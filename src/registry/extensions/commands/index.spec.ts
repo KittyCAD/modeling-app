@@ -108,6 +108,64 @@ describe('commands extension', () => {
     registry[Symbol.dispose]()
   })
 
+  it('runs a command selection sent before that command is registered', () => {
+    const commandsSlot = new Slot()
+    const onSubmit = vi.fn()
+    const command: Command = {
+      groupId: 'test',
+      name: 'late-command',
+      scopes: GLOBAL_COMMAND_SCOPES,
+      needsReview: false,
+      onSubmit,
+    }
+    const commandItem = defineRegistryItem({
+      id: 'late-command-item',
+      provides: [provideCommand(command)],
+    })
+
+    const registry = new Registry()
+    registry.configure([
+      defineRegistryItem({
+        id: 'test-wasm-promise',
+        provides: [provideWasmPromise(Promise.resolve({} as ModuleType))],
+      }),
+      defineRegistryItem({
+        id: 'test-machine-manager',
+        providesServices: [
+          provideService(machineManagerService, {
+            manager: new MachineManager(),
+          }),
+        ],
+      }),
+      commandsExtension,
+      commandsSlot.of(),
+    ])
+
+    const commandSystem = registry.get(commandSystemService)
+    commandSystem.send({
+      type: 'Find and select command',
+      data: {
+        groupId: command.groupId,
+        name: String(command.name),
+      },
+    })
+    commandSystem.send({
+      type: 'Find and select command',
+      data: {
+        groupId: command.groupId,
+        name: String(command.name),
+      },
+    })
+
+    expect(onSubmit).not.toHaveBeenCalled()
+
+    registry.reconfigure(commandsSlot, [commandItem])
+
+    expect(onSubmit).toHaveBeenCalledOnce()
+
+    registry[Symbol.dispose]()
+  })
+
   it('syncs the command palette scope with command machine state', () => {
     const activeScopes = signal<readonly string[]>([])
     const applyScope = (scope: string) => {

@@ -1,7 +1,7 @@
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { EngineConnectionManagerEvents } from '@src/lib/engineConnection/utils'
 import { useEffect } from 'react'
-import { EngineDisconnectEvent } from './useOnPeerConnectionClose'
+import type { EngineDisconnectEvent } from '@src/hooks/network/useOnPeerConnectionClose'
 
 export interface IUseOnPingPongTimeout {
   callback: (eventType: EngineDisconnectEvent) => void

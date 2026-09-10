@@ -10,7 +10,7 @@ description: Operations executed coerce_from_trig_to_point.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
         },
         "sourceRange": []
       },

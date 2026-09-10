@@ -77,7 +77,7 @@ beforeEach(async () => {
   }
 
   const { instance, engineCommandManager, rustContext } =
-    await buildTheWorldAndConnectToEngine()
+    await buildTheWorldAndConnectToEngine({ geometryOnly: true })
   instanceInThisFile = instance
   engineCommandManagerInThisFile = engineCommandManager
   rustContextInThisFile = rustContext
@@ -281,6 +281,7 @@ describe('Testing addSketchTo', () => {
   it('should add a sketch to a program', () => {
     const result = addSketchTo(
       {
+        type: 'Program',
         body: [],
         shebang: null,
         start: 0,

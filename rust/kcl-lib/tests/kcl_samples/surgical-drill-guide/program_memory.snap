@@ -6,8 +6,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
   "__sketch_105_on": {
     "type": "Face",
     "value": {
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "dbacbabd-ac68-548d-95dd-c708bf1ea9ca",
+      "artifactId": "dbacbabd-ac68-548d-95dd-c708bf1ea9ca",
       "objectId": 104,
       "value": "end",
       "xAxis": {
@@ -23,8 +23,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
+        "solidId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+        "creatorSketchId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
         "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
@@ -33,8 +33,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
   "__sketch_119_on": {
     "type": "Face",
     "value": {
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "c009654a-3c89-5df7-bc27-9522262037af",
+      "artifactId": "c009654a-3c89-5df7-bc27-9522262037af",
       "objectId": 118,
       "value": "end",
       "xAxis": {
@@ -50,11 +50,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
+        "solidId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+        "creatorSketchId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
         "creatorSketchIsClosed": "explicitly",
         "edgeCutIds": [
-          "[uuid]"
+          "c444b134-67e1-507a-bb00-d4998ba97afb"
         ]
       },
       "units": "mm"
@@ -63,8 +63,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
   "__sketch_133_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "906a1f18-6a62-5deb-b39b-61d540081804",
+      "id": "906a1f18-6a62-5deb-b39b-61d540081804",
       "objectId": 132,
       "kind": "Custom",
       "origin": {
@@ -96,8 +96,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
   "__sketch_163_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "9afb6023-b93a-59ec-afe5-e351f8385d69",
+      "id": "9afb6023-b93a-59ec-afe5-e351f8385d69",
       "objectId": 162,
       "kind": "Custom",
       "origin": {
@@ -129,8 +129,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
   "__sketch_177_on": {
     "type": "Face",
     "value": {
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "9fcd094c-d6cd-5b22-8222-0efbe600f813",
+      "artifactId": "9fcd094c-d6cd-5b22-8222-0efbe600f813",
       "objectId": 176,
       "value": "start",
       "xAxis": {
@@ -146,8 +146,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
+        "solidId": "f0a7732a-2f75-5407-b203-7382d01c3918",
+        "creatorSketchId": "f0a7732a-2f75-5407-b203-7382d01c3918",
         "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
@@ -156,8 +156,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
   "__sketch_191_on": {
     "type": "Face",
     "value": {
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "8e101a19-1049-5233-ace7-c1c03ed3ab41",
+      "artifactId": "8e101a19-1049-5233-ace7-c1c03ed3ab41",
       "objectId": 190,
       "value": "end",
       "xAxis": {
@@ -173,11 +173,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
+        "solidId": "f0a7732a-2f75-5407-b203-7382d01c3918",
+        "creatorSketchId": "f0a7732a-2f75-5407-b203-7382d01c3918",
         "creatorSketchIsClosed": "explicitly",
         "edgeCutIds": [
-          "[uuid]"
+          "ca586750-6453-56e0-b4cf-8e561096e7ca"
         ]
       },
       "units": "mm"
@@ -186,8 +186,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
+      "id": "7c4571e0-7b14-576f-a82e-22280b05874d",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -218,8 +218,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
   "__sketch_205_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "d1c03f64-0489-502b-bc48-3ba001cf2ed6",
+      "id": "d1c03f64-0489-502b-bc48-3ba001cf2ed6",
       "objectId": 204,
       "kind": "Custom",
       "origin": {
@@ -251,8 +251,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
   "__sketch_63_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -283,8 +283,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
   "__sketch_77_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+      "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
       "objectId": 76,
       "kind": "Custom",
       "origin": {
@@ -316,8 +316,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
   "__sketch_91_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+      "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
       "objectId": 90,
       "kind": "Custom",
       "origin": {
@@ -369,14 +369,14 @@ description: Variables in memory after executing surgical-drill-guide.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+      "originalId": "6f85cbad-5e6d-549c-850d-909283a25e83",
+      "topologyId": "6f85cbad-5e6d-549c-850d-909283a25e83",
+      "artifactId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f804c15c-218a-5715-b684-154aec0be6c4",
+          "id": "e20a732b-3d99-544f-b66b-653823a2b0b8",
           "sourceRange": [],
           "tag": {
             "commentStart": 6920,
@@ -392,11 +392,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e20a732b-3d99-544f-b66b-653823a2b0b8",
               "sourceRange": []
             },
             "ccw": true,
@@ -427,8 +427,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         ],
         "on": {
           "type": "face",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "c009654a-3c89-5df7-bc27-9522262037af",
+          "artifactId": "c009654a-3c89-5df7-bc27-9522262037af",
           "objectId": 118,
           "value": "end",
           "xAxis": {
@@ -444,11 +444,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
+            "solidId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+            "creatorSketchId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
             "creatorSketchIsClosed": "explicitly",
             "edgeCutIds": [
-              "[uuid]"
+              "c444b134-67e1-507a-bb00-d4998ba97afb"
             ]
           },
           "units": "mm"
@@ -465,7 +465,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
             "sourceRange": []
           }
         },
@@ -475,8 +475,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "value": "circle1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "6f85cbad-5e6d-549c-850d-909283a25e83",
+        "originalId": "6f85cbad-5e6d-549c-850d-909283a25e83",
         "units": "mm",
         "isClosed": "explicitly"
       },
@@ -490,11 +490,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e20a732b-3d99-544f-b66b-653823a2b0b8",
             "sourceRange": []
           },
           "ccw": true,
@@ -525,8 +525,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
       ],
       "on": {
         "type": "face",
-        "id": "[uuid]",
-        "artifactId": "[uuid]",
+        "id": "c009654a-3c89-5df7-bc27-9522262037af",
+        "artifactId": "c009654a-3c89-5df7-bc27-9522262037af",
         "objectId": 118,
         "value": "end",
         "xAxis": {
@@ -542,11 +542,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
+          "solidId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+          "creatorSketchId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
           "creatorSketchIsClosed": "explicitly",
           "edgeCutIds": [
-            "[uuid]"
+            "c444b134-67e1-507a-bb00-d4998ba97afb"
           ]
         },
         "units": "mm"
@@ -563,7 +563,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
           "sourceRange": []
         }
       },
@@ -573,8 +573,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "value": "circle1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "6f85cbad-5e6d-549c-850d-909283a25e83",
+      "originalId": "6f85cbad-5e6d-549c-850d-909283a25e83",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -588,7 +588,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "acb6b8b6-e024-57d9-a856-353e5c4d001f",
                 "objectId": 122,
                 "kind": {
                   "line": {
@@ -664,8 +664,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "c009654a-3c89-5df7-bc27-9522262037af",
+                  "artifactId": "c009654a-3c89-5df7-bc27-9522262037af",
                   "objectId": 118,
                   "value": "end",
                   "xAxis": {
@@ -681,16 +681,16 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+                    "creatorSketchId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
-                      "[uuid]"
+                      "c444b134-67e1-507a-bb00-d4998ba97afb"
                     ]
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "centerGuide"
@@ -706,7 +706,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
                 "objectId": 128,
                 "kind": {
                   "circle": {
@@ -781,8 +781,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "c009654a-3c89-5df7-bc27-9522262037af",
+                  "artifactId": "c009654a-3c89-5df7-bc27-9522262037af",
                   "objectId": 118,
                   "value": "end",
                   "xAxis": {
@@ -798,16 +798,16 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+                    "creatorSketchId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
-                      "[uuid]"
+                      "c444b134-67e1-507a-bb00-d4998ba97afb"
                     ]
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -824,11 +824,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -859,8 +859,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
               ],
               "on": {
                 "type": "face",
-                "id": "[uuid]",
-                "artifactId": "[uuid]",
+                "id": "c009654a-3c89-5df7-bc27-9522262037af",
+                "artifactId": "c009654a-3c89-5df7-bc27-9522262037af",
                 "objectId": 118,
                 "value": "end",
                 "xAxis": {
@@ -876,11 +876,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   "units": null
                 },
                 "parentSolid": {
-                  "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]",
+                  "solidId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+                  "creatorSketchId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
                   "creatorSketchIsClosed": "explicitly",
                   "edgeCutIds": [
-                    "[uuid]"
+                    "c444b134-67e1-507a-bb00-d4998ba97afb"
                   ]
                 },
                 "units": "mm"
@@ -897,7 +897,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
                   "sourceRange": []
                 }
               },
@@ -907,8 +907,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   "value": "circle1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
+              "originalId": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
               "units": "mm",
               "isClosed": "no"
             }
@@ -923,14 +923,14 @@ description: Variables in memory after executing surgical-drill-guide.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "f0a7732a-2f75-5407-b203-7382d01c3918",
+      "originalId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
+      "topologyId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
+      "artifactId": "c9d8522f-60d2-513b-9c62-a4a3110e5970",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "59a5f5e3-0117-5b42-83c7-373bd26730ac",
+          "id": "34c1cbd3-bd91-5004-a662-f8ddde34e7cd",
           "sourceRange": [],
           "tag": {
             "commentStart": 11224,
@@ -946,11 +946,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "f0a7732a-2f75-5407-b203-7382d01c3918",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "34c1cbd3-bd91-5004-a662-f8ddde34e7cd",
               "sourceRange": []
             },
             "ccw": true,
@@ -981,8 +981,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         ],
         "on": {
           "type": "face",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "8e101a19-1049-5233-ace7-c1c03ed3ab41",
+          "artifactId": "8e101a19-1049-5233-ace7-c1c03ed3ab41",
           "objectId": 190,
           "value": "end",
           "xAxis": {
@@ -998,11 +998,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
+            "solidId": "f0a7732a-2f75-5407-b203-7382d01c3918",
+            "creatorSketchId": "f0a7732a-2f75-5407-b203-7382d01c3918",
             "creatorSketchIsClosed": "explicitly",
             "edgeCutIds": [
-              "[uuid]"
+              "ca586750-6453-56e0-b4cf-8e561096e7ca"
             ]
           },
           "units": "mm"
@@ -1019,7 +1019,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "84468ff1-4b26-5c88-8618-6cea09661aac",
             "sourceRange": []
           }
         },
@@ -1029,8 +1029,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "value": "circle1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
+        "originalId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
         "units": "mm",
         "isClosed": "explicitly"
       },
@@ -1044,11 +1044,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "34c1cbd3-bd91-5004-a662-f8ddde34e7cd",
             "sourceRange": []
           },
           "ccw": true,
@@ -1079,8 +1079,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
       ],
       "on": {
         "type": "face",
-        "id": "[uuid]",
-        "artifactId": "[uuid]",
+        "id": "8e101a19-1049-5233-ace7-c1c03ed3ab41",
+        "artifactId": "8e101a19-1049-5233-ace7-c1c03ed3ab41",
         "objectId": 190,
         "value": "end",
         "xAxis": {
@@ -1096,11 +1096,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
+          "solidId": "f0a7732a-2f75-5407-b203-7382d01c3918",
+          "creatorSketchId": "f0a7732a-2f75-5407-b203-7382d01c3918",
           "creatorSketchIsClosed": "explicitly",
           "edgeCutIds": [
-            "[uuid]"
+            "ca586750-6453-56e0-b4cf-8e561096e7ca"
           ]
         },
         "units": "mm"
@@ -1117,7 +1117,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "84468ff1-4b26-5c88-8618-6cea09661aac",
           "sourceRange": []
         }
       },
@@ -1127,8 +1127,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "value": "circle1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
+      "originalId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -1142,7 +1142,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8d695cfb-b4c7-5cf4-9ce3-56d1cd39cb6c",
                 "objectId": 194,
                 "kind": {
                   "line": {
@@ -1218,8 +1218,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "8e101a19-1049-5233-ace7-c1c03ed3ab41",
+                  "artifactId": "8e101a19-1049-5233-ace7-c1c03ed3ab41",
                   "objectId": 190,
                   "value": "end",
                   "xAxis": {
@@ -1235,16 +1235,16 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "f0a7732a-2f75-5407-b203-7382d01c3918",
+                    "creatorSketchId": "f0a7732a-2f75-5407-b203-7382d01c3918",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
-                      "[uuid]"
+                      "ca586750-6453-56e0-b4cf-8e561096e7ca"
                     ]
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e6ed3605-69e2-53c9-bebb-df82937c0962",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "centerGuide"
@@ -1260,7 +1260,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "72e4fb1c-adcb-54a7-99b3-2a3ed589227e",
                 "objectId": 200,
                 "kind": {
                   "circle": {
@@ -1335,8 +1335,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "8e101a19-1049-5233-ace7-c1c03ed3ab41",
+                  "artifactId": "8e101a19-1049-5233-ace7-c1c03ed3ab41",
                   "objectId": 190,
                   "value": "end",
                   "xAxis": {
@@ -1352,16 +1352,16 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "f0a7732a-2f75-5407-b203-7382d01c3918",
+                    "creatorSketchId": "f0a7732a-2f75-5407-b203-7382d01c3918",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
-                      "[uuid]"
+                      "ca586750-6453-56e0-b4cf-8e561096e7ca"
                     ]
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e6ed3605-69e2-53c9-bebb-df82937c0962",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -1378,11 +1378,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "e6ed3605-69e2-53c9-bebb-df82937c0962",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "72e4fb1c-adcb-54a7-99b3-2a3ed589227e",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -1413,8 +1413,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
               ],
               "on": {
                 "type": "face",
-                "id": "[uuid]",
-                "artifactId": "[uuid]",
+                "id": "8e101a19-1049-5233-ace7-c1c03ed3ab41",
+                "artifactId": "8e101a19-1049-5233-ace7-c1c03ed3ab41",
                 "objectId": 190,
                 "value": "end",
                 "xAxis": {
@@ -1430,11 +1430,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   "units": null
                 },
                 "parentSolid": {
-                  "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]",
+                  "solidId": "f0a7732a-2f75-5407-b203-7382d01c3918",
+                  "creatorSketchId": "f0a7732a-2f75-5407-b203-7382d01c3918",
                   "creatorSketchIsClosed": "explicitly",
                   "edgeCutIds": [
-                    "[uuid]"
+                    "ca586750-6453-56e0-b4cf-8e561096e7ca"
                   ]
                 },
                 "units": "mm"
@@ -1451,7 +1451,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "84468ff1-4b26-5c88-8618-6cea09661aac",
                   "sourceRange": []
                 }
               },
@@ -1461,8 +1461,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   "value": "circle1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "e6ed3605-69e2-53c9-bebb-df82937c0962",
+              "originalId": "e6ed3605-69e2-53c9-bebb-df82937c0962",
               "units": "mm",
               "isClosed": "no"
             }
@@ -1477,14 +1477,14 @@ description: Variables in memory after executing surgical-drill-guide.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+      "originalId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+      "topologyId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+      "artifactId": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6274b46c-699d-53f2-b67c-09f2bafba551",
+          "id": "cfa8de4e-e7f4-5768-abc8-9fed336c272f",
           "sourceRange": [],
           "tag": {
             "commentStart": 3677,
@@ -1500,11 +1500,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "cfa8de4e-e7f4-5768-abc8-9fed336c272f",
               "sourceRange": []
             },
             "ccw": true,
@@ -1535,8 +1535,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+          "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
           "objectId": 62,
           "kind": "Custom",
           "origin": {
@@ -1576,7 +1576,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
             "sourceRange": []
           }
         },
@@ -1586,13 +1586,13 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "value": "circle1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+        "originalId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "151f577d-89c9-57d2-9e80-70d3947c8bbf",
+      "endCapId": "01dfd88a-3d23-5401-a4fe-3b70b106c3f6",
       "units": "mm",
       "sectional": false
     }
@@ -1601,11 +1601,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "cfa8de4e-e7f4-5768-abc8-9fed336c272f",
             "sourceRange": []
           },
           "ccw": true,
@@ -1636,8 +1636,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+        "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
         "objectId": 62,
         "kind": "Custom",
         "origin": {
@@ -1677,7 +1677,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
           "sourceRange": []
         }
       },
@@ -1687,8 +1687,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "value": "circle1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+      "originalId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -1702,7 +1702,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2269b169-b2b2-5ec2-a665-24cb3822e91f",
                 "objectId": 66,
                 "kind": {
                   "line": {
@@ -1777,8 +1777,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+                  "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
                   "kind": "Custom",
                   "objectId": 62,
                   "origin": {
@@ -1807,7 +1807,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "centerGuide"
@@ -1823,7 +1823,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
                 "objectId": 72,
                 "kind": {
                   "circle": {
@@ -1897,8 +1897,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+                  "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
                   "kind": "Custom",
                   "objectId": 62,
                   "origin": {
@@ -1927,7 +1927,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -1944,11 +1944,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -1979,8 +1979,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+                "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
                 "objectId": 62,
                 "kind": "Custom",
                 "origin": {
@@ -2020,7 +2020,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
                   "sourceRange": []
                 }
               },
@@ -2030,8 +2030,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   "value": "circle1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
+              "originalId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
               "units": "mm",
               "isClosed": "no"
             }
@@ -2046,14 +2046,14 @@ description: Variables in memory after executing surgical-drill-guide.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
+      "originalId": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
+      "topologyId": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
+      "artifactId": "40d8c462-7810-5666-bb09-1db7308cf666",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "957065b8-0f3a-5c2c-b135-5e132da133b6",
+          "id": "aba2b817-9542-59d2-a93b-3f3227630fd3",
           "sourceRange": [],
           "tag": {
             "commentStart": 4414,
@@ -2069,11 +2069,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "aba2b817-9542-59d2-a93b-3f3227630fd3",
               "sourceRange": []
             },
             "ccw": true,
@@ -2104,8 +2104,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+          "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
           "objectId": 76,
           "kind": "Custom",
           "origin": {
@@ -2145,7 +2145,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
             "sourceRange": []
           }
         },
@@ -2155,13 +2155,13 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "value": "circle1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
+        "originalId": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "d0f8c6bd-bdc8-5d47-ad7e-dff0facc7dc3",
+      "endCapId": "ce1b7be3-a467-5563-aa99-573be67bc90b",
       "units": "mm",
       "sectional": false
     }
@@ -2170,11 +2170,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "aba2b817-9542-59d2-a93b-3f3227630fd3",
             "sourceRange": []
           },
           "ccw": true,
@@ -2205,8 +2205,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+        "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
         "objectId": 76,
         "kind": "Custom",
         "origin": {
@@ -2246,7 +2246,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
           "sourceRange": []
         }
       },
@@ -2256,8 +2256,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "value": "circle1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
+      "originalId": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -2271,7 +2271,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
                 "objectId": 80,
                 "kind": {
                   "line": {
@@ -2346,8 +2346,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+                  "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
                   "kind": "Custom",
                   "objectId": 76,
                   "origin": {
@@ -2376,7 +2376,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "centerGuide"
@@ -2392,7 +2392,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
                 "objectId": 86,
                 "kind": {
                   "circle": {
@@ -2466,8 +2466,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+                  "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
                   "kind": "Custom",
                   "objectId": 76,
                   "origin": {
@@ -2496,7 +2496,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -2513,11 +2513,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -2548,8 +2548,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+                "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
                 "objectId": 76,
                 "kind": "Custom",
                 "origin": {
@@ -2589,7 +2589,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
                   "sourceRange": []
                 }
               },
@@ -2599,8 +2599,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   "value": "circle1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+              "originalId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
               "units": "mm",
               "isClosed": "no"
             }
@@ -2651,14 +2651,14 @@ description: Variables in memory after executing surgical-drill-guide.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+      "originalId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+      "topologyId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+      "artifactId": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ad960a9b-b839-524a-b9d8-96904af69c16",
+          "id": "1b0cf99f-3e61-542c-b1aa-d69dbb359e4d",
           "sourceRange": [],
           "tag": {
             "commentStart": 5245,
@@ -2674,11 +2674,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1b0cf99f-3e61-542c-b1aa-d69dbb359e4d",
               "sourceRange": []
             },
             "ccw": true,
@@ -2709,8 +2709,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+          "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
           "objectId": 90,
           "kind": "Custom",
           "origin": {
@@ -2750,7 +2750,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "19107e89-bf40-5541-88a5-5106b6de636d",
             "sourceRange": []
           }
         },
@@ -2760,13 +2760,13 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "value": "circle1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+        "originalId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "4578c6b9-8ff5-5d36-86a3-1943f06d7d6a",
+      "endCapId": "dbacbabd-ac68-548d-95dd-c708bf1ea9ca",
       "units": "mm",
       "sectional": false
     }
@@ -2775,11 +2775,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1b0cf99f-3e61-542c-b1aa-d69dbb359e4d",
             "sourceRange": []
           },
           "ccw": true,
@@ -2810,8 +2810,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+        "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
         "objectId": 90,
         "kind": "Custom",
         "origin": {
@@ -2851,7 +2851,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "19107e89-bf40-5541-88a5-5106b6de636d",
           "sourceRange": []
         }
       },
@@ -2861,8 +2861,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "value": "circle1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+      "originalId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -2876,7 +2876,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "ca502980-7bdd-5694-85c5-3eb8ffa8242b",
                 "objectId": 94,
                 "kind": {
                   "line": {
@@ -2951,8 +2951,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+                  "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
                   "kind": "Custom",
                   "objectId": 90,
                   "origin": {
@@ -2981,7 +2981,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "centerGuide"
@@ -2997,7 +2997,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
                 "objectId": 100,
                 "kind": {
                   "circle": {
@@ -3071,8 +3071,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+                  "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
                   "kind": "Custom",
                   "objectId": 90,
                   "origin": {
@@ -3101,7 +3101,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -3118,11 +3118,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -3153,8 +3153,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+                "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
                 "objectId": 90,
                 "kind": "Custom",
                 "origin": {
@@ -3194,7 +3194,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "19107e89-bf40-5541-88a5-5106b6de636d",
                   "sourceRange": []
                 }
               },
@@ -3204,8 +3204,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   "value": "circle1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
+              "originalId": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
               "units": "mm",
               "isClosed": "no"
             }
@@ -3220,14 +3220,14 @@ description: Variables in memory after executing surgical-drill-guide.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "f0a7732a-2f75-5407-b203-7382d01c3918",
+      "originalId": "f0a7732a-2f75-5407-b203-7382d01c3918",
+      "topologyId": "f0a7732a-2f75-5407-b203-7382d01c3918",
+      "artifactId": "f41b64cc-a0bb-5a3a-a1a2-6bb37bda7c26",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b406edb1-a5f2-5b5a-b856-fac4610ea949",
+          "id": "f4374afc-3377-5cac-a59b-bab63def911a",
           "sourceRange": [],
           "tag": {
             "commentStart": 9560,
@@ -3243,11 +3243,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "f0a7732a-2f75-5407-b203-7382d01c3918",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f4374afc-3377-5cac-a59b-bab63def911a",
               "sourceRange": []
             },
             "ccw": true,
@@ -3278,8 +3278,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "9afb6023-b93a-59ec-afe5-e351f8385d69",
+          "id": "9afb6023-b93a-59ec-afe5-e351f8385d69",
           "objectId": 162,
           "kind": "Custom",
           "origin": {
@@ -3319,7 +3319,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f6528d6a-e531-5b37-a104-5e45fe757c9f",
             "sourceRange": []
           }
         },
@@ -3329,13 +3329,13 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "value": "circle1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "f0a7732a-2f75-5407-b203-7382d01c3918",
+        "originalId": "f0a7732a-2f75-5407-b203-7382d01c3918",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "9fcd094c-d6cd-5b22-8222-0efbe600f813",
+      "endCapId": "cb6bb162-d65d-5b96-98c3-001537b64f8e",
       "units": "mm",
       "sectional": false
     }
@@ -3344,11 +3344,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "f0a7732a-2f75-5407-b203-7382d01c3918",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f4374afc-3377-5cac-a59b-bab63def911a",
             "sourceRange": []
           },
           "ccw": true,
@@ -3379,8 +3379,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "9afb6023-b93a-59ec-afe5-e351f8385d69",
+        "id": "9afb6023-b93a-59ec-afe5-e351f8385d69",
         "objectId": 162,
         "kind": "Custom",
         "origin": {
@@ -3420,7 +3420,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "f6528d6a-e531-5b37-a104-5e45fe757c9f",
           "sourceRange": []
         }
       },
@@ -3430,8 +3430,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "value": "circle1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "f0a7732a-2f75-5407-b203-7382d01c3918",
+      "originalId": "f0a7732a-2f75-5407-b203-7382d01c3918",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -3445,7 +3445,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "96b5306d-8365-5f19-adf7-7b3e844826ca",
                 "objectId": 166,
                 "kind": {
                   "line": {
@@ -3520,8 +3520,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "9afb6023-b93a-59ec-afe5-e351f8385d69",
+                  "id": "9afb6023-b93a-59ec-afe5-e351f8385d69",
                   "kind": "Custom",
                   "objectId": 162,
                   "origin": {
@@ -3550,7 +3550,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c47bdefb-e100-5d1c-a209-66adc3d957b5",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "centerGuide"
@@ -3566,7 +3566,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "c8fe1f51-8285-5882-9af3-7e3b8d0e3598",
                 "objectId": 172,
                 "kind": {
                   "circle": {
@@ -3640,8 +3640,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "9afb6023-b93a-59ec-afe5-e351f8385d69",
+                  "id": "9afb6023-b93a-59ec-afe5-e351f8385d69",
                   "kind": "Custom",
                   "objectId": 162,
                   "origin": {
@@ -3670,7 +3670,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c47bdefb-e100-5d1c-a209-66adc3d957b5",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -3687,11 +3687,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "c47bdefb-e100-5d1c-a209-66adc3d957b5",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "c8fe1f51-8285-5882-9af3-7e3b8d0e3598",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -3722,8 +3722,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "9afb6023-b93a-59ec-afe5-e351f8385d69",
+                "id": "9afb6023-b93a-59ec-afe5-e351f8385d69",
                 "objectId": 162,
                 "kind": "Custom",
                 "origin": {
@@ -3763,7 +3763,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "f6528d6a-e531-5b37-a104-5e45fe757c9f",
                   "sourceRange": []
                 }
               },
@@ -3773,8 +3773,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   "value": "circle1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "c47bdefb-e100-5d1c-a209-66adc3d957b5",
+              "originalId": "c47bdefb-e100-5d1c-a209-66adc3d957b5",
               "units": "mm",
               "isClosed": "no"
             }
@@ -3789,14 +3789,14 @@ description: Variables in memory after executing surgical-drill-guide.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+      "originalId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+      "topologyId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+      "artifactId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "01b5817a-95ba-559a-a207-ea6e6693a367",
+          "id": "f10c331a-4b27-5b97-a0ea-19a91c7930d1",
           "sourceRange": [],
           "tag": {
             "commentStart": 792,
@@ -3809,8 +3809,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9c48c2c0-9242-52e0-abf7-92f07408aa37",
+          "id": "de815b4c-817e-5265-b7b5-30ae92f19673",
           "sourceRange": [],
           "tag": {
             "commentStart": 862,
@@ -3823,8 +3823,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "83e1ebe8-034c-5079-a947-09d855b3d52c",
+          "id": "2a3cc8ae-d79c-5248-9ec5-6dc06de9ca6b",
           "sourceRange": [],
           "tag": {
             "commentStart": 981,
@@ -3837,8 +3837,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f240b728-d8f1-543d-b287-2a74e8fe21f0",
+          "id": "4e2075b3-008a-58a5-8d30-a638594f8a38",
           "sourceRange": [],
           "tag": {
             "commentStart": 1099,
@@ -3851,8 +3851,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a7e941fd-f08b-5ea3-9d19-dc760eb68812",
+          "id": "78f9fbb1-4644-505b-8150-e6db5ad7ddd8",
           "sourceRange": [],
           "tag": {
             "commentStart": 1246,
@@ -3865,8 +3865,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5bb2c8b6-74d3-5df5-8ba3-88e1e019cd8c",
+          "id": "609ac3b8-9ccc-5411-afa5-14b018bbc5df",
           "sourceRange": [],
           "tag": {
             "commentStart": 1377,
@@ -3879,8 +3879,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "758b1cbe-d29a-580f-afb0-6d33d10100ed",
+          "id": "5bab1ac2-a2ef-5a22-aaa0-f552b386e178",
           "sourceRange": [],
           "tag": {
             "commentStart": 1503,
@@ -3893,8 +3893,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7cd0d0c8-db48-5f91-b418-7cab944a2f9a",
+          "id": "c5cd4723-2ba1-59e7-8132-1e4b2473a556",
           "sourceRange": [],
           "tag": {
             "commentStart": 1629,
@@ -3907,8 +3907,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "361f733b-edc1-51f8-b746-9ebbb45cc862",
+          "id": "361f733b-edc1-51f8-b746-9ebbb45cc862",
           "sourceRange": [],
           "tag": {
             "commentStart": 3339,
@@ -3921,8 +3921,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f9dc6948-4271-538e-834e-70c79ca526dd",
+          "id": "f9dc6948-4271-538e-834e-70c79ca526dd",
           "sourceRange": [],
           "tag": {
             "commentStart": 3314,
@@ -3948,11 +3948,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f10c331a-4b27-5b97-a0ea-19a91c7930d1",
               "sourceRange": []
             },
             "from": [
@@ -3976,7 +3976,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "de815b4c-817e-5265-b7b5-30ae92f19673",
               "sourceRange": []
             },
             "from": [
@@ -4000,7 +4000,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2a3cc8ae-d79c-5248-9ec5-6dc06de9ca6b",
               "sourceRange": []
             },
             "from": [
@@ -4024,7 +4024,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4e2075b3-008a-58a5-8d30-a638594f8a38",
               "sourceRange": []
             },
             "ccw": false,
@@ -4054,7 +4054,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "78f9fbb1-4644-505b-8150-e6db5ad7ddd8",
               "sourceRange": []
             },
             "from": [
@@ -4078,7 +4078,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "609ac3b8-9ccc-5411-afa5-14b018bbc5df",
               "sourceRange": []
             },
             "from": [
@@ -4102,7 +4102,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5bab1ac2-a2ef-5a22-aaa0-f552b386e178",
               "sourceRange": []
             },
             "from": [
@@ -4126,7 +4126,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c5cd4723-2ba1-59e7-8132-1e4b2473a556",
               "sourceRange": []
             },
             "ccw": true,
@@ -4157,8 +4157,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -4198,7 +4198,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
             "sourceRange": []
           }
         },
@@ -4244,13 +4244,13 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "value": "topFace"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+        "originalId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "361f733b-edc1-51f8-b746-9ebbb45cc862",
+      "endCapId": "f9dc6948-4271-538e-834e-70c79ca526dd",
       "units": "mm",
       "sectional": false
     }
@@ -4332,14 +4332,14 @@ description: Variables in memory after executing surgical-drill-guide.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98",
+      "originalId": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98",
+      "topologyId": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98",
+      "artifactId": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b06e0aa7-c0e9-50d2-b15a-a4cf3e6f10ff",
+          "id": "004eb715-ee8c-5f99-b124-30de34181716",
           "sourceRange": [],
           "tag": {
             "commentStart": 7787,
@@ -4352,8 +4352,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "52344122-d895-5c37-bb71-0c0ef9d0bd7f",
+          "id": "ea9619f3-d268-5308-ad09-f2699c6038d7",
           "sourceRange": [],
           "tag": {
             "commentStart": 7870,
@@ -4366,8 +4366,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "61edf5c5-a068-58fe-b2a0-fd2eb95870b3",
+          "id": "61edf5c5-a068-58fe-b2a0-fd2eb95870b3",
           "sourceRange": [],
           "tag": {
             "commentStart": 8881,
@@ -4380,8 +4380,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f08698c7-f4e3-5762-a9de-6326a39681f8",
+          "id": "f08698c7-f4e3-5762-a9de-6326a39681f8",
           "sourceRange": [],
           "tag": {
             "commentStart": 8856,
@@ -4407,11 +4407,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "004eb715-ee8c-5f99-b124-30de34181716",
               "sourceRange": []
             },
             "ccw": true,
@@ -4441,7 +4441,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ea9619f3-d268-5308-ad09-f2699c6038d7",
               "sourceRange": []
             },
             "ccw": true,
@@ -4472,8 +4472,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "906a1f18-6a62-5deb-b39b-61d540081804",
+          "id": "906a1f18-6a62-5deb-b39b-61d540081804",
           "objectId": 132,
           "kind": "Custom",
           "origin": {
@@ -4513,7 +4513,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
             "sourceRange": []
           }
         },
@@ -4535,17 +4535,17 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "value": "outerCircle"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98",
+        "originalId": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "61edf5c5-a068-58fe-b2a0-fd2eb95870b3",
+      "endCapId": "f08698c7-f4e3-5762-a9de-6326a39681f8",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4",
           "radius": {
             "n": 1.0,
             "ty": {
@@ -4554,12 +4554,12 @@ description: Variables in memory after executing surgical-drill-guide.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "004eb715-ee8c-5f99-b124-30de34181716",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4",
           "radius": {
             "n": 1.0,
             "ty": {
@@ -4568,7 +4568,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "8e17a879-16a2-5baa-a821-4ecaa4051b7e",
           "tag": null
         }
       ],
@@ -4580,11 +4580,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "004eb715-ee8c-5f99-b124-30de34181716",
             "sourceRange": []
           },
           "ccw": true,
@@ -4614,7 +4614,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ea9619f3-d268-5308-ad09-f2699c6038d7",
             "sourceRange": []
           },
           "ccw": true,
@@ -4645,8 +4645,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "906a1f18-6a62-5deb-b39b-61d540081804",
+        "id": "906a1f18-6a62-5deb-b39b-61d540081804",
         "objectId": 132,
         "kind": "Custom",
         "origin": {
@@ -4686,7 +4686,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
           "sourceRange": []
         }
       },
@@ -4708,8 +4708,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "value": "outerCircle"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98",
+      "originalId": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -4723,7 +4723,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
                 "objectId": 136,
                 "kind": {
                   "line": {
@@ -4798,8 +4798,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "906a1f18-6a62-5deb-b39b-61d540081804",
+                  "id": "906a1f18-6a62-5deb-b39b-61d540081804",
                   "kind": "Custom",
                   "objectId": 132,
                   "origin": {
@@ -4828,7 +4828,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e5f7766f-25a6-52cd-9cbf-632be25dd038",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "centerGuide"
@@ -4844,7 +4844,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "0807f469-38fd-5e01-a326-82a66aa0f1d0",
                 "objectId": 148,
                 "kind": {
                   "circle": {
@@ -4918,8 +4918,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "906a1f18-6a62-5deb-b39b-61d540081804",
+                  "id": "906a1f18-6a62-5deb-b39b-61d540081804",
                   "kind": "Custom",
                   "objectId": 132,
                   "origin": {
@@ -4948,7 +4948,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e5f7766f-25a6-52cd-9cbf-632be25dd038",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "innerCircle"
@@ -4964,7 +4964,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a",
                 "objectId": 142,
                 "kind": {
                   "line": {
@@ -5039,8 +5039,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "906a1f18-6a62-5deb-b39b-61d540081804",
+                  "id": "906a1f18-6a62-5deb-b39b-61d540081804",
                   "kind": "Custom",
                   "objectId": 132,
                   "origin": {
@@ -5069,7 +5069,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e5f7766f-25a6-52cd-9cbf-632be25dd038",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "innerRadiusGuide"
@@ -5086,11 +5086,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "e5f7766f-25a6-52cd-9cbf-632be25dd038",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -5120,7 +5120,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "d4cbda13-cf30-51b5-adde-debccd5ae685",
                     "sourceRange": []
                   },
                   "from": [
@@ -5137,7 +5137,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "0807f469-38fd-5e01-a326-82a66aa0f1d0",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -5168,8 +5168,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "906a1f18-6a62-5deb-b39b-61d540081804",
+                "id": "906a1f18-6a62-5deb-b39b-61d540081804",
                 "objectId": 132,
                 "kind": "Custom",
                 "origin": {
@@ -5209,7 +5209,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
                   "sourceRange": []
                 }
               },
@@ -5223,8 +5223,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   "value": "outerCircle"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "e5f7766f-25a6-52cd-9cbf-632be25dd038",
+              "originalId": "e5f7766f-25a6-52cd-9cbf-632be25dd038",
               "units": "mm",
               "isClosed": "no"
             }
@@ -5238,7 +5238,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
                 "objectId": 145,
                 "kind": {
                   "circle": {
@@ -5312,8 +5312,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "906a1f18-6a62-5deb-b39b-61d540081804",
+                  "id": "906a1f18-6a62-5deb-b39b-61d540081804",
                   "kind": "Custom",
                   "objectId": 132,
                   "origin": {
@@ -5342,7 +5342,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e5f7766f-25a6-52cd-9cbf-632be25dd038",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "outerCircle"
@@ -5358,7 +5358,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bc2bd889-33e8-5f5e-94c6-3c456f236e9a",
                 "objectId": 139,
                 "kind": {
                   "line": {
@@ -5433,8 +5433,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "906a1f18-6a62-5deb-b39b-61d540081804",
+                  "id": "906a1f18-6a62-5deb-b39b-61d540081804",
                   "kind": "Custom",
                   "objectId": 132,
                   "origin": {
@@ -5463,7 +5463,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e5f7766f-25a6-52cd-9cbf-632be25dd038",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "outerRadiusGuide"
@@ -5480,14 +5480,14 @@ description: Variables in memory after executing surgical-drill-guide.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "5906c65e-a86e-5e74-ad3b-71b0fd95ea81",
+      "originalId": "5906c65e-a86e-5e74-ad3b-71b0fd95ea81",
+      "topologyId": "5906c65e-a86e-5e74-ad3b-71b0fd95ea81",
+      "artifactId": "cb96bce2-64b3-5697-9ac4-41978548d779",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3c8bc266-c8de-5075-b1ac-a05a2e4d7607",
+          "id": "05b39b46-dac1-5cf0-bc8b-9df039b7323c",
           "sourceRange": [],
           "tag": {
             "commentStart": 12078,
@@ -5500,8 +5500,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3855379a-ef74-5886-8359-7829dc2e86b0",
+          "id": "7dac2748-7c66-5dde-a2ff-8a075a1ed793",
           "sourceRange": [],
           "tag": {
             "commentStart": 12163,
@@ -5514,8 +5514,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1c82aba1-44ba-5f67-8290-d97e658165f0",
+          "id": "1c82aba1-44ba-5f67-8290-d97e658165f0",
           "sourceRange": [],
           "tag": {
             "commentStart": 13152,
@@ -5528,8 +5528,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ff08d2c6-5786-5e6d-b8a1-61a8af0924ae",
+          "id": "ff08d2c6-5786-5e6d-b8a1-61a8af0924ae",
           "sourceRange": [],
           "tag": {
             "commentStart": 13177,
@@ -5555,11 +5555,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "5906c65e-a86e-5e74-ad3b-71b0fd95ea81",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "05b39b46-dac1-5cf0-bc8b-9df039b7323c",
               "sourceRange": []
             },
             "ccw": true,
@@ -5589,7 +5589,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7dac2748-7c66-5dde-a2ff-8a075a1ed793",
               "sourceRange": []
             },
             "ccw": true,
@@ -5620,8 +5620,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "d1c03f64-0489-502b-bc48-3ba001cf2ed6",
+          "id": "d1c03f64-0489-502b-bc48-3ba001cf2ed6",
           "objectId": 204,
           "kind": "Custom",
           "origin": {
@@ -5661,7 +5661,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5e0ef8cd-86d0-539e-b5b7-45c22f6c2ecd",
             "sourceRange": []
           }
         },
@@ -5683,17 +5683,17 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "value": "outerCircle"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "5906c65e-a86e-5e74-ad3b-71b0fd95ea81",
+        "originalId": "5906c65e-a86e-5e74-ad3b-71b0fd95ea81",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "1c82aba1-44ba-5f67-8290-d97e658165f0",
+      "endCapId": "ff08d2c6-5786-5e6d-b8a1-61a8af0924ae",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "93084d86-3fba-5437-851f-9a4bb9523e0c",
           "radius": {
             "n": 1.0,
             "ty": {
@@ -5702,12 +5702,12 @@ description: Variables in memory after executing surgical-drill-guide.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "8fffa166-55db-5e29-a416-0e6886199142",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "93084d86-3fba-5437-851f-9a4bb9523e0c",
           "radius": {
             "n": 1.0,
             "ty": {
@@ -5716,7 +5716,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "05b39b46-dac1-5cf0-bc8b-9df039b7323c",
           "tag": null
         }
       ],
@@ -5728,11 +5728,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "5906c65e-a86e-5e74-ad3b-71b0fd95ea81",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "05b39b46-dac1-5cf0-bc8b-9df039b7323c",
             "sourceRange": []
           },
           "ccw": true,
@@ -5762,7 +5762,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "7dac2748-7c66-5dde-a2ff-8a075a1ed793",
             "sourceRange": []
           },
           "ccw": true,
@@ -5793,8 +5793,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "d1c03f64-0489-502b-bc48-3ba001cf2ed6",
+        "id": "d1c03f64-0489-502b-bc48-3ba001cf2ed6",
         "objectId": 204,
         "kind": "Custom",
         "origin": {
@@ -5834,7 +5834,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "5e0ef8cd-86d0-539e-b5b7-45c22f6c2ecd",
           "sourceRange": []
         }
       },
@@ -5856,8 +5856,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "value": "outerCircle"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "5906c65e-a86e-5e74-ad3b-71b0fd95ea81",
+      "originalId": "5906c65e-a86e-5e74-ad3b-71b0fd95ea81",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -5871,7 +5871,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "388597b8-4546-5655-b3a3-c3a0bba239ad",
                 "objectId": 208,
                 "kind": {
                   "line": {
@@ -5946,8 +5946,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "d1c03f64-0489-502b-bc48-3ba001cf2ed6",
+                  "id": "d1c03f64-0489-502b-bc48-3ba001cf2ed6",
                   "kind": "Custom",
                   "objectId": 204,
                   "origin": {
@@ -5976,7 +5976,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "a6e62985-97dc-5bc0-bf5d-67848762cf83",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "centerGuide"
@@ -5992,7 +5992,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f129c320-ce75-58e1-b5e8-ff4a5bae64dc",
                 "objectId": 220,
                 "kind": {
                   "circle": {
@@ -6066,8 +6066,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "d1c03f64-0489-502b-bc48-3ba001cf2ed6",
+                  "id": "d1c03f64-0489-502b-bc48-3ba001cf2ed6",
                   "kind": "Custom",
                   "objectId": 204,
                   "origin": {
@@ -6096,7 +6096,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "a6e62985-97dc-5bc0-bf5d-67848762cf83",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "innerCircle"
@@ -6112,7 +6112,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "5eed984f-8da1-571e-9576-dd247a4c55b3",
                 "objectId": 214,
                 "kind": {
                   "line": {
@@ -6187,8 +6187,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "d1c03f64-0489-502b-bc48-3ba001cf2ed6",
+                  "id": "d1c03f64-0489-502b-bc48-3ba001cf2ed6",
                   "kind": "Custom",
                   "objectId": 204,
                   "origin": {
@@ -6217,7 +6217,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "a6e62985-97dc-5bc0-bf5d-67848762cf83",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "innerRadiusGuide"
@@ -6234,11 +6234,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "a6e62985-97dc-5bc0-bf5d-67848762cf83",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "45dcafc5-d8d1-5e4a-95d8-e1fc36d780f1",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -6268,7 +6268,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "5e069ec3-b22a-5c34-ae73-15c55f4f871f",
                     "sourceRange": []
                   },
                   "from": [
@@ -6285,7 +6285,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f129c320-ce75-58e1-b5e8-ff4a5bae64dc",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -6316,8 +6316,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "d1c03f64-0489-502b-bc48-3ba001cf2ed6",
+                "id": "d1c03f64-0489-502b-bc48-3ba001cf2ed6",
                 "objectId": 204,
                 "kind": "Custom",
                 "origin": {
@@ -6357,7 +6357,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "5e0ef8cd-86d0-539e-b5b7-45c22f6c2ecd",
                   "sourceRange": []
                 }
               },
@@ -6371,8 +6371,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   "value": "outerCircle"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "a6e62985-97dc-5bc0-bf5d-67848762cf83",
+              "originalId": "a6e62985-97dc-5bc0-bf5d-67848762cf83",
               "units": "mm",
               "isClosed": "no"
             }
@@ -6386,7 +6386,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "45dcafc5-d8d1-5e4a-95d8-e1fc36d780f1",
                 "objectId": 217,
                 "kind": {
                   "circle": {
@@ -6460,8 +6460,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "d1c03f64-0489-502b-bc48-3ba001cf2ed6",
+                  "id": "d1c03f64-0489-502b-bc48-3ba001cf2ed6",
                   "kind": "Custom",
                   "objectId": 204,
                   "origin": {
@@ -6490,7 +6490,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "a6e62985-97dc-5bc0-bf5d-67848762cf83",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "outerCircle"
@@ -6506,7 +6506,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "5584477d-a466-5baa-9972-325d4b097d17",
                 "objectId": 211,
                 "kind": {
                   "line": {
@@ -6581,8 +6581,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "d1c03f64-0489-502b-bc48-3ba001cf2ed6",
+                  "id": "d1c03f64-0489-502b-bc48-3ba001cf2ed6",
                   "kind": "Custom",
                   "objectId": 204,
                   "origin": {
@@ -6611,7 +6611,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "a6e62985-97dc-5bc0-bf5d-67848762cf83",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "outerRadiusGuide"
@@ -6637,14 +6637,14 @@ description: Variables in memory after executing surgical-drill-guide.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
+      "originalId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+      "topologyId": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
+      "artifactId": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "01b5817a-95ba-559a-a207-ea6e6693a367",
+          "id": "f10c331a-4b27-5b97-a0ea-19a91c7930d1",
           "sourceRange": [],
           "tag": {
             "commentStart": 792,
@@ -6657,8 +6657,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9c48c2c0-9242-52e0-abf7-92f07408aa37",
+          "id": "de815b4c-817e-5265-b7b5-30ae92f19673",
           "sourceRange": [],
           "tag": {
             "commentStart": 862,
@@ -6671,8 +6671,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "83e1ebe8-034c-5079-a947-09d855b3d52c",
+          "id": "2a3cc8ae-d79c-5248-9ec5-6dc06de9ca6b",
           "sourceRange": [],
           "tag": {
             "commentStart": 981,
@@ -6685,8 +6685,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f240b728-d8f1-543d-b287-2a74e8fe21f0",
+          "id": "4e2075b3-008a-58a5-8d30-a638594f8a38",
           "sourceRange": [],
           "tag": {
             "commentStart": 1099,
@@ -6699,8 +6699,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a7e941fd-f08b-5ea3-9d19-dc760eb68812",
+          "id": "78f9fbb1-4644-505b-8150-e6db5ad7ddd8",
           "sourceRange": [],
           "tag": {
             "commentStart": 1246,
@@ -6713,8 +6713,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5bb2c8b6-74d3-5df5-8ba3-88e1e019cd8c",
+          "id": "609ac3b8-9ccc-5411-afa5-14b018bbc5df",
           "sourceRange": [],
           "tag": {
             "commentStart": 1377,
@@ -6727,8 +6727,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "758b1cbe-d29a-580f-afb0-6d33d10100ed",
+          "id": "5bab1ac2-a2ef-5a22-aaa0-f552b386e178",
           "sourceRange": [],
           "tag": {
             "commentStart": 1503,
@@ -6741,8 +6741,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7cd0d0c8-db48-5f91-b418-7cab944a2f9a",
+          "id": "c5cd4723-2ba1-59e7-8132-1e4b2473a556",
           "sourceRange": [],
           "tag": {
             "commentStart": 1629,
@@ -6755,8 +6755,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "361f733b-edc1-51f8-b746-9ebbb45cc862",
+          "id": "361f733b-edc1-51f8-b746-9ebbb45cc862",
           "sourceRange": [],
           "tag": {
             "commentStart": 3339,
@@ -6769,8 +6769,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f9dc6948-4271-538e-834e-70c79ca526dd",
+          "id": "f9dc6948-4271-538e-834e-70c79ca526dd",
           "sourceRange": [],
           "tag": {
             "commentStart": 3314,
@@ -6796,11 +6796,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f10c331a-4b27-5b97-a0ea-19a91c7930d1",
               "sourceRange": []
             },
             "from": [
@@ -6824,7 +6824,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "de815b4c-817e-5265-b7b5-30ae92f19673",
               "sourceRange": []
             },
             "from": [
@@ -6848,7 +6848,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2a3cc8ae-d79c-5248-9ec5-6dc06de9ca6b",
               "sourceRange": []
             },
             "from": [
@@ -6872,7 +6872,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4e2075b3-008a-58a5-8d30-a638594f8a38",
               "sourceRange": []
             },
             "ccw": false,
@@ -6902,7 +6902,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "78f9fbb1-4644-505b-8150-e6db5ad7ddd8",
               "sourceRange": []
             },
             "from": [
@@ -6926,7 +6926,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "609ac3b8-9ccc-5411-afa5-14b018bbc5df",
               "sourceRange": []
             },
             "from": [
@@ -6950,7 +6950,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5bab1ac2-a2ef-5a22-aaa0-f552b386e178",
               "sourceRange": []
             },
             "from": [
@@ -6974,7 +6974,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c5cd4723-2ba1-59e7-8132-1e4b2473a556",
               "sourceRange": []
             },
             "ccw": true,
@@ -7005,8 +7005,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -7046,7 +7046,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
             "sourceRange": []
           }
         },
@@ -7092,13 +7092,13 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "value": "topFace"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+        "originalId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "361f733b-edc1-51f8-b746-9ebbb45cc862",
+      "endCapId": "f9dc6948-4271-538e-834e-70c79ca526dd",
       "units": "mm",
       "sectional": false
     }
@@ -7121,7 +7121,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "7b681387-29ea-57f1-8713-d63280827139",
                 "objectId": 38,
                 "kind": {
                   "line": {
@@ -7196,8 +7196,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -7226,7 +7226,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6023bee8-3980-5182-88ac-ac06420ce00f",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arcCenterGuide"
@@ -7242,7 +7242,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                 "objectId": 24,
                 "kind": {
                   "line": {
@@ -7316,8 +7316,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -7346,7 +7346,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6023bee8-3980-5182-88ac-ac06420ce00f",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "backFace"
@@ -7362,7 +7362,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -7436,8 +7436,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -7466,7 +7466,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6023bee8-3980-5182-88ac-ac06420ce00f",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "base"
@@ -7482,7 +7482,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                 "objectId": 16,
                 "kind": {
                   "arc": {
@@ -7588,8 +7588,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -7618,7 +7618,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6023bee8-3980-5182-88ac-ac06420ce00f",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "frontBend"
@@ -7634,7 +7634,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -7708,8 +7708,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -7738,7 +7738,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6023bee8-3980-5182-88ac-ac06420ce00f",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "frontFace"
@@ -7754,7 +7754,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
                 "objectId": 33,
                 "kind": {
                   "arc": {
@@ -7860,8 +7860,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -7890,7 +7890,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6023bee8-3980-5182-88ac-ac06420ce00f",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "heelArc"
@@ -7907,11 +7907,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "6023bee8-3980-5182-88ac-ac06420ce00f",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -7935,7 +7935,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "from": [
@@ -7959,7 +7959,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -7983,7 +7983,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -8013,7 +8013,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
                     "sourceRange": []
                   },
                   "from": [
@@ -8037,7 +8037,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                     "sourceRange": []
                   },
                   "from": [
@@ -8061,7 +8061,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
                     "sourceRange": []
                   },
                   "from": [
@@ -8085,7 +8085,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -8116,8 +8116,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "objectId": 0,
                 "kind": "Custom",
                 "origin": {
@@ -8157,7 +8157,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
                   "sourceRange": []
                 }
               },
@@ -8195,8 +8195,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   "value": "topFace"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "6023bee8-3980-5182-88ac-ac06420ce00f",
+              "originalId": "6023bee8-3980-5182-88ac-ac06420ce00f",
               "units": "mm",
               "isClosed": "no"
             }
@@ -8210,7 +8210,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
                 "objectId": 28,
                 "kind": {
                   "line": {
@@ -8284,8 +8284,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -8314,7 +8314,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6023bee8-3980-5182-88ac-ac06420ce00f",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "returnEdge"
@@ -8330,7 +8330,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
                 "objectId": 20,
                 "kind": {
                   "line": {
@@ -8404,8 +8404,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -8434,7 +8434,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6023bee8-3980-5182-88ac-ac06420ce00f",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "supportEdge"
@@ -8450,7 +8450,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 11,
                 "kind": {
                   "line": {
@@ -8524,8 +8524,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -8554,7 +8554,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6023bee8-3980-5182-88ac-ac06420ce00f",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "topFace"
@@ -8571,11 +8571,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f10c331a-4b27-5b97-a0ea-19a91c7930d1",
             "sourceRange": []
           },
           "from": [
@@ -8599,7 +8599,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "de815b4c-817e-5265-b7b5-30ae92f19673",
             "sourceRange": []
           },
           "from": [
@@ -8623,7 +8623,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2a3cc8ae-d79c-5248-9ec5-6dc06de9ca6b",
             "sourceRange": []
           },
           "from": [
@@ -8647,7 +8647,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "4e2075b3-008a-58a5-8d30-a638594f8a38",
             "sourceRange": []
           },
           "ccw": false,
@@ -8677,7 +8677,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "78f9fbb1-4644-505b-8150-e6db5ad7ddd8",
             "sourceRange": []
           },
           "from": [
@@ -8701,7 +8701,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "609ac3b8-9ccc-5411-afa5-14b018bbc5df",
             "sourceRange": []
           },
           "from": [
@@ -8725,7 +8725,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5bab1ac2-a2ef-5a22-aaa0-f552b386e178",
             "sourceRange": []
           },
           "from": [
@@ -8749,7 +8749,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "c5cd4723-2ba1-59e7-8132-1e4b2473a556",
             "sourceRange": []
           },
           "ccw": true,
@@ -8780,8 +8780,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -8821,7 +8821,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
           "sourceRange": []
         }
       },
@@ -8867,8 +8867,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "value": "topFace"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+      "originalId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -8906,14 +8906,14 @@ description: Variables in memory after executing surgical-drill-guide.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+      "originalId": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
+      "topologyId": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
+      "artifactId": "41f59362-6fb8-51a4-926e-41d2df55ba70",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f6be86c0-14df-5d5c-87d9-5a2ccddf11d8",
+          "id": "2ecc1a17-0b75-5724-aa3d-7996c04f4aa4",
           "sourceRange": [],
           "tag": {
             "commentStart": 6009,
@@ -8926,8 +8926,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c009654a-3c89-5df7-bc27-9522262037af",
+          "id": "c009654a-3c89-5df7-bc27-9522262037af",
           "sourceRange": [],
           "tag": {
             "commentStart": 6398,
@@ -8949,11 +8949,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2ecc1a17-0b75-5724-aa3d-7996c04f4aa4",
               "sourceRange": []
             },
             "ccw": true,
@@ -8984,8 +8984,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         ],
         "on": {
           "type": "face",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "dbacbabd-ac68-548d-95dd-c708bf1ea9ca",
+          "artifactId": "dbacbabd-ac68-548d-95dd-c708bf1ea9ca",
           "objectId": 104,
           "value": "end",
           "xAxis": {
@@ -9001,8 +9001,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
+            "solidId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+            "creatorSketchId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
             "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
@@ -9019,7 +9019,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f58fd62a-578c-542c-94f8-dd627caab5d0",
             "sourceRange": []
           }
         },
@@ -9033,17 +9033,17 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "value": "circle1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
+        "originalId": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
         "units": "mm",
         "isClosed": "explicitly"
       },
       "startCapId": null,
-      "endCapId": "[uuid]",
+      "endCapId": "c009654a-3c89-5df7-bc27-9522262037af",
       "edgeCuts": [
         {
           "type": "chamfer",
-          "id": "[uuid]",
+          "id": "c444b134-67e1-507a-bb00-d4998ba97afb",
           "length": {
             "n": 0.6666666666666666,
             "ty": {
@@ -9052,7 +9052,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "0dac554c-8534-5249-b63d-86ddcc8218bb",
           "tag": null
         }
       ],
@@ -9064,11 +9064,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2ecc1a17-0b75-5724-aa3d-7996c04f4aa4",
             "sourceRange": []
           },
           "ccw": true,
@@ -9099,8 +9099,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
       ],
       "on": {
         "type": "face",
-        "id": "[uuid]",
-        "artifactId": "[uuid]",
+        "id": "dbacbabd-ac68-548d-95dd-c708bf1ea9ca",
+        "artifactId": "dbacbabd-ac68-548d-95dd-c708bf1ea9ca",
         "objectId": 104,
         "value": "end",
         "xAxis": {
@@ -9116,8 +9116,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
+          "solidId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+          "creatorSketchId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
           "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
@@ -9134,7 +9134,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "f58fd62a-578c-542c-94f8-dd627caab5d0",
           "sourceRange": []
         }
       },
@@ -9148,8 +9148,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "value": "circle1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
+      "originalId": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -9163,7 +9163,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "93954f29-a246-54bd-ac2a-62572f26d508",
                 "objectId": 108,
                 "kind": {
                   "line": {
@@ -9239,8 +9239,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "dbacbabd-ac68-548d-95dd-c708bf1ea9ca",
+                  "artifactId": "dbacbabd-ac68-548d-95dd-c708bf1ea9ca",
                   "objectId": 104,
                   "value": "end",
                   "xAxis": {
@@ -9256,13 +9256,13 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+                    "creatorSketchId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "0a3927a3-4dca-5e67-855f-5c8045a33997",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "centerGuide"
@@ -9278,7 +9278,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
                 "objectId": 114,
                 "kind": {
                   "circle": {
@@ -9353,8 +9353,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "dbacbabd-ac68-548d-95dd-c708bf1ea9ca",
+                  "artifactId": "dbacbabd-ac68-548d-95dd-c708bf1ea9ca",
                   "objectId": 104,
                   "value": "end",
                   "xAxis": {
@@ -9370,13 +9370,13 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+                    "creatorSketchId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "0a3927a3-4dca-5e67-855f-5c8045a33997",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -9393,11 +9393,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "0a3927a3-4dca-5e67-855f-5c8045a33997",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -9428,8 +9428,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
               ],
               "on": {
                 "type": "face",
-                "id": "[uuid]",
-                "artifactId": "[uuid]",
+                "id": "dbacbabd-ac68-548d-95dd-c708bf1ea9ca",
+                "artifactId": "dbacbabd-ac68-548d-95dd-c708bf1ea9ca",
                 "objectId": 104,
                 "value": "end",
                 "xAxis": {
@@ -9445,8 +9445,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   "units": null
                 },
                 "parentSolid": {
-                  "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]",
+                  "solidId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+                  "creatorSketchId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
                   "creatorSketchIsClosed": "explicitly"
                 },
                 "units": "mm"
@@ -9463,7 +9463,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "f58fd62a-578c-542c-94f8-dd627caab5d0",
                   "sourceRange": []
                 }
               },
@@ -9473,8 +9473,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   "value": "circle1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "0a3927a3-4dca-5e67-855f-5c8045a33997",
+              "originalId": "0a3927a3-4dca-5e67-855f-5c8045a33997",
               "units": "mm",
               "isClosed": "no"
             }
@@ -9489,14 +9489,14 @@ description: Variables in memory after executing surgical-drill-guide.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "originalId": "[uuid]",
-      "topologyId": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "f0a7732a-2f75-5407-b203-7382d01c3918",
+      "originalId": "edad1eb5-5562-5615-b23f-ee6623df14ee",
+      "topologyId": "edad1eb5-5562-5615-b23f-ee6623df14ee",
+      "artifactId": "92ead137-02a3-5a66-a3df-f1b87766c456",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b8210d80-61fa-5a7d-9375-39e5120b3575",
+          "id": "b82b52f2-de2e-5db0-9c7f-fb84deb4f29f",
           "sourceRange": [],
           "tag": {
             "commentStart": 10310,
@@ -9509,8 +9509,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8e101a19-1049-5233-ace7-c1c03ed3ab41",
+          "id": "8e101a19-1049-5233-ace7-c1c03ed3ab41",
           "sourceRange": [],
           "tag": {
             "commentStart": 10701,
@@ -9532,11 +9532,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "f0a7732a-2f75-5407-b203-7382d01c3918",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b82b52f2-de2e-5db0-9c7f-fb84deb4f29f",
               "sourceRange": []
             },
             "ccw": true,
@@ -9567,8 +9567,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         ],
         "on": {
           "type": "face",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "9fcd094c-d6cd-5b22-8222-0efbe600f813",
+          "artifactId": "9fcd094c-d6cd-5b22-8222-0efbe600f813",
           "objectId": 176,
           "value": "start",
           "xAxis": {
@@ -9584,8 +9584,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
+            "solidId": "f0a7732a-2f75-5407-b203-7382d01c3918",
+            "creatorSketchId": "f0a7732a-2f75-5407-b203-7382d01c3918",
             "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
@@ -9602,7 +9602,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ab87837d-7702-50ae-a973-1b474e1e48bf",
             "sourceRange": []
           }
         },
@@ -9616,17 +9616,17 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "value": "circle1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "edad1eb5-5562-5615-b23f-ee6623df14ee",
+        "originalId": "edad1eb5-5562-5615-b23f-ee6623df14ee",
         "units": "mm",
         "isClosed": "explicitly"
       },
       "startCapId": null,
-      "endCapId": "[uuid]",
+      "endCapId": "8e101a19-1049-5233-ace7-c1c03ed3ab41",
       "edgeCuts": [
         {
           "type": "chamfer",
-          "id": "[uuid]",
+          "id": "ca586750-6453-56e0-b4cf-8e561096e7ca",
           "length": {
             "n": 1.0666666666666667,
             "ty": {
@@ -9635,7 +9635,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "02d0de8e-cb7a-5326-8135-c85b4635828f",
           "tag": null
         }
       ],
@@ -9647,11 +9647,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "edad1eb5-5562-5615-b23f-ee6623df14ee",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "b82b52f2-de2e-5db0-9c7f-fb84deb4f29f",
             "sourceRange": []
           },
           "ccw": true,
@@ -9682,8 +9682,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
       ],
       "on": {
         "type": "face",
-        "id": "[uuid]",
-        "artifactId": "[uuid]",
+        "id": "9fcd094c-d6cd-5b22-8222-0efbe600f813",
+        "artifactId": "9fcd094c-d6cd-5b22-8222-0efbe600f813",
         "objectId": 176,
         "value": "start",
         "xAxis": {
@@ -9699,8 +9699,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
+          "solidId": "f0a7732a-2f75-5407-b203-7382d01c3918",
+          "creatorSketchId": "f0a7732a-2f75-5407-b203-7382d01c3918",
           "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
@@ -9717,7 +9717,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "ab87837d-7702-50ae-a973-1b474e1e48bf",
           "sourceRange": []
         }
       },
@@ -9731,8 +9731,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "value": "circle1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "edad1eb5-5562-5615-b23f-ee6623df14ee",
+      "originalId": "edad1eb5-5562-5615-b23f-ee6623df14ee",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -9746,7 +9746,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "c7d3a70e-3921-5009-ad0e-e05ef0d30709",
                 "objectId": 180,
                 "kind": {
                   "line": {
@@ -9822,8 +9822,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "9fcd094c-d6cd-5b22-8222-0efbe600f813",
+                  "artifactId": "9fcd094c-d6cd-5b22-8222-0efbe600f813",
                   "objectId": 176,
                   "value": "start",
                   "xAxis": {
@@ -9839,13 +9839,13 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "f0a7732a-2f75-5407-b203-7382d01c3918",
+                    "creatorSketchId": "f0a7732a-2f75-5407-b203-7382d01c3918",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "33d4ddb8-e281-5429-897a-8b34342e4a06",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "centerGuide"
@@ -9861,7 +9861,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
                 "objectId": 186,
                 "kind": {
                   "circle": {
@@ -9936,8 +9936,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "9fcd094c-d6cd-5b22-8222-0efbe600f813",
+                  "artifactId": "9fcd094c-d6cd-5b22-8222-0efbe600f813",
                   "objectId": 176,
                   "value": "start",
                   "xAxis": {
@@ -9953,13 +9953,13 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "f0a7732a-2f75-5407-b203-7382d01c3918",
+                    "creatorSketchId": "f0a7732a-2f75-5407-b203-7382d01c3918",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "33d4ddb8-e281-5429-897a-8b34342e4a06",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -9976,11 +9976,11 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "33d4ddb8-e281-5429-897a-8b34342e4a06",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -10011,8 +10011,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
               ],
               "on": {
                 "type": "face",
-                "id": "[uuid]",
-                "artifactId": "[uuid]",
+                "id": "9fcd094c-d6cd-5b22-8222-0efbe600f813",
+                "artifactId": "9fcd094c-d6cd-5b22-8222-0efbe600f813",
                 "objectId": 176,
                 "value": "start",
                 "xAxis": {
@@ -10028,8 +10028,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   "units": null
                 },
                 "parentSolid": {
-                  "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]",
+                  "solidId": "f0a7732a-2f75-5407-b203-7382d01c3918",
+                  "creatorSketchId": "f0a7732a-2f75-5407-b203-7382d01c3918",
                   "creatorSketchIsClosed": "explicitly"
                 },
                 "units": "mm"
@@ -10046,7 +10046,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "ab87837d-7702-50ae-a973-1b474e1e48bf",
                   "sourceRange": []
                 }
               },
@@ -10056,8 +10056,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   "value": "circle1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "33d4ddb8-e281-5429-897a-8b34342e4a06",
+              "originalId": "33d4ddb8-e281-5429-897a-8b34342e4a06",
               "units": "mm",
               "isClosed": "no"
             }

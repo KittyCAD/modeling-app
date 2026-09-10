@@ -4,10 +4,6 @@ import type {
   WebSocketResponse,
 } from '@kittycad/lib/dist/types/src'
 import { EngineDebugger } from '@src/lib/debugger'
-import { markOnce } from '@src/lib/performance'
-import { notifySessionExpired } from '@src/lib/sessionExpired'
-import { promiseFactory, uuidv4 } from '@src/lib/utils'
-import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
 import {
   createOnConnectionStateChange,
   createOnDataChannel,
@@ -31,6 +27,7 @@ import {
   PING_INTERVAL_MS,
   PONG_TIMEOUT_REASON,
   PONG_TIMEOUT_MS,
+  WebSocketCloseCode,
   WebSocketStatusCodes,
 } from '@src/lib/engineConnection/utils'
 import {
@@ -39,6 +36,10 @@ import {
   createOnWebSocketMessage,
   createOnWebSocketOpen,
 } from '@src/lib/engineConnection/websocketConnection'
+import { markOnce } from '@src/lib/performance'
+import { notifySessionExpired } from '@src/lib/sessionExpired'
+import { promiseFactory, uuidv4 } from '@src/lib/utils'
+import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
 
 // An interface for a promise that needs to be awaited and pass the resolve reject to
 // other dependencies. We do not need to pass values between these. It is mainly
@@ -102,6 +103,7 @@ export class Connection extends EventTarget {
   rejectPendingCommand: ({ cmdId }: { cmdId: string }) => void
   handleMessage: ((event: MessageEvent<any>) => void) | null
   private readonly getCloudProjectId: () => string | undefined
+  private reconnectRequested = false
 
   constructor({
     url,
@@ -110,6 +112,7 @@ export class Connection extends EventTarget {
     tearDownManager,
     rejectPendingCommand,
     callbackOnUnitTestingConnection,
+    unitTestGeometryOnly,
     handleMessage,
     getCloudProjectId,
   }: {
@@ -119,6 +122,7 @@ export class Connection extends EventTarget {
     tearDownManager: (options?: ManagerTearDown) => void
     rejectPendingCommand: ({ cmdId }: { cmdId: string }) => void
     callbackOnUnitTestingConnection?: (message: string) => void
+    unitTestGeometryOnly?: boolean
     handleMessage: (event: MessageEvent<any>) => void
     getCloudProjectId: () => string | undefined
   }) {
@@ -155,14 +159,20 @@ export class Connection extends EventTarget {
     })
 
     if (callbackOnUnitTestingConnection) {
-      this.connectUnitTesting(callbackOnUnitTestingConnection)
+      this.connectUnitTesting(
+        callbackOnUnitTestingConnection,
+        unitTestGeometryOnly
+      )
       this.isUsingUnitTestingConnection = true
     }
   }
 
-  connectUnitTesting(callback: (message: string) => void) {
+  connectUnitTesting(
+    callback: (message: string) => void,
+    geometryOnly = false
+  ) {
     const url = withKittycadWebSocketURL(
-      `?video_res_width=${256}&video_res_height=${256}&post_effect=ssao`
+      `?video_res_width=${256}&video_res_height=${256}&post_effect=ssao${geometryOnly ? '&webrtc=false' : ''}`
     )
     this.websocket = new WebSocket(url, [])
     this.websocket.binaryType = 'arraybuffer'
@@ -202,6 +212,14 @@ export class Connection extends EventTarget {
 
       switch (resp.type) {
         case 'pong':
+          break
+
+        // Geometry-only sessions do not establish WebRTC, so the session data
+        // response is the successful connection handshake for these tests.
+        case 'modeling_session_data':
+          if (geometryOnly) {
+            callback('auth success')
+          }
           break
 
         // Only fires on successful authentication.
@@ -650,6 +668,21 @@ export class Connection extends EventTarget {
         this.apiCallId = apiCallId
       },
       getCloudProjectId: this.getCloudProjectId,
+      tearDownManager: this.tearDownManager.bind(this),
+      requestReconnect: () => {
+        if (
+          this.reconnectRequested ||
+          this.websocket?.readyState !== WebSocket.OPEN
+        ) {
+          return
+        }
+
+        this.reconnectRequested = true
+        this.websocket.close(
+          WebSocketCloseCode.NormalClosure,
+          'reconnect requested'
+        )
+      },
     })
     const onWebSocketClose = createOnWebSocketClose({
       websocket: this.websocket,
@@ -658,6 +691,7 @@ export class Connection extends EventTarget {
       onWebSocketMessage: onWebSocketMessage,
       tearDownManager: this.tearDownManager.bind(this),
       dispatchEvent: this.dispatchEvent.bind(this),
+      getReconnectRequested: () => this.reconnectRequested,
     })
 
     // Meta close will remove all the internal events itself but then the this.websocket.close

@@ -706,7 +706,7 @@ description: Operations executed ceiling-fan.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -5040,7 +5040,7 @@ description: Operations executed ceiling-fan.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               }
             ]
           },
@@ -5070,7 +5070,7 @@ description: Operations executed ceiling-fan.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "50fc9cbf-14b4-5cbe-9167-a6636695394d"
           }
         },
         "sourceRange": []
@@ -5112,7 +5112,7 @@ description: Operations executed ceiling-fan.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0"
           }
         },
         "sourceRange": []
@@ -6734,7 +6734,7 @@ description: Operations executed ceiling-fan.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce"
               }
             ]
           },
@@ -6764,7 +6764,7 @@ description: Operations executed ceiling-fan.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5"
           }
         },
         "sourceRange": []
@@ -6817,7 +6817,7 @@ description: Operations executed ceiling-fan.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978"
           }
         },
         "sourceRange": []
@@ -6887,7 +6887,7 @@ description: Operations executed ceiling-fan.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b"
           }
         },
         "sourceRange": []
@@ -6913,7 +6913,7 @@ description: Operations executed ceiling-fan.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978"
           }
         },
         "sourceRange": []
@@ -6946,7 +6946,7 @@ description: Operations executed ceiling-fan.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "eeb336b4-adc7-580c-be25-5e81ad6a56ee"
           }
         },
         "sourceRange": []
@@ -7016,7 +7016,7 @@ description: Operations executed ceiling-fan.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ca502980-7bdd-5694-85c5-3eb8ffa8242b"
           }
         },
         "sourceRange": []
@@ -7045,7 +7045,7 @@ description: Operations executed ceiling-fan.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978"
           }
         },
         "sourceRange": []
@@ -7077,7 +7077,7 @@ description: Operations executed ceiling-fan.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "ca502980-7bdd-5694-85c5-3eb8ffa8242b"
               }
             }
           ]
@@ -7092,7 +7092,7 @@ description: Operations executed ceiling-fan.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978"
                 }
               }
             ]
@@ -7123,7 +7123,7 @@ description: Operations executed ceiling-fan.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "44b2dfb0-0721-57cd-a796-4401a664e194"
           }
         },
         "sourceRange": []
@@ -7152,7 +7152,7 @@ description: Operations executed ceiling-fan.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "eeb336b4-adc7-580c-be25-5e81ad6a56ee"
           }
         },
         "sourceRange": []
@@ -7184,7 +7184,7 @@ description: Operations executed ceiling-fan.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "44b2dfb0-0721-57cd-a796-4401a664e194"
               }
             }
           ]
@@ -7199,7 +7199,7 @@ description: Operations executed ceiling-fan.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "eeb336b4-adc7-580c-be25-5e81ad6a56ee"
                 }
               }
             ]
@@ -7230,7 +7230,7 @@ description: Operations executed ceiling-fan.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ba769d4c-3a67-5309-824d-fd59f263bb46"
           }
         },
         "sourceRange": []

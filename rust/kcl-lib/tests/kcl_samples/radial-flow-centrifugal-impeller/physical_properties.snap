@@ -7,12 +7,12 @@ description: Physical properties radial-flow-centrifugal-impeller.kcl
     "center": {
       "x": 0.000000018750000663203537,
       "y": 0.0,
-      "z": 16.30000000000002
+      "z": 17.000000000000014
     },
     "dimensions": {
       "x": 180.00000000000006,
       "y": 180.00000000000006,
-      "z": 56.60000000000004
+      "z": 55.200000000000045
     },
     "unit": "mm"
   },

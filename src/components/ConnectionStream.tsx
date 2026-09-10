@@ -368,6 +368,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const onPageIdleStartCb = useCallback(() => {
     if (!videoWrapperRef.current) return
     if (!props.authToken) return
+    if (engineCommandManager.lastConnectionError?.terminal) return
     if (engineCommandManager.started) return
 
     // Do not try to restart the engine on any mouse move.
@@ -407,10 +408,15 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
 
   const onWebSocketCloseParams = useMemo(
     () => ({
-      callback: (code: string | undefined) => {
-        reportEngineDisconnect(EngineConnectionManagerEvents.WebsocketClosed, {
-          websocketCloseCode: code,
-        })
+      callback: (code: string | undefined, reconnectRequested: boolean) => {
+        if (!reconnectRequested) {
+          reportEngineDisconnect(
+            EngineConnectionManagerEvents.WebsocketClosed,
+            {
+              websocketCloseCode: code,
+            }
+          )
+        }
         setShowManualConnect(false)
         tryConnecting({
           authToken: props.authToken || '',
@@ -433,6 +439,9 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         reportEngineDisconnect(EngineConnectionManagerEvents.WebsocketClosed, {
           websocketCloseCode: code,
         })
+        setShowManualConnect(true)
+      },
+      terminalErrorCallback: () => {
         setShowManualConnect(true)
       },
       engineCommandManager,
@@ -557,6 +566,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         engineCommandManager.tearDown()
       },
       connect: () => {
+        if (engineCommandManager.lastConnectionError?.terminal) return
         setShowManualConnect(false)
         tryConnecting({
           authToken: props.authToken || '',

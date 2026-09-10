@@ -1027,8 +1027,8 @@ fn unavailable_kw_arg_message(
         ParamUnavailable::NotYetAdded(added) => {
             format!("{base}; it was added in KCL {added}, but this program uses KCL {program_version}")
         }
-        ParamUnavailable::Removed(since) => {
-            format!("{base}; it was removed as of KCL {since}, but this program uses KCL {program_version}")
+        ParamUnavailable::Removed(removed) => {
+            format!("{base}; it was removed in KCL {removed}, but this program uses KCL {program_version}")
         }
     }
 }
@@ -1232,7 +1232,7 @@ fn type_check_params_kw(
                     added_in: _,
                     deprecated: _,
                     deprecated_since: _,
-                    removed_since: _,
+                    removed_in: _,
                     default_value: def,
                     ty,
                     resolved_ty,
@@ -1536,7 +1536,7 @@ mod test {
                 added_in: None,
                 deprecated: false,
                 deprecated_since: None,
-                removed_since: None,
+                removed_in: None,
                 identifier: ident(s),
                 param_type: None,
                 default_value: Some(DefaultParamVal::none()),
@@ -1550,7 +1550,7 @@ mod test {
                 added_in: None,
                 deprecated: false,
                 deprecated_since: None,
-                removed_since: None,
+                removed_in: None,
                 identifier: ident(s),
                 param_type: None,
                 default_value: None,
@@ -2428,12 +2428,12 @@ x = f(1)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn passing_removed_param_on_removed_version_errors_like_unknown_arg() {
-        // "3.0-preview" is a pre-release of 3.0, so a parameter removed as of
+        // "3.0-preview" is a pre-release of 3.0, so a parameter removed in
         // 3.0 is already gone there.
         let program = r#"@settings(kclVersion = "3.0-preview")
 fn f(
   @a: number,
-  @(deprecated_since = "2.0", removed_since = "3.0")
+  @(deprecated_since = "2.0", removed_in = "3.0")
   oldArg?: number,
 ) {
   return a
@@ -2454,7 +2454,7 @@ x = f(1, oldArg = 2)
         // the mismatch.
         assert_eq!(
             errors[0].message,
-            "`oldArg` is not an argument of `f`; it was removed as of KCL 3.0, but this program uses KCL 3.0-preview"
+            "`oldArg` is not an argument of `f`; it was removed in KCL 3.0, but this program uses KCL 3.0-preview"
         );
         // The error replaces the deprecation warning rather than adding to it.
         assert!(
@@ -2471,7 +2471,7 @@ x = f(1, oldArg = 2)
         let program = r#"@settings(kclVersion = 2.0)
 fn f(
   @a: number,
-  @(deprecated_since = "2.0", removed_since = "3.0")
+  @(deprecated_since = "2.0", removed_in = "3.0")
   oldArg?: number,
 ) {
   return oldArg
@@ -2499,7 +2499,7 @@ x = f(1, oldArg = 2)
     async fn removed_optional_param_binds_its_default() {
         let program = r#"@settings(kclVersion = "3.0-preview")
 fn f(
-  @(removed_since = "3.0")
+  @(removed_in = "3.0")
   oldArg?: number = 7,
 ) {
   return oldArg
@@ -2520,7 +2520,7 @@ x = f()
         // suggested as a label.
         let program = r#"@settings(kclVersion = "3.0-preview")
 fn f(
-  @(removed_since = "3.0")
+  @(removed_in = "3.0")
   oldArg?: number,
 ) {
   return 1
@@ -2656,7 +2656,7 @@ x = f(newArg)
     #[tokio::test(flavor = "multi_thread")]
     async fn param_lifecycle_added_then_deprecated_then_removed() {
         let body = r#"fn f(
-  @(added_in = "2.0", deprecated_since = "2.0", removed_since = "3.0")
+  @(added_in = "2.0", deprecated_since = "2.0", removed_in = "3.0")
   arg?: number,
 ) {
   return arg
@@ -2672,7 +2672,7 @@ x = f(arg = 2)
             (
                 "\"3.0-preview\"",
                 Some(
-                    "`arg` is not an argument of `f`; it was removed as of KCL 3.0, but this program uses KCL 3.0-preview",
+                    "`arg` is not an argument of `f`; it was removed in KCL 3.0, but this program uses KCL 3.0-preview",
                 ),
             ),
         ] {
@@ -2724,7 +2724,7 @@ both = union([left, right], legacyMethod = true)
         assert_eq!(errors.len(), 1, "got {:#?}", result.issues());
         assert_eq!(
             errors[0].message,
-            "`legacyMethod` is not an argument of `union`; it was removed as of KCL 3.0, but this program uses KCL 3.0-preview"
+            "`legacyMethod` is not an argument of `union`; it was removed in KCL 3.0, but this program uses KCL 3.0-preview"
         );
 
         // Still accepted, with a deprecation warning, before KCL 3.0.

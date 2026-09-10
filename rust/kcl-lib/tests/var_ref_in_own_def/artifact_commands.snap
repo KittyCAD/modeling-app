@@ -5,7 +5,7 @@ description: Artifact commands var_ref_in_own_def.kcl
 {
   "rust/kcl-lib/tests/var_ref_in_own_def/input.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3c085bb9-a401-55d5-8042-5a9095193d55",
       "range": [],
       "command": {
         "type": "make_plane",

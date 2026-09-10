@@ -150,6 +150,30 @@ function AppProjectCard({
   onMoveToLibrary,
   ...props
 }: AppProjectCardProps) {
+  const cardRef = useRef<HTMLLIElement>(null)
+  const [isInView, setIsInView] = useState(false)
+  const remoteProjectId = project.remoteProjectId
+  const hasLocalThumbnail = project.thumbnail?.type === 'local'
+
+  useEffect(() => {
+    const card = cardRef.current
+    if (!card) {
+      return
+    }
+
+    const observer = new IntersectionObserver(([entry]) => {
+      setIsInView(entry.isIntersecting)
+    })
+    observer.observe(card)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    if (isInView && remoteProjectId && !hasLocalThumbnail) {
+      return projectActions.watchRemoteThumbnail(remoteProjectId)
+    }
+  }, [isInView, remoteProjectId, hasLocalThumbnail, projectActions])
+
   const navigate = useNavigate()
   useHotkeys('esc', () => setIsEditing(false))
   const [isEditing, setIsEditing] = useState(false)
@@ -165,7 +189,9 @@ function AppProjectCard({
     showCloudSyncUi && project.conflict && project.localProjectPath
   )
   const hasCloudSyncFailure = Boolean(showCloudSyncUi && project.syncFailure)
-  const imageUrl = useProjectThumbnailUrl(project.thumbnail)
+  const imageUrl = useProjectThumbnailUrl(
+    hasLocalThumbnail || isInView ? project.thumbnail : undefined
+  )
   /** "Optimistic" in that it updates before any remote/cloud sync completes, and may be rolled back on failure to sync. */
   const [optimisticProjectName, setOptimisticProjectName] = useState<{
     projectId: string
@@ -477,6 +503,7 @@ function AppProjectCard({
   return (
     <UiProjectCard
       {...props}
+      rootRef={cardRef}
       title={projectName}
       titleText={projectName}
       canOpen={canOpen}

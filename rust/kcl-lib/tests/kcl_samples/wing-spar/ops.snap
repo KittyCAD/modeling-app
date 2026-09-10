@@ -300,7 +300,7 @@ description: Operations executed wing-spar.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
         },
         "sourceRange": []
       },
@@ -1680,11 +1680,11 @@ description: Operations executed wing-spar.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "efd1e3b2-5268-50fd-858e-26540f8146e5"
               }
             ]
           },
@@ -1714,7 +1714,7 @@ description: Operations executed wing-spar.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "067ed736-8554-5b63-8bf6-a3fbc610eb7a"
           }
         },
         "sourceRange": []
@@ -1756,7 +1756,7 @@ description: Operations executed wing-spar.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "372890e3-2e6c-58b4-9c42-35f8d38804dc"
           }
         },
         "sourceRange": []
@@ -4081,11 +4081,11 @@ description: Operations executed wing-spar.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205"
               }
             ]
           },
@@ -4115,7 +4115,7 @@ description: Operations executed wing-spar.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2"
           }
         },
         "sourceRange": []
@@ -6394,11 +6394,11 @@ description: Operations executed wing-spar.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "89273a0b-b55b-5457-9b1c-de1d777240e8"
               }
             ]
           },
@@ -6428,7 +6428,7 @@ description: Operations executed wing-spar.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "93fe6743-e0aa-5d65-834b-87a82208c703"
           }
         },
         "sourceRange": []
@@ -7607,11 +7607,11 @@ description: Operations executed wing-spar.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "95d80984-dc84-541c-af31-df26752c9fd4"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f"
               }
             ]
           },
@@ -7644,7 +7644,7 @@ description: Operations executed wing-spar.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "33d4ddb8-e281-5429-897a-8b34342e4a06"
           }
         },
         "sourceRange": []
@@ -7686,7 +7686,7 @@ description: Operations executed wing-spar.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "df641c7f-27a7-5524-a6c2-93d1677bc829"
           }
         },
         "sourceRange": []
@@ -7774,7 +7774,7 @@ description: Operations executed wing-spar.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2489202c-0475-5b18-97c8-c3f239bd1947"
           }
         },
         "sourceRange": []
@@ -7787,25 +7787,25 @@ description: Operations executed wing-spar.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "df641c7f-27a7-5524-a6c2-93d1677bc829"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "9141b79d-47b8-5c0f-9c98-31e31e0bc8dd"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "141780c3-1e80-5a96-a341-13338b4222d2"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "143cad1d-db47-5f28-bfae-22acccf5843c"
                 }
               }
             ]
@@ -8973,11 +8973,11 @@ description: Operations executed wing-spar.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "92ead137-02a3-5a66-a3df-f1b87766c456"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "da427568-57f9-5fba-9ace-3a3e7be5bc36"
               }
             ]
           },
@@ -9010,7 +9010,7 @@ description: Operations executed wing-spar.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "12a33a9d-38b6-56fb-af56-29ce1e09b1cb"
           }
         },
         "sourceRange": []
@@ -9052,7 +9052,7 @@ description: Operations executed wing-spar.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "eb172247-c469-54b8-920f-ca9ddc4fdbb3"
           }
         },
         "sourceRange": []
@@ -9140,7 +9140,7 @@ description: Operations executed wing-spar.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "03314dc0-0005-55f9-bfa2-d4e07847c4b2"
           }
         },
         "sourceRange": []
@@ -9153,25 +9153,25 @@ description: Operations executed wing-spar.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "eb172247-c469-54b8-920f-ca9ddc4fdbb3"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "5003f590-f81e-57e8-8e77-0ef05ab6ad9b"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "87353632-81ef-57d6-b18f-b3d2ca985bf9"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "986560d2-7799-5367-bd4e-411b4d4eaf29"
                 }
               }
             ]

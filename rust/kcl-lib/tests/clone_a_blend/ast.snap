@@ -4148,6 +4148,7 @@ description: Result of parsing clone_a_blend.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }
