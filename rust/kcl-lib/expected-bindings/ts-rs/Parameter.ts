@@ -21,7 +21,7 @@ experimental?: boolean,
  * optional. A pre-release version such as "3.0-preview" counts as the
  * release it precedes. May be combined with `deprecated`,
  * `deprecated_since` (which must not be earlier than `added_in`), or
- * `removed_since` (which must be later than `added_in`).
+ * `removed_in` (which must be later than `added_in`).
  */
 added_in?: VersionConstraint | null, 
 /**
@@ -37,7 +37,7 @@ deprecated?: boolean,
  */
 deprecated_since?: VersionConstraint | null, 
 /**
- * If set, this parameter is removed as of the given KCL version (e.g.,
+ * If set, this parameter is removed in the given KCL version (e.g.,
  * "3.0"). On that version or later, passing the parameter is an error,
  * exactly as if the function did not declare it, and the function body
  * sees the parameter's default value. The parser requires a removed
@@ -45,7 +45,7 @@ deprecated_since?: VersionConstraint | null,
  * counts as the release it precedes. May be combined with `deprecated` or
  * `deprecated_since`.
  */
-removed_since?: VersionConstraint | null, 
+removed_in?: VersionConstraint | null, 
 /**
  * The parameter's label or name.
  */
