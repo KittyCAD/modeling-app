@@ -43,10 +43,8 @@ export enum ClientErrorCode {
 
 const reportedClientErrors = new Set<string>()
 const FALLBACK_APP_RELEASE = 'unknown'
-// The API truncates stack to 8,192 Unicode characters. Using JS string length
-// is conservative for astral characters and includes JSON escaping.
+// Match the API's stack limit in Unicode characters.
 const MAX_STACK_LENGTH = 8192
-const MAX_ENGINE_CONTEXT_LENGTH = MAX_STACK_LENGTH / 2
 
 const getAppRelease = () => {
   if (typeof window !== 'undefined') {
@@ -144,37 +142,24 @@ const buildStack = (params: ReportClientErrorParams) => {
     return JSON.stringify(context)
   }
 
-  delete context.engineDebugger
-  let serializedContext = JSON.stringify(context)
-  if (serializedContext.length > MAX_ENGINE_CONTEXT_LENGTH) {
-    // Leave at least half the budget for engine history. Keep small context
-    // fields even when another field (such as a runtime stack) is oversized.
-    const shortenedContext: Record<string, unknown> = { contextTruncated: true }
-    for (const [key, value] of Object.entries(context)) {
-      if (key === 'contextTruncated') continue
-      shortenedContext[key] = value
-      if (JSON.stringify(shortenedContext).length > MAX_ENGINE_CONTEXT_LENGTH) {
-        shortenedContext[key] =
-          typeof value === 'string'
-            ? `${value.slice(0, 256)}[Truncated]`
-            : '[Truncated]'
-        if (
-          JSON.stringify(shortenedContext).length > MAX_ENGINE_CONTEXT_LENGTH
-        ) {
-          delete shortenedContext[key]
-        }
-      }
-    }
-    serializedContext = JSON.stringify(shortenedContext)
+  let stack: string
+  try {
+    stack = JSON.stringify({
+      ...context,
+      engineDebugger: EngineDebugger.logs.map(
+        ({ time, message, label, metadata }) => ({
+          time,
+          message,
+          label,
+          metadata,
+        })
+      ),
+    })
+  } catch {
+    // Still report the original error if the debugger buffer cannot serialize.
+    stack = JSON.stringify(context)
   }
-
-  // Reuse the exact serialized context we measured, and budget for the key,
-  // comma and closing brace as well as the snapshot's own envelope.
-  const prefix = `${serializedContext.slice(0, -1)}${serializedContext === '{}' ? '' : ','}"engineDebugger":`
-  const snapshot = EngineDebugger.snapshotForReport(
-    MAX_STACK_LENGTH - prefix.length - 1
-  )
-  return `${prefix}${JSON.stringify(snapshot)}}`
+  return Array.from(stack).slice(0, MAX_STACK_LENGTH).join('')
 }
 
 const buildClientErrorReport = (

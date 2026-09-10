@@ -177,137 +177,113 @@ describe('reportClientError', () => {
   it.each([
     ClientErrorCode.EngineDisconnect,
     ClientErrorCode.EngineBackendDisconnect,
-  ])('attaches recent engine diagnostics to %s reports', async (code) => {
-    EngineDebugger.addLog({
-      label: 'onConnectionStateChange',
-      message: 'connectionstatechange',
-      metadata: { connectionState: 'failed' },
+  ])(
+    'preserves engine log data except per-entry stacks for %s',
+    async (code) => {
+      const metadata = {
+        candidate: {
+          toJSON: () => ({ candidate: 'relay candidate', sdpMLineIndex: 0 }),
+        },
+        command: { type: 'example', values: [1, { arbitraryField: true }] },
+        jsAppSettings: { theme: 'dark' },
+        filePath: '/project/main.kcl',
+        longValue: 'x'.repeat(1500),
+        event: new Event('close'),
+      }
+      const log = {
+        time: 1789058414000,
+        message: 'icecandidate',
+        label: 'onIceCandidate',
+        metadata,
+      }
+      EngineDebugger.logs = [{ ...log, stack: 'per-entry stack' }]
+      const expected = JSON.stringify({
+        userAgent: navigator.userAgent,
+        engineDebugger: [log],
+      })
+
+      await reportClientError({ code, message: 'Engine disconnected' })
+      metadata.command.values.push(2)
+
+      expect(mockState.reportUserClientError).toHaveBeenCalledWith({
+        client: { mocked: true },
+        body: expect.objectContaining({ code, stack: expected }),
+      })
+      expect(EngineDebugger.logs[0].stack).toBe('per-entry stack')
+    }
+  )
+
+  it.each(['x', '\u{1f680}', '\u0000'])(
+    'only crops the serialized report at the API character limit (%j)',
+    async (character) => {
+      const log = {
+        time: 1789058414000,
+        message: 'closed',
+        label: 'connection',
+        metadata: { payload: character.repeat(10_000) },
+      }
+      EngineDebugger.logs = [{ ...log, stack: 'per-entry stack' }]
+      const serialized = JSON.stringify({
+        source: 'EngineWebSocket',
+        userAgent: navigator.userAgent,
+        engineDebugger: [log],
+      })
+
+      await reportClientError({
+        code: ClientErrorCode.EngineDisconnect,
+        extra: { source: 'EngineWebSocket' },
+      })
+
+      const stack =
+        mockState.reportUserClientError.mock.calls[0]?.[0].body.stack
+      if (!stack) throw new Error('Expected a reported stack')
+      expect(stack).toBe(Array.from(serialized).slice(0, 8192).join(''))
+      expect(Array.from(stack)).toHaveLength(8192)
+      // Cropping deliberately permits a partial JSON document in stack.
+      expect(() => JSON.parse(stack)).toThrow()
+    }
+  )
+
+  it('still reports the original error when log metadata cannot serialize', async () => {
+    const metadata: Record<string, unknown> = {}
+    metadata.circular = metadata
+    EngineDebugger.addLog({ label: 'connection', message: 'closed', metadata })
+
+    await reportClientError({
+      code: ClientErrorCode.EngineDisconnect,
+      message: 'Engine disconnected',
+      extra: { source: 'ConnectionStream' },
     })
-    const expectedSnapshot = EngineDebugger.snapshotForReport(8192)
-    await reportClientError({ code, message: 'Engine disconnected' })
-    EngineDebugger.addLog({ label: 'connection', message: 'reconnecting' })
 
     expect(mockState.reportUserClientError).toHaveBeenCalledWith({
       client: { mocked: true },
       body: expect.objectContaining({
-        code,
+        message: 'Engine disconnected',
         stack: JSON.stringify({
+          source: 'ConnectionStream',
           userAgent: navigator.userAgent,
-          engineDebugger: expectedSnapshot,
         }),
       }),
     })
   })
 
-  it.each([
-    ClientErrorCode.EngineDisconnect,
-    ClientErrorCode.EngineBackendDisconnect,
-  ])(
-    'keeps the latest event in %s reports after the API stack limit',
-    async (code) => {
-      EngineDebugger.logs = Array.from({ length: 200 }, (_, i) => ({
-        time: 1789058414000 + i,
-        label: 'connection',
-        message: i === 199 ? 'latest disconnect event' : `event-${i}`,
-        metadata: { id: '9ce59f90-ef78-42b7-a777-a4b268f14bbd' },
-        stack: '',
-      }))
-      const error = new Error('Engine disconnected')
-      error.stack = 'runtime stack'.repeat(100)
+  it('does not serialize engine logs for unrelated errors or duplicate reports', async () => {
+    const toJSON = vi.fn(() => ({ connectionState: 'failed' }))
+    EngineDebugger.addLog({
+      label: 'connection',
+      message: 'closed',
+      metadata: { toJSON },
+    })
 
-      await reportClientError({
-        code,
-        error,
-        extra: { source: 'ConnectionStream', connectionId: 'connection-1' },
-      })
-
-      const stack =
-        mockState.reportUserClientError.mock.calls[0]?.[0].body.stack
-      if (!stack) throw new Error('Expected a reported stack')
-      // Match the API's truncate_to_chars(stack, MAX_STACK_LEN).
-      const persistedStack = Array.from(stack.trim()).slice(0, 8192).join('')
-      expect(stack.length).toBeLessThanOrEqual(8192)
-      expect(persistedStack).toBe(stack)
-      expect(JSON.parse(persistedStack)).toMatchObject({
-        runtimeStack: error.stack,
-        source: 'ConnectionStream',
-        connectionId: 'connection-1',
-        userAgent: navigator.userAgent,
-        engineDebugger: {
-          totalLogCount: 200,
-          truncated: true,
-          logs: expect.arrayContaining([
-            expect.objectContaining({ message: 'latest disconnect event' }),
-          ]),
-        },
-      })
-      expect(stack).not.toContain('"message":"event-0"')
+    await reportClientError({ code: ClientErrorCode.AuthGetUserError })
+    expect(toJSON).not.toHaveBeenCalled()
+    const report = {
+      code: ClientErrorCode.EngineDisconnect,
+      dedupeKey: 'engine-disconnect',
     }
-  )
-
-  it.each(['\u{1f680}', '\u0000'])(
-    'fits oversized context and escaped logs into the API limit (%j)',
-    async (character) => {
-      const oversized = character.repeat(10_000)
-      const error = new Error('Engine disconnected')
-      error.stack = oversized
-      EngineDebugger.addLog({
-        label: `latest-connection-${oversized}`,
-        message: `latest disconnect event ${oversized}`,
-        metadata: { message: oversized, reason: oversized },
-      })
-
-      await reportClientError({
-        code: ClientErrorCode.EngineDisconnect,
-        error,
-        extra: {
-          projectName: oversized,
-          details: { message: oversized },
-          ['key'.repeat(3000)]: 'oversized property name',
-          source: 'EngineWebSocket',
-          connectionId: 'connection-1',
-        },
-      })
-
-      const stack =
-        mockState.reportUserClientError.mock.calls[0]?.[0].body.stack
-      if (!stack) throw new Error('Expected a reported stack')
-      const persistedStack = Array.from(stack.trim()).slice(0, 8192).join('')
-      expect(stack.length).toBeLessThanOrEqual(8192)
-      expect(persistedStack).toBe(stack)
-      expect(JSON.parse(persistedStack)).toMatchObject({
-        contextTruncated: true,
-        source: 'EngineWebSocket',
-        connectionId: 'connection-1',
-        engineDebugger: {
-          totalLogCount: 1,
-          truncated: true,
-          logs: [
-            expect.objectContaining({
-              label: expect.stringContaining('latest-connection-'),
-              message: expect.stringContaining('latest disconnect event'),
-            }),
-          ],
-        },
-      })
-    }
-  )
-
-  it('does not collect engine logs for unrelated errors or duplicate reports', async () => {
-    const snapshotSpy = vi.spyOn(EngineDebugger, 'snapshotForReport')
-    try {
-      await reportClientError({ code: ClientErrorCode.AuthGetUserError })
-      expect(snapshotSpy).not.toHaveBeenCalled()
-      const report = {
-        code: ClientErrorCode.EngineDisconnect,
-        dedupeKey: 'engine-disconnect',
-      }
-      await reportClientError(report)
-      await reportClientError(report)
-      expect(snapshotSpy).toHaveBeenCalledTimes(1)
-      expect(mockState.reportUserClientError).toHaveBeenCalledTimes(2)
-    } finally {
-      snapshotSpy.mockRestore()
-    }
+    await reportClientError(report)
+    await reportClientError(report)
+    expect(toJSON).toHaveBeenCalledTimes(1)
+    expect(mockState.reportUserClientError).toHaveBeenCalledTimes(2)
   })
 })
