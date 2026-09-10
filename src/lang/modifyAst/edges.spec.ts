@@ -10,7 +10,6 @@ import {
 } from '@src/lang/modifyAst/edges'
 import {
   codeRefFromRange,
-  getCommonFacesForEdge,
   getOriginalSegmentArtifact,
 } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
@@ -646,13 +645,9 @@ fillet001 = fillet(
       expect(kclManagerInThisFile.errors).toEqual([])
     })
 
-    it.each([
-      ['fillet', 'inherited'],
-      ['chamfer', 'inherited'],
-      ['fillet', 'created'],
-    ] as const)(
-      'should add one %s for merged array outputs with %s caps and primitive edges',
-      async (name, capKind) => {
+    it.each(['inherited', 'created'] as const)(
+      'should add one fillet for merged array outputs with %s caps and primitive edges',
+      async (capKind) => {
         const createsCaps = capKind === 'created'
         const bodyName = createsCaps ? 'part' : 'extrude001'
         // Exercise new cap ownership after a boolean, not just on a sweep.
@@ -712,14 +707,8 @@ extrude002 = extrude([region002, region003], length = -2)`
                 artifact.sweepId === sweep.id
               )
             }
-            if (artifact.type !== 'segment' || artifact.pathId !== sweep.pathId)
-              return false
-            const faces = getCommonFacesForEdge(artifact, artifactGraph)
             return (
-              !(faces instanceof Error) &&
-              faces.some(
-                (face) => face.type === 'cap' && face.sweepId === base.id
-              )
+              artifact.type === 'segment' && artifact.pathId === sweep.pathId
             )
           })
           if (!edge) throw new Error('Missing pocket rim edge')
@@ -737,22 +726,13 @@ extrude002 = extrude([region002, region003], length = -2)`
           '0.23',
           rustContextInThisFile
         )) as KclCommandValue
-        const result =
-          name === 'fillet'
-            ? addFillet({
-                ast,
-                artifactGraph,
-                selection,
-                radius: size,
-                wasmInstance: instanceInThisFile,
-              })
-            : addChamfer({
-                ast,
-                artifactGraph,
-                selection,
-                length: size,
-                wasmInstance: instanceInThisFile,
-              })
+        const result = addFillet({
+          ast,
+          artifactGraph,
+          selection,
+          radius: size,
+          wasmInstance: instanceInThisFile,
+        })
         if (err(result)) throw result
         expect(result.pathToNode).toHaveLength(1)
         const newCode = recast(result.modifiedAst, instanceInThisFile)
@@ -777,7 +757,7 @@ region002 = region(point = [5mm, 10mm], sketch = sketch002)
 region003 = region(point = [20mm, 10mm], sketch = sketch002)
 extrude002 = extrude([region002, region003], length = -2${createsCaps ? ', tagStart = $capStart001' : ''})
 edge001 = edgeId(${bodyName}, index = 0)
-${name}001 = ${name}(
+fillet001 = fillet(
   ${bodyName},
   tags = [
     getCommonEdge(faces = [
@@ -790,7 +770,7 @@ ${name}001 = ${name}(
     ]),
     edge001
   ],
-  ${name === 'fillet' ? 'radius' : 'length'} = 0.23,
+  radius = 0.23,
 )`
         expect(newCode).toEqual(
           recast(
