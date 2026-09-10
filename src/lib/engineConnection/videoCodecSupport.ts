@@ -1,3 +1,8 @@
+import {
+  type EngineConnectionError,
+  EngineConnectionErrorKind,
+} from '@src/lib/engineConnection/utils'
+
 // Keep this list aligned with the video tracks Engine can produce. Once that
 // contract is available before Engine allocation, replace this constant with
 // API-provided metadata. See modeling-app#13673.
@@ -14,7 +19,12 @@ export type EngineVideoCodecSupport = {
   engineCodecs: typeof ENGINE_SUPPORTED_VIDEO_CODECS
 }
 
-export class UnsupportedEngineVideoCodecError extends Error {
+export class UnsupportedEngineVideoCodecError
+  extends Error
+  implements EngineConnectionError
+{
+  readonly kind = EngineConnectionErrorKind.UnsupportedVideoCodec
+  readonly terminal = true
   readonly browserCodecs: readonly string[]
   readonly engineCodecs = ENGINE_SUPPORTED_VIDEO_CODECS
 

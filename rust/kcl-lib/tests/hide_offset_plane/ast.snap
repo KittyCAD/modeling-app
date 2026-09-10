@@ -3753,6 +3753,7 @@ description: Result of parsing hide_offset_plane.kcl
       }
     ],
     "moduleId": 0,
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

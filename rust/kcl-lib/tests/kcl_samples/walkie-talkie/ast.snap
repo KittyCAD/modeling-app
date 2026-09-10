@@ -2571,6 +2571,7 @@ description: Result of parsing walkie-talkie.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

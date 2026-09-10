@@ -46,6 +46,7 @@ const attemptToConnectToEngine = async ({
 }) => {
   const codecSupport = await preflightEngineVideoCodecSupport()
   if (isUnsupportedEngineVideoCodecError(codecSupport)) {
+    engineCommandManager.lastConnectionError = codecSupport
     void reportClientError({
       code: ClientErrorCode.EngineUnsupportedVideoCodec,
       error: codecSupport,
@@ -205,7 +206,7 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
  * No part of the system should be trying to directly connect. This file wraps multiple levels of business logic and state management to provide
  * a single safe location to connect to the engine.
  */
-async function tryConnecting({
+export async function tryConnecting({
   isConnecting,
   numberOfConnectionAttempts,
   authToken,
@@ -298,19 +299,20 @@ async function tryConnecting({
         } catch (e) {
           isConnecting.current = false
           setAppState({ isStreamAcceptingInput: false })
-          if (isUnsupportedEngineVideoCodecError(e)) {
-            EngineDebugger.addLog({
-              label: 'useTryConnect.tsx',
-              message: `Attempt ${numberOfConnectionAttempts.current}/${NUMBER_OF_ENGINE_RETRIES} stopped before Engine allocation: unsupported video codec`,
-            })
-            numberOfConnectionAttempts.current = 0
-            setShowManualConnect(true)
-            return reject(e)
-          }
+          const terminalConnectionError =
+            engineCommandManager.lastConnectionError?.terminal === true
+              ? engineCommandManager.lastConnectionError
+              : undefined
           EngineDebugger.addLog({
             label: 'useTryConnect.tsx',
-            message: `Attempt ${numberOfConnectionAttempts.current}/${NUMBER_OF_ENGINE_RETRIES} failed, calling tearDown()`,
+            message: `Attempt ${numberOfConnectionAttempts.current}/${NUMBER_OF_ENGINE_RETRIES} failed`,
+            metadata: { terminalConnectionError },
           })
+          if (terminalConnectionError) {
+            numberOfConnectionAttempts.current = 0
+            setShowManualConnect(true)
+            return reject(terminalConnectionError)
+          }
           engineCommandManager.tearDown()
           if (numberOfConnectionAttempts.current >= NUMBER_OF_ENGINE_RETRIES) {
             numberOfConnectionAttempts.current = 0

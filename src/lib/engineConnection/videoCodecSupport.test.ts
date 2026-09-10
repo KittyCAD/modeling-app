@@ -7,6 +7,7 @@ import {
   UNSUPPORTED_ENGINE_VIDEO_CODEC_MESSAGE,
   UnsupportedEngineVideoCodecError,
 } from '@src/lib/engineConnection/videoCodecSupport'
+import { EngineConnectionErrorKind } from '@src/lib/engineConnection/utils'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 
 afterEach(() => {
@@ -106,6 +107,8 @@ describe('Engine video codec support', () => {
     expect(error.message).toBe(UNSUPPORTED_ENGINE_VIDEO_CODEC_MESSAGE)
     expect(error.message).toContain('Chrome, Edge, Firefox, or Safari')
     expect(error.message).toContain('update it to the latest version')
+    expect(error.kind).toBe(EngineConnectionErrorKind.UnsupportedVideoCodec)
+    expect(error.terminal).toBe(true)
     expect(isUnsupportedEngineVideoCodecError(error)).toBe(true)
     expect(isUnsupportedEngineVideoCodecError(new Error('temporary'))).toBe(
       false

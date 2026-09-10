@@ -2675,47 +2675,47 @@ description: Operations executed fun-stacker-toy.kcl
             "value": {
               "arc1": {
                 "type": "Segment",
-                "artifact_id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9"
+                "artifact_id": "[uuid]"
               },
               "arc2": {
                 "type": "Segment",
-                "artifact_id": "8accf664-7097-5b74-b4cf-22cfff115a4f"
+                "artifact_id": "[uuid]"
               },
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "e00e9caf-6e9e-5221-8545-b199546c367f"
+                "artifact_id": "[uuid]"
               },
               "circle2": {
                 "type": "Segment",
-                "artifact_id": "f084ad07-5777-5607-a544-c69f455c2aab"
+                "artifact_id": "[uuid]"
               },
               "circle3": {
                 "type": "Segment",
-                "artifact_id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6"
+                "artifact_id": "[uuid]"
               },
               "circle4": {
                 "type": "Segment",
-                "artifact_id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3"
+                "artifact_id": "[uuid]"
               },
               "circle5": {
                 "type": "Segment",
-                "artifact_id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527"
+                "artifact_id": "[uuid]"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+                "artifact_id": "[uuid]"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
+                "artifact_id": "[uuid]"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "41c630c9-9d44-581b-98af-caee575bea48"
+                "artifact_id": "[uuid]"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -2723,7 +2723,7 @@ description: Operations executed fun-stacker-toy.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -2756,7 +2756,7 @@ description: Operations executed fun-stacker-toy.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "14d4f28b-98bf-5f5d-9542-446598cbea13"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2856,7 +2856,7 @@ description: Operations executed fun-stacker-toy.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "d5eaf678-0440-563f-ac19-e473850b9270"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2927,47 +2927,47 @@ description: Operations executed fun-stacker-toy.kcl
             "value": {
               "arc1": {
                 "type": "Segment",
-                "artifact_id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9"
+                "artifact_id": "[uuid]"
               },
               "arc2": {
                 "type": "Segment",
-                "artifact_id": "8accf664-7097-5b74-b4cf-22cfff115a4f"
+                "artifact_id": "[uuid]"
               },
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "e00e9caf-6e9e-5221-8545-b199546c367f"
+                "artifact_id": "[uuid]"
               },
               "circle2": {
                 "type": "Segment",
-                "artifact_id": "f084ad07-5777-5607-a544-c69f455c2aab"
+                "artifact_id": "[uuid]"
               },
               "circle3": {
                 "type": "Segment",
-                "artifact_id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6"
+                "artifact_id": "[uuid]"
               },
               "circle4": {
                 "type": "Segment",
-                "artifact_id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3"
+                "artifact_id": "[uuid]"
               },
               "circle5": {
                 "type": "Segment",
-                "artifact_id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527"
+                "artifact_id": "[uuid]"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+                "artifact_id": "[uuid]"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
+                "artifact_id": "[uuid]"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "41c630c9-9d44-581b-98af-caee575bea48"
+                "artifact_id": "[uuid]"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -2975,7 +2975,7 @@ description: Operations executed fun-stacker-toy.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -3008,7 +3008,7 @@ description: Operations executed fun-stacker-toy.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "0f805c0b-b523-5978-a0dd-c17f7ac70690"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3108,7 +3108,7 @@ description: Operations executed fun-stacker-toy.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "5288de96-84bb-518a-848b-5092b5d33e48"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3179,47 +3179,47 @@ description: Operations executed fun-stacker-toy.kcl
             "value": {
               "arc1": {
                 "type": "Segment",
-                "artifact_id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9"
+                "artifact_id": "[uuid]"
               },
               "arc2": {
                 "type": "Segment",
-                "artifact_id": "8accf664-7097-5b74-b4cf-22cfff115a4f"
+                "artifact_id": "[uuid]"
               },
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "e00e9caf-6e9e-5221-8545-b199546c367f"
+                "artifact_id": "[uuid]"
               },
               "circle2": {
                 "type": "Segment",
-                "artifact_id": "f084ad07-5777-5607-a544-c69f455c2aab"
+                "artifact_id": "[uuid]"
               },
               "circle3": {
                 "type": "Segment",
-                "artifact_id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6"
+                "artifact_id": "[uuid]"
               },
               "circle4": {
                 "type": "Segment",
-                "artifact_id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3"
+                "artifact_id": "[uuid]"
               },
               "circle5": {
                 "type": "Segment",
-                "artifact_id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527"
+                "artifact_id": "[uuid]"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+                "artifact_id": "[uuid]"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
+                "artifact_id": "[uuid]"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "41c630c9-9d44-581b-98af-caee575bea48"
+                "artifact_id": "[uuid]"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -3227,7 +3227,7 @@ description: Operations executed fun-stacker-toy.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -3260,7 +3260,7 @@ description: Operations executed fun-stacker-toy.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "e8637a6d-00c2-5b87-831e-2db8c2223948"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3360,7 +3360,7 @@ description: Operations executed fun-stacker-toy.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "0919e597-7112-50da-97bb-e5ba198e1dcd"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3431,47 +3431,47 @@ description: Operations executed fun-stacker-toy.kcl
             "value": {
               "arc1": {
                 "type": "Segment",
-                "artifact_id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9"
+                "artifact_id": "[uuid]"
               },
               "arc2": {
                 "type": "Segment",
-                "artifact_id": "8accf664-7097-5b74-b4cf-22cfff115a4f"
+                "artifact_id": "[uuid]"
               },
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "e00e9caf-6e9e-5221-8545-b199546c367f"
+                "artifact_id": "[uuid]"
               },
               "circle2": {
                 "type": "Segment",
-                "artifact_id": "f084ad07-5777-5607-a544-c69f455c2aab"
+                "artifact_id": "[uuid]"
               },
               "circle3": {
                 "type": "Segment",
-                "artifact_id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6"
+                "artifact_id": "[uuid]"
               },
               "circle4": {
                 "type": "Segment",
-                "artifact_id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3"
+                "artifact_id": "[uuid]"
               },
               "circle5": {
                 "type": "Segment",
-                "artifact_id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527"
+                "artifact_id": "[uuid]"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+                "artifact_id": "[uuid]"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
+                "artifact_id": "[uuid]"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "41c630c9-9d44-581b-98af-caee575bea48"
+                "artifact_id": "[uuid]"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -3479,7 +3479,7 @@ description: Operations executed fun-stacker-toy.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -3512,7 +3512,7 @@ description: Operations executed fun-stacker-toy.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3612,7 +3612,7 @@ description: Operations executed fun-stacker-toy.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3683,47 +3683,47 @@ description: Operations executed fun-stacker-toy.kcl
             "value": {
               "arc1": {
                 "type": "Segment",
-                "artifact_id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9"
+                "artifact_id": "[uuid]"
               },
               "arc2": {
                 "type": "Segment",
-                "artifact_id": "8accf664-7097-5b74-b4cf-22cfff115a4f"
+                "artifact_id": "[uuid]"
               },
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "e00e9caf-6e9e-5221-8545-b199546c367f"
+                "artifact_id": "[uuid]"
               },
               "circle2": {
                 "type": "Segment",
-                "artifact_id": "f084ad07-5777-5607-a544-c69f455c2aab"
+                "artifact_id": "[uuid]"
               },
               "circle3": {
                 "type": "Segment",
-                "artifact_id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6"
+                "artifact_id": "[uuid]"
               },
               "circle4": {
                 "type": "Segment",
-                "artifact_id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3"
+                "artifact_id": "[uuid]"
               },
               "circle5": {
                 "type": "Segment",
-                "artifact_id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527"
+                "artifact_id": "[uuid]"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+                "artifact_id": "[uuid]"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
+                "artifact_id": "[uuid]"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "41c630c9-9d44-581b-98af-caee575bea48"
+                "artifact_id": "[uuid]"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -3731,7 +3731,7 @@ description: Operations executed fun-stacker-toy.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -3764,7 +3764,7 @@ description: Operations executed fun-stacker-toy.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "f611456b-82df-55af-a95e-b0c5e1ba1457"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3864,7 +3864,7 @@ description: Operations executed fun-stacker-toy.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "3312f826-b323-5332-871a-6a8a59a3ae93"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3935,47 +3935,47 @@ description: Operations executed fun-stacker-toy.kcl
             "value": {
               "arc1": {
                 "type": "Segment",
-                "artifact_id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9"
+                "artifact_id": "[uuid]"
               },
               "arc2": {
                 "type": "Segment",
-                "artifact_id": "8accf664-7097-5b74-b4cf-22cfff115a4f"
+                "artifact_id": "[uuid]"
               },
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "e00e9caf-6e9e-5221-8545-b199546c367f"
+                "artifact_id": "[uuid]"
               },
               "circle2": {
                 "type": "Segment",
-                "artifact_id": "f084ad07-5777-5607-a544-c69f455c2aab"
+                "artifact_id": "[uuid]"
               },
               "circle3": {
                 "type": "Segment",
-                "artifact_id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6"
+                "artifact_id": "[uuid]"
               },
               "circle4": {
                 "type": "Segment",
-                "artifact_id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3"
+                "artifact_id": "[uuid]"
               },
               "circle5": {
                 "type": "Segment",
-                "artifact_id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527"
+                "artifact_id": "[uuid]"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+                "artifact_id": "[uuid]"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
+                "artifact_id": "[uuid]"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "41c630c9-9d44-581b-98af-caee575bea48"
+                "artifact_id": "[uuid]"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -3983,7 +3983,7 @@ description: Operations executed fun-stacker-toy.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -4016,7 +4016,7 @@ description: Operations executed fun-stacker-toy.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "6be94036-fce8-50e0-a9cd-4631846bb4fc"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -4116,7 +4116,7 @@ description: Operations executed fun-stacker-toy.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "2181764b-b5ce-5e14-b499-f36d24b7b28a"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -5485,11 +5485,11 @@ description: Operations executed fun-stacker-toy.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -5519,7 +5519,7 @@ description: Operations executed fun-stacker-toy.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "29f44732-9f58-5550-8e28-aea348bd8ebb"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -5565,7 +5565,7 @@ description: Operations executed fun-stacker-toy.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "0a3927a3-4dca-5e67-855f-5c8045a33997"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -5606,7 +5606,7 @@ description: Operations executed fun-stacker-toy.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "0a3927a3-4dca-5e67-855f-5c8045a33997"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -5630,19 +5630,19 @@ description: Operations executed fun-stacker-toy.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "859e3f87-4031-5c80-b618-2714d1f8e1be"
+                "value": "[uuid]"
               },
               {
                 "type": "Uuid",
-                "value": "ad4be036-72e8-5c1c-ae94-972f0bc019b0"
+                "value": "[uuid]"
               },
               {
                 "type": "Uuid",
-                "value": "3fb40954-28e6-50db-b8d0-0fe19c096a83"
+                "value": "[uuid]"
               },
               {
                 "type": "Uuid",
-                "value": "f3f268a0-527c-5b6d-8951-6831cc778f58"
+                "value": "[uuid]"
               }
             ]
           },
@@ -5672,7 +5672,7 @@ description: Operations executed fun-stacker-toy.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "d90f6603-b0cd-5c83-a076-386b01d9e12a"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
