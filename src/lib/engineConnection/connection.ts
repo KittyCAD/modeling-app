@@ -4,10 +4,6 @@ import type {
   WebSocketResponse,
 } from '@kittycad/lib/dist/types/src'
 import { EngineDebugger } from '@src/lib/debugger'
-import { markOnce } from '@src/lib/performance'
-import { notifySessionExpired } from '@src/lib/sessionExpired'
-import { promiseFactory, uuidv4 } from '@src/lib/utils'
-import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
 import {
   createOnConnectionStateChange,
   createOnDataChannel,
@@ -37,6 +33,10 @@ import {
   createOnWebSocketMessage,
   createOnWebSocketOpen,
 } from '@src/lib/engineConnection/websocketConnection'
+import { markOnce } from '@src/lib/performance'
+import { notifySessionExpired } from '@src/lib/sessionExpired'
+import { promiseFactory, uuidv4 } from '@src/lib/utils'
+import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
 
 // An interface for a promise that needs to be awaited and pass the resolve reject to
 // other dependencies. We do not need to pass values between these. It is mainly
@@ -646,6 +646,7 @@ export class Connection extends EventTarget {
         this.apiCallId = apiCallId
       },
       getCloudProjectId: this.getCloudProjectId,
+      tearDownManager: this.tearDownManager.bind(this),
     })
     const onWebSocketClose = createOnWebSocketClose({
       websocket: this.websocket,
