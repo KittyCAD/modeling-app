@@ -35,13 +35,17 @@ async function main() {
 
     // VS Code can exit successfully without finishing the extension host tests.
     if (!fs.existsSync(completionPath)) {
-      throw new Error(
+      console.error(
         'VS Code exited without completing the extension test suite'
       )
+      process.exitCode = 1
+      return
     }
     const passed = Number(fs.readFileSync(completionPath, 'utf8'))
     if (!Number.isSafeInteger(passed) || passed <= 0) {
-      throw new Error('Invalid VS Code extension test completion count')
+      console.error('Invalid VS Code extension test completion count')
+      process.exitCode = 1
+      return
     }
     // Report from the parent too: the launcher can close the child's output
     // streams before its last console messages have been forwarded on Windows.
