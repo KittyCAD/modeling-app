@@ -412,7 +412,7 @@ export const defaultKeymap: KeymapDocument = {
       title: 'Import',
       when: [MODE_MODELING_KEYMAP_SCOPE],
       keystrokes: ['i'],
-      command: 'code:Import',
+      command: 'code:Insert',
     },
     {
       id: 'toolbar.modeling.mirror3d',

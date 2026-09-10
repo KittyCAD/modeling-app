@@ -1154,7 +1154,7 @@ export function buildToolbarConfig(
         'break',
         {
           id: 'insert',
-          command: 'code:Import',
+          command: 'code:Insert',
           onClick: () =>
             commands.send({
               type: 'Find and select command',
