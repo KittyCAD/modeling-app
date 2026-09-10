@@ -11,6 +11,7 @@ import {
   type EngineDisconnectEvent,
   useOnPeerConnectionClose,
 } from '@src/hooks/network/useOnPeerConnectionClose'
+import { useOnPingPongTimeout } from '@src/hooks/network/useOnPingPongTimeout'
 import { useOnVitestEngineOnline } from '@src/hooks/network/useOnVitestEngineOnline'
 import { useOnWebsocketClose } from '@src/hooks/network/useOnWebsocketClose'
 import { useOnWindowOnlineOffline } from '@src/hooks/network/useOnWindowOnlineOffline'
@@ -509,6 +510,41 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
     ]
   )
   useOnPeerConnectionClose(onPeerConnectionCloseParams)
+
+  const onPingPongTimout = useMemo(
+    () => ({
+      callback: (eventType: EngineDisconnectEvent) => {
+        reportEngineDisconnect(eventType)
+        setShowManualConnect(false)
+        tryConnecting({
+          authToken: props.authToken || '',
+          videoWrapperRef,
+          setAppState,
+          videoRef,
+          setIsSceneReady,
+          isConnecting,
+          numberOfConnectionAttempts,
+          timeToConnect: TIME_TO_CONNECT,
+          setShowManualConnect,
+          sceneInfra,
+          settingsActor: settings.actor,
+        }).catch((e) => {
+          console.warn(e)
+          setShowManualConnect(true)
+        })
+      },
+      engineCommandManager,
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      isConnecting,
+      numberOfConnectionAttempts,
+      props.authToken,
+      reportEngineDisconnect,
+      settings,
+    ]
+  )
+  useOnPingPongTimeout(onPingPongTimout)
 
   const onWindowOnlineOfflineParams = useMemo(
     () => ({
