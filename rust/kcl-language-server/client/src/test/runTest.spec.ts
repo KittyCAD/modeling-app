@@ -35,6 +35,9 @@ suite('VS Code suite completion', () => {
            Module._load = function (id, ...args) {
              if (id === '@vscode/test-electron') return {
                runTests: async (options) => {
+                 const manifest = require(require('node:path').join(
+                   options.extensionDevelopmentPath, 'package.json'))
+                 require('node:assert').strictEqual(manifest.name, 'kcl-language-server')
                  if (${JSON.stringify(scenario)} === 'no-suite') return
                  Object.assign(process.env, options.extensionTestsEnv)
                  await require(options.extensionTestsPath).run()
