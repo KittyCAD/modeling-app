@@ -305,9 +305,13 @@ impl ExecOutcome {
     }
 
     /// Render one sketch from this execution as a PNG, colored by solver
-    /// freedom.
-    fn render_sketch_png(&self, sketch_name: &str) -> PyResult<Vec<u8>> {
-        self.inner.render_sketch_png(sketch_name).map_err(to_py_exception)
+    /// freedom. For duplicate names, pass the zero-based instance_index
+    /// from the constraint report for this entrypoint and source.
+    #[pyo3(signature = (sketch_name, *, instance_index=None))]
+    fn render_sketch_png(&self, sketch_name: &str, instance_index: Option<usize>) -> PyResult<Vec<u8>> {
+        self.inner
+            .render_sketch_png_instance(sketch_name, instance_index)
+            .map_err(to_py_exception)
     }
 
     fn report_all(&self) -> Vec<String> {

@@ -199,10 +199,11 @@ class ExecOutcome:
         Analyze all sketches from this execution and group them by constraint
         status.
         """
-    def render_sketch_png(self, sketch_name: builtins.str) -> builtins.list[builtins.int]:
+    def render_sketch_png(self, sketch_name: builtins.str, *, instance_index: typing.Optional[builtins.int] = None) -> builtins.list[builtins.int]:
         r"""
         Render one sketch from this execution as a PNG, colored by solver
-        freedom.
+        freedom. For duplicate names, pass the zero-based instance_index
+        from the constraint report for this entrypoint and source.
         """
     def report_all(self) -> builtins.list[builtins.str]: ...
 
@@ -647,8 +648,13 @@ class SketchConstraintStatus:
         Name of the variable the sketch was assigned to. Empty when the sketch
         has no enclosing variable declaration, and shared between entries when
         two sketches resolve to the same declaration. This name can be passed
-        to `ExecOutcome.render_sketch_png`, which returns an ambiguity error
-        when multiple sketches share it.
+        to `ExecOutcome.render_sketch_png`, with instance_index for duplicates.
+        """
+    @property
+    def instance_index(self) -> builtins.int:
+        r"""
+        Zero-based creation order among sketches with this name. Obtain a
+        fresh report for the same entrypoint after editing the project.
         """
     @property
     def status(self) -> zooConstraintKind: ...
