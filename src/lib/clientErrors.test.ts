@@ -244,6 +244,48 @@ describe('reportClientError', () => {
     }
   )
 
+  it.each([
+    ClientErrorCode.EngineDisconnect,
+    ClientErrorCode.EngineBackendDisconnect,
+  ])('keeps recent events when history overflows for %s', async (code) => {
+    const previousConnections = Array.from({ length: 100 }, (_, index) => ({
+      time: index,
+      message: `Previous connection ${index}`,
+      stack: 'per-entry stack',
+      label: 'connection',
+      metadata: { connectionId: index, detail: 'x'.repeat(100) },
+    }))
+    const failed = {
+      time: 100,
+      message: 'ICE connection failed',
+      label: 'connection',
+      metadata: { connectionId: 100, iceConnectionState: 'failed' },
+    }
+    const disconnected = {
+      time: 101,
+      message: 'Current connection disconnected',
+      label: 'connection',
+      metadata: { connectionId: 100 },
+    }
+    EngineDebugger.logs = [
+      ...previousConnections,
+      { ...failed, stack: 'failure stack' },
+      { ...disconnected, stack: 'disconnect stack' },
+    ]
+    const originalLogs = [...EngineDebugger.logs]
+
+    await reportClientError({ code })
+
+    const stack = mockState.reportUserClientError.mock.calls[0]?.[0].body.stack
+    if (!stack) throw new Error('Expected a reported stack')
+    expect(Array.from(stack)).toHaveLength(8192)
+    expect(stack).toContain(
+      `"engineDebugger":[${JSON.stringify(disconnected)},${JSON.stringify(failed)},`
+    )
+    expect(stack).not.toContain('"message":"Previous connection 0"')
+    expect(EngineDebugger.logs).toEqual(originalLogs)
+  })
+
   it('still reports the original error when log metadata cannot serialize', async () => {
     const metadata: Record<string, unknown> = {}
     metadata.circular = metadata

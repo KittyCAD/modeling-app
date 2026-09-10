@@ -146,14 +146,15 @@ const buildStack = (params: ReportClientErrorParams) => {
   try {
     stack = JSON.stringify({
       ...context,
-      engineDebugger: EngineDebugger.logs.map(
-        ({ time, message, label, metadata }) => ({
+      // Keep recent events first so they survive the raw crop below.
+      engineDebugger: EngineDebugger.logs
+        .map(({ time, message, label, metadata }) => ({
           time,
           message,
           label,
           metadata,
-        })
-      ),
+        }))
+        .reverse(),
     })
   } catch {
     // Still report the original error if the debugger buffer cannot serialize.
