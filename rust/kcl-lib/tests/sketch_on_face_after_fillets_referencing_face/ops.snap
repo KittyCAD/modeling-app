@@ -300,7 +300,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -332,7 +332,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
           }
         },
         "sourceRange": []
@@ -378,7 +378,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966"
           }
         },
         "sourceRange": []
@@ -402,7 +402,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "9eee21ba-6c99-5df4-a742-d43a03ad5000"
               }
             ]
           },
@@ -436,7 +436,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966"
           }
         },
         "sourceRange": []
@@ -460,7 +460,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "47ff4dac-32f2-5e48-962f-6870d4f8f118"
               }
             ]
           },
@@ -494,7 +494,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966"
           }
         },
         "sourceRange": []
@@ -504,7 +504,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
           "value": {
             "type": "TagIdentifier",
             "value": "seg01",
-            "artifact_id": "[uuid]"
+            "artifact_id": "89316223-2ea1-5731-9c72-0492bc30fbe2"
           },
           "sourceRange": []
         }
@@ -536,7 +536,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec"
           }
         },
         "sourceRange": []

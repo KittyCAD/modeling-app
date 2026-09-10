@@ -56,6 +56,7 @@ import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
 import {
   darkModeMatcher,
+  edgeColor,
   getOppositeTheme,
   getThemeColorForEngine,
   type Themes,
@@ -177,6 +178,7 @@ export class ConnectionManager extends EventTarget {
     token,
     setStreamIsReady,
     callbackOnUnitTestingConnection,
+    unitTestGeometryOnly,
     rustContext,
   }: {
     width: number
@@ -184,6 +186,7 @@ export class ConnectionManager extends EventTarget {
     token: string
     setStreamIsReady: (setStreamIsReady: boolean) => void
     callbackOnUnitTestingConnection?: (message: string) => void
+    unitTestGeometryOnly?: boolean
     rustContext?: RustContext
   }) {
     EngineDebugger.addLog({
@@ -227,6 +230,7 @@ export class ConnectionManager extends EventTarget {
       tearDownManager: this.tearDown.bind(this),
       rejectPendingCommand: this.rejectPendingCommand.bind(this),
       callbackOnUnitTestingConnection,
+      unitTestGeometryOnly,
       handleMessage,
       getCloudProjectId: () =>
         this.systemDeps.settingsActor.getSnapshot().context.currentProject
@@ -448,6 +452,7 @@ export class ConnectionManager extends EventTarget {
       color: defaultSystemColor,
       highlight_color: SYSTEM_HIGHLIGHT_COLOR,
       selection_color: SYSTEM_SELECTION_COLOR,
+      edge_3d_color: edgeColor(),
     } as const
     EngineDebugger.addLog({
       label: 'connectionManager',

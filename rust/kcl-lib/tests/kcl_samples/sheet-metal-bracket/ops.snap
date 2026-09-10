@@ -4931,11 +4931,11 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               }
             ]
           },
@@ -4965,7 +4965,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "19107e89-bf40-5541-88a5-5106b6de636d"
           }
         },
         "sourceRange": []
@@ -5028,7 +5028,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0917d07d-5996-5994-8a06-602d43e2b6f3"
           }
         },
         "sourceRange": []
@@ -9590,87 +9590,87 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": {
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d5e2f4d6-228a-502b-94db-3100e57ccc81"
               },
               "circle2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee"
               },
               "circle3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "035728b5-01db-5e9b-b285-181bc5693d5a"
               },
               "circle4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "08138142-a558-56a4-a23f-2f334e02b011"
               },
               "circle5": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "44b2dfb0-0721-57cd-a796-4401a664e194"
               },
               "circle6": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ba769d4c-3a67-5309-824d-fd59f263bb46"
               },
               "circle7": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a"
               },
               "circle8": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0616b09c-75f9-545b-bd98-b7fbaf5b3587"
               },
               "circle9": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2ab8a671-6218-5516-901a-d1a83480ded7"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ca431487-8e9a-59ce-a472-84fe45652fab"
               },
               "line10": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "594993e6-1056-5d16-9f2e-5770c7b5e4e7"
               },
               "line11": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "88600ae1-c4f2-5277-8c4e-117866e83f6e"
               },
               "line12": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1f5ca073-184d-543b-9da6-2db6719123a8"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "93954f29-a246-54bd-ac2a-62572f26d508"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "20f09319-bab0-5dd8-8c40-ce90cd688483"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bee9909d-abbf-534c-b266-2c2c04133834"
               },
               "line5": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "fa75438f-b2d0-5142-b452-608454e1806a"
               },
               "line6": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2e4398f0-3503-52f1-9fb1-caadee14f488"
               },
               "line7": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "eb4a5516-04df-5d3c-a783-6699c67f971f"
               },
               "line8": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6"
               },
               "line9": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e80fd4da-2562-5d4d-be7f-42b434d6e397"
               },
               "meta": {
                 "type": "Object",
@@ -9678,7 +9678,7 @@ description: Operations executed sheet-metal-bracket.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620"
                     }
                   }
                 }
@@ -9741,87 +9741,87 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": {
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d5e2f4d6-228a-502b-94db-3100e57ccc81"
               },
               "circle2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee"
               },
               "circle3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "035728b5-01db-5e9b-b285-181bc5693d5a"
               },
               "circle4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "08138142-a558-56a4-a23f-2f334e02b011"
               },
               "circle5": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "44b2dfb0-0721-57cd-a796-4401a664e194"
               },
               "circle6": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ba769d4c-3a67-5309-824d-fd59f263bb46"
               },
               "circle7": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a"
               },
               "circle8": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0616b09c-75f9-545b-bd98-b7fbaf5b3587"
               },
               "circle9": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2ab8a671-6218-5516-901a-d1a83480ded7"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ca431487-8e9a-59ce-a472-84fe45652fab"
               },
               "line10": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "594993e6-1056-5d16-9f2e-5770c7b5e4e7"
               },
               "line11": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "88600ae1-c4f2-5277-8c4e-117866e83f6e"
               },
               "line12": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1f5ca073-184d-543b-9da6-2db6719123a8"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "93954f29-a246-54bd-ac2a-62572f26d508"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "20f09319-bab0-5dd8-8c40-ce90cd688483"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bee9909d-abbf-534c-b266-2c2c04133834"
               },
               "line5": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "fa75438f-b2d0-5142-b452-608454e1806a"
               },
               "line6": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2e4398f0-3503-52f1-9fb1-caadee14f488"
               },
               "line7": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "eb4a5516-04df-5d3c-a783-6699c67f971f"
               },
               "line8": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6"
               },
               "line9": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e80fd4da-2562-5d4d-be7f-42b434d6e397"
               },
               "meta": {
                 "type": "Object",
@@ -9829,7 +9829,7 @@ description: Operations executed sheet-metal-bracket.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620"
                     }
                   }
                 }
@@ -9892,87 +9892,87 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": {
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d5e2f4d6-228a-502b-94db-3100e57ccc81"
               },
               "circle2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee"
               },
               "circle3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "035728b5-01db-5e9b-b285-181bc5693d5a"
               },
               "circle4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "08138142-a558-56a4-a23f-2f334e02b011"
               },
               "circle5": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "44b2dfb0-0721-57cd-a796-4401a664e194"
               },
               "circle6": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ba769d4c-3a67-5309-824d-fd59f263bb46"
               },
               "circle7": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a"
               },
               "circle8": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0616b09c-75f9-545b-bd98-b7fbaf5b3587"
               },
               "circle9": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2ab8a671-6218-5516-901a-d1a83480ded7"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ca431487-8e9a-59ce-a472-84fe45652fab"
               },
               "line10": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "594993e6-1056-5d16-9f2e-5770c7b5e4e7"
               },
               "line11": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "88600ae1-c4f2-5277-8c4e-117866e83f6e"
               },
               "line12": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1f5ca073-184d-543b-9da6-2db6719123a8"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "93954f29-a246-54bd-ac2a-62572f26d508"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "20f09319-bab0-5dd8-8c40-ce90cd688483"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bee9909d-abbf-534c-b266-2c2c04133834"
               },
               "line5": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "fa75438f-b2d0-5142-b452-608454e1806a"
               },
               "line6": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2e4398f0-3503-52f1-9fb1-caadee14f488"
               },
               "line7": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "eb4a5516-04df-5d3c-a783-6699c67f971f"
               },
               "line8": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6"
               },
               "line9": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e80fd4da-2562-5d4d-be7f-42b434d6e397"
               },
               "meta": {
                 "type": "Object",
@@ -9980,7 +9980,7 @@ description: Operations executed sheet-metal-bracket.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620"
                     }
                   }
                 }
@@ -10043,87 +10043,87 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": {
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d5e2f4d6-228a-502b-94db-3100e57ccc81"
               },
               "circle2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee"
               },
               "circle3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "035728b5-01db-5e9b-b285-181bc5693d5a"
               },
               "circle4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "08138142-a558-56a4-a23f-2f334e02b011"
               },
               "circle5": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "44b2dfb0-0721-57cd-a796-4401a664e194"
               },
               "circle6": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ba769d4c-3a67-5309-824d-fd59f263bb46"
               },
               "circle7": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a"
               },
               "circle8": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0616b09c-75f9-545b-bd98-b7fbaf5b3587"
               },
               "circle9": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2ab8a671-6218-5516-901a-d1a83480ded7"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ca431487-8e9a-59ce-a472-84fe45652fab"
               },
               "line10": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "594993e6-1056-5d16-9f2e-5770c7b5e4e7"
               },
               "line11": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "88600ae1-c4f2-5277-8c4e-117866e83f6e"
               },
               "line12": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1f5ca073-184d-543b-9da6-2db6719123a8"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "93954f29-a246-54bd-ac2a-62572f26d508"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "20f09319-bab0-5dd8-8c40-ce90cd688483"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bee9909d-abbf-534c-b266-2c2c04133834"
               },
               "line5": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "fa75438f-b2d0-5142-b452-608454e1806a"
               },
               "line6": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2e4398f0-3503-52f1-9fb1-caadee14f488"
               },
               "line7": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "eb4a5516-04df-5d3c-a783-6699c67f971f"
               },
               "line8": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6"
               },
               "line9": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e80fd4da-2562-5d4d-be7f-42b434d6e397"
               },
               "meta": {
                 "type": "Object",
@@ -10131,7 +10131,7 @@ description: Operations executed sheet-metal-bracket.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620"
                     }
                   }
                 }
@@ -10194,87 +10194,87 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": {
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d5e2f4d6-228a-502b-94db-3100e57ccc81"
               },
               "circle2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee"
               },
               "circle3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "035728b5-01db-5e9b-b285-181bc5693d5a"
               },
               "circle4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "08138142-a558-56a4-a23f-2f334e02b011"
               },
               "circle5": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "44b2dfb0-0721-57cd-a796-4401a664e194"
               },
               "circle6": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ba769d4c-3a67-5309-824d-fd59f263bb46"
               },
               "circle7": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a"
               },
               "circle8": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0616b09c-75f9-545b-bd98-b7fbaf5b3587"
               },
               "circle9": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2ab8a671-6218-5516-901a-d1a83480ded7"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ca431487-8e9a-59ce-a472-84fe45652fab"
               },
               "line10": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "594993e6-1056-5d16-9f2e-5770c7b5e4e7"
               },
               "line11": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "88600ae1-c4f2-5277-8c4e-117866e83f6e"
               },
               "line12": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1f5ca073-184d-543b-9da6-2db6719123a8"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "93954f29-a246-54bd-ac2a-62572f26d508"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "20f09319-bab0-5dd8-8c40-ce90cd688483"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bee9909d-abbf-534c-b266-2c2c04133834"
               },
               "line5": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "fa75438f-b2d0-5142-b452-608454e1806a"
               },
               "line6": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2e4398f0-3503-52f1-9fb1-caadee14f488"
               },
               "line7": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "eb4a5516-04df-5d3c-a783-6699c67f971f"
               },
               "line8": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6"
               },
               "line9": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e80fd4da-2562-5d4d-be7f-42b434d6e397"
               },
               "meta": {
                 "type": "Object",
@@ -10282,7 +10282,7 @@ description: Operations executed sheet-metal-bracket.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620"
                     }
                   }
                 }
@@ -10345,87 +10345,87 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": {
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d5e2f4d6-228a-502b-94db-3100e57ccc81"
               },
               "circle2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee"
               },
               "circle3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "035728b5-01db-5e9b-b285-181bc5693d5a"
               },
               "circle4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "08138142-a558-56a4-a23f-2f334e02b011"
               },
               "circle5": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "44b2dfb0-0721-57cd-a796-4401a664e194"
               },
               "circle6": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ba769d4c-3a67-5309-824d-fd59f263bb46"
               },
               "circle7": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a"
               },
               "circle8": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0616b09c-75f9-545b-bd98-b7fbaf5b3587"
               },
               "circle9": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2ab8a671-6218-5516-901a-d1a83480ded7"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ca431487-8e9a-59ce-a472-84fe45652fab"
               },
               "line10": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "594993e6-1056-5d16-9f2e-5770c7b5e4e7"
               },
               "line11": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "88600ae1-c4f2-5277-8c4e-117866e83f6e"
               },
               "line12": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1f5ca073-184d-543b-9da6-2db6719123a8"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "93954f29-a246-54bd-ac2a-62572f26d508"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "20f09319-bab0-5dd8-8c40-ce90cd688483"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bee9909d-abbf-534c-b266-2c2c04133834"
               },
               "line5": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "fa75438f-b2d0-5142-b452-608454e1806a"
               },
               "line6": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2e4398f0-3503-52f1-9fb1-caadee14f488"
               },
               "line7": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "eb4a5516-04df-5d3c-a783-6699c67f971f"
               },
               "line8": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6"
               },
               "line9": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e80fd4da-2562-5d4d-be7f-42b434d6e397"
               },
               "meta": {
                 "type": "Object",
@@ -10433,7 +10433,7 @@ description: Operations executed sheet-metal-bracket.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620"
                     }
                   }
                 }
@@ -10496,87 +10496,87 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": {
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d5e2f4d6-228a-502b-94db-3100e57ccc81"
               },
               "circle2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee"
               },
               "circle3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "035728b5-01db-5e9b-b285-181bc5693d5a"
               },
               "circle4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "08138142-a558-56a4-a23f-2f334e02b011"
               },
               "circle5": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "44b2dfb0-0721-57cd-a796-4401a664e194"
               },
               "circle6": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ba769d4c-3a67-5309-824d-fd59f263bb46"
               },
               "circle7": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a"
               },
               "circle8": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0616b09c-75f9-545b-bd98-b7fbaf5b3587"
               },
               "circle9": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2ab8a671-6218-5516-901a-d1a83480ded7"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ca431487-8e9a-59ce-a472-84fe45652fab"
               },
               "line10": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "594993e6-1056-5d16-9f2e-5770c7b5e4e7"
               },
               "line11": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "88600ae1-c4f2-5277-8c4e-117866e83f6e"
               },
               "line12": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1f5ca073-184d-543b-9da6-2db6719123a8"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "93954f29-a246-54bd-ac2a-62572f26d508"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "20f09319-bab0-5dd8-8c40-ce90cd688483"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bee9909d-abbf-534c-b266-2c2c04133834"
               },
               "line5": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "fa75438f-b2d0-5142-b452-608454e1806a"
               },
               "line6": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2e4398f0-3503-52f1-9fb1-caadee14f488"
               },
               "line7": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "eb4a5516-04df-5d3c-a783-6699c67f971f"
               },
               "line8": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6"
               },
               "line9": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e80fd4da-2562-5d4d-be7f-42b434d6e397"
               },
               "meta": {
                 "type": "Object",
@@ -10584,7 +10584,7 @@ description: Operations executed sheet-metal-bracket.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620"
                     }
                   }
                 }
@@ -10647,87 +10647,87 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": {
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d5e2f4d6-228a-502b-94db-3100e57ccc81"
               },
               "circle2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee"
               },
               "circle3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "035728b5-01db-5e9b-b285-181bc5693d5a"
               },
               "circle4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "08138142-a558-56a4-a23f-2f334e02b011"
               },
               "circle5": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "44b2dfb0-0721-57cd-a796-4401a664e194"
               },
               "circle6": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ba769d4c-3a67-5309-824d-fd59f263bb46"
               },
               "circle7": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a"
               },
               "circle8": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0616b09c-75f9-545b-bd98-b7fbaf5b3587"
               },
               "circle9": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2ab8a671-6218-5516-901a-d1a83480ded7"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ca431487-8e9a-59ce-a472-84fe45652fab"
               },
               "line10": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "594993e6-1056-5d16-9f2e-5770c7b5e4e7"
               },
               "line11": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "88600ae1-c4f2-5277-8c4e-117866e83f6e"
               },
               "line12": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1f5ca073-184d-543b-9da6-2db6719123a8"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "93954f29-a246-54bd-ac2a-62572f26d508"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "20f09319-bab0-5dd8-8c40-ce90cd688483"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bee9909d-abbf-534c-b266-2c2c04133834"
               },
               "line5": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "fa75438f-b2d0-5142-b452-608454e1806a"
               },
               "line6": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2e4398f0-3503-52f1-9fb1-caadee14f488"
               },
               "line7": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "eb4a5516-04df-5d3c-a783-6699c67f971f"
               },
               "line8": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6"
               },
               "line9": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e80fd4da-2562-5d4d-be7f-42b434d6e397"
               },
               "meta": {
                 "type": "Object",
@@ -10735,7 +10735,7 @@ description: Operations executed sheet-metal-bracket.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620"
                     }
                   }
                 }
@@ -10798,87 +10798,87 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": {
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d5e2f4d6-228a-502b-94db-3100e57ccc81"
               },
               "circle2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee"
               },
               "circle3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "035728b5-01db-5e9b-b285-181bc5693d5a"
               },
               "circle4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "08138142-a558-56a4-a23f-2f334e02b011"
               },
               "circle5": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "44b2dfb0-0721-57cd-a796-4401a664e194"
               },
               "circle6": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ba769d4c-3a67-5309-824d-fd59f263bb46"
               },
               "circle7": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a"
               },
               "circle8": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0616b09c-75f9-545b-bd98-b7fbaf5b3587"
               },
               "circle9": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2ab8a671-6218-5516-901a-d1a83480ded7"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ca431487-8e9a-59ce-a472-84fe45652fab"
               },
               "line10": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "594993e6-1056-5d16-9f2e-5770c7b5e4e7"
               },
               "line11": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "88600ae1-c4f2-5277-8c4e-117866e83f6e"
               },
               "line12": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1f5ca073-184d-543b-9da6-2db6719123a8"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "93954f29-a246-54bd-ac2a-62572f26d508"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "20f09319-bab0-5dd8-8c40-ce90cd688483"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bee9909d-abbf-534c-b266-2c2c04133834"
               },
               "line5": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "fa75438f-b2d0-5142-b452-608454e1806a"
               },
               "line6": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2e4398f0-3503-52f1-9fb1-caadee14f488"
               },
               "line7": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "eb4a5516-04df-5d3c-a783-6699c67f971f"
               },
               "line8": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6"
               },
               "line9": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e80fd4da-2562-5d4d-be7f-42b434d6e397"
               },
               "meta": {
                 "type": "Object",
@@ -10886,7 +10886,7 @@ description: Operations executed sheet-metal-bracket.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620"
                     }
                   }
                 }
@@ -10922,55 +10922,55 @@ description: Operations executed sheet-metal-bracket.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "c4aa09ae-7e71-562f-b6c8-079aeb535be9"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "2d6c2537-3784-5667-8614-4423d6c6f752"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "67d03316-0deb-5224-a7ce-b3394ba08db9"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "b6f946ca-ccd6-5fa9-942d-14331e8fb26e"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "e47f2e3b-0460-52b0-a07e-9a08403f5c49"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "ab87837d-7702-50ae-a973-1b474e1e48bf"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "aaa2a6cb-5f04-5c7c-b55f-4a6996b316dd"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "edad1eb5-5562-5615-b23f-ee6623df14ee"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "9e7bf977-5ef0-5034-a49f-a9e7744d4434"
               }
             }
           ]
@@ -11021,7 +11021,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620"
           }
         },
         "sourceRange": []
@@ -11050,7 +11050,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef"
           }
         },
         "sourceRange": []
@@ -11063,55 +11063,55 @@ description: Operations executed sheet-metal-bracket.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "92ead137-02a3-5a66-a3df-f1b87766c456"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "28f6e85f-5537-5013-ac4d-1b88aa312db5"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "c93c1163-3f23-5d1e-bca1-1a555fc8ee8b"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "e6ed3605-69e2-53c9-bebb-df82937c0962"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "349ba77a-8183-57f6-8580-b06227eac5bd"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "c9d8522f-60d2-513b-9c62-a4a3110e5970"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "d1c03f64-0489-502b-bc48-3ba001cf2ed6"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "45dcafc5-d8d1-5e4a-95d8-e1fc36d780f1"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "12a33a9d-38b6-56fb-af56-29ce1e09b1cb"
                 }
               }
             ]
@@ -11146,7 +11146,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "12b93b5e-f5fc-5dc1-b2d9-7321b6a5279d"
           }
         },
         "sourceRange": []
@@ -11170,19 +11170,19 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "8583fc63-fdea-56c5-a2f4-d09328163f25"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "3052eaca-e4f2-52f2-92f3-87303d16406d"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "aa0b39ac-e5f9-5b59-9008-8e0d2997d1b5"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "a4dd9c86-029b-5670-a54b-0ce4677e5a8d"
               }
             ]
           },

@@ -6,8 +6,8 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
   "__sketch_19_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,8 +38,8 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -71,12 +71,14 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
+      "originalId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+      "topologyId": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
+      "artifactId": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "092755e4-e002-58b9-a194-69b526ae6929",
+          "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
           "sourceRange": [],
           "tag": {
             "commentStart": 35,
@@ -89,8 +91,8 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "00f8003d-3b65-5f10-b911-9092660fca40",
+          "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
           "sourceRange": [],
           "tag": {
             "commentStart": 104,
@@ -103,8 +105,8 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bb04bee5-f92e-54fd-b9d8-0e476678cb88",
+          "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
           "sourceRange": [],
           "tag": {
             "commentStart": 170,
@@ -117,8 +119,8 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a49b9612-c4dc-5d46-9c14-74c0b7247edd",
+          "id": "eb116575-1f8f-50df-810e-a61970915fe0",
           "sourceRange": [],
           "tag": {
             "commentStart": 234,
@@ -134,11 +136,11 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
               "sourceRange": []
             },
             "from": [
@@ -162,7 +164,7 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
               "sourceRange": []
             },
             "from": [
@@ -186,7 +188,7 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
               "sourceRange": []
             },
             "from": [
@@ -210,7 +212,7 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "eb116575-1f8f-50df-810e-a61970915fe0",
               "sourceRange": []
             },
             "from": [
@@ -234,17 +236,17 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
-          "kind": "Custom",
+          "type": "plane",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -276,7 +278,7 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
             "sourceRange": []
           }
         },
@@ -298,13 +300,13 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
             "value": "top"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "artifactId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+        "originalId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+        "units": "mm",
+        "isClosed": "explicitly"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
+      "endCapId": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
       "units": "mm",
       "sectional": false
     }
@@ -313,12 +315,14 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+      "originalId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+      "topologyId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+      "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "092755e4-e002-58b9-a194-69b526ae6929",
+          "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
           "sourceRange": [],
           "tag": {
             "commentStart": 35,
@@ -331,8 +335,8 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "00f8003d-3b65-5f10-b911-9092660fca40",
+          "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
           "sourceRange": [],
           "tag": {
             "commentStart": 104,
@@ -345,8 +349,8 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bb04bee5-f92e-54fd-b9d8-0e476678cb88",
+          "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
           "sourceRange": [],
           "tag": {
             "commentStart": 170,
@@ -359,8 +363,8 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a49b9612-c4dc-5d46-9c14-74c0b7247edd",
+          "id": "eb116575-1f8f-50df-810e-a61970915fe0",
           "sourceRange": [],
           "tag": {
             "commentStart": 234,
@@ -376,11 +380,11 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
               "sourceRange": []
             },
             "from": [
@@ -404,7 +408,7 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
               "sourceRange": []
             },
             "from": [
@@ -428,7 +432,7 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
               "sourceRange": []
             },
             "from": [
@@ -452,7 +456,7 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "eb116575-1f8f-50df-810e-a61970915fe0",
               "sourceRange": []
             },
             "from": [
@@ -476,17 +480,17 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
-          "kind": "Custom",
+          "type": "plane",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -518,7 +522,7 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
             "sourceRange": []
           }
         },
@@ -540,13 +544,13 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
             "value": "top"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "artifactId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+        "originalId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+        "units": "mm",
+        "isClosed": "explicitly"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
+      "endCapId": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
       "units": "mm",
       "sectional": false
     }
@@ -560,34 +564,41 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
-                "objectId": 4,
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -10.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 10.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": -10.0
                         }
                       },
-                      {
-                        "n": -10.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": -10.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": -10.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 10.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -595,76 +606,65 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
                         "n": -10.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -10.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -10.0,
-                          "units": "None"
+                    "end_freedom": "Free",
+                    "end_object_id": 3,
+                    "start": [
+                      {
+                        "n": -10.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 10.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -10.0,
-                          "units": "None"
+                      {
+                        "n": -10.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 2,
-                    "end_object_id": 3,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 2
                   }
                 },
+                "objectId": 4,
+                "sketchId": "41c630c9-9d44-581b-98af-caee575bea48",
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bottom"
@@ -680,16 +680,59 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
-                "objectId": 13,
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "kind": {
                   "line": {
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": -10.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": -10.0
+                        }
+                      },
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": -10.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 10.0
+                        }
+                      }
+                    },
+                    "end": [
+                      {
+                        "n": -10.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -10.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end_freedom": "Free",
+                    "end_object_id": 12,
                     "start": [
                       {
                         "n": -10.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -697,94 +740,47 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
                         "n": 10.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "end": [
-                      {
-                        "n": -10.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -10.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -10.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 10.0,
-                          "units": "None"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -10.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -10.0,
-                          "units": "None"
-                        }
-                      }
-                    },
-                    "start_object_id": 11,
-                    "end_object_id": 12,
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 11
                   }
                 },
+                "objectId": 13,
+                "sketchId": "41c630c9-9d44-581b-98af-caee575bea48",
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "left"
@@ -801,11 +797,11 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "41c630c9-9d44-581b-98af-caee575bea48",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -829,7 +825,7 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "from": [
@@ -853,7 +849,7 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                     "sourceRange": []
                   },
                   "from": [
@@ -877,7 +873,7 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -901,17 +897,17 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
-                "kind": "Custom",
+                "type": "plane",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -943,7 +939,7 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
                   "sourceRange": []
                 }
               },
@@ -965,8 +961,8 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
                   "value": "top"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "41c630c9-9d44-581b-98af-caee575bea48",
+              "originalId": "41c630c9-9d44-581b-98af-caee575bea48",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -980,16 +976,59 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
-                "objectId": 7,
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "kind": {
                   "line": {
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 10.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 10.0
+                        }
+                      },
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 10.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": -10.0
+                        }
+                      }
+                    },
+                    "end": [
+                      {
+                        "n": 10.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 10.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end_freedom": "Free",
+                    "end_object_id": 6,
                     "start": [
                       {
                         "n": 10.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -997,94 +1036,47 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
                         "n": -10.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "end": [
-                      {
-                        "n": 10.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 10.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 10.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -10.0,
-                          "units": "None"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 10.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 10.0,
-                          "units": "None"
-                        }
-                      }
-                    },
-                    "start_object_id": 5,
-                    "end_object_id": 6,
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 5
                   }
                 },
+                "objectId": 7,
+                "sketchId": "41c630c9-9d44-581b-98af-caee575bea48",
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "right"
@@ -1100,34 +1092,41 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
-                "objectId": 10,
+                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 10.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": -10.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 10.0
                         }
                       },
-                      {
-                        "n": 10.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 10.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 10.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -10.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1135,76 +1134,65 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
                         "n": 10.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 10.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 10.0,
-                          "units": "None"
+                    "end_freedom": "Free",
+                    "end_object_id": 9,
+                    "start": [
+                      {
+                        "n": 10.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -10.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 10.0,
-                          "units": "None"
+                      {
+                        "n": 10.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 8,
-                    "end_object_id": 9,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 8
                   }
                 },
+                "objectId": 10,
+                "sketchId": "41c630c9-9d44-581b-98af-caee575bea48",
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "top"
@@ -1221,12 +1209,14 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
+      "originalId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
+      "topologyId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
+      "artifactId": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9f4eb1aa-edde-5423-b838-744539667ee8",
+          "id": "e445bc8a-9094-57cc-b3ce-a572fc71ab16",
           "sourceRange": [],
           "tag": {
             "commentStart": 565,
@@ -1239,8 +1229,8 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "46ef413e-7f7d-51c7-92e8-52410b572f94",
+          "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
           "sourceRange": [],
           "tag": {
             "commentStart": 630,
@@ -1253,8 +1243,8 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9b3ed7b2-ab34-5e27-aa76-78d32accbb8f",
+          "id": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194",
           "sourceRange": [],
           "tag": {
             "commentStart": 692,
@@ -1267,8 +1257,8 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5ac5e12d-2e01-543e-98d2-cb87b8695e72",
+          "id": "375909ca-005f-5bf2-83c9-5f0b348dac37",
           "sourceRange": [],
           "tag": {
             "commentStart": 752,
@@ -1284,11 +1274,11 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e445bc8a-9094-57cc-b3ce-a572fc71ab16",
               "sourceRange": []
             },
             "from": [
@@ -1312,7 +1302,7 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
               "sourceRange": []
             },
             "from": [
@@ -1336,7 +1326,7 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194",
               "sourceRange": []
             },
             "from": [
@@ -1360,7 +1350,7 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "375909ca-005f-5bf2-83c9-5f0b348dac37",
               "sourceRange": []
             },
             "from": [
@@ -1384,17 +1374,17 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
-          "kind": "Custom",
+          "type": "plane",
+          "artifactId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+          "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
           "objectId": 18,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1426,7 +1416,7 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "7d4c814d-f292-503d-a012-68ab58c77524",
             "sourceRange": []
           }
         },
@@ -1448,13 +1438,13 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
             "value": "top"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "artifactId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
+        "originalId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
+        "units": "mm",
+        "isClosed": "explicitly"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "0c8445ab-4d19-5096-a4c1-6ba4e51a6eca",
+      "endCapId": "8c0deb2f-1671-58eb-a5a0-7f73ec91728e",
       "units": "mm",
       "sectional": false
     }
@@ -1468,34 +1458,41 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
-                "objectId": 22,
+                "id": "53a9149e-1246-5c44-9e3c-558201ff438c",
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -3.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 3.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": -3.0
                         }
                       },
-                      {
-                        "n": -3.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": -3.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": -3.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 3.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1503,76 +1500,65 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
                         "n": -3.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -3.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -3.0,
-                          "units": "None"
+                    "end_freedom": "Free",
+                    "end_object_id": 21,
+                    "start": [
+                      {
+                        "n": -3.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 3.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -3.0,
-                          "units": "None"
+                      {
+                        "n": -3.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 20,
-                    "end_object_id": 21,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 20
                   }
                 },
+                "objectId": 22,
+                "sketchId": "e342814e-d7c1-537b-959c-f7fd92c90294",
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+                  "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
                   "kind": "Custom",
                   "objectId": 18,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bottom"
@@ -1588,16 +1574,59 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
-                "objectId": 31,
+                "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "kind": {
                   "line": {
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": -3.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": -3.0
+                        }
+                      },
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": -3.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 3.0
+                        }
+                      }
+                    },
+                    "end": [
+                      {
+                        "n": -3.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -3.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end_freedom": "Free",
+                    "end_object_id": 30,
                     "start": [
                       {
                         "n": -3.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1605,94 +1634,47 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
                         "n": 3.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "end": [
-                      {
-                        "n": -3.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -3.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -3.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 3.0,
-                          "units": "None"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -3.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -3.0,
-                          "units": "None"
-                        }
-                      }
-                    },
-                    "start_object_id": 29,
-                    "end_object_id": 30,
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 29
                   }
                 },
+                "objectId": 31,
+                "sketchId": "e342814e-d7c1-537b-959c-f7fd92c90294",
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+                  "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
                   "kind": "Custom",
                   "objectId": 18,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "left"
@@ -1709,11 +1691,11 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "e342814e-d7c1-537b-959c-f7fd92c90294",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "53a9149e-1246-5c44-9e3c-558201ff438c",
                     "sourceRange": []
                   },
                   "from": [
@@ -1737,7 +1719,7 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "b680fe3e-a804-583c-99d9-1693b2432aeb",
                     "sourceRange": []
                   },
                   "from": [
@@ -1761,7 +1743,7 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
                     "sourceRange": []
                   },
                   "from": [
@@ -1785,7 +1767,7 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                     "sourceRange": []
                   },
                   "from": [
@@ -1809,17 +1791,17 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
-                "kind": "Custom",
+                "type": "plane",
+                "artifactId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+                "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
                 "objectId": 18,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -1851,7 +1833,7 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "7d4c814d-f292-503d-a012-68ab58c77524",
                   "sourceRange": []
                 }
               },
@@ -1873,8 +1855,8 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
                   "value": "top"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "e342814e-d7c1-537b-959c-f7fd92c90294",
+              "originalId": "e342814e-d7c1-537b-959c-f7fd92c90294",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -1888,16 +1870,59 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
-                "objectId": 25,
+                "id": "b680fe3e-a804-583c-99d9-1693b2432aeb",
                 "kind": {
                   "line": {
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 3.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 3.0
+                        }
+                      },
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 3.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": -3.0
+                        }
+                      }
+                    },
+                    "end": [
+                      {
+                        "n": 3.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 3.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end_freedom": "Free",
+                    "end_object_id": 24,
                     "start": [
                       {
                         "n": 3.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1905,94 +1930,47 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
                         "n": -3.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "end": [
-                      {
-                        "n": 3.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 3.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 3.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -3.0,
-                          "units": "None"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 3.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 3.0,
-                          "units": "None"
-                        }
-                      }
-                    },
-                    "start_object_id": 23,
-                    "end_object_id": 24,
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 23
                   }
                 },
+                "objectId": 25,
+                "sketchId": "e342814e-d7c1-537b-959c-f7fd92c90294",
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+                  "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
                   "kind": "Custom",
                   "objectId": 18,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "right"
@@ -2008,34 +1986,41 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
-                "objectId": 28,
+                "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 3.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": -3.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 3.0
                         }
                       },
-                      {
-                        "n": 3.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 3.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 3.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -3.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2043,76 +2028,65 @@ description: Variables in memory after executing consumed_solid_appearance.kcl
                         "n": 3.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 3.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 3.0,
-                          "units": "None"
+                    "end_freedom": "Free",
+                    "end_object_id": 27,
+                    "start": [
+                      {
+                        "n": 3.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -3.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 3.0,
-                          "units": "None"
+                      {
+                        "n": 3.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 26,
-                    "end_object_id": 27,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 26
                   }
                 },
+                "objectId": 28,
+                "sketchId": "e342814e-d7c1-537b-959c-f7fd92c90294",
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+                  "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
                   "kind": "Custom",
                   "objectId": 18,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "top"

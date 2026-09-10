@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties herringbone-gear.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -0.017074028219152382,
+      "y": -0.003304864524972473,
+      "z": 4.0
+    },
+    "dimensions": {
+      "x": 26.954717241442022,
+      "y": 26.99078473104263,
+      "z": 8.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 2256.8866662333457
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 3.58387961488209
+  }
+}

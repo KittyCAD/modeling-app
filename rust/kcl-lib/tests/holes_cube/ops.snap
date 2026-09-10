@@ -39,7 +39,7 @@ description: Operations executed holes_cube.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -71,7 +71,7 @@ description: Operations executed holes_cube.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
           }
         },
         "sourceRange": []
@@ -124,7 +124,7 @@ description: Operations executed holes_cube.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79"
           }
         },
         "sourceRange": []
@@ -170,7 +170,7 @@ description: Operations executed holes_cube.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79"
           }
         },
         "sourceRange": []
@@ -195,54 +195,54 @@ description: Operations executed holes_cube.kcl
               {
                 "type": "TagIdentifier",
                 "value": "a",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
               },
               {
                 "type": "TagIdentifier",
                 "value": "b",
-                "artifact_id": "[uuid]"
+                "artifact_id": "89316223-2ea1-5731-9c72-0492bc30fbe2"
               },
               {
                 "type": "TagIdentifier",
                 "value": "c",
-                "artifact_id": "[uuid]"
+                "artifact_id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b"
               },
               {
                 "type": "TagIdentifier",
                 "value": "d",
-                "artifact_id": "[uuid]"
+                "artifact_id": "523b9fc1-d681-5ef3-b407-128525533bfe"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "680d8dcc-80d3-575f-8a83-671eeae5295a"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "13f3e170-5395-5816-b6dc-323fa3f4da34"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "749d3e98-3061-5730-90b9-784607aeecf4"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "0b77af05-b15c-5d76-8041-c54efb758dd8"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "a89079a7-b512-522b-801d-db5076bba0eb"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "d47408cc-330b-59ea-9675-89b8fd0b97f5"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "eb9d3280-e4c3-551f-ad28-3bfd93acc2fc"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "76e97e85-e537-578b-ac43-e32d1b685418"
               }
             ]
           },
@@ -276,7 +276,7 @@ description: Operations executed holes_cube.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79"
           }
         },
         "sourceRange": []
@@ -312,7 +312,7 @@ description: Operations executed holes_cube.kcl
           "value": {
             "type": "TagIdentifier",
             "value": "a",
-            "artifact_id": "[uuid]"
+            "artifact_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
           },
           "sourceRange": []
         },
@@ -428,7 +428,7 @@ description: Operations executed holes_cube.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "01e801cc-22ef-5071-814b-847d3fcf22d5"
           }
         },
         "sourceRange": []
@@ -570,7 +570,7 @@ description: Operations executed holes_cube.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48"
           }
         },
         "sourceRange": []
@@ -606,7 +606,7 @@ description: Operations executed holes_cube.kcl
           "value": {
             "type": "TagIdentifier",
             "value": "b",
-            "artifact_id": "[uuid]"
+            "artifact_id": "89316223-2ea1-5731-9c72-0492bc30fbe2"
           },
           "sourceRange": []
         },
@@ -695,7 +695,7 @@ description: Operations executed holes_cube.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "94e50507-a449-5f71-8fce-fd2931e7c6c9"
           }
         },
         "sourceRange": []

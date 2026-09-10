@@ -425,7 +425,7 @@ description: Operations executed surface_extrude_edge_from_surface.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "89316223-2ea1-5731-9c72-0492bc30fbe2"
           }
         },
         "sourceRange": []
@@ -484,15 +484,15 @@ description: Operations executed surface_extrude_edge_from_surface.kcl
             "value": {
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               "circle2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
               },
               "meta": {
                 "type": "Object",
@@ -500,7 +500,7 @@ description: Operations executed surface_extrude_edge_from_surface.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "89316223-2ea1-5731-9c72-0492bc30fbe2"
                     }
                   }
                 }
@@ -533,7 +533,7 @@ description: Operations executed surface_extrude_edge_from_surface.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6"
           }
         },
         "sourceRange": []
@@ -581,7 +581,7 @@ description: Operations executed surface_extrude_edge_from_surface.kcl
       "unlabeledArg": {
         "value": {
           "type": "Uuid",
-          "value": "[uuid]"
+          "value": "5b010224-2823-5bc8-b783-67a1d63cd2d0"
         },
         "sourceRange": []
       },

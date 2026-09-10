@@ -6,8 +6,8 @@ description: Variables in memory after executing translate_helix.kcl
   "helix001": {
     "type": "Helix",
     "value": {
-      "value": "[uuid]",
-      "artifactId": "[uuid]",
+      "value": "f7696437-0c54-515c-9a57-315967ca9a9d",
+      "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "revolutions": 5.0,
       "angleStart": 0.0,
       "ccw": false,
@@ -18,8 +18,8 @@ description: Variables in memory after executing translate_helix.kcl
   "helix002": {
     "type": "Helix",
     "value": {
-      "value": "[uuid]",
-      "artifactId": "[uuid]",
+      "value": "3c085bb9-a401-55d5-8042-5a9095193d55",
+      "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
       "revolutions": 5.0,
       "angleStart": 0.0,
       "ccw": true,
@@ -30,8 +30,8 @@ description: Variables in memory after executing translate_helix.kcl
   "helix003": {
     "type": "Helix",
     "value": {
-      "value": "[uuid]",
-      "artifactId": "[uuid]",
+      "value": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
       "revolutions": 8.0,
       "angleStart": 0.0,
       "ccw": false,
@@ -42,8 +42,8 @@ description: Variables in memory after executing translate_helix.kcl
   "helix004": {
     "type": "Helix",
     "value": {
-      "value": "[uuid]",
-      "artifactId": "[uuid]",
+      "value": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+      "artifactId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
       "revolutions": 5.0,
       "angleStart": 0.0,
       "ccw": false,
@@ -57,8 +57,8 @@ description: Variables in memory after executing translate_helix.kcl
       {
         "type": "Helix",
         "value": {
-          "value": "[uuid]",
-          "artifactId": "[uuid]",
+          "value": "3c085bb9-a401-55d5-8042-5a9095193d55",
+          "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
           "revolutions": 5.0,
           "angleStart": 0.0,
           "ccw": true,
@@ -69,8 +69,8 @@ description: Variables in memory after executing translate_helix.kcl
       {
         "type": "Helix",
         "value": {
-          "value": "[uuid]",
-          "artifactId": "[uuid]",
+          "value": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
           "revolutions": 8.0,
           "angleStart": 0.0,
           "ccw": false,

@@ -1,0 +1,228 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Artifact commands if_arm_scoped_geometry.kcl
+---
+{
+  "rust/kcl-lib/tests/if_arm_scoped_geometry/input.kcl": [
+    {
+      "cmdId": "3c085bb9-a401-55d5-8042-5a9095193d55",
+      "range": [],
+      "command": {
+        "type": "make_plane",
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "x_axis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "y_axis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "size": 60.0,
+        "clobber": false,
+        "hide": true
+      }
+    },
+    {
+      "cmdId": "91226189-7e64-5690-9203-67ee33a6eb03",
+      "range": [],
+      "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "cmdId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "range": [],
+      "command": {
+        "type": "start_path"
+      }
+    },
+    {
+      "cmdId": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "to": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
+      }
+    },
+    {
+      "cmdId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 10.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "relative": true
+        }
+      }
+    },
+    {
+      "cmdId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 0.0,
+            "y": 10.0,
+            "z": 0.0
+          },
+          "relative": true
+        }
+      }
+    },
+    {
+      "cmdId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -10.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "relative": true
+        }
+      }
+    },
+    {
+      "cmdId": "523b9fc1-d681-5ef3-b407-128525533bfe",
+      "range": [],
+      "command": {
+        "type": "close_path",
+        "path_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+      }
+    },
+    {
+      "cmdId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+      "range": [],
+      "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "cmdId": "41c630c9-9d44-581b-98af-caee575bea48",
+      "range": [],
+      "command": {
+        "type": "extrude",
+        "target": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "distance": 10.0,
+        "faces": null,
+        "opposite": "None",
+        "extrude_method": "merge",
+        "body_type": "solid"
+      }
+    },
+    {
+      "cmdId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
+      }
+    },
+    {
+      "cmdId": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+      "range": [],
+      "command": {
+        "type": "object_bring_to_front",
+        "object_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+      }
+    },
+    {
+      "cmdId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_extrusion_face_info",
+        "object_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "edge_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
+      }
+    },
+    {
+      "cmdId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_adjacency_info",
+        "object_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "edge_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
+      }
+    },
+    {
+      "cmdId": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "edge_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
+      },
+      "omitFromGraph": true
+    },
+    {
+      "cmdId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+      "range": [],
+      "command": {
+        "type": "solid3d_cut_edges",
+        "object_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "edge_ids": [
+          "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
+        ],
+        "cut_type": {
+          "fillet": {
+            "radius": 1.0,
+            "second_length": null
+          }
+        },
+        "tolerance": 0.0000001,
+        "strategy": "automatic",
+        "extra_face_ids": [],
+        "version": "v2"
+      }
+    }
+  ]
+}

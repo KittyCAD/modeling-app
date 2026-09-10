@@ -266,7 +266,9 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
             // Anything left here belongs to a KCL 1.0 sketch, since sketch
             // blocks and undeclared regions were handled above.
             if (!hasLegacySketchMode) {
-              toast.error(LEGACY_SKETCH_MODE_REMOVED_MESSAGE)
+              toast.error(LEGACY_SKETCH_MODE_REMOVED_MESSAGE, {
+                duration: 5_000,
+              })
               return
             }
             sceneInfra.modelingSend({ type: 'Enter sketch' })

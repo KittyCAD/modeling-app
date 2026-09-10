@@ -2776,6 +2776,7 @@ description: Result of parsing sketch-on-chamfer-two-times-different-order.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

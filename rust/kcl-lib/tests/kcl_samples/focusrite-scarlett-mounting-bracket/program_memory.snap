@@ -6,8 +6,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,10 +38,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
   "__sketch_35_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
-      "kind": "Custom",
+      "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+      "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
       "objectId": 34,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -71,10 +71,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
   "__sketch_55_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
-      "kind": "Custom",
+      "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+      "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
       "objectId": 34,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -104,8 +104,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
   "__sketch_76_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
+      "id": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
       "kind": "Custom",
       "origin": {
         "x": -52.0,
@@ -136,8 +136,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
   "__sketch_90_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "eb4a5516-04df-5d3c-a783-6699c67f971f",
+      "id": "eb4a5516-04df-5d3c-a783-6699c67f971f",
       "kind": "Custom",
       "origin": {
         "x": -52.0,
@@ -169,12 +169,14 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "76d81d0d-ef16-5794-bc58-3132468566e9",
+      "originalId": "76d81d0d-ef16-5794-bc58-3132468566e9",
+      "topologyId": "76d81d0d-ef16-5794-bc58-3132468566e9",
+      "artifactId": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ae309947-ca13-5fbf-ad79-3e0ff67eea8b",
+          "id": "aae2fdfe-97db-5552-ad5e-f0b39acdfecc",
           "sourceRange": [],
           "tag": {
             "commentStart": 5269,
@@ -187,8 +189,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7a2e9ba1-2add-5fe2-8d8c-9d6fc25cb680",
+          "id": "987da574-95ac-5bce-aeb1-bdabb2138408",
           "sourceRange": [],
           "tag": {
             "commentStart": 5340,
@@ -201,8 +203,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3b6255cc-4830-515d-8c45-c42cc3cd5eea",
+          "id": "0b41f0d0-9c48-5ea8-aea9-68b809442fe6",
           "sourceRange": [],
           "tag": {
             "commentStart": 5411,
@@ -215,8 +217,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9d1f6230-c38c-516a-b297-0b981311be49",
+          "id": "45ead65f-299b-5c33-9fb1-7480fc69de33",
           "sourceRange": [],
           "tag": {
             "commentStart": 5482,
@@ -232,11 +234,11 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "76d81d0d-ef16-5794-bc58-3132468566e9",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "aae2fdfe-97db-5552-ad5e-f0b39acdfecc",
               "sourceRange": []
             },
             "from": [
@@ -260,7 +262,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "987da574-95ac-5bce-aeb1-bdabb2138408",
               "sourceRange": []
             },
             "from": [
@@ -284,7 +286,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0b41f0d0-9c48-5ea8-aea9-68b809442fe6",
               "sourceRange": []
             },
             "from": [
@@ -308,7 +310,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "45ead65f-299b-5c33-9fb1-7480fc69de33",
               "sourceRange": []
             },
             "from": [
@@ -332,17 +334,17 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
-          "kind": "Custom",
+          "type": "plane",
+          "artifactId": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
+          "id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
           "objectId": 89,
+          "kind": "Custom",
           "origin": {
             "x": -52.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -374,7 +376,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "b6048962-8de8-56e0-bd4c-204ee5451b34",
             "sourceRange": []
           }
         },
@@ -396,13 +398,13 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "artifactId": "76d81d0d-ef16-5794-bc58-3132468566e9",
+        "originalId": "76d81d0d-ef16-5794-bc58-3132468566e9",
+        "units": "mm",
+        "isClosed": "explicitly"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "c1c6fdfc-4d94-58d0-a267-1dc2f63c2974",
+      "endCapId": "bebf4693-d54c-5813-aaa9-8ef08dda772e",
       "units": "mm",
       "sectional": false
     }
@@ -416,7 +418,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f58fd62a-578c-542c-94f8-dd627caab5d0",
                 "objectId": 93,
                 "kind": {
                   "line": {
@@ -490,8 +492,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
+                  "id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
                   "kind": "Custom",
                   "objectId": 89,
                   "origin": {
@@ -520,7 +522,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "a0df0eb6-009b-594d-815d-31646979be80",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -536,7 +538,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
                 "objectId": 96,
                 "kind": {
                   "line": {
@@ -610,8 +612,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
+                  "id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
                   "kind": "Custom",
                   "objectId": 89,
                   "origin": {
@@ -640,7 +642,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "a0df0eb6-009b-594d-815d-31646979be80",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -656,7 +658,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
                 "objectId": 99,
                 "kind": {
                   "line": {
@@ -730,8 +732,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
+                  "id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
                   "kind": "Custom",
                   "objectId": 89,
                   "origin": {
@@ -760,7 +762,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "a0df0eb6-009b-594d-815d-31646979be80",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -776,7 +778,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "d848303b-8f89-5fe5-9391-dbf9dbcbfed9",
                 "objectId": 102,
                 "kind": {
                   "line": {
@@ -850,8 +852,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
+                  "id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
                   "kind": "Custom",
                   "objectId": 89,
                   "origin": {
@@ -880,7 +882,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "a0df0eb6-009b-594d-815d-31646979be80",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -897,11 +899,11 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "a0df0eb6-009b-594d-815d-31646979be80",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f58fd62a-578c-542c-94f8-dd627caab5d0",
                     "sourceRange": []
                   },
                   "from": [
@@ -925,7 +927,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
                     "sourceRange": []
                   },
                   "from": [
@@ -949,7 +951,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
                     "sourceRange": []
                   },
                   "from": [
@@ -973,7 +975,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "d848303b-8f89-5fe5-9391-dbf9dbcbfed9",
                     "sourceRange": []
                   },
                   "from": [
@@ -997,17 +999,17 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
-                "kind": "Custom",
+                "type": "plane",
+                "artifactId": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
+                "id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
                 "objectId": 89,
+                "kind": "Custom",
                 "origin": {
                   "x": -52.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -1039,7 +1041,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "b6048962-8de8-56e0-bd4c-204ee5451b34",
                   "sourceRange": []
                 }
               },
@@ -1061,8 +1063,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "a0df0eb6-009b-594d-815d-31646979be80",
+              "originalId": "a0df0eb6-009b-594d-815d-31646979be80",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -1077,12 +1079,14 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+      "originalId": "e383621f-755a-5f2e-ada3-608aff393dab",
+      "topologyId": "e383621f-755a-5f2e-ada3-608aff393dab",
+      "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ead1fc36-fe75-5bd8-97e8-c0fa73f8cf7e",
+          "id": "46c1c873-adde-54a9-8c92-5f163decf204",
           "sourceRange": [],
           "tag": {
             "commentStart": 594,
@@ -1095,8 +1099,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0f126e7b-acca-5f24-aab5-a8b751c9d51e",
+          "id": "3132128b-3a82-5446-aa11-78053c088f3c",
           "sourceRange": [],
           "tag": {
             "commentStart": 669,
@@ -1109,8 +1113,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8cc393b1-9bc2-5519-b3b1-20aed1bb0995",
+          "id": "9efbcccc-288a-5a5c-b7f4-7d2f8bbae204",
           "sourceRange": [],
           "tag": {
             "commentStart": 743,
@@ -1123,8 +1127,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "af69293d-db36-5dd3-ad98-9ff1e9a1e4a2",
+          "id": "71a72feb-bdc7-50b4-97fd-9fa2630226d6",
           "sourceRange": [],
           "tag": {
             "commentStart": 816,
@@ -1137,8 +1141,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "732f48f5-d790-5ba9-a3a1-d09c781ea026",
+          "id": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194",
           "sourceRange": [],
           "tag": {
             "commentStart": 889,
@@ -1151,8 +1155,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "628b3e21-f60d-5fed-8cd2-20c40e0fd5ac",
+          "id": "375909ca-005f-5bf2-83c9-5f0b348dac37",
           "sourceRange": [],
           "tag": {
             "commentStart": 961,
@@ -1165,8 +1169,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f7a11116-1b78-5474-9b2a-aa67039dd5d6",
+          "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
           "sourceRange": [],
           "tag": {
             "commentStart": 1033,
@@ -1179,8 +1183,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3d1bdef1-c537-5723-9a0e-08ac54423202",
+          "id": "e445bc8a-9094-57cc-b3ce-a572fc71ab16",
           "sourceRange": [],
           "tag": {
             "commentStart": 1107,
@@ -1196,11 +1200,11 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "e383621f-755a-5f2e-ada3-608aff393dab",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "46c1c873-adde-54a9-8c92-5f163decf204",
               "sourceRange": []
             },
             "from": [
@@ -1224,7 +1228,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3132128b-3a82-5446-aa11-78053c088f3c",
               "sourceRange": []
             },
             "from": [
@@ -1248,7 +1252,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9efbcccc-288a-5a5c-b7f4-7d2f8bbae204",
               "sourceRange": []
             },
             "from": [
@@ -1272,7 +1276,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "71a72feb-bdc7-50b4-97fd-9fa2630226d6",
               "sourceRange": []
             },
             "from": [
@@ -1296,7 +1300,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194",
               "sourceRange": []
             },
             "from": [
@@ -1320,7 +1324,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "375909ca-005f-5bf2-83c9-5f0b348dac37",
               "sourceRange": []
             },
             "from": [
@@ -1344,7 +1348,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
               "sourceRange": []
             },
             "from": [
@@ -1368,7 +1372,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e445bc8a-9094-57cc-b3ce-a572fc71ab16",
               "sourceRange": []
             },
             "from": [
@@ -1392,17 +1396,17 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
-          "kind": "Custom",
+          "type": "plane",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1434,7 +1438,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
             "sourceRange": []
           }
         },
@@ -1472,13 +1476,13 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": "line8"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
+        "originalId": "e383621f-755a-5f2e-ada3-608aff393dab",
+        "units": "mm",
+        "isClosed": "explicitly"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "93ef1d9a-12aa-5da7-b046-06f3b0a5ab5c",
+      "endCapId": "41280f43-8573-5a9b-ab43-6af54c38a17e",
       "units": "mm",
       "sectional": false
     }
@@ -1487,11 +1491,11 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "e383621f-755a-5f2e-ada3-608aff393dab",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "46c1c873-adde-54a9-8c92-5f163decf204",
             "sourceRange": []
           },
           "from": [
@@ -1515,7 +1519,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3132128b-3a82-5446-aa11-78053c088f3c",
             "sourceRange": []
           },
           "from": [
@@ -1539,7 +1543,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "9efbcccc-288a-5a5c-b7f4-7d2f8bbae204",
             "sourceRange": []
           },
           "from": [
@@ -1563,7 +1567,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "71a72feb-bdc7-50b4-97fd-9fa2630226d6",
             "sourceRange": []
           },
           "from": [
@@ -1587,7 +1591,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194",
             "sourceRange": []
           },
           "from": [
@@ -1611,7 +1615,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "375909ca-005f-5bf2-83c9-5f0b348dac37",
             "sourceRange": []
           },
           "from": [
@@ -1635,7 +1639,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
             "sourceRange": []
           },
           "from": [
@@ -1659,7 +1663,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e445bc8a-9094-57cc-b3ce-a572fc71ab16",
             "sourceRange": []
           },
           "from": [
@@ -1683,17 +1687,17 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
-        "kind": "Custom",
+        "type": "plane",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1725,7 +1729,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
           "sourceRange": []
         }
       },
@@ -1763,10 +1767,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "value": "line8"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
+      "originalId": "e383621f-755a-5f2e-ada3-608aff393dab",
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "bodySketch": {
@@ -1778,7 +1782,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -1852,8 +1856,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1882,7 +1886,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7b681387-29ea-57f1-8713-d63280827139",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1898,7 +1902,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -1972,8 +1976,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2002,7 +2006,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7b681387-29ea-57f1-8713-d63280827139",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -2018,7 +2022,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                 "objectId": 10,
                 "kind": {
                   "line": {
@@ -2092,8 +2096,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2122,7 +2126,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7b681387-29ea-57f1-8713-d63280827139",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -2138,7 +2142,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 13,
                 "kind": {
                   "line": {
@@ -2212,8 +2216,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2242,7 +2246,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7b681387-29ea-57f1-8713-d63280827139",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -2258,7 +2262,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
                 "objectId": 16,
                 "kind": {
                   "line": {
@@ -2332,8 +2336,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2362,7 +2366,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7b681387-29ea-57f1-8713-d63280827139",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -2378,7 +2382,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                 "objectId": 19,
                 "kind": {
                   "line": {
@@ -2452,8 +2456,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2482,7 +2486,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7b681387-29ea-57f1-8713-d63280827139",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -2498,7 +2502,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                 "objectId": 22,
                 "kind": {
                   "line": {
@@ -2572,8 +2576,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2602,7 +2606,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7b681387-29ea-57f1-8713-d63280827139",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line7"
@@ -2618,7 +2622,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
                 "objectId": 25,
                 "kind": {
                   "line": {
@@ -2692,8 +2696,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2722,7 +2726,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7b681387-29ea-57f1-8713-d63280827139",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line8"
@@ -2739,11 +2743,11 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "7b681387-29ea-57f1-8713-d63280827139",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -2767,7 +2771,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "from": [
@@ -2791,7 +2795,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                     "sourceRange": []
                   },
                   "from": [
@@ -2815,7 +2819,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -2839,7 +2843,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
                     "sourceRange": []
                   },
                   "from": [
@@ -2863,7 +2867,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                     "sourceRange": []
                   },
                   "from": [
@@ -2887,7 +2891,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                     "sourceRange": []
                   },
                   "from": [
@@ -2911,7 +2915,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
                     "sourceRange": []
                   },
                   "from": [
@@ -2935,17 +2939,17 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
-                "kind": "Custom",
+                "type": "plane",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -2977,7 +2981,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
                   "sourceRange": []
                 }
               },
@@ -3015,8 +3019,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   "value": "line8"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "7b681387-29ea-57f1-8713-d63280827139",
+              "originalId": "7b681387-29ea-57f1-8713-d63280827139",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -3031,12 +3035,14 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+      "originalId": "e383621f-755a-5f2e-ada3-608aff393dab",
+      "topologyId": "e383621f-755a-5f2e-ada3-608aff393dab",
+      "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ead1fc36-fe75-5bd8-97e8-c0fa73f8cf7e",
+          "id": "46c1c873-adde-54a9-8c92-5f163decf204",
           "sourceRange": [],
           "tag": {
             "commentStart": 594,
@@ -3049,8 +3055,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0f126e7b-acca-5f24-aab5-a8b751c9d51e",
+          "id": "3132128b-3a82-5446-aa11-78053c088f3c",
           "sourceRange": [],
           "tag": {
             "commentStart": 669,
@@ -3063,8 +3069,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8cc393b1-9bc2-5519-b3b1-20aed1bb0995",
+          "id": "9efbcccc-288a-5a5c-b7f4-7d2f8bbae204",
           "sourceRange": [],
           "tag": {
             "commentStart": 743,
@@ -3077,8 +3083,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "af69293d-db36-5dd3-ad98-9ff1e9a1e4a2",
+          "id": "71a72feb-bdc7-50b4-97fd-9fa2630226d6",
           "sourceRange": [],
           "tag": {
             "commentStart": 816,
@@ -3091,8 +3097,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "732f48f5-d790-5ba9-a3a1-d09c781ea026",
+          "id": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194",
           "sourceRange": [],
           "tag": {
             "commentStart": 889,
@@ -3105,8 +3111,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "628b3e21-f60d-5fed-8cd2-20c40e0fd5ac",
+          "id": "375909ca-005f-5bf2-83c9-5f0b348dac37",
           "sourceRange": [],
           "tag": {
             "commentStart": 961,
@@ -3119,8 +3125,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f7a11116-1b78-5474-9b2a-aa67039dd5d6",
+          "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
           "sourceRange": [],
           "tag": {
             "commentStart": 1033,
@@ -3133,8 +3139,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3d1bdef1-c537-5723-9a0e-08ac54423202",
+          "id": "e445bc8a-9094-57cc-b3ce-a572fc71ab16",
           "sourceRange": [],
           "tag": {
             "commentStart": 1107,
@@ -3150,11 +3156,11 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "e383621f-755a-5f2e-ada3-608aff393dab",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "46c1c873-adde-54a9-8c92-5f163decf204",
               "sourceRange": []
             },
             "from": [
@@ -3178,7 +3184,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3132128b-3a82-5446-aa11-78053c088f3c",
               "sourceRange": []
             },
             "from": [
@@ -3202,7 +3208,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9efbcccc-288a-5a5c-b7f4-7d2f8bbae204",
               "sourceRange": []
             },
             "from": [
@@ -3226,7 +3232,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "71a72feb-bdc7-50b4-97fd-9fa2630226d6",
               "sourceRange": []
             },
             "from": [
@@ -3250,7 +3256,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194",
               "sourceRange": []
             },
             "from": [
@@ -3274,7 +3280,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "375909ca-005f-5bf2-83c9-5f0b348dac37",
               "sourceRange": []
             },
             "from": [
@@ -3298,7 +3304,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
               "sourceRange": []
             },
             "from": [
@@ -3322,7 +3328,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e445bc8a-9094-57cc-b3ce-a572fc71ab16",
               "sourceRange": []
             },
             "from": [
@@ -3346,17 +3352,17 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
-          "kind": "Custom",
+          "type": "plane",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3388,7 +3394,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
             "sourceRange": []
           }
         },
@@ -3426,17 +3432,17 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": "line8"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
+        "originalId": "e383621f-755a-5f2e-ada3-608aff393dab",
+        "units": "mm",
+        "isClosed": "explicitly"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "93ef1d9a-12aa-5da7-b046-06f3b0a5ab5c",
+      "endCapId": "41280f43-8573-5a9b-ab43-6af54c38a17e",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
           "radius": {
             "n": 6.0,
             "ty": {
@@ -3445,12 +3451,12 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "361f733b-edc1-51f8-b746-9ebbb45cc862",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
           "radius": {
             "n": 6.0,
             "ty": {
@@ -3459,12 +3465,12 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "3a6ce3d7-4036-5d3a-867e-1feec0a610b6",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
           "radius": {
             "n": 6.0,
             "ty": {
@@ -3473,12 +3479,12 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "3ada940a-3c51-57fe-9367-77fb64618817",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
           "radius": {
             "n": 6.0,
             "ty": {
@@ -3487,7 +3493,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "01b5817a-95ba-559a-a207-ea6e6693a367",
           "tag": null
         }
       ],
@@ -3508,12 +3514,14 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
+      "originalId": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
+      "topologyId": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
+      "artifactId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0876ccaa-af72-53ae-905b-a923db5fac76",
+          "id": "87065e57-bbd0-5e45-b432-520fecf01435",
           "sourceRange": [],
           "tag": {
             "commentStart": 4742,
@@ -3526,8 +3534,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "77c78554-953a-5aa3-a1dd-afcfa21917b8",
+          "id": "9876b478-4b81-5671-aa59-53474441b952",
           "sourceRange": [],
           "tag": {
             "commentStart": 4815,
@@ -3540,8 +3548,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c5850f9c-7959-5552-b0cc-253a13086adb",
+          "id": "95cec220-76b7-517c-b3ec-06011c1324fe",
           "sourceRange": [],
           "tag": {
             "commentStart": 4888,
@@ -3557,11 +3565,11 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "87065e57-bbd0-5e45-b432-520fecf01435",
               "sourceRange": []
             },
             "from": [
@@ -3585,7 +3593,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9876b478-4b81-5671-aa59-53474441b952",
               "sourceRange": []
             },
             "from": [
@@ -3609,7 +3617,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "95cec220-76b7-517c-b3ec-06011c1324fe",
               "sourceRange": []
             },
             "from": [
@@ -3633,17 +3641,17 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
-          "kind": "Custom",
+          "type": "plane",
+          "artifactId": "1e31790b-7616-51eb-9bbe-0d46f611d053",
+          "id": "1e31790b-7616-51eb-9bbe-0d46f611d053",
           "objectId": 75,
+          "kind": "Custom",
           "origin": {
             "x": -52.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -3675,7 +3683,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
             "sourceRange": []
           }
         },
@@ -3693,13 +3701,13 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": "line3"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "artifactId": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
+        "originalId": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
+        "units": "mm",
+        "isClosed": "explicitly"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "6db8d588-dfb9-5362-8117-98d74b9a3021",
+      "endCapId": "6e6cf41e-a346-5781-8906-5ad61cf70cdb",
       "units": "mm",
       "sectional": false
     }
@@ -3713,7 +3721,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "03cd9cd9-3406-55e1-ae54-f1d9525eb3ba",
                 "objectId": 79,
                 "kind": {
                   "line": {
@@ -3787,8 +3795,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1e31790b-7616-51eb-9bbe-0d46f611d053",
+                  "id": "1e31790b-7616-51eb-9bbe-0d46f611d053",
                   "kind": "Custom",
                   "objectId": 75,
                   "origin": {
@@ -3817,7 +3825,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "020035cf-ab88-50f3-91b0-886b7f399647",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -3833,7 +3841,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
                 "objectId": 82,
                 "kind": {
                   "line": {
@@ -3907,8 +3915,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1e31790b-7616-51eb-9bbe-0d46f611d053",
+                  "id": "1e31790b-7616-51eb-9bbe-0d46f611d053",
                   "kind": "Custom",
                   "objectId": 75,
                   "origin": {
@@ -3937,7 +3945,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "020035cf-ab88-50f3-91b0-886b7f399647",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -3953,7 +3961,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
                 "objectId": 85,
                 "kind": {
                   "line": {
@@ -4027,8 +4035,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1e31790b-7616-51eb-9bbe-0d46f611d053",
+                  "id": "1e31790b-7616-51eb-9bbe-0d46f611d053",
                   "kind": "Custom",
                   "objectId": 75,
                   "origin": {
@@ -4057,7 +4065,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "020035cf-ab88-50f3-91b0-886b7f399647",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -4074,11 +4082,11 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "020035cf-ab88-50f3-91b0-886b7f399647",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "03cd9cd9-3406-55e1-ae54-f1d9525eb3ba",
                     "sourceRange": []
                   },
                   "from": [
@@ -4102,7 +4110,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
                     "sourceRange": []
                   },
                   "from": [
@@ -4126,7 +4134,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
                     "sourceRange": []
                   },
                   "from": [
@@ -4150,17 +4158,17 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
-                "kind": "Custom",
+                "type": "plane",
+                "artifactId": "1e31790b-7616-51eb-9bbe-0d46f611d053",
+                "id": "1e31790b-7616-51eb-9bbe-0d46f611d053",
                 "objectId": 75,
+                "kind": "Custom",
                 "origin": {
                   "x": -52.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -4192,7 +4200,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
                   "sourceRange": []
                 }
               },
@@ -4210,8 +4218,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   "value": "line3"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "020035cf-ab88-50f3-91b0-886b7f399647",
+              "originalId": "020035cf-ab88-50f3-91b0-886b7f399647",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -4238,12 +4246,14 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+          "originalId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+          "topologyId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+          "artifactId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "c431dad1-3a25-538c-bcff-97e7d3d4e7d1",
+              "id": "408d2d6b-bcd8-5b20-96ea-96444d4963ce",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3371,
@@ -4256,8 +4266,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "e8ff332c-9199-5d1f-8f66-5165a7e0af57",
+              "id": "3e04111d-dfa2-55a1-91b5-35bad56e8529",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3456,
@@ -4270,8 +4280,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "09805ac1-b71d-5410-8d37-d0c31b1d3254",
+              "id": "0b414bb4-f45b-519e-bb67-1729eea05417",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3541,
@@ -4284,8 +4294,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "65f0c99d-770b-568d-bf28-372eff483b04",
+              "id": "4fa21285-744a-5041-b4f5-70f22bd8d38d",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3626,
@@ -4298,8 +4308,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "ce1c1b94-c87a-53e3-80f6-15ac9f10caa4",
+              "id": "2559eb4b-a486-598c-8fe0-044375654684",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3867,
@@ -4315,11 +4325,11 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "408d2d6b-bcd8-5b20-96ea-96444d4963ce",
                   "sourceRange": []
                 },
                 "from": [
@@ -4343,7 +4353,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "3e04111d-dfa2-55a1-91b5-35bad56e8529",
                   "sourceRange": []
                 },
                 "from": [
@@ -4367,7 +4377,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "0b414bb4-f45b-519e-bb67-1729eea05417",
                   "sourceRange": []
                 },
                 "from": [
@@ -4391,7 +4401,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "4fa21285-744a-5041-b4f5-70f22bd8d38d",
                   "sourceRange": []
                 },
                 "from": [
@@ -4415,7 +4425,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "2559eb4b-a486-598c-8fe0-044375654684",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -4445,17 +4455,17 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "kind": "Custom",
+              "type": "plane",
+              "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+              "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
               "objectId": 34,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 49.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4487,7 +4497,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
                 "sourceRange": []
               }
             },
@@ -4513,17 +4523,17 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "value": "mountingHole"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "artifactId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+            "originalId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+            "units": "mm",
+            "isClosed": "explicitly"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "3768871e-61ef-576f-a4eb-9fe724b2f583",
+          "endCapId": "26848d5a-58c8-5962-9b97-4569ef31defc",
           "edgeCuts": [
             {
               "type": "fillet",
-              "id": "[uuid]",
+              "id": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
               "radius": {
                 "n": 2.5,
                 "ty": {
@@ -4532,12 +4542,12 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   "angle": "degrees"
                 }
               },
-              "edgeId": "[uuid]",
+              "edgeId": "97b06be9-9563-5012-90a3-1827e9d7d4a7",
               "tag": null
             },
             {
               "type": "fillet",
-              "id": "[uuid]",
+              "id": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
               "radius": {
                 "n": 2.5,
                 "ty": {
@@ -4546,7 +4556,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   "angle": "degrees"
                 }
               },
-              "edgeId": "[uuid]",
+              "edgeId": "f927cac4-287d-5638-8615-2ac7ced25ddd",
               "tag": null
             }
           ],
@@ -4558,12 +4568,14 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "78b16c9a-5856-5e59-8c65-319cb3bc5770",
+          "originalId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+          "topologyId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+          "artifactId": "78b16c9a-5856-5e59-8c65-319cb3bc5770",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "c431dad1-3a25-538c-bcff-97e7d3d4e7d1",
+              "id": "408d2d6b-bcd8-5b20-96ea-96444d4963ce",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3371,
@@ -4576,8 +4588,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "e8ff332c-9199-5d1f-8f66-5165a7e0af57",
+              "id": "3e04111d-dfa2-55a1-91b5-35bad56e8529",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3456,
@@ -4590,8 +4602,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "09805ac1-b71d-5410-8d37-d0c31b1d3254",
+              "id": "0b414bb4-f45b-519e-bb67-1729eea05417",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3541,
@@ -4604,8 +4616,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "65f0c99d-770b-568d-bf28-372eff483b04",
+              "id": "4fa21285-744a-5041-b4f5-70f22bd8d38d",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3626,
@@ -4618,8 +4630,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "ce1c1b94-c87a-53e3-80f6-15ac9f10caa4",
+              "id": "2559eb4b-a486-598c-8fe0-044375654684",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3867,
@@ -4635,11 +4647,11 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "78b16c9a-5856-5e59-8c65-319cb3bc5770",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "408d2d6b-bcd8-5b20-96ea-96444d4963ce",
                   "sourceRange": []
                 },
                 "from": [
@@ -4663,7 +4675,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "3e04111d-dfa2-55a1-91b5-35bad56e8529",
                   "sourceRange": []
                 },
                 "from": [
@@ -4687,7 +4699,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "0b414bb4-f45b-519e-bb67-1729eea05417",
                   "sourceRange": []
                 },
                 "from": [
@@ -4711,7 +4723,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "4fa21285-744a-5041-b4f5-70f22bd8d38d",
                   "sourceRange": []
                 },
                 "from": [
@@ -4735,7 +4747,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "2559eb4b-a486-598c-8fe0-044375654684",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -4765,17 +4777,17 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "kind": "Custom",
+              "type": "plane",
+              "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+              "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
               "objectId": 34,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 49.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4807,7 +4819,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
                 "sourceRange": []
               }
             },
@@ -4833,17 +4845,17 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "value": "mountingHole"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "artifactId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+            "originalId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+            "units": "mm",
+            "isClosed": "explicitly"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "3768871e-61ef-576f-a4eb-9fe724b2f583",
+          "endCapId": "26848d5a-58c8-5962-9b97-4569ef31defc",
           "edgeCuts": [
             {
               "type": "fillet",
-              "id": "[uuid]",
+              "id": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
               "radius": {
                 "n": 2.5,
                 "ty": {
@@ -4852,12 +4864,12 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   "angle": "degrees"
                 }
               },
-              "edgeId": "[uuid]",
+              "edgeId": "97b06be9-9563-5012-90a3-1827e9d7d4a7",
               "tag": null
             },
             {
               "type": "fillet",
-              "id": "[uuid]",
+              "id": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
               "radius": {
                 "n": 2.5,
                 "ty": {
@@ -4866,7 +4878,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   "angle": "degrees"
                 }
               },
-              "edgeId": "[uuid]",
+              "edgeId": "f927cac4-287d-5638-8615-2ac7ced25ddd",
               "tag": null
             }
           ],
@@ -4880,12 +4892,14 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+      "originalId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+      "topologyId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+      "artifactId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c431dad1-3a25-538c-bcff-97e7d3d4e7d1",
+          "id": "408d2d6b-bcd8-5b20-96ea-96444d4963ce",
           "sourceRange": [],
           "tag": {
             "commentStart": 3371,
@@ -4898,8 +4912,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e8ff332c-9199-5d1f-8f66-5165a7e0af57",
+          "id": "3e04111d-dfa2-55a1-91b5-35bad56e8529",
           "sourceRange": [],
           "tag": {
             "commentStart": 3456,
@@ -4912,8 +4926,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "09805ac1-b71d-5410-8d37-d0c31b1d3254",
+          "id": "0b414bb4-f45b-519e-bb67-1729eea05417",
           "sourceRange": [],
           "tag": {
             "commentStart": 3541,
@@ -4926,8 +4940,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "65f0c99d-770b-568d-bf28-372eff483b04",
+          "id": "4fa21285-744a-5041-b4f5-70f22bd8d38d",
           "sourceRange": [],
           "tag": {
             "commentStart": 3626,
@@ -4940,8 +4954,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ce1c1b94-c87a-53e3-80f6-15ac9f10caa4",
+          "id": "2559eb4b-a486-598c-8fe0-044375654684",
           "sourceRange": [],
           "tag": {
             "commentStart": 3867,
@@ -4957,11 +4971,11 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "408d2d6b-bcd8-5b20-96ea-96444d4963ce",
               "sourceRange": []
             },
             "from": [
@@ -4985,7 +4999,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3e04111d-dfa2-55a1-91b5-35bad56e8529",
               "sourceRange": []
             },
             "from": [
@@ -5009,7 +5023,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0b414bb4-f45b-519e-bb67-1729eea05417",
               "sourceRange": []
             },
             "from": [
@@ -5033,7 +5047,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4fa21285-744a-5041-b4f5-70f22bd8d38d",
               "sourceRange": []
             },
             "from": [
@@ -5057,7 +5071,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2559eb4b-a486-598c-8fe0-044375654684",
               "sourceRange": []
             },
             "ccw": true,
@@ -5087,17 +5101,17 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
-          "kind": "Custom",
+          "type": "plane",
+          "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+          "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
           "objectId": 34,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 49.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -5129,7 +5143,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
             "sourceRange": []
           }
         },
@@ -5155,13 +5169,13 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": "mountingHole"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "artifactId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+        "originalId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+        "units": "mm",
+        "isClosed": "explicitly"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "3768871e-61ef-576f-a4eb-9fe724b2f583",
+      "endCapId": "26848d5a-58c8-5962-9b97-4569ef31defc",
       "units": "mm",
       "sectional": false
     }
@@ -5170,11 +5184,11 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "408d2d6b-bcd8-5b20-96ea-96444d4963ce",
             "sourceRange": []
           },
           "from": [
@@ -5198,7 +5212,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3e04111d-dfa2-55a1-91b5-35bad56e8529",
             "sourceRange": []
           },
           "from": [
@@ -5222,7 +5236,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0b414bb4-f45b-519e-bb67-1729eea05417",
             "sourceRange": []
           },
           "from": [
@@ -5246,7 +5260,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "4fa21285-744a-5041-b4f5-70f22bd8d38d",
             "sourceRange": []
           },
           "from": [
@@ -5270,7 +5284,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2559eb4b-a486-598c-8fe0-044375654684",
             "sourceRange": []
           },
           "ccw": true,
@@ -5300,17 +5314,17 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
-        "kind": "Custom",
+        "type": "plane",
+        "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+        "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
         "objectId": 34,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 49.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -5342,7 +5356,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
           "sourceRange": []
         }
       },
@@ -5368,10 +5382,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "value": "mountingHole"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "artifactId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+      "originalId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "leftTabSketch": {
@@ -5383,7 +5397,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
                 "objectId": 58,
                 "kind": {
                   "line": {
@@ -5457,8 +5471,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+                  "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                   "kind": "Custom",
                   "objectId": 34,
                   "origin": {
@@ -5487,7 +5501,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -5503,7 +5517,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
                 "objectId": 61,
                 "kind": {
                   "line": {
@@ -5577,8 +5591,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+                  "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                   "kind": "Custom",
                   "objectId": 34,
                   "origin": {
@@ -5607,7 +5621,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -5623,7 +5637,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
                 "objectId": 64,
                 "kind": {
                   "line": {
@@ -5697,8 +5711,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+                  "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                   "kind": "Custom",
                   "objectId": 34,
                   "origin": {
@@ -5727,7 +5741,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -5743,7 +5757,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
                 "objectId": 67,
                 "kind": {
                   "line": {
@@ -5817,8 +5831,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+                  "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                   "kind": "Custom",
                   "objectId": 34,
                   "origin": {
@@ -5847,7 +5861,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -5864,11 +5878,11 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
                     "sourceRange": []
                   },
                   "from": [
@@ -5892,7 +5906,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
                     "sourceRange": []
                   },
                   "from": [
@@ -5916,7 +5930,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
                     "sourceRange": []
                   },
                   "from": [
@@ -5940,7 +5954,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
                     "sourceRange": []
                   },
                   "from": [
@@ -5964,7 +5978,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
                     "sourceRange": []
                   },
                   "from": [
@@ -5981,7 +5995,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "3312f826-b323-5332-871a-6a8a59a3ae93",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -6011,17 +6025,17 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
-                "kind": "Custom",
+                "type": "plane",
+                "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+                "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "objectId": 34,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 49.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -6053,7 +6067,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
                   "sourceRange": []
                 }
               },
@@ -6079,8 +6093,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   "value": "mountingHole"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
+              "originalId": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -6094,7 +6108,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "3312f826-b323-5332-871a-6a8a59a3ae93",
                 "objectId": 74,
                 "kind": {
                   "circle": {
@@ -6168,8 +6182,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+                  "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                   "kind": "Custom",
                   "objectId": 34,
                   "origin": {
@@ -6198,7 +6212,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "mountingHole"
@@ -6419,12 +6433,14 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+          "originalId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+          "topologyId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+          "artifactId": "d005938d-7477-557a-bef2-28dfc45d0fce",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "e12a513d-673e-526a-9a3e-cba6a56a5013",
+              "id": "f629c1b3-ef34-5d38-9392-d0ad05fafac3",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2177,
@@ -6437,8 +6453,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "deaf291b-d3a9-5e3b-af59-42134c5dc546",
+              "id": "53d7d995-c7e5-524b-b3cc-28a822738a74",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2260,
@@ -6451,8 +6467,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "f410f9f1-2c6b-5129-b834-e429f4869b3f",
+              "id": "2a012a35-370f-5976-b11f-847b817f5967",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2343,
@@ -6465,8 +6481,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "c8911be0-c3bb-5d8c-970f-f724b0229a87",
+              "id": "16871db5-3fde-549f-a16e-c9c31aa34387",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2426,
@@ -6479,8 +6495,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "934cbf5e-6deb-52c6-9707-7c47a3f19043",
+              "id": "5d8b98f0-e33d-5a84-a43e-bd240b6fa65c",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2665,
@@ -6496,11 +6512,11 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "f629c1b3-ef34-5d38-9392-d0ad05fafac3",
                   "sourceRange": []
                 },
                 "from": [
@@ -6524,7 +6540,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "53d7d995-c7e5-524b-b3cc-28a822738a74",
                   "sourceRange": []
                 },
                 "from": [
@@ -6548,7 +6564,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "2a012a35-370f-5976-b11f-847b817f5967",
                   "sourceRange": []
                 },
                 "from": [
@@ -6572,7 +6588,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "16871db5-3fde-549f-a16e-c9c31aa34387",
                   "sourceRange": []
                 },
                 "from": [
@@ -6596,7 +6612,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "5d8b98f0-e33d-5a84-a43e-bd240b6fa65c",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -6626,17 +6642,17 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "kind": "Custom",
+              "type": "plane",
+              "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+              "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
               "objectId": 34,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 49.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6668,7 +6684,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                 "sourceRange": []
               }
             },
@@ -6694,17 +6710,17 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "value": "mountingHole"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "artifactId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+            "originalId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+            "units": "mm",
+            "isClosed": "explicitly"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "cd7dc725-7d30-5016-abf1-3b6be615621d",
+          "endCapId": "577866d9-438f-5314-9abb-786726d4b0f5",
           "edgeCuts": [
             {
               "type": "fillet",
-              "id": "[uuid]",
+              "id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
               "radius": {
                 "n": 2.5,
                 "ty": {
@@ -6713,12 +6729,12 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   "angle": "degrees"
                 }
               },
-              "edgeId": "[uuid]",
+              "edgeId": "fd194ffd-0c4a-5196-ae27-26bf60486885",
               "tag": null
             },
             {
               "type": "fillet",
-              "id": "[uuid]",
+              "id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
               "radius": {
                 "n": 2.5,
                 "ty": {
@@ -6727,7 +6743,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   "angle": "degrees"
                 }
               },
-              "edgeId": "[uuid]",
+              "edgeId": "f771073c-62aa-5393-a2a8-69d0a3e9691d",
               "tag": null
             }
           ],
@@ -6739,12 +6755,14 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "a3733cb2-93d9-5eed-89e6-e95cbe9239b3",
+          "originalId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+          "topologyId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+          "artifactId": "a3733cb2-93d9-5eed-89e6-e95cbe9239b3",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "e12a513d-673e-526a-9a3e-cba6a56a5013",
+              "id": "f629c1b3-ef34-5d38-9392-d0ad05fafac3",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2177,
@@ -6757,8 +6775,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "deaf291b-d3a9-5e3b-af59-42134c5dc546",
+              "id": "53d7d995-c7e5-524b-b3cc-28a822738a74",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2260,
@@ -6771,8 +6789,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "f410f9f1-2c6b-5129-b834-e429f4869b3f",
+              "id": "2a012a35-370f-5976-b11f-847b817f5967",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2343,
@@ -6785,8 +6803,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "c8911be0-c3bb-5d8c-970f-f724b0229a87",
+              "id": "16871db5-3fde-549f-a16e-c9c31aa34387",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2426,
@@ -6799,8 +6817,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "934cbf5e-6deb-52c6-9707-7c47a3f19043",
+              "id": "5d8b98f0-e33d-5a84-a43e-bd240b6fa65c",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2665,
@@ -6816,11 +6834,11 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "a3733cb2-93d9-5eed-89e6-e95cbe9239b3",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "f629c1b3-ef34-5d38-9392-d0ad05fafac3",
                   "sourceRange": []
                 },
                 "from": [
@@ -6844,7 +6862,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "53d7d995-c7e5-524b-b3cc-28a822738a74",
                   "sourceRange": []
                 },
                 "from": [
@@ -6868,7 +6886,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "2a012a35-370f-5976-b11f-847b817f5967",
                   "sourceRange": []
                 },
                 "from": [
@@ -6892,7 +6910,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "16871db5-3fde-549f-a16e-c9c31aa34387",
                   "sourceRange": []
                 },
                 "from": [
@@ -6916,7 +6934,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "5d8b98f0-e33d-5a84-a43e-bd240b6fa65c",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -6946,17 +6964,17 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "kind": "Custom",
+              "type": "plane",
+              "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+              "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
               "objectId": 34,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 49.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6988,7 +7006,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                 "sourceRange": []
               }
             },
@@ -7014,17 +7032,17 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "value": "mountingHole"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "artifactId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+            "originalId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+            "units": "mm",
+            "isClosed": "explicitly"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "cd7dc725-7d30-5016-abf1-3b6be615621d",
+          "endCapId": "577866d9-438f-5314-9abb-786726d4b0f5",
           "edgeCuts": [
             {
               "type": "fillet",
-              "id": "[uuid]",
+              "id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
               "radius": {
                 "n": 2.5,
                 "ty": {
@@ -7033,12 +7051,12 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   "angle": "degrees"
                 }
               },
-              "edgeId": "[uuid]",
+              "edgeId": "fd194ffd-0c4a-5196-ae27-26bf60486885",
               "tag": null
             },
             {
               "type": "fillet",
-              "id": "[uuid]",
+              "id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
               "radius": {
                 "n": 2.5,
                 "ty": {
@@ -7047,7 +7065,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   "angle": "degrees"
                 }
               },
-              "edgeId": "[uuid]",
+              "edgeId": "f771073c-62aa-5393-a2a8-69d0a3e9691d",
               "tag": null
             }
           ],
@@ -7061,12 +7079,14 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+      "originalId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+      "topologyId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+      "artifactId": "d005938d-7477-557a-bef2-28dfc45d0fce",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e12a513d-673e-526a-9a3e-cba6a56a5013",
+          "id": "f629c1b3-ef34-5d38-9392-d0ad05fafac3",
           "sourceRange": [],
           "tag": {
             "commentStart": 2177,
@@ -7079,8 +7099,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "deaf291b-d3a9-5e3b-af59-42134c5dc546",
+          "id": "53d7d995-c7e5-524b-b3cc-28a822738a74",
           "sourceRange": [],
           "tag": {
             "commentStart": 2260,
@@ -7093,8 +7113,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f410f9f1-2c6b-5129-b834-e429f4869b3f",
+          "id": "2a012a35-370f-5976-b11f-847b817f5967",
           "sourceRange": [],
           "tag": {
             "commentStart": 2343,
@@ -7107,8 +7127,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c8911be0-c3bb-5d8c-970f-f724b0229a87",
+          "id": "16871db5-3fde-549f-a16e-c9c31aa34387",
           "sourceRange": [],
           "tag": {
             "commentStart": 2426,
@@ -7121,8 +7141,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "934cbf5e-6deb-52c6-9707-7c47a3f19043",
+          "id": "5d8b98f0-e33d-5a84-a43e-bd240b6fa65c",
           "sourceRange": [],
           "tag": {
             "commentStart": 2665,
@@ -7138,11 +7158,11 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f629c1b3-ef34-5d38-9392-d0ad05fafac3",
               "sourceRange": []
             },
             "from": [
@@ -7166,7 +7186,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "53d7d995-c7e5-524b-b3cc-28a822738a74",
               "sourceRange": []
             },
             "from": [
@@ -7190,7 +7210,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2a012a35-370f-5976-b11f-847b817f5967",
               "sourceRange": []
             },
             "from": [
@@ -7214,7 +7234,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "16871db5-3fde-549f-a16e-c9c31aa34387",
               "sourceRange": []
             },
             "from": [
@@ -7238,7 +7258,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5d8b98f0-e33d-5a84-a43e-bd240b6fa65c",
               "sourceRange": []
             },
             "ccw": true,
@@ -7268,17 +7288,17 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
-          "kind": "Custom",
+          "type": "plane",
+          "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+          "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
           "objectId": 34,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 49.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -7310,7 +7330,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
             "sourceRange": []
           }
         },
@@ -7336,13 +7356,13 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "value": "mountingHole"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "artifactId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+        "originalId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+        "units": "mm",
+        "isClosed": "explicitly"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "cd7dc725-7d30-5016-abf1-3b6be615621d",
+      "endCapId": "577866d9-438f-5314-9abb-786726d4b0f5",
       "units": "mm",
       "sectional": false
     }
@@ -7351,11 +7371,11 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f629c1b3-ef34-5d38-9392-d0ad05fafac3",
             "sourceRange": []
           },
           "from": [
@@ -7379,7 +7399,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "53d7d995-c7e5-524b-b3cc-28a822738a74",
             "sourceRange": []
           },
           "from": [
@@ -7403,7 +7423,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2a012a35-370f-5976-b11f-847b817f5967",
             "sourceRange": []
           },
           "from": [
@@ -7427,7 +7447,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "16871db5-3fde-549f-a16e-c9c31aa34387",
             "sourceRange": []
           },
           "from": [
@@ -7451,7 +7471,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5d8b98f0-e33d-5a84-a43e-bd240b6fa65c",
             "sourceRange": []
           },
           "ccw": true,
@@ -7481,17 +7501,17 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
-        "kind": "Custom",
+        "type": "plane",
+        "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+        "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
         "objectId": 34,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 49.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -7523,7 +7543,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
           "sourceRange": []
         }
       },
@@ -7549,10 +7569,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "value": "mountingHole"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "artifactId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+      "originalId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "rightTabSketch": {
@@ -7564,7 +7584,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
                 "objectId": 38,
                 "kind": {
                   "line": {
@@ -7638,8 +7658,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+                  "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                   "kind": "Custom",
                   "objectId": 34,
                   "origin": {
@@ -7668,7 +7688,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -7684,7 +7704,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                 "objectId": 41,
                 "kind": {
                   "line": {
@@ -7758,8 +7778,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+                  "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                   "kind": "Custom",
                   "objectId": 34,
                   "origin": {
@@ -7788,7 +7808,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -7804,7 +7824,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2f87eb95-71f2-5911-bdbf-6255b335334d",
                 "objectId": 44,
                 "kind": {
                   "line": {
@@ -7878,8 +7898,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+                  "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                   "kind": "Custom",
                   "objectId": 34,
                   "origin": {
@@ -7908,7 +7928,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -7924,7 +7944,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "01e801cc-22ef-5071-814b-847d3fcf22d5",
                 "objectId": 47,
                 "kind": {
                   "line": {
@@ -7998,8 +8018,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+                  "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                   "kind": "Custom",
                   "objectId": 34,
                   "origin": {
@@ -8028,7 +8048,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -8045,11 +8065,11 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "0917d07d-5996-5994-8a06-602d43e2b6f3",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
                     "sourceRange": []
                   },
                   "from": [
@@ -8073,7 +8093,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                     "sourceRange": []
                   },
                   "from": [
@@ -8097,7 +8117,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2f87eb95-71f2-5911-bdbf-6255b335334d",
                     "sourceRange": []
                   },
                   "from": [
@@ -8121,7 +8141,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "01e801cc-22ef-5071-814b-847d3fcf22d5",
                     "sourceRange": []
                   },
                   "from": [
@@ -8145,7 +8165,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "d5eaf678-0440-563f-ac19-e473850b9270",
                     "sourceRange": []
                   },
                   "from": [
@@ -8162,7 +8182,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -8192,17 +8212,17 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
-                "kind": "Custom",
+                "type": "plane",
+                "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+                "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "objectId": 34,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 49.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -8234,7 +8254,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "sourceRange": []
                 }
               },
@@ -8260,8 +8280,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   "value": "mountingHole"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
+              "originalId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -8275,7 +8295,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
                 "objectId": 54,
                 "kind": {
                   "circle": {
@@ -8349,8 +8369,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+                  "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                   "kind": "Custom",
                   "objectId": 34,
                   "origin": {
@@ -8379,7 +8399,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "mountingHole"
@@ -8404,10 +8424,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
   "tabPlane": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
-      "kind": "Custom",
+      "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+      "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
       "objectId": 34,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,

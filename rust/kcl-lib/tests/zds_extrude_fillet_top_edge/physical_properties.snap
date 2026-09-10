@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties zds_extrude_fillet_top_edge.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 2.03,
+      "y": 2.725,
+      "z": 0.5
+    },
+    "dimensions": {
+      "x": 3.0,
+      "y": 2.8500000000000005,
+      "z": 1.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 28.04731658083426
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.008388102601975903
+  }
+}

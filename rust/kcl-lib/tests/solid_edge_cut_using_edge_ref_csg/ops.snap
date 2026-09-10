@@ -728,7 +728,7 @@ description: Operations executed solid_edge_cut_using_edge_ref_csg.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7"
           }
         },
         "sourceRange": []
@@ -787,19 +787,19 @@ description: Operations executed solid_edge_cut_using_edge_ref_csg.kcl
             "value": {
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "efd1e3b2-5268-50fd-858e-26540f8146e5"
               },
               "meta": {
                 "type": "Object",
@@ -807,7 +807,7 @@ description: Operations executed solid_edge_cut_using_edge_ref_csg.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7"
                     }
                   }
                 }
@@ -840,7 +840,7 @@ description: Operations executed solid_edge_cut_using_edge_ref_csg.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7"
           }
         },
         "sourceRange": []
@@ -1285,11 +1285,11 @@ description: Operations executed solid_edge_cut_using_edge_ref_csg.kcl
             "value": {
               "bottom": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8accf664-7097-5b74-b4cf-22cfff115a4f"
               },
               "left": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e342814e-d7c1-537b-959c-f7fd92c90294"
               },
               "meta": {
                 "type": "Object",
@@ -1297,18 +1297,18 @@ description: Operations executed solid_edge_cut_using_edge_ref_csg.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44"
                     }
                   }
                 }
               },
               "right": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "6023bee8-3980-5182-88ac-ac06420ce00f"
               },
               "top": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "907cac50-3701-5367-b35c-4ec2132c824f"
               }
             }
           },
@@ -1338,7 +1338,7 @@ description: Operations executed solid_edge_cut_using_edge_ref_csg.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "bbcacf2c-f132-502a-87e1-0b0ffa846931"
           }
         },
         "sourceRange": []
@@ -1387,7 +1387,7 @@ description: Operations executed solid_edge_cut_using_edge_ref_csg.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44"
           }
         },
         "sourceRange": []
@@ -1416,7 +1416,7 @@ description: Operations executed solid_edge_cut_using_edge_ref_csg.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "cc312d38-2fa6-5583-a605-44880f646499"
           }
         },
         "sourceRange": []
@@ -1435,12 +1435,12 @@ description: Operations executed solid_edge_cut_using_edge_ref_csg.kcl
                       {
                         "type": "TagIdentifier",
                         "value": "bottom",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "9bae9824-fc91-5745-8e9a-fc2839744e92"
                       },
                       {
                         "type": "TagIdentifier",
                         "value": "topCap",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "9f4eb1aa-edde-5423-b838-744539667ee8"
                       }
                     ]
                   }
@@ -1493,7 +1493,7 @@ description: Operations executed solid_edge_cut_using_edge_ref_csg.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "cc312d38-2fa6-5583-a605-44880f646499"
           }
         },
         "sourceRange": []
@@ -1512,12 +1512,12 @@ description: Operations executed solid_edge_cut_using_edge_ref_csg.kcl
                       {
                         "type": "TagIdentifier",
                         "value": "right",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc"
                       },
                       {
                         "type": "TagIdentifier",
                         "value": "topCap",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "9f4eb1aa-edde-5423-b838-744539667ee8"
                       }
                     ]
                   }
@@ -1573,13 +1573,13 @@ description: Operations executed solid_edge_cut_using_edge_ref_csg.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "cc312d38-2fa6-5583-a605-44880f646499"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "1173902c-36a4-51e4-ba62-e51739ec2a5c"
               }
             }
           ]

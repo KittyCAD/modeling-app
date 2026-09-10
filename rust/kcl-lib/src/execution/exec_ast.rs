@@ -33,6 +33,7 @@ use crate::execution::ExecState;
 use crate::execution::ExecutorContext;
 use crate::execution::KclValue;
 use crate::execution::KclValueControlFlow;
+use crate::execution::KclVersion;
 use crate::execution::LegacyAngleRefactorMeta;
 use crate::execution::Metadata;
 use crate::execution::ModelingCmdMeta;
@@ -939,10 +940,17 @@ impl ExecutorContext {
                         exec_state.mod_local.explicit_length_units = true;
                     }
                     if updated_angle {
+                        if exec_state.kcl_version() >= KclVersion::V3Preview {
+                            return Err(KclError::new_semantic(KclErrorDetails::new(
+                                "The `defaultAngleUnit` setting was removed in KCL 3.0; use explicit units for angles"
+                                    .to_owned(),
+                                annotation.as_source_ranges(),
+                            )));
+                        }
                         exec_state.warn(
                             CompilationIssue::err(
                                 annotation.as_source_range(),
-                                "Prefer to use explicit units for angles",
+                                "The `defaultAngleUnit` setting is deprecated; use explicit units for angles",
                             ),
                             annotations::WARN_ANGLE_UNITS,
                         );
@@ -1215,7 +1223,7 @@ impl ExecutorContext {
                         break;
                     }
                     let value = value_cf.into_value();
-                    if exec_state.use_kcl_v3_control_flow() {
+                    if exec_state.entry_point_version_is_v3_or_higher() {
                         // KCL 3.0: early return. The value unwinds as control
                         // flow to the nearest function-call boundary, which
                         // absorbs it; see call_finish.
@@ -3434,17 +3442,58 @@ impl Node<MemberExpression> {
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
     ) -> Result<KclValueControlFlow, KclError> {
-        // Evaluate each child with its own source range so that diagnostics
-        // raised while evaluating a child (module errors, missing-return
-        // warnings) point at that child instead of the whole member
-        // expression.
-        //
-        // TODO: The order of execution is wrong. We should execute the object
-        // *before* the property.
+        if exec_state.entry_point_version_is_v3_or_higher() {
+            // KCL 3.0: evaluate in source order, the object before the
+            // property.
+            let object = control_continue!(self.eval_object(exec_state, ctx).await?);
+            let property = match self.eval_property(exec_state, ctx).await {
+                Ok(property) => property,
+                // The property expression exited, e.g. by calling exit().
+                // Propagate the exit so that it terminates the enclosing module.
+                Err(EarlyReturn::Value(cf)) => return Ok(cf),
+                Err(EarlyReturn::Error(err)) => return Err(err),
+            };
+            return self.apply_member(object, property, exec_state, ctx).await;
+        }
+
+        // Pre-KCL-3.0: the property is evaluated before the object. This is
+        // backwards with respect to the source text, but it is preserved
+        // because ids and engine commands are order-dependent.
+        let property = match self.eval_property(exec_state, ctx).await {
+            Ok(property) => property,
+            // The property expression exited, e.g. by calling exit().
+            // Propagate the exit so that it terminates the enclosing module.
+            Err(EarlyReturn::Value(cf)) => return Ok(cf),
+            Err(EarlyReturn::Error(err)) => return Err(err),
+        };
+        let object = control_continue!(self.eval_object(exec_state, ctx).await?);
+        self.apply_member(object, property, exec_state, ctx).await
+    }
+
+    /// Evaluate the object half of the member expression. It gets its own
+    /// source range so that diagnostics raised while evaluating it (module
+    /// errors, missing-return warnings) point at the object instead of the
+    /// whole member expression.
+    async fn eval_object(
+        &self,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<KclValueControlFlow, KclError> {
+        let object_meta = Metadata {
+            source_range: SourceRange::from(&self.object),
+        };
+        ctx.execute_expr(&self.object, exec_state, &object_meta, &[], StatementKind::Expression)
+            .await
+    }
+
+    /// Evaluate the property half of the member expression: a computed index
+    /// is executed, while `obj.name` just reads the identifier. Likewise
+    /// gets its own source range.
+    async fn eval_property(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<Property, EarlyReturn> {
         let property_meta = Metadata {
             source_range: SourceRange::from(&self.property),
         };
-        let property_result = Property::try_from(
+        Property::try_from(
             self.computed,
             self.property.clone(),
             exec_state,
@@ -3454,22 +3503,7 @@ impl Node<MemberExpression> {
             &[],
             StatementKind::Expression,
         )
-        .await;
-        let property = match property_result {
-            Ok(property) => property,
-            // The property expression exited, e.g. by calling exit().
-            // Propagate the exit so that it terminates the enclosing module.
-            Err(EarlyReturn::Value(cf)) => return Ok(cf),
-            Err(EarlyReturn::Error(err)) => return Err(err),
-        };
-        let object_meta = Metadata {
-            source_range: SourceRange::from(&self.object),
-        };
-        let object_cf = ctx
-            .execute_expr(&self.object, exec_state, &object_meta, &[], StatementKind::Expression)
-            .await?;
-        let object = control_continue!(object_cf);
-        self.apply_member(object, property, exec_state, ctx).await
+        .await
     }
 
     /// Apply property access or indexing to an already-evaluated object: the
@@ -6811,7 +6845,8 @@ impl Node<IfExpression> {
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
     ) -> Result<KclValueControlFlow, KclError> {
-        // Check the `if` branch.
+        // Check the `if` branch. Conditions are evaluated in the enclosing
+        // scope; only arm bodies get their own scope (under KCL 3.0).
         let cond_value = ctx
             .execute_expr(
                 &self.cond,
@@ -6823,11 +6858,7 @@ impl Node<IfExpression> {
             .await?;
         let cond_value = control_continue!(cond_value);
         if cond_value.get_bool()? {
-            let block_result = ctx.exec_block(&*self.then_val, exec_state, BodyType::Block).await?;
-            // Block must end in an expression, so this has to be Some.
-            // Enforced by the parser.
-            // See https://github.com/KittyCAD/modeling-app/issues/4015
-            return Ok(block_result.unwrap());
+            return exec_if_arm(ctx, &self.then_val, exec_state).await;
         }
 
         // Check any `else if` branches.
@@ -6843,19 +6874,60 @@ impl Node<IfExpression> {
                 .await?;
             let cond_value = control_continue!(cond_value);
             if cond_value.get_bool()? {
-                let block_result = ctx.exec_block(&*else_if.then_val, exec_state, BodyType::Block).await?;
-                // Block must end in an expression, so this has to be Some.
-                // Enforced by the parser.
-                // See https://github.com/KittyCAD/modeling-app/issues/4015
-                return Ok(block_result.unwrap());
+                return exec_if_arm(ctx, &else_if.then_val, exec_state).await;
             }
         }
 
         // Run the final `else` branch.
-        ctx.exec_block(&*self.final_else, exec_state, BodyType::Block)
-            .await
-            .map(|expr| expr.unwrap())
+        exec_if_arm(ctx, &self.final_else, exec_state).await
     }
+}
+
+/// Begin an if-arm scope. Under a KCL 3.0 entry point, each
+/// if/else-if/else arm body gets its own scope: bindings made inside the arm
+/// are visible from their declaration to the arm's closing brace, never
+/// outside it, and may shadow bindings from enclosing scopes. Under older
+/// entry points the arm shares the enclosing environment (bindings leak out
+/// and shadowing is a redefinition error). Returns whether a scope
+/// environment was pushed; the caller must pop it on every path. Shared by
+/// both executors.
+pub(super) fn if_arm_scope_begin(exec_state: &mut ExecState) -> Result<bool, KclError> {
+    if !exec_state.entry_point_version_is_v3_or_higher() {
+        return Ok(false);
+    }
+    exec_state.mut_stack().push_new_env_for_block()?;
+    Ok(true)
+}
+
+/// Execute one if/else-if/else arm body in its own scope (under a
+/// KCL 3.0 entry point). Values escaping the arm -- including closures
+/// declared in it -- stay valid after the pop because environments that may
+/// still be referenced are preserved, exactly as for function returns.
+async fn exec_if_arm(
+    ctx: &ExecutorContext,
+    block: &Node<Program>,
+    exec_state: &mut ExecState,
+) -> Result<KclValueControlFlow, KclError> {
+    let scoped = if_arm_scope_begin(exec_state)?;
+    let result = ctx.exec_block(block, exec_state, BodyType::Block).await;
+    if scoped {
+        // Pop on success (including Return/Exit control flow escaping the
+        // arm) and error alike. A pop failure wins over the block's error,
+        // matching call_abort_on_arg_binding_failure.
+        exec_state.mut_stack().pop_env()?;
+    }
+    // Block must end in an expression, so this is always Some.
+    // Enforced by the parser.
+    // See https://github.com/KittyCAD/modeling-app/issues/4015
+    let Some(cf) = result? else {
+        let message = "if-expression arm produced no value";
+        debug_assert!(false, "{message}");
+        return Err(KclError::new_internal(KclErrorDetails::new(
+            message.to_owned(),
+            vec![block.to_source_range()],
+        )));
+    };
+    Ok(cf)
 }
 
 #[derive(Debug)]
@@ -6876,18 +6948,8 @@ impl Property {
         annotations: &[Node<Annotation>],
         statement_kind: StatementKind<'a>,
     ) -> Result<Self, EarlyReturn> {
-        let property_sr = vec![sr];
         if !computed {
-            let Expr::Name(identifier) = value else {
-                // Should actually be impossible because the parser would reject it.
-                return Err(KclError::new_semantic(KclErrorDetails::new(
-                    "Object expressions like `obj.property` must use simple identifier names, not complex expressions"
-                        .to_owned(),
-                    property_sr,
-                ))
-                .into());
-            };
-            return Ok(Property::String(identifier.to_string()));
+            return Ok(Self::from_static_name(&value, sr)?);
         }
 
         let prop_value = ctx
@@ -6897,6 +6959,20 @@ impl Property {
         // the exit so that it terminates the enclosing module.
         let prop_value = early_return!(prop_value);
         Ok(Self::from_value(prop_value, sr)?)
+    }
+
+    /// Convert a non-computed property (the identifier in `obj.property`)
+    /// into a Property. Nothing is evaluated. Shared by both executors.
+    pub(super) fn from_static_name(property: &Expr, sr: SourceRange) -> Result<Self, KclError> {
+        let Expr::Name(identifier) = property else {
+            // Should actually be impossible because the parser would reject it.
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Object expressions like `obj.property` must use simple identifier names, not complex expressions"
+                    .to_owned(),
+                vec![sr],
+            )));
+        };
+        Ok(Property::String(identifier.to_string()))
     }
 
     /// Convert an already-evaluated computed-property value (the expression

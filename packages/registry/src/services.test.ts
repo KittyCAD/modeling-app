@@ -162,12 +162,12 @@ describe('services', () => {
     expect(() => container.get(registrySignal)).toThrow(ReconfigurationError)
   })
 
-  it('toggle controller reconfigures a slot and preserves unrelated runtime instances', () => {
+  it('toggle controller reconfigures a slot and preserves unrelated runtime instances', async () => {
     const toggleService = defineService<{
       active: { readonly value: boolean }
-      enable(): void
-      disable(): void
-      toggle(): void
+      enable(): Promise<void>
+      disable(): Promise<void>
+      toggle(): Promise<void>
     }>('toggle')
     const stableService = defineService<{
       isOpen: { readonly value: boolean }
@@ -217,19 +217,19 @@ describe('services', () => {
     container.configure([stableRuntime, toggleRegistryItem, slot.of()])
 
     container.get(stableService).open()
-    container.get(toggleService).enable()
+    await container.get(toggleService).enable()
     expect(container.get(featureSignal)).toEqual(['enabled'])
     expect(container.get(toggleService).active.value).toBe(true)
     expect(container.get(stableService).isOpen.value).toBe(true)
 
-    container.get(toggleService).disable()
+    await container.get(toggleService).disable()
     expect(container.get(featureSignal)).toEqual([])
     expect(container.get(toggleService).active.value).toBe(false)
     expect(container.get(stableService).isOpen.value).toBe(true)
     expect(runtimeCalls).toHaveBeenCalledTimes(1)
   })
 
-  it('installs a plugin as one registry node and preserves its toggle metadata', () => {
+  it('installs a plugin as one registry node and preserves its toggle metadata', async () => {
     const featureSignal = firstWinsValueSpec<string>('feature', 'uninitialized')
     const plugin = createPlugin({
       id: 'feature-plugin',
@@ -258,9 +258,9 @@ describe('services', () => {
     )
 
     const pluginService = container.get(pluginRecord.service)
-    pluginService.disable()
+    await pluginService.disable()
     expect(container.get(featureSignal)).toEqual('uninitialized')
-    pluginService.enable()
+    await pluginService.enable()
     expect(container.get(featureSignal)).toEqual('enabled')
   })
 

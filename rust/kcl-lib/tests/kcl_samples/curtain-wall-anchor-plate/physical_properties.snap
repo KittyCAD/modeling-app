@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties curtain-wall-anchor-plate.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 150.0,
+      "y": 0.0,
+      "z": 34.0
+    },
+    "dimensions": {
+      "x": 300.0,
+      "y": 200.0,
+      "z": 92.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 163086.57684403373
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 592.729667132493
+  }
+}

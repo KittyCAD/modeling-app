@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties gridfinity-bins.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 42.0,
+      "y": 63.0,
+      "z": 9.1375
+    },
+    "dimensions": {
+      "x": 100.8,
+      "y": 151.2,
+      "z": 19.225
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 65099.49804463755
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 58.25663549108382
+  }
+}

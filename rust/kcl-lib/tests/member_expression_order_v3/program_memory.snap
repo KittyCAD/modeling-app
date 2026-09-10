@@ -1,0 +1,256 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing member_expression_order_v3.kcl
+---
+{
+  "boxes": {
+    "type": "Function"
+  },
+  "chooseIndex": {
+    "type": "Function"
+  },
+  "picked": {
+    "type": "Solid",
+    "value": {
+      "type": "Solid",
+      "id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
+      "originalId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
+      "topologyId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
+      "artifactId": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
+      "value": [
+        {
+          "faceId": "9f4eb1aa-edde-5423-b838-744539667ee8",
+          "id": "e445bc8a-9094-57cc-b3ce-a572fc71ab16",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 831,
+            "end": 837,
+            "moduleId": 0,
+            "start": 831,
+            "type": "TagDeclarator",
+            "value": "bottom"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "9b3ed7b2-ab34-5e27-aa76-78d32accbb8f",
+          "id": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 905,
+            "end": 910,
+            "moduleId": 0,
+            "start": 905,
+            "type": "TagDeclarator",
+            "value": "right"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "5ac5e12d-2e01-543e-98d2-cb87b8695e72",
+          "id": "375909ca-005f-5bf2-83c9-5f0b348dac37",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 979,
+            "end": 982,
+            "moduleId": 0,
+            "start": 979,
+            "type": "TagDeclarator",
+            "value": "top"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "46ef413e-7f7d-51c7-92e8-52410b572f94",
+          "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 1052,
+            "end": 1056,
+            "moduleId": 0,
+            "start": 1052,
+            "type": "TagDeclarator",
+            "value": "left"
+          },
+          "type": "extrudePlane"
+        }
+      ],
+      "sketch": {
+        "creatorType": "sketch",
+        "type": "Sketch",
+        "id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
+        "paths": [
+          {
+            "__geoMeta": {
+              "id": "e445bc8a-9094-57cc-b3ce-a572fc71ab16",
+              "sourceRange": []
+            },
+            "from": [
+              20.0,
+              0.0
+            ],
+            "tag": {
+              "commentStart": 831,
+              "end": 837,
+              "moduleId": 0,
+              "start": 831,
+              "type": "TagDeclarator",
+              "value": "bottom"
+            },
+            "to": [
+              30.0,
+              0.0
+            ],
+            "type": "ToPoint",
+            "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194",
+              "sourceRange": []
+            },
+            "from": [
+              30.0,
+              0.0
+            ],
+            "tag": {
+              "commentStart": 905,
+              "end": 910,
+              "moduleId": 0,
+              "start": 905,
+              "type": "TagDeclarator",
+              "value": "right"
+            },
+            "to": [
+              30.0,
+              10.0
+            ],
+            "type": "ToPoint",
+            "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "375909ca-005f-5bf2-83c9-5f0b348dac37",
+              "sourceRange": []
+            },
+            "from": [
+              30.0,
+              10.0
+            ],
+            "tag": {
+              "commentStart": 979,
+              "end": 982,
+              "moduleId": 0,
+              "start": 979,
+              "type": "TagDeclarator",
+              "value": "top"
+            },
+            "to": [
+              20.0,
+              10.0
+            ],
+            "type": "ToPoint",
+            "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
+              "sourceRange": []
+            },
+            "from": [
+              20.0,
+              10.0
+            ],
+            "tag": {
+              "commentStart": 1052,
+              "end": 1056,
+              "moduleId": 0,
+              "start": 1052,
+              "type": "TagDeclarator",
+              "value": "left"
+            },
+            "to": [
+              20.0,
+              0.0
+            ],
+            "type": "ToPoint",
+            "units": "mm"
+          }
+        ],
+        "on": {
+          "type": "plane",
+          "artifactId": "59bc8baf-257f-5783-ad91-95db236aa6b0",
+          "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
+          "objectId": 14,
+          "kind": "Custom",
+          "origin": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "units": "mm"
+          },
+          "xAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
+            "units": null
+          },
+          "yAxis": {
+            "x": 0.0,
+            "y": 1.0,
+            "z": 0.0,
+            "units": null
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
+            "units": null
+          }
+        },
+        "start": {
+          "from": [
+            20.0,
+            0.0
+          ],
+          "to": [
+            20.0,
+            0.0
+          ],
+          "units": "mm",
+          "tag": null,
+          "__geoMeta": {
+            "id": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+            "sourceRange": []
+          }
+        },
+        "tags": {
+          "bottom": {
+            "type": "TagIdentifier",
+            "value": "bottom"
+          },
+          "left": {
+            "type": "TagIdentifier",
+            "value": "left"
+          },
+          "right": {
+            "type": "TagIdentifier",
+            "value": "right"
+          },
+          "top": {
+            "type": "TagIdentifier",
+            "value": "top"
+          }
+        },
+        "artifactId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
+        "originalId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
+        "units": "mm",
+        "isClosed": "explicitly"
+      },
+      "startCapId": "0c8445ab-4d19-5096-a4c1-6ba4e51a6eca",
+      "endCapId": "8c0deb2f-1671-58eb-a5a0-7f73ec91728e",
+      "units": "mm",
+      "sectional": false
+    }
+  }
+}
