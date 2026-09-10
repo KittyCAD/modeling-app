@@ -1417,9 +1417,7 @@ impl ExecState {
     /// to resolve a mismatch. Foreign imports carry no KCL settings.
     ///
     /// `import_range` is the import statement when the check runs at the
-    /// import site; it is appended to the error so that the importing file is
-    /// labeled too. When the check runs as the module body starts executing,
-    /// the import backtrace added by the caller supplies that location.
+    /// import site, which is included in the error.
     pub(crate) fn check_imported_module_kcl_version(
         &self,
         path: &ModulePath,
