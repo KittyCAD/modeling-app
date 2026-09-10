@@ -46,6 +46,7 @@ import {
   EngineConnectionStateType,
   REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE,
   validateStreamDimensions,
+  type EngineDisconnectEventDetail,
 } from '@src/lib/engineConnection/utils'
 import {
   isExportResponse,
@@ -1080,12 +1081,16 @@ export class ConnectionManager extends EventTarget {
     // It was torn down from a websocket close.
     if (options?.websocketClosed) {
       this.dispatchEvent(
-        new CustomEvent(EngineConnectionManagerEvents.WebsocketClosed, {
-          detail: {
-            code: options.code,
-            connectionError: options.connectionError,
-          },
-        })
+        new CustomEvent<EngineDisconnectEventDetail>(
+          EngineConnectionManagerEvents.WebsocketClosed,
+          {
+            detail: {
+              code: options.code,
+              connectionError: options.connectionError,
+              reconnectRequested: options.reconnectRequested ?? false,
+            },
+          }
+        )
       )
     } else if (options?.peerConnectionClosed) {
       this.dispatchEvent(
