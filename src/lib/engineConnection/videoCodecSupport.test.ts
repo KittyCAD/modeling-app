@@ -44,6 +44,8 @@ test('normalizes codec names before comparison', async () => {
 test('returns a typed terminal error when the offer lacks H.264', async () => {
   const close = stubLocalOffer(
     [
+      'm=audio 9 UDP/TLS/RTP/SAVPF 111',
+      'a=rtpmap:111 opus/48000/2',
       'm=video 9 UDP/TLS/RTP/SAVPF 96 97',
       'a=rtpmap:96 VP8/90000',
       'a=rtpmap:97 VP9/90000',

@@ -305,12 +305,12 @@ export async function tryConnecting({
             message: `Attempt ${numberOfConnectionAttempts.current}/${NUMBER_OF_ENGINE_RETRIES} failed`,
             metadata: { terminalConnectionError },
           })
-          engineCommandManager.tearDown()
           if (terminalConnectionError) {
             numberOfConnectionAttempts.current = 0
             setShowManualConnect(true)
             return reject(terminalConnectionError)
           }
+          engineCommandManager.tearDown()
           if (numberOfConnectionAttempts.current >= NUMBER_OF_ENGINE_RETRIES) {
             numberOfConnectionAttempts.current = 0
             return reject(e)
