@@ -2,10 +2,15 @@ import type { useAppState } from '@src/AppState'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { KclManager } from '@src/lang/KclManager'
 import { useSingletons } from '@src/lib/boot'
+import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { NUMBER_OF_ENGINE_RETRIES } from '@src/lib/constants'
 import { EngineDebugger } from '@src/lib/debugger'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { getDimensions } from '@src/lib/engineConnection/utils'
+import {
+  isUnsupportedEngineVideoCodecError,
+  preflightEngineVideoCodecSupport,
+} from '@src/lib/engineConnection/videoCodecSupport'
 import { reapplyActiveViewAfterReconnect } from '@src/lib/kclNamedViewActivation'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import type RustContext from '@src/lib/rustContext'
@@ -39,6 +44,21 @@ const attemptToConnectToEngine = async ({
   engineCommandManager: ConnectionManager
   rustContext: RustContext
 }) => {
+  const codecSupport = await preflightEngineVideoCodecSupport()
+  if (isUnsupportedEngineVideoCodecError(codecSupport)) {
+    engineCommandManager.lastConnectionError = codecSupport
+    void reportClientError({
+      code: ClientErrorCode.EngineUnsupportedVideoCodec,
+      error: codecSupport,
+      dedupeKey: ClientErrorCode.EngineUnsupportedVideoCodec,
+      extra: {
+        browserVideoCodecs: codecSupport.browserCodecs,
+        engineVideoCodecs: codecSupport.engineCodecs,
+      },
+    })
+    return Promise.reject(codecSupport)
+  }
+
   const connection = new Promise<boolean>((resolve, reject) => {
     const cancelTimeout = setTimeout(() => {
       EngineDebugger.addLog({
@@ -288,12 +308,12 @@ export async function tryConnecting({
             message: `Attempt ${numberOfConnectionAttempts.current}/${NUMBER_OF_ENGINE_RETRIES} failed`,
             metadata: { terminalConnectionError },
           })
-          engineCommandManager.tearDown()
           if (terminalConnectionError) {
             numberOfConnectionAttempts.current = 0
             setShowManualConnect(true)
             return reject(terminalConnectionError)
           }
+          engineCommandManager.tearDown()
           if (numberOfConnectionAttempts.current >= NUMBER_OF_ENGINE_RETRIES) {
             numberOfConnectionAttempts.current = 0
             return reject(e)
