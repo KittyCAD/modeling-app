@@ -70,7 +70,7 @@ suite('VS Code suite completion', () => {
           scenario === 'no-suite'
             ? 'VS Code exited without completing the extension test suite'
             : scenario === 'passing'
-              ? '1 passing'
+              ? 'VS Code extension tests: 1 passed'
               : scenario === 'failing'
                 ? 'fixture failure'
                 : scenario === 'empty'

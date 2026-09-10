@@ -39,6 +39,13 @@ async function main() {
         'VS Code exited without completing the extension test suite'
       )
     }
+    const passed = Number(fs.readFileSync(completionPath, 'utf8'))
+    if (!Number.isSafeInteger(passed) || passed <= 0) {
+      throw new Error('Invalid VS Code extension test completion count')
+    }
+    // Report from the parent too: the launcher can close the child's output
+    // streams before its last console messages have been forwarded on Windows.
+    console.log(`VS Code extension tests: ${passed} passed`)
   } catch (err) {
     console.error(err)
     console.error('Failed to run tests')

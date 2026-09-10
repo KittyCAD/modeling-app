@@ -16,14 +16,14 @@ export async function run(): Promise<void> {
     mocha.addFile(path.resolve(testsRoot, file))
   }
 
-  await new Promise<void>((resolve, reject) => {
+  const passed = await new Promise<number>((resolve, reject) => {
     const runner = mocha.run((failures) => {
       if (failures > 0) {
         reject(new Error(`${failures} tests failed.`))
       } else if (!runner.stats?.passes) {
         reject(new Error('The extension test suite did not pass any tests'))
       } else {
-        resolve()
+        resolve(runner.stats.passes)
       }
     })
   })
@@ -32,6 +32,6 @@ export async function run(): Promise<void> {
   // supply this completion marker. Manual extension-host runs need no marker.
   const { KCL_VSCODE_TEST_COMPLETION: completionPath } = process.env
   if (completionPath) {
-    await writeFile(completionPath, 'passed\n')
+    await writeFile(completionPath, String(passed))
   }
 }
