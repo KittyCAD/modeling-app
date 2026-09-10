@@ -3,11 +3,12 @@ import toast from 'react-hot-toast'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { KclManager } from '@src/lang/KclManager'
-import { updateModelingState } from '@src/lang/modelingWorkflows'
+import { findUniqueName } from '@src/lang/create'
 import {
-  addModuleImport,
-  insertVariableAndOffsetPathToNode,
-} from '@src/lang/modifyAst'
+  mockExecAstAndReportErrors,
+  updateModelingState,
+} from '@src/lang/modelingWorkflows'
+import { insertVariableAndOffsetPathToNode } from '@src/lang/modifyAst'
 import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { getVariableDeclaration } from '@src/lang/queryAst/getVariableDeclaration'
@@ -26,13 +27,15 @@ import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   DEFAULT_EXPERIMENTAL_FEATURES,
   EXECUTION_TYPE_REAL,
+  KCL_DEFAULT_CONSTANT_PREFIXES,
 } from '@src/lib/constants'
 import { getPathFilenameInVariableCase } from '@src/lib/desktop'
 import { isStepFile } from '@src/lib/fileExtensions'
 import fsZds from '@src/lib/fs-zds'
+import { addImportOrClone, findImportedFile } from '@src/lib/importCommand'
 import type { Project } from '@src/lib/project'
 import { baseUnitsUnion, warningLevels } from '@src/lib/settings/settingsTypes'
-import { err, reportRejection } from '@src/lib/trap'
+import { err, isErr, reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
@@ -194,14 +197,47 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       // Keep the persisted shortcut identity stable across the display rename.
       id: 'code:Insert',
       name: 'Import',
+      reviewMessage: ({ argumentsToSubmit }) => {
+        if (typeof argumentsToSubmit.path !== 'string') return
+        const importedFile = findImportedFile(
+          commandProps.kclManager.ast,
+          argumentsToSubmit.path
+        )
+        if (
+          !importedFile ||
+          importedFile.node.selector.type !== 'None' ||
+          !importedFile.node.selector.alias
+        )
+          return
+
+        return `This file is already imported. A clone of ${importedFile.node.selector.alias.name} will be added.`
+      },
       description: 'Import from a file in the current project directory',
       icon: 'import',
       groupId: 'code',
       hide: 'web',
       needsReview: true,
-      reviewValidation: async () => {
+      reviewValidation: async ({ argumentsToSubmit }) => {
         if (commandProps.kclManager.isExecuting) {
           return new Error(EXECUTING_MESSAGE)
+        }
+        if (
+          typeof argumentsToSubmit.path === 'string' &&
+          typeof argumentsToSubmit.localName === 'string' &&
+          findImportedFile(commandProps.kclManager.ast, argumentsToSubmit.path)
+        ) {
+          const result = addImportOrClone({
+            ast: commandProps.kclManager.ast,
+            path: argumentsToSubmit.path,
+            localName: argumentsToSubmit.localName,
+            artifactGraph: commandProps.kclManager.artifactGraph,
+            wasmInstance: commandProps.wasmInstance,
+          })
+          if (isErr(result)) return result
+          return mockExecAstAndReportErrors(
+            result.modifiedAst,
+            commandProps.kclManager.rustContext
+          )
         }
       },
       args: {
@@ -230,34 +266,26 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             }
             return providedOptions
           },
-          validation: async ({ data }) => {
-            const importExists = commandProps.kclManager.ast.body.find(
-              (n) =>
-                n.type === 'ImportStatement' &&
-                ((n.path.type === 'Kcl' && n.path.filename === data.path) ||
-                  (n.path.type === 'Foreign' && n.path.path === data.path))
-            )
-            if (importExists) {
-              return 'This file is already imported, use the Clone command instead.'
-              // TODO: see if we can transition to the clone command, see #6515
-            }
-
-            return true
-          },
         },
         localName: {
           inputType: 'string',
           required: true,
           defaultValue: (context: CommandBarContext) => {
-            if (!context.argumentsToSubmit['path']) {
+            const path = context.argumentsToSubmit.path
+            if (typeof path !== 'string') {
               return
             }
-
-            const path = context.argumentsToSubmit['path'] as string
+            if (findImportedFile(commandProps.kclManager.ast, path)) {
+              return findUniqueName(
+                commandProps.kclManager.ast,
+                KCL_DEFAULT_CONSTANT_PREFIXES.CLONE
+              )
+            }
             return getPathFilenameInVariableCase(path)
           },
           validation: async ({ data }) => {
             const variableExists =
+              commandProps.kclManager.variables[data.localName] ||
               commandProps.kclManager.variables['__mod_' + data.localName]
             if (variableExists) {
               return 'This variable name is already in use.'
@@ -271,8 +299,18 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           description:
             'Choose how this STEP file should be represented in your model.',
           inputType: 'options',
-          required: (context) => isStepFile(context.argumentsToSubmit.path),
-          hidden: (context) => !isStepFile(context.argumentsToSubmit.path),
+          required: (context) =>
+            isStepFile(context.argumentsToSubmit.path) &&
+            !findImportedFile(
+              commandProps.kclManager.ast,
+              context.argumentsToSubmit.path
+            ),
+          hidden: (context) =>
+            !isStepFile(context.argumentsToSubmit.path) ||
+            !!findImportedFile(
+              commandProps.kclManager.ast,
+              context.argumentsToSubmit.path
+            ),
           defaultValue: DEFAULT_IMPORT_REPRESENTATION,
           options: [
             {
@@ -301,12 +339,16 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           ? (data.representation ?? DEFAULT_IMPORT_REPRESENTATION)
           : undefined
 
-        const { modifiedAst, pathToNode } = addModuleImport({
+        const result = addImportOrClone({
           ast: commandProps.kclManager.ast,
           path,
           localName,
           representation,
+          artifactGraph: commandProps.kclManager.artifactGraph,
+          wasmInstance: commandProps.wasmInstance,
         })
+        if (isErr(result)) return result
+        const { modifiedAst, pathToNode } = result
         updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,

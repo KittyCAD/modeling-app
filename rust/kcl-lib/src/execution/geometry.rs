@@ -191,7 +191,9 @@ impl ImportedGeometry {
     }
 
     pub async fn id(&mut self, ctx: &ExecutorContext) -> Result<uuid::Uuid, KclError> {
-        if !self.completed {
+        // Mock execution can reuse imported geometry after engine responses have
+        // been drained. Its ID is sufficient; only real execution needs the reply.
+        if !self.completed && !ctx.no_engine_commands().await {
             self.wait_for_finish(ctx).await?;
         }
 
@@ -2721,6 +2723,29 @@ impl SketchConstraintKind {
             SketchConstraintKind::Diameter { .. } => "diameter",
             SketchConstraintKind::HorizontalDistance { .. } => "horizontalDistance",
             SketchConstraintKind::VerticalDistance { .. } => "verticalDistance",
+        }
+    }
+}
+
+#[cfg(all(test, not(target_arch = "wasm32")))]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn imported_geometry_id_does_not_wait_for_engine_in_mock_execution() {
+        let ctx = ExecutorContext::new_mock(None).await;
+        let id = uuid::Uuid::new_v4();
+        let mut geometry = ImportedGeometry::new(id, vec!["part.step".to_owned()], vec![]);
+
+        // Repeated preview/submit checks must work without an engine response.
+        for _ in 0..2 {
+            let actual = tokio::time::timeout(std::time::Duration::from_secs(1), geometry.id(&ctx))
+                .await
+                .expect("mock execution must not wait for an import response")
+                .unwrap();
+            assert_eq!(actual, id);
+            // A later real execution must still check completion.
+            assert!(!geometry.completed);
         }
     }
 }

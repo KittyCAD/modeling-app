@@ -1682,8 +1682,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             }
             // Be conservative and error out if there is an item or module with the same name.
             const variableExists =
-              modelingContext.kclManager.variables[data] ||
-              modelingContext.kclManager.variables['__mod_' + data]
+              modelingContext.kclManager.variables[data.variableName] ||
+              modelingContext.kclManager.variables['__mod_' + data.variableName]
             if (variableExists) {
               return 'This variable name is already in use.'
             }

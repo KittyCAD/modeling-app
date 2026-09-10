@@ -77,6 +77,9 @@ pub struct EngineManager {
     pending_errors: Arc<RwLock<Vec<String>>>,
     socket_health: Arc<RwLock<SocketHealth>>,
     ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, SourceRange>>>,
+    // Import geometry can outlive responses drained into the artifact graph.
+    #[builder(default)]
+    completed_async_commands: Arc<RwLock<IndexMap<Uuid, OkWebSocketResponseData>>>,
 
     /// The default planes for the scene.
     #[builder(default)]
@@ -124,6 +127,7 @@ impl EngineManager {
             pending_errors,
             socket_health,
             ids_of_async_commands,
+            completed_async_commands: Default::default(),
             default_planes: Default::default(),
             session_data,
             stats: Default::default(),
@@ -159,6 +163,7 @@ impl EngineManager {
             pending_errors,
             socket_health,
             ids_of_async_commands,
+            completed_async_commands: Default::default(),
             default_planes: Default::default(),
             session_data,
             stats: Default::default(),
@@ -182,6 +187,7 @@ impl EngineManager {
             pending_errors,
             socket_health,
             ids_of_async_commands,
+            completed_async_commands: Default::default(),
             default_planes: Default::default(),
             session_data,
             stats: Default::default(),
@@ -207,6 +213,7 @@ impl EngineManager {
     ) -> Result<(), crate::errors::KclError> {
         // Clear any batched commands leftover from previous scenes.
         self.clear_queues(batch_context).await;
+        self.completed_async_commands.write().await.clear();
 
         self.batch_modeling_cmd(
             batch_context,
@@ -233,6 +240,9 @@ impl EngineManager {
         id: uuid::Uuid,
         source_range: Option<SourceRange>,
     ) -> Result<OkWebSocketResponseData, KclError> {
+        if let Some(response) = self.completed_async_commands.read().await.get(&id).cloned() {
+            return Ok(response);
+        }
         let source_range = if let Some(source_range) = source_range {
             source_range
         } else {
@@ -277,6 +287,7 @@ impl EngineManager {
             // If the response is an error, return it.
             // Parsing will do that and we can ignore the result, we don't care.
             let response = self.parse_websocket_response(resp.clone(), source_range)?;
+            self.completed_async_commands.write().await.insert(id, response.clone());
             return Ok(response);
         }
 
@@ -465,6 +476,9 @@ impl EngineManager {
         source_range: SourceRange,
         cmd: &ModelingCmd,
     ) -> Result<(), crate::errors::KclError> {
+        // A re-executed command must wait for its new response, even if its ID is reused.
+        self.completed_async_commands.write().await.shift_remove(&id);
+        self.responses().write().await.shift_remove(&id);
         // Add the command ID to the list of async commands.
         self.ids_of_async_commands().write().await.insert(id, source_range);
 
@@ -944,4 +958,43 @@ impl EngineManager {
 pub enum SocketHealth {
     Active,
     Inactive,
+}
+
+#[cfg(all(test, not(target_arch = "wasm32")))]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn async_command_completion_survives_drained_responses() {
+        let engine = EngineManager::new_mock();
+        let id = Uuid::new_v4();
+        let command = ModelingCmd::from(
+            mcmd::ImportFiles::builder()
+                .files(vec![])
+                .format(kcmc::format::InputFormat3d::Step(Default::default()))
+                .build(),
+        );
+        engine
+            .async_modeling_cmd(id, SourceRange::synthetic(), &command)
+            .await
+            .unwrap();
+        engine.ensure_async_command_completed(id, None).await.unwrap();
+        assert_eq!(engine.take_responses().await.len(), 1);
+
+        // A cached imported part must remain usable after building the artifact graph.
+        tokio::time::timeout(
+            std::time::Duration::from_secs(1),
+            engine.ensure_async_command_completed(id, None),
+        )
+        .await
+        .expect("a completed import must not wait for a drained response")
+        .unwrap();
+
+        // Reusing a command ID must invalidate the previous completion.
+        engine
+            .async_modeling_cmd(id, SourceRange::synthetic(), &command)
+            .await
+            .unwrap();
+        assert!(engine.completed_async_commands.read().await.is_empty());
+    }
 }
