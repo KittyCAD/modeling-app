@@ -2,7 +2,6 @@ import * as fs from 'fs'
 import * as os from 'os'
 import * as path from 'path'
 import { runTests } from '@vscode/test-electron'
-import { removeVSCodeProfile } from './vscodeProfile'
 
 function createShortVSCodeProfileDir() {
   const tempRoot = process.platform === 'win32' ? os.tmpdir() : '/tmp'
@@ -35,7 +34,7 @@ async function main() {
     console.error('Failed to run tests')
     process.exitCode = 1
   } finally {
-    await removeVSCodeProfile(vscodeProfileDir)
+    fs.rmSync(vscodeProfileDir, { force: true, recursive: true })
   }
 }
 

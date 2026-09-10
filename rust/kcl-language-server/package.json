@@ -108,7 +108,7 @@
     "compile": "cross-env NODE_ENV=production tsc -b",
     "build": "npm run build-base -- --sourcemap",
     "watch": "npm run build-base -- --sourcemap --watch",
-    "pretest": "npm run build && npm run test-compile && mocha --ui tdd ./dist/client/src/test/suite/vscodeProfile.test.js",
+    "pretest": "npm run build && npm run test-compile",
     "test": "node ./dist/client/src/test/runTest.js",
     "package": "vsce package -o kcl-language-server.vsix"
   },
