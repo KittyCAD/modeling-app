@@ -1,4 +1,5 @@
 import { type ClientErrorReport, users } from '@kittycad/lib'
+import { EngineDebugger } from '@src/lib/debugger'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 
 type ReportClientErrorParams = {
@@ -130,6 +131,10 @@ const buildStack = (params: ReportClientErrorParams) => {
       ? { runtimeStack: params.error.stack }
       : {}),
     ...params.extra,
+    ...(params.code === ClientErrorCode.EngineDisconnect ||
+    params.code === ClientErrorCode.EngineBackendDisconnect
+      ? { engineDebugger: EngineDebugger.snapshotForReport() }
+      : {}),
     userAgent,
   })
 }

@@ -18,14 +18,17 @@ vi.mock('@kittycad/lib', () => ({
 }))
 
 import {
+  ClientErrorCode,
   reportClientError,
   resetReportedClientErrorsForTests,
 } from '@src/lib/clientErrors'
+import { EngineDebugger } from '@src/lib/debugger'
 
 describe('reportClientError', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     resetReportedClientErrorsForTests()
+    EngineDebugger.logs = []
     Object.defineProperty(globalThis, '__APP_VERSION__', {
       configurable: true,
       value: 'test-version',
@@ -165,5 +168,48 @@ describe('reportClientError', () => {
     })
 
     expect(mockState.reportUserClientError).toHaveBeenCalledTimes(1)
+  })
+
+  it.each([
+    ClientErrorCode.EngineDisconnect,
+    ClientErrorCode.EngineBackendDisconnect,
+  ])('attaches recent engine diagnostics to %s reports', async (code) => {
+    EngineDebugger.addLog({
+      label: 'onConnectionStateChange',
+      message: 'connectionstatechange',
+      metadata: { connectionState: 'failed' },
+    })
+    const expectedSnapshot = EngineDebugger.snapshotForReport()
+    await reportClientError({ code, message: 'Engine disconnected' })
+    EngineDebugger.addLog({ label: 'connection', message: 'reconnecting' })
+
+    expect(mockState.reportUserClientError).toHaveBeenCalledWith({
+      client: { mocked: true },
+      body: expect.objectContaining({
+        code,
+        stack: JSON.stringify({
+          engineDebugger: expectedSnapshot,
+          userAgent: navigator.userAgent,
+        }),
+      }),
+    })
+  })
+
+  it('does not collect engine logs for unrelated errors or duplicate reports', async () => {
+    const snapshotSpy = vi.spyOn(EngineDebugger, 'snapshotForReport')
+    try {
+      await reportClientError({ code: ClientErrorCode.AuthGetUserError })
+      expect(snapshotSpy).not.toHaveBeenCalled()
+      const report = {
+        code: ClientErrorCode.EngineDisconnect,
+        dedupeKey: 'engine-disconnect',
+      }
+      await reportClientError(report)
+      await reportClientError(report)
+      expect(snapshotSpy).toHaveBeenCalledTimes(1)
+      expect(mockState.reportUserClientError).toHaveBeenCalledTimes(2)
+    } finally {
+      snapshotSpy.mockRestore()
+    }
   })
 })
