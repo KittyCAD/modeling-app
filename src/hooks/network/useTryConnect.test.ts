@@ -65,7 +65,7 @@ describe('tryConnecting', () => {
     ).rejects.toEqual(connectionError)
 
     expect(manager.start).toHaveBeenCalledOnce()
-    expect(manager.tearDown).not.toHaveBeenCalled()
+    expect(manager.tearDown).toHaveBeenCalledOnce()
     expect(numberOfConnectionAttempts.current).toBe(0)
     expect(setShowManualConnect).toHaveBeenCalledWith(true)
   })
