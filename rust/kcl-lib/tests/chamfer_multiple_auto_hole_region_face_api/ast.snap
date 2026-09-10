@@ -1825,6 +1825,7 @@ description: Result of parsing chamfer_multiple_auto_hole_region_face_api.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

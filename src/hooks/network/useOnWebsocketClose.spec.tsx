@@ -1,5 +1,8 @@
 import { useOnWebsocketClose } from '@src/hooks/network/useOnWebsocketClose'
-import { EngineConnectionManagerEvents } from '@src/lib/engineConnection/utils'
+import {
+  EngineConnectionErrorKind,
+  EngineConnectionManagerEvents,
+} from '@src/lib/engineConnection/utils'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { renderHook } from '@testing-library/react'
 import { describe, expect, test, vi } from 'vitest'
@@ -84,6 +87,42 @@ describe('useOnWebsocketClose', () => {
       expect(callback).toHaveBeenCalledTimes(0)
       expect(infiniteLoopCallback).toHaveBeenCalledTimes(1)
       expect(infiniteLoopCallback).toHaveBeenCalledWith('1006')
+    })
+    test('routes terminal errors without invoking automatic reconnect callbacks', async () => {
+      const callback = vi.fn(() => 1)
+      const infiniteLoopCallback = vi.fn(() => 1)
+      const terminalErrorCallback = vi.fn(() => 1)
+      const { engineCommandManager } =
+        await buildTheWorldAndNoEngineConnection(true)
+      const { unmount } = renderHook(() =>
+        useOnWebsocketClose({
+          callback,
+          infiniteDetectionLoopCallback: infiniteLoopCallback,
+          terminalErrorCallback,
+          engineCommandManager,
+        })
+      )
+      const connectionError = {
+        kind: EngineConnectionErrorKind.BackendDisconnect,
+        message: 'backend disconnected',
+        terminal: true,
+      }
+
+      engineCommandManager.tearDown({
+        websocketClosed: true,
+        code: '1011',
+        connectionError,
+      })
+      unmount()
+
+      expect(engineCommandManager.lastConnectionError).toEqual(connectionError)
+      expect(terminalErrorCallback).toHaveBeenCalledOnce()
+      expect(terminalErrorCallback).toHaveBeenCalledWith(
+        connectionError,
+        '1011'
+      )
+      expect(callback).not.toHaveBeenCalled()
+      expect(infiniteLoopCallback).not.toHaveBeenCalled()
     })
   })
 })
