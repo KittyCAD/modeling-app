@@ -340,6 +340,7 @@ export enum EngineConnectionManagerEvents {
 
 export enum EngineConnectionErrorKind {
   BackendDisconnect = 'backend-disconnect',
+  UnsupportedVideoCodec = 'unsupported-video-codec',
 }
 
 export type EngineConnectionError = {
