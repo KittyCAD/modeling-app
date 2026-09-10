@@ -1495,6 +1495,7 @@ description: Result of parsing washer.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

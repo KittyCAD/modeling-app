@@ -2165,6 +2165,7 @@ description: Result of parsing mirror3d_edge_specifier_after_subtract.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

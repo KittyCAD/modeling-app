@@ -2259,6 +2259,7 @@ description: Result of parsing error_large_fillet_radius.kcl
         }
       ]
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

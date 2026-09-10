@@ -381,6 +381,7 @@ description: Result of parsing sketch_block_arc_direction_invalid.kcl
       }
     ],
     "moduleId": 0,
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

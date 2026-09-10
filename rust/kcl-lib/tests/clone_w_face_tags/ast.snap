@@ -2427,6 +2427,7 @@ description: Result of parsing clone_w_face_tags.kcl
       }
     ],
     "moduleId": 0,
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }
