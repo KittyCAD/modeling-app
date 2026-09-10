@@ -3589,6 +3589,7 @@ description: Result of parsing solid_edge_cut_using_edge_ref_csg.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

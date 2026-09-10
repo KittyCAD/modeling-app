@@ -2041,6 +2041,7 @@ description: Result of parsing use_point_from_other_sketch.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

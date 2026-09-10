@@ -5265,6 +5265,7 @@ description: Result of parsing lattice-cubic.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }
