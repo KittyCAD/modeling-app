@@ -6821,6 +6821,72 @@ type Color { | Red | Green | Red }
         parse_execute_with_project_dir(main, Some(crate::TypedPath(tmpdir.path().into()))).await
     }
 
+    #[tokio::test(flavor = "multi_thread")]
+    async fn named_import_unexported_declaration() {
+        let name = "motorSideStationaryBearingOuter";
+        let settings = "@settings(experimentalFeatures = allow)\n";
+        for declaration in [
+            format!("{name} = 42\n"),
+            format!("fn {name}() {{ return 42 }}\n"),
+            format!("type {name} = number(mm)\n"),
+            format!("import \"inner.kcl\" as {name}\n"),
+        ] {
+            for alias in ["", " as bearing"] {
+                let main = format!("{settings}import {name}{alias} from \"bearing.kcl\"\n");
+                let module = format!("{settings}{declaration}");
+                let err = execute_with_modules(&main, &[("bearing.kcl", &module), ("inner.kcl", "")])
+                    .await
+                    .unwrap_err();
+                assert!(matches!(err, KclError::Semantic { .. }), "{declaration}: {err}");
+                assert_eq!(
+                    err.message(),
+                    format!(
+                        "Cannot import \"{name}\" from \"bearing.kcl\" because it is not exported. Add `export` before its declaration in \"bearing.kcl\" (for example, `export {name} = ...` for a variable)."
+                    ),
+                );
+                let start = main.find(name).unwrap();
+                assert_eq!(
+                    err.source_ranges(),
+                    vec![SourceRange::new(start, start + name.len(), ModuleId::default())]
+                );
+                // The serialized message is what the Wasm consumer displays.
+                assert_eq!(serde_json::to_value(&err).unwrap()["details"]["msg"], err.message());
+
+                // Apply the suggested fix in the source module. This also pins
+                // current export syntax for variables, functions, types and imports.
+                let exported = format!("{settings}export {declaration}");
+                execute_with_modules(&main, &[("bearing.kcl", &exported), ("inner.kcl", "")])
+                    .await
+                    .unwrap_or_else(|err| panic!("{exported}: {err}"));
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn named_import_undefined_declaration() {
+        let main = "import missing as bearing from \"bearing.kcl\"\n";
+        let err = execute_with_modules(main, &[("bearing.kcl", "other = 42\n")])
+            .await
+            .unwrap_err();
+        assert!(matches!(err, KclError::UndefinedValue { .. }));
+        assert_eq!(err.message(), "missing is not defined in module");
+        assert_eq!(err.source_ranges(), vec![SourceRange::new(7, 14, ModuleId::default())]);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn named_import_exported_in_one_namespace() {
+        let settings = "@settings(experimentalFeatures = allow)\n";
+        let main = format!("{settings}import bearing from \"bearing.kcl\"\n");
+        for declarations in [
+            "bearing = 42\nexport type bearing = number(mm)\n",
+            "export bearing = 42\ntype bearing = number(mm)\n",
+        ] {
+            execute_with_modules(&main, &[("bearing.kcl", &format!("{settings}{declarations}"))])
+                .await
+                .unwrap();
+        }
+    }
+
     /// Runs `main` with an empty imported module named `m.kcl` in mock
     /// execution and returns the recorded compilation issues; the run may
     /// end in an error (e.g. from operating on the module's missing return

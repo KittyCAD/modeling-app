@@ -1310,11 +1310,11 @@ impl ExecutorContext {
                 for import_item in items {
                     // Extract the item from the module.
                     let mem = &exec_state.stack().memory;
-                    let mut value = mem.get_from_owned(&import_item.name.name, env_ref, import_item.into(), 0);
+                    let value = mem.get_from_owned(&import_item.name.name, env_ref, import_item.into(), 0);
                     let ty_name = format!("{}{}", memory::TYPE_PREFIX, import_item.name.name);
-                    let mut ty = mem.get_from_owned(&ty_name, env_ref, import_item.into(), 0);
+                    let ty = mem.get_from_owned(&ty_name, env_ref, import_item.into(), 0);
                     let mod_name = format!("{}{}", memory::MODULE_PREFIX, import_item.name.name);
-                    let mut mod_value = mem.get_from_owned(&mod_name, env_ref, import_item.into(), 0);
+                    let mod_value = mem.get_from_owned(&mod_name, env_ref, import_item.into(), 0);
 
                     if value.is_err() && ty.is_err() && mod_value.is_err() {
                         return Err(KclError::new_undefined_value(
@@ -1326,43 +1326,24 @@ impl ExecutorContext {
                         ));
                     }
 
-                    // Check that the item is allowed to be imported (in at least one namespace).
-                    if value.is_ok() && !module_exports.contains(&import_item.name.name) {
-                        value = Err(KclError::new_semantic(KclErrorDetails::new(
+                    // Import only exported namespaces. The name exists, so if none
+                    // are exported, report visibility rather than a failed value lookup.
+                    let value = value.ok().filter(|_| module_exports.contains(&import_item.name.name));
+                    let ty = ty.ok().filter(|_| module_exports.contains(&ty_name));
+                    let mod_value = mod_value.ok().filter(|_| module_exports.contains(&mod_name));
+                    if value.is_none() && ty.is_none() && mod_value.is_none() {
+                        let name = &import_item.name.name;
+                        let path = &import_stmt.path;
+                        return Err(KclError::new_semantic(KclErrorDetails::new(
                             format!(
-                                "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
-                                import_item.name.name
+                                "Cannot import \"{name}\" from \"{path}\" because it is not exported. Add `export` before its declaration in \"{path}\" (for example, `export {name} = ...` for a variable)."
                             ),
                             vec![SourceRange::from(&import_item.name)],
                         )));
-                    }
-
-                    if ty.is_ok() && !module_exports.contains(&ty_name) {
-                        ty = Err(KclError::new_semantic(KclErrorDetails::new(
-                            format!(
-                                "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
-                                import_item.name.name
-                            ),
-                            vec![SourceRange::from(&import_item.name)],
-                        )));
-                    }
-
-                    if mod_value.is_ok() && !module_exports.contains(&mod_name) {
-                        mod_value = Err(KclError::new_semantic(KclErrorDetails::new(
-                            format!(
-                                "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
-                                import_item.name.name
-                            ),
-                            vec![SourceRange::from(&import_item.name)],
-                        )));
-                    }
-
-                    if value.is_err() && ty.is_err() && mod_value.is_err() {
-                        return value.map(|_| ());
                     }
 
                     // Add the item to the current module.
-                    if let Ok(value) = value {
+                    if let Some(value) = value {
                         exec_state.mut_stack().add(
                             import_item.identifier().to_owned(),
                             value,
@@ -1377,7 +1358,7 @@ impl ExecutorContext {
                         }
                     }
 
-                    if let Ok(ty) = ty {
+                    if let Some(ty) = ty {
                         let ty_name = format!("{}{}", memory::TYPE_PREFIX, import_item.identifier());
                         if matches!(
                             &ty,
@@ -1401,7 +1382,7 @@ impl ExecutorContext {
                         }
                     }
 
-                    if let Ok(mod_value) = mod_value {
+                    if let Some(mod_value) = mod_value {
                         let mod_name = format!("{}{}", memory::MODULE_PREFIX, import_item.identifier());
                         reject_module_clashing_with_enum(
                             exec_state,
@@ -1448,9 +1429,11 @@ impl ExecutorContext {
                     value: module_id,
                     meta: vec![source_range.into()],
                 };
-                exec_state
-                    .mut_stack()
-                    .add(format!("{}{}", memory::MODULE_PREFIX, name), item, source_range)?;
+                let mod_name = format!("{}{}", memory::MODULE_PREFIX, name);
+                exec_state.mut_stack().add(mod_name.clone(), item, source_range)?;
+                if let ItemVisibility::Export = import_stmt.visibility {
+                    exec_state.mod_local.module_exports.push(mod_name);
+                }
             }
         }
 
