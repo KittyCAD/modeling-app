@@ -214,10 +214,10 @@ test.describe(
         await scene.settled()
       })
 
-      await test.step('Import a second time opens Clone, then cancel', async () => {
+      await test.step('Import a second time suggests a clone name, then cancel', async () => {
         await toolbar.insertButton.click()
         await cmdBar.selectOption({ name: 'bracket.kcl' }).click()
-        await expect(page.getByTestId('command-name')).toHaveText('Clone')
+        await expect(page.getByTestId('command-name')).toHaveText('Import')
         await expect(cmdBar.argumentInput).toHaveValue('clone001')
         await cmdBar.closeCmdBar()
         await editor.expectEditor.not.toContain('clone001')

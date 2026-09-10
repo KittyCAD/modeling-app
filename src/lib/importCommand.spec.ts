@@ -1,8 +1,7 @@
 import { join } from 'path'
-import { addClone } from '@src/lang/modifyAst/transforms'
 import { assertParse, recast } from '@src/lang/wasm'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
-import { findImportedFile } from '@src/lib/importCommand'
+import { addImportOrClone, findImportedFile } from '@src/lib/importCommand'
 import { beforeAll, describe, expect, it } from 'vitest'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
@@ -13,7 +12,7 @@ beforeAll(async () => {
   )
 })
 
-describe('findImportedFile', () => {
+describe('addImportOrClone', () => {
   it.each([
     ['parts/main.kcl', './parts/main.kcl'],
     ['parts/main.kcl', 'parts/../parts/main.kcl'],
@@ -23,25 +22,78 @@ describe('findImportedFile', () => {
     const code = `import "other.kcl" as other
 import "${importedPath}" as originalPart`
     const ast = assertParse(code, wasmInstance)
-    const importedFile = findImportedFile(ast, filePath)
-    if (!importedFile) throw new Error('Import not found')
-    const result = addClone({
+    const result = addImportOrClone({
       ast,
       artifactGraph: new Map(),
-      objects: {
-        graphSelections: [importedFile.selection],
-        otherSelections: [],
-      },
-      variableName: 'clone001',
+      path: filePath,
+      localName: 'myInstance',
       wasmInstance,
     })
     if (result instanceof Error) throw result
     const clonedCode = recast(result.modifiedAst, wasmInstance)
-    expect(clonedCode).toContain('clone001 = clone(originalPart)')
+    expect(clonedCode).toContain('myInstance = clone(originalPart)')
     expect(
       result.modifiedAst.body.filter((node) => node.type === 'ImportStatement')
     ).toHaveLength(2)
-    expect(recast(ast, wasmInstance)).not.toContain('clone001')
+    expect(recast(ast, wasmInstance)).not.toContain('myInstance')
+  })
+
+  it('adds a new import with the requested STEP representation', () => {
+    const ast = assertParse('import "washer.kcl" as washer', wasmInstance)
+    const result = addImportOrClone({
+      ast,
+      path: 'cube.step',
+      localName: 'cube',
+      representation: 'brep',
+      artifactGraph: new Map(),
+      wasmInstance,
+    })
+    if (result instanceof Error) throw result
+    const code = recast(result.modifiedAst, wasmInstance)
+    expect(code).toContain(
+      '@(targetRepresentation = brep)\nimport "cube.step" as cube'
+    )
+    expect(code).not.toContain('clone(')
+    expect(recast(ast, wasmInstance)).not.toContain('cube')
+  })
+
+  it('keeps the original STEP representation when cloning', () => {
+    const ast = assertParse(
+      '@(targetRepresentation = brep)\nimport "cube.step" as cube',
+      wasmInstance
+    )
+    const result = addImportOrClone({
+      ast,
+      path: 'cube.step',
+      localName: 'myInstance',
+      representation: 'mesh',
+      artifactGraph: new Map(),
+      wasmInstance,
+    })
+    if (result instanceof Error) throw result
+    const code = recast(result.modifiedAst, wasmInstance)
+    expect(code).toContain(
+      '@(targetRepresentation = brep)\nimport "cube.step" as cube'
+    )
+    expect(code).toContain('myInstance = clone(cube)')
+    expect(code).not.toContain('targetRepresentation = mesh')
+  })
+
+  it('blocks repeat imports without a module alias', () => {
+    const ast = assertParse('import "washer.kcl"', wasmInstance)
+    const result = addImportOrClone({
+      ast,
+      path: 'washer.kcl',
+      localName: 'myInstance',
+      artifactGraph: new Map(),
+      wasmInstance,
+    })
+    expect(result).toEqual(
+      new Error(
+        'This file must be imported with a module alias to add a clone.'
+      )
+    )
+    expect(recast(ast, wasmInstance)).not.toContain('myInstance')
   })
 
   it('does not confuse files in different directories', () => {

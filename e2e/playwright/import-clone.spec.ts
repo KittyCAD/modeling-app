@@ -6,7 +6,7 @@ import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 for (const fileType of ['kcl', 'step']) {
   test(
-    `Repeat ${fileType} import reuses the existing part through Clone`,
+    `Repeat ${fileType} import creates a clone when Import is submitted`,
     { tag: ['@desktop', '@macos', '@windows'] },
     async ({
       folderSetupFn,
@@ -36,7 +36,7 @@ for (const fileType of ['kcl', 'step']) {
       await homePage.openProject(projectName)
       await scene.settled()
 
-      await test.step('Open Clone with the imported part already selected', async () => {
+      await test.step('Stay in Import and suggest a new instance name', async () => {
         if (fileType === 'step') {
           // The file browser supplies a path without visiting the path argument.
           await toolbar.openPane(DefaultLayoutPaneID.Files)
@@ -46,11 +46,14 @@ for (const fileType of ['kcl', 'step']) {
           await toolbar.insertButton.click()
           await cmdBar.selectOption({ name: filePath }).click()
         }
-        await expect(page.getByTestId('command-name')).toHaveText('Clone')
+        await expect(page.getByTestId('command-name')).toHaveText('Import')
         await expect(cmdBar.argumentInput).toHaveValue('clone001')
+        expect(
+          await page.evaluate(() => window.app.singletons.kclManager.code)
+        ).toBe(code)
       })
 
-      await test.step('Keep Clone name validation and review', async () => {
+      await test.step('Validate the name and explain the clone before submission', async () => {
         await cmdBar.argumentInput.fill('originalPart')
         await cmdBar.progressCmdBar()
         await expect(
@@ -59,6 +62,18 @@ for (const fileType of ['kcl', 'step']) {
         await cmdBar.argumentInput.fill('clone001')
         await cmdBar.progressCmdBar()
         await expect(page.locator('#review-form')).toBeVisible()
+        await expect(page.getByTestId('command-name')).toHaveText('Import')
+        await expect(
+          page.getByText(
+            'This file is already imported. A clone of originalPart will be added.'
+          )
+        ).toBeVisible()
+        await expect(
+          page.getByText('Representation', { exact: true })
+        ).not.toBeVisible()
+        expect(
+          await page.evaluate(() => window.app.singletons.kclManager.code)
+        ).toBe(code)
         await expect(
           page.getByTestId('cmd-bar-review-validation-error')
         ).not.toBeVisible()
@@ -80,13 +95,16 @@ for (const fileType of ['kcl', 'step']) {
         )
         await toolbar.insertButton.click()
         await cmdBar.selectOption({ name: filePath }).click()
-        await expect(page.getByTestId('command-name')).toHaveText('Clone')
+        await expect(page.getByTestId('command-name')).toHaveText('Import')
         await expect(cmdBar.argumentInput).toHaveValue('clone002')
         await cmdBar.argumentInput.fill('clone001')
         await cmdBar.progressCmdBar()
         await expect(
           page.getByText('This variable name is already in use.')
         ).toBeVisible()
+        await cmdBar.argumentInput.fill('clone002')
+        await cmdBar.progressCmdBar()
+        await expect(page.locator('#review-form')).toBeVisible()
         await cmdBar.closeCmdBar()
         expect(
           await page.evaluate(() => window.app.singletons.kclManager.code)
@@ -97,10 +115,11 @@ for (const fileType of ['kcl', 'step']) {
         await toolbar.insertButton.click()
         await cmdBar.selectOption({ name: filePath }).click()
         await expect(cmdBar.argumentInput).toHaveValue('clone002')
+        await cmdBar.argumentInput.fill('myInstance')
         await cmdBar.progressCmdBar()
         await cmdBar.progressCmdBar()
         await scene.settled()
-        await editor.expectEditor.toContain('clone002 = clone(originalPart)')
+        await editor.expectEditor.toContain('myInstance = clone(originalPart)')
         const result = await page.evaluate(() => ({
           code: window.app.singletons.kclManager.code,
           errors: window.app.singletons.kclManager.errors,
