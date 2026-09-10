@@ -164,11 +164,16 @@ export async function getBillingInfo(
     return subscriptions
   }
 
-  const isOrg = subscriptions.modeling_app.type.type === 'organization'
-  const tier = subscriptions.modeling_app.name
-  const ratioSec = subscriptions.modeling_app.pay_as_you_go_api_credit_price
+  const plan = subscriptions.modeling_app
+  const isOrg = plan.type.type === 'organization'
+  const tier = plan.name
+  const ratioSec = plan.pay_as_you_go_api_credit_price
+  const hasUnlimitedCredits = Boolean(
+    plan.zoo_tools_included?.includes('modeling_app') &&
+      plan.endpoints_included?.includes('ml')
+  )
 
-  if (isOrg || tier === 'pro') {
+  if (hasUnlimitedCredits) {
     return {
       balance: Number.POSITIVE_INFINITY,
       userPaymentBalance: billing,
@@ -180,7 +185,7 @@ export async function getBillingInfo(
 
   const toMinutes = (value: number, ratioSec: number) => value / ratioSec / 60
   const computedAllowance =
-    subscriptions.modeling_app.monthly_pay_as_you_go_api_credits_monetary_value
+    plan.monthly_pay_as_you_go_api_credits_monetary_value
 
   if (ratioSec === undefined || computedAllowance === undefined) {
     return createInvalidBillingDataError(

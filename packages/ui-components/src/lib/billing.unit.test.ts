@@ -1,8 +1,10 @@
 import {
   Client,
+  type ApiEndpoint,
   type CustomerBalance,
   type SubscriptionTierType,
   type ZooProductSubscriptions,
+  type ZooTool,
 } from '@kittycad/lib'
 import {
   BillingError,
@@ -39,12 +41,18 @@ function createUserPaymentBalanceResponse(opts: {
   }
 }
 
-function createUserPaymentSubscriptionsResponse(opts: {
+type SubscriptionOptions = {
   monthlyPayAsYouGoApiBalanceTotalMonthlyValue?: number
   name: string
   payAsYouGoApiCreditPrice?: number
   type?: SubscriptionTierType
-}): ZooProductSubscriptions {
+  zooToolsIncluded?: ZooTool[]
+  endpointsIncluded?: ApiEndpoint[]
+}
+
+function createUserPaymentSubscriptionsResponse(
+  opts: SubscriptionOptions
+): ZooProductSubscriptions {
   return {
     modeling_app: {
       annual_discount: 10,
@@ -62,6 +70,8 @@ function createUserPaymentSubscriptionsResponse(opts: {
       support_tier: 'community',
       training_data_behavior: 'default_on',
       type: opts.type ?? { type: 'individual' },
+      zoo_tools_included: opts.zooToolsIncluded,
+      endpoints_included: opts.endpointsIncluded,
     },
   }
 }
@@ -173,36 +183,41 @@ test('Finds the credits of Plus subscription', async () => {
   expect(billing.isOrg).toBe(false)
 })
 
-test('Finds infinite credits for Pro subscription', async () => {
-  server.use(
-    http.get('*/user/payment/balance', () => {
-      return HttpResponse.json(
-        createUserPaymentBalanceResponse({
-          monthlyApiBalanceRemainingMonthlyValue: 10,
-          stableApiBalanceRemainingMonthlyValue: 0,
-        })
-      )
-    }),
-    http.get('*/user/payment/subscriptions', () => {
-      return HttpResponse.json(
-        createUserPaymentSubscriptionsResponse({
-          monthlyPayAsYouGoApiBalanceTotalMonthlyValue: 20,
-          name: 'pro',
-        })
-      )
-    })
-  )
+test.each(['pro', 'custom-unlimited-individual-plan'])(
+  'Finds infinite credits for individual subscription %s with ML coverage',
+  async (name) => {
+    server.use(
+      http.get('*/user/payment/balance', () => {
+        return HttpResponse.json(
+          createUserPaymentBalanceResponse({
+            monthlyApiBalanceRemainingMonthlyValue: 10,
+            stableApiBalanceRemainingMonthlyValue: 0,
+          })
+        )
+      }),
+      http.get('*/user/payment/subscriptions', () => {
+        return HttpResponse.json(
+          createUserPaymentSubscriptionsResponse({
+            monthlyPayAsYouGoApiBalanceTotalMonthlyValue: 20,
+            name,
+            zooToolsIncluded: ['modeling_app'],
+            endpointsIncluded: ['modeling', 'ml', 'file'],
+          })
+        )
+      })
+    )
 
-  const billing = await getBillingInfo(client)
-  if (BillingError.from(billing)) throw billing
-  expect(billing.balance).toBe(Number.POSITIVE_INFINITY)
-  expect(billing.allowance).toBeUndefined()
-  expect(billing.hasSubscription).toBe(true)
-  expect(billing.isOrg).toBe(false)
-})
+    const billing = await getBillingInfo(client)
+    if (BillingError.from(billing)) throw billing
+    expect(billing.balance).toBe(Number.POSITIVE_INFINITY)
+    expect(billing.allowance).toBeUndefined()
+    expect(billing.hasSubscription).toBe(true)
+    expect(billing.isOrg).toBe(false)
+  }
+)
 
 test.each(['enterprise', 'enterprise-free', 'team', 'custom-org-plan'])(
-  'Finds infinite credits for organization subscription %s',
+  'Finds infinite credits for organization subscription %s with ML coverage',
   async (name) => {
     server.use(
       http.get('*/user/payment/balance', () => {
@@ -219,6 +234,8 @@ test.each(['enterprise', 'enterprise-free', 'team', 'custom-org-plan'])(
             monthlyPayAsYouGoApiBalanceTotalMonthlyValue: 20,
             name,
             type: { type: 'organization', saml_sso: true },
+            zooToolsIncluded: ['modeling_app'],
+            endpointsIncluded: ['modeling', 'ml', 'file'],
           })
         )
       })
@@ -260,7 +277,30 @@ test('Returns billing error for missing subscription credit data', async () => {
   })
 })
 
-test('Finds the credits of a custom individual subscription', async () => {
+test.each<SubscriptionOptions>([
+  { name: 'custom-individual-plan' },
+  {
+    name: 'pro',
+    zooToolsIncluded: ['modeling_app'],
+    endpointsIncluded: ['modeling'],
+  },
+  {
+    name: 'custom-text-to-cad-plan',
+    zooToolsIncluded: ['text_to_cad'],
+    endpointsIncluded: ['ml'],
+  },
+  {
+    name: 'team',
+    type: { type: 'organization', saml_sso: false },
+    zooToolsIncluded: ['modeling_app'],
+    endpointsIncluded: [],
+  },
+  {
+    name: 'custom-org-without-tools',
+    type: { type: 'organization', saml_sso: false },
+    endpointsIncluded: ['ml'],
+  },
+])('Finds metered credits for $name without app ML coverage', async (opts) => {
   server.use(
     http.get('*/user/payment/balance', () => {
       return HttpResponse.json(
@@ -274,7 +314,7 @@ test('Finds the credits of a custom individual subscription', async () => {
       return HttpResponse.json(
         createUserPaymentSubscriptionsResponse({
           monthlyPayAsYouGoApiBalanceTotalMonthlyValue: 10,
-          name: 'custom-individual-plan',
+          ...opts,
         })
       )
     })
@@ -286,5 +326,5 @@ test('Finds the credits of a custom individual subscription', async () => {
   expect(Math.floor(billing.allowance!)).toEqual(20)
   expect(billing.payAsYouGoApiCreditPrice).toEqual(0.0083)
   expect(billing.hasSubscription).toBe(true)
-  expect(billing.isOrg).toBe(false)
+  expect(billing.isOrg).toBe(opts.type?.type === 'organization')
 })
