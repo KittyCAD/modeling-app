@@ -404,18 +404,11 @@ extrude002 = extrude(profile002, length = 150)`
       // Click the checkbox
       await cmdBar.submit()
 
-      // Find the toast.
-      // Look out for the toast message
-      await expect(exportingToastMessage).toBeVisible()
-
-      // Expect it to succeed.
+      // A fast export can complete before its progress toast is observed.
+      const successToastMessage = page.getByText(`Exported successfully`)
+      await expect(successToastMessage.first()).toBeVisible({ timeout: 15_000 })
       await expect(exportingToastMessage).not.toBeVisible()
       await expect(engineErrorToastMessage).not.toBeVisible()
-
-      const successToastMessage = page.getByText(`Exported successfully`)
-      await page.waitForTimeout(1_000)
-      const count = await successToastMessage.count()
-      expect(count).toBeGreaterThanOrEqual(1)
     }
   )
   // We updated this test such that you can have multiple exports going at once.
@@ -465,10 +458,11 @@ extrude002 = extrude(profile002, length = 150)`
 
       await test.step('The first export still succeeds', async () => {
         await Promise.all([
-          expect(exportingToastMessage).not.toBeVisible({ timeout: 15_000 }),
+          expect(exportingToastMessage).toHaveCount(0, { timeout: 15_000 }),
           expect(errorToastMessage).not.toBeVisible(),
           expect(engineErrorToastMessage).not.toBeVisible(),
-          expect(successToastMessage).toBeVisible({ timeout: 15_000 }),
+          // Overlapping exports can each retain a success notification.
+          expect(successToastMessage.first()).toBeVisible({ timeout: 15_000 }),
           expect(alreadyExportingToastMessage).not.toBeVisible({
             timeout: 15_000,
           }),
@@ -484,7 +478,7 @@ extrude002 = extrude(profile002, length = 150)`
 
       // Expect it to succeed.
       await Promise.all([
-        expect(exportingToastMessage).not.toBeVisible({ timeout: 15_000 }),
+        expect(exportingToastMessage).toHaveCount(0, { timeout: 15_000 }),
         expect(errorToastMessage).not.toBeVisible(),
         expect(engineErrorToastMessage).not.toBeVisible(),
         expect(alreadyExportingToastMessage).not.toBeVisible(),
