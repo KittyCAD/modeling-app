@@ -47,12 +47,11 @@ test('Loading uses ConnectionRecovery for Engine manual reconnects', () => {
       showManualConnect={true}
       callback={onReconnect}
       dataTestId="loading-engine"
-      manualConnectTitle="Terminal connection failure"
     />
   )
 
   expect(screen.getByTestId('loading-engine')).toHaveTextContent(
-    'Terminal connection failure'
+    'Failed to connect.'
   )
   fireEvent.click(screen.getByRole('button', { name: /reconnect/i }))
   expect(onReconnect).toHaveBeenCalledTimes(1)

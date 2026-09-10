@@ -20,7 +20,6 @@ interface LoadingProps extends React.PropsWithChildren {
   retryAttemptCountdown?: number
   isRetrying?: boolean
   showManualConnect?: boolean
-  manualConnectTitle?: ReactNode
   callback?: () => void
 }
 
@@ -77,7 +76,6 @@ const Loading = ({
   retryAttemptCountdown,
   isRetrying,
   showManualConnect,
-  manualConnectTitle,
   callback,
 }: LoadingProps) => {
   const [error, setError] = useState<IErrorType>({
@@ -157,7 +155,6 @@ const Loading = ({
       <ConnectionRecovery
         className={`body-bg ${className ?? ''}`}
         dataTestId={dataTestId ? dataTestId : 'loading'}
-        title={manualConnectTitle}
         onReconnect={() => callback?.()}
       />
     )

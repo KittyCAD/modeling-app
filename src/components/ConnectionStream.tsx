@@ -644,11 +644,6 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           dataTestId="loading-engine"
           className="absolute inset-0 h-screen"
           showManualConnect={showManualConnect}
-          manualConnectTitle={
-            engineCommandManager.lastConnectionError?.terminal
-              ? engineCommandManager.lastConnectionError.message
-              : undefined
-          }
           callback={() => {
             setShowManualConnect(false)
             tryConnecting({
