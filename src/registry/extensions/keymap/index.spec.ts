@@ -1,32 +1,36 @@
 import {
-  Registry,
-  Slot,
   defineRegistryItem,
   provideService,
+  Registry,
+  Slot,
 } from '@kittycad/registry'
 import type { Command } from '@src/lib/commandTypes'
 import {
+  type CommandSystemService,
+  commandScopeService,
+  commandScopesValueSpec,
+  commandSystemService,
   FILE_COMMAND_SCOPES,
   GLOBAL_COMMAND_SCOPES,
   HOME_COMMAND_SCOPE,
   MODE_MODELING_COMMAND_SCOPE,
   SETTINGS_COMMAND_SCOPE,
-  type CommandSystemService,
-  commandScopeService,
-  commandScopesValueSpec,
-  commandSystemService,
 } from '@src/registry/contracts/commands'
+import {
+  type FileOperationsRegistryService,
+  fileOperationsService,
+} from '@src/registry/contracts/fileOperations'
 import {
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
   EDITABLE_FOCUSED_KEYMAP_SCOPE,
   KEYMAP_SCHEMA_VERSION,
-  MODE_SKETCHING_KEYMAP_SCOPE,
-  MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
-  type PersistedKeymap,
   keymapContract,
   keymapScopesValueSpec,
   keymapService,
+  MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
+  MODE_SKETCHING_KEYMAP_SCOPE,
+  type PersistedKeymap,
   provideKeymapDocument,
   provideKeymapItem,
 } from '@src/registry/contracts/keymap'
@@ -38,6 +42,8 @@ const persistenceMocks = vi.hoisted(() => ({
   readUserKeymapFile: vi.fn(),
   writeUserKeymapFile: vi.fn(),
 }))
+
+const testFileOperations = {} as FileOperationsRegistryService
 
 vi.mock('@src/registry/extensions/keymap/persistence', () => persistenceMocks)
 
@@ -427,16 +433,19 @@ describe('keymap extension', () => {
     await savePromise
 
     expect(persistenceMocks.writeUserKeymapFile).toHaveBeenCalledOnce()
-    expect(persistenceMocks.writeUserKeymapFile).toHaveBeenCalledWith({
-      version: KEYMAP_SCHEMA_VERSION,
-      bindings: [
-        {
-          command: 'zds.toolbar.sketch.line',
-          keystrokes: ['shift+q'],
-          when: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
-        },
-      ],
-    })
+    expect(persistenceMocks.writeUserKeymapFile).toHaveBeenCalledWith(
+      testFileOperations,
+      {
+        version: KEYMAP_SCHEMA_VERSION,
+        bindings: [
+          {
+            command: 'zds.toolbar.sketch.line',
+            keystrokes: ['shift+q'],
+            when: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+          },
+        ],
+      }
+    )
     expect(
       keymap.handleKeyDown(new KeyboardEvent('keydown', { key: 'l' }), {
         source: 'global',
@@ -479,7 +488,10 @@ describe('keymap extension', () => {
       ],
     }
     expect(keymap.persistedKeymap.value).toEqual(expected)
-    expect(persistenceMocks.writeUserKeymapFile).toHaveBeenCalledWith(expected)
+    expect(persistenceMocks.writeUserKeymapFile).toHaveBeenCalledWith(
+      testFileOperations,
+      expected
+    )
 
     registry[Symbol.dispose]()
   })
@@ -875,6 +887,12 @@ function createRegistryWithKeymapItems(
   const keymapSlot = new Slot()
   const registry = new Registry()
   registry.configure([
+    defineRegistryItem({
+      id: 'test-file-operations',
+      providesServices: [
+        provideService(fileOperationsService, testFileOperations),
+      ],
+    }),
     keymapExtension,
     ...(commands.length > 0
       ? [createTestCommandSystemItem(commands, options.send ?? vi.fn())]

@@ -89,6 +89,10 @@ import {
   cloudSyncService,
 } from '@src/registry/contracts/cloudSync'
 import {
+  type FileOperationsRegistryService,
+  fileOperationsService,
+} from '@src/registry/contracts/fileOperations'
+import {
   type ProjectExplorerProjectBreadcrumbBadgeComponentProps,
   type ProjectExplorerProjectMenuItemComponentProps,
   projectExplorerProjectBreadcrumbBadgesValueSpec,
@@ -1035,9 +1039,11 @@ function selectManifestComparisonCanonical({
 }
 
 async function readLocalManifestComparisons({
+  fileOperations,
   metadata,
   realizations,
 }: {
+  fileOperations?: FileOperationsRegistryService
   metadata: readonly CloudSyncProjectMetadataIndexEntry[]
   realizations: readonly ProjectLibraryRealization[]
 }) {
@@ -1110,11 +1116,18 @@ async function readLocalManifestComparisons({
             return
           }
 
+          if (!fileOperations) {
+            comparisons.set(normalizedLocalProjectPath, {
+              manifestReadable: false,
+            })
+            return
+          }
+
           try {
             comparisons.set(normalizedLocalProjectPath, {
               localMatchesBase: await localProjectManifestMatchesBase({
                 baseManifest,
-                localFs: fsZds,
+                fileOperations,
                 projectRoot: realization.localProjectPath,
               }),
             })
@@ -1133,6 +1146,7 @@ async function readLocalManifestComparisons({
 
 const cloudSyncCloudProjectRelationships = defineRegistryItemFactory((ctx) => {
   const cloudSync = ctx.services.signal(cloudSyncService)
+  const fileOperations = ctx.services.signal(fileOperationsService)
   const projectLibraryRealizations = ctx.valueSpecs.signal(
     projectLibraryRealizationsValueSpec
   )
@@ -1249,6 +1263,7 @@ const cloudSyncCloudProjectRelationships = defineRegistryItemFactory((ctx) => {
     // Visibility changes must not reread metadata or compare local manifests.
     const disposeMetadata = effect(() => {
       const service = cloudSync.value
+      const operations = fileOperations.value
       const status = cloudSyncStatus.value
       const nextLoadId = ++loadId
 
@@ -1273,6 +1288,7 @@ const cloudSyncCloudProjectRelationships = defineRegistryItemFactory((ctx) => {
           cloudSyncMetadata.value = metadata
 
           readLocalManifestComparisons({
+            fileOperations: operations,
             metadata,
             realizations,
           })
@@ -1331,6 +1347,7 @@ const cloudSyncCloudProjectRelationships = defineRegistryItemFactory((ctx) => {
  * sync-only surface (remote entries, status bar, project-menu sync actions).
  */
 export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
+  const fileOperations = () => ctx.services.get(fileOperationsService)
   const systemIO = ctx.services.signal(systemIOService)
   const userFeatures = ctx.services.signal(userFeaturesService)
   const getWasmPromise = () =>
@@ -1376,6 +1393,7 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
           }
 
           const project = await createProjectInLocalDirectory({
+            fileOperations: fileOperations(),
             projectDirectoryPath:
               await getCloudProjectLibraryMaterializationDirectoryPath(library),
             requestedProjectName,
@@ -1404,6 +1422,7 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
             }
 
             const result = await duplicateProjectInDirectory({
+              fileOperations: fileOperations(),
               source: {
                 directoryName: project.localProjectName,
                 displayName: getHomeProjectDisplayName(project),
@@ -1463,6 +1482,7 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
 
           if (project.localProjectPath && project.readWriteAccess) {
             await writeProjectTitleToProjectToml(
+              fileOperations(),
               project.localProjectPath,
               title
             )
@@ -1495,7 +1515,7 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
                 project.localProjectPath
               )
             } else {
-              await fsZds.rm(project.localProjectPath, { recursive: true })
+              await fileOperations().remove(project.localProjectPath)
             }
             // Cloud-backed deletes are explicit local + remote product
             // actions, not just local tombstones for background sync.
@@ -1539,15 +1559,16 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
       },
       moveProjectTo: {
         run: async ({ library, source }) => {
-          const projectToml = await fsZds
+          const projectToml = await fileOperations()
             .readFile(
-              fsZds.join(source.localProjectPath, PROJECT_SETTINGS_FILE_NAME),
-              { encoding: 'utf-8' }
+              fsZds.join(source.localProjectPath, PROJECT_SETTINGS_FILE_NAME)
             )
+            .then((contents) => new TextDecoder().decode(contents))
             .catch(() => '')
           const projectTitle =
             getProjectTitleFromProjectTomlContents(projectToml)
           const result = await moveProjectIntoLocalDirectory({
+            fileOperations: fileOperations(),
             projectDirectoryPath:
               await getCloudProjectLibraryMaterializationDirectoryPath(library),
             sourceProjectPath: source.localProjectPath,
@@ -1579,6 +1600,7 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
       }
 
       const projects = await readProjectsFromProjectDirectory({
+        fileOperations: fileOperations(),
         projectDirectoryPath:
           await getCloudProjectLibraryMaterializationDirectoryPath(library),
         wasmInstancePromise,

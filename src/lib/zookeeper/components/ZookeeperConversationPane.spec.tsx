@@ -1,3 +1,4 @@
+import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
@@ -39,8 +40,8 @@ import type {
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import {
   ZookeeperManagerStates,
-  zookeeperManagerMachine,
   ZookeeperManagerTransitions,
+  zookeeperManagerMachine,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { S } from '@src/machines/utils'
 
@@ -372,12 +373,17 @@ const createPaneElement = ({
   sendBillingUsageStarted = vi.fn(),
   sendBillingUsageEnded = vi.fn(),
 }: RenderPaneOptions = {}) => {
+  const kclManagerWithFileOperations = {
+    fileOperations: testFileOperations,
+    ...kclManager,
+  }
+
   return (
     <MemoryRouter>
       <ZookeeperConversationPane
         zookeeperManagerActor={zookeeperManagerActor as any}
         conversationStore={conversationStore}
-        kclManager={kclManager}
+        kclManager={kclManagerWithFileOperations}
         theProject={theProject}
         contextModeling={
           {

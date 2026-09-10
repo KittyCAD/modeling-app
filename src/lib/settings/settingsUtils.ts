@@ -1,8 +1,8 @@
+import type { Feature } from '@kittycad/lib'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 import type { JsonValue } from '@rust/kcl-lib/bindings/serde_json/JsonValue'
-import type { Feature } from '@kittycad/lib'
 import {
   serializeConfiguration,
   serializeProjectConfiguration,
@@ -20,8 +20,8 @@ import {
 } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import type {
-  LayoutWithMetadata,
   LayoutsWithMetadata,
+  LayoutWithMetadata,
 } from '@src/lib/layout/types'
 import {
   createLayoutWithMetadata,
@@ -34,13 +34,11 @@ import {
   mergeProjectLibrarySettings,
   type ProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
-import type { ProjectLibrarySettingDefaultPolicy } from '@src/registry/contracts/projectLibraries'
-import { resolveProjectLibrarySettingDefaults } from '@src/registry/contracts/projectLibraries'
 import type { ResolvedExtensionSettings } from '@src/lib/settings/extensionSettings'
 import {
+  createSettings,
   Setting,
   type SettingsType,
-  createSettings,
 } from '@src/lib/settings/initialSettings'
 import type {
   SaveSettingsPayload,
@@ -52,6 +50,9 @@ import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
+import type { ProjectLibrarySettingDefaultPolicy } from '@src/registry/contracts/projectLibraries'
+import { resolveProjectLibrarySettingDefaults } from '@src/registry/contracts/projectLibraries'
 import decamelize from 'decamelize'
 import { NIL as uuidNIL, v4 } from 'uuid'
 
@@ -962,6 +963,7 @@ export interface AppSettings {
  * Relies on WASM for TOML de/serialization.
  */
 export async function loadAndValidateSettings(
+  fileOperations: FileOperationsRegistryService,
   initPromise: Promise<ModuleType> | ModuleType,
   projectPathOrOptions:
     | string
@@ -987,7 +989,10 @@ export async function loadAndValidateSettings(
   const wasmInstance = await initPromise
 
   // Load the app settings from the file system or localStorage.
-  const appSettingsPayload = await readAppSettingsFile(wasmInstance)
+  const appSettingsPayload = await readAppSettingsFile(
+    fileOperations,
+    wasmInstance
+  )
 
   if (err(appSettingsPayload)) {
     return Promise.reject(appSettingsPayload)
@@ -1026,6 +1031,7 @@ export async function loadAndValidateSettings(
   // Load the project settings if they exist
   if (projectPath) {
     let projectSettings = await readProjectSettingsFile(
+      fileOperations,
       projectPath,
       wasmInstance
     )
@@ -1049,7 +1055,11 @@ export async function loadAndValidateSettings(
         )
       }
 
-      await overwriteProjectTomlWithNewSettings(projectPath, projectTomlString)
+      await overwriteProjectTomlWithNewSettings(
+        fileOperations,
+        projectPath,
+        projectTomlString
+      )
     }
 
     const projectSettingsPayload = projectSettings
@@ -1126,6 +1136,7 @@ async function resolveAsyncHideOnPlatform(
  * Relies on WASM for TOML serialization.
  */
 export async function saveSettings(
+  fileOperations: FileOperationsRegistryService,
   initPromise: Promise<ModuleType>,
   allSettings: SettingsType,
   extensionSettings: ResolvedExtensionSettings = {},
@@ -1155,7 +1166,7 @@ export async function saveSettings(
   }
 
   // Write the app settings.
-  await writeAppSettingsFile(appTomlString)
+  await writeAppSettingsFile(fileOperations, appTomlString)
 
   if (!projectPath) {
     // If we're not saving project settings, we're done.
@@ -1165,6 +1176,7 @@ export async function saveSettings(
   // Get the project settings.
   const jsProjectSettings = getChangedSettingsAtLevel(allSettings, 'project')
   const existingProjectSettings = await readProjectSettingsFile(
+    fileOperations,
     projectPath,
     wasmInstance
   )
@@ -1185,7 +1197,11 @@ export async function saveSettings(
   }
 
   // Write the project settings.
-  await overwriteProjectTomlWithNewSettings(projectPath, projectTomlString)
+  await overwriteProjectTomlWithNewSettings(
+    fileOperations,
+    projectPath,
+    projectTomlString
+  )
 }
 
 export function getChangedSettingsAtLevel(

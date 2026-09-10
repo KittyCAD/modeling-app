@@ -5,14 +5,17 @@ import fsZds from '@src/lib/fs-zds'
 import { toProjectRelativePath, toWebSafePath } from '@src/lib/paths'
 import { isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 
 export async function getProjectTomlContents({
+  fileOperations,
   projectPath,
   wasmInstance,
   defaultFilePath,
   defaultFileFallback,
   readExistingFile = true,
 }: {
+  fileOperations: FileOperationsRegistryService
   projectPath: string
   wasmInstance: ModuleType
   defaultFilePath?: string | null
@@ -23,11 +26,14 @@ export async function getProjectTomlContents({
 
   if (readExistingFile) {
     try {
-      return await fsZds.readFile(projectTomlPath, { encoding: 'utf-8' })
+      return new TextDecoder().decode(
+        await fileOperations.readFile(projectTomlPath)
+      )
     } catch {}
   }
 
   const projectSettings = await readProjectSettingsFile(
+    fileOperations,
     projectPath,
     wasmInstance
   )

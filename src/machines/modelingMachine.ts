@@ -4604,7 +4604,17 @@ export const modelingMachine = setup({
           return
         }
 
-        await exportSave({ files, toastId, fileName })
+        const fileOperations = kclManager.fileOperations
+        if (!fileOperations) {
+          return new Error('File operations are not configured.')
+        }
+
+        await exportSave({
+          fileOperations,
+          files,
+          toastId,
+          fileName,
+        })
       }
     ),
     makeFromEngine: fromPromise(

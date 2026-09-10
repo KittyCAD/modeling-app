@@ -9,9 +9,9 @@ import {
   DEFAULT_KCL_VERSION,
   PROJECT_ENTRYPOINT,
 } from '@src/lib/constants'
-import fsZds from '@src/lib/fs-zds'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 
 export function isMainKclPath(filePath: string): boolean {
   const normalizedPath = filePath.replace(/\\/g, '/')
@@ -71,14 +71,14 @@ export function newKclFile(
 }
 
 export async function projectSkeletonCreate(
+  fileOperations: FileOperationsRegistryService,
   targetPath: string,
   defaultLengthUnit: UnitLength,
   wasmInstance: ModuleType
 ) {
-  await fsZds.mkdir(fsZds.dirname(targetPath), { recursive: true })
   const codeToWrite = newKclFile(undefined, defaultLengthUnit, wasmInstance)
   if (err(codeToWrite)) {
     return Promise.reject(codeToWrite)
   }
-  await fsZds.writeFile(targetPath, new TextEncoder().encode(codeToWrite))
+  await fileOperations.writeFile(targetPath, codeToWrite)
 }

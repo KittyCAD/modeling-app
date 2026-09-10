@@ -1,11 +1,14 @@
 import { exportSave } from '@src/lib/exportSave'
 import { dataUrlToFile, takeViewportScreenshot } from '@src/lib/screenshot'
 import { isErr } from '@src/lib/trap'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import toast from 'react-hot-toast'
 
 export const VIEWPORT_SCREENSHOT_FILE_NAME = 'viewport-screenshot.png'
 
-export async function saveViewportScreenshot(): Promise<void> {
+export async function saveViewportScreenshot(
+  fileOperations: FileOperationsRegistryService
+): Promise<void> {
   let screenshotFile: File | Error
   try {
     const dataUrl = takeViewportScreenshot()
@@ -33,6 +36,7 @@ export async function saveViewportScreenshot(): Promise<void> {
       new Uint8Array(await screenshotFile.arrayBuffer())
     )
     await exportSave({
+      fileOperations,
       files: [{ name: VIEWPORT_SCREENSHOT_FILE_NAME, contents }],
       fileName: VIEWPORT_SCREENSHOT_FILE_NAME,
       toastId,

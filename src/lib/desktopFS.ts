@@ -9,6 +9,7 @@ import {
 import type { FileEntry } from '@src/lib/project'
 import { getUniqueProjectNameFromExistingNames } from '@src/lib/projectName'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 
 export const isHidden = (fileOrDir: FileEntry) =>
   !!fileOrDir.name?.startsWith('.')
@@ -127,11 +128,13 @@ export async function getSettingsFolderPaths(projectPath?: string) {
  * Get the next available file name by appending a hyphen and number to the end of the name
  */
 export async function getNextFileName({
+  fileOperations,
   entryName,
   baseDir,
   wasmInstance,
   preserveUnknownExtension = false,
 }: {
+  fileOperations: FileOperationsRegistryService
   entryName: string
   baseDir: string
   wasmInstance: ModuleType
@@ -154,7 +157,7 @@ export async function getNextFileName({
   let createdPath = fsZds.join(baseDir, createdName)
   let i = 1
   try {
-    while (await fsZds.stat(createdPath)) {
+    while (await fileOperations.exists(createdPath)) {
       const matchOnIndexAndExtension = new RegExp(`(-\\d+)?(${extension})?$`)
       createdName =
         entryName.replace(matchOnIndexAndExtension, '') + `-${i}` + extension
@@ -179,9 +182,11 @@ export async function getNextFileName({
  * Get the next available directory name by appending a hyphen and number to the end of the name
  */
 export async function getNextDirName({
+  fileOperations,
   entryName,
   baseDir,
 }: {
+  fileOperations: FileOperationsRegistryService
   entryName: string
   baseDir: string
 }) {
@@ -189,16 +194,10 @@ export async function getNextDirName({
   let createdPath = fsZds.join(baseDir, createdName)
   let i = 1
 
-  // This code is fucking cursed -- lee
-  try {
-    while (true) {
-      await fsZds.stat(createdPath)
-      createdName = entryName.replace(/-\d+$/, '') + `-${i}`
-      createdPath = fsZds.join(baseDir, createdName)
-      i++
-    }
-  } catch (e) {
-    console.error(e)
+  while (await fileOperations.exists(createdPath)) {
+    createdName = entryName.replace(/-\d+$/, '') + `-${i}`
+    createdPath = fsZds.join(baseDir, createdName)
+    i++
   }
   return {
     name: createdName,

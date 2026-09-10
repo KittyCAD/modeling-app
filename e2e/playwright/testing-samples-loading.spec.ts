@@ -133,6 +133,7 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
       await expect(
         page.getByTestId('file-tree-item').getByText(sampleOne.folderName)
       ).toBeVisible()
+      await scene.settled()
     })
 
     await test.step('Load a KCL sample with the command palette', async () => {
