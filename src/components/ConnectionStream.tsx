@@ -520,7 +520,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   )
   useOnPeerConnectionClose(onPeerConnectionCloseParams)
 
-  const onPingPongTimout = useMemo(
+  const onPingPongTimeout = useMemo(
     () => ({
       callback: (eventType: EngineDisconnectEvent) => {
         reportEngineDisconnect(eventType)
@@ -553,7 +553,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       settings,
     ]
   )
-  useOnPingPongTimeout(onPingPongTimout)
+  useOnPingPongTimeout(onPingPongTimeout)
 
   const onWindowOnlineOfflineParams = useMemo(
     () => ({

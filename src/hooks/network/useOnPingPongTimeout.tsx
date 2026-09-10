@@ -8,7 +8,7 @@ export interface IUseOnPingPongTimeout {
   engineCommandManager: ConnectionManager
 }
 /**
- * If we do not recieve a ping pong cycle within PONG_TIMEOUT_MS then a pingPongTimeout
+ * If we do not receive a ping pong cycle within PONG_TIMEOUT_MS then a pingPongTimeout
  * will be dispatched during the engineCommandManager.teardown();
  */
 export function useOnPingPongTimeout({
