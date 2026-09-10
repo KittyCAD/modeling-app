@@ -2294,7 +2294,7 @@ description: Operations executed angle-gauge.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -2324,7 +2324,7 @@ description: Operations executed angle-gauge.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2350,7 +2350,7 @@ description: Operations executed angle-gauge.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []

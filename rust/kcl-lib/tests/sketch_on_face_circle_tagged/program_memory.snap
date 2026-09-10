@@ -15,35 +15,35 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "topologyId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "artifactId": "41c630c9-9d44-581b-98af-caee575bea48",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "33aa9496-5ecf-5157-ab0b-51ae219ee4df",
-          "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "eb9d56c1-169a-5445-ae15-f24345ec7c75",
-          "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "4b38ed2e-2ab0-52cc-891e-107ea704e9c3",
-          "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "cbbb4f65-6ab2-564b-ab3f-1e225724a282",
-          "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
@@ -52,11 +52,11 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -73,7 +73,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
           },
           {
             "__geoMeta": {
-              "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -90,7 +90,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
           },
           {
             "__geoMeta": {
-              "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -107,7 +107,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
           },
           {
             "__geoMeta": {
-              "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -125,8 +125,8 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
         ],
         "on": {
           "type": "plane",
-          "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
-          "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "XY",
           "origin": {
@@ -166,17 +166,17 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
-        "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-        "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "db676f42-098b-5f8a-b4c7-abb41d3ee6dc",
-      "endCapId": "087239f0-3707-5efe-b7cf-6dc7c2f1a6b9",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -185,14 +185,14 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "originalId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
-      "topologyId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
-      "artifactId": "f084ad07-5777-5607-a544-c69f455c2aab",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "24655609-c68c-5b76-9ccf-684a19064a93",
-          "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 359,
@@ -208,11 +208,11 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -243,8 +243,8 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
         ],
         "on": {
           "type": "face",
-          "id": "087239f0-3707-5efe-b7cf-6dc7c2f1a6b9",
-          "artifactId": "087239f0-3707-5efe-b7cf-6dc7c2f1a6b9",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
           "objectId": 1,
           "value": "end",
           "xAxis": {
@@ -260,8 +260,8 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
             "units": null
           },
           "parentSolid": {
-            "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-            "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+            "solidId": "[uuid]",
+            "creatorSketchId": "[uuid]",
             "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
@@ -278,7 +278,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -288,13 +288,13 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
             "value": "myCircle"
           }
         },
-        "artifactId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
-        "originalId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "4579311f-b00c-58c4-af18-cddf42afbd1c",
-      "endCapId": "f8586284-8783-53cf-9764-2730ccc64bfe",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }

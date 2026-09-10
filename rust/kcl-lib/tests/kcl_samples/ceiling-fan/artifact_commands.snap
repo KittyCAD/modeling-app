@@ -5,7 +5,7 @@ description: Artifact commands ceiling-fan.kcl
 {
   "public/kcl-samples/ceiling-fan/main.kcl": [
     {
-      "cmdId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,11 +30,11 @@ description: Artifact commands ceiling-fan.kcl
       }
     },
     {
-      "cmdId": "3c085bb9-a401-55d5-8042-5a9095193d55",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "plane_id": "[uuid]",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -44,20 +44,20 @@ description: Artifact commands ceiling-fan.kcl
       }
     },
     {
-      "cmdId": "0030d44a-e936-52d0-b5b6-efd80f2f6770",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -69,18 +69,18 @@ description: Artifact commands ceiling-fan.kcl
       }
     },
     {
-      "cmdId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+        "path": "[uuid]",
         "to": {
           "x": 0.0000000000000000000055583092029221886,
           "y": -0.00000000000000000009849998117036657,
@@ -89,18 +89,18 @@ description: Artifact commands ceiling-fan.kcl
       }
     },
     {
-      "cmdId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "91226189-7e64-5690-9203-67ee33a6eb03",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -113,11 +113,11 @@ description: Artifact commands ceiling-fan.kcl
       }
     },
     {
-      "cmdId": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -130,11 +130,11 @@ description: Artifact commands ceiling-fan.kcl
       }
     },
     {
-      "cmdId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -147,11 +147,11 @@ description: Artifact commands ceiling-fan.kcl
       }
     },
     {
-      "cmdId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -172,11 +172,11 @@ description: Artifact commands ceiling-fan.kcl
       }
     },
     {
-      "cmdId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -189,11 +189,11 @@ description: Artifact commands ceiling-fan.kcl
       }
     },
     {
-      "cmdId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -206,11 +206,11 @@ description: Artifact commands ceiling-fan.kcl
       }
     },
     {
-      "cmdId": "523b9fc1-d681-5ef3-b407-128525533bfe",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -231,11 +231,11 @@ description: Artifact commands ceiling-fan.kcl
       }
     },
     {
-      "cmdId": "41c630c9-9d44-581b-98af-caee575bea48",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -248,11 +248,11 @@ description: Artifact commands ceiling-fan.kcl
       }
     },
     {
-      "cmdId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -265,11 +265,11 @@ description: Artifact commands ceiling-fan.kcl
       }
     },
     {
-      "cmdId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -282,24 +282,24 @@ description: Artifact commands ceiling-fan.kcl
       }
     },
     {
-      "cmdId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
-        "segment": "91226189-7e64-5690-9203-67ee33a6eb03",
-        "intersection_segment": "91226189-7e64-5690-9203-67ee33a6eb03",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -311,11 +311,11 @@ description: Artifact commands ceiling-fan.kcl
       }
     },
     {
-      "cmdId": "ca502980-7bdd-5694-85c5-3eb8ffa8242b",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
+        "target": "[uuid]",
         "distance": 10.0,
         "faces": null,
         "opposite": "None",
@@ -324,49 +324,49 @@ description: Artifact commands ceiling-fan.kcl
       }
     },
     {
-      "cmdId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "50fc9cbf-14b4-5cbe-9167-a6636695394d"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
-        "edge_id": "093c46c0-5777-5140-8207-3c2c5f10fa26"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "44621ebd-5856-5dfd-9426-dda5d969f375",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
-        "edge_id": "093c46c0-5777-5140-8207-3c2c5f10fa26"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -391,20 +391,20 @@ description: Artifact commands ceiling-fan.kcl
       }
     },
     {
-      "cmdId": "1f5ca073-184d-543b-9da6-2db6719123a8",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "c8da3189-2eee-5307-9477-076b12db84a5",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -416,18 +416,18 @@ description: Artifact commands ceiling-fan.kcl
       }
     },
     {
-      "cmdId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
+        "path": "[uuid]",
         "to": {
           "x": 150.0,
           "y": 1.0,
@@ -436,18 +436,18 @@ description: Artifact commands ceiling-fan.kcl
       }
     },
     {
-      "cmdId": "f2e3fae3-4069-58be-a5a5-17ae327df966",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -460,11 +460,11 @@ description: Artifact commands ceiling-fan.kcl
       }
     },
     {
-      "cmdId": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -485,11 +485,11 @@ description: Artifact commands ceiling-fan.kcl
       }
     },
     {
-      "cmdId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -502,11 +502,11 @@ description: Artifact commands ceiling-fan.kcl
       }
     },
     {
-      "cmdId": "1e31790b-7616-51eb-9bbe-0d46f611d053",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -519,24 +519,24 @@ description: Artifact commands ceiling-fan.kcl
       }
     },
     {
-      "cmdId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
-        "segment": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce",
-        "intersection_segment": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -548,11 +548,11 @@ description: Artifact commands ceiling-fan.kcl
       }
     },
     {
-      "cmdId": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
+        "target": "[uuid]",
         "distance": 52.5,
         "faces": null,
         "opposite": "Symmetric",
@@ -561,44 +561,44 @@ description: Artifact commands ceiling-fan.kcl
       }
     },
     {
-      "cmdId": "b6048962-8de8-56e0-bd4c-204ee5451b34",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "bae7e631-b71d-5980-89ea-29b2140a8a32",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "76d81d0d-ef16-5794-bc58-3132468566e9",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
-        "edge_id": "ea776e7b-35a3-59e4-a84c-e5d610fca17c"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
-        "edge_id": "ea776e7b-35a3-59e4-a84c-e5d610fca17c"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "d5e2f4d6-228a-502b-94db-3100e57ccc81",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
+        "object_id": "[uuid]",
         "transforms": [
           {
             "translate": null,
@@ -620,75 +620,75 @@ description: Artifact commands ceiling-fan.kcl
       }
     },
     {
-      "cmdId": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "30efa5e2-105e-56b9-85d8-16e0935167b0",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "entity_clone",
-        "entity_id": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5"
+        "entity_id": "[uuid]"
       },
       "entityCloneInfo": {
-        "sourceArtifactId": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978",
-        "resultArtifactId": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
-        "sourceTopologyId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5"
+        "sourceArtifactId": "[uuid]",
+        "resultArtifactId": "[uuid]",
+        "sourceTopologyId": "[uuid]"
       }
     },
     {
-      "cmdId": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5"
+        "entity_id": "[uuid]"
       }
     },
     {
-      "cmdId": "6f85cbad-5e6d-549c-850d-909283a25e83",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "30efa5e2-105e-56b9-85d8-16e0935167b0"
+        "entity_id": "[uuid]"
       }
     },
     {
-      "cmdId": "035728b5-01db-5e9b-b285-181bc5693d5a",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "30efa5e2-105e-56b9-85d8-16e0935167b0"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
-        "edge_id": "ea776e7b-35a3-59e4-a84c-e5d610fca17c"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "2b45af9b-6b90-5530-b9b7-b193031152d8",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
-        "edge_id": "ea776e7b-35a3-59e4-a84c-e5d610fca17c"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "08138142-a558-56a4-a23f-2f334e02b011",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "30efa5e2-105e-56b9-85d8-16e0935167b0",
+        "object_id": "[uuid]",
         "transforms": [
           {
             "translate": null,
@@ -710,77 +710,77 @@ description: Artifact commands ceiling-fan.kcl
       }
     },
     {
-      "cmdId": "7b8ae56e-c9b0-55b7-a0b6-d20f44780498",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "e37f0c41-fa06-5331-9fe6-fafe466ea8fa",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "44b2dfb0-0721-57cd-a796-4401a664e194",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "50fc9cbf-14b4-5cbe-9167-a6636695394d"
+          "[uuid]"
         ],
         "tool_ids": [
-          "a7b34ba2-fd7c-5682-81f5-8deb44c234d5"
+          "[uuid]"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "906a1f18-6a62-5deb-b39b-61d540081804",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "44b2dfb0-0721-57cd-a796-4401a664e194",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "c72a5b97-c42a-573c-bbdf-1ce176bd07cd",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "30efa5e2-105e-56b9-85d8-16e0935167b0",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "ba769d4c-3a67-5309-824d-fd59f263bb46",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "44b2dfb0-0721-57cd-a796-4401a664e194"
+          "[uuid]"
         ],
         "tool_ids": [
-          "30efa5e2-105e-56b9-85d8-16e0935167b0"
+          "[uuid]"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "ba769d4c-3a67-5309-824d-fd59f263bb46",
+        "entity_id": "[uuid]",
         "axis": {
           "x": 0.0,
           "y": 0.0,

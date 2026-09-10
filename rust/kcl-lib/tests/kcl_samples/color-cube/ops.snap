@@ -1453,11 +1453,11 @@ description: Operations executed color-cube.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "efd1e3b2-5268-50fd-858e-26540f8146e5"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -1487,7 +1487,7 @@ description: Operations executed color-cube.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1533,7 +1533,7 @@ description: Operations executed color-cube.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1586,7 +1586,7 @@ description: Operations executed color-cube.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1612,7 +1612,7 @@ description: Operations executed color-cube.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1645,7 +1645,7 @@ description: Operations executed color-cube.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1698,7 +1698,7 @@ description: Operations executed color-cube.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1731,7 +1731,7 @@ description: Operations executed color-cube.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1784,7 +1784,7 @@ description: Operations executed color-cube.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1817,7 +1817,7 @@ description: Operations executed color-cube.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1935,7 +1935,7 @@ description: Operations executed color-cube.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1988,7 +1988,7 @@ description: Operations executed color-cube.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2021,7 +2021,7 @@ description: Operations executed color-cube.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2139,7 +2139,7 @@ description: Operations executed color-cube.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2192,7 +2192,7 @@ description: Operations executed color-cube.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2225,7 +2225,7 @@ description: Operations executed color-cube.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "4593843c-7d41-5ede-b7fa-ab9201f55957"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2343,7 +2343,7 @@ description: Operations executed color-cube.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "4593843c-7d41-5ede-b7fa-ab9201f55957"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2396,7 +2396,7 @@ description: Operations executed color-cube.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2514,7 +2514,7 @@ description: Operations executed color-cube.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2567,7 +2567,7 @@ description: Operations executed color-cube.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2626,7 +2626,7 @@ description: Operations executed color-cube.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2685,7 +2685,7 @@ description: Operations executed color-cube.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2744,7 +2744,7 @@ description: Operations executed color-cube.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "4593843c-7d41-5ede-b7fa-ab9201f55957"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2803,7 +2803,7 @@ description: Operations executed color-cube.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2862,7 +2862,7 @@ description: Operations executed color-cube.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
