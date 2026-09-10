@@ -710,11 +710,16 @@ export function MeasurementStatusBarItem() {
   const [streamElement, setStreamElement] = useState<HTMLElement | null>(null)
   const [result, setResult] = useState<MeasurementResult | null>(null)
   const latestRequestKey = useRef<string | null>(null)
+  const selectionSceneGeneration = useRef(
+    kclManager.engineSceneGenerationSignal.value
+  )
 
   const isIdle = state.matches('idle')
+  const sceneGeneration = kclManager.engineSceneGenerationSignal.value
+  const selectionRanges = state.context.selectionRanges
   const selectedEntities = useMemo(
-    () => getMeasurementEntities(state.context.selectionRanges),
-    [state.context.selectionRanges]
+    () => getMeasurementEntities(selectionRanges),
+    [selectionRanges]
   )
   const graphSelectionsAreCurrent = useMemo(
     () =>
@@ -758,11 +763,22 @@ export function MeasurementStatusBarItem() {
     [engineCommandManager]
   )
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: selection identity marks a new occurrence even when the derived entity key is unchanged.
+  useEffect(() => {
+    selectionSceneGeneration.current =
+      kclManager.engineSceneGenerationSignal.value
+  }, [kclManager, selectionRanges])
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: a same-key reselection must restart measurement after its generation stamp is refreshed.
   useEffect(() => {
     latestRequestKey.current = measurementInputKey
     setResult(null)
 
     if (!isIdle || !measurementTarget || !graphSelectionsAreCurrent) {
+      return
+    }
+
+    if (sceneGeneration !== selectionSceneGeneration.current) {
       return
     }
 
@@ -799,6 +815,8 @@ export function MeasurementStatusBarItem() {
     isIdle,
     measurementInputKey,
     measurementTarget,
+    sceneGeneration,
+    selectionRanges,
     selectedEntityIdsKey,
     sendModelingCommand,
     unit,
