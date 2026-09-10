@@ -1,17 +1,15 @@
 import type { EditorState } from '@codemirror/state'
-import { Menu } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
-import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { KclManager } from '@src/lang/KclManager'
 import { BillingTransition } from '@src/lib/billing'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { browserSaveFile } from '@src/lib/browserSaveFile'
 import { isCodeTheSame } from '@src/lib/codeEditor'
 import { isPathNotFoundError } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
+import { ZookeeperConversationMenu } from '@src/lib/zookeeper/components/ZookeeperConversationMenu'
 import { ZookeeperConversationPane } from '@src/lib/zookeeper/components/ZookeeperConversationPane'
 import {
   useProjectIdToConversationId,
@@ -29,7 +27,6 @@ import {
   type ZookeeperEditPatchFile,
 } from '@src/lib/zookeeper/zookeeperEditPatch'
 import {
-  ZookeeperConversationToMarkdown,
   type ZookeeperManagerActor,
   ZookeeperManagerReactContext,
   ZookeeperManagerTransitions,
@@ -999,33 +996,4 @@ function useFlushZookeeperHistoryOnResponseEnd(
     pendingZookeeperHistoryByExchange,
     tryFlushPendingZookeeperHistory,
   ])
-}
-
-export const ZookeeperConversationMenu = () => {
-  const zookeeperManagerActor = ZookeeperManagerReactContext.useActorRef()
-
-  return (
-    <HeaderMenu>
-      <Menu.Item>
-        <button
-          type="button"
-          onClick={() => {
-            const context = zookeeperManagerActor.getSnapshot().context
-            const md = ZookeeperConversationToMarkdown(context.conversation)
-            const blob = new Blob([new TextEncoder().encode(md)], {
-              type: 'text/markdown',
-            })
-            void browserSaveFile(
-              blob,
-              `${context.conversationId ?? new Date().toISOString()}.md`,
-              ''
-            )
-          }}
-          className="menuButton"
-        >
-          <span>Export conversation</span>
-        </button>
-      </Menu.Item>
-    </HeaderMenu>
-  )
 }
