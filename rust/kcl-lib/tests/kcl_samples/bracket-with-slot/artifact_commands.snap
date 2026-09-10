@@ -1180,7 +1180,7 @@ description: Artifact commands bracket-with-slot.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a",
-        "edge_id": "e1f6cd1f-6071-5d4d-872c-bd968e2f300b"
+        "edge_id": "9fd92ae9-d8e4-5d4a-a397-d21f997ce177"
       }
     },
     {
@@ -1189,7 +1189,7 @@ description: Artifact commands bracket-with-slot.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a",
-        "edge_id": "e1f6cd1f-6071-5d4d-872c-bd968e2f300b"
+        "edge_id": "9fd92ae9-d8e4-5d4a-a397-d21f997ce177"
       }
     },
     {

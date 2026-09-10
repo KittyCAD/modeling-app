@@ -6067,8 +6067,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
       "artifactId": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
       "value": [
         {
-          "faceId": "13c223ab-055f-59b6-858c-147ca04a4ae7",
-          "id": "e1f6cd1f-6071-5d4d-872c-bd968e2f300b",
+          "faceId": "b3646c56-ad0f-5cd4-b02a-a23108a4923d",
+          "id": "9fd92ae9-d8e4-5d4a-a397-d21f997ce177",
           "sourceRange": [],
           "tag": {
             "commentStart": 6385,
@@ -6081,8 +6081,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "898a3549-24a6-55ce-930f-cbd1ca566293",
-          "id": "3df72a37-176e-50b7-a300-421ed01496b3",
+          "faceId": "2299164f-fcb1-5a0a-8f19-02135f1b05be",
+          "id": "9930c8d8-ef8e-57dc-8777-6077777667b7",
           "sourceRange": [],
           "tag": {
             "commentStart": 6460,
@@ -6095,8 +6095,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "297e8a54-cbea-5883-809b-dfec617ac879",
-          "id": "6e04fdcd-9d9e-5f96-8b40-9d47d4ce7089",
+          "faceId": "6484a5a0-9894-5197-b3e6-7fd78f2c93a7",
+          "id": "982a5ba3-5f00-518b-bad2-071606a97452",
           "sourceRange": [],
           "tag": {
             "commentStart": 6600,
@@ -6109,8 +6109,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "7201fb5f-8a9b-5412-8a4c-4c48dd06067d",
-          "id": "4864d83b-006d-595b-80e0-1a2fbc9b5540",
+          "faceId": "3e9eca3b-8162-5d97-b3e7-b5e5c938d424",
+          "id": "b050a4fc-8b2f-5af2-b8b5-77c901b5973f",
           "sourceRange": [],
           "tag": {
             "commentStart": 6714,
@@ -6130,7 +6130,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
         "paths": [
           {
             "__geoMeta": {
-              "id": "e1f6cd1f-6071-5d4d-872c-bd968e2f300b",
+              "id": "9fd92ae9-d8e4-5d4a-a397-d21f997ce177",
               "sourceRange": []
             },
             "from": [
@@ -6154,7 +6154,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           {
             "__geoMeta": {
-              "id": "3df72a37-176e-50b7-a300-421ed01496b3",
+              "id": "9930c8d8-ef8e-57dc-8777-6077777667b7",
               "sourceRange": []
             },
             "ccw": false,
@@ -6184,7 +6184,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           {
             "__geoMeta": {
-              "id": "6e04fdcd-9d9e-5f96-8b40-9d47d4ce7089",
+              "id": "982a5ba3-5f00-518b-bad2-071606a97452",
               "sourceRange": []
             },
             "from": [
@@ -6208,7 +6208,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           {
             "__geoMeta": {
-              "id": "4864d83b-006d-595b-80e0-1a2fbc9b5540",
+              "id": "b050a4fc-8b2f-5af2-b8b5-77c901b5973f",
               "sourceRange": []
             },
             "ccw": false,
@@ -6307,8 +6307,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "be3e7291-a64f-58c5-bb05-c589f8e551aa",
-      "endCapId": "4600d0b9-367f-5b66-a581-f32de3783157",
+      "startCapId": "26a18c5d-4943-52e6-addb-f325544093f1",
+      "endCapId": "67213e05-3f1a-5e49-93cd-498b7b528ba1",
       "units": "mm",
       "sectional": false
     }
@@ -7677,7 +7677,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
       "paths": [
         {
           "__geoMeta": {
-            "id": "e1f6cd1f-6071-5d4d-872c-bd968e2f300b",
+            "id": "9fd92ae9-d8e4-5d4a-a397-d21f997ce177",
             "sourceRange": []
           },
           "from": [
@@ -7701,7 +7701,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
         },
         {
           "__geoMeta": {
-            "id": "3df72a37-176e-50b7-a300-421ed01496b3",
+            "id": "9930c8d8-ef8e-57dc-8777-6077777667b7",
             "sourceRange": []
           },
           "ccw": false,
@@ -7731,7 +7731,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
         },
         {
           "__geoMeta": {
-            "id": "6e04fdcd-9d9e-5f96-8b40-9d47d4ce7089",
+            "id": "982a5ba3-5f00-518b-bad2-071606a97452",
             "sourceRange": []
           },
           "from": [
@@ -7755,7 +7755,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
         },
         {
           "__geoMeta": {
-            "id": "4864d83b-006d-595b-80e0-1a2fbc9b5540",
+            "id": "b050a4fc-8b2f-5af2-b8b5-77c901b5973f",
             "sourceRange": []
           },
           "ccw": false,
