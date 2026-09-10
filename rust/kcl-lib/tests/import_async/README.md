@@ -34,7 +34,9 @@ INSTA_UPDATE=no cargo nextest run -p kcl-lib --features artifact-graph \
   --retries 0 -E 'test(=simulation_tests::import_async::kcl_test_completed_import_bounds)'
 ```
 
-Modeling App's recursive and machine executor CI paths include this test.
+Modeling App's default-executor Rust CI includes this test. Focused validation
+against both the recursive and machine executors is still required for landing;
+the regular CI workflow no longer has a separate recursive-executor leg.
 Engine's KCL shards also select it through their `kcl_test` name filter after
 the source is included in Modeling App main. Exact binary/fixture pairing for
 those cross-repository jobs is tracked by
