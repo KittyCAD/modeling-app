@@ -37,7 +37,7 @@ struct StdLibCommandArgShape {
     added_in: Option<String>,
     deprecated: bool,
     deprecated_since: Option<String>,
-    removed_since: Option<String>,
+    removed_in: Option<String>,
 }
 
 #[test]
@@ -73,7 +73,7 @@ fn export_bindings_stdlib_commands() {
                             added_in: arg.added_in.as_ref().map(ToString::to_string),
                             deprecated: arg.deprecated,
                             deprecated_since: arg.deprecated_since.as_ref().map(ToString::to_string),
-                            removed_since: arg.removed_since.as_ref().map(ToString::to_string),
+                            removed_in: arg.removed_in.as_ref().map(ToString::to_string),
                         })
                         .collect(),
                 },
