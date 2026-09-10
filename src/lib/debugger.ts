@@ -10,7 +10,6 @@ export interface ILog {
 }
 
 const REPORT_LOG_LIMIT = 200
-const REPORT_BYTE_LIMIT = 64 * 1024
 const REPORT_STRING_LIMIT = 1024
 
 type ReportMetadata =
@@ -115,7 +114,7 @@ export class Debugger {
     })
   }
 
-  snapshotForReport(): DebugLogSnapshot {
+  snapshotForReport(maxLength: number): DebugLogSnapshot {
     const snapshot: DebugLogSnapshot = {
       logs: [],
       totalLogCount: this.logs.length,
@@ -155,9 +154,9 @@ export class Debugger {
       return summary
     }
 
-    const encoder = new TextEncoder()
-    // Reserve the envelope too. `false` is one byte longer than `true`.
-    let byteCount = encoder.encode(JSON.stringify(snapshot)).length
+    // Count serialized UTF-16 code units, a conservative bound on the API's
+    // Unicode character limit. Reserve the envelope, including `false`.
+    let length = JSON.stringify(snapshot).length
     const firstLog = Math.max(0, this.logs.length - REPORT_LOG_LIMIT)
     for (let i = this.logs.length - 1; i >= firstLog; i--) {
       const log = this.logs[i]
@@ -168,18 +167,31 @@ export class Debugger {
         message: limitString(log.message),
         metadata: summarizeMetadata(log.metadata),
       }
-      let entryBytes =
-        encoder.encode(JSON.stringify(entry)).length +
-        (snapshot.logs.length ? 1 : 0)
+      let entryLength =
+        JSON.stringify(entry).length + (snapshot.logs.length ? 1 : 0)
       // Always retain the most recent event, even if its metadata alone would
       // exhaust the budget (JSON escaping can expand a string considerably).
-      if (byteCount + entryBytes > REPORT_BYTE_LIMIT && !snapshot.logs.length) {
+      if (length + entryLength > maxLength && !snapshot.logs.length) {
         entry.metadata = '[Truncated]'
         snapshot.truncated = true
-        entryBytes = encoder.encode(JSON.stringify(entry)).length
+        entryLength = JSON.stringify(entry).length
+        // Escaped labels and messages can still exceed the remaining budget.
+        while (length + entryLength > maxLength) {
+          if (
+            entry.message.length >= entry.label.length &&
+            entry.message.length > 1
+          ) {
+            entry.message = entry.message.slice(0, entry.message.length / 2)
+          } else if (entry.label.length > 1) {
+            entry.label = entry.label.slice(0, entry.label.length / 2)
+          } else {
+            break
+          }
+          entryLength = JSON.stringify(entry).length
+        }
       }
-      if (byteCount + entryBytes > REPORT_BYTE_LIMIT) break
-      byteCount += entryBytes
+      if (length + entryLength > maxLength) break
+      length += entryLength
       snapshot.logs.push(entry)
     }
     snapshot.logs.reverse()

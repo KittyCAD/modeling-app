@@ -7,7 +7,7 @@ describe('Debugger.snapshotForReport', () => {
     const metadata = { id: 'connection-1', readyState: 1 }
     engineDebugger.addLog({ label: 'connection', message: 'open', metadata })
 
-    const snapshot = engineDebugger.snapshotForReport()
+    const snapshot = engineDebugger.snapshotForReport(8192)
     metadata.readyState = 3
     engineDebugger.addLog({ label: 'connection', message: 'closed' })
 
@@ -27,13 +27,13 @@ describe('Debugger.snapshotForReport', () => {
     expect(engineDebugger.logs).toHaveLength(2)
   })
 
-  it('keeps the latest 200 entries in chronological order', () => {
+  it('keeps at most 200 entries even with a larger caller budget', () => {
     const engineDebugger = new Debugger()
     for (let i = 0; i < 205; i++) {
       engineDebugger.addLog({ label: 'connection', message: `event-${i}` })
     }
 
-    const snapshot = engineDebugger.snapshotForReport()
+    const snapshot = engineDebugger.snapshotForReport(64 * 1024)
     expect(snapshot.logs).toHaveLength(200)
     expect(snapshot.logs[0].message).toBe('event-5')
     expect(snapshot.logs.at(-1)?.message).toBe('event-204')
@@ -41,7 +41,7 @@ describe('Debugger.snapshotForReport', () => {
     expect(snapshot.truncated).toBe(true)
   })
 
-  it('bounds the entire snapshot by UTF-8 bytes, retaining the newest events', () => {
+  it('bounds the serialized snapshot by characters, retaining the newest events', () => {
     const engineDebugger = new Debugger()
     for (let i = 0; i < 200; i++) {
       engineDebugger.addLog({
@@ -50,17 +50,15 @@ describe('Debugger.snapshotForReport', () => {
       })
     }
 
-    const snapshot = engineDebugger.snapshotForReport()
-    expect(
-      new TextEncoder().encode(JSON.stringify(snapshot)).length
-    ).toBeLessThanOrEqual(64 * 1024)
+    const snapshot = engineDebugger.snapshotForReport(8192)
+    expect(JSON.stringify(snapshot).length).toBeLessThanOrEqual(8192)
     expect(snapshot.logs.length).toBeGreaterThan(0)
     expect(snapshot.logs.length).toBeLessThan(200)
     expect(snapshot.logs.at(-1)?.label).toBe('event-199')
     expect(snapshot.truncated).toBe(true)
   })
 
-  it('retains the newest event when its escaped metadata exceeds the byte budget', () => {
+  it('retains the newest event when its escaped metadata exceeds the character budget', () => {
     const engineDebugger = new Debugger()
     const hugeString = '\u0000'.repeat(100_000)
     engineDebugger.addLog({
@@ -86,10 +84,8 @@ describe('Debugger.snapshotForReport', () => {
       ),
     })
 
-    const snapshot = engineDebugger.snapshotForReport()
-    expect(
-      new TextEncoder().encode(JSON.stringify(snapshot)).length
-    ).toBeLessThanOrEqual(64 * 1024)
+    const snapshot = engineDebugger.snapshotForReport(8192)
+    expect(JSON.stringify(snapshot).length).toBeLessThanOrEqual(8192)
     expect(snapshot.logs).toHaveLength(1)
     expect(snapshot.logs[0].message).toContain('[Truncated]')
     expect(snapshot.logs[0].metadata).toBe('[Truncated]')
@@ -120,7 +116,7 @@ describe('Debugger.snapshotForReport', () => {
       },
     })
 
-    expect(engineDebugger.snapshotForReport().logs[0].metadata).toEqual({
+    expect(engineDebugger.snapshotForReport(8192).logs[0].metadata).toEqual({
       event: {
         type: 'close',
         code: 1006,
@@ -149,7 +145,7 @@ describe('Debugger.snapshotForReport', () => {
     }
     engineDebugger.addLog({ label: 'connection', message: 'failed', metadata })
 
-    const snapshot = engineDebugger.snapshotForReport()
+    const snapshot = engineDebugger.snapshotForReport(8192)
     expect(() => JSON.stringify(snapshot)).not.toThrow()
     expect(snapshot.logs[0].metadata).toMatchObject({
       id: 'connection-1',
@@ -160,7 +156,7 @@ describe('Debugger.snapshotForReport', () => {
   })
 
   it('returns an empty snapshot before any events have been logged', () => {
-    expect(new Debugger().snapshotForReport()).toEqual({
+    expect(new Debugger().snapshotForReport(8192)).toEqual({
       logs: [],
       totalLogCount: 0,
       truncated: false,

@@ -3,7 +3,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 const mockState = vi.hoisted(() => ({
   createKCClient: vi.fn(() => ({ mocked: true })),
   kcCall: vi.fn(async (fn: () => Promise<unknown>) => await fn()),
-  reportUserClientError: vi.fn(async () => ({ accepted: true })),
+  reportUserClientError: vi.fn(
+    async (_params: { body: { stack?: string } }) => ({
+      accepted: true,
+    })
+  ),
 }))
 
 vi.mock('@src/lib/kcClient', () => ({
@@ -179,7 +183,7 @@ describe('reportClientError', () => {
       message: 'connectionstatechange',
       metadata: { connectionState: 'failed' },
     })
-    const expectedSnapshot = EngineDebugger.snapshotForReport()
+    const expectedSnapshot = EngineDebugger.snapshotForReport(8192)
     await reportClientError({ code, message: 'Engine disconnected' })
     EngineDebugger.addLog({ label: 'connection', message: 'reconnecting' })
 
@@ -188,12 +192,106 @@ describe('reportClientError', () => {
       body: expect.objectContaining({
         code,
         stack: JSON.stringify({
-          engineDebugger: expectedSnapshot,
           userAgent: navigator.userAgent,
+          engineDebugger: expectedSnapshot,
         }),
       }),
     })
   })
+
+  it.each([
+    ClientErrorCode.EngineDisconnect,
+    ClientErrorCode.EngineBackendDisconnect,
+  ])(
+    'keeps the latest event in %s reports after the API stack limit',
+    async (code) => {
+      EngineDebugger.logs = Array.from({ length: 200 }, (_, i) => ({
+        time: 1789058414000 + i,
+        label: 'connection',
+        message: i === 199 ? 'latest disconnect event' : `event-${i}`,
+        metadata: { id: '9ce59f90-ef78-42b7-a777-a4b268f14bbd' },
+        stack: '',
+      }))
+      const error = new Error('Engine disconnected')
+      error.stack = 'runtime stack'.repeat(100)
+
+      await reportClientError({
+        code,
+        error,
+        extra: { source: 'ConnectionStream', connectionId: 'connection-1' },
+      })
+
+      const stack =
+        mockState.reportUserClientError.mock.calls[0]?.[0].body.stack
+      if (!stack) throw new Error('Expected a reported stack')
+      // Match the API's truncate_to_chars(stack, MAX_STACK_LEN).
+      const persistedStack = Array.from(stack.trim()).slice(0, 8192).join('')
+      expect(stack.length).toBeLessThanOrEqual(8192)
+      expect(persistedStack).toBe(stack)
+      expect(JSON.parse(persistedStack)).toMatchObject({
+        runtimeStack: error.stack,
+        source: 'ConnectionStream',
+        connectionId: 'connection-1',
+        userAgent: navigator.userAgent,
+        engineDebugger: {
+          totalLogCount: 200,
+          truncated: true,
+          logs: expect.arrayContaining([
+            expect.objectContaining({ message: 'latest disconnect event' }),
+          ]),
+        },
+      })
+      expect(stack).not.toContain('"message":"event-0"')
+    }
+  )
+
+  it.each(['\u{1f680}', '\u0000'])(
+    'fits oversized context and escaped logs into the API limit (%j)',
+    async (character) => {
+      const oversized = character.repeat(10_000)
+      const error = new Error('Engine disconnected')
+      error.stack = oversized
+      EngineDebugger.addLog({
+        label: `latest-connection-${oversized}`,
+        message: `latest disconnect event ${oversized}`,
+        metadata: { message: oversized, reason: oversized },
+      })
+
+      await reportClientError({
+        code: ClientErrorCode.EngineDisconnect,
+        error,
+        extra: {
+          projectName: oversized,
+          details: { message: oversized },
+          ['key'.repeat(3000)]: 'oversized property name',
+          source: 'EngineWebSocket',
+          connectionId: 'connection-1',
+        },
+      })
+
+      const stack =
+        mockState.reportUserClientError.mock.calls[0]?.[0].body.stack
+      if (!stack) throw new Error('Expected a reported stack')
+      const persistedStack = Array.from(stack.trim()).slice(0, 8192).join('')
+      expect(stack.length).toBeLessThanOrEqual(8192)
+      expect(persistedStack).toBe(stack)
+      expect(JSON.parse(persistedStack)).toMatchObject({
+        contextTruncated: true,
+        source: 'EngineWebSocket',
+        connectionId: 'connection-1',
+        engineDebugger: {
+          totalLogCount: 1,
+          truncated: true,
+          logs: [
+            expect.objectContaining({
+              label: expect.stringContaining('latest-connection-'),
+              message: expect.stringContaining('latest disconnect event'),
+            }),
+          ],
+        },
+      })
+    }
+  )
 
   it('does not collect engine logs for unrelated errors or duplicate reports', async () => {
     const snapshotSpy = vi.spyOn(EngineDebugger, 'snapshotForReport')
