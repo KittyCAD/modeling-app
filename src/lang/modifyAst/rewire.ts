@@ -100,10 +100,10 @@ type ScopeFrame = {
   bindings: Set<string>
 }
 
-// If-expression arm bodies are Program nodes without a `type` field, so they
-// are recognized by their path instead: traverse visits each arm container at
-// `['then_val'|'final_else', 'IfExpression']`, and nothing else is visited
-// with that final segment.
+// If-expression arm bodies are Program nodes, the same type as the root
+// program, so they are recognized by their path instead: traverse visits each
+// arm container at `['then_val'|'final_else', 'IfExpression']`, and nothing
+// else is visited with that final segment.
 const isIfArmBodyPath = (pathToNode: PathToNode): boolean => {
   const segment = pathToNode[pathToNode.length - 1]
   return (
