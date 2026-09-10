@@ -4,11 +4,8 @@ import {
   type StdLibCommandName,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
 
-import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { CommandArgumentConfig } from '@src/lib/commandTypes'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
-
-type ModelingCommandName = Extract<keyof ModelingCommandSchema, string>
 
 export type StdLibCommandDriftConfig = {
   stdLibName: StdLibCommandName
@@ -268,7 +265,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'fillet',
     editFlow: true,
     flowArgOrder: ['selection', 'radius'],
-    omittedStdLibArgs: ['solid', 'edges'],
+    omittedStdLibArgs: ['solid', 'edges', 'legacyMethod'],
     argAliases: {
       tags: 'selection',
     },
@@ -277,7 +274,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'chamfer',
     editFlow: true,
     flowArgOrder: ['selection', 'length'],
-    omittedStdLibArgs: ['solid', 'edges'],
+    omittedStdLibArgs: ['solid', 'edges', 'legacyMethod'],
     argAliases: {
       tags: 'selection',
     },
@@ -544,19 +541,23 @@ export const modelingCommandStdLibDriftConfig = {
   'Boolean Subtract': {
     stdLibName: 'subtract',
     flowArgOrder: ['solids', 'tools'],
+    omittedStdLibArgs: ['legacyMethod'],
   },
   'Boolean Union': {
     stdLibName: 'union',
     flowArgOrder: ['solids'],
+    omittedStdLibArgs: ['legacyMethod'],
   },
   'Boolean Intersect': {
     stdLibName: 'intersect',
     flowArgOrder: ['solids'],
+    omittedStdLibArgs: ['legacyMethod'],
   },
   'Boolean Split': {
     stdLibName: 'split',
     editFlow: true,
     flowArgOrder: ['targets'],
+    omittedStdLibArgs: ['legacyMethod'],
   },
   'Flip Surface': {
     stdLibName: 'flipSurface',
@@ -575,9 +576,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'joinSurfaces',
     flowArgOrder: ['selection'],
   },
-} as const satisfies Partial<
-  Record<ModelingCommandName, StdLibCommandDriftConfig>
->
+} as const satisfies Record<string, StdLibCommandDriftConfig>
 
 export type ModelingStdLibCommandName =
   keyof typeof modelingCommandStdLibDriftConfig
