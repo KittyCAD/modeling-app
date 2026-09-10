@@ -80,7 +80,11 @@ export function createSettledUserFeaturesForTest(): UserFeaturesSettleService {
 // Initialize all the singletons, the WASM blob, and open an engine connection
 // Most likely a lite engine connection because this function should only run in vitest
 // if this runs in vitest the engineCommandManager will run a lite connection mode.
-export async function buildTheWorldAndConnectToEngine() {
+export async function buildTheWorldAndConnectToEngine({
+  geometryOnly = false,
+}: {
+  geometryOnly?: boolean
+} = {}) {
   const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
   const instancePromise = loadAndInitialiseWasmInstance(WASM_PATH)
   const machineManager = new MachineManager()
@@ -140,6 +144,7 @@ export async function buildTheWorldAndConnectToEngine() {
             console.log('unit test connected!')
           }
         },
+        unitTestGeometryOnly: geometryOnly,
         rustContext: kclManager.rustContext,
       })
       .catch(reportRejection)

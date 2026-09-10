@@ -822,7 +822,7 @@ description: Operations executed gdt-tutorial.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fe76cc2a-18a1-5937-82e8-b2572a7c2149"
           }
         },
         "sourceRange": []
@@ -855,11 +855,11 @@ description: Operations executed gdt-tutorial.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               }
             ]
           },
@@ -889,7 +889,7 @@ description: Operations executed gdt-tutorial.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "cc141785-f204-5d03-bdf3-aa7163368c30"
           }
         },
         "sourceRange": []
@@ -947,14 +947,14 @@ description: Operations executed gdt-tutorial.kcl
           "value": {
             "type": "TagIdentifier",
             "value": "line2",
-            "artifact_id": "[uuid]"
+            "artifact_id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f"
           },
           "sourceRange": []
         },
         "framePlane": {
           "value": {
             "type": "Plane",
-            "artifact_id": "[uuid]"
+            "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
           },
           "sourceRange": []
         },
@@ -1001,7 +1001,7 @@ description: Operations executed gdt-tutorial.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88"
               }
             ]
           },
@@ -1022,7 +1022,7 @@ description: Operations executed gdt-tutorial.kcl
         "framePlane": {
           "value": {
             "type": "Plane",
-            "artifact_id": "[uuid]"
+            "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
           },
           "sourceRange": []
         },
@@ -1090,7 +1090,7 @@ description: Operations executed gdt-tutorial.kcl
               {
                 "type": "TagIdentifier",
                 "value": "line1",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc"
               }
             ]
           },
@@ -1111,7 +1111,7 @@ description: Operations executed gdt-tutorial.kcl
         "framePlane": {
           "value": {
             "type": "Plane",
-            "artifact_id": "[uuid]"
+            "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
           },
           "sourceRange": []
         },
@@ -1187,7 +1187,7 @@ description: Operations executed gdt-tutorial.kcl
               {
                 "type": "TagIdentifier",
                 "value": "capEnd001",
-                "artifact_id": "[uuid]"
+                "artifact_id": "092755e4-e002-58b9-a194-69b526ae6929"
               }
             ]
           },
@@ -1196,7 +1196,7 @@ description: Operations executed gdt-tutorial.kcl
         "framePlane": {
           "value": {
             "type": "Plane",
-            "artifact_id": "[uuid]"
+            "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
           },
           "sourceRange": []
         },
@@ -1261,7 +1261,7 @@ description: Operations executed gdt-tutorial.kcl
               {
                 "type": "TagIdentifier",
                 "value": "line4",
-                "artifact_id": "[uuid]"
+                "artifact_id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5"
               }
             ]
           },
@@ -1270,7 +1270,7 @@ description: Operations executed gdt-tutorial.kcl
         "framePlane": {
           "value": {
             "type": "Plane",
-            "artifact_id": "[uuid]"
+            "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
           },
           "sourceRange": []
         },
@@ -1356,7 +1356,7 @@ description: Operations executed gdt-tutorial.kcl
               {
                 "type": "TagIdentifier",
                 "value": "line3",
-                "artifact_id": "[uuid]"
+                "artifact_id": "eb116575-1f8f-50df-810e-a61970915fe0"
               }
             ]
           },

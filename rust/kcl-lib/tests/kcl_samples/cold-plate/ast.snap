@@ -38357,6 +38357,7 @@ description: Result of parsing cold-plate.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

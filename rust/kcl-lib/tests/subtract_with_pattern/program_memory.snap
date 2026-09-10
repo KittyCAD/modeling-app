@@ -7,33 +7,35 @@ description: Variables in memory after executing subtract_with_pattern.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "topologyId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "artifactId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "eb9d56c1-169a-5445-ae15-f24345ec7c75",
+          "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "4b38ed2e-2ab0-52cc-891e-107ea704e9c3",
+          "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "cbbb4f65-6ab2-564b-ab3f-1e225724a282",
+          "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "de7be92e-614b-5db2-af67-45ab2a0e944d",
+          "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
@@ -42,11 +44,11 @@ description: Variables in memory after executing subtract_with_pattern.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
               "sourceRange": []
             },
             "from": [
@@ -63,7 +65,7 @@ description: Variables in memory after executing subtract_with_pattern.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
               "sourceRange": []
             },
             "from": [
@@ -80,7 +82,7 @@ description: Variables in memory after executing subtract_with_pattern.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
               "sourceRange": []
             },
             "from": [
@@ -97,7 +99,7 @@ description: Variables in memory after executing subtract_with_pattern.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
               "sourceRange": []
             },
             "from": [
@@ -114,17 +116,17 @@ description: Variables in memory after executing subtract_with_pattern.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
-          "kind": "XY",
+          "type": "plane",
+          "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
+          "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
           "objectId": 0,
+          "kind": "XY",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -156,16 +158,17 @@ description: Variables in memory after executing subtract_with_pattern.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
             "sourceRange": []
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "mm"
+        "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "units": "mm",
+        "isClosed": "explicitly"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "33aa9496-5ecf-5157-ab0b-51ae219ee4df",
+      "endCapId": "db676f42-098b-5f8a-b4c7-abb41d3ee6dc",
       "units": "mm",
       "sectional": false
     }
@@ -174,12 +177,14 @@ description: Variables in memory after executing subtract_with_pattern.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+      "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+      "topologyId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+      "artifactId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ed22babf-097a-522b-8ea6-c0fd4a48d939",
+          "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
@@ -188,11 +193,11 @@ description: Variables in memory after executing subtract_with_pattern.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": []
             },
             "ccw": true,
@@ -215,17 +220,17 @@ description: Variables in memory after executing subtract_with_pattern.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
-          "kind": "XZ",
+          "type": "plane",
+          "artifactId": "7b681387-29ea-57f1-8713-d63280827139",
+          "id": "7b681387-29ea-57f1-8713-d63280827139",
           "objectId": 1,
+          "kind": "XZ",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -257,16 +262,17 @@ description: Variables in memory after executing subtract_with_pattern.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
             "sourceRange": []
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "mm"
+        "artifactId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+        "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+        "units": "mm",
+        "isClosed": "explicitly"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "094c2621-b6dc-5b8d-b217-525224318aa7",
+      "endCapId": "b620e86e-3390-5b73-897e-9d5291058003",
       "units": "mm",
       "sectional": false
     }
@@ -278,12 +284,14 @@ description: Variables in memory after executing subtract_with_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+          "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+          "topologyId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+          "artifactId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "ed22babf-097a-522b-8ea6-c0fd4a48d939",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -292,11 +300,11 @@ description: Variables in memory after executing subtract_with_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -319,17 +327,17 @@ description: Variables in memory after executing subtract_with_pattern.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "kind": "XZ",
+              "type": "plane",
+              "artifactId": "7b681387-29ea-57f1-8713-d63280827139",
+              "id": "7b681387-29ea-57f1-8713-d63280827139",
               "objectId": 1,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -361,16 +369,17 @@ description: Variables in memory after executing subtract_with_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "mm"
+            "artifactId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+            "units": "mm",
+            "isClosed": "explicitly"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "094c2621-b6dc-5b8d-b217-525224318aa7",
+          "endCapId": "b620e86e-3390-5b73-897e-9d5291058003",
           "units": "mm",
           "sectional": false
         }
@@ -379,12 +388,14 @@ description: Variables in memory after executing subtract_with_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "9eee21ba-6c99-5df4-a742-d43a03ad5000",
+          "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+          "topologyId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+          "artifactId": "9eee21ba-6c99-5df4-a742-d43a03ad5000",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "ed22babf-097a-522b-8ea6-c0fd4a48d939",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -393,11 +404,11 @@ description: Variables in memory after executing subtract_with_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "9eee21ba-6c99-5df4-a742-d43a03ad5000",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -420,17 +431,17 @@ description: Variables in memory after executing subtract_with_pattern.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "kind": "XZ",
+              "type": "plane",
+              "artifactId": "7b681387-29ea-57f1-8713-d63280827139",
+              "id": "7b681387-29ea-57f1-8713-d63280827139",
               "objectId": 1,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -462,16 +473,17 @@ description: Variables in memory after executing subtract_with_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "mm"
+            "artifactId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+            "units": "mm",
+            "isClosed": "explicitly"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "094c2621-b6dc-5b8d-b217-525224318aa7",
+          "endCapId": "b620e86e-3390-5b73-897e-9d5291058003",
           "units": "mm",
           "sectional": false
         }
@@ -480,12 +492,14 @@ description: Variables in memory after executing subtract_with_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "6cb1f6ba-f041-5f0f-82b5-9fc53b93b48b",
+          "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+          "topologyId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+          "artifactId": "6cb1f6ba-f041-5f0f-82b5-9fc53b93b48b",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "ed22babf-097a-522b-8ea6-c0fd4a48d939",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -494,11 +508,11 @@ description: Variables in memory after executing subtract_with_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "6cb1f6ba-f041-5f0f-82b5-9fc53b93b48b",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -521,17 +535,17 @@ description: Variables in memory after executing subtract_with_pattern.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "kind": "XZ",
+              "type": "plane",
+              "artifactId": "7b681387-29ea-57f1-8713-d63280827139",
+              "id": "7b681387-29ea-57f1-8713-d63280827139",
               "objectId": 1,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -563,16 +577,17 @@ description: Variables in memory after executing subtract_with_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "mm"
+            "artifactId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+            "units": "mm",
+            "isClosed": "explicitly"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "094c2621-b6dc-5b8d-b217-525224318aa7",
+          "endCapId": "b620e86e-3390-5b73-897e-9d5291058003",
           "units": "mm",
           "sectional": false
         }
@@ -581,12 +596,14 @@ description: Variables in memory after executing subtract_with_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "70234578-22da-5570-b77f-9ab44bbf8710",
+          "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+          "topologyId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+          "artifactId": "70234578-22da-5570-b77f-9ab44bbf8710",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "ed22babf-097a-522b-8ea6-c0fd4a48d939",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -595,11 +612,11 @@ description: Variables in memory after executing subtract_with_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "70234578-22da-5570-b77f-9ab44bbf8710",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -622,17 +639,17 @@ description: Variables in memory after executing subtract_with_pattern.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "kind": "XZ",
+              "type": "plane",
+              "artifactId": "7b681387-29ea-57f1-8713-d63280827139",
+              "id": "7b681387-29ea-57f1-8713-d63280827139",
               "objectId": 1,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -664,16 +681,17 @@ description: Variables in memory after executing subtract_with_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "mm"
+            "artifactId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+            "units": "mm",
+            "isClosed": "explicitly"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "094c2621-b6dc-5b8d-b217-525224318aa7",
+          "endCapId": "b620e86e-3390-5b73-897e-9d5291058003",
           "units": "mm",
           "sectional": false
         }
@@ -682,12 +700,14 @@ description: Variables in memory after executing subtract_with_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "25662764-9b8b-5d82-98e0-84ff503bf2cc",
+          "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+          "topologyId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+          "artifactId": "25662764-9b8b-5d82-98e0-84ff503bf2cc",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "ed22babf-097a-522b-8ea6-c0fd4a48d939",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -696,11 +716,11 @@ description: Variables in memory after executing subtract_with_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "25662764-9b8b-5d82-98e0-84ff503bf2cc",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -723,17 +743,17 @@ description: Variables in memory after executing subtract_with_pattern.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "kind": "XZ",
+              "type": "plane",
+              "artifactId": "7b681387-29ea-57f1-8713-d63280827139",
+              "id": "7b681387-29ea-57f1-8713-d63280827139",
               "objectId": 1,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -765,16 +785,17 @@ description: Variables in memory after executing subtract_with_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "mm"
+            "artifactId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+            "units": "mm",
+            "isClosed": "explicitly"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "094c2621-b6dc-5b8d-b217-525224318aa7",
+          "endCapId": "b620e86e-3390-5b73-897e-9d5291058003",
           "units": "mm",
           "sectional": false
         }
@@ -783,12 +804,14 @@ description: Variables in memory after executing subtract_with_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "e0e90311-f817-5383-bbb9-73bf2ceba624",
+          "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+          "topologyId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+          "artifactId": "e0e90311-f817-5383-bbb9-73bf2ceba624",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "ed22babf-097a-522b-8ea6-c0fd4a48d939",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -797,11 +820,11 @@ description: Variables in memory after executing subtract_with_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "e0e90311-f817-5383-bbb9-73bf2ceba624",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -824,17 +847,17 @@ description: Variables in memory after executing subtract_with_pattern.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "kind": "XZ",
+              "type": "plane",
+              "artifactId": "7b681387-29ea-57f1-8713-d63280827139",
+              "id": "7b681387-29ea-57f1-8713-d63280827139",
               "objectId": 1,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -866,16 +889,17 @@ description: Variables in memory after executing subtract_with_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "mm"
+            "artifactId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+            "units": "mm",
+            "isClosed": "explicitly"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "094c2621-b6dc-5b8d-b217-525224318aa7",
+          "endCapId": "b620e86e-3390-5b73-897e-9d5291058003",
           "units": "mm",
           "sectional": false
         }
@@ -884,12 +908,14 @@ description: Variables in memory after executing subtract_with_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "7007d862-9d2a-5f79-99a3-6390bcf68412",
+          "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+          "topologyId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+          "artifactId": "7007d862-9d2a-5f79-99a3-6390bcf68412",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "ed22babf-097a-522b-8ea6-c0fd4a48d939",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -898,11 +924,11 @@ description: Variables in memory after executing subtract_with_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "7007d862-9d2a-5f79-99a3-6390bcf68412",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -925,17 +951,17 @@ description: Variables in memory after executing subtract_with_pattern.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "kind": "XZ",
+              "type": "plane",
+              "artifactId": "7b681387-29ea-57f1-8713-d63280827139",
+              "id": "7b681387-29ea-57f1-8713-d63280827139",
               "objectId": 1,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -967,16 +993,17 @@ description: Variables in memory after executing subtract_with_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "mm"
+            "artifactId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+            "units": "mm",
+            "isClosed": "explicitly"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "094c2621-b6dc-5b8d-b217-525224318aa7",
+          "endCapId": "b620e86e-3390-5b73-897e-9d5291058003",
           "units": "mm",
           "sectional": false
         }
@@ -985,12 +1012,14 @@ description: Variables in memory after executing subtract_with_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "86db84ac-4417-5d6d-94f9-5754ec394147",
+          "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+          "topologyId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+          "artifactId": "86db84ac-4417-5d6d-94f9-5754ec394147",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "ed22babf-097a-522b-8ea6-c0fd4a48d939",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -999,11 +1028,11 @@ description: Variables in memory after executing subtract_with_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "86db84ac-4417-5d6d-94f9-5754ec394147",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1026,17 +1055,17 @@ description: Variables in memory after executing subtract_with_pattern.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "kind": "XZ",
+              "type": "plane",
+              "artifactId": "7b681387-29ea-57f1-8713-d63280827139",
+              "id": "7b681387-29ea-57f1-8713-d63280827139",
               "objectId": 1,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1068,16 +1097,17 @@ description: Variables in memory after executing subtract_with_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "mm"
+            "artifactId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+            "units": "mm",
+            "isClosed": "explicitly"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "094c2621-b6dc-5b8d-b217-525224318aa7",
+          "endCapId": "b620e86e-3390-5b73-897e-9d5291058003",
           "units": "mm",
           "sectional": false
         }
@@ -1086,12 +1116,14 @@ description: Variables in memory after executing subtract_with_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "9efbcccc-288a-5a5c-b7f4-7d2f8bbae204",
+          "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+          "topologyId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+          "artifactId": "9efbcccc-288a-5a5c-b7f4-7d2f8bbae204",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "ed22babf-097a-522b-8ea6-c0fd4a48d939",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -1100,11 +1132,11 @@ description: Variables in memory after executing subtract_with_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "9efbcccc-288a-5a5c-b7f4-7d2f8bbae204",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1127,17 +1159,17 @@ description: Variables in memory after executing subtract_with_pattern.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "kind": "XZ",
+              "type": "plane",
+              "artifactId": "7b681387-29ea-57f1-8713-d63280827139",
+              "id": "7b681387-29ea-57f1-8713-d63280827139",
               "objectId": 1,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1169,16 +1201,17 @@ description: Variables in memory after executing subtract_with_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "mm"
+            "artifactId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+            "units": "mm",
+            "isClosed": "explicitly"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "094c2621-b6dc-5b8d-b217-525224318aa7",
+          "endCapId": "b620e86e-3390-5b73-897e-9d5291058003",
           "units": "mm",
           "sectional": false
         }
@@ -1187,12 +1220,14 @@ description: Variables in memory after executing subtract_with_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "fc7fb0e2-498c-5d88-b923-2cb90df78883",
+          "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+          "topologyId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+          "artifactId": "fc7fb0e2-498c-5d88-b923-2cb90df78883",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "ed22babf-097a-522b-8ea6-c0fd4a48d939",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -1201,11 +1236,11 @@ description: Variables in memory after executing subtract_with_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "fc7fb0e2-498c-5d88-b923-2cb90df78883",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1228,17 +1263,17 @@ description: Variables in memory after executing subtract_with_pattern.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "kind": "XZ",
+              "type": "plane",
+              "artifactId": "7b681387-29ea-57f1-8713-d63280827139",
+              "id": "7b681387-29ea-57f1-8713-d63280827139",
               "objectId": 1,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1270,16 +1305,17 @@ description: Variables in memory after executing subtract_with_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "mm"
+            "artifactId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+            "units": "mm",
+            "isClosed": "explicitly"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "094c2621-b6dc-5b8d-b217-525224318aa7",
+          "endCapId": "b620e86e-3390-5b73-897e-9d5291058003",
           "units": "mm",
           "sectional": false
         }
@@ -1290,11 +1326,11 @@ description: Variables in memory after executing subtract_with_pattern.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
             "sourceRange": []
           },
           "from": [
@@ -1311,7 +1347,7 @@ description: Variables in memory after executing subtract_with_pattern.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
             "sourceRange": []
           },
           "from": [
@@ -1328,7 +1364,7 @@ description: Variables in memory after executing subtract_with_pattern.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
             "sourceRange": []
           },
           "from": [
@@ -1345,7 +1381,7 @@ description: Variables in memory after executing subtract_with_pattern.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
             "sourceRange": []
           },
           "from": [
@@ -1362,17 +1398,17 @@ description: Variables in memory after executing subtract_with_pattern.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
-        "kind": "XY",
+        "type": "plane",
+        "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
+        "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
         "objectId": 0,
+        "kind": "XY",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1404,24 +1440,25 @@ description: Variables in memory after executing subtract_with_pattern.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
           "sourceRange": []
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "units": "mm"
+      "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "profile002": {
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
             "sourceRange": []
           },
           "ccw": true,
@@ -1444,17 +1481,17 @@ description: Variables in memory after executing subtract_with_pattern.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
-        "kind": "XZ",
+        "type": "plane",
+        "artifactId": "7b681387-29ea-57f1-8713-d63280827139",
+        "id": "7b681387-29ea-57f1-8713-d63280827139",
         "objectId": 1,
+        "kind": "XZ",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1486,22 +1523,23 @@ description: Variables in memory after executing subtract_with_pattern.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
           "sourceRange": []
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "units": "mm"
+      "artifactId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+      "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "sketch001": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
-      "kind": "XY",
+      "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
+      "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
       "objectId": 0,
+      "kind": "XY",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -1531,10 +1569,10 @@ description: Variables in memory after executing subtract_with_pattern.kcl
   "sketch002": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
-      "kind": "XZ",
+      "artifactId": "7b681387-29ea-57f1-8713-d63280827139",
+      "id": "7b681387-29ea-57f1-8713-d63280827139",
       "objectId": 1,
+      "kind": "XZ",
       "origin": {
         "x": 0.0,
         "y": 0.0,

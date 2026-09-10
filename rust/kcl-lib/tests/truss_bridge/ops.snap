@@ -2128,7 +2128,7 @@ description: Operations executed truss_bridge.kcl
         "unlabeledArg": {
           "value": {
             "type": "Segment",
-            "artifact_id": "[uuid]"
+            "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
           },
           "sourceRange": []
         },
@@ -9933,123 +9933,123 @@ description: Operations executed truss_bridge.kcl
             "value": {
               "arc1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "b111fba8-8876-56ff-b0a2-c225f35bfbdc"
               },
               "arc2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "44621ebd-5856-5dfd-9426-dda5d969f375"
               },
               "arc3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce"
               },
               "arc4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d90f6603-b0cd-5c83-a076-386b01d9e12a"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "468f6520-a683-5392-9492-de009fdcddef"
               },
               "line10": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d5eaf678-0440-563f-ac19-e473850b9270"
               },
               "line11": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d005938d-7477-557a-bef2-28dfc45d0fce"
               },
               "line12": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "7d8da150-b7c1-5e35-95ff-877c868e6b01"
               },
               "line13": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "9be00e59-09ca-5d92-b815-256daf9fc98e"
               },
               "line14": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f88ee97f-bd8d-58c2-8a13-430790ee61a8"
               },
               "line15": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2181764b-b5ce-5e14-b499-f36d24b7b28a"
               },
               "line16": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2ed3043b-96d9-5307-babe-4ee1188fa544"
               },
               "line17": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "5f95e913-96e4-58df-abe6-125bedd61cad"
               },
               "line18": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "b5a5f9c1-90db-5435-9bb1-97963b81c501"
               },
               "line19": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8"
               },
               "line20": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7"
               },
               "line21": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "40d8c462-7810-5666-bb09-1db7308cf666"
               },
               "line22": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5"
               },
               "line23": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f65c8713-a1f8-5ea9-a702-cab0411afc85"
               },
               "line24": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab"
               },
               "line25": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3"
               },
               "line26": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ca502980-7bdd-5694-85c5-3eb8ffa8242b"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2269b169-b2b2-5ec2-a665-24cb3822e91f"
               },
               "line5": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "82295fd4-30e7-52f8-bbfa-45b71b8986dd"
               },
               "line6": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "6c096663-896a-5f49-b4a0-b5621e2f3b74"
               },
               "line7": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "4593843c-7d41-5ede-b7fa-ab9201f55957"
               },
               "line8": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "5f65350e-7a7d-5c6d-8c8c-58382da58899"
               },
               "line9": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1cca8d80-f404-5b33-b6e0-cca169c4da48"
               },
               "meta": {
                 "type": "Object",
@@ -10057,7 +10057,7 @@ description: Operations executed truss_bridge.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "eb4a5516-04df-5d3c-a783-6699c67f971f"
                     }
                   }
                 }
@@ -10103,7 +10103,7 @@ description: Operations executed truss_bridge.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "eb4a5516-04df-5d3c-a783-6699c67f971f"
           }
         },
         "sourceRange": []
@@ -10142,7 +10142,7 @@ description: Operations executed truss_bridge.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c8fe1f51-8285-5882-9af3-7e3b8d0e3598"
           }
         },
         "sourceRange": []
@@ -10158,7 +10158,7 @@ description: Operations executed truss_bridge.kcl
         "path": {
           "value": {
             "type": "Segment",
-            "artifact_id": "[uuid]"
+            "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
           },
           "sourceRange": []
         },
@@ -10219,7 +10219,7 @@ description: Operations executed truss_bridge.kcl
         "unlabeledArg": {
           "value": {
             "type": "Segment",
-            "artifact_id": "[uuid]"
+            "artifact_id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6"
           },
           "sourceRange": []
         },
@@ -18024,123 +18024,123 @@ description: Operations executed truss_bridge.kcl
             "value": {
               "arc1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "5584477d-a466-5baa-9972-325d4b097d17"
               },
               "arc2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "806c3d5e-727c-5e29-9a69-c4ca7ed4e15b"
               },
               "arc3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "12a33a9d-38b6-56fb-af56-29ce1e09b1cb"
               },
               "arc4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0d85720f-31f4-5aac-90ae-672aa1715f9d"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f41b64cc-a0bb-5a3a-a1a2-6bb37bda7c26"
               },
               "line10": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "6df8ec7f-7a39-55d7-a123-33133fbcbbd6"
               },
               "line11": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2d6c2537-3784-5667-8614-4423d6c6f752"
               },
               "line12": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "b6f946ca-ccd6-5fa9-942d-14331e8fb26e"
               },
               "line13": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "aaa2a6cb-5f04-5c7c-b55f-4a6996b316dd"
               },
               "line14": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "92ead137-02a3-5a66-a3df-f1b87766c456"
               },
               "line15": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c902ac1e-80c0-5a28-b5a8-0ef58e8fd399"
               },
               "line16": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "b5fd1215-9080-56e3-9845-e939e4245bdb"
               },
               "line17": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "60f59271-6b58-59b1-94ae-dad793e5c6cd"
               },
               "line18": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "9bc907a5-bec7-5f87-9105-27ffee0da4e4"
               },
               "line19": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "84468ff1-4b26-5c88-8618-6cea09661aac"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "065d6e6f-62af-500d-aae0-fe097d5f952b"
               },
               "line20": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "cbd0a735-3417-50fd-a670-41b483234c04"
               },
               "line21": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "5e11c45c-4e86-5b88-8029-f0565bc2f6cc"
               },
               "line22": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "5d2a2786-5258-5364-b1b2-b28334229017"
               },
               "line23": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "5e1dab3c-521b-58cf-85c3-1a827d68f2b4"
               },
               "line24": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "77202593-ebf9-50c7-b715-41557309d9ab"
               },
               "line25": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "fc243886-5941-5a64-8a15-a0b50bb063cb"
               },
               "line26": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "388597b8-4546-5655-b3a3-c3a0bba239ad"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "fe6e67eb-7a61-566b-b101-f63111291cbc"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ff7ee7c9-c639-51f1-8d87-df7f7aaf95ec"
               },
               "line5": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c7d3a70e-3921-5009-ad0e-e05ef0d30709"
               },
               "line6": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c0a92fa6-be55-5cfb-a650-710b68437549"
               },
               "line7": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "cea75c17-0a18-5ab9-8495-1b1bb278e899"
               },
               "line8": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "af94b4da-da53-5386-a65f-ed75c251c9ff"
               },
               "line9": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "33d4ddb8-e281-5429-897a-8b34342e4a06"
               },
               "meta": {
                 "type": "Object",
@@ -18148,7 +18148,7 @@ description: Operations executed truss_bridge.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "cb96bce2-64b3-5697-9ac4-41978548d779"
                     }
                   }
                 }
@@ -18194,7 +18194,7 @@ description: Operations executed truss_bridge.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "cb96bce2-64b3-5697-9ac4-41978548d779"
           }
         },
         "sourceRange": []
@@ -18233,7 +18233,7 @@ description: Operations executed truss_bridge.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "edc11da7-15c9-5591-8b3f-a69aaa9e333e"
           }
         },
         "sourceRange": []
@@ -18249,7 +18249,7 @@ description: Operations executed truss_bridge.kcl
         "path": {
           "value": {
             "type": "Segment",
-            "artifact_id": "[uuid]"
+            "artifact_id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6"
           },
           "sourceRange": []
         },
@@ -18310,7 +18310,7 @@ description: Operations executed truss_bridge.kcl
         "unlabeledArg": {
           "value": {
             "type": "Segment",
-            "artifact_id": "[uuid]"
+            "artifact_id": "eb15cf8e-a943-5fe0-8d78-046893de64b7"
           },
           "sourceRange": []
         },
@@ -26115,123 +26115,123 @@ description: Operations executed truss_bridge.kcl
             "value": {
               "arc1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "54856312-89c1-5f60-a671-1f47b4a401c8"
               },
               "arc2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "35e57bb8-6aa7-5307-a4bb-9c4b6e3dceb9"
               },
               "arc3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "fba10312-ccc1-5900-b701-a62fd578246e"
               },
               "arc4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "3e9b58f7-be96-58f5-8f64-98da64ff12eb"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f20f97db-6c6e-5597-acd6-63874dd9452b"
               },
               "line10": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "5b5bd21f-4e8b-5eb5-b86b-6c5a708d5a3d"
               },
               "line11": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "286b9632-8f7e-58a1-9be7-c68cdb74bd58"
               },
               "line12": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "9794ca46-f9b1-580c-a79d-2169f4b5a877"
               },
               "line13": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "3ba5b88a-6ca4-5923-9f3c-edc551a4a985"
               },
               "line14": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "37cf3a1a-36fb-57c7-8861-2c9334d3ac33"
               },
               "line15": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d18cac33-8289-57fc-b158-acc5374b53ba"
               },
               "line16": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ded96391-9097-560e-913f-0484d96394a3"
               },
               "line17": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "7f923424-cf19-52ea-89fc-c05221fc17da"
               },
               "line18": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "75b833e5-f0e5-5611-a824-7cb0f52be847"
               },
               "line19": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "a284338f-93ca-5bd0-93ec-db71e311620e"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "6c399e30-11b0-54b4-ab2e-01904812cfa4"
               },
               "line20": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "190fcd82-dbf5-5b4c-8c91-69fd729ed3e6"
               },
               "line21": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "a033dab5-0390-57db-8839-ba1e2994485a"
               },
               "line22": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ddae3a47-d1c4-5304-85bb-00753661f913"
               },
               "line23": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e31d7de7-89b0-511e-b9d7-de347a758b0a"
               },
               "line24": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "cb7fe19d-d3c9-5d32-9874-193084f5a579"
               },
               "line25": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "9d90de2c-e90a-555e-8e4b-8feb0fc81637"
               },
               "line26": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "75a71087-3ea4-59f8-8b21-e05a9ebd7b03"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "67150385-7d6d-5558-9b12-a25e9c433b14"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "35c5db46-d8f1-5ab0-a220-51057c9b6cac"
               },
               "line5": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "3f7f5047-af98-5f62-a2f5-70fb6b5d1787"
               },
               "line6": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d4a58bb1-6e9a-567c-9a22-4e8a1d8a3d75"
               },
               "line7": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f3bb49a2-9c39-5528-8f44-a3337b76b362"
               },
               "line8": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "3ba624ec-0a0b-564c-90e4-cfa74956d06b"
               },
               "line9": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ce3966c0-d3aa-5d09-95fe-a587aa26e2fd"
               },
               "meta": {
                 "type": "Object",
@@ -26239,7 +26239,7 @@ description: Operations executed truss_bridge.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "589feeab-5bd5-57b3-8210-34189549c7ae"
                     }
                   }
                 }
@@ -26285,7 +26285,7 @@ description: Operations executed truss_bridge.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "589feeab-5bd5-57b3-8210-34189549c7ae"
           }
         },
         "sourceRange": []
@@ -26324,7 +26324,7 @@ description: Operations executed truss_bridge.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "aff7bbe5-b62b-5343-8440-5fda86f9729f"
           }
         },
         "sourceRange": []
@@ -26340,7 +26340,7 @@ description: Operations executed truss_bridge.kcl
         "path": {
           "value": {
             "type": "Segment",
-            "artifact_id": "[uuid]"
+            "artifact_id": "eb15cf8e-a943-5fe0-8d78-046893de64b7"
           },
           "sourceRange": []
         },
@@ -26401,7 +26401,7 @@ description: Operations executed truss_bridge.kcl
         "unlabeledArg": {
           "value": {
             "type": "Segment",
-            "artifact_id": "[uuid]"
+            "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
           },
           "sourceRange": []
         },
@@ -34206,123 +34206,123 @@ description: Operations executed truss_bridge.kcl
             "value": {
               "arc1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "732f5c89-036d-508f-97b1-77f5a239c165"
               },
               "arc2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e9b5b4a5-9e2c-52d0-9670-589c6aeac8d7"
               },
               "arc3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "968aeaa0-ace1-5894-9f9e-88f0c11dca73"
               },
               "arc4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "b9dd5be8-e95f-52fc-875f-994e4f373ea6"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c6cb6085-3fb8-53af-8bca-0d9dd3bc9abe"
               },
               "line10": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "99562ea2-e7c7-5e9e-ba0d-0204007ef37c"
               },
               "line11": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "a6cea98b-99ee-5172-bf5d-26bd63e7f000"
               },
               "line12": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8dcf225e-b515-5026-a0e3-b677bad1b3a1"
               },
               "line13": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d42347fa-40db-5268-9bba-8566acb17363"
               },
               "line14": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "39b4c135-118a-58fb-9ec6-761eefeeadce"
               },
               "line15": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "6ed7eeb6-e79d-54e3-ae1a-396443521c05"
               },
               "line16": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e7d892a3-735a-5c46-99d7-335f68088dec"
               },
               "line17": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1e62787a-9f09-5201-9b43-43d7c8439f3d"
               },
               "line18": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "664ab16b-0e66-5eb0-a73a-55a188ea5c69"
               },
               "line19": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "fc8f0db3-1e07-5c6f-b896-ec1ed303927b"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "96ef223d-c9a3-567c-95ad-18cd4610a5b8"
               },
               "line20": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e7807f37-e1a4-5d2a-9c3a-c08f01bc4d86"
               },
               "line21": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "dffe07ca-4067-5be7-b16b-9aa389c11cc7"
               },
               "line22": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "27933fba-01d2-5b7c-aa89-4c472ddc51e9"
               },
               "line23": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2b71c9cb-6de6-5fd0-be55-a3ac2938a448"
               },
               "line24": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ce979aa8-bc44-5b2a-b8ad-9f86631821b0"
               },
               "line25": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "b7e254f7-87f6-53d6-962d-4e99b65f4276"
               },
               "line26": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2c20c2dc-a7a6-52a4-80f4-3546cd91849c"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "508798c1-f7e9-5cc1-b458-586c0b4064e2"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "cffbe61c-3cde-5f35-b6e7-73bb1848df41"
               },
               "line5": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "090b86dd-868c-517d-b505-a16b164baf44"
               },
               "line6": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ce9db15f-f9e3-54ef-b0b0-8a7984452663"
               },
               "line7": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "6deaa0d3-db83-59af-a15c-2e532411d92c"
               },
               "line8": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0e4e0be1-6f28-5df2-9a9b-aaafa7b9e6dc"
               },
               "line9": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "fd5e2a7d-9b87-5ce8-aa2c-01e2de245528"
               },
               "meta": {
                 "type": "Object",
@@ -34330,7 +34330,7 @@ description: Operations executed truss_bridge.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "b14a4e56-cab7-50ae-bd9c-76b9d7a943af"
                     }
                   }
                 }
@@ -34376,7 +34376,7 @@ description: Operations executed truss_bridge.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b14a4e56-cab7-50ae-bd9c-76b9d7a943af"
           }
         },
         "sourceRange": []
@@ -34415,7 +34415,7 @@ description: Operations executed truss_bridge.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "281c416a-0e3e-565e-9f7e-18ef4df2f53d"
           }
         },
         "sourceRange": []
@@ -34431,7 +34431,7 @@ description: Operations executed truss_bridge.kcl
         "path": {
           "value": {
             "type": "Segment",
-            "artifact_id": "[uuid]"
+            "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
           },
           "sourceRange": []
         },
@@ -34492,7 +34492,7 @@ description: Operations executed truss_bridge.kcl
         "unlabeledArg": {
           "value": {
             "type": "Segment",
-            "artifact_id": "[uuid]"
+            "artifact_id": "90a5d279-3b15-5070-b2fd-a30474df87a6"
           },
           "sourceRange": []
         },
@@ -42297,123 +42297,123 @@ description: Operations executed truss_bridge.kcl
             "value": {
               "arc1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c0137d8e-bcc0-5d81-b5ab-ac17c0532df3"
               },
               "arc2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "afdf0e45-8c46-5bd4-84bb-9d1194ce058f"
               },
               "arc3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "29b7cff7-3a5d-51e7-a725-3facbc50929a"
               },
               "arc4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "9efc903f-f0ff-51c2-8216-c77c9ceb1bfb"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "b46b8591-2c0e-5d2d-a89c-6e7e587a4bff"
               },
               "line10": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "24b6eb41-4a32-5869-9674-ab24003d2893"
               },
               "line11": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "49b30cca-d700-5ed5-9e13-9aeaf4bb44c0"
               },
               "line12": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "a35cd184-4a9e-5730-a4b6-edb84aa570aa"
               },
               "line13": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "3b77bfa1-6926-5b5d-899f-c7850230a981"
               },
               "line14": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "946678ea-6134-556b-9530-74ff4b03a729"
               },
               "line15": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "7c8869c3-df0c-5e04-9bf2-63751631e367"
               },
               "line16": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "3932ac2d-7f2c-54ae-b962-4e2bff388f90"
               },
               "line17": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "4385353f-d134-5961-abfd-b450da7fe822"
               },
               "line18": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "78112e0e-bced-5e0f-8359-3a8e8eb78f5a"
               },
               "line19": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "366c4a01-60f1-536f-bf46-8eca7070e4bf"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "72f0e991-7dc5-5a6e-bdfd-5a076dc1d70d"
               },
               "line20": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ad26a214-4dba-5667-9a1a-b65641f718fb"
               },
               "line21": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "eb02fdaa-09df-52b4-a00b-2eefaaf8ee04"
               },
               "line22": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "b8be4dc9-6ce3-5255-b642-f364d2786645"
               },
               "line23": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ba10c382-f783-5646-a8a8-a0c8707ded16"
               },
               "line24": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "917318aa-1919-51a2-bc93-7925d8480ce4"
               },
               "line25": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "daf2943e-d2ea-5be5-9175-07489b92eadf"
               },
               "line26": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "6ab65c27-9336-58c7-8721-3791cf2b92f7"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "6be55b17-85a2-5c7b-b079-4a9706a73eea"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "80a8b4e9-24bb-51f6-9da1-58ae390711da"
               },
               "line5": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "15cc0dc9-88a7-57f7-8880-9e07e0e24c77"
               },
               "line6": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "188afc7c-cc3c-5261-9579-6d88bdfa08ab"
               },
               "line7": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "02ba7194-611b-50e8-9622-2ad66d8b829d"
               },
               "line8": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "fd75fc8a-a912-5b92-a652-1110a10441a8"
               },
               "line9": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "27627e83-abfb-5842-9e08-7bd6e481ffea"
               },
               "meta": {
                 "type": "Object",
@@ -42421,7 +42421,7 @@ description: Operations executed truss_bridge.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "d319cbd7-b7ec-5777-a37c-e47b8f0988e9"
                     }
                   }
                 }
@@ -42467,7 +42467,7 @@ description: Operations executed truss_bridge.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d319cbd7-b7ec-5777-a37c-e47b8f0988e9"
           }
         },
         "sourceRange": []
@@ -42506,7 +42506,7 @@ description: Operations executed truss_bridge.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "86cdb829-743c-5637-bfa3-138189463624"
           }
         },
         "sourceRange": []
@@ -42522,7 +42522,7 @@ description: Operations executed truss_bridge.kcl
         "path": {
           "value": {
             "type": "Segment",
-            "artifact_id": "[uuid]"
+            "artifact_id": "90a5d279-3b15-5070-b2fd-a30474df87a6"
           },
           "sourceRange": []
         },
@@ -42583,7 +42583,7 @@ description: Operations executed truss_bridge.kcl
         "unlabeledArg": {
           "value": {
             "type": "Segment",
-            "artifact_id": "[uuid]"
+            "artifact_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
           },
           "sourceRange": []
         },
@@ -50388,123 +50388,123 @@ description: Operations executed truss_bridge.kcl
             "value": {
               "arc1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e2bc3cb1-0b33-528c-b228-4daf5684d844"
               },
               "arc2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "7635abf7-f58b-5734-a65f-56a7bb0e124d"
               },
               "arc3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "3cc8b832-e6b6-51ca-b701-c728c9560e53"
               },
               "arc4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0a22e4fe-ce20-5f39-8b4b-c020f10d93cf"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "51943e54-9fbe-5edc-a64a-382ef1721381"
               },
               "line10": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d1b1ab97-3dab-5bcb-9e65-cad490783f3e"
               },
               "line11": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ef171dae-c286-5507-b9c6-7f7465dc7461"
               },
               "line12": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "6cf2a698-ac12-51b1-99a3-14911bb30995"
               },
               "line13": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "aab37265-fb17-5994-9a7b-92e1760b84c8"
               },
               "line14": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2961ebcc-db83-5a3d-8130-c1e553924cc1"
               },
               "line15": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "71068460-1dec-5410-a13f-0a0085899cd7"
               },
               "line16": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f7edfb8d-56ab-5ab8-8e43-7bbb19cceee3"
               },
               "line17": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "90ef68c1-63f7-59a4-b12c-55dd7d25af8c"
               },
               "line18": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "92ea6525-ebad-5997-8cc4-312eb8db90cf"
               },
               "line19": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d65ba3b9-6f5e-55f6-afeb-91178a3d6691"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c12873d7-10b9-5ebd-a639-5df6f4fa9a8e"
               },
               "line20": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "40e28632-605b-58ec-a9f8-df004cfcc2cb"
               },
               "line21": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "3b1d1fc6-51e1-5439-ab21-56ccfda323c1"
               },
               "line22": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "6d6dfd10-c0ac-54b7-9ca2-3f8c63e53f85"
               },
               "line23": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bbbc2981-6f1a-5fb4-994b-0a5aedfd3fe8"
               },
               "line24": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f30281d9-6449-50e7-948b-da6cfb24a0e2"
               },
               "line25": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "30719ad1-f528-551a-930a-978421d0dd64"
               },
               "line26": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "7fe06aa9-72bb-5312-9408-3709b2d42454"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "03aed83f-0587-5113-bf35-d06010023ee9"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "96f1b9a4-0e73-5101-ad0a-14d84d18e49f"
               },
               "line5": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "04fe2689-9854-50ef-9369-736adf7cf792"
               },
               "line6": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "cfd48b1f-b002-57be-a8f4-91ca36c39c99"
               },
               "line7": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1089ce27-b8ba-54f6-8ef7-88b0a8a88dcf"
               },
               "line8": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "b2b67008-2160-5ac0-a513-1b8a8f7b0c6e"
               },
               "line9": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "3b6efa65-aa6e-559b-8b82-9c64661f6e87"
               },
               "meta": {
                 "type": "Object",
@@ -50512,7 +50512,7 @@ description: Operations executed truss_bridge.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "0900887c-0046-53c7-952f-5567cdf52c5f"
                     }
                   }
                 }
@@ -50558,7 +50558,7 @@ description: Operations executed truss_bridge.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0900887c-0046-53c7-952f-5567cdf52c5f"
           }
         },
         "sourceRange": []
@@ -50597,7 +50597,7 @@ description: Operations executed truss_bridge.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "aa651ccb-d589-51c4-a060-a9282889e127"
           }
         },
         "sourceRange": []
@@ -50613,7 +50613,7 @@ description: Operations executed truss_bridge.kcl
         "path": {
           "value": {
             "type": "Segment",
-            "artifact_id": "[uuid]"
+            "artifact_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
           },
           "sourceRange": []
         },
@@ -50674,7 +50674,7 @@ description: Operations executed truss_bridge.kcl
         "unlabeledArg": {
           "value": {
             "type": "Segment",
-            "artifact_id": "[uuid]"
+            "artifact_id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b"
           },
           "sourceRange": []
         },
@@ -58479,123 +58479,123 @@ description: Operations executed truss_bridge.kcl
             "value": {
               "arc1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "03bbfa0d-ae8f-541e-b08a-13f7970cfde8"
               },
               "arc2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "dbf5be32-ecc7-59fd-91fd-8e460401f1ad"
               },
               "arc3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "3e205172-50cc-5001-82bf-29a879a0f309"
               },
               "arc4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "45fbc78c-6278-509c-98ec-d508b807c83c"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "66191844-357e-5d62-823a-9f0f1af35417"
               },
               "line10": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "b87d11de-10d7-55eb-9e59-2b2373c09296"
               },
               "line11": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "cd0e5eef-eecd-50ee-9c4a-f4e2ba2ae4af"
               },
               "line12": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "571efe2a-7b29-5d8b-9134-4b1c661fe15e"
               },
               "line13": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "9a3c20fb-91e6-5f15-83fc-178c178addd9"
               },
               "line14": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "054adf61-165c-525c-a8d6-c18a9c5bc053"
               },
               "line15": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "65a84f8a-0c86-5336-ae4c-106af8d04334"
               },
               "line16": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "6c199e08-c793-5713-8ca6-490092e14a96"
               },
               "line17": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "85fb3529-d3a2-5d0d-bbdd-2db4c6cf664a"
               },
               "line18": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2dc53f7e-c03e-50a5-8679-d48027ce08b2"
               },
               "line19": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "592e8e86-f853-598a-be0e-c68ec53c2ca1"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d529f5a1-f08b-55d9-becb-79c6a37b6ee0"
               },
               "line20": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "98c9f5ab-4aca-55eb-93aa-519eb3cd3203"
               },
               "line21": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "33c832a2-b481-53f6-ad50-1e5a53fff68d"
               },
               "line22": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bba2d9f6-7e13-518d-a5d7-901aa01ad9b5"
               },
               "line23": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d19ec55f-a212-5ddf-a43e-b73689252702"
               },
               "line24": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ebd9139e-489f-5e1f-b8bd-08723071b56d"
               },
               "line25": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "4672ce9f-83aa-55b4-9008-017d01168579"
               },
               "line26": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "af4623d9-2bd8-5e60-846a-a914bb72b5f0"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "b0a77ece-6a09-552f-b5d4-d47368b72021"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ad1f2d9a-bbce-5a81-91a8-233fc7329bf2"
               },
               "line5": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "334d0e2b-c68c-5e8d-b2c3-b9e299494189"
               },
               "line6": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "06d4c6e8-760f-5157-afa5-fbb182cac534"
               },
               "line7": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "98a9a16a-96a6-5af7-a34c-f42978d22722"
               },
               "line8": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "753cdb25-2d4a-5283-afb0-33a00ef2a086"
               },
               "line9": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "3c0892da-066c-5c0b-bbb7-985297738e8b"
               },
               "meta": {
                 "type": "Object",
@@ -58603,7 +58603,7 @@ description: Operations executed truss_bridge.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "136828cb-e57e-5062-9eb9-b88c7d04a2c5"
                     }
                   }
                 }
@@ -58649,7 +58649,7 @@ description: Operations executed truss_bridge.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "136828cb-e57e-5062-9eb9-b88c7d04a2c5"
           }
         },
         "sourceRange": []
@@ -58688,7 +58688,7 @@ description: Operations executed truss_bridge.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9cd9b73b-61ae-5347-83b2-9ec9b2e71971"
           }
         },
         "sourceRange": []
@@ -58704,7 +58704,7 @@ description: Operations executed truss_bridge.kcl
         "path": {
           "value": {
             "type": "Segment",
-            "artifact_id": "[uuid]"
+            "artifact_id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b"
           },
           "sourceRange": []
         },
@@ -58765,7 +58765,7 @@ description: Operations executed truss_bridge.kcl
         "unlabeledArg": {
           "value": {
             "type": "Segment",
-            "artifact_id": "[uuid]"
+            "artifact_id": "41c630c9-9d44-581b-98af-caee575bea48"
           },
           "sourceRange": []
         },
@@ -66570,123 +66570,123 @@ description: Operations executed truss_bridge.kcl
             "value": {
               "arc1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "313a872b-68b2-5b9c-8a1c-428e59783583"
               },
               "arc2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "519f88ce-55e5-558c-b17e-6ca3943770ab"
               },
               "arc3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0695ae60-1ffa-5280-9bb0-b7689535af88"
               },
               "arc4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "dabc938b-ef73-5152-8ca1-0e63c9e04797"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8feb6bf8-ca73-52ac-8ac0-ad158ec3ecf0"
               },
               "line10": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "67782fd5-dc38-5654-9962-c413c4147cb3"
               },
               "line11": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "684dec9c-7c8d-5b66-aaf3-73c5831db642"
               },
               "line12": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1f10bb4b-a887-595e-96b8-c079cdca3b47"
               },
               "line13": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "5d1eb41d-94d9-54e7-9483-558d14947a67"
               },
               "line14": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e0de1c75-c34e-5a78-a533-142edd7d8d53"
               },
               "line15": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ddbd2744-1f20-50bf-945a-45f3aa96225f"
               },
               "line16": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2331c793-95a5-5516-82c8-dd7c63528f29"
               },
               "line17": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "409f4306-e8dc-55c5-9bf3-8dab91ca8b27"
               },
               "line18": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c8ef30fe-c3f0-5903-be4f-a0a98149f636"
               },
               "line19": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ef820bc1-43bd-5982-aa40-6827a2e90c50"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "620e9d7f-9f5b-5267-b4f7-cdfa6a7b06a3"
               },
               "line20": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "5b40f4bd-04be-535d-9a6e-e27bdb81c7fd"
               },
               "line21": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bef56441-8ded-5799-892c-008026cbc417"
               },
               "line22": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "890b141e-93cb-54fd-ac17-27cf452a05ab"
               },
               "line23": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f3f75945-b1bd-50e5-97ed-8599c14d5e45"
               },
               "line24": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "cfa03430-e1a3-53f6-a281-5b685a6663d8"
               },
               "line25": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0f8983a9-dd71-5068-8e8d-a052bbba53f8"
               },
               "line26": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "5fb99f45-6c39-5f22-afb9-f821ace667d7"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "3586bb36-f9bc-53d4-ba63-1f9d59467fcc"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "08345845-96b3-5525-88d5-8589a3cd3bc2"
               },
               "line5": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "acf5697e-b0b0-5d7f-9281-2df8fe2e7b9e"
               },
               "line6": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "535d26b8-13a1-53b3-9e5b-51c6f382daf6"
               },
               "line7": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "853151f7-d6f6-5d8c-9ea3-9cf5c67a1f5f"
               },
               "line8": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "41ebc6fe-43bb-527a-99f3-d88827bc06d5"
               },
               "line9": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bce050b6-3770-56f6-b60f-a5ce8b814de7"
               },
               "meta": {
                 "type": "Object",
@@ -66694,7 +66694,7 @@ description: Operations executed truss_bridge.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "dc1a2d94-411b-5c1d-9e26-4a7b429e5c9c"
                     }
                   }
                 }
@@ -66740,7 +66740,7 @@ description: Operations executed truss_bridge.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "dc1a2d94-411b-5c1d-9e26-4a7b429e5c9c"
           }
         },
         "sourceRange": []
@@ -66779,7 +66779,7 @@ description: Operations executed truss_bridge.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "3816db71-b15d-52f5-8528-78b1fd219df6"
           }
         },
         "sourceRange": []
@@ -66795,7 +66795,7 @@ description: Operations executed truss_bridge.kcl
         "path": {
           "value": {
             "type": "Segment",
-            "artifact_id": "[uuid]"
+            "artifact_id": "41c630c9-9d44-581b-98af-caee575bea48"
           },
           "sourceRange": []
         },
@@ -66856,7 +66856,7 @@ description: Operations executed truss_bridge.kcl
         "unlabeledArg": {
           "value": {
             "type": "Segment",
-            "artifact_id": "[uuid]"
+            "artifact_id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966"
           },
           "sourceRange": []
         },
@@ -74661,123 +74661,123 @@ description: Operations executed truss_bridge.kcl
             "value": {
               "arc1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bcf3b797-fe62-5c4e-96a5-94d20e6874aa"
               },
               "arc2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0272acce-fb9a-5b2c-b1e0-4490a9cd53ce"
               },
               "arc3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "b86dab81-e6f5-5cea-a48e-5d5c8a2ab6df"
               },
               "arc4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "cccd465d-7e9c-5ce6-aefe-4e4d1005f591"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "dadd5866-0288-5d77-a976-8f545e2e7b55"
               },
               "line10": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91345a1e-0343-5a51-abe4-923d413ff81e"
               },
               "line11": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "4ab567e8-f725-5d7d-90ff-6778a03e1de6"
               },
               "line12": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "dafde960-dde1-58cf-877c-6e5b7dcefae2"
               },
               "line13": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0d54ce09-6677-5202-b152-124fce62bcb4"
               },
               "line14": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "718d27b4-0f80-595c-b456-a30309d098f0"
               },
               "line15": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "4edff550-efa8-5bc0-bf31-b7a74f50ab32"
               },
               "line16": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "4e015730-f652-518d-af40-3dcc3891483a"
               },
               "line17": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f233ec2f-89f3-5ff4-8561-1e91a300a4b4"
               },
               "line18": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "7a7f5fc6-95b2-53b7-8efc-524e3033b19a"
               },
               "line19": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "5b2ffa6b-36c8-579c-b09b-934622daf2c2"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d8957557-164b-5966-a0cf-a0c22dd2d4fe"
               },
               "line20": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f525cc4a-7709-5f3c-856a-980b8e4af8e3"
               },
               "line21": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bd18ffad-4d52-5644-9201-b2283db6870d"
               },
               "line22": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e6311616-9f6a-579f-8b22-b6b55078386f"
               },
               "line23": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f1e219aa-3d49-58e4-9323-74dac3cc235f"
               },
               "line24": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c55f09f3-a5b5-59b5-addd-6957d7f9be0a"
               },
               "line25": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "7f335f2f-1e39-521f-9099-69e2ec739708"
               },
               "line26": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "5b955ee7-935a-5b41-91b7-7fcd2842a614"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1423421f-4b33-50ff-85d6-25386afb8c1b"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "07b1ee1a-6b3b-5929-bdfa-8181032a9e10"
               },
               "line5": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "773a37b3-4f4a-5be0-a94d-a9c1255c47b7"
               },
               "line6": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0d188fc0-e06c-5219-ae56-310f826c4bde"
               },
               "line7": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "97557a03-80c3-58c3-8674-d370a4bf9e98"
               },
               "line8": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "504120a9-4b0a-5366-a720-00a002c47d4e"
               },
               "line9": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "97858671-fe97-5dd6-b97f-35ea230c8fbc"
               },
               "meta": {
                 "type": "Object",
@@ -74785,7 +74785,7 @@ description: Operations executed truss_bridge.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "00800e52-63ce-54e0-94f9-3512becc92d1"
                     }
                   }
                 }
@@ -74831,7 +74831,7 @@ description: Operations executed truss_bridge.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "00800e52-63ce-54e0-94f9-3512becc92d1"
           }
         },
         "sourceRange": []
@@ -74870,7 +74870,7 @@ description: Operations executed truss_bridge.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f93ee836-ac15-5388-8812-19d19e9c2f4c"
           }
         },
         "sourceRange": []
@@ -74886,7 +74886,7 @@ description: Operations executed truss_bridge.kcl
         "path": {
           "value": {
             "type": "Segment",
-            "artifact_id": "[uuid]"
+            "artifact_id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966"
           },
           "sourceRange": []
         },
@@ -74947,7 +74947,7 @@ description: Operations executed truss_bridge.kcl
         "unlabeledArg": {
           "value": {
             "type": "Segment",
-            "artifact_id": "[uuid]"
+            "artifact_id": "38f0111a-8034-5e85-9ec1-07dbc9646b06"
           },
           "sourceRange": []
         },
@@ -82752,123 +82752,123 @@ description: Operations executed truss_bridge.kcl
             "value": {
               "arc1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c0718dce-f437-544d-b03d-2f0f0931e234"
               },
               "arc2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "7c9be39d-a63b-5754-ab08-7cc649efc0e8"
               },
               "arc3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f1bb5370-fd02-521b-809b-81c4925eed64"
               },
               "arc4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "02d53216-a099-5c41-88ff-0f95df0152fd"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "b27fe4b8-43e9-593d-bdd6-650846a2dfa4"
               },
               "line10": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "70d2eb0e-4ace-5c91-83ad-c7feb6d86c30"
               },
               "line11": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "dd904460-13ac-52af-85c0-1f124f7f9856"
               },
               "line12": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bbef6993-f423-5d55-a6d8-dc19ea3ee534"
               },
               "line13": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "dba16236-21c6-50b0-87f0-603d52d8f7c9"
               },
               "line14": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "36f2e7a0-88c5-5b17-a72f-f07a1e18e83a"
               },
               "line15": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d254ef0e-f07d-5d69-8121-99d236e9fe3f"
               },
               "line16": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ec1e05d1-d148-5eda-bd3b-445a2638f545"
               },
               "line17": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e91d4b6a-8d65-5f68-897e-78219e83b7ed"
               },
               "line18": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ce82e7ac-d8d0-5a03-8bee-bd937d38d0f5"
               },
               "line19": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "cbdc8323-71d1-5f71-bfd8-050b5c3d657e"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "4b8595af-2fae-5b89-9f4a-756f431622c0"
               },
               "line20": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "cc559261-0a6c-59dc-9131-0a2acf49c3ab"
               },
               "line21": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "4cb8d40b-5c56-5dcc-887b-e53a9bc36737"
               },
               "line22": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "140ab40c-09db-5048-8038-d9174cb7793b"
               },
               "line23": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e2c615c4-90c9-55a6-9667-873ccaec4ac7"
               },
               "line24": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ae2041a8-e0e3-573c-835e-0d0232862a1e"
               },
               "line25": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "3235fd1e-500f-51cd-9ab7-dfe35195b5fa"
               },
               "line26": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "be8aedc2-0bdc-5769-952b-881550b14fab"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "589db058-53d9-5203-94e6-5692e107249d"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "14838629-0695-5ab9-916a-4dbfc4340c10"
               },
               "line5": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c83e8299-a632-5dae-abb9-7280c822625c"
               },
               "line6": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "5ab794c4-c683-58fa-a4eb-dd6a7e415f67"
               },
               "line7": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "227df18c-0c66-53b9-8f0b-5c6b874e498a"
               },
               "line8": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "15ce7344-2a07-59f7-b93a-20e2a8efd55a"
               },
               "line9": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "11390dcc-3d71-5ac2-80d5-06b774b8f855"
               },
               "meta": {
                 "type": "Object",
@@ -82876,7 +82876,7 @@ description: Operations executed truss_bridge.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "48b762f9-e9d4-59cf-8903-b73cec9a43a6"
                     }
                   }
                 }
@@ -82922,7 +82922,7 @@ description: Operations executed truss_bridge.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "48b762f9-e9d4-59cf-8903-b73cec9a43a6"
           }
         },
         "sourceRange": []
@@ -82961,7 +82961,7 @@ description: Operations executed truss_bridge.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c79331cf-9f8d-52f6-8839-1be5b8625c32"
           }
         },
         "sourceRange": []
@@ -82977,7 +82977,7 @@ description: Operations executed truss_bridge.kcl
         "path": {
           "value": {
             "type": "Segment",
-            "artifact_id": "[uuid]"
+            "artifact_id": "38f0111a-8034-5e85-9ec1-07dbc9646b06"
           },
           "sourceRange": []
         },
@@ -83038,7 +83038,7 @@ description: Operations executed truss_bridge.kcl
         "unlabeledArg": {
           "value": {
             "type": "Segment",
-            "artifact_id": "[uuid]"
+            "artifact_id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9"
           },
           "sourceRange": []
         },
@@ -90843,123 +90843,123 @@ description: Operations executed truss_bridge.kcl
             "value": {
               "arc1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "cedeec6d-d407-53f7-9928-1c4f263a368f"
               },
               "arc2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "9d57c2b3-2339-57bd-af48-524a2b5456cf"
               },
               "arc3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "a70bc770-63d0-5d93-8b32-1a0f651fdb44"
               },
               "arc4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "5f1c2cd3-7e98-532e-a878-7673674476bf"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8e51bf5e-ad07-56bf-88e8-848139c6ed91"
               },
               "line10": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "46dd08a5-daa1-5a4e-a6ef-eb5e444a2970"
               },
               "line11": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "a51533ff-d082-51c5-93b8-02b02deeb84a"
               },
               "line12": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "30bd060a-0786-5fd9-9091-ed1106b8f617"
               },
               "line13": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c43dfba4-d20c-57c6-9f66-372555405e10"
               },
               "line14": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "cd006fb6-9f80-5d7d-833f-3e21da12996e"
               },
               "line15": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "b3fe5678-b1d6-5341-9037-689d3d5b0ad1"
               },
               "line16": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "68c9f873-c3e6-5f7f-99c9-26ab5b81b86a"
               },
               "line17": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1ce2dcae-944a-5200-81ae-bcebd5beeb0c"
               },
               "line18": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2d45e5c8-b332-5192-aab4-7290a7bffdf1"
               },
               "line19": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c6f50780-d3c2-584e-9ca4-9c558ca69318"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "4b95394f-1d58-5393-be18-887a30ea4178"
               },
               "line20": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "fbace6a5-3867-5b98-bda9-96d2d6bbf5a5"
               },
               "line21": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "4bf7cf7c-51b3-53a0-9724-55f46dff5607"
               },
               "line22": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1d38894d-a742-5aa5-b855-021dd02160dc"
               },
               "line23": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "cd16091e-3007-5269-923c-2b2052fa5c45"
               },
               "line24": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "b5a0ed35-43f6-54f6-bcff-77f317a93406"
               },
               "line25": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0f489737-9db6-57c7-afaf-5e62de6e8d27"
               },
               "line26": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "564429bd-af0c-5cd2-b873-7a968685702d"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "6fff4ba5-b15b-57c1-a007-6bda61e89268"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "9017b6d8-4d92-528b-b23c-1e49e1d8615e"
               },
               "line5": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0dc999ea-47b3-590c-8b35-e77da57cec93"
               },
               "line6": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "994de0fa-7821-5990-be2a-4ddced54e27c"
               },
               "line7": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "13250ee2-b99e-544b-bf7c-28042ff2848b"
               },
               "line8": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "eb4d6022-3b8a-53ef-8244-6545923a756f"
               },
               "line9": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "7db86b68-bf38-54b6-aba1-ed1c65c08834"
               },
               "meta": {
                 "type": "Object",
@@ -90967,7 +90967,7 @@ description: Operations executed truss_bridge.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "d5ec8247-09d9-50f0-8112-cd0e30eed729"
                     }
                   }
                 }
@@ -91013,7 +91013,7 @@ description: Operations executed truss_bridge.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d5ec8247-09d9-50f0-8112-cd0e30eed729"
           }
         },
         "sourceRange": []
@@ -91052,7 +91052,7 @@ description: Operations executed truss_bridge.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "080afe6a-1e44-5d81-9437-18059dbf1c31"
           }
         },
         "sourceRange": []
@@ -91068,7 +91068,7 @@ description: Operations executed truss_bridge.kcl
         "path": {
           "value": {
             "type": "Segment",
-            "artifact_id": "[uuid]"
+            "artifact_id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9"
           },
           "sourceRange": []
         },

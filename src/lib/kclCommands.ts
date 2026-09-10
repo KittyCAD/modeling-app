@@ -38,6 +38,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import { listAllImportFilesWithinProject } from '@src/machines/systemIO/snapshotContext'
 import type { SystemIOActor } from '@src/machines/systemIO/utils'
+import { FILE_AND_CODE_EDITOR_COMMAND_SCOPES } from '@src/registry/contracts/commands'
 
 interface KclCommandConfig {
   // TODO: find a different approach that doesn't require
@@ -63,6 +64,7 @@ const DEFAULT_IMPORT_REPRESENTATION = 'mesh' as const
 export function kclCommands(commandProps: KclCommandConfig): Command[] {
   return [
     {
+      scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
       name: 'set-file-units',
       displayName: 'Set file units',
       description:
@@ -114,6 +116,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       },
     },
     {
+      scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
       name: 'set-file-experimental-features',
       displayName: 'Set experimental features flag',
       description: 'Set the experimental features flag in the current file.',
@@ -187,6 +190,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       },
     },
     {
+      scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
       name: 'Insert',
       description: 'Insert from a file in the current project directory',
       icon: 'import',
@@ -264,7 +268,6 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           displayName: 'Representation',
           description:
             'Choose how this STEP file should be represented in your model.',
-          status: 'experimental',
           inputType: 'options',
           required: (context) => isStepFile(context.argumentsToSubmit.path),
           hidden: (context) => !isStepFile(context.argumentsToSubmit.path),
@@ -291,33 +294,13 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           return new Error(NO_INPUT_PROVIDED_MESSAGE)
         }
 
-        let ast = commandProps.kclManager.ast
         const { path, localName } = data
         const representation = isStepFile(path)
           ? (data.representation ?? DEFAULT_IMPORT_REPRESENTATION)
           : undefined
 
-        if (
-          representation &&
-          commandProps.kclManager.fileSettings.experimentalFeatures?.type !==
-            'Allow'
-        ) {
-          const astWithExperimentalFeatures = setExperimentalFeatures(
-            commandProps.kclManager.code,
-            { type: 'Allow' },
-            commandProps.wasmInstance
-          )
-          if (err(astWithExperimentalFeatures)) {
-            toast.error(
-              `Failed to enable experimental features for STEP import: ${astWithExperimentalFeatures.message}`
-            )
-            return astWithExperimentalFeatures
-          }
-          ast = astWithExperimentalFeatures
-        }
-
         const { modifiedAst, pathToNode } = addModuleImport({
-          ast,
+          ast: commandProps.kclManager.ast,
           path,
           localName,
           representation,
@@ -334,6 +317,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       },
     },
     {
+      scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
       name: 'format-code',
       displayName: 'Format Code',
       description: 'Nicely formats the KCL code in the editor.',
@@ -345,6 +329,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       },
     },
     {
+      scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
       name: 'parameter.create',
       displayName: 'Create parameter',
       description: 'Add a named constant to use in geometry',
@@ -409,6 +394,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       },
     },
     {
+      scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
       name: 'parameter.edit',
       displayName: 'Edit parameter',
       description: 'Edit the value of a named constant',

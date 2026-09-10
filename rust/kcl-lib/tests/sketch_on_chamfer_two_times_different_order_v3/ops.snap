@@ -1,0 +1,676 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Operations executed sketch_on_chamfer_two_times_different_order_v3.kcl
+---
+{
+  "rust/kcl-lib/tests/sketch_on_chamfer_two_times_different_order_v3/input.kcl": [
+    {
+      "type": "StdLibCall",
+      "name": "startSketchOn",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "extrude",
+      "unlabeledArg": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 100.0,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "fillet",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "radius": {
+          "value": {
+            "type": "Number",
+            "value": 20.0,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
+        },
+        "tags": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "TagIdentifier",
+                "value": "seg01",
+                "artifact_id": "89316223-2ea1-5731-9c72-0492bc30fbe2"
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 1
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "chamfer",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 50.0,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
+        },
+        "tag": {
+          "value": {
+            "type": "TagDeclarator",
+            "name": "seg03"
+          },
+          "sourceRange": []
+        },
+        "tags": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Uuid",
+                "value": "749d3e98-3061-5730-90b9-784607aeecf4"
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "chamfer",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 50.0,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
+        },
+        "tag": {
+          "value": {
+            "type": "TagDeclarator",
+            "name": "seg04"
+          },
+          "sourceRange": []
+        },
+        "tags": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "TagIdentifier",
+                "value": "seg02",
+                "artifact_id": "523b9fc1-d681-5ef3-b407-128525533bfe"
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 3
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "startSketchOn",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "face": {
+          "value": {
+            "type": "TagIdentifier",
+            "value": "seg04",
+            "artifact_id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "startSketchOn",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "face": {
+          "value": {
+            "type": "TagIdentifier",
+            "value": "seg03",
+            "artifact_id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "extrude",
+      "unlabeledArg": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 50.0,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 6
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    }
+  ],
+  "std::math": [
+    {
+      "type": "VariableDeclaration",
+      "name": "PI",
+      "value": {
+        "type": "Number",
+        "value": 3.141592653589793,
+        "ty": {
+          "type": "Unknown"
+        }
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "E",
+      "value": {
+        "type": "Number",
+        "value": 2.718281828459045,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "TAU",
+      "value": {
+        "type": "Number",
+        "value": 6.283185307179586,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    }
+  ],
+  "std::prelude": [
+    {
+      "type": "VariableDeclaration",
+      "name": "START",
+      "value": {
+        "type": "String",
+        "value": "start"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 23
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "END",
+      "value": {
+        "type": "String",
+        "value": "end"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 24
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "NEW",
+      "value": {
+        "type": "String",
+        "value": "new"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 25
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "MERGE",
+      "value": {
+        "type": "String",
+        "value": "merge"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 26
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "SOLID",
+      "value": {
+        "type": "String",
+        "value": "solid"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 27
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "SURFACE",
+      "value": {
+        "type": "String",
+        "value": "surface"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 28
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "CCW",
+      "value": {
+        "type": "String",
+        "value": "ccw"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 29
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "CW",
+      "value": {
+        "type": "String",
+        "value": "cw"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 30
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    }
+  ]
+}

@@ -27989,6 +27989,7 @@ description: Result of parsing sprocket.kcl
         }
       ]
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

@@ -712,7 +712,7 @@ description: Operations executed teapot.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
         },
         "sourceRange": []
       },
@@ -1081,7 +1081,7 @@ description: Operations executed teapot.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "037b0f2d-13ef-58af-b918-43b89e77393e"
               }
             ]
           },
@@ -1111,7 +1111,7 @@ description: Operations executed teapot.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4"
           }
         },
         "sourceRange": []
@@ -1121,7 +1121,7 @@ description: Operations executed teapot.kcl
           "value": {
             "type": "Sketch",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "523b9fc1-d681-5ef3-b407-128525533bfe"
             }
           },
           "sourceRange": []
@@ -1999,11 +1999,11 @@ description: Operations executed teapot.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f0c740f1-5055-5cce-95b9-6f1fba47290d"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "7d4c814d-f292-503d-a012-68ab58c77524"
               }
             ]
           },
@@ -2033,7 +2033,7 @@ description: Operations executed teapot.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1a0ade6f-d355-5121-9adb-351976a78284"
           }
         },
         "sourceRange": []
@@ -3601,11 +3601,11 @@ description: Operations executed teapot.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0030d44a-e936-52d0-b5b6-efd80f2f6770"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab"
               }
             ]
           },
@@ -3635,7 +3635,7 @@ description: Operations executed teapot.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1e1f4f78-e1b7-5008-9940-d59e53844df4"
           }
         },
         "sourceRange": []
@@ -3645,7 +3645,7 @@ description: Operations executed teapot.kcl
           "value": {
             "type": "Sketch",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596"
             }
           },
           "sourceRange": []
@@ -3678,7 +3678,7 @@ description: Operations executed teapot.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ca431487-8e9a-59ce-a472-84fe45652fab"
           }
         },
         "sourceRange": []
@@ -3688,7 +3688,7 @@ description: Operations executed teapot.kcl
           "value": {
             "type": "Solid",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48"
             }
           },
           "sourceRange": []
@@ -3837,7 +3837,7 @@ description: Operations executed teapot.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b"
               }
             ]
           },
@@ -3867,7 +3867,7 @@ description: Operations executed teapot.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2be53470-95a0-52f3-9baa-988a35cbe7a5"
           }
         },
         "sourceRange": []
@@ -5425,11 +5425,11 @@ description: Operations executed teapot.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c444b134-67e1-507a-bb00-d4998ba97afb"
               }
             ]
           },
@@ -5459,7 +5459,7 @@ description: Operations executed teapot.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ff863943-02de-5b48-baf7-471ff32b980f"
           }
         },
         "sourceRange": []
@@ -5547,7 +5547,7 @@ description: Operations executed teapot.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "662e081e-0c36-5b97-b2b8-ea0464220525"
           }
         },
         "sourceRange": []
@@ -5560,7 +5560,7 @@ description: Operations executed teapot.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "d848303b-8f89-5fe5-9391-dbf9dbcbfed9"
                 }
               }
             ]
@@ -5598,19 +5598,19 @@ description: Operations executed teapot.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "93fe6743-e0aa-5d65-834b-87a82208c703"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674"
               }
             }
           ]

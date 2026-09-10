@@ -5,7 +5,7 @@ description: Artifact commands cycloidal-gear.kcl
 {
   "public/kcl-samples/cycloidal-gear/main.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,20 +30,20 @@ description: Artifact commands cycloidal-gear.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5288de96-84bb-518a-848b-5092b5d33e48",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -55,18 +55,18 @@ description: Artifact commands cycloidal-gear.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1da187cf-4f25-596d-a170-2007a75f41c6",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
         "to": {
           "x": 11.810999999999934,
           "y": -7.620000000000938,
@@ -75,18 +75,18 @@ description: Artifact commands cycloidal-gear.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
         "segment": {
           "type": "arc",
           "center": {
@@ -107,11 +107,11 @@ description: Artifact commands cycloidal-gear.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
         "to": {
           "x": 11.810999999999934,
           "y": -7.62000000000189,
@@ -120,11 +120,11 @@ description: Artifact commands cycloidal-gear.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
         "segment": {
           "type": "arc",
           "center": {
@@ -145,11 +145,11 @@ description: Artifact commands cycloidal-gear.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "59bc8baf-257f-5783-ad91-95db236aa6b0",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
         "segment": {
           "type": "arc",
           "center": {
@@ -170,11 +170,11 @@ description: Artifact commands cycloidal-gear.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "037b0f2d-13ef-58af-b918-43b89e77393e",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
         "segment": {
           "type": "arc",
           "center": {
@@ -195,11 +195,11 @@ description: Artifact commands cycloidal-gear.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
         "segment": {
           "type": "arc",
           "center": {
@@ -220,11 +220,11 @@ description: Artifact commands cycloidal-gear.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
         "segment": {
           "type": "arc",
           "center": {
@@ -245,7 +245,7 @@ description: Artifact commands cycloidal-gear.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -270,20 +270,20 @@ description: Artifact commands cycloidal-gear.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "e8637a6d-00c2-5b87-831e-2db8c2223948",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f611456b-82df-55af-a95e-b0c5e1ba1457",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "e8637a6d-00c2-5b87-831e-2db8c2223948",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -295,18 +295,18 @@ description: Artifact commands cycloidal-gear.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3312f826-b323-5332-871a-6a8a59a3ae93",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
         "to": {
           "x": 3.7719000000253997,
           "y": 0.0,
@@ -315,18 +315,18 @@ description: Artifact commands cycloidal-gear.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
         "segment": {
           "type": "arc",
           "center": {
@@ -347,37 +347,37 @@ description: Artifact commands cycloidal-gear.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+        "segment": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+        "intersection_segment": "5173c024-ac32-59f6-acbe-69ddbf68893d",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
+        "segment": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
+        "intersection_segment": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -389,11 +389,11 @@ description: Artifact commands cycloidal-gear.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
       "range": [],
       "command": {
         "type": "twist_extrude",
-        "target": "[uuid]",
+        "target": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
         "distance": 38.099999999999994,
         "faces": null,
         "center_2d": {
@@ -413,44 +413,44 @@ description: Artifact commands cycloidal-gear.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2ed3043b-96d9-5307-babe-4ee1188fa544",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+        "edge_id": "af0a7034-5ea7-56f1-9145-413e8c236728"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5f95e913-96e4-58df-abe6-125bedd61cad",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+        "edge_id": "af0a7034-5ea7-56f1-9145-413e8c236728"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "e8637a6d-00c2-5b87-831e-2db8c2223948",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -462,11 +462,11 @@ description: Artifact commands cycloidal-gear.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3bcd28fd-2b1b-5bfe-a9ba-ee907292b41f",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
         "distance": 38.099999999999994,
         "faces": null,
         "opposite": "None",
@@ -475,86 +475,86 @@ description: Artifact commands cycloidal-gear.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "2ef0458f-7b67-5182-aea8-2f1df80750ef"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
+        "edge_id": "0d37746a-0831-5508-8b7b-f53342c45c32"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "40d8c462-7810-5666-bb09-1db7308cf666",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
+        "edge_id": "0d37746a-0831-5508-8b7b-f53342c45c32"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "[uuid]"
+          "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d"
         ],
         "tool_ids": [
-          "[uuid]"
+          "2ef0458f-7b67-5182-aea8-2f1df80750ef"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0030d44a-e936-52d0-b5b6-efd80f2f6770",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
         "hidden": true
       }
     }

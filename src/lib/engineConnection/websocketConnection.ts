@@ -8,6 +8,8 @@ import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { EngineDebugger } from '@src/lib/debugger'
 import {
   ConnectingType,
+  type EngineConnectionError,
+  EngineConnectionErrorKind,
   EngineConnectionEvents,
   EngineConnectionStateType,
   type ManagerTearDown,
@@ -103,6 +105,7 @@ export const createOnWebSocketMessage = ({
   sdpAnswerReject,
   setApiCallId,
   getCloudProjectId,
+  tearDownManager,
 }: {
   disconnectAll: () => void
   setPong: (pong: number) => void
@@ -119,6 +122,7 @@ export const createOnWebSocketMessage = ({
   sdpAnswerReject: (value: any) => void
   setApiCallId: (apiCallId: string) => void
   getCloudProjectId: () => string | undefined
+  tearDownManager: (options?: ManagerTearDown) => void
 }) => {
   const onWebSocketMessage = (event: MessageEvent<any>) => {
     // In the EngineConnection, we're looking for messages to/from
@@ -138,7 +142,14 @@ export const createOnWebSocketMessage = ({
       const backendDisconnectError = message.errors.find(
         (error) => error.message === MODELING_BACKEND_DISCONNECTED_MESSAGE
       )
+
       if (backendDisconnectError) {
+        const connectionError: EngineConnectionError = {
+          kind: EngineConnectionErrorKind.BackendDisconnect,
+          message: backendDisconnectError.message,
+          terminal: true,
+        }
+        tearDownManager({ websocketClosed: true, connectionError })
         const cloudProjectId = getCloudProjectId()
         void reportClientError({
           code: ClientErrorCode.EngineBackendDisconnect,
@@ -172,12 +183,12 @@ export const createOnWebSocketMessage = ({
       }
 
       const firstError = message.errors[0]
-      if (firstError.error_code === 'auth_token_invalid') {
+      if (firstError?.error_code === 'auth_token_invalid') {
         notifySessionExpired('engine-websocket')
         disconnectAll()
       }
 
-      if (firstError.error_code === 'internal_api') {
+      if (firstError?.error_code === 'internal_api') {
         console.warn(
           'internal_api from server consider calling the request again'
         )

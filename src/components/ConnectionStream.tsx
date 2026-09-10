@@ -266,7 +266,9 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
             // Anything left here belongs to a KCL 1.0 sketch, since sketch
             // blocks and undeclared regions were handled above.
             if (!hasLegacySketchMode) {
-              toast.error(LEGACY_SKETCH_MODE_REMOVED_MESSAGE)
+              toast.error(LEGACY_SKETCH_MODE_REMOVED_MESSAGE, {
+                duration: 5_000,
+              })
               return
             }
             sceneInfra.modelingSend({ type: 'Enter sketch' })
@@ -365,6 +367,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const onPageIdleStartCb = useCallback(() => {
     if (!videoWrapperRef.current) return
     if (!props.authToken) return
+    if (engineCommandManager.lastConnectionError?.terminal) return
     if (engineCommandManager.started) return
 
     // Do not try to restart the engine on any mouse move.
@@ -430,6 +433,9 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         reportEngineDisconnect(EngineConnectionManagerEvents.WebsocketClosed, {
           websocketCloseCode: code,
         })
+        setShowManualConnect(true)
+      },
+      terminalErrorCallback: () => {
         setShowManualConnect(true)
       },
       engineCommandManager,
@@ -519,6 +525,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         engineCommandManager.tearDown()
       },
       connect: () => {
+        if (engineCommandManager.lastConnectionError?.terminal) return
         setShowManualConnect(false)
         tryConnecting({
           authToken: props.authToken || '',

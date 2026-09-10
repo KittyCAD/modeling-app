@@ -5,6 +5,7 @@ use std::sync::Arc;
 use ahash::AHashMap;
 use anyhow::Result;
 use indexmap::IndexMap;
+pub use kcl_api::KclVersion;
 use kcl_api::UnitAngle;
 use kcl_api::UnitLength;
 use serde::Deserialize;
@@ -636,6 +637,14 @@ impl ExecState {
         self.global.deprecation_version_override = version.map(str::to_owned);
     }
 
+    #[cfg(test)]
+    pub(crate) fn program_memory_for_tests(
+        &self,
+        main_ref: EnvironmentRef,
+    ) -> Result<IndexMap<String, KclValue>, KclError> {
+        self.mod_local.variables(main_ref)
+    }
+
     /// Convert to execution outcome when running in WebAssembly.  We want to
     /// reduce the amount of data that crosses the WASM boundary as much as
     /// possible.
@@ -646,9 +655,10 @@ impl ExecState {
     ) -> Result<ExecOutcome, KclError> {
         // Fields are opt-in so that we don't accidentally leak private internal
         // state when we add more to ExecState.
-        let variables = self
-            .mod_local
-            .variables(main_ref)?
+        let variables = self.mod_local.variables(main_ref)?;
+        #[cfg(test)]
+        let test_program_memory = variables.clone();
+        let variables = variables
             .into_iter()
             .map(|(key, value)| (key, KclValueView::from(value)))
             .collect();
@@ -664,6 +674,8 @@ impl ExecState {
             issues: self.global.issues,
             source_files: self.global.id_to_source,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
+            #[cfg(test)]
+            test_program_memory,
         })
     }
 
@@ -988,6 +1000,17 @@ impl ExecState {
 
     pub(crate) fn artifact_mut(&mut self, id: ArtifactId) -> Option<&mut Artifact> {
         self.mod_local.artifacts.artifacts.get_mut(&id)
+    }
+
+    pub(crate) fn is_sketch_block_path(&self, path_id: ArtifactId) -> bool {
+        self.mod_local
+            .artifacts
+            .artifacts
+            .values()
+            .chain(self.global.artifacts.artifacts.values())
+            .any(|artifact| {
+                matches!(artifact, Artifact::SketchBlock(sketch_block) if sketch_block.path_id == Some(path_id))
+            })
     }
 
     pub(crate) fn push_op(&mut self, op: Operation) {
@@ -1358,9 +1381,9 @@ impl ExecState {
 
     /// Gate for behaviors introduced in KCL 3.0. True only when the entry-point
     /// module of this execution declares KCL 3.0 or later. This never looks at
-    /// [`Self::legacy_caller_kcl_version()`] so that control flow behavior
-    /// never varies within a single execution.
-    pub(crate) fn use_kcl_v3_control_flow(&self) -> bool {
+    /// [`Self::legacy_caller_kcl_version()`] so that behavior never varies
+    /// within a single execution.
+    pub(crate) fn entry_point_version_is_v3_or_higher(&self) -> bool {
         self.global
             .entry_point_kcl_version
             .is_some_and(|v| v >= KclVersion::V3Preview)
@@ -1378,47 +1401,6 @@ impl ExecState {
             Some(v) if v >= KclVersion::V3Preview => Some(v),
             _ => None,
         };
-    }
-}
-
-#[derive(Debug, Clone, Copy, Default, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, Ord, PartialOrd)]
-#[ts(export)]
-pub enum KclVersion {
-    #[default]
-    #[serde(rename = "1.0")]
-    V1,
-    #[serde(rename = "2.0")]
-    V2,
-    #[serde(rename = "3.0-preview")]
-    V3Preview,
-}
-
-impl KclVersion {
-    pub fn as_str(self) -> &'static str {
-        match self {
-            Self::V1 => "1.0",
-            Self::V2 => "2.0",
-            Self::V3Preview => "3.0-preview",
-        }
-    }
-}
-
-impl FromStr for KclVersion {
-    type Err = KclError;
-
-    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
-        match s {
-            "1" | "1.0" | "1.0.0" => Ok(Self::V1),
-            "2" | "2.0" | "2.0.0" => Ok(Self::V2),
-            "3-preview" | "3.0-preview" | "3.0.0-preview" => Ok(Self::V3Preview),
-            other => Err(KclError::new_semantic(KclErrorDetails {
-                source_ranges: Default::default(),
-                backtrace: Default::default(),
-                message: format!(
-                    "Unrecognized version {other}. Valid versions are 1.0, 2.0 and (experimentally) 3.0-preview"
-                ),
-            })),
-        }
     }
 }
 
@@ -1763,7 +1745,6 @@ impl MetaSettings {
 
 #[cfg(test)]
 mod tests {
-    use std::str::FromStr;
 
     use uuid::Uuid;
 
@@ -1778,17 +1759,6 @@ mod tests {
     use crate::front::ObjectKind;
     use crate::front::Plane;
     use crate::front::SourceRef;
-
-    #[test]
-    fn kcl_version_parses_supported_spellings() {
-        assert_eq!(KclVersion::from_str("1"), Ok(KclVersion::V1));
-        assert_eq!(KclVersion::from_str("1.0.0"), Ok(KclVersion::V1));
-        assert_eq!(KclVersion::from_str("2"), Ok(KclVersion::V2));
-        assert_eq!(KclVersion::from_str("2.0.0"), Ok(KclVersion::V2));
-        assert_eq!(KclVersion::from_str("3.0-preview"), Ok(KclVersion::V3Preview));
-        // No such version.
-        KclVersion::from_str("99.123").unwrap_err();
-    }
 
     #[test]
     fn kcl_version_serializes_as_canonical_setting_value() {

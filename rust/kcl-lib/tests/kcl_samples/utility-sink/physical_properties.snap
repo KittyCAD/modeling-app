@@ -5,14 +5,14 @@ description: Physical properties utility-sink.kcl
 {
   "bounding_box": {
     "center": {
-      "x": 596.3249999938,
-      "y": 366.0,
-      "z": 485.0
+      "x": 599.99999999,
+      "y": 369.99466124508115,
+      "z": 510.0
     },
     "dimensions": {
-      "x": 1292.6499999876,
-      "y": 832.0,
-      "z": 1070.0
+      "x": 1285.2999999952,
+      "y": 824.0106775098377,
+      "z": 1020.0
     },
     "unit": "mm"
   },
@@ -24,6 +24,6 @@ description: Physical properties utility-sink.kcl
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 34383.194221199985
+    "value": 34383.10704067585
   }
 }

@@ -1542,6 +1542,7 @@ description: Result of parsing surface_extrude_edge_merge_error.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

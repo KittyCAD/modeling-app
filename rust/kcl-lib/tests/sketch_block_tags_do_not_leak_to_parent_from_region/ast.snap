@@ -1396,6 +1396,7 @@ description: Result of parsing sketch_block_tags_do_not_leak_to_parent_from_regi
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

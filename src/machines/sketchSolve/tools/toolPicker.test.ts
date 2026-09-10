@@ -2,7 +2,6 @@ import type {
   ApiConstraint,
   ApiObject,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import type { EquipTool } from '@src/machines/sketchSolve/sketchSolveImpl'
 import {
   createArcApiObject,
   createCircleApiObject,
@@ -11,6 +10,7 @@ import {
   createPointApiObject,
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
 import {
+  type DirectlyPickableTool,
   getToolForApiObject,
   getToolForConstraintType,
   resolveToolPickerSelection,
@@ -35,7 +35,7 @@ const expectedConstraintTools = {
   Symmetric: 'symmetricConstraintTool',
   Tangent: 'tangentConstraintTool',
   Vertical: 'verticalConstraintTool',
-} satisfies Record<ApiConstraint['type'], EquipTool>
+} satisfies Record<ApiConstraint['type'], DirectlyPickableTool | null>
 
 function createHorizontalConstraintApiObject(id: number): ApiObject {
   return {
@@ -58,7 +58,7 @@ describe('toolPicker', () => {
     )) {
       expect(
         getToolForConstraintType(constraintType as ApiConstraint['type'])
-      ).toBe(tool)
+      ).toBe(tool ?? undefined)
     }
   })
 

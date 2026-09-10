@@ -12,7 +12,7 @@ import {
   getVariableExprsFromSelection,
   valueOrVariable,
 } from '@src/lang/queryAst'
-import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
+import type { ArtifactGraph, Expr, PathToNode, Program } from '@src/lang/wasm'
 import { modelingStdLibCommandName } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
@@ -47,22 +47,24 @@ export function addFlipSurface({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled arguments
-  if (surface.graphSelections.length < 1) {
+  if (!mNodeToEdit && surface.graphSelections.length < 1) {
     return new Error('flipSurface surfaces must have at least one selection.')
   }
 
-  const vars = getVariableExprsFromSelection(
-    surface,
-    artifactGraph,
-    modifiedAst,
-    wasmInstance,
-    mNodeToEdit,
-    {
-      lastChildLookup: true,
+  let vars: { exprs: Expr[]; pathIfPipe?: PathToNode } = { exprs: [] }
+  if (!mNodeToEdit) {
+    const selectionVars = getVariableExprsFromSelection(
+      surface,
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      undefined,
+      { lastChildLookup: true }
+    )
+    if (err(selectionVars)) {
+      return selectionVars
     }
-  )
-  if (err(vars)) {
-    return vars
+    vars = selectionVars
   }
 
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
@@ -121,23 +123,27 @@ export function addJoinSurfaces({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled arguments
-  if (selection.graphSelections.length < 1) {
+  if (!mNodeToEdit && selection.graphSelections.length < 1) {
     return new Error('join selection must have at least one selection.')
   }
 
-  const vars = getVariableExprsFromSelection(
-    selection,
-    artifactGraph,
-    modifiedAst,
-    wasmInstance,
-    mNodeToEdit,
-    {
-      lastChildLookup: true,
-      artifactTypeFilter: ['compositeSolid', 'sweep'],
+  let vars: { exprs: Expr[]; pathIfPipe?: PathToNode } = { exprs: [] }
+  if (!mNodeToEdit) {
+    const selectionVars = getVariableExprsFromSelection(
+      selection,
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      undefined,
+      {
+        lastChildLookup: true,
+        artifactTypeFilter: ['compositeSolid', 'sweep'],
+      }
+    )
+    if (err(selectionVars)) {
+      return selectionVars
     }
-  )
-  if (err(vars)) {
-    return vars
+    vars = selectionVars
   }
 
   const objectsExpr = createVariableExpressionsArray(vars.exprs)

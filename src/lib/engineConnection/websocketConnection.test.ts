@@ -9,11 +9,15 @@ vi.mock('@src/lib/clientErrors', () => ({
   reportClientError,
 }))
 
+import { EngineConnectionErrorKind } from '@src/lib/engineConnection/utils'
 import { createOnWebSocketMessage } from '@src/lib/engineConnection/websocketConnection'
+
+const disconnectAll = vi.fn()
+const tearDownManager = vi.fn()
 
 const createMessageHandler = (cloudProjectId?: string) =>
   createOnWebSocketMessage({
-    disconnectAll: vi.fn(),
+    disconnectAll,
     setPong: vi.fn(),
     dispatchEvent: vi.fn(() => true),
     ping: vi.fn(),
@@ -28,6 +32,7 @@ const createMessageHandler = (cloudProjectId?: string) =>
     sdpAnswerReject: vi.fn(),
     setApiCallId: vi.fn(),
     getCloudProjectId: () => cloudProjectId,
+    tearDownManager,
   })
 
 const dispatchFailureMessage = (message: string, cloudProjectId?: string) => {
@@ -55,6 +60,14 @@ describe('createOnWebSocketMessage', () => {
     )
 
     expect(reportClientError).toHaveBeenCalledOnce()
+    expect(tearDownManager).toHaveBeenCalledWith({
+      websocketClosed: true,
+      connectionError: {
+        kind: EngineConnectionErrorKind.BackendDisconnect,
+        message: 'modeling connection interrupted; please reconnect and retry',
+        terminal: true,
+      },
+    })
     expect(reportClientError).toHaveBeenCalledWith({
       code: 'engine_backend_disconnect',
       message: 'modeling connection interrupted; please reconnect and retry',
@@ -84,6 +97,42 @@ describe('createOnWebSocketMessage', () => {
   it('does not report other internal API failures as backend disconnects', () => {
     dispatchFailureMessage('modeling service unavailable; please retry')
 
+    expect(tearDownManager).not.toHaveBeenCalled()
     expect(reportClientError).not.toHaveBeenCalled()
+  })
+
+  it('does not throw when a failed response has no error details', () => {
+    const handler = createMessageHandler()
+
+    expect(() =>
+      handler(
+        new MessageEvent('message', {
+          data: JSON.stringify({ success: false, errors: [] }),
+        })
+      )
+    ).not.toThrow()
+  })
+
+  it('keeps the pre-header auth token missing response non-terminal', () => {
+    const handler = createMessageHandler()
+
+    handler(
+      new MessageEvent('message', {
+        data: JSON.stringify({
+          success: false,
+          request_id: null,
+          errors: [
+            {
+              error_code: 'auth_token_missing',
+              message:
+                'Please send `{ headers: { Authorization: "Bearer <token>" } }` over this websocket.',
+            },
+          ],
+        }),
+      })
+    )
+
+    expect(tearDownManager).not.toHaveBeenCalled()
+    expect(disconnectAll).not.toHaveBeenCalled()
   })
 })

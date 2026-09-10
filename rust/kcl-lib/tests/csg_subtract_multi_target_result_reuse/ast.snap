@@ -4734,6 +4734,7 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

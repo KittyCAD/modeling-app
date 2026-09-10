@@ -5,14 +5,14 @@ description: Physical properties gridfinity-bins.kcl
 {
   "bounding_box": {
     "center": {
-      "x": 21.200000000000003,
-      "y": 44.3,
-      "z": 0.0
+      "x": 42.0,
+      "y": 63.0,
+      "z": 9.1375
     },
     "dimensions": {
-      "x": 142.4,
-      "y": 188.6,
-      "z": 100.0
+      "x": 100.8,
+      "y": 151.2,
+      "z": 19.225
     },
     "unit": "mm"
   },
