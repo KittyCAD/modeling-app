@@ -193,6 +193,9 @@ export async function getBillingInfo(
     )
   }
 
+  // This slug check is not ideal: the API has no explicit free-tier flag.
+  const hasSubscription = tier !== 'free'
+
   return {
     balance: toMinutes(
       billing.monthly_api_credits_remaining_monetary_value +
@@ -202,7 +205,7 @@ export async function getBillingInfo(
     allowance: toMinutes(computedAllowance, ratioSec),
     userPaymentBalance: billing,
     payAsYouGoApiCreditPrice: ratioSec,
-    hasSubscription: tier !== 'free',
+    hasSubscription,
     isOrg,
   }
 }
