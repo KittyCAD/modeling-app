@@ -460,10 +460,13 @@ solid = extrude(profile, length = 10)
 fillet(solid, tags = [edge], radius = 1, tangentChain = true)
 "#;
 
-        let kcl_2_error = parse_execute(&format!("@settings(kclVersion = 2.0)\n{body}"))
+        let result = parse_execute(&format!("@settings(kclVersion = 2.0)\n{body}"))
             .await
-            .expect_err("KCL 2.0 should reject tangentChain");
-        assert!(kcl_2_error.to_string().contains("only available in KCL 3.0"));
+            .unwrap();
+        assert!(result.issues().iter().any(|issue| {
+            issue.message
+                == "`tangentChain` is not an argument of `fillet`; it was added in KCL 3.0, but this program uses KCL 2.0"
+        }));
 
         let result = parse_execute(&format!("@settings(kclVersion = \"3.0-preview\")\n{body}"))
             .await
