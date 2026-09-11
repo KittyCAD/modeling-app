@@ -17,6 +17,7 @@ fillet(
   tag?: TagDecl,
   legacyMethod?: bool,
   version?: number(_),
+  tangentChain?: bool,
 ): Solid
 ```
 
@@ -36,6 +37,7 @@ will smoothly blend the transition.
 | `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Create a new tag which refers to this fillet | No |
 | `legacyMethod` | [`bool`](/docs/kcl-std/types/std-types-bool) | **Deprecated as of KCL 2.0.** **Removed in KCL 3.0.** You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm. If true, revert to older engine SSI algorithm. Defaults to false. | No |
 | `version` | [`number(_)`](/docs/kcl-std/types/std-types-number) | **Removed in KCL 3.0.** **Experimental.** What version of the fillet algorithm to use. 0 means "let the Zoo engine choose whichever version is best", 1 is the original Zoo fillet algorithm, 2 is the newer algorithm (supports rolling ball fillets). On KCL 2.0 and before, the default is 1. KCL 3.0 and later always use the newest algorithm. | No |
+| `tangentChain` | [`bool`](/docs/kcl-std/types/std-types-bool) | **Added in KCL 3.0.** If true, also fillet edges that are tangent to the selected edges. Defaults to true. | No |
 
 ### Returns
 
