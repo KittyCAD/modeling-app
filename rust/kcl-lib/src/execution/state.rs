@@ -1466,25 +1466,31 @@ impl ExecState {
 /// The kclVersion that a program's `@settings` annotations declare, with the
 /// source range of the declaring property, or `None` when the program does not
 /// declare one. The last declaration wins, as in
-/// [`MetaSettings::update_from_annotation`].
+/// [`MetaSettings::update_from_annotation`], so this searches from the end and
+/// stops at the first match.
 pub(crate) fn declared_kcl_version(program: &Node<Program>) -> Result<Option<(KclVersion, SourceRange)>, KclError> {
-    let mut declared = None;
-    for annotation in &program.inner_attrs {
-        if annotation.name() != Some(annotations::SETTINGS) {
-            continue;
-        }
-        for property in annotation.properties.iter().flatten() {
-            if &*property.inner.key.name != annotations::SETTINGS_VERSION {
-                continue;
-            }
-            let value = annotations::expect_kcl_version(&property.inner.value)?;
-            let version = value.parse::<KclVersion>().map_err(|err| {
-                KclError::new_semantic(KclErrorDetails::new(err.to_string(), vec![property.as_source_range()]))
-            })?;
-            declared = Some((version, property.as_source_range()));
-        }
-    }
-    Ok(declared)
+    let Some(property) = program
+        .inner_attrs
+        .iter()
+        .rev()
+        .filter(|annotation| annotation.name() == Some(annotations::SETTINGS))
+        .find_map(|annotation| {
+            annotation
+                .properties
+                .as_deref()
+                .unwrap_or_default()
+                .iter()
+                .rev()
+                .find(|property| &*property.inner.key.name == annotations::SETTINGS_VERSION)
+        })
+    else {
+        return Ok(None);
+    };
+    let value = annotations::expect_kcl_version(&property.inner.value)?;
+    let version = value.parse::<KclVersion>().map_err(|err| {
+        KclError::new_semantic(KclErrorDetails::new(err.to_string(), vec![property.as_source_range()]))
+    })?;
+    Ok(Some((version, property.as_source_range())))
 }
 
 impl GlobalState {
@@ -1863,6 +1869,17 @@ mod tests {
             .unwrap()
             .unwrap();
         assert_eq!(version, KclVersion::V3Preview);
+
+        // The last declaration wins, whether it is in a later annotation or
+        // later within the same annotation.
+        let code = "@settings(kclVersion = 1.0)\n@settings(defaultLengthUnit = in)\n@settings(kclVersion = 2.0, kclVersion = \"3.0-preview\")\n";
+        let (version, range) = super::declared_kcl_version(&parse(code)).unwrap().unwrap();
+        assert_eq!(version, KclVersion::V3Preview);
+        let start = code.rfind("kclVersion").unwrap();
+        assert_eq!(
+            (range.start(), range.end()),
+            (start, start + "kclVersion = \"3.0-preview\"".len())
+        );
 
         // An unknown version is an error located at the setting.
         let code = "@settings(kclVersion = 9.0)\n";
