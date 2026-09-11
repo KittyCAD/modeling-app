@@ -27,7 +27,7 @@ describe('engine video stream visibility', () => {
       drawImage,
     } as unknown as CanvasRenderingContext2D)
     video.requestVideoFrameCallback = vi.fn((callback) => {
-      fireFrame = () => callback(0, {} as VideoFrameCallbackMetadata)
+      fireFrame = () => callback(0, {})
       return 1
     })
     cancelVideoFrame = vi.fn()
