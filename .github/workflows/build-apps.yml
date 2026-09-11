@@ -20,7 +20,71 @@ concurrency:
 
 jobs:
   build-wasm:
-    uses: ./.github/workflows/build-wasm.yml
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-rust-host-v2
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Use correct Rust toolchain
+        shell: bash
+        run: |
+          [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
+
+      - name: Install Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
+        with:
+          cache: false # configured below
+          rustflags: '' # use .cargo/config.toml
+
+      - name: Install Wasm pack
+        uses: taiki-e/install-action@c30ba1cbe2face7f695d394a2c95af204d417b29
+        with:
+          tool: wasm-pack
+
+      - name: Cache Rust artifacts
+        uses: namespacelabs/nscloud-cache-action@v1
+        with:
+          path: |
+            rust/target
+            ~/.cargo/registry
+            ~/.cargo/git
+
+      - name: Verify Rust cache is writable
+        run: .github/ci-cd-scripts/verify-rust-cache-writable.sh
+
+      - name: Build Wasm
+        shell: bash
+        run: npm run build:wasm
+
+      - name: Use committed TypeScript bindings
+        shell: bash
+        run: |
+          cp -R rust/kcl-lib/expected-bindings/ts-rs rust/kcl-lib/bindings
+
+      - name: Copy Wasm to public
+        run: |
+          ls -R rust/kcl-wasm-lib/pkg
+          cp rust/kcl-wasm-lib/pkg/kcl_wasm_lib_bg.wasm public
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: prepared-wasm
+          retention-days: 7
+          path: |
+            rust/kcl-wasm-lib/pkg/kcl_wasm_lib*
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: prepared-ts-rs-bindings
+          path: |
+            rust/kcl-lib/bindings/*
 
   prepare-files:
     needs: [build-wasm]
