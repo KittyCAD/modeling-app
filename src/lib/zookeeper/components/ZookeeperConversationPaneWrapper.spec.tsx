@@ -1,5 +1,5 @@
-import { ZookeeperConversationPaneWrapper } from '@src/lib/zookeeper/components/ZookeeperConversationPaneWrapper'
 import { AreaType, LayoutType } from '@src/lib/layout/types'
+import { ZookeeperConversationPaneWrapper } from '@src/lib/zookeeper/components/ZookeeperConversationPaneWrapper'
 import type * as SystemIOUtils from '@src/machines/systemIO/utils'
 import { render, waitFor } from '@testing-library/react'
 import { describe, expect, test, vi } from 'vitest'
@@ -8,6 +8,13 @@ const mocks = vi.hoisted(() => {
   const systemIOSend = vi.fn()
   const useWatchForNewFileRequestsFromZookeeper = vi.fn()
   const zookeeperSubscribe = vi.fn(() => ({ unsubscribe: vi.fn() }))
+  const zookeeperSnapshot = {
+    context: {
+      clientCommandsEnabled: false,
+      clientCommandQueue: [],
+      activeClientCommandRequestId: undefined,
+    },
+  }
   const kclManager = {
     captureEditorHistoryState: vi.fn(() => ({
       doc: { toString: () => 'initial code' },
@@ -23,6 +30,7 @@ const mocks = vi.hoisted(() => {
 
   return {
     kclManager,
+    zookeeperSnapshot,
     zookeeperSubscribe,
     systemIOSend,
     useWatchForNewFileRequestsFromZookeeper,
@@ -56,7 +64,11 @@ vi.mock('@src/lib/zookeeper/components/ZookeeperConversationPane', () => ({
 
 vi.mock('@src/hooks/useModelingContext', () => ({
   useModelingContext: () => ({
-    context: {},
+    context: {
+      store: {
+        defaultUnit: { current: 'mm' },
+      },
+    },
     send: vi.fn(),
     theProject: { current: undefined },
   }),
@@ -76,12 +88,19 @@ vi.mock('@src/lib/boot', () => ({
       executingPath: '/workspace/demo/main.kcl',
       executingFileEntry: { value: { name: 'main.kcl' } },
     },
+    registry: {
+      signal: () => ({ value: [] }),
+      optional: () => undefined,
+    },
     settings: {
       actor: { send: vi.fn() },
       useSettings: () => ({ meta: { id: { current: 'project-id' } } }),
     },
     systemIOActor: {
       send: mocks.systemIOSend,
+    },
+    userFeatures: {
+      useHas: () => false,
     },
   }),
   useSingletons: () => ({
@@ -106,13 +125,13 @@ vi.mock('@src/lib/zookeeper/zookeeperManagerMachine', () => ({
   ZookeeperConversationToMarkdown: vi.fn(() => ''),
   ZookeeperManagerTransitions: {
     AuthTokenChanged: 'auth-token-changed',
+    ClientCommandFinished: 'client-command-finished',
+    ClientCommandStarted: 'client-command-started',
   },
   ZookeeperManagerReactContext: {
     Provider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
     useActorRef: () => ({
-      getSnapshot: () => ({
-        context: {},
-      }),
+      getSnapshot: () => mocks.zookeeperSnapshot,
       send: vi.fn(),
       subscribe: mocks.zookeeperSubscribe,
     }),

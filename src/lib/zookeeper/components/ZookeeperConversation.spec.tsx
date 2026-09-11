@@ -379,6 +379,70 @@ describe('ZookeeperConversation', () => {
     ).toHaveClass('text-chalkboard-100', 'dark:text-chalkboard-10')
   })
 
+  test('shows FIFO client-command state and allows cancelling non-active items', () => {
+    const onCancelClientCommand = vi.fn()
+    render(
+      <ZookeeperConversation
+        isLoading={false}
+        conversation={{ exchanges: [] }}
+        onProcess={() => {}}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        contexts={[]}
+        hasPromptCompleted={true}
+        isProcessing={false}
+        queue={[]}
+        clientCommandQueue={[
+          {
+            requestId: 'request-1',
+            commandId: 'modeling.export',
+            title: 'Export',
+            status: 'waiting',
+          },
+          {
+            requestId: 'request-2',
+            commandId: 'modeling.export',
+            title: 'Export',
+            status: 'queued',
+          },
+          {
+            requestId: 'request-3',
+            commandId: 'modeling.export',
+            title: 'Export',
+            status: 'executing',
+          },
+        ]}
+        onCancelClientCommand={onCancelClientCommand}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+      />
+    )
+
+    expect(
+      screen.getByText(/Waiting for command.*to become available/)
+    ).toHaveTextContent(
+      'Waiting for command modeling.export to become available...'
+    )
+    expect(screen.getByText(/Queued command/)).toHaveTextContent(
+      'Queued command modeling.export.'
+    )
+    expect(screen.getByText(/Running command/)).toHaveTextContent(
+      'Running command modeling.export...'
+    )
+    expect(
+      screen.getAllByRole('button', { name: 'Cancel queued command Export' })
+    ).toHaveLength(2)
+
+    fireEvent.click(
+      screen.getAllByRole('button', {
+        name: 'Cancel queued command Export',
+      })[1]
+    )
+    expect(onCancelClientCommand).toHaveBeenCalledWith('request-2')
+  })
+
   function rendersRequestBubbleThenDisplayResponse(
     mode: MlCopilotModeId = 'deep'
   ) {
