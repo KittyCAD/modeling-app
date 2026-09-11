@@ -1,0 +1,7 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing tests/import_kcl_version_mismatch_v3/dep.kcl
+---
+@settings(kclVersion = 2.0)
+
+export width = 10
