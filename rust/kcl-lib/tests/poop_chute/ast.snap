@@ -3175,6 +3175,7 @@ description: Result of parsing poop_chute.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

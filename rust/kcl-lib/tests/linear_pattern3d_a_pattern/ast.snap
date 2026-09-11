@@ -865,6 +865,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

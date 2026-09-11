@@ -1480,6 +1480,7 @@ description: Result of parsing sweep_profile_defaults_v3.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

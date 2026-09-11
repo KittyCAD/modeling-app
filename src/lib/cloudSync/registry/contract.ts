@@ -72,6 +72,8 @@ export type CloudProjectRelationshipsRegistryService = {
    * contribution surface.
    */
   relationships: ReadonlySignal<CloudProjectRelationship[]>
+  /** Fetch and refresh a visible card's thumbnail until the returned cleanup runs. */
+  watchRemoteThumbnail: (remoteProjectId: string) => () => void
 }
 
 /** Runtime inputs registry callers may override before activation policy runs. */

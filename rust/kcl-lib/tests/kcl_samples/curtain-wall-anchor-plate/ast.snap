@@ -24111,6 +24111,7 @@ description: Result of parsing curtain-wall-anchor-plate.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

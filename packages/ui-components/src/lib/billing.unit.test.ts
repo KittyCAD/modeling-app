@@ -1,8 +1,10 @@
 import {
   Client,
+  type ApiEndpoint,
   type CustomerBalance,
-  type UserOrgInfo,
+  type SubscriptionTierType,
   type ZooProductSubscriptions,
+  type ZooTool,
 } from '@kittycad/lib'
 import {
   BillingError,
@@ -39,27 +41,18 @@ function createUserPaymentBalanceResponse(opts: {
   }
 }
 
-function createUserOrgResponse(): UserOrgInfo {
-  return {
-    id: '78432284-8660-46bf-ac65-d00bf9b18c3e',
-    created_at: '2024-01-26T23:14:28.062Z',
-    updated_at: '2025-11-10T20:09:09.190Z',
-    name: 'Zoo',
-    billing_email: 'billing@zoo.dev',
-    image: 'https://avatars.githubusercontent.com/u/81783542?s=200&v=4',
-    domain: 'zoo.dev',
-    allow_users_in_domain_to_auto_join: true,
-    phone: '',
-    stripe_id: 'stripe_id',
-    role: 'member',
-  }
-}
-
-function createUserPaymentSubscriptionsResponse(opts: {
+type SubscriptionOptions = {
   monthlyPayAsYouGoApiBalanceTotalMonthlyValue?: number
   name: string
   payAsYouGoApiCreditPrice?: number
-}): ZooProductSubscriptions {
+  type?: SubscriptionTierType
+  zooToolsIncluded?: ZooTool[]
+  endpointsIncluded?: ApiEndpoint[]
+}
+
+function createUserPaymentSubscriptionsResponse(
+  opts: SubscriptionOptions
+): ZooProductSubscriptions {
   return {
     modeling_app: {
       annual_discount: 10,
@@ -76,10 +69,9 @@ function createUserPaymentSubscriptionsResponse(opts: {
       },
       support_tier: 'community',
       training_data_behavior: 'default_on',
-      type: {
-        saml_sso: true,
-        type: 'organization',
-      },
+      type: opts.type ?? { type: 'individual' },
+      zoo_tools_included: opts.zooToolsIncluded,
+      endpoints_included: opts.endpointsIncluded,
     },
   }
 }
@@ -123,9 +115,6 @@ test('Requests total due in user payment balance', async () => {
     http.get('*/user/payment/methods', () => {
       didRequestPaymentMethods = true
       return HttpResponse.json([])
-    }),
-    http.get('*/user/org', () => {
-      return new HttpResponse(null, { status: 403 })
     })
   )
 
@@ -153,9 +142,6 @@ test('Finds the credits of Free subscription', async () => {
           name: 'free',
         })
       )
-    }),
-    http.get('*/user/org', () => {
-      return new HttpResponse(null, { status: 403 })
     })
   )
 
@@ -185,9 +171,6 @@ test('Finds the credits of Plus subscription', async () => {
           name: 'plus',
         })
       )
-    }),
-    http.get('*/user/org', () => {
-      return new HttpResponse(null, { status: 403 })
     })
   )
 
@@ -200,67 +183,72 @@ test('Finds the credits of Plus subscription', async () => {
   expect(billing.isOrg).toBe(false)
 })
 
-test('Finds infinite credits for Pro subscription', async () => {
-  server.use(
-    http.get('*/user/payment/balance', () => {
-      return HttpResponse.json(
-        createUserPaymentBalanceResponse({
-          monthlyApiBalanceRemainingMonthlyValue: 10,
-          stableApiBalanceRemainingMonthlyValue: 0,
-        })
-      )
-    }),
-    http.get('*/user/payment/subscriptions', () => {
-      return HttpResponse.json(
-        createUserPaymentSubscriptionsResponse({
-          monthlyPayAsYouGoApiBalanceTotalMonthlyValue: 20,
-          name: 'pro',
-        })
-      )
-    }),
-    http.get('*/user/org', () => {
-      return new HttpResponse(null, { status: 403 })
-    })
-  )
+test.each(['pro', 'custom-unlimited-individual-plan'])(
+  'Finds infinite credits for individual subscription %s with ML coverage',
+  async (name) => {
+    server.use(
+      http.get('*/user/payment/balance', () => {
+        return HttpResponse.json(
+          createUserPaymentBalanceResponse({
+            monthlyApiBalanceRemainingMonthlyValue: 10,
+            stableApiBalanceRemainingMonthlyValue: 0,
+          })
+        )
+      }),
+      http.get('*/user/payment/subscriptions', () => {
+        return HttpResponse.json(
+          createUserPaymentSubscriptionsResponse({
+            monthlyPayAsYouGoApiBalanceTotalMonthlyValue: 20,
+            name,
+            zooToolsIncluded: ['modeling_app'],
+            endpointsIncluded: ['modeling', 'ml', 'file'],
+          })
+        )
+      })
+    )
 
-  const billing = await getBillingInfo(client)
-  if (BillingError.from(billing)) throw billing
-  expect(billing.balance).toBe(Number.POSITIVE_INFINITY)
-  expect(billing.allowance).toBeUndefined()
-  expect(billing.hasSubscription).toBe(true)
-  expect(billing.isOrg).toBe(false)
-})
+    const billing = await getBillingInfo(client)
+    if (BillingError.from(billing)) throw billing
+    expect(billing.balance).toBe(Number.POSITIVE_INFINITY)
+    expect(billing.allowance).toBeUndefined()
+    expect(billing.hasSubscription).toBe(true)
+    expect(billing.isOrg).toBe(false)
+  }
+)
 
-test('Finds infinite credits for org user', async () => {
-  server.use(
-    http.get('*/user/payment/balance', () => {
-      return HttpResponse.json(
-        createUserPaymentBalanceResponse({
-          monthlyApiBalanceRemainingMonthlyValue: 10,
-          stableApiBalanceRemainingMonthlyValue: 0,
-        })
-      )
-    }),
-    http.get('*/user/payment/subscriptions', () => {
-      return HttpResponse.json(
-        createUserPaymentSubscriptionsResponse({
-          monthlyPayAsYouGoApiBalanceTotalMonthlyValue: 20,
-          name: 'enterprise',
-        })
-      )
-    }),
-    http.get('*/user/org', () => {
-      return HttpResponse.json(createUserOrgResponse())
-    })
-  )
+test.each(['enterprise', 'enterprise-free', 'team', 'custom-org-plan'])(
+  'Finds infinite credits for organization subscription %s with ML coverage',
+  async (name) => {
+    server.use(
+      http.get('*/user/payment/balance', () => {
+        return HttpResponse.json(
+          createUserPaymentBalanceResponse({
+            monthlyApiBalanceRemainingMonthlyValue: 10,
+            stableApiBalanceRemainingMonthlyValue: 0,
+          })
+        )
+      }),
+      http.get('*/user/payment/subscriptions', () => {
+        return HttpResponse.json(
+          createUserPaymentSubscriptionsResponse({
+            monthlyPayAsYouGoApiBalanceTotalMonthlyValue: 20,
+            name,
+            type: { type: 'organization', saml_sso: true },
+            zooToolsIncluded: ['modeling_app'],
+            endpointsIncluded: ['modeling', 'ml', 'file'],
+          })
+        )
+      })
+    )
 
-  const billing = await getBillingInfo(client)
-  if (BillingError.from(billing)) throw billing
-  expect(billing.balance).toBe(Number.POSITIVE_INFINITY)
-  expect(billing.allowance).toBeUndefined()
-  expect(billing.hasSubscription).toBe(true)
-  expect(billing.isOrg).toBe(true)
-})
+    const billing = await getBillingInfo(client)
+    if (BillingError.from(billing)) throw billing
+    expect(billing.balance).toBe(Number.POSITIVE_INFINITY)
+    expect(billing.allowance).toBeUndefined()
+    expect(billing.hasSubscription).toBe(true)
+    expect(billing.isOrg).toBe(true)
+  }
+)
 
 test('Returns billing error for missing subscription credit data', async () => {
   server.use(
@@ -278,9 +266,6 @@ test('Returns billing error for missing subscription credit data', async () => {
           name: 'plus',
         })
       )
-    }),
-    http.get('*/user/org', () => {
-      return new HttpResponse(null, { status: 403 })
     })
   )
 
@@ -292,7 +277,30 @@ test('Returns billing error for missing subscription credit data', async () => {
   })
 })
 
-test('Returns billing error for unsupported subscription tier', async () => {
+test.each<SubscriptionOptions>([
+  { name: 'custom-individual-plan' },
+  {
+    name: 'pro',
+    zooToolsIncluded: ['modeling_app'],
+    endpointsIncluded: ['modeling'],
+  },
+  {
+    name: 'custom-text-to-cad-plan',
+    zooToolsIncluded: ['text_to_cad'],
+    endpointsIncluded: ['ml'],
+  },
+  {
+    name: 'team',
+    type: { type: 'organization', saml_sso: false },
+    zooToolsIncluded: ['modeling_app'],
+    endpointsIncluded: [],
+  },
+  {
+    name: 'custom-org-without-tools',
+    type: { type: 'organization', saml_sso: false },
+    endpointsIncluded: ['ml'],
+  },
+])('Finds metered credits for $name without app ML coverage', async (opts) => {
   server.use(
     http.get('*/user/payment/balance', () => {
       return HttpResponse.json(
@@ -306,19 +314,17 @@ test('Returns billing error for unsupported subscription tier', async () => {
       return HttpResponse.json(
         createUserPaymentSubscriptionsResponse({
           monthlyPayAsYouGoApiBalanceTotalMonthlyValue: 10,
-          name: 'unsupported',
+          ...opts,
         })
       )
-    }),
-    http.get('*/user/org', () => {
-      return new HttpResponse(null, { status: 403 })
     })
   )
 
   const billing = await getBillingInfo(client)
-  expect(billing).toBeInstanceOf(BillingError)
-  expect(BillingError.from(billing) && billing.error).toEqual({
-    type: EBillingError.InvalidData,
-    message: 'Unhandled subscription tier: unsupported',
-  })
+  if (BillingError.from(billing)) throw billing
+  expect(Math.floor(billing.balance)).toEqual(20)
+  expect(Math.floor(billing.allowance!)).toEqual(20)
+  expect(billing.payAsYouGoApiCreditPrice).toEqual(0.0083)
+  expect(billing.hasSubscription).toBe(true)
+  expect(billing.isOrg).toBe(opts.type?.type === 'organization')
 })

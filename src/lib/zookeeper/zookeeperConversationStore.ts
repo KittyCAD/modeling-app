@@ -77,18 +77,32 @@ const writeZookeeperConversations = async (
   )
 }
 
+let pendingOperation = Promise.resolve<unknown>(undefined)
+
+const serialize = <T>(operation: () => Promise<T>): Promise<T> => {
+  const result = pendingOperation.then(operation, operation)
+  pendingOperation = result.catch(() => undefined)
+  return result
+}
+
 export const zookeeperConversationStore: ZookeeperConversationStore = {
-  async getProjectConversationId(projectId) {
-    return (await readZookeeperConversations()).get(projectId)
+  getProjectConversationId(projectId) {
+    return serialize(async () =>
+      (await readZookeeperConversations()).get(projectId)
+    )
   },
-  async saveProjectConversationId({ projectId, conversationId }) {
-    const conversations = await readZookeeperConversations()
-    conversations.set(projectId, conversationId)
-    await writeZookeeperConversations(conversations)
+  saveProjectConversationId({ projectId, conversationId }) {
+    return serialize(async () => {
+      const conversations = await readZookeeperConversations()
+      conversations.set(projectId, conversationId)
+      await writeZookeeperConversations(conversations)
+    })
   },
-  async deleteProjectConversationId(projectId) {
-    const conversations = await readZookeeperConversations()
-    conversations.delete(projectId)
-    await writeZookeeperConversations(conversations)
+  deleteProjectConversationId(projectId) {
+    return serialize(async () => {
+      const conversations = await readZookeeperConversations()
+      conversations.delete(projectId)
+      await writeZookeeperConversations(conversations)
+    })
   },
 }

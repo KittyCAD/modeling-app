@@ -1119,6 +1119,7 @@ description: Result of parsing scale_helix.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

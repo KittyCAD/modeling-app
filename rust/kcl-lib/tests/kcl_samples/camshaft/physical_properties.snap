@@ -5,13 +5,13 @@ description: Physical properties camshaft.kcl
 {
   "bounding_box": {
     "center": {
-      "x": 0.0,
-      "y": 0.0,
+      "x": 0.13388530508566987,
+      "y": 0.027934182827806353,
       "z": 236.2454
     },
     "dimensions": {
-      "x": 100.0,
-      "y": 100.0,
+      "x": 89.21334711966017,
+      "y": 89.26113523178603,
       "z": 472.4908
     },
     "unit": "mm"
