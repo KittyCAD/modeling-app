@@ -343,12 +343,16 @@ struct ExecutedKcl {
 }
 
 async fn run_kcl(input: KclInput, mock: bool, highlight_edges: Option<bool>) -> PyResult<ExecutedKcl> {
+    run_parsed_kcl(load_and_parse(input).await?, mock, highlight_edges).await
+}
+
+async fn run_parsed_kcl(parsed: KclProgram, mock: bool, highlight_edges: Option<bool>) -> PyResult<ExecutedKcl> {
     let KclProgram {
         code,
         program,
         path,
         filename,
-    } = load_and_parse(input).await?;
+    } = parsed;
 
     let (ctx, mut state) = new_context_state(path, mock, highlight_edges)
         .await
@@ -371,6 +375,10 @@ async fn run_kcl(input: KclInput, mock: bool, highlight_edges: Option<bool>) -> 
 }
 
 async fn execute_impl(input: KclInput, mock: bool) -> PyResult<ExecOutcome> {
+    execution_outcome(run_kcl(input, mock, None).await?).await
+}
+
+async fn execution_outcome(executed: ExecutedKcl) -> PyResult<ExecOutcome> {
     let ExecutedKcl {
         ctx,
         state,
@@ -378,7 +386,7 @@ async fn execute_impl(input: KclInput, mock: bool) -> PyResult<ExecOutcome> {
         code,
         filename,
         ..
-    } = run_kcl(input, mock, None).await?;
+    } = executed;
     let outcome = match state.into_exec_outcome(env_ref, &ctx).await {
         Ok(outcome) => outcome,
         Err(err) => {
@@ -392,6 +400,58 @@ async fn execute_impl(input: KclInput, mock: bool) -> PyResult<ExecOutcome> {
         code,
         filename,
     })
+}
+
+async fn try_render_sketch_instance_impl(
+    input: KclInput,
+    sketch_name: String,
+    instance_index: usize,
+) -> PyResult<Option<Vec<u8>>> {
+    // Later indices may include cloned instances. Keep ordinary execution for
+    // those rather than renumbering instances after dropping earlier geometry.
+    if instance_index != 0 {
+        return Ok(None);
+    }
+    let mut parsed = load_and_parse(input).await?;
+    let Some(program) = kcl_lib::tooling::sketch_execution::first_instance(&parsed.program, &sketch_name) else {
+        return Ok(None);
+    };
+    parsed.program = program;
+    let outcome = execution_outcome(run_parsed_kcl(parsed, false, None).await?).await?;
+    outcome.render_sketch_png(&sketch_name, Some(0)).map(Some)
+}
+
+/// Render the first instance of an eligible solver-sketch solid helper without
+/// unrelated geometry. Returns None when ordinary execution is required.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
+#[pyfunction]
+async fn try_render_sketch_instance(
+    path: String,
+    sketch_name: String,
+    instance_index: usize,
+) -> PyResult<Option<Vec<u8>>> {
+    spawn_py(try_render_sketch_instance_impl(
+        KclInput::Path(path),
+        sketch_name,
+        instance_index,
+    ))
+    .await
+}
+
+/// Code-string counterpart of try_render_sketch_instance.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
+#[pyfunction]
+async fn try_render_sketch_instance_code(
+    code: String,
+    sketch_name: String,
+    instance_index: usize,
+) -> PyResult<Option<Vec<u8>>> {
+    spawn_py(try_render_sketch_instance_impl(
+        KclInput::Code(code),
+        sketch_name,
+        instance_index,
+    ))
+    .await
 }
 
 async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstraintReport> {
@@ -1305,6 +1365,8 @@ fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(parse_code, m)?)?;
     m.add_function(wrap_pyfunction!(execute, m)?)?;
     m.add_function(wrap_pyfunction!(execute_code, m)?)?;
+    m.add_function(wrap_pyfunction!(try_render_sketch_instance, m)?)?;
+    m.add_function(wrap_pyfunction!(try_render_sketch_instance_code, m)?)?;
     m.add_function(wrap_pyfunction!(mock_execute, m)?)?;
     m.add_function(wrap_pyfunction!(mock_execute_code, m)?)?;
     m.add_function(wrap_pyfunction!(get_sketch_constraint_status, m)?)?;
@@ -1357,6 +1419,7 @@ mod tests {
             .await
             .expect("native task remained alive after caller cancellation")
             .expect_err("native task should drop its sender");
+        assert_eq!(spawn_py(async { Ok(42) }).await.unwrap(), 42);
     }
 
     #[test]
