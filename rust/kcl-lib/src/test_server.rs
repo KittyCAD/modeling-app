@@ -70,6 +70,7 @@ pub async fn execute_locally_and_render_on_engine(
 
 /// Execute the kcl then export the resulting glb and CPU render an image locally
 /// cheaper than engine render since we can use the engine in geometry-only mode.
+
 pub async fn execute_export_and_render_locally(
     ctx: &ExecutorContext,
     program: Program,
@@ -134,33 +135,75 @@ impl From<RawFile> for Glb {
     }
 }
 
-pub struct KclDocGraphics {
-    pub image: image::DynamicImage,
-    pub glb: Option<Glb>,
+pub enum TestGraphicsArtifact {
+    Image(image::DynamicImage),
+    ImageAndGlb { image: image::DynamicImage, glb: Glb },
+    None,
+}
+
+impl TestGraphicsArtifact {
+    pub fn image(self) -> Option<image::DynamicImage> {
+        match self {
+            Self::Image(img) => Some(img),
+            Self::ImageAndGlb { image, .. } => Some(image),
+            Self::None => None,
+        }
+    }
+}
+
+enum TestGraphicsParams {
+    /// use the 3d engine scene to render an image
+    EngineRender,
+    /// the model is exportable. export and CPU render
+    ExportAndRender,
+    /// the model doesn't need any graphical test output
+    None,
+}
+
+impl TestGraphicsParams {
+    fn geometry_only(&self) -> bool {
+        matches!(self, Self::ExportAndRender | Self::None)
+    }
+    /// kcl tests have `no3d` or `norun` flags in their declaration.
+    /// `norun` means "no graphics" and "no3d" means we want graphics but the model can't yet be exported for local rendering.
+    /// Translate these requirements into a more descriptive type here.
+    fn from_kcl_sample_spec(no_3d: bool, no_run: bool) -> Self {
+        match (no_3d, no_run) {
+            (true, false) => Self::EngineRender,
+            (false, false) => Self::ExportAndRender,
+            (true, true) | (false, true) => Self::None,
+        }
+    }
 }
 
 pub async fn kcl_doc_execute_and_snapshot(
     code: &str,
     current_file: Option<PathBuf>,
     no_3d: bool,
-) -> Result<KclDocGraphics, ExecError> {
-    let ctx = new_context(true, current_file, !no_3d).await?;
+    no_run: bool,
+) -> Result<TestGraphicsArtifact, ExecError> {
+    let graphics = TestGraphicsParams::from_kcl_sample_spec(no_3d, no_run);
+    let ctx = new_context(true, current_file, graphics.geometry_only()).await?;
     let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
 
-    let graphical_result = match no_3d {
-        true => execute_locally_and_render_on_engine(&ctx, program, None)
+    let result = match graphics {
+        TestGraphicsParams::EngineRender => execute_locally_and_render_on_engine(&ctx, program, None)
             .await
-            .map(|(_, _, image)| KclDocGraphics { image, glb: None })
+            .map(|(_, _, image)| TestGraphicsArtifact::Image(image))
             .map_err(|err| err.error)?,
-        false => execute_export_and_render_locally(&ctx, program, None)
+        TestGraphicsParams::ExportAndRender => execute_export_and_render_locally(&ctx, program, None)
             .await
-            .map(|(_, _, snap_3d)| KclDocGraphics {
+            .map(|(_, _, snap_3d)| TestGraphicsArtifact::ImageAndGlb {
                 image: snap_3d.image,
-                glb: Some(snap_3d.glb),
+                glb: snap_3d.glb,
             })
             .map_err(|err| err.error)?,
+        TestGraphicsParams::None => {
+            _ = do_execute(&ctx, program, None).await.map_err(|err| err.error)?;
+            TestGraphicsArtifact::None
+        }
     };
-    Ok(graphical_result)
+    Ok(result)
 }
 
 /// Executes a kcl program and takes a snapshot of the result.
