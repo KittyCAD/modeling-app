@@ -21,6 +21,8 @@ rectangle(
 
 This is part of sketch v1 and is deprecated in favor of
 [sketch-solve](/docs/kcl-std/modules/std-solver).
+Legacy sketch functions cannot be used with constraints; strongly prefer
+constraint-based sketch functions inside a `sketch` block.
 
 A rectangle can be defined by its width, height, and location. Either the center or corner must be provided, but not both, to specify its location.
 

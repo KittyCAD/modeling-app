@@ -40,29 +40,25 @@ This helps keep your code neat and avoid unnecessary declarations.
 
 ## Pipelines and keyword arguments
 
-Say you have a long pipeline of sketch functions, like this:
+Say you have a long pipeline of functions that modify a solid, like this:
 
 ```kcl
-startSketchOn(XZ)
-  |> startProfile(at = [0, 0])
-  |> line(%, end = [3, 4])
-  |> line(%, end = [10, 10])
-  |> line(%, end = [-13, -14])
-  |> close(%)
+solid
+  |> appearance(%, color = "#ff0000")
+  |> appearance(%, metalness = 50)
+  |> appearance(%, roughness = 50)
 ```
 
-In this example, each function call outputs a sketch, and it gets put into the next function call via
+In this example, each function call outputs a solid, and it gets put into the next function call via
 the `%`, into the first (unlabeled) argument.
 
 If a function call uses an unlabeled first parameter, it will default to `%` if it's not given. This
-means that `|> line(%, end = [3, 4])` and `|> line(end = [3, 4])` are equivalent! So the above
+means that `|> appearance(%, color = "#ff0000")` and `|> appearance(color = "#ff0000")` are equivalent! So the above
 could be rewritten as 
 
 ```kcl
-startSketchOn(XZ)
-  |> startProfile(at = [0, 0])
-  |> line(end = [3, 4])
-  |> line(end = [10, 10])
-  |> line(end = [-13, -14])
-  |> close()
+solid
+  |> appearance(color = "#ff0000")
+  |> appearance(metalness = 50)
+  |> appearance(roughness = 50)
 ```

@@ -23,6 +23,8 @@ tangentialArc(
 
 This is part of sketch v1 and is deprecated in favor of
 [sketch-solve](/docs/kcl-std/modules/std-solver).
+Legacy sketch functions cannot be used with constraints; strongly prefer
+constraint-based sketch functions inside a `sketch` block.
 
 When using radius and angle, draw a curved line segment along part of an
 imaginary circle. The arc is constructed such that the last line segment is
