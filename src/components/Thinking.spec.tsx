@@ -147,7 +147,7 @@ describe('FilesSnapshot', () => {
     }
     const view = () => (
       <Thinking
-        thoughts={[{ files: { files: [{ ...file }] } }]}
+        thoughts={[{ files: { files: [{ ...file, data: [...file.data] }] } }]}
         isDone={true}
         onlyShowImmediateThought={false}
       />
@@ -165,8 +165,13 @@ describe('FilesSnapshot', () => {
     expect(revokeObjectURLMock).not.toHaveBeenCalled()
   })
 
-  test('keeps a loaded image while another attachment loads', () => {
-    const firstRef = { prompt_id: 'prompt', seq: 1, index: 0 }
+  test('only recreates URLs when an attachment finishes loading', () => {
+    const firstRef = {
+      prompt_id: 'prompt',
+      seq: 1,
+      index: 0,
+      content_hash: 'sha256:' + '0'.repeat(64),
+    }
     const secondRef = { ...firstRef, index: 1 }
     const first: MlCopilotFile = {
       name: 'first.png',
@@ -215,12 +220,31 @@ describe('FilesSnapshot', () => {
         onFetchAttachment={onFetchAttachment}
       />
     )
-    expect(screen.getByAltText(first.name)).toHaveAttribute('src', firstUrl)
+    expect(screen.getByAltText(first.name)).not.toHaveAttribute('src', firstUrl)
     expect(screen.getByAltText(second.name)).toBeInTheDocument()
-    expect(createObjectURLMock).toHaveBeenCalledTimes(2)
-    expect(revokeObjectURLMock).not.toHaveBeenCalled()
+    expect(createObjectURLMock).toHaveBeenCalledTimes(3)
+    expect(revokeObjectURLMock).toHaveBeenCalledExactlyOnceWith(firstUrl)
     unmount()
-    expect(revokeObjectURLMock).toHaveBeenCalledTimes(2)
+    expect(revokeObjectURLMock).toHaveBeenCalledTimes(3)
+  })
+
+  test.each([
+    { label: 'inline bytes', data: [3, 2, 1], mimetype: 'image/png' },
+    { label: 'MIME type', data: [1, 2, 3], mimetype: 'image/jpeg' },
+  ])('updates the URL when $label changes', ({ data, mimetype }) => {
+    const file: MlCopilotFile = {
+      name: 'snapshot.png',
+      mimetype: 'image/png',
+      data: [1, 2, 3],
+    }
+    const { rerender } = render(<FilesSnapshot files={[file]} />)
+    const oldUrl = screen.getByAltText(file.name).getAttribute('src')
+
+    rerender(<FilesSnapshot files={[{ ...file, data, mimetype }]} />)
+
+    expect(screen.getByAltText(file.name)).not.toHaveAttribute('src', oldUrl)
+    expect(createObjectURLMock).toHaveBeenCalledTimes(2)
+    expect(revokeObjectURLMock).toHaveBeenCalledExactlyOnceWith(oldUrl)
   })
 
   test('renders a single image file with correct filename', () => {

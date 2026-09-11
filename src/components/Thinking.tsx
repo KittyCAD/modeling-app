@@ -516,48 +516,9 @@ const ImageFileItem = (props: {
   )
 }
 
-// Each rendered file owns its URL independently of the surrounding file list.
-const LoadedFileItem = (props: { file: MlCopilotFile }) => {
-  const { data, mimetype } = props.file
-  const [url, setUrl] = useState<string>()
-
-  useEffect(() => {
-    const url = data.length > 0 ? bytesToDataUrl(data, mimetype) : undefined
-    setUrl(url)
-    return () => {
-      if (url) URL.revokeObjectURL(url)
-    }
-  }, [data, mimetype])
-
-  const handleDownload = (url: string, filename: string) => {
-    const link = document.createElement('a')
-    link.href = url
-    link.download = filename
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-  }
-
-  if (isImageMimetype(mimetype)) {
-    return (
-      <ImageFileItem file={props.file} url={url} onDownload={handleDownload} />
-    )
-  }
-
-  return (
-    <button
-      onClick={() => url && handleDownload(url, props.file.name)}
-      className="flex flex-row gap-2 items-center cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-90 p-2 rounded transition-colors text-left w-full"
-      title={`Click to download ${props.file.name}`}
-    >
-      <CustomIcon name="file" className="w-5 h-5 flex-shrink-0" />
-      <span className="text-sm truncate">{props.file.name}</span>
-      <CustomIcon name="download" className="w-4 h-4 ml-auto flex-shrink-0" />
-    </button>
-  )
-}
-
 const FileList = (props: { files: MlCopilotFile[] } & AttachmentFetchProps) => {
+  const [objectUrls, setObjectUrls] = useState<Array<string | undefined>>([])
+
   const resolvedFiles = useMemo(
     () =>
       props.files.map((file) => {
@@ -570,6 +531,46 @@ const FileList = (props: { files: MlCopilotFile[] } & AttachmentFetchProps) => {
       }),
     [props.attachmentFetches, props.files]
   )
+
+  // Hashes identify loaded bytes; inline files fall back to their contents.
+  const contentKey = JSON.stringify(
+    resolvedFiles.map((file) => [
+      file.attachment_ref?.content_hash ?? file.data,
+      file.mimetype,
+      file.data.length > 0,
+      isReplayAttachmentUnavailable(file),
+    ])
+  )
+
+  useEffect(() => {
+    // Create object URLs for all files
+    const urls = resolvedFiles.map((file) =>
+      isReplayAttachmentUnavailable(file) || file.data.length === 0
+        ? undefined
+        : bytesToDataUrl(file.data, file.mimetype)
+    )
+    setObjectUrls(urls)
+
+    // Cleanup object URLs when component unmounts
+    return () => {
+      urls.forEach((url) => {
+        if (url) {
+          URL.revokeObjectURL(url)
+        }
+      })
+    }
+    // The key covers every file value used to create or skip an object URL.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [contentKey])
+
+  const handleDownload = (url: string, filename: string) => {
+    const link = document.createElement('a')
+    link.href = url
+    link.download = filename
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
 
   const fileItems = resolvedFiles.map((file, index) => ({ file, index }))
   const imageFiles = fileItems.filter(({ file }) =>
@@ -610,7 +611,15 @@ const FileList = (props: { files: MlCopilotFile[] } & AttachmentFetchProps) => {
         const fetchItem = attachmentFetchItem(index)
         if (fetchItem) return fetchItem
 
-        return <LoadedFileItem key={`${file.name}-${index}`} file={file} />
+        const url = objectUrls[index]
+        return (
+          <ImageFileItem
+            key={`${file.name}-${index}`}
+            file={file}
+            url={url}
+            onDownload={handleDownload}
+          />
+        )
       })}
       {otherFiles.map(({ file, index }) => {
         if (isReplayAttachmentUnavailable(file)) {
@@ -621,7 +630,22 @@ const FileList = (props: { files: MlCopilotFile[] } & AttachmentFetchProps) => {
         const fetchItem = attachmentFetchItem(index)
         if (fetchItem) return fetchItem
 
-        return <LoadedFileItem key={`${file.name}-${index}`} file={file} />
+        const url = objectUrls[index]
+        return (
+          <button
+            key={`${file.name}-${index}`}
+            onClick={() => url && handleDownload(url, file.name)}
+            className="flex flex-row gap-2 items-center cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-90 p-2 rounded transition-colors text-left w-full"
+            title={`Click to download ${file.name}`}
+          >
+            <CustomIcon name="file" className="w-5 h-5 flex-shrink-0" />
+            <span className="text-sm truncate">{file.name}</span>
+            <CustomIcon
+              name="download"
+              className="w-4 h-4 ml-auto flex-shrink-0"
+            />
+          </button>
+        )
       })}
     </div>
   )
