@@ -1913,6 +1913,7 @@ mod test {
                     std::io::Write::write_all(&mut f, &glb.bytes).expect("could not write to file");
                 }
             };
+            return;
         }
 
         panic!(

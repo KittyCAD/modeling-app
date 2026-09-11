@@ -95,7 +95,7 @@ import Axis3d, BoundedEdge, Edge, Face, Plane, Point3d, Solid, TaggedEdge, Tagge
 /// // This example shows rolling ball fillets, a new type of fillet
 /// // available with KCL 3.
 /// @settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
-/// 
+///
 /// sketch001 = sketch(on = XY) {
 ///   seg02 = line(start = [var -131.92mm, var 32.75mm], end = [var 195.16mm, var 32.75mm])
 ///   seg01 = line(start = [var 195.16mm, var 32.75mm], end = [var 195.16mm, var 112.75mm])
@@ -105,7 +105,7 @@ import Axis3d, BoundedEdge, Edge, Face, Plane, Point3d, Solid, TaggedEdge, Tagge
 ///   innerLeftRise = line(start = [var -104.94mm, var 62.75mm], end = [var -104.94mm, var 112.75mm])
 ///   topLeftInset = line(start = [var -104.94mm, var 112.75mm], end = [var -131.92mm, var 112.75mm])
 ///   seg03 = line(start = [var -131.92mm, var 112.75mm], end = [var -131.92mm, var 32.75mm])
-/// 
+///
 ///   coincident([seg02.end, seg01.start])
 ///   coincident([seg01.end, topRightInset.start])
 ///   coincident([
@@ -117,7 +117,7 @@ import Axis3d, BoundedEdge, Edge, Face, Plane, Point3d, Solid, TaggedEdge, Tagge
 ///   coincident([innerLeftRise.end, topLeftInset.start])
 ///   coincident([topLeftInset.end, seg03.start])
 ///   coincident([seg03.end, seg02.start])
-/// 
+///
 ///   horizontal(seg02)
 ///   vertical(seg01)
 ///   horizontal(topRightInset)
@@ -125,7 +125,7 @@ import Axis3d, BoundedEdge, Edge, Face, Plane, Point3d, Solid, TaggedEdge, Tagge
 ///   horizontal(lowerSpan)
 ///   vertical(innerLeftRise)
 ///   horizontal(topLeftInset)
-/// 
+///
 ///   horizontalDistance([seg02.start, ORIGIN]) == 131.92mm
 ///   verticalDistance([ORIGIN, seg02.start]) == 32.75mm
 ///   distance([seg01.start, seg01.end]) == 80
@@ -139,7 +139,7 @@ import Axis3d, BoundedEdge, Edge, Face, Plane, Point3d, Solid, TaggedEdge, Tagge
 ///   distance([topLeftInset.start, topLeftInset.end]) == 26.98mm
 ///   vertical(seg03)
 /// }
-/// 
+///
 /// hidden001 = hide(sketch001)
 /// profile001 = region(segments = [sketch001.seg02, sketch001.seg01], intersectionIndex = -1, direction = CCW)
 /// revolve001 = revolve(profile001, angle = 360deg, axis = X)
@@ -156,7 +156,7 @@ import Axis3d, BoundedEdge, Edge, Face, Plane, Point3d, Solid, TaggedEdge, Tagge
 /// // Same as previous example, but with the fillet and revolve call
 /// // in separate commands, with an intermediate variable.
 /// @settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
-/// 
+///
 /// sketch001 = sketch(on = XY) {
 ///   seg02 = line(start = [var -131.92mm, var 32.75mm], end = [var 195.16mm, var 32.75mm])
 ///   seg01 = line(start = [var 195.16mm, var 32.75mm], end = [var 195.16mm, var 112.75mm])
@@ -166,7 +166,7 @@ import Axis3d, BoundedEdge, Edge, Face, Plane, Point3d, Solid, TaggedEdge, Tagge
 ///   innerLeftRise = line(start = [var -104.94mm, var 62.75mm], end = [var -104.94mm, var 112.75mm])
 ///   topLeftInset = line(start = [var -104.94mm, var 112.75mm], end = [var -131.92mm, var 112.75mm])
 ///   seg03 = line(start = [var -131.92mm, var 112.75mm], end = [var -131.92mm, var 32.75mm])
-/// 
+///
 ///   coincident([seg02.end, seg01.start])
 ///   coincident([seg01.end, topRightInset.start])
 ///   coincident([
@@ -178,7 +178,7 @@ import Axis3d, BoundedEdge, Edge, Face, Plane, Point3d, Solid, TaggedEdge, Tagge
 ///   coincident([innerLeftRise.end, topLeftInset.start])
 ///   coincident([topLeftInset.end, seg03.start])
 ///   coincident([seg03.end, seg02.start])
-/// 
+///
 ///   horizontal(seg02)
 ///   vertical(seg01)
 ///   horizontal(topRightInset)
@@ -186,7 +186,7 @@ import Axis3d, BoundedEdge, Edge, Face, Plane, Point3d, Solid, TaggedEdge, Tagge
 ///   horizontal(lowerSpan)
 ///   vertical(innerLeftRise)
 ///   horizontal(topLeftInset)
-/// 
+///
 ///   horizontalDistance([seg02.start, ORIGIN]) == 131.92mm
 ///   verticalDistance([ORIGIN, seg02.start]) == 32.75mm
 ///   distance([seg01.start, seg01.end]) == 80
@@ -200,12 +200,12 @@ import Axis3d, BoundedEdge, Edge, Face, Plane, Point3d, Solid, TaggedEdge, Tagge
 ///   distance([topLeftInset.start, topLeftInset.end]) == 26.98mm
 ///   vertical(seg03)
 /// }
-/// 
+///
 /// hidden001 = hide(sketch001)
 /// profile001 = region(segments = [sketch001.seg02, sketch001.seg01], intersectionIndex = -1, direction = CCW)
-/// 
+///
 /// revolve001 = revolve(profile001, angle = 360deg, axis = X)
-/// 
+///
 /// fillet001 = fillet(
 ///   revolve001,
 ///   tags = getCommonEdge(faces = [
@@ -301,7 +301,7 @@ export fn fillet(
 ///         length = 10,
 ///         tags = [getOppositeEdge(line1)],
 ///         tag = $chamfer1,
-///     )  
+///     )
 ///
 /// sketch001 = startSketchOn(part001, face = chamfer1)
 ///     |> startProfile(at = [10, 10])
@@ -366,11 +366,11 @@ export fn fillet(
 ///
 /// ```kcl,sketchSolve
 /// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
-///  
+///
 /// // Chamfer the top circular edge of an extruded 8 mm shaft.
 /// // These two shafts show two equivalent edge-selection approaches:
 /// // `getOppositeEdge` and a tagged end face with `getCommonEdge`.
-/// 
+///
 /// // Sketch two circles, one on the left, one on the right.
 /// // We'll use them for shafts below.
 /// leftShaftSketch = sketch(on = XY) {
@@ -381,11 +381,11 @@ export fn fillet(
 ///   rightCircle = circle(start = [var 16mm, var 0mm], center = [var 12mm, var 0mm])
 ///   radius(rightCircle) == 4mm
 /// }
-/// 
+///
 /// // For each sketch, get the region inside its circle.
 /// leftRegion = region(segments = [leftShaftSketch.leftCircle])
 /// rightRegion = region(segments = [rightShaftSketch.rightCircle])
-/// 
+///
 /// // Extrude one circle into a shaft,
 /// // then use `leftRegion.tags.leftCircle` to reference the original circle
 /// // at the base of the shaft,
@@ -397,7 +397,7 @@ export fn fillet(
 ///          getOppositeEdge(leftRegion.tags.leftCircle)
 ///        ],
 ///      )
-/// 
+///
 /// // Extrude the other circle into a shaft and tag its top end face.
 /// rightShaftBase = extrude(rightRegion, length = 20mm, tagEnd = $rightShaftTop)
 ///
@@ -655,7 +655,7 @@ export fn shell(
 /// hollowCube = clone(solidCube)
 ///   |> hollow(thickness = 0.25)
 ///   |> translate(x = width * 1.1)
-/// 
+///
 /// // Make a tool that spans the top half of both cubes,
 /// // so we can cut open the cubes and look at their insides.
 /// tool = startSketchOn(offsetPlane(XY, offset = width))
@@ -717,7 +717,7 @@ export fn hollow(
 ///
 ///  - `translate` (3D point)
 ///
-///    Translates the replica, moving its position in space.      
+///    Translates the replica, moving its position in space.
 ///
 ///  - `replicate` (bool)
 ///
@@ -726,7 +726,7 @@ export fn hollow(
 ///  - `scale` (3D point)
 ///
 ///    Stretches the object, multiplying its width in the given dimension by the point's component in
-///    that direction.      
+///    that direction.
 ///
 ///  - `rotation` (object, with the following properties)
 ///
@@ -890,7 +890,7 @@ export fn hollow(
 /// n = 5
 /// width = 10
 /// gap = 1.5 * width
-/// 
+///
 /// // Transform function
 /// fn chessboard(@i) {
 ///   row = rem(i, divisor = n)
@@ -898,7 +898,7 @@ export fn hollow(
 ///   isEven = rem(i, divisor = 2) == 0
 ///   return [{ translate = [row * gap, column * gap, 0], replicate = isEven }]
 /// }
-/// 
+///
 /// startSketchOn(XY)
 ///   |> polygon(numSides = 4, radius = width, center = [0, 0])
 ///   |> extrude(length = 2)
@@ -1530,7 +1530,7 @@ export fn subtract(
 ///        roughness = 50
 ///    )
 /// ```
-/// ```kcl
+/// ```kcl,no3d
 /// offsetPlane(XZ, offset = 4mm)
 /// |> appearance(color = "#ff0000", opacity = 50)
 /// ```
@@ -1554,7 +1554,7 @@ export fn appearance(
 ///
 /// ```kcl,legacySketch
 /// sideLen = 4
-/// 
+///
 /// fn square(@plane, offset, y) {
 ///   at = if y {
 ///     [-offset, 0]
@@ -1566,7 +1566,7 @@ export fn appearance(
 ///     |> if y { yLine(length = sideLen)} else {xLine(length = sideLen)}
 ///     |> extrude(length = if y {-sideLen} else {sideLen}, bodyType = SURFACE)
 /// }
-/// 
+///
 /// // Make a cube polysurface from 6 squares
 /// cube = [
 ///   square(XY, offset = 0, y = false),
@@ -1579,7 +1579,7 @@ export fn appearance(
 /// ```
 /// ```kcl,legacySketch
 /// sideLen = 4
-/// 
+///
 /// fn square(@plane, offset, y) {
 ///   at = if y {
 ///     [-offset, 0]
@@ -1591,7 +1591,7 @@ export fn appearance(
 ///     |> if y { yLine(length = sideLen)} else {xLine(length = sideLen)}
 ///     |> extrude(length = if y {-sideLen} else {sideLen}, bodyType = SURFACE)
 /// }
-/// 
+///
 /// // Make a cube polysurface from 6 squares
 /// cube = [
 ///   square(XY, offset = 0, y = false),
@@ -1614,7 +1614,7 @@ export fn flipSurface(
 ///
 /// ```kcl,legacySketch
 /// sideLen = 4
-/// 
+///
 /// // Helper function to make a square surface body.
 /// fn square(@plane, offset, y) {
 ///   at = if y {
@@ -1627,7 +1627,7 @@ export fn flipSurface(
 ///     |> if y { yLine(length = sideLen)} else {xLine(length = sideLen)}
 ///     |> extrude(length = if y {-sideLen} else {sideLen}, bodyType = SURFACE)
 /// }
-/// 
+///
 /// // Make a cube polysurface from 6 squares.
 /// cube = [
 ///   square(XY, offset = 0, y = false),
@@ -1648,11 +1648,11 @@ export fn flipSurface(
 /// cube1 = startSketchOn(XY)
 /// |> rectangle(width = 3, height = 3, center = [0, 0])
 /// |> extrude(length = 2)
-/// 
+///
 /// cube2 = startSketchOn(offsetPlane(XY, offset = 0.4))
 /// |> rectangle(width = 3, height = 3, center = [2, 2])
 /// |> extrude(length = 2)
-/// 
+///
 /// cubes = split([cube1], tools = [cube2], merge = true)
 /// |> appearance(color = "#da4333", roughness = 50, metalness = 90, opacity = 80)
 /// ```
@@ -1661,12 +1661,12 @@ export fn flipSurface(
 ///   |> rectangle(width = 10, height = 10, center = [0, 0])
 ///   |> extrude(length = 10)
 ///   |> appearance(color = "#da7333", roughness = 50, metalness = 90)
-/// 
+///
 /// roseCube = startSketchOn(offsetPlane(XY, offset = 2))
 ///   |> rectangle(width = 10, height = 10, center = [4, 2])
 ///   |> extrude(length = 10)
 ///   |> appearance(color = "#da4333", roughness = 50, metalness = 90)
-/// 
+///
 /// // Split the gold cube along the edges of rose cube. Keep rose cube in place after.
 /// final = split([goldCube], tools = [roseCube], merge = true, keepTools = true)
 /// // You can't see it, because the rose cube is covering it, but the gold cube now has
@@ -1677,12 +1677,12 @@ export fn flipSurface(
 ///   |> rectangle(width = 10, height = 10, center = [0, 0])
 ///   |> extrude(length = 10)
 ///   |> appearance(color = "#da7333", roughness = 50, metalness = 90)
-/// 
+///
 /// roseCube = startSketchOn(offsetPlane(XY, offset = 2))
 ///   |> rectangle(width = 10, height = 10, center = [4, 2])
 ///   |> extrude(length = 10)
 ///   |> appearance(color = "#da4333", roughness = 50, metalness = 90)
-/// 
+///
 /// // Split the gold cube along the edges of rose cube.
 /// // Then delete some of the new faces that were created on gold cube.
 /// final = split([goldCube], tools = [roseCube], merge = true)
@@ -1698,7 +1698,7 @@ export fn flipSurface(
 ///   tag = $seg01,
 /// )
 /// cylinder = extrude(profile001, length = 5)
-/// 
+///
 /// // Make a wedge that splits the cylinder down the middle.
 /// sketch002 = startSketchOn(XY)
 /// profile002 = startProfile(sketch002, at = [0, -4.75])
@@ -1708,10 +1708,10 @@ export fn flipSurface(
 ///   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 ///   |> close()
 /// wedge = extrude(profile002, length = 15, symmetric = true)
-/// 
+///
 /// // Split the cylinder down the wedge.
 /// result = split([cylinder], tools = [wedge])
-/// 
+///
 /// // Color each part of the split cylinder differently,
 /// // and move the parts a bit away from each other,
 /// // so you can see their interiors.
@@ -1745,7 +1745,7 @@ export fn split(
 ): [Solid; 1+] {}
 
 
-/// Given a KCL value that is a "body" (currently typed as `Solid`), returns `true` if the value is a solid and `false` otherwise. 
+/// Given a KCL value that is a "body" (currently typed as `Solid`), returns `true` if the value is a solid and `false` otherwise.
 ///
 /// ```kcl,legacySketch
 /// fn square(@plane, origin, side, body_type) {
@@ -1757,10 +1757,10 @@ export fn split(
 ///     |> xLine(length = -side)
 ///     |> extrude(length = side, bodyType = body_type)
 /// }
-/// 
+///
 /// originX0Y0 = [0, 0]
 /// originX10Y0 = [10, 0]
-/// 
+///
 /// cube = square(
 ///   XY,
 ///   origin = originX0Y0,
@@ -1773,13 +1773,13 @@ export fn split(
 ///   side = 6,
 ///   body_type = "surface",
 /// )
-/// 
+///
 /// assertIs(isSolid(cube))
 /// assertIs(isSurface(openBoxSurface))
-/// 
+///
 /// // surface is not a solid
 /// assertIs(!isSolid(openBoxSurface))
-/// 
+///
 /// // solid is not a surface
 /// assertIs(!isSurface(cube))
 /// ```
@@ -1790,7 +1790,7 @@ export fn isSolid(
 ): bool {}
 
 
-/// Given a KCL value that is a 'body' (currently typed as `Solid`), returns `true` if the value is a surface and `false` otherwise. 
+/// Given a KCL value that is a 'body' (currently typed as `Solid`), returns `true` if the value is a surface and `false` otherwise.
 ///
 /// ```kcl,legacySketch
 /// fn square(@plane, origin, side, body_type) {
@@ -1802,10 +1802,10 @@ export fn isSolid(
 ///     |> xLine(length = -side)
 ///     |> extrude(length = side, bodyType = body_type)
 /// }
-/// 
+///
 /// originX0Y0 = [0, 0]
 /// originX10Y0 = [10, 0]
-/// 
+///
 /// cube = square(
 ///   XY,
 ///   origin = originX0Y0,
@@ -1818,13 +1818,13 @@ export fn isSolid(
 ///   side = 6,
 ///   body_type = "surface",
 /// )
-/// 
+///
 /// assertIs(isSolid(cube))
 /// assertIs(isSurface(openBoxSurface))
-/// 
+///
 /// // surface is not a solid
 /// assertIs(!isSolid(openBoxSurface))
-/// 
+///
 /// // solid is not a surface
 /// assertIs(!isSurface(cube))
 /// ```
@@ -1856,7 +1856,7 @@ export fn isSurface(
 /// ```
 /// ```kcl,legacySketch
 /// sideLen = 4
-/// 
+///
 /// // Helper function to make a square surface body.
 /// fn square(@plane, offset, y) {
 ///   at = if y {
@@ -1869,7 +1869,7 @@ export fn isSurface(
 ///     |> if y { yLine(length = sideLen)} else {xLine(length = sideLen)}
 ///     |> extrude(length = if y {-sideLen} else {sideLen}, bodyType = SURFACE)
 /// }
-/// 
+///
 /// // Make a cube polysurface from 6 squares.
 /// cube = [
 ///   square(XY, offset = 0, y = false),
@@ -1925,16 +1925,16 @@ export fn deleteFace(
 ///   |> angledLine(angle = 0deg, length = 4, tag = $rectangleSegmentA001)
 ///   |> extrude(length = 2, bodyType = SURFACE)
 ///   |> translate(y = 3, z = 2)
-/// 
+///
 /// sketch002 = startSketchOn(XZ)
 /// profile002 = startProfile(sketch002, at = [-1, 0])
 ///   |> angledLine(angle = 0deg, length = 2, tag = $rectangleSegmentA002)
 ///   |> extrude(length = 2, bodyType = SURFACE)
 ///   |> flipSurface()
-/// 
+///
 /// edge001 = getBoundedEdge(profile001, edge = rectangleSegmentA001, lowerBound = 0.1, upperBound = 0.9)
 /// edge002 = getBoundedEdge(profile002, edge = rectangleSegmentA002)
-/// 
+///
 /// blend([edge001, edge002])
 /// ```
 ///
@@ -1996,7 +1996,7 @@ export fn blend(
 
 /// ```kcl,legacySketch
 /// @settings(defaultLengthUnit = mm)
-/// 
+///
 /// beamSectionWidth = 40
 /// beamSectionHeight = 95
 /// beamLength = 142
@@ -2005,7 +2005,7 @@ export fn blend(
 /// beamBoxCutterInset = 8
 /// beamForkCutterGap = 2
 /// beamForkCutterTipExtension = beamBoxCutterInset + beamForkCutterGap
-/// 
+///
 /// beamHalfWidth = beamSectionWidth / 2
 /// beamHalfHeight = beamSectionHeight / 2
 /// beamCurvedAngle = -(beamCurvedArcLength / beamCurvedRadius): number(rad)
@@ -2013,8 +2013,8 @@ export fn blend(
 /// beamForkCutterHalfHeight = beamHalfHeight + beamForkCutterGap
 /// beamForkCutterBackX = beamForkCutterHalfWidth
 /// beamForkCutterOpenX = -beamForkCutterHalfWidth - beamForkCutterTipExtension
-/// 
-/// 
+///
+///
 /// beamForkCutterStraightProfile = startSketchOn(XZ)
 ///   |> startProfile(at = [beamForkCutterOpenX, beamForkCutterHalfHeight])
 ///   |> line(
@@ -2026,13 +2026,13 @@ export fn blend(
 ///        end = [beamForkCutterOpenX - beamForkCutterBackX, 0],
 ///        tag = $beamForkCutterBottomStraightEdge,
 ///      )
-/// 
+///
 /// beamForkCutterStraight = extrude(
 ///   beamForkCutterStraightProfile,
 ///   length = beamLength,
 ///   bodyType = SURFACE,
 /// )
-/// 
+///
 /// beamForkCutterCurvedProfile = startSketchOn(XZ)
 ///   |> startProfile(at = [beamForkCutterOpenX, beamForkCutterHalfHeight])
 ///   |> line(
@@ -2044,38 +2044,38 @@ export fn blend(
 ///        end = [beamForkCutterOpenX - beamForkCutterBackX, 0],
 ///        tag = $beamForkCutterBottomCurvedEdge,
 ///      )
-/// 
+///
 /// curvedBeamAxis = {
 ///   direction = [0, 1],
 ///   origin = [beamCurvedRadius, 0]
 /// }
-/// 
+///
 /// beamForkCutterCurved = revolve(
 ///   beamForkCutterCurvedProfile,
 ///   axis = curvedBeamAxis,
 ///   angle = beamCurvedAngle,
 ///   bodyType = SURFACE,
 /// )
-/// 
+///
 /// beamForkCutterCurvedPlaced = beamForkCutterCurved
 ///   |> rotate(axis = Z, angle = -22deg, global = true)
 ///   |> translate(x = 93, y = 453, global = true)
-/// 
+///
 /// beamForkCutterTopBlend = blend([
 ///   getBoundedEdge(beamForkCutterCurvedPlaced, edge = getOppositeEdge(beamForkCutterTopCurvedEdge)),
 ///   beamForkCutterTopStraightEdge,
 /// ])
-/// 
+///
 /// beamForkCutterBackBlend = blend([
 ///   getBoundedEdge(beamForkCutterCurvedPlaced, edge = getOppositeEdge(beamForkCutterBackCurvedEdge)),
 ///   beamForkCutterBackStraightEdge,
 /// ])
-/// 
+///
 /// beamForkCutterBottomBlend = blend([
 ///   getBoundedEdge(beamForkCutterCurvedPlaced, edge = getOppositeEdge(beamForkCutterBottomCurvedEdge)),
 ///   beamForkCutterBottomStraightEdge,
 /// ])
-/// 
+///
 /// bumperBeamForkCutter = [
 ///   beamForkCutterTopBlend,
 ///   beamForkCutterBackBlend,
