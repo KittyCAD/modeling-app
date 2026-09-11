@@ -476,9 +476,9 @@ const ImageFileItem = (props: {
   url: string | undefined
   onDownload: (url: string, filename: string) => void
 }) => {
-  const [failedUrl, setFailedUrl] = useState<string>()
+  const [imageError, setImageError] = useState(false)
 
-  if (!props.url || props.url === failedUrl) {
+  if (!props.url || imageError) {
     // Fallback to file icon if image fails to load
     return (
       <button
@@ -509,7 +509,7 @@ const ImageFileItem = (props: {
           src={props.url}
           alt={props.file.name}
           className="block h-auto max-w-full"
-          onError={() => setFailedUrl(props.url)}
+          onError={() => setImageError(true)}
         />
       </button>
     </div>
@@ -519,24 +519,15 @@ const ImageFileItem = (props: {
 // Each rendered file owns its URL independently of the surrounding file list.
 const LoadedFileItem = (props: { file: MlCopilotFile }) => {
   const { data, mimetype } = props.file
-  const [objectUrl, setObjectUrl] = useState<{
-    data: number[]
-    mimetype: string
-    url: string
-  }>()
+  const [url, setUrl] = useState<string>()
 
   useEffect(() => {
-    if (data.length === 0) return
-    const url = bytesToDataUrl(data, mimetype)
-    setObjectUrl({ data, mimetype, url })
-    return () => URL.revokeObjectURL(url)
+    const url = data.length > 0 ? bytesToDataUrl(data, mimetype) : undefined
+    setUrl(url)
+    return () => {
+      if (url) URL.revokeObjectURL(url)
+    }
   }, [data, mimetype])
-
-  // Detach a replaced source in the commit before its effect cleanup revokes it.
-  const url =
-    objectUrl?.data === data && objectUrl.mimetype === mimetype
-      ? objectUrl.url
-      : undefined
 
   const handleDownload = (url: string, filename: string) => {
     const link = document.createElement('a')

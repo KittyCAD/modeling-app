@@ -1,5 +1,4 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { StrictMode } from 'react'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
 import type { MlCopilotFile, MlCopilotServerMessage } from '@kittycad/lib'
@@ -222,78 +221,6 @@ describe('FilesSnapshot', () => {
     expect(revokeObjectURLMock).not.toHaveBeenCalled()
     unmount()
     expect(revokeObjectURLMock).toHaveBeenCalledTimes(2)
-  })
-
-  test('detaches an old image source before revoking it on replacement', () => {
-    const revokedWhileDisplayed: string[] = []
-    revokeObjectURLMock.mockImplementation((url: string) => {
-      if (
-        screen
-          .queryAllByRole('img')
-          .some((image) => image.getAttribute('src') === url)
-      ) {
-        revokedWhileDisplayed.push(url)
-      }
-    })
-    const file: MlCopilotFile = {
-      name: 'snapshot.png',
-      mimetype: 'image/png',
-      data: MOCK_PNG_DATA,
-    }
-    const { rerender, unmount } = render(<FilesSnapshot files={[file]} />)
-    const oldUrl = screen.getByAltText(file.name).getAttribute('src')
-
-    rerender(
-      <FilesSnapshot files={[{ ...file, data: [...MOCK_PNG_DATA, 0] }]} />
-    )
-    expect(screen.getByAltText(file.name)).not.toHaveAttribute('src', oldUrl)
-    expect(revokeObjectURLMock).toHaveBeenCalledExactlyOnceWith(oldUrl)
-    unmount()
-    expect(revokedWhileDisplayed).toEqual([])
-    expect(revokeObjectURLMock).toHaveBeenCalledTimes(2)
-  })
-
-  test('retries image rendering when a failed source is replaced', () => {
-    const file: MlCopilotFile = {
-      name: 'snapshot.png',
-      mimetype: 'image/png',
-      data: MOCK_PNG_DATA,
-    }
-    const { rerender } = render(<FilesSnapshot files={[file]} />)
-    fireEvent.error(screen.getByAltText(file.name))
-    expect(screen.queryByAltText(file.name)).not.toBeInTheDocument()
-
-    rerender(
-      <FilesSnapshot files={[{ ...file, data: [...MOCK_PNG_DATA, 0] }]} />
-    )
-    expect(screen.getByAltText(file.name)).toBeInTheDocument()
-  })
-
-  test('releases each URL once through StrictMode setup and final unmount', () => {
-    const file: MlCopilotFile = {
-      name: 'snapshot.png',
-      mimetype: 'image/png',
-      data: MOCK_PNG_DATA,
-    }
-    const view = () => (
-      <StrictMode>
-        <FilesSnapshot files={[file]} />
-      </StrictMode>
-    )
-    const { rerender, unmount } = render(view())
-    const url = screen.getByAltText(file.name).getAttribute('src')
-    const created = createObjectURLMock.mock.calls.length
-    rerender(view())
-    expect(screen.getByAltText(file.name)).toHaveAttribute('src', url)
-    expect(createObjectURLMock).toHaveBeenCalledTimes(created)
-    expect(revokeObjectURLMock).not.toHaveBeenCalledWith(url)
-    unmount()
-    const createdUrls = createObjectURLMock.mock.results.map(
-      ({ value }) => value
-    )
-    expect(revokeObjectURLMock.mock.calls.map(([url]) => url).sort()).toEqual(
-      createdUrls.sort()
-    )
   })
 
   test('renders a single image file with correct filename', () => {
