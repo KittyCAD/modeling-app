@@ -22,7 +22,8 @@ circleThreePoint(
 This is part of sketch v1 and is deprecated in favor of
 [sketch-solve](/docs/kcl-std/modules/std-solver).
 Legacy sketch functions cannot be used with constraints; strongly prefer
-constraint-based sketch functions inside a `sketch` block.
+[`solver::circle`](/docs/kcl-std/functions/std-solver-circle) inside a
+`sketch` block instead.
 
 ### Arguments
 

@@ -26,7 +26,8 @@ This is part of sketch v1 and is deprecated in favor of
 [sketch-solve](/docs/kcl-std/modules/std-solver) and the
 [gear module](/docs/kcl-std/modules/std-gear).
 Legacy sketch functions cannot be used with constraints; strongly prefer
-constraint-based sketch functions inside a `sketch` block.
+the gear module when it applies. No constraint-based involute is available
+yet; first try approximating the shape with one or more constrained arcs.
 
 ### Arguments
 
