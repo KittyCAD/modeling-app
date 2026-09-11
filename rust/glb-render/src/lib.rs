@@ -483,12 +483,7 @@ fn draw_triangle(image: &mut RgbaImage, depth_buffer: &mut [f32], points: [Scree
     }
     // glTF front faces wind counterclockwise. Projection flips Y, so this
     // edge function gives front faces positive area and backfaces negative area.
-    let color = if area < 0.0 {
-        let [red, green, blue, alpha] = color.0;
-        Rgba([255 - red, 255 - green, 255 - blue, alpha])
-    } else {
-        color
-    };
+    let color = if area < 0.0 { Rgba([0, 213, 255, 255]) } else { color };
     let max_pixel_x = image.width().saturating_sub(1) as f32;
     let max_pixel_y = image.height().saturating_sub(1) as f32;
     let min_x = points
@@ -952,7 +947,7 @@ mod tests {
     }
 
     #[test]
-    fn backfaces_invert_rgb_and_preserve_alpha() {
+    fn backfaces_use_opaque_cyan() {
         let data = BrepRenderData {
             edge_polylines: vec![vec![-Vec3::ONE, Vec3::ONE]],
             ..Default::default()
@@ -968,7 +963,7 @@ mod tests {
             let material = Rgba([255, 100, 0, alpha]);
             for (points, expected) in [
                 (front, material),
-                ([front[0], front[2], front[1]], Rgba([0, 155, 255, alpha])),
+                ([front[0], front[2], front[1]], Rgba([0, 213, 255, 255])),
             ] {
                 let mut image = RgbaImage::from_pixel(32, 32, BACKGROUND);
                 let mut depth = vec![f32::INFINITY; 32 * 32];
