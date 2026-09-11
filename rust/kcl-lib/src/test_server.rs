@@ -187,7 +187,7 @@ pub async fn execute_and_snapshot_ast_no_close(
     ast: Program,
     current_file: Option<PathBuf>,
     deprecation_version_override: Option<&str>,
-) -> Result<(ExecState, ExecutorContext, EnvironmentRef, Snapshot3d), ExecErrorWithState> {
+) -> Result<(ExecState, ExecutorContext, EnvironmentRef, image::DynamicImage), ExecErrorWithState> {
     execute_and_snapshot_ast_with_heartbeats(ast, current_file, deprecation_version_override, Some(5)).await
 }
 
@@ -197,11 +197,11 @@ async fn execute_and_snapshot_ast_with_heartbeats(
     current_file: Option<PathBuf>,
     deprecation_version_override: Option<&str>,
     heartbeats: Option<u64>,
-) -> Result<(ExecState, ExecutorContext, EnvironmentRef, Snapshot3d), ExecErrorWithState> {
+) -> Result<(ExecState, ExecutorContext, EnvironmentRef, image::DynamicImage), ExecErrorWithState> {
     let ctx = new_context_with_heartbeats(true, current_file, heartbeats, false).await?;
-    let (exec_state, env, snap_3d) =
-        match execute_export_and_render_locally(&ctx, ast, deprecation_version_override).await {
-            Ok((exec_state, env_ref, snap_3d)) => (exec_state, env_ref, snap_3d),
+    let (exec_state, env, image) =
+        match execute_locally_and_render_on_engine(&ctx, ast, deprecation_version_override).await {
+            Ok((exec_state, env_ref, image)) => (exec_state, env_ref, image),
             Err(err) => {
                 // If there was an error executing the program, return it.
                 // Close the context to avoid any resource leaks.
@@ -209,7 +209,7 @@ async fn execute_and_snapshot_ast_with_heartbeats(
                 return Err(err);
             }
         };
-    Ok((exec_state, ctx, env, snap_3d))
+    Ok((exec_state, ctx, env, image))
 }
 
 pub async fn execute_and_snapshot_no_auth(

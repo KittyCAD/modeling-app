@@ -765,7 +765,7 @@ async fn execute_test(test: &Test, render_to_png: bool) {
     })
     .await;
     match exec_res {
-        Ok((exec_state, ctx, env_ref, snap_3d)) => {
+        Ok((exec_state, ctx, env_ref, image)) => {
             if let Some(expected_deprecation_warnings) = test.expected_deprecation_warnings {
                 let deprecation_warnings = exec_state
                     .issues()
@@ -799,7 +799,7 @@ async fn execute_test(test: &Test, render_to_png: bool) {
             // rendering to png means the model was exported with mesh and readable brep data.
             if render_to_png
                 && let Err(err) =
-                    twenty_twenty::try_assert_image(test.output_dir.join(RENDERED_MODEL_NAME), &snap_3d.image, 0.99)
+                    twenty_twenty::try_assert_image(test.output_dir.join(RENDERED_MODEL_NAME), &image, 0.99)
             {
                 panic!(
                     "Image assertion failed: {err}; input KCL file: {}",
