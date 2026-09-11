@@ -1043,7 +1043,7 @@ class UnitArea(enum.Enum):
     """
     SquareYards = ...
     r"""
-    Square yards <https://en.wikipedia.org/wiki/Square_mile>
+    Square yards <https://en.wikipedia.org/wiki/Square_yard>
     """
 
 @typing.final
@@ -1081,7 +1081,7 @@ class UnitArea(enum.Enum):
     """
     SquareYards = ...
     r"""
-    Square yards <https://en.wikipedia.org/wiki/Square_yard>
+    Square yards <https://en.wikipedia.org/wiki/Square_mile>
     """
 
 @typing.final
