@@ -59,6 +59,7 @@ export class Connection extends EventTarget {
   private _lastPingSentAt: number | undefined
   private _lastPongReceivedAt: number | undefined
   private _pingIntervalId: ReturnType<typeof setInterval> | undefined
+  private clearDisconnectedTimeout: (() => void) | undefined
   timeoutToForceConnectId: ReturnType<typeof setTimeout> | undefined
 
   peerConnection: RTCPeerConnection | undefined
@@ -515,11 +516,13 @@ export class Connection extends EventTarget {
     const onNegotiationNeeded = createOnNegotiationNeeded()
     const onSignalingStateChange = createOnSignalingStateChange()
     const onIceCandidateError = createOnIceCandidateError()
-    const onConnectionStateChange = createOnConnectionStateChange({
-      dispatchEvent: this.dispatchEvent.bind(this),
-      connection: this,
-      tearDownManager: this.tearDownManager.bind(this),
-    })
+    const { onConnectionStateChange, clearDisconnectedTimeout } =
+      createOnConnectionStateChange({
+        dispatchEvent: this.dispatchEvent.bind(this),
+        connection: this,
+        tearDownManager: this.tearDownManager.bind(this),
+      })
+    this.clearDisconnectedTimeout = clearDisconnectedTimeout
     const onTrack = createOnTrack({
       setMediaStream: this.setMediaStream.bind(this),
       setWebrtcStatsCollector: this.setWebrtcStatsCollector.bind(this),
@@ -864,22 +867,17 @@ export class Connection extends EventTarget {
       return
     }
 
-    if (this.peerConnection.connectionState === 'closed') {
-      EngineDebugger.addLog({
-        label: 'connection',
-        message: 'disconnectPeerConnection',
-        metadata: { id: this.id },
-      })
+    EngineDebugger.addLog({
+      label: 'connection',
+      message: 'disconnectPeerConnection',
+      metadata: {
+        id: this.id,
+        connectionState: this.peerConnection.connectionState,
+      },
+    })
+
+    if (this.peerConnection.connectionState !== 'closed') {
       this.peerConnection.close()
-    } else {
-      EngineDebugger.addLog({
-        label: 'connection',
-        message: 'disconnectPeerConnection',
-        metadata: {
-          id: this.id,
-          connectionState: this.peerConnection.connectionState,
-        },
-      })
     }
   }
 
@@ -927,6 +925,9 @@ export class Connection extends EventTarget {
   }
 
   cleanUpTimeouts() {
+    // This also runs after setting the remote description. Keep the callback
+    // available to cancel disconnect timers created later in the connection.
+    this.clearDisconnectedTimeout?.()
     clearTimeout(this.timeoutToForceConnectId)
     this.timeoutToForceConnectId = undefined
   }
