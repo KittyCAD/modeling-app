@@ -49,8 +49,22 @@ fn head_call(expr: &Expr) -> Option<&CallExpressionKw> {
     }
 }
 
-/// Only direct calls with literal arguments (or earlier literal constants) are
-/// eligible. Do not infer instance order through imports, aliases or callbacks.
+fn constant_argument(expr: &Expr, literal_names: &HashSet<&str>) -> bool {
+    match expr {
+        Expr::Literal(_) => true,
+        Expr::Name(name) => name.path.is_empty() && !name.abs_path && literal_names.contains(name.name.name.as_str()),
+        Expr::BinaryExpression(binary) => {
+            constant_argument(&Expr::from(&binary.left), literal_names)
+                && constant_argument(&Expr::from(&binary.right), literal_names)
+        }
+        Expr::UnaryExpression(unary) => constant_argument(&Expr::from(&unary.argument), literal_names),
+        _ => false,
+    }
+}
+
+/// Only direct calls with constant arguments are eligible, including arithmetic
+/// on earlier literal constants. The ordinary executor still evaluates units.
+/// Do not infer instance order through imports, aliases or callbacks.
 pub fn first_instance(program: &Program, sketch_name: &str) -> Option<Program> {
     let mut helper = None;
     for item in &program.ast.body {
@@ -145,13 +159,10 @@ pub fn first_instance(program: &Program, sketch_name: &str) -> Option<Program> {
                                 .is_some_and(|label| label.name == param.identifier.name)
                         })
                     })
-                    || !call.arguments.iter().all(|arg| match &arg.arg {
-                        Expr::Literal(_) => true,
-                        Expr::Name(name) => {
-                            name.path.is_empty() && !name.abs_path && literal_names.contains(name.name.name.as_str())
-                        }
-                        _ => false,
-                    })
+                    || !call
+                        .arguments
+                        .iter()
+                        .all(|arg| constant_argument(&arg.arg, &literal_names))
                 {
                     return None;
                 }
@@ -292,6 +303,8 @@ second = makePad(r = 7mm, depth = depth)
             ),
             CODE.replace("return solid", "return profile"),
             CODE.replace("r = 3mm", "r = radius(unrelated.edge)"),
+            CODE.replace("r = 3mm", "r = 1mm + radius(unrelated.edge)"),
+            CODE.replace("r = 3mm", "r = depth + later"),
             CODE.replace("depth = 5mm", "depth = 2mm + 3mm"),
             CODE.replace("radius(perimeter) == r", "radius(perimeter) == random()"),
             format!("radius = 3mm\n{CODE}"),
@@ -307,7 +320,9 @@ second = makePad(r = 7mm, depth = depth)
     #[tokio::test]
     async fn first_instance_matches_real_execution_png_and_constraints() {
         for plane in ["XY", "XZ", "YZ"] {
-            let code = CODE.replace("profile = sketch(on = XY)", &format!("profile = sketch(on = {plane})"));
+            let code = CODE
+                .replace("profile = sketch(on = XY)", &format!("profile = sketch(on = {plane})"))
+                .replace("r = 3mm, depth = depth", "r = -(depth - 8mm), depth = depth + 1mm");
             let original = Program::parse_no_errs(&code).unwrap();
             let isolated = first_instance(&original, "profile").unwrap();
             let full = execute(original).await;
