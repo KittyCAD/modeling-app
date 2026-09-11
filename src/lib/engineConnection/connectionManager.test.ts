@@ -50,6 +50,23 @@ function startConnectionManager(
 }
 
 describe('ConnectionManager', () => {
+  it('reports a pong timeout separately from a WebSocket close', () => {
+    const manager = createConnectionManager()
+    const onPingPongTimeout = vi.fn()
+    manager.started = true
+    manager.connection = {
+      disconnectAll: vi.fn(),
+    } as unknown as NonNullable<ConnectionManager['connection']>
+    manager.addEventListener(
+      EngineConnectionManagerEvents.pingPongTimeout,
+      onPingPongTimeout
+    )
+
+    manager.tearDown({ pingPongTimeout: true })
+
+    expect(onPingPongTimeout).toHaveBeenCalledOnce()
+  })
+
   afterEach(() => {
     vi.unstubAllGlobals()
     ReconnectTestWebSocket.instances = []

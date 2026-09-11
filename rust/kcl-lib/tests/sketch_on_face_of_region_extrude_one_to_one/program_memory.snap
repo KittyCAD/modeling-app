@@ -6,8 +6,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
   "__sketch_17_on": {
     "type": "Face",
     "value": {
-      "id": "de7be92e-614b-5db2-af67-45ab2a0e944d",
-      "artifactId": "de7be92e-614b-5db2-af67-45ab2a0e944d",
+      "id": "[uuid]",
+      "artifactId": "[uuid]",
       "objectId": 16,
       "value": "line1",
       "xAxis": {
@@ -23,8 +23,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
         "units": null
       },
       "parentSolid": {
-        "solidId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
-        "creatorSketchId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+        "solidId": "[uuid]",
+        "creatorSketchId": "[uuid]",
         "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
@@ -33,8 +33,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
-      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -65,8 +65,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
   "face001": {
     "type": "Face",
     "value": {
-      "id": "de7be92e-614b-5db2-af67-45ab2a0e944d",
-      "artifactId": "de7be92e-614b-5db2-af67-45ab2a0e944d",
+      "id": "[uuid]",
+      "artifactId": "[uuid]",
       "objectId": 16,
       "value": "line1",
       "xAxis": {
@@ -82,8 +82,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
         "units": null
       },
       "parentSolid": {
-        "solidId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
-        "creatorSketchId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+        "solidId": "[uuid]",
+        "creatorSketchId": "[uuid]",
         "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
@@ -93,14 +93,14 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
-      "originalId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
-      "topologyId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
-      "artifactId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "de7be92e-614b-5db2-af67-45ab2a0e944d",
-          "id": "b3a327ba-a286-5e82-8eb4-ed878dab91fb",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 31,
@@ -113,8 +113,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
           "type": "extrudePlane"
         },
         {
-          "faceId": "5c385f17-1c26-5e87-91b4-ca7b9ef86668",
-          "id": "126498f1-2635-5500-bf0d-757df8fb0e18",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 114,
@@ -127,8 +127,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
           "type": "extrudePlane"
         },
         {
-          "faceId": "b04d04fa-99c4-5f05-a3f5-19f132230c6a",
-          "id": "bc451185-b0ef-5ce1-9c08-46bf9b850559",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 234,
@@ -144,11 +144,11 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "b3a327ba-a286-5e82-8eb4-ed878dab91fb",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -172,7 +172,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
           },
           {
             "__geoMeta": {
-              "id": "126498f1-2635-5500-bf0d-757df8fb0e18",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -196,7 +196,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
           },
           {
             "__geoMeta": {
-              "id": "bc451185-b0ef-5ce1-9c08-46bf9b850559",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -221,8 +221,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -262,7 +262,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "f084ad07-5777-5607-a544-c69f455c2aab",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -280,13 +280,13 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
             "value": "line3"
           }
         },
-        "artifactId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
-        "originalId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "cbbb4f65-6ab2-564b-ab3f-1e225724a282",
-      "endCapId": "4b38ed2e-2ab0-52cc-891e-107ea704e9c3",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -295,14 +295,14 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
-      "originalId": "cc312d38-2fa6-5583-a605-44880f646499",
-      "topologyId": "cc312d38-2fa6-5583-a605-44880f646499",
-      "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "d577f6b7-4101-59d0-8f6f-234f212e9526",
-          "id": "9eee21ba-6c99-5df4-a742-d43a03ad5000",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 657,
@@ -315,8 +315,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
           "type": "extrudePlane"
         },
         {
-          "faceId": "2bf7f2ab-17bd-54ff-9751-d381b6fbff3c",
-          "id": "663e209d-df18-5e9b-b139-668cc41baf79",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 738,
@@ -329,8 +329,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
           "type": "extrudePlane"
         },
         {
-          "faceId": "01d0bb6a-52f1-5551-8109-5992382e6bd1",
-          "id": "cd6a35d8-2b4b-5381-84ab-2e95ff0ca7bc",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 819,
@@ -343,8 +343,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
           "type": "extrudePlane"
         },
         {
-          "faceId": "af0a7034-5ea7-56f1-9145-413e8c236728",
-          "id": "af001eb6-1559-57ab-b4d9-c2c7d90fc87f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 900,
@@ -360,11 +360,11 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "9eee21ba-6c99-5df4-a742-d43a03ad5000",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -388,7 +388,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
           },
           {
             "__geoMeta": {
-              "id": "663e209d-df18-5e9b-b139-668cc41baf79",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -412,7 +412,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
           },
           {
             "__geoMeta": {
-              "id": "cd6a35d8-2b4b-5381-84ab-2e95ff0ca7bc",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -436,7 +436,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
           },
           {
             "__geoMeta": {
-              "id": "af001eb6-1559-57ab-b4d9-c2c7d90fc87f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -461,8 +461,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
         ],
         "on": {
           "type": "face",
-          "id": "de7be92e-614b-5db2-af67-45ab2a0e944d",
-          "artifactId": "de7be92e-614b-5db2-af67-45ab2a0e944d",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
           "objectId": 16,
           "value": "line1",
           "xAxis": {
@@ -478,8 +478,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
             "units": null
           },
           "parentSolid": {
-            "solidId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
-            "creatorSketchId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+            "solidId": "[uuid]",
+            "creatorSketchId": "[uuid]",
             "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
@@ -496,7 +496,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -518,13 +518,13 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
             "value": "line4"
           }
         },
-        "artifactId": "cc312d38-2fa6-5583-a605-44880f646499",
-        "originalId": "cc312d38-2fa6-5583-a605-44880f646499",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
       "startCapId": null,
-      "endCapId": "60939c8c-8887-54d1-936f-3f956c6fccb8",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -533,11 +533,11 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "cc312d38-2fa6-5583-a605-44880f646499",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "9eee21ba-6c99-5df4-a742-d43a03ad5000",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -561,7 +561,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
         },
         {
           "__geoMeta": {
-            "id": "663e209d-df18-5e9b-b139-668cc41baf79",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -585,7 +585,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
         },
         {
           "__geoMeta": {
-            "id": "cd6a35d8-2b4b-5381-84ab-2e95ff0ca7bc",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -609,7 +609,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
         },
         {
           "__geoMeta": {
-            "id": "af001eb6-1559-57ab-b4d9-c2c7d90fc87f",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -634,8 +634,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
       ],
       "on": {
         "type": "face",
-        "id": "de7be92e-614b-5db2-af67-45ab2a0e944d",
-        "artifactId": "de7be92e-614b-5db2-af67-45ab2a0e944d",
+        "id": "[uuid]",
+        "artifactId": "[uuid]",
         "objectId": 16,
         "value": "line1",
         "xAxis": {
@@ -651,8 +651,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
           "units": null
         },
         "parentSolid": {
-          "solidId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
-          "creatorSketchId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+          "solidId": "[uuid]",
+          "creatorSketchId": "[uuid]",
           "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
@@ -669,7 +669,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -691,8 +691,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
           "value": "line4"
         }
       },
-      "artifactId": "cc312d38-2fa6-5583-a605-44880f646499",
-      "originalId": "cc312d38-2fa6-5583-a605-44880f646499",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -706,7 +706,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
           "repr": {
             "Solved": {
               "segment": {
-                "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+                "id": "[uuid]",
                 "objectId": 20,
                 "kind": {
                   "line": {
@@ -781,8 +781,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                 },
                 "surface": {
                   "type": "face",
-                  "id": "de7be92e-614b-5db2-af67-45ab2a0e944d",
-                  "artifactId": "de7be92e-614b-5db2-af67-45ab2a0e944d",
+                  "id": "[uuid]",
+                  "artifactId": "[uuid]",
                   "objectId": 16,
                   "value": "line1",
                   "xAxis": {
@@ -798,13 +798,13 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
-                    "creatorSketchId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "e383621f-755a-5f2e-ada3-608aff393dab",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -820,7 +820,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
           "repr": {
             "Solved": {
               "segment": {
-                "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
+                "id": "[uuid]",
                 "objectId": 23,
                 "kind": {
                   "line": {
@@ -895,8 +895,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                 },
                 "surface": {
                   "type": "face",
-                  "id": "de7be92e-614b-5db2-af67-45ab2a0e944d",
-                  "artifactId": "de7be92e-614b-5db2-af67-45ab2a0e944d",
+                  "id": "[uuid]",
+                  "artifactId": "[uuid]",
                   "objectId": 16,
                   "value": "line1",
                   "xAxis": {
@@ -912,13 +912,13 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
-                    "creatorSketchId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "e383621f-755a-5f2e-ada3-608aff393dab",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -934,7 +934,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
           "repr": {
             "Solved": {
               "segment": {
-                "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
+                "id": "[uuid]",
                 "objectId": 26,
                 "kind": {
                   "line": {
@@ -1009,8 +1009,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                 },
                 "surface": {
                   "type": "face",
-                  "id": "de7be92e-614b-5db2-af67-45ab2a0e944d",
-                  "artifactId": "de7be92e-614b-5db2-af67-45ab2a0e944d",
+                  "id": "[uuid]",
+                  "artifactId": "[uuid]",
                   "objectId": 16,
                   "value": "line1",
                   "xAxis": {
@@ -1026,13 +1026,13 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
-                    "creatorSketchId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "e383621f-755a-5f2e-ada3-608aff393dab",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -1048,7 +1048,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
           "repr": {
             "Solved": {
               "segment": {
-                "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+                "id": "[uuid]",
                 "objectId": 29,
                 "kind": {
                   "line": {
@@ -1123,8 +1123,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                 },
                 "surface": {
                   "type": "face",
-                  "id": "de7be92e-614b-5db2-af67-45ab2a0e944d",
-                  "artifactId": "de7be92e-614b-5db2-af67-45ab2a0e944d",
+                  "id": "[uuid]",
+                  "artifactId": "[uuid]",
                   "objectId": 16,
                   "value": "line1",
                   "xAxis": {
@@ -1140,13 +1140,13 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
-                    "creatorSketchId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+                    "solidId": "[uuid]",
+                    "creatorSketchId": "[uuid]",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "e383621f-755a-5f2e-ada3-608aff393dab",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -1163,11 +1163,11 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1191,7 +1191,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                 },
                 {
                   "__geoMeta": {
-                    "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1215,7 +1215,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                 },
                 {
                   "__geoMeta": {
-                    "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1239,7 +1239,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                 },
                 {
                   "__geoMeta": {
-                    "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1264,8 +1264,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
               ],
               "on": {
                 "type": "face",
-                "id": "de7be92e-614b-5db2-af67-45ab2a0e944d",
-                "artifactId": "de7be92e-614b-5db2-af67-45ab2a0e944d",
+                "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "objectId": 16,
                 "value": "line1",
                 "xAxis": {
@@ -1281,8 +1281,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                   "units": null
                 },
                 "parentSolid": {
-                  "solidId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
-                  "creatorSketchId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+                  "solidId": "[uuid]",
+                  "creatorSketchId": "[uuid]",
                   "creatorSketchIsClosed": "explicitly"
                 },
                 "units": "mm"
@@ -1299,7 +1299,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -1321,8 +1321,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                   "value": "line4"
                 }
               },
-              "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
-              "originalId": "e383621f-755a-5f2e-ada3-608aff393dab",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "no"
             }
@@ -1342,7 +1342,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "id": "[uuid]",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -1416,8 +1416,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1446,7 +1446,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                     "units": null
                   }
                 },
-                "sketchId": "41c630c9-9d44-581b-98af-caee575bea48",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1462,7 +1462,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
           "repr": {
             "Solved": {
               "segment": {
-                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                "id": "[uuid]",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -1536,8 +1536,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1566,7 +1566,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                     "units": null
                   }
                 },
-                "sketchId": "41c630c9-9d44-581b-98af-caee575bea48",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -1582,7 +1582,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
           "repr": {
             "Solved": {
               "segment": {
-                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                "id": "[uuid]",
                 "objectId": 11,
                 "kind": {
                   "line": {
@@ -1656,8 +1656,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1686,7 +1686,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                     "units": null
                   }
                 },
-                "sketchId": "41c630c9-9d44-581b-98af-caee575bea48",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -1703,11 +1703,11 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "41c630c9-9d44-581b-98af-caee575bea48",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1731,7 +1731,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                 },
                 {
                   "__geoMeta": {
-                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1755,7 +1755,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                 },
                 {
                   "__geoMeta": {
-                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1780,8 +1780,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 0,
                 "kind": "Custom",
                 "origin": {
@@ -1821,7 +1821,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "f084ad07-5777-5607-a544-c69f455c2aab",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -1839,8 +1839,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                   "value": "line3"
                 }
               },
-              "artifactId": "41c630c9-9d44-581b-98af-caee575bea48",
-              "originalId": "41c630c9-9d44-581b-98af-caee575bea48",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -1855,11 +1855,11 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "b3a327ba-a286-5e82-8eb4-ed878dab91fb",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -1883,7 +1883,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
         },
         {
           "__geoMeta": {
-            "id": "126498f1-2635-5500-bf0d-757df8fb0e18",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -1907,7 +1907,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
         },
         {
           "__geoMeta": {
-            "id": "bc451185-b0ef-5ce1-9c08-46bf9b850559",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -1932,8 +1932,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
       ],
       "on": {
         "type": "plane",
-        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -1973,7 +1973,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "f084ad07-5777-5607-a544-c69f455c2aab",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -1991,8 +1991,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
           "value": "line3"
         }
       },
-      "artifactId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
-      "originalId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }

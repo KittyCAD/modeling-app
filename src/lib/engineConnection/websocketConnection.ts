@@ -94,7 +94,6 @@ export const createOnWebSocketMessage = ({
   setPong,
   dispatchEvent,
   ping,
-  setPing,
   createPeerConnection,
   send,
   setSdpAnswer,
@@ -112,7 +111,6 @@ export const createOnWebSocketMessage = ({
   setPong: (pong: number) => void
   dispatchEvent: (event: Event) => boolean
   ping: () => number | undefined
-  setPing: (pong: number | undefined) => void
   createPeerConnection: () => RTCPeerConnection | undefined
   send: (message: WebSocketRequest) => void
   setSdpAnswer: (answer: RTCSessionDescriptionInit) => void
@@ -216,7 +214,6 @@ export const createOnWebSocketMessage = ({
             detail: Math.min(999, Math.floor(pong - (ping() ?? 0))),
           })
         )
-        setPing(undefined)
         break
       case 'modeling_session_data':
         const apiCallId = resp.data.session.api_call_id

@@ -6,8 +6,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
   "__sketch_102_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
-      "id": "7c4571e0-7b14-576f-a82e-22280b05874d",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,8 +38,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
   "__sketch_122_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "b6048962-8de8-56e0-bd4c-204ee5451b34",
-      "id": "b6048962-8de8-56e0-bd4c-204ee5451b34",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "objectId": 121,
       "kind": "Custom",
       "origin": {
@@ -71,8 +71,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
   "__sketch_148_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "7239bb75-ea9c-5e04-812d-426e933ce851",
-      "id": "7239bb75-ea9c-5e04-812d-426e933ce851",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -103,8 +103,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
   "__sketch_185_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "94906884-1803-5336-93e6-0aca938f73f1",
-      "id": "94906884-1803-5336-93e6-0aca938f73f1",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -135,8 +135,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
-      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -167,8 +167,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
   "__sketch_51_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
-      "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "objectId": 50,
       "kind": "Custom",
       "origin": {
@@ -200,8 +200,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
   "__sketch_76_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
-      "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "objectId": 50,
       "kind": "Custom",
       "origin": {
@@ -289,14 +289,14 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "b45580d1-28b2-5700-a6b3-7be443b3bfd8",
-      "originalId": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94",
-      "topologyId": "b45580d1-28b2-5700-a6b3-7be443b3bfd8",
-      "artifactId": "b45580d1-28b2-5700-a6b3-7be443b3bfd8",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "46c80d34-ba63-5ed7-8f41-17398233c011",
-          "id": "1c428132-0b7d-5131-8bef-0c168acae00d",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 8381,
@@ -309,8 +309,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "71bb1d49-6a46-565e-8b29-bb9fadb1b6f5",
-          "id": "21a16b73-0e59-5690-a395-5ce9a7f525a1",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 8464,
@@ -326,11 +326,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "b45580d1-28b2-5700-a6b3-7be443b3bfd8",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "1c428132-0b7d-5131-8bef-0c168acae00d",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -360,7 +360,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           },
           {
             "__geoMeta": {
-              "id": "21a16b73-0e59-5690-a395-5ce9a7f525a1",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -391,8 +391,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "b6048962-8de8-56e0-bd4c-204ee5451b34",
-          "id": "b6048962-8de8-56e0-bd4c-204ee5451b34",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 121,
           "kind": "Custom",
           "origin": {
@@ -432,7 +432,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "2d22753f-e63a-506c-bc84-6006343b9a0b",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -446,13 +446,13 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "value": "outerCircle"
           }
         },
-        "artifactId": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94",
-        "originalId": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
-      "startCapId": "8f5e8265-baeb-5f01-b091-c2e8146c16f2",
-      "endCapId": "cc8401a4-417c-5ab9-b661-39254a7bb42e",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "in",
       "sectional": false
     }
@@ -461,11 +461,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "1c428132-0b7d-5131-8bef-0c168acae00d",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -495,7 +495,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         },
         {
           "__geoMeta": {
-            "id": "21a16b73-0e59-5690-a395-5ce9a7f525a1",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -526,8 +526,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "b6048962-8de8-56e0-bd4c-204ee5451b34",
-        "id": "b6048962-8de8-56e0-bd4c-204ee5451b34",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 121,
         "kind": "Custom",
         "origin": {
@@ -567,7 +567,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "2d22753f-e63a-506c-bc84-6006343b9a0b",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -581,8 +581,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "value": "outerCircle"
         }
       },
-      "artifactId": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94",
-      "originalId": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "in",
       "isClosed": "explicitly"
     }
@@ -596,7 +596,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "30efa5e2-105e-56b9-85d8-16e0935167b0",
+                "id": "[uuid]",
                 "objectId": 134,
                 "kind": {
                   "circle": {
@@ -670,8 +670,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "b6048962-8de8-56e0-bd4c-204ee5451b34",
-                  "id": "b6048962-8de8-56e0-bd4c-204ee5451b34",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 121,
                   "origin": {
@@ -700,7 +700,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "units": null
                   }
                 },
-                "sketchId": "ba769d4c-3a67-5309-824d-fd59f263bb46",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "innerCircle"
@@ -716,7 +716,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "d5e2f4d6-228a-502b-94db-3100e57ccc81",
+                "id": "[uuid]",
                 "objectId": 128,
                 "kind": {
                   "line": {
@@ -791,8 +791,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "b6048962-8de8-56e0-bd4c-204ee5451b34",
-                  "id": "b6048962-8de8-56e0-bd4c-204ee5451b34",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 121,
                   "origin": {
@@ -821,7 +821,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "units": null
                   }
                 },
-                "sketchId": "ba769d4c-3a67-5309-824d-fd59f263bb46",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "innerRadiusGuide"
@@ -838,11 +838,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "ba769d4c-3a67-5309-824d-fd59f263bb46",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -872,7 +872,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "2ab8a671-6218-5516-901a-d1a83480ded7",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -889,7 +889,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "30efa5e2-105e-56b9-85d8-16e0935167b0",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -920,8 +920,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "b6048962-8de8-56e0-bd4c-204ee5451b34",
-                "id": "b6048962-8de8-56e0-bd4c-204ee5451b34",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 121,
                 "kind": "Custom",
                 "origin": {
@@ -961,7 +961,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "2d22753f-e63a-506c-bc84-6006343b9a0b",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -975,8 +975,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "value": "outerCircle"
                 }
               },
-              "artifactId": "ba769d4c-3a67-5309-824d-fd59f263bb46",
-              "originalId": "ba769d4c-3a67-5309-824d-fd59f263bb46",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "in",
               "isClosed": "no"
             }
@@ -990,7 +990,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
+                "id": "[uuid]",
                 "objectId": 131,
                 "kind": {
                   "circle": {
@@ -1064,8 +1064,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "b6048962-8de8-56e0-bd4c-204ee5451b34",
-                  "id": "b6048962-8de8-56e0-bd4c-204ee5451b34",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 121,
                   "origin": {
@@ -1094,7 +1094,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "units": null
                   }
                 },
-                "sketchId": "ba769d4c-3a67-5309-824d-fd59f263bb46",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "outerCircle"
@@ -1110,7 +1110,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
+                "id": "[uuid]",
                 "objectId": 125,
                 "kind": {
                   "line": {
@@ -1185,8 +1185,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "b6048962-8de8-56e0-bd4c-204ee5451b34",
-                  "id": "b6048962-8de8-56e0-bd4c-204ee5451b34",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 121,
                   "origin": {
@@ -1215,7 +1215,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "units": null
                   }
                 },
-                "sketchId": "ba769d4c-3a67-5309-824d-fd59f263bb46",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "outerRadiusGuide"
@@ -1232,14 +1232,14 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94",
-      "originalId": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94",
-      "topologyId": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94",
-      "artifactId": "e5f7766f-25a6-52cd-9cbf-632be25dd038",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "46c80d34-ba63-5ed7-8f41-17398233c011",
-          "id": "1c428132-0b7d-5131-8bef-0c168acae00d",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 8381,
@@ -1252,8 +1252,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "71bb1d49-6a46-565e-8b29-bb9fadb1b6f5",
-          "id": "21a16b73-0e59-5690-a395-5ce9a7f525a1",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 8464,
@@ -1269,11 +1269,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "1c428132-0b7d-5131-8bef-0c168acae00d",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -1303,7 +1303,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           },
           {
             "__geoMeta": {
-              "id": "21a16b73-0e59-5690-a395-5ce9a7f525a1",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -1334,8 +1334,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "b6048962-8de8-56e0-bd4c-204ee5451b34",
-          "id": "b6048962-8de8-56e0-bd4c-204ee5451b34",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 121,
           "kind": "Custom",
           "origin": {
@@ -1375,7 +1375,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "2d22753f-e63a-506c-bc84-6006343b9a0b",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -1389,13 +1389,13 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "value": "outerCircle"
           }
         },
-        "artifactId": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94",
-        "originalId": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
-      "startCapId": "8f5e8265-baeb-5f01-b091-c2e8146c16f2",
-      "endCapId": "cc8401a4-417c-5ab9-b661-39254a7bb42e",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "in",
       "sectional": false
     }
@@ -1412,14 +1412,14 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
-          "originalId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
-          "topologyId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
-          "artifactId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "12052744-1034-50a9-8488-5ec2ee7423a5",
-              "id": "a154debd-ab30-5f7f-b33f-a1e92a5e6409",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 5325,
@@ -1435,11 +1435,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "a154debd-ab30-5f7f-b33f-a1e92a5e6409",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1470,8 +1470,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
-              "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 50,
               "kind": "Custom",
               "origin": {
@@ -1511,7 +1511,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -1521,13 +1521,13 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 "value": "counterdrillCircle"
               }
             },
-            "artifactId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
-            "originalId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "f5e991aa-5fe0-5c2a-a63e-b7c7ccfc77af",
-          "endCapId": "0070f07c-155b-515e-9490-a6ef837dc085",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -1536,14 +1536,14 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "3a64a61f-1518-5c74-8fe4-362eb7daddf4",
-          "originalId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
-          "topologyId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
-          "artifactId": "3a64a61f-1518-5c74-8fe4-362eb7daddf4",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "12052744-1034-50a9-8488-5ec2ee7423a5",
-              "id": "a154debd-ab30-5f7f-b33f-a1e92a5e6409",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 5325,
@@ -1559,11 +1559,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "3a64a61f-1518-5c74-8fe4-362eb7daddf4",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "a154debd-ab30-5f7f-b33f-a1e92a5e6409",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1594,8 +1594,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
-              "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 50,
               "kind": "Custom",
               "origin": {
@@ -1635,7 +1635,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -1645,13 +1645,13 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 "value": "counterdrillCircle"
               }
             },
-            "artifactId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
-            "originalId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "f5e991aa-5fe0-5c2a-a63e-b7c7ccfc77af",
-          "endCapId": "0070f07c-155b-515e-9490-a6ef837dc085",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -1660,14 +1660,14 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "cfa59c6c-63ae-562e-9e17-7889254a83f8",
-          "originalId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
-          "topologyId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
-          "artifactId": "cfa59c6c-63ae-562e-9e17-7889254a83f8",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "12052744-1034-50a9-8488-5ec2ee7423a5",
-              "id": "a154debd-ab30-5f7f-b33f-a1e92a5e6409",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 5325,
@@ -1683,11 +1683,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "cfa59c6c-63ae-562e-9e17-7889254a83f8",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "a154debd-ab30-5f7f-b33f-a1e92a5e6409",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1718,8 +1718,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
-              "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 50,
               "kind": "Custom",
               "origin": {
@@ -1759,7 +1759,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -1769,13 +1769,13 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 "value": "counterdrillCircle"
               }
             },
-            "artifactId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
-            "originalId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "f5e991aa-5fe0-5c2a-a63e-b7c7ccfc77af",
-          "endCapId": "0070f07c-155b-515e-9490-a6ef837dc085",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -1784,14 +1784,14 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "44e7bf43-6dbb-5264-8125-14d3f772a317",
-          "originalId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
-          "topologyId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
-          "artifactId": "44e7bf43-6dbb-5264-8125-14d3f772a317",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "12052744-1034-50a9-8488-5ec2ee7423a5",
-              "id": "a154debd-ab30-5f7f-b33f-a1e92a5e6409",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 5325,
@@ -1807,11 +1807,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "44e7bf43-6dbb-5264-8125-14d3f772a317",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "a154debd-ab30-5f7f-b33f-a1e92a5e6409",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1842,8 +1842,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
-              "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 50,
               "kind": "Custom",
               "origin": {
@@ -1883,7 +1883,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -1893,13 +1893,13 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 "value": "counterdrillCircle"
               }
             },
-            "artifactId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
-            "originalId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "f5e991aa-5fe0-5c2a-a63e-b7c7ccfc77af",
-          "endCapId": "0070f07c-155b-515e-9490-a6ef837dc085",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -1928,11 +1928,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "a154debd-ab30-5f7f-b33f-a1e92a5e6409",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -1963,8 +1963,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
-        "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 50,
         "kind": "Custom",
         "origin": {
@@ -2004,7 +2004,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -2014,8 +2014,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "value": "counterdrillCircle"
         }
       },
-      "artifactId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
-      "originalId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "in",
       "isClosed": "explicitly"
     }
@@ -2027,14 +2027,14 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
-          "originalId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
-          "topologyId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
-          "artifactId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "12052744-1034-50a9-8488-5ec2ee7423a5",
-              "id": "a154debd-ab30-5f7f-b33f-a1e92a5e6409",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 5325,
@@ -2050,11 +2050,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "a154debd-ab30-5f7f-b33f-a1e92a5e6409",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2085,8 +2085,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
-              "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 50,
               "kind": "Custom",
               "origin": {
@@ -2126,7 +2126,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -2136,13 +2136,13 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 "value": "counterdrillCircle"
               }
             },
-            "artifactId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
-            "originalId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "f5e991aa-5fe0-5c2a-a63e-b7c7ccfc77af",
-          "endCapId": "0070f07c-155b-515e-9490-a6ef837dc085",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -2151,14 +2151,14 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "cfa59c6c-63ae-562e-9e17-7889254a83f8",
-          "originalId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
-          "topologyId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
-          "artifactId": "cfa59c6c-63ae-562e-9e17-7889254a83f8",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "12052744-1034-50a9-8488-5ec2ee7423a5",
-              "id": "a154debd-ab30-5f7f-b33f-a1e92a5e6409",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 5325,
@@ -2174,11 +2174,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "cfa59c6c-63ae-562e-9e17-7889254a83f8",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "a154debd-ab30-5f7f-b33f-a1e92a5e6409",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2209,8 +2209,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
-              "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 50,
               "kind": "Custom",
               "origin": {
@@ -2250,7 +2250,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -2260,13 +2260,13 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 "value": "counterdrillCircle"
               }
             },
-            "artifactId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
-            "originalId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "f5e991aa-5fe0-5c2a-a63e-b7c7ccfc77af",
-          "endCapId": "0070f07c-155b-515e-9490-a6ef837dc085",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -2277,14 +2277,14 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
-      "originalId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
-      "topologyId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
-      "artifactId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "12052744-1034-50a9-8488-5ec2ee7423a5",
-          "id": "a154debd-ab30-5f7f-b33f-a1e92a5e6409",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 5325,
@@ -2300,11 +2300,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "a154debd-ab30-5f7f-b33f-a1e92a5e6409",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -2335,8 +2335,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
-          "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 50,
           "kind": "Custom",
           "origin": {
@@ -2376,7 +2376,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -2386,13 +2386,13 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "value": "counterdrillCircle"
           }
         },
-        "artifactId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
-        "originalId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
-      "startCapId": "f5e991aa-5fe0-5c2a-a63e-b7c7ccfc77af",
-      "endCapId": "0070f07c-155b-515e-9490-a6ef837dc085",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "in",
       "sectional": false
     }
@@ -2406,7 +2406,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
+                "id": "[uuid]",
                 "objectId": 88,
                 "kind": {
                   "circle": {
@@ -2480,8 +2480,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
-                  "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 50,
                   "origin": {
@@ -2510,7 +2510,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "units": null
                   }
                 },
-                "sketchId": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "counterdrillCircle"
@@ -2526,7 +2526,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+                "id": "[uuid]",
                 "objectId": 85,
                 "kind": {
                   "line": {
@@ -2601,8 +2601,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
-                  "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 50,
                   "origin": {
@@ -2631,7 +2631,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "units": null
                   }
                 },
-                "sketchId": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "counterdrillRadiusGuide"
@@ -2647,7 +2647,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "3bcd28fd-2b1b-5bfe-a9ba-ee907292b41f",
+                "id": "[uuid]",
                 "objectId": 79,
                 "kind": {
                   "line": {
@@ -2722,8 +2722,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
-                  "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 50,
                   "origin": {
@@ -2752,7 +2752,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "units": null
                   }
                 },
-                "sketchId": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "holeOffsetX"
@@ -2768,7 +2768,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
+                "id": "[uuid]",
                 "objectId": 82,
                 "kind": {
                   "line": {
@@ -2843,8 +2843,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
-                  "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 50,
                   "origin": {
@@ -2873,7 +2873,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "units": null
                   }
                 },
-                "sketchId": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "holeOffsetY"
@@ -2890,11 +2890,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -2925,8 +2925,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
-                "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 50,
                 "kind": "Custom",
                 "origin": {
@@ -2966,7 +2966,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -2976,8 +2976,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "value": "counterdrillCircle"
                 }
               },
-              "artifactId": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
-              "originalId": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "in",
               "isClosed": "no"
             }
@@ -3217,14 +3217,14 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "c349d1a9-19a0-5db8-b19d-4e0dc473c583",
-          "originalId": "c349d1a9-19a0-5db8-b19d-4e0dc473c583",
-          "topologyId": "c349d1a9-19a0-5db8-b19d-4e0dc473c583",
-          "artifactId": "f0a7732a-2f75-5407-b203-7382d01c3918",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "28791130-7fbc-5a22-82fd-6afdb0d50064",
-              "id": "caf96e54-1138-574b-9a32-2fb7baff5822",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 9801,
@@ -3237,8 +3237,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "f19386ba-1690-531a-9d15-c94b83b2b534",
-              "id": "2bcf8a90-eb65-5b8f-8056-4e4955b7d581",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 9884,
@@ -3251,8 +3251,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "82608052-cbfd-59a1-b09b-0f56807e31fd",
-              "id": "c47238ac-79d6-5de5-81c3-f82ee105fc8a",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 9965,
@@ -3265,8 +3265,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "9615dcc9-bbd7-5170-b320-cb46006656a4",
-              "id": "fae09350-a044-5759-9da8-b684ca1f0fdb",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 10050,
@@ -3279,8 +3279,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "2404f390-1c3e-5060-9dac-e7daa7fa7730",
-              "id": "d74f1ccd-1712-55ac-bb6b-4d04923de796",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 10134,
@@ -3296,11 +3296,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "c349d1a9-19a0-5db8-b19d-4e0dc473c583",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "caf96e54-1138-574b-9a32-2fb7baff5822",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3324,7 +3324,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "2bcf8a90-eb65-5b8f-8056-4e4955b7d581",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3348,7 +3348,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "c47238ac-79d6-5de5-81c3-f82ee105fc8a",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3372,7 +3372,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "fae09350-a044-5759-9da8-b684ca1f0fdb",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3396,7 +3396,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "d74f1ccd-1712-55ac-bb6b-4d04923de796",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3421,8 +3421,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
-              "id": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 147,
               "kind": "Custom",
               "origin": {
@@ -3462,7 +3462,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "8166dfa8-fbe2-57c9-a383-b66e8c8b9070",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -3488,13 +3488,13 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 "value": "topEdge"
               }
             },
-            "artifactId": "c349d1a9-19a0-5db8-b19d-4e0dc473c583",
-            "originalId": "c349d1a9-19a0-5db8-b19d-4e0dc473c583",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "fde528b9-ac99-5488-a342-b7d296a9855e",
-          "endCapId": "de8146cc-0380-5c7a-88e4-fb1b399e3dc5",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -3503,14 +3503,14 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "6cda3d08-b9a6-5a51-a362-2082483fd1ac",
-          "originalId": "c349d1a9-19a0-5db8-b19d-4e0dc473c583",
-          "topologyId": "c349d1a9-19a0-5db8-b19d-4e0dc473c583",
-          "artifactId": "6cda3d08-b9a6-5a51-a362-2082483fd1ac",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "28791130-7fbc-5a22-82fd-6afdb0d50064",
-              "id": "caf96e54-1138-574b-9a32-2fb7baff5822",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 9801,
@@ -3523,8 +3523,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "f19386ba-1690-531a-9d15-c94b83b2b534",
-              "id": "2bcf8a90-eb65-5b8f-8056-4e4955b7d581",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 9884,
@@ -3537,8 +3537,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "82608052-cbfd-59a1-b09b-0f56807e31fd",
-              "id": "c47238ac-79d6-5de5-81c3-f82ee105fc8a",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 9965,
@@ -3551,8 +3551,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "9615dcc9-bbd7-5170-b320-cb46006656a4",
-              "id": "fae09350-a044-5759-9da8-b684ca1f0fdb",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 10050,
@@ -3565,8 +3565,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "2404f390-1c3e-5060-9dac-e7daa7fa7730",
-              "id": "d74f1ccd-1712-55ac-bb6b-4d04923de796",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 10134,
@@ -3582,11 +3582,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "6cda3d08-b9a6-5a51-a362-2082483fd1ac",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "caf96e54-1138-574b-9a32-2fb7baff5822",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3610,7 +3610,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "2bcf8a90-eb65-5b8f-8056-4e4955b7d581",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3634,7 +3634,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "c47238ac-79d6-5de5-81c3-f82ee105fc8a",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3658,7 +3658,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "fae09350-a044-5759-9da8-b684ca1f0fdb",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3682,7 +3682,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "d74f1ccd-1712-55ac-bb6b-4d04923de796",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3707,8 +3707,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
-              "id": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 147,
               "kind": "Custom",
               "origin": {
@@ -3748,7 +3748,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "8166dfa8-fbe2-57c9-a383-b66e8c8b9070",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -3774,13 +3774,13 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 "value": "topEdge"
               }
             },
-            "artifactId": "c349d1a9-19a0-5db8-b19d-4e0dc473c583",
-            "originalId": "c349d1a9-19a0-5db8-b19d-4e0dc473c583",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "fde528b9-ac99-5488-a342-b7d296a9855e",
-          "endCapId": "de8146cc-0380-5c7a-88e4-fb1b399e3dc5",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -3794,14 +3794,14 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
-          "originalId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
-          "topologyId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
-          "artifactId": "5e11c45c-4e86-5b88-8029-f0565bc2f6cc",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "a9b6ba29-07c5-5109-beb7-00626be89564",
-              "id": "bee1e072-94c0-5229-8797-cd2da477f8f1",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 11746,
@@ -3814,8 +3814,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "44f18850-0b17-5097-8786-e3284b167eb2",
-              "id": "a4f2d81f-8669-5546-a7e6-d636b00f131d",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 11829,
@@ -3828,8 +3828,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "f4ec5c95-a1bb-5dbb-875a-67dc4d438790",
-              "id": "6c899771-15f7-55a9-ac7d-b13ab13f152a",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 11910,
@@ -3842,8 +3842,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "3398bb3f-e733-53fb-9f7c-39217e51547f",
-              "id": "de355e5d-2d98-5ec9-ba3a-0d3fbff8a0ba",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 11995,
@@ -3856,8 +3856,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "4c60656f-fd85-5000-920f-717a9ff16b8c",
-              "id": "a3456125-4ee2-5736-8a6b-ee0ceaf0bed4",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 12079,
@@ -3873,11 +3873,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "bee1e072-94c0-5229-8797-cd2da477f8f1",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3901,7 +3901,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "a4f2d81f-8669-5546-a7e6-d636b00f131d",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3925,7 +3925,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "6c899771-15f7-55a9-ac7d-b13ab13f152a",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3949,7 +3949,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "de355e5d-2d98-5ec9-ba3a-0d3fbff8a0ba",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3973,7 +3973,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "a3456125-4ee2-5736-8a6b-ee0ceaf0bed4",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3998,8 +3998,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "c7d3a70e-3921-5009-ad0e-e05ef0d30709",
-              "id": "c7d3a70e-3921-5009-ad0e-e05ef0d30709",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 184,
               "kind": "Custom",
               "origin": {
@@ -4039,7 +4039,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "84468ff1-4b26-5c88-8618-6cea09661aac",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -4065,13 +4065,13 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 "value": "topEdge"
               }
             },
-            "artifactId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
-            "originalId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "87d18f43-a28b-526a-91e7-73e5cea09cd6",
-          "endCapId": "5092a708-b49f-5bac-aeba-47b64186def7",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -4080,14 +4080,14 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "c594d9c8-a1f7-5f67-97b0-ccf5eec945a8",
-          "originalId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
-          "topologyId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
-          "artifactId": "c594d9c8-a1f7-5f67-97b0-ccf5eec945a8",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "a9b6ba29-07c5-5109-beb7-00626be89564",
-              "id": "bee1e072-94c0-5229-8797-cd2da477f8f1",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 11746,
@@ -4100,8 +4100,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "44f18850-0b17-5097-8786-e3284b167eb2",
-              "id": "a4f2d81f-8669-5546-a7e6-d636b00f131d",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 11829,
@@ -4114,8 +4114,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "f4ec5c95-a1bb-5dbb-875a-67dc4d438790",
-              "id": "6c899771-15f7-55a9-ac7d-b13ab13f152a",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 11910,
@@ -4128,8 +4128,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "3398bb3f-e733-53fb-9f7c-39217e51547f",
-              "id": "de355e5d-2d98-5ec9-ba3a-0d3fbff8a0ba",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 11995,
@@ -4142,8 +4142,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "4c60656f-fd85-5000-920f-717a9ff16b8c",
-              "id": "a3456125-4ee2-5736-8a6b-ee0ceaf0bed4",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 12079,
@@ -4159,11 +4159,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "c594d9c8-a1f7-5f67-97b0-ccf5eec945a8",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "bee1e072-94c0-5229-8797-cd2da477f8f1",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -4187,7 +4187,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "a4f2d81f-8669-5546-a7e6-d636b00f131d",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -4211,7 +4211,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "6c899771-15f7-55a9-ac7d-b13ab13f152a",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -4235,7 +4235,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "de355e5d-2d98-5ec9-ba3a-0d3fbff8a0ba",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -4259,7 +4259,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "a3456125-4ee2-5736-8a6b-ee0ceaf0bed4",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -4284,8 +4284,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "c7d3a70e-3921-5009-ad0e-e05ef0d30709",
-              "id": "c7d3a70e-3921-5009-ad0e-e05ef0d30709",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 184,
               "kind": "Custom",
               "origin": {
@@ -4325,7 +4325,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "84468ff1-4b26-5c88-8618-6cea09661aac",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -4351,13 +4351,13 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 "value": "topEdge"
               }
             },
-            "artifactId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
-            "originalId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "87d18f43-a28b-526a-91e7-73e5cea09cd6",
-          "endCapId": "5092a708-b49f-5bac-aeba-47b64186def7",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -4373,7 +4373,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "bd2c7879-5553-55c3-bc25-46df0c8081fc",
+                "id": "[uuid]",
                 "objectId": 166,
                 "kind": {
                   "line": {
@@ -4447,8 +4447,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
-                  "id": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 147,
                   "origin": {
@@ -4477,7 +4477,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "units": null
                   }
                 },
-                "sketchId": "96889f64-587b-51f2-b62f-b230408206cc",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "baseEdge"
@@ -4493,7 +4493,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
+                "id": "[uuid]",
                 "objectId": 151,
                 "kind": {
                   "line": {
@@ -4568,8 +4568,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
-                  "id": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 147,
                   "origin": {
@@ -4598,7 +4598,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "units": null
                   }
                 },
-                "sketchId": "96889f64-587b-51f2-b62f-b230408206cc",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "finBaseGuide"
@@ -4614,7 +4614,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "ff863943-02de-5b48-baf7-471ff32b980f",
+                "id": "[uuid]",
                 "objectId": 154,
                 "kind": {
                   "line": {
@@ -4688,8 +4688,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
-                  "id": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 147,
                   "origin": {
@@ -4718,7 +4718,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "units": null
                   }
                 },
-                "sketchId": "96889f64-587b-51f2-b62f-b230408206cc",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "innerWall"
@@ -4735,11 +4735,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "96889f64-587b-51f2-b62f-b230408206cc",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "ff863943-02de-5b48-baf7-471ff32b980f",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -4763,7 +4763,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "662e081e-0c36-5b97-b2b8-ea0464220525",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -4787,7 +4787,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "5b060302-5d33-5353-bd5e-3f938c80ea7f",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -4811,7 +4811,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "fd9de7dd-b79f-57cc-9aca-d5f0c32b8322",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -4835,7 +4835,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "bd2c7879-5553-55c3-bc25-46df0c8081fc",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -4860,8 +4860,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
-                "id": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 147,
                 "kind": "Custom",
                 "origin": {
@@ -4901,7 +4901,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "8166dfa8-fbe2-57c9-a383-b66e8c8b9070",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -4927,8 +4927,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "value": "topEdge"
                 }
               },
-              "artifactId": "96889f64-587b-51f2-b62f-b230408206cc",
-              "originalId": "96889f64-587b-51f2-b62f-b230408206cc",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "in",
               "isClosed": "implicitly"
             }
@@ -4942,7 +4942,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "fd9de7dd-b79f-57cc-9aca-d5f0c32b8322",
+                "id": "[uuid]",
                 "objectId": 163,
                 "kind": {
                   "line": {
@@ -5016,8 +5016,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
-                  "id": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 147,
                   "origin": {
@@ -5046,7 +5046,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "units": null
                   }
                 },
-                "sketchId": "96889f64-587b-51f2-b62f-b230408206cc",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "outerRise"
@@ -5062,7 +5062,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "5b060302-5d33-5353-bd5e-3f938c80ea7f",
+                "id": "[uuid]",
                 "objectId": 160,
                 "kind": {
                   "line": {
@@ -5136,8 +5136,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
-                  "id": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 147,
                   "origin": {
@@ -5166,7 +5166,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "units": null
                   }
                 },
-                "sketchId": "96889f64-587b-51f2-b62f-b230408206cc",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slopedEdge"
@@ -5182,7 +5182,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "662e081e-0c36-5b97-b2b8-ea0464220525",
+                "id": "[uuid]",
                 "objectId": 157,
                 "kind": {
                   "line": {
@@ -5256,8 +5256,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
-                  "id": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 147,
                   "origin": {
@@ -5286,7 +5286,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "units": null
                   }
                 },
-                "sketchId": "96889f64-587b-51f2-b62f-b230408206cc",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "topEdge"
@@ -5308,7 +5308,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "28c981cc-7131-50cd-b5b9-f2a7f868c0bf",
+                "id": "[uuid]",
                 "objectId": 203,
                 "kind": {
                   "line": {
@@ -5382,8 +5382,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "c7d3a70e-3921-5009-ad0e-e05ef0d30709",
-                  "id": "c7d3a70e-3921-5009-ad0e-e05ef0d30709",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 184,
                   "origin": {
@@ -5412,7 +5412,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "units": null
                   }
                 },
-                "sketchId": "6ae8c147-090c-5277-8840-6daa34bb4685",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "baseEdge"
@@ -5428,7 +5428,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "c0a92fa6-be55-5cfb-a650-710b68437549",
+                "id": "[uuid]",
                 "objectId": 188,
                 "kind": {
                   "line": {
@@ -5503,8 +5503,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "c7d3a70e-3921-5009-ad0e-e05ef0d30709",
-                  "id": "c7d3a70e-3921-5009-ad0e-e05ef0d30709",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 184,
                   "origin": {
@@ -5533,7 +5533,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "units": null
                   }
                 },
-                "sketchId": "6ae8c147-090c-5277-8840-6daa34bb4685",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "finBaseGuide"
@@ -5549,7 +5549,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "f296bd37-495b-5038-81a3-eade3812cc2e",
+                "id": "[uuid]",
                 "objectId": 191,
                 "kind": {
                   "line": {
@@ -5623,8 +5623,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "c7d3a70e-3921-5009-ad0e-e05ef0d30709",
-                  "id": "c7d3a70e-3921-5009-ad0e-e05ef0d30709",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 184,
                   "origin": {
@@ -5653,7 +5653,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "units": null
                   }
                 },
-                "sketchId": "6ae8c147-090c-5277-8840-6daa34bb4685",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "innerWall"
@@ -5670,11 +5670,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "6ae8c147-090c-5277-8840-6daa34bb4685",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "f296bd37-495b-5038-81a3-eade3812cc2e",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -5698,7 +5698,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -5722,7 +5722,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "4728ade4-a3a9-5b06-851f-c0795fb8ba92",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -5746,7 +5746,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "af94b4da-da53-5386-a65f-ed75c251c9ff",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -5770,7 +5770,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "28c981cc-7131-50cd-b5b9-f2a7f868c0bf",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -5795,8 +5795,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "c7d3a70e-3921-5009-ad0e-e05ef0d30709",
-                "id": "c7d3a70e-3921-5009-ad0e-e05ef0d30709",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 184,
                 "kind": "Custom",
                 "origin": {
@@ -5836,7 +5836,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "84468ff1-4b26-5c88-8618-6cea09661aac",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -5862,8 +5862,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "value": "topEdge"
                 }
               },
-              "artifactId": "6ae8c147-090c-5277-8840-6daa34bb4685",
-              "originalId": "6ae8c147-090c-5277-8840-6daa34bb4685",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "in",
               "isClosed": "implicitly"
             }
@@ -5877,7 +5877,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "af94b4da-da53-5386-a65f-ed75c251c9ff",
+                "id": "[uuid]",
                 "objectId": 200,
                 "kind": {
                   "line": {
@@ -5951,8 +5951,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "c7d3a70e-3921-5009-ad0e-e05ef0d30709",
-                  "id": "c7d3a70e-3921-5009-ad0e-e05ef0d30709",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 184,
                   "origin": {
@@ -5981,7 +5981,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "units": null
                   }
                 },
-                "sketchId": "6ae8c147-090c-5277-8840-6daa34bb4685",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "outerRise"
@@ -5997,7 +5997,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "4728ade4-a3a9-5b06-851f-c0795fb8ba92",
+                "id": "[uuid]",
                 "objectId": 197,
                 "kind": {
                   "line": {
@@ -6071,8 +6071,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "c7d3a70e-3921-5009-ad0e-e05ef0d30709",
-                  "id": "c7d3a70e-3921-5009-ad0e-e05ef0d30709",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 184,
                   "origin": {
@@ -6101,7 +6101,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "units": null
                   }
                 },
-                "sketchId": "6ae8c147-090c-5277-8840-6daa34bb4685",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slopedEdge"
@@ -6117,7 +6117,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
+                "id": "[uuid]",
                 "objectId": 194,
                 "kind": {
                   "line": {
@@ -6191,8 +6191,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "c7d3a70e-3921-5009-ad0e-e05ef0d30709",
-                  "id": "c7d3a70e-3921-5009-ad0e-e05ef0d30709",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 184,
                   "origin": {
@@ -6221,7 +6221,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "units": null
                   }
                 },
-                "sketchId": "6ae8c147-090c-5277-8840-6daa34bb4685",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "topEdge"
@@ -6238,11 +6238,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "c349d1a9-19a0-5db8-b19d-4e0dc473c583",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "caf96e54-1138-574b-9a32-2fb7baff5822",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -6266,7 +6266,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         },
         {
           "__geoMeta": {
-            "id": "2bcf8a90-eb65-5b8f-8056-4e4955b7d581",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -6290,7 +6290,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         },
         {
           "__geoMeta": {
-            "id": "c47238ac-79d6-5de5-81c3-f82ee105fc8a",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -6314,7 +6314,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         },
         {
           "__geoMeta": {
-            "id": "fae09350-a044-5759-9da8-b684ca1f0fdb",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -6338,7 +6338,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         },
         {
           "__geoMeta": {
-            "id": "d74f1ccd-1712-55ac-bb6b-4d04923de796",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -6363,8 +6363,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
-        "id": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 147,
         "kind": "Custom",
         "origin": {
@@ -6404,7 +6404,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "8166dfa8-fbe2-57c9-a383-b66e8c8b9070",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -6430,8 +6430,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "value": "topEdge"
         }
       },
-      "artifactId": "c349d1a9-19a0-5db8-b19d-4e0dc473c583",
-      "originalId": "c349d1a9-19a0-5db8-b19d-4e0dc473c583",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "in",
       "isClosed": "explicitly"
     }
@@ -6440,11 +6440,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "bee1e072-94c0-5229-8797-cd2da477f8f1",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -6468,7 +6468,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         },
         {
           "__geoMeta": {
-            "id": "a4f2d81f-8669-5546-a7e6-d636b00f131d",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -6492,7 +6492,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         },
         {
           "__geoMeta": {
-            "id": "6c899771-15f7-55a9-ac7d-b13ab13f152a",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -6516,7 +6516,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         },
         {
           "__geoMeta": {
-            "id": "de355e5d-2d98-5ec9-ba3a-0d3fbff8a0ba",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -6540,7 +6540,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         },
         {
           "__geoMeta": {
-            "id": "a3456125-4ee2-5736-8a6b-ee0ceaf0bed4",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -6565,8 +6565,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "c7d3a70e-3921-5009-ad0e-e05ef0d30709",
-        "id": "c7d3a70e-3921-5009-ad0e-e05ef0d30709",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 184,
         "kind": "Custom",
         "origin": {
@@ -6606,7 +6606,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "84468ff1-4b26-5c88-8618-6cea09661aac",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -6632,8 +6632,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "value": "topEdge"
         }
       },
-      "artifactId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
-      "originalId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "in",
       "isClosed": "explicitly"
     }
@@ -6642,14 +6642,14 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "c349d1a9-19a0-5db8-b19d-4e0dc473c583",
-      "originalId": "c349d1a9-19a0-5db8-b19d-4e0dc473c583",
-      "topologyId": "c349d1a9-19a0-5db8-b19d-4e0dc473c583",
-      "artifactId": "f0a7732a-2f75-5407-b203-7382d01c3918",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "28791130-7fbc-5a22-82fd-6afdb0d50064",
-          "id": "caf96e54-1138-574b-9a32-2fb7baff5822",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 9801,
@@ -6662,8 +6662,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "f19386ba-1690-531a-9d15-c94b83b2b534",
-          "id": "2bcf8a90-eb65-5b8f-8056-4e4955b7d581",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 9884,
@@ -6676,8 +6676,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "82608052-cbfd-59a1-b09b-0f56807e31fd",
-          "id": "c47238ac-79d6-5de5-81c3-f82ee105fc8a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 9965,
@@ -6690,8 +6690,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "9615dcc9-bbd7-5170-b320-cb46006656a4",
-          "id": "fae09350-a044-5759-9da8-b684ca1f0fdb",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 10050,
@@ -6704,8 +6704,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "2404f390-1c3e-5060-9dac-e7daa7fa7730",
-          "id": "d74f1ccd-1712-55ac-bb6b-4d04923de796",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 10134,
@@ -6721,11 +6721,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "c349d1a9-19a0-5db8-b19d-4e0dc473c583",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "caf96e54-1138-574b-9a32-2fb7baff5822",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6749,7 +6749,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           },
           {
             "__geoMeta": {
-              "id": "2bcf8a90-eb65-5b8f-8056-4e4955b7d581",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6773,7 +6773,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           },
           {
             "__geoMeta": {
-              "id": "c47238ac-79d6-5de5-81c3-f82ee105fc8a",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6797,7 +6797,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           },
           {
             "__geoMeta": {
-              "id": "fae09350-a044-5759-9da8-b684ca1f0fdb",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6821,7 +6821,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           },
           {
             "__geoMeta": {
-              "id": "d74f1ccd-1712-55ac-bb6b-4d04923de796",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6846,8 +6846,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
-          "id": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 147,
           "kind": "Custom",
           "origin": {
@@ -6887,7 +6887,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "8166dfa8-fbe2-57c9-a383-b66e8c8b9070",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -6913,13 +6913,13 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "value": "topEdge"
           }
         },
-        "artifactId": "c349d1a9-19a0-5db8-b19d-4e0dc473c583",
-        "originalId": "c349d1a9-19a0-5db8-b19d-4e0dc473c583",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
-      "startCapId": "fde528b9-ac99-5488-a342-b7d296a9855e",
-      "endCapId": "de8146cc-0380-5c7a-88e4-fb1b399e3dc5",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "in",
       "sectional": false
     }
@@ -6928,14 +6928,14 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
-      "originalId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
-      "topologyId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
-      "artifactId": "5e11c45c-4e86-5b88-8029-f0565bc2f6cc",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "a9b6ba29-07c5-5109-beb7-00626be89564",
-          "id": "bee1e072-94c0-5229-8797-cd2da477f8f1",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 11746,
@@ -6948,8 +6948,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "44f18850-0b17-5097-8786-e3284b167eb2",
-          "id": "a4f2d81f-8669-5546-a7e6-d636b00f131d",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 11829,
@@ -6962,8 +6962,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "f4ec5c95-a1bb-5dbb-875a-67dc4d438790",
-          "id": "6c899771-15f7-55a9-ac7d-b13ab13f152a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 11910,
@@ -6976,8 +6976,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "3398bb3f-e733-53fb-9f7c-39217e51547f",
-          "id": "de355e5d-2d98-5ec9-ba3a-0d3fbff8a0ba",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 11995,
@@ -6990,8 +6990,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "4c60656f-fd85-5000-920f-717a9ff16b8c",
-          "id": "a3456125-4ee2-5736-8a6b-ee0ceaf0bed4",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 12079,
@@ -7007,11 +7007,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "bee1e072-94c0-5229-8797-cd2da477f8f1",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -7035,7 +7035,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           },
           {
             "__geoMeta": {
-              "id": "a4f2d81f-8669-5546-a7e6-d636b00f131d",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -7059,7 +7059,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           },
           {
             "__geoMeta": {
-              "id": "6c899771-15f7-55a9-ac7d-b13ab13f152a",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -7083,7 +7083,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           },
           {
             "__geoMeta": {
-              "id": "de355e5d-2d98-5ec9-ba3a-0d3fbff8a0ba",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -7107,7 +7107,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           },
           {
             "__geoMeta": {
-              "id": "a3456125-4ee2-5736-8a6b-ee0ceaf0bed4",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -7132,8 +7132,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "c7d3a70e-3921-5009-ad0e-e05ef0d30709",
-          "id": "c7d3a70e-3921-5009-ad0e-e05ef0d30709",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 184,
           "kind": "Custom",
           "origin": {
@@ -7173,7 +7173,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "84468ff1-4b26-5c88-8618-6cea09661aac",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -7199,13 +7199,13 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "value": "topEdge"
           }
         },
-        "artifactId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
-        "originalId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
-      "startCapId": "87d18f43-a28b-526a-91e7-73e5cea09cd6",
-      "endCapId": "5092a708-b49f-5bac-aeba-47b64186def7",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "in",
       "sectional": false
     }
@@ -7236,8 +7236,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
   "holeSeedPlane": {
     "type": "Plane",
     "value": {
-      "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
-      "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "objectId": 50,
       "kind": "Custom",
       "origin": {
@@ -7275,7 +7275,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
+                "id": "[uuid]",
                 "objectId": 63,
                 "kind": {
                   "circle": {
@@ -7349,8 +7349,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
-                  "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 50,
                   "origin": {
@@ -7379,7 +7379,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "units": null
                   }
                 },
-                "sketchId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "holeCircle"
@@ -7395,7 +7395,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "62f92a38-07e6-5321-9e56-be9dd50f1d7b",
+                "id": "[uuid]",
                 "objectId": 54,
                 "kind": {
                   "line": {
@@ -7470,8 +7470,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
-                  "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 50,
                   "origin": {
@@ -7500,7 +7500,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "units": null
                   }
                 },
-                "sketchId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "holeOffsetX"
@@ -7516,7 +7516,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "82295fd4-30e7-52f8-bbfa-45b71b8986dd",
+                "id": "[uuid]",
                 "objectId": 57,
                 "kind": {
                   "line": {
@@ -7591,8 +7591,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
-                  "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 50,
                   "origin": {
@@ -7621,7 +7621,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "units": null
                   }
                 },
-                "sketchId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "holeOffsetY"
@@ -7637,7 +7637,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
+                "id": "[uuid]",
                 "objectId": 60,
                 "kind": {
                   "line": {
@@ -7712,8 +7712,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
-                  "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 50,
                   "origin": {
@@ -7742,7 +7742,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "units": null
                   }
                 },
-                "sketchId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "holeRadiusGuide"
@@ -7759,11 +7759,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -7794,8 +7794,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
-                "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 50,
                 "kind": "Custom",
                 "origin": {
@@ -7835,7 +7835,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "a54ad82c-be8d-599a-9764-c6498922dd5c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -7845,8 +7845,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "value": "holeCircle"
                 }
               },
-              "artifactId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
-              "originalId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "in",
               "isClosed": "no"
             }
@@ -7891,14 +7891,14 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "5a7368ed-12c7-59b9-88f4-186289245e86",
-      "originalId": "5a7368ed-12c7-59b9-88f4-186289245e86",
-      "topologyId": "5a7368ed-12c7-59b9-88f4-186289245e86",
-      "artifactId": "1f5ca073-184d-543b-9da6-2db6719123a8",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "07e2fb8d-9a40-5ffb-9aff-204ee759cb08",
-          "id": "989da03c-09fa-5ef3-8080-019420d17879",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 7296,
@@ -7914,11 +7914,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "5a7368ed-12c7-59b9-88f4-186289245e86",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "989da03c-09fa-5ef3-8080-019420d17879",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -7949,8 +7949,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
-          "id": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 101,
           "kind": "Custom",
           "origin": {
@@ -7990,7 +7990,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "88600ae1-c4f2-5277-8c4e-117866e83f6e",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -8000,13 +8000,13 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "value": "pinholeCircle"
           }
         },
-        "artifactId": "5a7368ed-12c7-59b9-88f4-186289245e86",
-        "originalId": "5a7368ed-12c7-59b9-88f4-186289245e86",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
-      "startCapId": "07f25746-fd44-5e87-b2e6-3f61f7d56f96",
-      "endCapId": "e7b33edb-4d9a-5e96-b10a-20370bcc80e7",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "in",
       "sectional": false
     }
@@ -8029,11 +8029,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "5a7368ed-12c7-59b9-88f4-186289245e86",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "989da03c-09fa-5ef3-8080-019420d17879",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -8064,8 +8064,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
-        "id": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 101,
         "kind": "Custom",
         "origin": {
@@ -8105,7 +8105,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "88600ae1-c4f2-5277-8c4e-117866e83f6e",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -8115,8 +8115,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "value": "pinholeCircle"
         }
       },
-      "artifactId": "5a7368ed-12c7-59b9-88f4-186289245e86",
-      "originalId": "5a7368ed-12c7-59b9-88f4-186289245e86",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "in",
       "isClosed": "explicitly"
     }
@@ -8131,11 +8131,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "29f44732-9f58-5550-8e28-aea348bd8ebb",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -8166,8 +8166,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
-                "id": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 101,
                 "kind": "Custom",
                 "origin": {
@@ -8207,7 +8207,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "88600ae1-c4f2-5277-8c4e-117866e83f6e",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -8217,8 +8217,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "value": "pinholeCircle"
                 }
               },
-              "artifactId": "c0c1140b-284f-50ff-b80d-615b8b938475",
-              "originalId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "in",
               "isClosed": "no"
             }
@@ -8232,7 +8232,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "89273a0b-b55b-5457-9b1c-de1d777240e8",
+                "id": "[uuid]",
                 "objectId": 105,
                 "kind": {
                   "line": {
@@ -8307,8 +8307,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
-                  "id": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 101,
                   "origin": {
@@ -8337,7 +8337,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "pinholeCenterGuide"
@@ -8353,7 +8353,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "29f44732-9f58-5550-8e28-aea348bd8ebb",
+                "id": "[uuid]",
                 "objectId": 111,
                 "kind": {
                   "circle": {
@@ -8427,8 +8427,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
-                  "id": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 101,
                   "origin": {
@@ -8457,7 +8457,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "pinholeCircle"
@@ -8473,7 +8473,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
+                "id": "[uuid]",
                 "objectId": 108,
                 "kind": {
                   "line": {
@@ -8548,8 +8548,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
-                  "id": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 101,
                   "origin": {
@@ -8578,7 +8578,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c0c1140b-284f-50ff-b80d-615b8b938475",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "pinholeRadiusGuide"
@@ -8595,14 +8595,14 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "bee9909d-abbf-534c-b266-2c2c04133834",
-      "originalId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
-      "topologyId": "bee9909d-abbf-534c-b266-2c2c04133834",
-      "artifactId": "bee9909d-abbf-534c-b266-2c2c04133834",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "86db84ac-4417-5d6d-94f9-5754ec394147",
-          "id": "5a7287ed-4a2e-53da-b55e-3536552c87d6",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1036,
@@ -8615,8 +8615,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "45c86744-f72c-5399-b733-e4de8fd466eb",
-          "id": "5091c57b-edcb-53f2-bfdc-2d66de88ecb0",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1125,
@@ -8629,8 +8629,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "4f90ab43-f1b1-5530-bc2c-cc346e10fe9a",
-          "id": "3a213260-fbbe-52a6-8308-0f43854e81c1",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1211,
@@ -8643,8 +8643,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "2aed78e6-b228-597d-9803-a7a8225fa6b6",
-          "id": "9cd8541e-f421-5847-b354-6b1c1aa838d5",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1295,
@@ -8657,8 +8657,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "2ae10b5d-1888-5133-9900-bb646396dac2",
-          "id": "8d0f250a-af2c-5d44-91b3-0fa55acccbff",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2289,
@@ -8671,8 +8671,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "26ac3e3a-d2c4-57f6-a00d-b3d5584ade1a",
-          "id": "26ac3e3a-d2c4-57f6-a00d-b3d5584ade1a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2881,
@@ -8694,11 +8694,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "bee9909d-abbf-534c-b266-2c2c04133834",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "5a7287ed-4a2e-53da-b55e-3536552c87d6",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -8722,7 +8722,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           },
           {
             "__geoMeta": {
-              "id": "5091c57b-edcb-53f2-bfdc-2d66de88ecb0",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -8746,7 +8746,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           },
           {
             "__geoMeta": {
-              "id": "3a213260-fbbe-52a6-8308-0f43854e81c1",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -8770,7 +8770,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           },
           {
             "__geoMeta": {
-              "id": "9cd8541e-f421-5847-b354-6b1c1aa838d5",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -8794,7 +8794,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           },
           {
             "__geoMeta": {
-              "id": "8d0f250a-af2c-5d44-91b3-0fa55acccbff",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -8825,8 +8825,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -8866,7 +8866,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -8896,17 +8896,17 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "value": "topEdge"
           }
         },
-        "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
-        "originalId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
-      "startCapId": "f32bed28-dee1-5887-9f68-a95a6d032c09",
-      "endCapId": "26ac3e3a-d2c4-57f6-a00d-b3d5584ade1a",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "edgeCuts": [
         {
           "type": "chamfer",
-          "id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
+          "id": "[uuid]",
           "length": {
             "n": 0.5,
             "ty": {
@@ -8915,12 +8915,12 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "5983fe0d-ad46-595e-9b48-dfabc7824ea6",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "chamfer",
-          "id": "468f6520-a683-5392-9492-de009fdcddef",
+          "id": "[uuid]",
           "length": {
             "n": 0.5,
             "ty": {
@@ -8929,12 +8929,12 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "de815b4c-817e-5265-b7b5-30ae92f19673",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "chamfer",
-          "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
+          "id": "[uuid]",
           "length": {
             "n": 0.5,
             "ty": {
@@ -8943,12 +8943,12 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "acf4900d-8e16-5c01-911d-bb2445b5f458",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "chamfer",
-          "id": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
+          "id": "[uuid]",
           "length": {
             "n": 0.5,
             "ty": {
@@ -8957,7 +8957,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "2a3cc8ae-d79c-5248-9ec5-6dc06de9ca6b",
+          "edgeId": "[uuid]",
           "tag": null
         }
       ],
@@ -8969,14 +8969,14 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
-      "originalId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
-      "topologyId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
-      "artifactId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "86db84ac-4417-5d6d-94f9-5754ec394147",
-          "id": "5a7287ed-4a2e-53da-b55e-3536552c87d6",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1036,
@@ -8989,8 +8989,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "45c86744-f72c-5399-b733-e4de8fd466eb",
-          "id": "5091c57b-edcb-53f2-bfdc-2d66de88ecb0",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1125,
@@ -9003,8 +9003,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "4f90ab43-f1b1-5530-bc2c-cc346e10fe9a",
-          "id": "3a213260-fbbe-52a6-8308-0f43854e81c1",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1211,
@@ -9017,8 +9017,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "2aed78e6-b228-597d-9803-a7a8225fa6b6",
-          "id": "9cd8541e-f421-5847-b354-6b1c1aa838d5",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1295,
@@ -9031,8 +9031,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "2ae10b5d-1888-5133-9900-bb646396dac2",
-          "id": "8d0f250a-af2c-5d44-91b3-0fa55acccbff",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2289,
@@ -9045,8 +9045,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "26ac3e3a-d2c4-57f6-a00d-b3d5584ade1a",
-          "id": "26ac3e3a-d2c4-57f6-a00d-b3d5584ade1a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2881,
@@ -9068,11 +9068,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "5a7287ed-4a2e-53da-b55e-3536552c87d6",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -9096,7 +9096,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           },
           {
             "__geoMeta": {
-              "id": "5091c57b-edcb-53f2-bfdc-2d66de88ecb0",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -9120,7 +9120,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           },
           {
             "__geoMeta": {
-              "id": "3a213260-fbbe-52a6-8308-0f43854e81c1",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -9144,7 +9144,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           },
           {
             "__geoMeta": {
-              "id": "9cd8541e-f421-5847-b354-6b1c1aa838d5",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -9168,7 +9168,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           },
           {
             "__geoMeta": {
-              "id": "8d0f250a-af2c-5d44-91b3-0fa55acccbff",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -9199,8 +9199,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -9240,7 +9240,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -9270,17 +9270,17 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "value": "topEdge"
           }
         },
-        "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
-        "originalId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
-      "startCapId": "f32bed28-dee1-5887-9f68-a95a6d032c09",
-      "endCapId": "26ac3e3a-d2c4-57f6-a00d-b3d5584ade1a",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "edgeCuts": [
         {
           "type": "chamfer",
-          "id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
+          "id": "[uuid]",
           "length": {
             "n": 0.5,
             "ty": {
@@ -9289,12 +9289,12 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "5983fe0d-ad46-595e-9b48-dfabc7824ea6",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "chamfer",
-          "id": "468f6520-a683-5392-9492-de009fdcddef",
+          "id": "[uuid]",
           "length": {
             "n": 0.5,
             "ty": {
@@ -9303,12 +9303,12 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "de815b4c-817e-5265-b7b5-30ae92f19673",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "chamfer",
-          "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
+          "id": "[uuid]",
           "length": {
             "n": 0.5,
             "ty": {
@@ -9317,12 +9317,12 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "acf4900d-8e16-5c01-911d-bb2445b5f458",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "chamfer",
-          "id": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
+          "id": "[uuid]",
           "length": {
             "n": 0.5,
             "ty": {
@@ -9331,7 +9331,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "2a3cc8ae-d79c-5248-9ec5-6dc06de9ca6b",
+          "edgeId": "[uuid]",
           "tag": null
         }
       ],
@@ -9343,11 +9343,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "5a7287ed-4a2e-53da-b55e-3536552c87d6",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -9371,7 +9371,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         },
         {
           "__geoMeta": {
-            "id": "5091c57b-edcb-53f2-bfdc-2d66de88ecb0",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -9395,7 +9395,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         },
         {
           "__geoMeta": {
-            "id": "3a213260-fbbe-52a6-8308-0f43854e81c1",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -9419,7 +9419,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         },
         {
           "__geoMeta": {
-            "id": "9cd8541e-f421-5847-b354-6b1c1aa838d5",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -9443,7 +9443,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         },
         {
           "__geoMeta": {
-            "id": "8d0f250a-af2c-5d44-91b3-0fa55acccbff",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -9474,8 +9474,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -9515,7 +9515,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -9545,8 +9545,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "value": "topEdge"
         }
       },
-      "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
-      "originalId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "in",
       "isClosed": "explicitly"
     }
@@ -9560,7 +9560,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+                "id": "[uuid]",
                 "objectId": 10,
                 "kind": {
                   "line": {
@@ -9634,8 +9634,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -9664,7 +9664,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "units": null
                   }
                 },
-                "sketchId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bottomEdge"
@@ -9680,7 +9680,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "id": "[uuid]",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -9755,8 +9755,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -9785,7 +9785,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "units": null
                   }
                 },
-                "sketchId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "centerToRight"
@@ -9801,7 +9801,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                "id": "[uuid]",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -9876,8 +9876,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -9906,7 +9906,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "units": null
                   }
                 },
-                "sketchId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "centerToTop"
@@ -9922,7 +9922,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+                "id": "[uuid]",
                 "objectId": 43,
                 "kind": {
                   "circle": {
@@ -9996,8 +9996,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -10026,7 +10026,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "units": null
                   }
                 },
-                "sketchId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "innerHole"
@@ -10042,7 +10042,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                "id": "[uuid]",
                 "objectId": 40,
                 "kind": {
                   "line": {
@@ -10117,8 +10117,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -10147,7 +10147,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "units": null
                   }
                 },
-                "sketchId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "innerHoleRadiusGuide"
@@ -10163,7 +10163,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+                "id": "[uuid]",
                 "objectId": 19,
                 "kind": {
                   "line": {
@@ -10237,8 +10237,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -10267,7 +10267,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "units": null
                   }
                 },
-                "sketchId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leftEdge"
@@ -10284,11 +10284,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -10312,7 +10312,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -10336,7 +10336,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -10360,7 +10360,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -10384,7 +10384,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "cc312d38-2fa6-5583-a605-44880f646499",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -10401,7 +10401,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -10432,8 +10432,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 0,
                 "kind": "Custom",
                 "origin": {
@@ -10473,7 +10473,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -10499,8 +10499,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   "value": "topEdge"
                 }
               },
-              "artifactId": "cc141785-f204-5d03-bdf3-aa7163368c30",
-              "originalId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "in",
               "isClosed": "implicitly"
             }
@@ -10514,7 +10514,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                "id": "[uuid]",
                 "objectId": 13,
                 "kind": {
                   "line": {
@@ -10588,8 +10588,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -10618,7 +10618,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "units": null
                   }
                 },
-                "sketchId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rightEdge"
@@ -10634,7 +10634,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+                "id": "[uuid]",
                 "objectId": 16,
                 "kind": {
                   "line": {
@@ -10708,8 +10708,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -10738,7 +10738,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     "units": null
                   }
                 },
-                "sketchId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "topEdge"
@@ -10760,14 +10760,14 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
-      "originalId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
-      "topologyId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
-      "artifactId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "86db84ac-4417-5d6d-94f9-5754ec394147",
-          "id": "5a7287ed-4a2e-53da-b55e-3536552c87d6",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1036,
@@ -10780,8 +10780,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "45c86744-f72c-5399-b733-e4de8fd466eb",
-          "id": "5091c57b-edcb-53f2-bfdc-2d66de88ecb0",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1125,
@@ -10794,8 +10794,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "4f90ab43-f1b1-5530-bc2c-cc346e10fe9a",
-          "id": "3a213260-fbbe-52a6-8308-0f43854e81c1",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1211,
@@ -10808,8 +10808,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "2aed78e6-b228-597d-9803-a7a8225fa6b6",
-          "id": "9cd8541e-f421-5847-b354-6b1c1aa838d5",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1295,
@@ -10822,8 +10822,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "2ae10b5d-1888-5133-9900-bb646396dac2",
-          "id": "8d0f250a-af2c-5d44-91b3-0fa55acccbff",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2289,
@@ -10836,8 +10836,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "26ac3e3a-d2c4-57f6-a00d-b3d5584ade1a",
-          "id": "26ac3e3a-d2c4-57f6-a00d-b3d5584ade1a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2881,
@@ -10859,11 +10859,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "5a7287ed-4a2e-53da-b55e-3536552c87d6",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -10887,7 +10887,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           },
           {
             "__geoMeta": {
-              "id": "5091c57b-edcb-53f2-bfdc-2d66de88ecb0",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -10911,7 +10911,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           },
           {
             "__geoMeta": {
-              "id": "3a213260-fbbe-52a6-8308-0f43854e81c1",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -10935,7 +10935,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           },
           {
             "__geoMeta": {
-              "id": "9cd8541e-f421-5847-b354-6b1c1aa838d5",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -10959,7 +10959,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           },
           {
             "__geoMeta": {
-              "id": "8d0f250a-af2c-5d44-91b3-0fa55acccbff",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -10990,8 +10990,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -11031,7 +11031,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -11061,13 +11061,13 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "value": "topEdge"
           }
         },
-        "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
-        "originalId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
-      "startCapId": "f32bed28-dee1-5887-9f68-a95a6d032c09",
-      "endCapId": "26ac3e3a-d2c4-57f6-a00d-b3d5584ade1a",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "in",
       "sectional": false
     }
@@ -11076,14 +11076,14 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "20f09319-bab0-5dd8-8c40-ce90cd688483",
-      "originalId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
-      "topologyId": "20f09319-bab0-5dd8-8c40-ce90cd688483",
-      "artifactId": "20f09319-bab0-5dd8-8c40-ce90cd688483",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "86db84ac-4417-5d6d-94f9-5754ec394147",
-          "id": "5a7287ed-4a2e-53da-b55e-3536552c87d6",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1036,
@@ -11096,8 +11096,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "45c86744-f72c-5399-b733-e4de8fd466eb",
-          "id": "5091c57b-edcb-53f2-bfdc-2d66de88ecb0",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1125,
@@ -11110,8 +11110,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "4f90ab43-f1b1-5530-bc2c-cc346e10fe9a",
-          "id": "3a213260-fbbe-52a6-8308-0f43854e81c1",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1211,
@@ -11124,8 +11124,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "2aed78e6-b228-597d-9803-a7a8225fa6b6",
-          "id": "9cd8541e-f421-5847-b354-6b1c1aa838d5",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1295,
@@ -11138,8 +11138,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "2ae10b5d-1888-5133-9900-bb646396dac2",
-          "id": "8d0f250a-af2c-5d44-91b3-0fa55acccbff",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2289,
@@ -11152,8 +11152,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "26ac3e3a-d2c4-57f6-a00d-b3d5584ade1a",
-          "id": "26ac3e3a-d2c4-57f6-a00d-b3d5584ade1a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2881,
@@ -11175,11 +11175,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "20f09319-bab0-5dd8-8c40-ce90cd688483",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "5a7287ed-4a2e-53da-b55e-3536552c87d6",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -11203,7 +11203,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           },
           {
             "__geoMeta": {
-              "id": "5091c57b-edcb-53f2-bfdc-2d66de88ecb0",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -11227,7 +11227,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           },
           {
             "__geoMeta": {
-              "id": "3a213260-fbbe-52a6-8308-0f43854e81c1",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -11251,7 +11251,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           },
           {
             "__geoMeta": {
-              "id": "9cd8541e-f421-5847-b354-6b1c1aa838d5",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -11275,7 +11275,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           },
           {
             "__geoMeta": {
-              "id": "8d0f250a-af2c-5d44-91b3-0fa55acccbff",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -11306,8 +11306,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -11347,7 +11347,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -11377,17 +11377,17 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "value": "topEdge"
           }
         },
-        "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
-        "originalId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
-      "startCapId": "f32bed28-dee1-5887-9f68-a95a6d032c09",
-      "endCapId": "26ac3e3a-d2c4-57f6-a00d-b3d5584ade1a",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "edgeCuts": [
         {
           "type": "chamfer",
-          "id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
+          "id": "[uuid]",
           "length": {
             "n": 0.5,
             "ty": {
@@ -11396,12 +11396,12 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "5983fe0d-ad46-595e-9b48-dfabc7824ea6",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "chamfer",
-          "id": "468f6520-a683-5392-9492-de009fdcddef",
+          "id": "[uuid]",
           "length": {
             "n": 0.5,
             "ty": {
@@ -11410,12 +11410,12 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "de815b4c-817e-5265-b7b5-30ae92f19673",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "chamfer",
-          "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
+          "id": "[uuid]",
           "length": {
             "n": 0.5,
             "ty": {
@@ -11424,12 +11424,12 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "acf4900d-8e16-5c01-911d-bb2445b5f458",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "chamfer",
-          "id": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
+          "id": "[uuid]",
           "length": {
             "n": 0.5,
             "ty": {
@@ -11438,7 +11438,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "2a3cc8ae-d79c-5248-9ec5-6dc06de9ca6b",
+          "edgeId": "[uuid]",
           "tag": null
         }
       ],
@@ -11472,14 +11472,14 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
-          "originalId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
-          "topologyId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
-          "artifactId": "f611456b-82df-55af-a95e-b0c5e1ba1457",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "8cc393b1-9bc2-5519-b3b1-20aed1bb0995",
-              "id": "b9ea2399-1f22-5fc3-9b84-fd3d7a2029df",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3795,
@@ -11495,11 +11495,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "b9ea2399-1f22-5fc3-9b84-fd3d7a2029df",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -11530,8 +11530,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
-              "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 50,
               "kind": "Custom",
               "origin": {
@@ -11571,7 +11571,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "a54ad82c-be8d-599a-9764-c6498922dd5c",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -11581,13 +11581,13 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 "value": "holeCircle"
               }
             },
-            "artifactId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
-            "originalId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "af69293d-db36-5dd3-ad98-9ff1e9a1e4a2",
-          "endCapId": "732f48f5-d790-5ba9-a3a1-d09c781ea026",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -11596,14 +11596,14 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "e2970b5b-5156-5923-9f19-d4ab1e22a323",
-          "originalId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
-          "topologyId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
-          "artifactId": "e2970b5b-5156-5923-9f19-d4ab1e22a323",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "8cc393b1-9bc2-5519-b3b1-20aed1bb0995",
-              "id": "b9ea2399-1f22-5fc3-9b84-fd3d7a2029df",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3795,
@@ -11619,11 +11619,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "e2970b5b-5156-5923-9f19-d4ab1e22a323",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "b9ea2399-1f22-5fc3-9b84-fd3d7a2029df",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -11654,8 +11654,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
-              "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 50,
               "kind": "Custom",
               "origin": {
@@ -11695,7 +11695,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "a54ad82c-be8d-599a-9764-c6498922dd5c",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -11705,13 +11705,13 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 "value": "holeCircle"
               }
             },
-            "artifactId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
-            "originalId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "af69293d-db36-5dd3-ad98-9ff1e9a1e4a2",
-          "endCapId": "732f48f5-d790-5ba9-a3a1-d09c781ea026",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -11720,14 +11720,14 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "d7578b21-5a90-58ec-b05d-a2d675031806",
-          "originalId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
-          "topologyId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
-          "artifactId": "d7578b21-5a90-58ec-b05d-a2d675031806",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "8cc393b1-9bc2-5519-b3b1-20aed1bb0995",
-              "id": "b9ea2399-1f22-5fc3-9b84-fd3d7a2029df",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3795,
@@ -11743,11 +11743,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "d7578b21-5a90-58ec-b05d-a2d675031806",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "b9ea2399-1f22-5fc3-9b84-fd3d7a2029df",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -11778,8 +11778,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
-              "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 50,
               "kind": "Custom",
               "origin": {
@@ -11819,7 +11819,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "a54ad82c-be8d-599a-9764-c6498922dd5c",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -11829,13 +11829,13 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 "value": "holeCircle"
               }
             },
-            "artifactId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
-            "originalId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "af69293d-db36-5dd3-ad98-9ff1e9a1e4a2",
-          "endCapId": "732f48f5-d790-5ba9-a3a1-d09c781ea026",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -11844,14 +11844,14 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "5b010224-2823-5bc8-b783-67a1d63cd2d0",
-          "originalId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
-          "topologyId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
-          "artifactId": "5b010224-2823-5bc8-b783-67a1d63cd2d0",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "8cc393b1-9bc2-5519-b3b1-20aed1bb0995",
-              "id": "b9ea2399-1f22-5fc3-9b84-fd3d7a2029df",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3795,
@@ -11867,11 +11867,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "5b010224-2823-5bc8-b783-67a1d63cd2d0",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "b9ea2399-1f22-5fc3-9b84-fd3d7a2029df",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -11902,8 +11902,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
-              "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 50,
               "kind": "Custom",
               "origin": {
@@ -11943,7 +11943,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "a54ad82c-be8d-599a-9764-c6498922dd5c",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -11953,13 +11953,13 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 "value": "holeCircle"
               }
             },
-            "artifactId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
-            "originalId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "af69293d-db36-5dd3-ad98-9ff1e9a1e4a2",
-          "endCapId": "732f48f5-d790-5ba9-a3a1-d09c781ea026",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -11970,11 +11970,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "b9ea2399-1f22-5fc3-9b84-fd3d7a2029df",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -12005,8 +12005,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
-        "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 50,
         "kind": "Custom",
         "origin": {
@@ -12046,7 +12046,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "a54ad82c-be8d-599a-9764-c6498922dd5c",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -12056,8 +12056,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "value": "holeCircle"
         }
       },
-      "artifactId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
-      "originalId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "in",
       "isClosed": "explicitly"
     }
@@ -12069,14 +12069,14 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
-          "originalId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
-          "topologyId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
-          "artifactId": "f611456b-82df-55af-a95e-b0c5e1ba1457",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "8cc393b1-9bc2-5519-b3b1-20aed1bb0995",
-              "id": "b9ea2399-1f22-5fc3-9b84-fd3d7a2029df",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3795,
@@ -12092,11 +12092,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "b9ea2399-1f22-5fc3-9b84-fd3d7a2029df",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -12127,8 +12127,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
-              "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 50,
               "kind": "Custom",
               "origin": {
@@ -12168,7 +12168,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "a54ad82c-be8d-599a-9764-c6498922dd5c",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -12178,13 +12178,13 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 "value": "holeCircle"
               }
             },
-            "artifactId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
-            "originalId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "af69293d-db36-5dd3-ad98-9ff1e9a1e4a2",
-          "endCapId": "732f48f5-d790-5ba9-a3a1-d09c781ea026",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -12193,14 +12193,14 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "d7578b21-5a90-58ec-b05d-a2d675031806",
-          "originalId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
-          "topologyId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
-          "artifactId": "d7578b21-5a90-58ec-b05d-a2d675031806",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "8cc393b1-9bc2-5519-b3b1-20aed1bb0995",
-              "id": "b9ea2399-1f22-5fc3-9b84-fd3d7a2029df",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3795,
@@ -12216,11 +12216,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "d7578b21-5a90-58ec-b05d-a2d675031806",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "b9ea2399-1f22-5fc3-9b84-fd3d7a2029df",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -12251,8 +12251,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
-              "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 50,
               "kind": "Custom",
               "origin": {
@@ -12292,7 +12292,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "a54ad82c-be8d-599a-9764-c6498922dd5c",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -12302,13 +12302,13 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 "value": "holeCircle"
               }
             },
-            "artifactId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
-            "originalId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "af69293d-db36-5dd3-ad98-9ff1e9a1e4a2",
-          "endCapId": "732f48f5-d790-5ba9-a3a1-d09c781ea026",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -12319,14 +12319,14 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
-      "originalId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
-      "topologyId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
-      "artifactId": "f611456b-82df-55af-a95e-b0c5e1ba1457",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "8cc393b1-9bc2-5519-b3b1-20aed1bb0995",
-          "id": "b9ea2399-1f22-5fc3-9b84-fd3d7a2029df",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3795,
@@ -12342,11 +12342,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "b9ea2399-1f22-5fc3-9b84-fd3d7a2029df",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -12377,8 +12377,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
-          "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 50,
           "kind": "Custom",
           "origin": {
@@ -12418,7 +12418,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "a54ad82c-be8d-599a-9764-c6498922dd5c",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -12428,13 +12428,13 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "value": "holeCircle"
           }
         },
-        "artifactId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
-        "originalId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
-      "startCapId": "af69293d-db36-5dd3-ad98-9ff1e9a1e4a2",
-      "endCapId": "732f48f5-d790-5ba9-a3a1-d09c781ea026",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "in",
       "sectional": false
     }

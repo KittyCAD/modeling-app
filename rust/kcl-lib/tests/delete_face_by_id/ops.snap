@@ -10,7 +10,7 @@ description: Operations executed delete_face_by_id.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -42,7 +42,7 @@ description: Operations executed delete_face_by_id.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -87,7 +87,7 @@ description: Operations executed delete_face_by_id.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -122,7 +122,7 @@ description: Operations executed delete_face_by_id.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "38f0111a-8034-5e85-9ec1-07dbc9646b06"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -168,7 +168,7 @@ description: Operations executed delete_face_by_id.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "89316223-2ea1-5731-9c72-0492bc30fbe2"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -178,7 +178,7 @@ description: Operations executed delete_face_by_id.kcl
           "value": {
             "type": "Solid",
             "value": {
-              "artifactId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6"
+              "artifactId": "[uuid]"
             }
           },
           "sourceRange": []
@@ -207,7 +207,7 @@ description: Operations executed delete_face_by_id.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "59bc8baf-257f-5783-ad91-95db236aa6b0"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -219,8 +219,8 @@ description: Operations executed delete_face_by_id.kcl
             "value": [
               {
                 "type": "TagIdentifier",
-                "value": "face_id_0ecab4c6_8f70_5ea8_892e_5f128998044b",
-                "artifact_id": "0ecab4c6-8f70-5ea8-892e-5f128998044b"
+                "value": "face_id_[uuid]",
+                "artifact_id": "[uuid]"
               }
             ]
           },

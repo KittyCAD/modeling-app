@@ -6,8 +6,8 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
-      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -39,11 +39,11 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "21b7dbba-2b34-5938-ba83-578fad340cef",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -67,7 +67,7 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
         },
         {
           "__geoMeta": {
-            "id": "47ff4dac-32f2-5e48-962f-6870d4f8f118",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -91,7 +91,7 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
         },
         {
           "__geoMeta": {
-            "id": "99194547-d759-57c0-aabc-e5c9d6f3a53b",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -115,7 +115,7 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
         },
         {
           "__geoMeta": {
-            "id": "d73842c9-bff4-5e4d-a787-f94edc024edd",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -140,8 +140,8 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
       ],
       "on": {
         "type": "plane",
-        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -181,7 +181,7 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -203,8 +203,8 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
           "value": "line4"
         }
       },
-      "artifactId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
-      "originalId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -244,7 +244,7 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "id": "[uuid]",
                 "kind": {
                   "line": {
                     "construction": false,
@@ -313,10 +313,10 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
                   }
                 },
                 "objectId": 4,
-                "sketchId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+                "sketchId": "[uuid]",
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -360,7 +360,7 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
           "repr": {
             "Solved": {
               "segment": {
-                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                "id": "[uuid]",
                 "kind": {
                   "line": {
                     "construction": false,
@@ -429,10 +429,10 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
                   }
                 },
                 "objectId": 7,
-                "sketchId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+                "sketchId": "[uuid]",
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -476,7 +476,7 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
           "repr": {
             "Solved": {
               "segment": {
-                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+                "id": "[uuid]",
                 "kind": {
                   "line": {
                     "construction": false,
@@ -545,10 +545,10 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
                   }
                 },
                 "objectId": 10,
-                "sketchId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+                "sketchId": "[uuid]",
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -592,7 +592,7 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
           "repr": {
             "Solved": {
               "segment": {
-                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                "id": "[uuid]",
                 "kind": {
                   "line": {
                     "construction": false,
@@ -661,10 +661,10 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
                   }
                 },
                 "objectId": 13,
-                "sketchId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+                "sketchId": "[uuid]",
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -709,11 +709,11 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -737,7 +737,7 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
                 },
                 {
                   "__geoMeta": {
-                    "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -754,7 +754,7 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
                 },
                 {
                   "__geoMeta": {
-                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -778,7 +778,7 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
                 },
                 {
                   "__geoMeta": {
-                    "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -795,7 +795,7 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
                 },
                 {
                   "__geoMeta": {
-                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -819,7 +819,7 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
                 },
                 {
                   "__geoMeta": {
-                    "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -836,7 +836,7 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
                 },
                 {
                   "__geoMeta": {
-                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -861,8 +861,8 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 0,
                 "kind": "Custom",
                 "origin": {
@@ -902,7 +902,7 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -924,8 +924,8 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
                   "value": "line4"
                 }
               },
-              "artifactId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
-              "originalId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "no"
             }
