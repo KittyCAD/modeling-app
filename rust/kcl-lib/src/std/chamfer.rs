@@ -635,14 +635,19 @@ chamfer(solid, tags = [getCommonEdge(faces = [profileRegion.tags.edge1, top])], 
     #[tokio::test(flavor = "multi_thread")]
     async fn tangent_chain_requires_kcl_3_and_is_sent_to_engine() {
         let body = r#"
-profile = startSketchOn(XY)
-  |> startProfile(at = [0, 0])
-  |> line(end = [10, 0], tag = $edge)
-  |> line(end = [0, 10])
-  |> line(end = [-10, 0])
-  |> close()
-solid = extrude(profile, length = 10)
-chamfer(solid, tags = [edge], length = 1, tangentChain = true)
+profile = sketch(on = XY) {
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  edge3 = line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  edge4 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+}
+profileRegion = region(point = [5mm, 5mm], sketch = profile)
+solid = extrude(profileRegion, length = 10mm, tagEnd = $top)
+chamfer(solid, tags = [getCommonEdge(faces = [profileRegion.tags.edge1, top])], length = 1mm, tangentChain = true)
 "#;
 
         let result = parse_execute(&format!("@settings(kclVersion = 2.0)\n{body}"))
