@@ -6,8 +6,8 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
-      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -44,14 +44,14 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
-      "originalId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
-      "topologyId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
-      "artifactId": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "a49b9612-c4dc-5d46-9c14-74c0b7247edd",
-          "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 61,
@@ -64,8 +64,8 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "67c68347-0747-5a3d-b270-da035abddd8c",
-          "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 140,
@@ -78,8 +78,8 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "660d6e44-47cd-5ee1-8bee-90267b8cbbc9",
-          "id": "eb116575-1f8f-50df-810e-a61970915fe0",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 220,
@@ -92,8 +92,8 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "bb04bee5-f92e-54fd-b9d8-0e476678cb88",
-          "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 301,
@@ -106,8 +106,8 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "092755e4-e002-58b9-a194-69b526ae6929",
-          "id": "092755e4-e002-58b9-a194-69b526ae6929",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 791,
@@ -129,11 +129,11 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -157,7 +157,7 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
           },
           {
             "__geoMeta": {
-              "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -181,7 +181,7 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
           },
           {
             "__geoMeta": {
-              "id": "eb116575-1f8f-50df-810e-a61970915fe0",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -205,7 +205,7 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
           },
           {
             "__geoMeta": {
-              "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -230,8 +230,8 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -271,7 +271,7 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -297,13 +297,13 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
             "value": "line4"
           }
         },
-        "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
-        "originalId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "00f8003d-3b65-5f10-b911-9092660fca40",
-      "endCapId": "092755e4-e002-58b9-a194-69b526ae6929",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -312,14 +312,14 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
-      "originalId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
-      "topologyId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
-      "artifactId": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "a49b9612-c4dc-5d46-9c14-74c0b7247edd",
-          "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 61,
@@ -332,8 +332,8 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "67c68347-0747-5a3d-b270-da035abddd8c",
-          "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 140,
@@ -346,8 +346,8 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "660d6e44-47cd-5ee1-8bee-90267b8cbbc9",
-          "id": "eb116575-1f8f-50df-810e-a61970915fe0",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 220,
@@ -360,8 +360,8 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "bb04bee5-f92e-54fd-b9d8-0e476678cb88",
-          "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 301,
@@ -374,8 +374,8 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "092755e4-e002-58b9-a194-69b526ae6929",
-          "id": "092755e4-e002-58b9-a194-69b526ae6929",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 791,
@@ -397,11 +397,11 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -425,7 +425,7 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
           },
           {
             "__geoMeta": {
-              "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -449,7 +449,7 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
           },
           {
             "__geoMeta": {
-              "id": "eb116575-1f8f-50df-810e-a61970915fe0",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -473,7 +473,7 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
           },
           {
             "__geoMeta": {
-              "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -498,8 +498,8 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -539,7 +539,7 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -565,17 +565,17 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
             "value": "line4"
           }
         },
-        "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
-        "originalId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "00f8003d-3b65-5f10-b911-9092660fca40",
-      "endCapId": "092755e4-e002-58b9-a194-69b526ae6929",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+          "id": "[uuid]",
           "radius": {
             "n": 0.5,
             "ty": {
@@ -584,7 +584,7 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "db427524-76a6-553d-bb6b-6ac873083b95",
+          "edgeId": "[uuid]",
           "tag": null
         }
       ],
@@ -596,11 +596,11 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -624,7 +624,7 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
         },
         {
           "__geoMeta": {
-            "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -648,7 +648,7 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
         },
         {
           "__geoMeta": {
-            "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -672,7 +672,7 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
         },
         {
           "__geoMeta": {
-            "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -697,8 +697,8 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -738,7 +738,7 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -760,8 +760,8 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
           "value": "line4"
         }
       },
-      "artifactId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
-      "originalId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "implicitly"
     }
@@ -790,11 +790,11 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -818,7 +818,7 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
         },
         {
           "__geoMeta": {
-            "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -842,7 +842,7 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
         },
         {
           "__geoMeta": {
-            "id": "eb116575-1f8f-50df-810e-a61970915fe0",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -866,7 +866,7 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
         },
         {
           "__geoMeta": {
-            "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -891,8 +891,8 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -932,7 +932,7 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -958,8 +958,8 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
           "value": "line4"
         }
       },
-      "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
-      "originalId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -973,7 +973,7 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "id": "[uuid]",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -1047,8 +1047,8 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1077,7 +1077,7 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1093,7 +1093,7 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                "id": "[uuid]",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -1167,8 +1167,8 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1197,7 +1197,7 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -1213,7 +1213,7 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+                "id": "[uuid]",
                 "objectId": 10,
                 "kind": {
                   "line": {
@@ -1287,8 +1287,8 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1317,7 +1317,7 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -1333,7 +1333,7 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                "id": "[uuid]",
                 "objectId": 13,
                 "kind": {
                   "line": {
@@ -1407,8 +1407,8 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1437,7 +1437,7 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -1454,11 +1454,11 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1482,7 +1482,7 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1506,7 +1506,7 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1530,7 +1530,7 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1555,8 +1555,8 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 0,
                 "kind": "Custom",
                 "origin": {
@@ -1596,7 +1596,7 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -1618,8 +1618,8 @@ description: Variables in memory after executing zds_extrude_fillet_top_edge.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
-              "originalId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "implicitly"
             }

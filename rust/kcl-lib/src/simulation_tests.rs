@@ -149,14 +149,26 @@ fn is_writing() -> bool {
     matches!(std::env::var("ZOO_SIM_UPDATE").as_deref(), Ok("always"))
 }
 
-#[derive(Default, Deserialize, Clone, Debug)]
+#[derive(Deserialize, Clone, Debug)]
 #[serde(deny_unknown_fields)]
 struct TestConfig {
     /// Replace UUIDs with the string "[uuid]", because otherwise the tests
     /// would constantly be changing the UUID. This is a stopgap measure
     /// until we make the engine more deterministic.
-    #[serde(default)]
+    #[serde(default = "default_redact_uuids")]
     redact_uuids: bool,
+}
+
+impl Default for TestConfig {
+    fn default() -> Self {
+        Self {
+            redact_uuids: default_redact_uuids(),
+        }
+    }
+}
+
+fn default_redact_uuids() -> bool {
+    true
 }
 
 impl TestConfig {

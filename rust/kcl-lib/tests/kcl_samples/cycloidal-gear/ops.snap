@@ -3981,11 +3981,11 @@ description: Operations executed cycloidal-gear.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "5173c024-ac32-59f6-acbe-69ddbf68893d"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -4019,7 +4019,7 @@ description: Operations executed cycloidal-gear.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -4049,7 +4049,7 @@ description: Operations executed cycloidal-gear.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -4129,7 +4129,7 @@ description: Operations executed cycloidal-gear.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "2ef0458f-7b67-5182-aea8-2f1df80750ef"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -4171,7 +4171,7 @@ description: Operations executed cycloidal-gear.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "129583cc-c953-5cdf-8ea4-5e7d50b41896"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -4200,7 +4200,7 @@ description: Operations executed cycloidal-gear.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "3bcd28fd-2b1b-5bfe-a9ba-ee907292b41f"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -4232,7 +4232,7 @@ description: Operations executed cycloidal-gear.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "129583cc-c953-5cdf-8ea4-5e7d50b41896"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -4247,7 +4247,7 @@ description: Operations executed cycloidal-gear.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "3bcd28fd-2b1b-5bfe-a9ba-ee907292b41f"
+                  "artifactId": "[uuid]"
                 }
               }
             ]
@@ -4278,7 +4278,7 @@ description: Operations executed cycloidal-gear.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -4304,7 +4304,7 @@ description: Operations executed cycloidal-gear.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
