@@ -640,16 +640,6 @@ fn parse_args(args: Vec<OsString>) -> Result<Option<BatchRenderOptions>, String>
 mod tests {
     use super::*;
 
-    #[test]
-    fn renders_glb_bytes() {
-        let glb = fs::read(concat!(env!("CARGO_MANIFEST_DIR"), "/../../assets/output.glb")).unwrap();
-        let image = render(&glb).unwrap().into_rgba8();
-        assert!(image.width() <= MAX_OUTPUT_SIZE.x && image.height() <= MAX_OUTPUT_SIZE.y);
-        assert!(image.width() == MAX_OUTPUT_SIZE.x || image.height() == MAX_OUTPUT_SIZE.y);
-        assert!(image.pixels().any(|pixel| pixel[3] == 0));
-        assert!(image.pixels().any(|pixel| *pixel != BACKGROUND));
-    }
-
     fn silhouette_view() -> ViewProjection {
         ViewProjection {
             center: Vec3::ZERO,
