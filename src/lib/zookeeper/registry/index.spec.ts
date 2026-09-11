@@ -1,8 +1,8 @@
 import {
-  Registry,
   defineRegistryItem,
   pluginsValueSpec,
   provideService,
+  Registry,
 } from '@kittycad/registry'
 import { type Signal, signal } from '@preact/signals-core'
 import {
@@ -72,7 +72,7 @@ function createTestLayoutServiceRegistryItem(layoutSignal: Signal<Layout>) {
 }
 
 describe('zookeeper plugin', () => {
-  it('contributes the conversation pane and credits status item', async () => {
+  it('contributes the conversation pane and credits', async () => {
     const { default: zookeeper } = await import('.')
     const layoutSignal = signal(zookeeperPaneLayout())
     const registry = new Registry()
@@ -87,9 +87,10 @@ describe('zookeeper plugin', () => {
       .find((candidate) => candidate.id === 'zookeeper')
 
     expect(plugin).toBeDefined()
-    expect(
-      registry.get(layoutAreaLibraryValueSpec)[AreaType.Zookeeper]
-    ).toMatchObject({
+    const zookeeperArea = registry.get(layoutAreaLibraryValueSpec)[
+      AreaType.Zookeeper
+    ]
+    expect(zookeeperArea).toMatchObject({
       shortcut: 'Ctrl + T',
     })
     expect(
@@ -103,7 +104,7 @@ describe('zookeeper plugin', () => {
     ).not.toContain('zookeeper-credits')
   })
 
-  it('removes zookeeper UI contributions when disabled', async () => {
+  it('removes and restores zookeeper contributions when toggled', async () => {
     const { default: zookeeper } = await import('.')
     const layoutSignal = signal(zookeeperPaneLayout())
     const registry = new Registry()
@@ -130,5 +131,11 @@ describe('zookeeper plugin', () => {
     expect(
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
     ).not.toContain('zookeeper-credits')
+
+    await registry.get(plugin.service).enable()
+
+    expect(
+      registry.get(layoutAreaLibraryValueSpec)[AreaType.Zookeeper]
+    ).toBeDefined()
   })
 })
