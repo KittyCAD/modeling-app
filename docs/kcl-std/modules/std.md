@@ -55,6 +55,7 @@ You might also want the [KCL language reference](/docs/kcl-lang) or the [KCL gui
 * [`Z`](/docs/kcl-std/consts/std-Z)
 * [`assert`](/docs/kcl-std/functions/std-assert)
 * [`assertIs`](/docs/kcl-std/functions/std-assertIs)
+* [`bodyOf`](/docs/kcl-std/functions/std-bodyOf)
 * [`clone`](/docs/kcl-std/functions/std-clone)
 * [`edgeId`](/docs/kcl-std/functions/std-edgeId)
 * [`faceId`](/docs/kcl-std/functions/std-faceId)

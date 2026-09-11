@@ -1,6 +1,7 @@
 //! Functions for handling and converting IDs.
 
 use anyhow::Result;
+use kcl_api::artifact::ImportedGeometryArtifact;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
 use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
@@ -11,16 +12,20 @@ use kittycad_modeling_cmds::{self as kcmc};
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::exec::KclValue;
+use crate::execution::Artifact;
+use crate::execution::ArtifactId;
+use crate::execution::CodeRef;
 use crate::execution::EdgeRefactorStdlibFn;
 use crate::execution::ExecState;
 use crate::execution::ExtrudeSurface;
 use crate::execution::GeoMeta;
-use crate::execution::Geometry;
+use crate::execution::GeometryWithImportedGeometry;
+use crate::execution::ImportedGeometry;
 use crate::execution::Metadata;
 use crate::execution::ModelingCmdMeta;
-use crate::execution::Solid;
 use crate::execution::TagEngineInfo;
 use crate::execution::TagIdentifier;
+use crate::execution::types::ArrayLen;
 use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::TagDeclarator;
 use crate::std::Args;
@@ -29,7 +34,11 @@ use crate::std::edge;
 
 /// Translates face indices to face IDs.
 pub async fn face_id(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let body = args.get_unlabeled_kw_arg("body", &RuntimeType::solid(), exec_state)?;
+    let body = args.get_unlabeled_kw_arg(
+        "body",
+        &RuntimeType::Union(vec![RuntimeType::solid(), RuntimeType::imported()]),
+        exec_state,
+    )?;
     let face_index: u32 = args.get_kw_arg("index", &RuntimeType::count(), exec_state)?;
 
     inner_face_id(body, face_index, exec_state, args).await
@@ -37,11 +46,12 @@ pub async fn face_id(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 
 /// Translates face indices to face IDs.
 async fn inner_face_id(
-    body: Solid,
+    mut body: GeometryWithImportedGeometry,
     face_index: u32,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<KclValue, KclError> {
+    let body_id = body.id(&args.ctx).await?;
     let no_engine_commands = args.ctx.no_engine_commands().await;
     // Handle mock execution
     let face_id = if no_engine_commands {
@@ -53,7 +63,7 @@ async fn inner_face_id(
                 ModelingCmdMeta::from_args(exec_state, &args),
                 ModelingCmd::from(
                     mcmd::Solid3dGetFaceUuid::builder()
-                        .object_id(body.id)
+                        .object_id(body_id)
                         .face_index(face_index)
                         .build(),
                 ),
@@ -77,10 +87,8 @@ async fn inner_face_id(
     let new_tag_node = TagDeclarator::new(&new_tag_name);
 
     let mut tagged_surface = body
-        .value
-        .iter()
-        .find(|surface| surface.face_id() == face_id)
-        .cloned()
+        .as_solid()
+        .and_then(|solid| solid.value.iter().find(|surface| surface.face_id() == face_id).cloned())
         .unwrap_or_else(|| {
             // Booleans and imported solids can have engine face IDs that we don't track in
             // `body.value`, but `faceId` should still return a usable tagged face.
@@ -101,7 +109,8 @@ async fn inner_face_id(
             exec_state.stack().current_epoch(),
             TagEngineInfo {
                 id: tagged_surface.get_id(),
-                geometry: Geometry::Solid(body),
+                body_id,
+                geometry: body,
                 path: None,
                 surface: Some(tagged_surface),
             },
@@ -116,7 +125,11 @@ async fn inner_face_id(
 
 /// Translates edge indices to edge IDs.
 pub async fn edge_id(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let body = args.get_unlabeled_kw_arg("body", &RuntimeType::solid(), exec_state)?;
+    let body = args.get_unlabeled_kw_arg(
+        "body",
+        &RuntimeType::Union(vec![RuntimeType::solid(), RuntimeType::imported()]),
+        exec_state,
+    )?;
     let edge_index: Option<u32> = args.get_kw_arg_opt("index", &RuntimeType::count(), exec_state)?;
     let closest_to: Option<[TyF64; 3]> = args.get_kw_arg_opt("closestTo", &RuntimeType::point3d(), exec_state)?;
     let closest_to = closest_to
@@ -138,11 +151,12 @@ pub async fn edge_id(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 
 /// Translates edge indices to edge IDs.
 async fn inner_edge_id(
-    body: Solid,
+    mut body: GeometryWithImportedGeometry,
     edge_index: u32,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<KclValue, KclError> {
+    let body_id = body.id(&args.ctx).await?;
     // Handle mock execution
     let no_engine_commands = args.ctx.no_engine_commands().await;
     let edge_id = if no_engine_commands {
@@ -153,7 +167,7 @@ async fn inner_edge_id(
                 ModelingCmdMeta::from_args(exec_state, &args),
                 ModelingCmd::from(
                     mcmd::Solid3dGetEdgeUuid::builder()
-                        .object_id(body.id)
+                        .object_id(body_id)
                         .edge_index(edge_index)
                         .build(),
                 ),
@@ -197,11 +211,12 @@ async fn inner_edge_id(
 
 /// Finds ID of edge closest to this point.
 async fn inner_edge_id_by_point(
-    body: Solid,
+    mut body: GeometryWithImportedGeometry,
     closest_point: Point3d<f64>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<KclValue, KclError> {
+    let body_id = body.id(&args.ctx).await?;
     // Handle mock execution
     let no_engine_commands = args.ctx.no_engine_commands().await;
     let edge_id = if no_engine_commands {
@@ -212,7 +227,7 @@ async fn inner_edge_id_by_point(
                 ModelingCmdMeta::from_args(exec_state, &args),
                 ModelingCmd::from(
                     mcmd::ClosestEdge::builder()
-                        .object_id(body.id)
+                        .object_id(body_id)
                         .closest_to(closest_point)
                         .build(),
                 ),
@@ -257,4 +272,76 @@ async fn inner_edge_id_by_point(
             source_range: args.source_range,
         }],
     })
+}
+
+/// Returns a nested body from imported geometry.
+pub async fn body_of(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let body = args.get_unlabeled_kw_arg("body", &RuntimeType::imported(), exec_state)?;
+    let GeometryWithImportedGeometry::ImportedGeometry(mut body) = body else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "bodyOf requires imported geometry".to_owned(),
+            vec![args.source_range],
+        )));
+    };
+    let path: Vec<TyF64> = args.get_kw_arg(
+        "path",
+        &RuntimeType::Array(Box::new(RuntimeType::count()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let path: Vec<u32> = path
+        .into_iter()
+        .map(|index| {
+            crate::try_f64_to_u32(index.n).ok_or_else(|| {
+                KclError::new_semantic(KclErrorDetails::new(
+                    format!("Body path indices must be whole numbers, got {}", index.n),
+                    vec![args.source_range],
+                ))
+            })
+        })
+        .collect::<Result<_, _>>()?;
+
+    let mut body_id = body.id(&args.ctx).await?;
+    if args.ctx.no_engine_commands().await {
+        body_id = exec_state.next_uuid();
+    } else {
+        for child_index in path {
+            let response = exec_state
+                .send_modeling_cmd(
+                    ModelingCmdMeta::from_args(exec_state, &args),
+                    ModelingCmd::from(
+                        mcmd::EntityGetChildUuid::builder()
+                            .entity_id(body_id)
+                            .child_index(child_index)
+                            .build(),
+                    ),
+                )
+                .await?;
+            let OkWebSocketResponseData::Modeling {
+                modeling_response: OkModelingCmdResponse::EntityGetChildUuid(inner_resp),
+            } = response
+            else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    format!(
+                        "Engine returned invalid response while resolving bodyOf, it should have returned EntityGetChildUuid but it returned {response:?}"
+                    ),
+                    vec![args.source_range],
+                )));
+            };
+            body_id = inner_resp.entity_id;
+        }
+    }
+
+    let nested_body = ImportedGeometry::new(
+        body_id,
+        body.value.clone(),
+        vec![Metadata {
+            source_range: args.source_range,
+        }],
+    );
+    exec_state.add_artifact(Artifact::ImportedGeometry(ImportedGeometryArtifact {
+        id: ArtifactId::new(body_id),
+        code_ref: CodeRef::placeholder(args.source_range),
+    }));
+
+    Ok(KclValue::ImportedGeometry(nested_body))
 }

@@ -525,6 +525,16 @@ fn fill_in_node_paths(
     import_code_refs: &AHashMap<ModuleId, ImportCodeRef>,
 ) {
     match artifact {
+        Artifact::ImportedGeometry(imported_geometry) if imported_geometry.code_ref.node_path.is_empty() => {
+            let (range, node_path) = code_ref_for_range(
+                programs,
+                cached_body_items,
+                imported_geometry.code_ref.range,
+                import_code_refs,
+            );
+            imported_geometry.code_ref.range = range;
+            imported_geometry.code_ref.node_path = node_path;
+        }
         Artifact::StartSketchOnFace(face) if face.code_ref.node_path.is_empty() => {
             let (range, node_path) =
                 code_ref_for_range(programs, cached_body_items, face.code_ref.range, import_code_refs);

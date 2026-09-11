@@ -38,6 +38,7 @@ use crate::execution::CodeRef;
 use crate::execution::ExecState;
 use crate::execution::GeoMeta;
 use crate::execution::Geometry;
+use crate::execution::GeometryWithImportedGeometry;
 use crate::execution::KclValue;
 use crate::execution::KclVersion;
 use crate::execution::ModelingCmdMeta;
@@ -109,25 +110,29 @@ impl FaceTag {
     /// Get the face id from the tag.
     pub async fn get_face_id(
         &self,
-        solid: &Solid,
+        body: &GeometryWithImportedGeometry,
         exec_state: &mut ExecState,
         args: &Args,
         must_be_planar: bool,
     ) -> Result<uuid::Uuid, KclError> {
         match self {
             FaceTag::Tag(t) => args.get_adjacent_face_to_tag(exec_state, t, must_be_planar).await,
-            FaceTag::StartOrEnd(StartOrEnd::Start) => solid.start_cap_id.ok_or_else(|| {
-                KclError::new_type(KclErrorDetails::new(
-                    "Expected a start face".to_string(),
-                    vec![args.source_range],
-                ))
-            }),
-            FaceTag::StartOrEnd(StartOrEnd::End) => solid.end_cap_id.ok_or_else(|| {
-                KclError::new_type(KclErrorDetails::new(
-                    "Expected an end face".to_string(),
-                    vec![args.source_range],
-                ))
-            }),
+            FaceTag::StartOrEnd(StartOrEnd::Start) => {
+                body.as_solid().and_then(|solid| solid.start_cap_id).ok_or_else(|| {
+                    KclError::new_type(KclErrorDetails::new(
+                        "Expected a start face".to_string(),
+                        vec![args.source_range],
+                    ))
+                })
+            }
+            FaceTag::StartOrEnd(StartOrEnd::End) => {
+                body.as_solid().and_then(|solid| solid.end_cap_id).ok_or_else(|| {
+                    KclError::new_type(KclErrorDetails::new(
+                        "Expected an end face".to_string(),
+                        vec![args.source_range],
+                    ))
+                })
+            }
         }
     }
 
@@ -149,6 +154,13 @@ impl FaceTag {
     pub fn geometry(&self) -> Option<Geometry> {
         match self {
             FaceTag::Tag(t) => t.geometry(),
+            _ => None,
+        }
+    }
+
+    pub fn body_id(&self) -> Option<uuid::Uuid> {
+        match self {
+            FaceTag::Tag(t) => t.body_id(),
             _ => None,
         }
     }
@@ -1023,7 +1035,8 @@ async fn inner_start_sketch_on(
                 )));
             };
             if let Some(align_axis) = align_axis {
-                let plane_of = inner_plane_of(*solid, tag, exec_state, args).await?;
+                let plane_of =
+                    inner_plane_of(GeometryWithImportedGeometry::Solid(*solid), tag, exec_state, args).await?;
 
                 // plane_of info axis units are Some(UnitLength::Millimeters), see inner_plane_of and PlaneInfo
                 let offset = normal_offset.map_or(0.0, |x| x.to_mm());
@@ -1099,7 +1112,7 @@ async fn inner_start_sketch_on(
 
                 Ok(SketchSurface::Plane(plane))
             } else {
-                let face = make_face(solid, tag, exec_state, args).await?;
+                let face = make_face(GeometryWithImportedGeometry::Solid(*solid), tag, exec_state, args).await?;
 
                 // Create artifact used only by the UI, not the engine.
                 let id = exec_state.next_uuid();

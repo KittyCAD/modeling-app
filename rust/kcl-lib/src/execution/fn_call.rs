@@ -798,7 +798,8 @@ fn attach_face_tags_to_solid(solid: &mut Solid, exec_state: &ExecState, tag_name
                             id: surface.get_id(),
                             surface: Some(surface.clone()),
                             path: None,
-                            geometry: Geometry::Solid(solid_copy),
+                            body_id: solid_copy.id,
+                            geometry: Geometry::Solid(solid_copy).into(),
                         },
                     )],
                     meta: vec![Metadata {
@@ -880,7 +881,8 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                         let mut info = info.clone();
                         info.id = v.get_id();
                         info.surface = Some(v.clone());
-                        info.geometry = Geometry::Solid(*solid_copy);
+                        info.body_id = solid_copy.id;
+                        info.geometry = Geometry::Solid(*solid_copy).into();
                         t.info.push((exec_state.stack().current_epoch(), info));
                         t
                     } else {
@@ -894,7 +896,8 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                                     id: v.get_id(),
                                     surface: Some(v.clone()),
                                     path: None,
-                                    geometry: Geometry::Solid(*solid_copy),
+                                    body_id: solid_copy.id,
+                                    geometry: Geometry::Solid(*solid_copy).into(),
                                 },
                             )],
                             meta: vec![Metadata {

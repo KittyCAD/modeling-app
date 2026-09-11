@@ -29,6 +29,15 @@ impl MockTransport {
         Self { responses }
     }
 
+    fn child_uuid(entity_id: Uuid, child_index: u32) -> Uuid {
+        Uuid::from_u128(
+            entity_id
+                .as_u128()
+                .wrapping_mul(37)
+                .wrapping_add(u128::from(child_index) + 1),
+        )
+    }
+
     fn response_for_cmd(id: Uuid, cmd: WebSocketRequest) -> WebSocketResponse {
         match cmd {
             WebSocketRequest::ModelingCmdBatchReq(ModelingBatch {
@@ -61,6 +70,36 @@ impl MockTransport {
                         kittycad_modeling_cmds::output::ImportFiles::builder()
                             .object_id(cmd_id.into())
                             .build(),
+                    ),
+                },
+                success: true,
+            }),
+            WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
+                cmd: ModelingCmd::EntityGetChildUuid(cmd),
+                ..
+            }) => WebSocketResponse::Success(SuccessWebSocketResponse {
+                request_id: Some(id),
+                resp: OkWebSocketResponseData::Modeling {
+                    modeling_response: OkModelingCmdResponse::EntityGetChildUuid(
+                        serde_json::from_value(serde_json::json!({
+                            "entity_id": Self::child_uuid(cmd.entity_id, cmd.child_index),
+                        }))
+                        .expect("valid mock EntityGetChildUuid response"),
+                    ),
+                },
+                success: true,
+            }),
+            WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
+                cmd: ModelingCmd::Solid3dGetFaceUuid(cmd),
+                ..
+            }) => WebSocketResponse::Success(SuccessWebSocketResponse {
+                request_id: Some(id),
+                resp: OkWebSocketResponseData::Modeling {
+                    modeling_response: OkModelingCmdResponse::Solid3dGetFaceUuid(
+                        serde_json::from_value(serde_json::json!({
+                            "face_id": Self::child_uuid(cmd.object_id, cmd.face_index),
+                        }))
+                        .expect("valid mock Solid3dGetFaceUuid response"),
                     ),
                 },
                 success: true,

@@ -820,6 +820,43 @@ export default {
       }
     ]
   },
+  "bodyOf": {
+    "name": "bodyOf",
+    "preferredName": "bodyOf",
+    "qualName": "std::bodyOf",
+    "moduleName": "std",
+    "returnType": "ImportedGeometry",
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": false,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "body",
+        "ty": "ImportedGeometry",
+        "docs": "Imported geometry containing the nested body.",
+        "required": true,
+        "special": true,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "path",
+        "ty": "[number(_); 1+]",
+        "docs": "Child-index path from `body` to the nested body.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      }
+    ]
+  },
   "ceil": {
     "name": "ceil",
     "preferredName": "ceil",
@@ -850,7 +887,7 @@ export default {
     "preferredName": "chamfer",
     "qualName": "std::solid::chamfer",
     "moduleName": "solid",
-    "returnType": "Solid",
+    "returnType": "Solid | ImportedGeometry",
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -858,8 +895,8 @@ export default {
     "args": [
       {
         "name": "solid",
-        "ty": "Solid",
-        "docs": "The solid whose edges should be chamfered",
+        "ty": "Solid | ImportedGeometry",
+        "docs": "The solid or imported geometry whose edges should be chamfered",
         "required": true,
         "special": true,
         "experimental": false,
@@ -931,7 +968,7 @@ export default {
       {
         "name": "tag",
         "ty": "TagDecl",
-        "docs": "Create a new tag which refers to this chamfer",
+        "docs": "Create a new tag which refers to this chamfer. Not supported for imported geometry.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -955,7 +992,7 @@ export default {
       {
         "name": "version",
         "ty": "number(_)",
-        "docs": "What version of the fillet algorithm to use. 0 means \"let the Zoo engine choose whichever version is best\", 1 is the original Zoo fillet algorithm, 2 is the newer algorithm (supports rolling ball fillets). On KCL 2.0 and before, the default is 1. KCL 3.0 and later always use the newest algorithm.",
+        "docs": "What version of the fillet algorithm to use. 0 means \"let the Zoo engine choose whichever version is best\", 1 is the original Zoo fillet algorithm, 2 is the newer algorithm (supports rolling ball fillets). On KCL 2.0 and before, the default is 1. KCL 3.0 and later always use the newest algorithm. Imported geometry always uses version 2 and rejects other explicit versions.",
         "required": false,
         "special": false,
         "experimental": true,
@@ -1412,7 +1449,7 @@ export default {
     "preferredName": "deleteFace",
     "qualName": "std::solid::deleteFace",
     "moduleName": "solid",
-    "returnType": "Solid",
+    "returnType": "Solid | ImportedGeometry",
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -1420,7 +1457,7 @@ export default {
     "args": [
       {
         "name": "body",
-        "ty": "Solid",
+        "ty": "Solid | ImportedGeometry",
         "docs": "Target to delete a surface from.",
         "required": true,
         "special": true,
@@ -1469,8 +1506,8 @@ export default {
     "args": [
       {
         "name": "body",
-        "ty": "Solid",
-        "docs": "The solid whose edges we're trying to find",
+        "ty": "Solid | ImportedGeometry",
+        "docs": "The body whose edges we're trying to find.",
         "required": true,
         "special": true,
         "experimental": false,
@@ -1978,8 +2015,8 @@ export default {
     "args": [
       {
         "name": "body",
-        "ty": "Solid",
-        "docs": "The solid whose faces we're trying to find",
+        "ty": "Solid | ImportedGeometry",
+        "docs": "The body whose faces we're trying to find.",
         "required": true,
         "special": true,
         "experimental": false,
@@ -2015,8 +2052,8 @@ export default {
     "args": [
       {
         "name": "solid",
-        "ty": "Solid",
-        "docs": "The solid that has the face.",
+        "ty": "Solid | ImportedGeometry",
+        "docs": "The body that has the face.",
         "required": true,
         "special": true,
         "experimental": false,
@@ -2069,7 +2106,7 @@ export default {
     "preferredName": "fillet",
     "qualName": "std::solid::fillet",
     "moduleName": "solid",
-    "returnType": "Solid",
+    "returnType": "Solid | ImportedGeometry",
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -2077,8 +2114,8 @@ export default {
     "args": [
       {
         "name": "solid",
-        "ty": "Solid",
-        "docs": "The solid whose edges should be filletted",
+        "ty": "Solid | ImportedGeometry",
+        "docs": "The solid or imported geometry whose edges should be filletted",
         "required": true,
         "special": true,
         "experimental": false,
@@ -2138,7 +2175,7 @@ export default {
       {
         "name": "tag",
         "ty": "TagDecl",
-        "docs": "Create a new tag which refers to this fillet",
+        "docs": "Create a new tag which refers to this fillet. Not supported for imported geometry.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -2162,7 +2199,7 @@ export default {
       {
         "name": "version",
         "ty": "number(_)",
-        "docs": "What version of the fillet algorithm to use. 0 means \"let the Zoo engine choose whichever version is best\", 1 is the original Zoo fillet algorithm, 2 is the newer algorithm (supports rolling ball fillets). On KCL 2.0 and before, the default is 1. KCL 3.0 and later always use the newest algorithm.",
+        "docs": "What version of the fillet algorithm to use. 0 means \"let the Zoo engine choose whichever version is best\", 1 is the original Zoo fillet algorithm, 2 is the newer algorithm (supports rolling ball fillets). On KCL 2.0 and before, the default is 1. KCL 3.0 and later always use the newest algorithm. Imported geometry always uses version 2 and rejects other explicit versions.",
         "required": false,
         "special": false,
         "experimental": true,
@@ -7239,8 +7276,8 @@ export default {
     "args": [
       {
         "name": "solid",
-        "ty": "Solid",
-        "docs": "The solid whose face is being queried.",
+        "ty": "Solid | ImportedGeometry",
+        "docs": "The body whose face is being queried.",
         "required": true,
         "special": true,
         "experimental": false,

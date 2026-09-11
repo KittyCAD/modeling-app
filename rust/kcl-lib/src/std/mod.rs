@@ -572,6 +572,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::clone::clone(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::clone"),
         ),
+        ("prelude", "bodyOf") => (
+            |e, a| Box::pin(crate::std::ids::body_of(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::bodyOf"),
+        ),
         ("prelude", "faceId") => (
             |e, a| Box::pin(crate::std::ids::face_id(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::faceId"),

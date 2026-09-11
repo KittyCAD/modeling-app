@@ -762,12 +762,21 @@ impl TagIdentifier {
     }
 
     pub fn geometry(&self) -> Option<Geometry> {
-        self.get_cur_info().map(|info| info.geometry.clone())
+        self.get_cur_info()
+            .and_then(|info| info.geometry.clone().into_geometry())
+    }
+
+    pub fn body_id(&self) -> Option<uuid::Uuid> {
+        self.get_cur_info().map(|info| info.body_id)
     }
 
     pub(crate) fn is_body_created_tag(&self) -> bool {
         self.get_cur_info().is_some_and(|info| {
-            matches!(&info.geometry, Geometry::Solid(_)) && info.path.is_none() && info.surface.is_some()
+            matches!(
+                &info.geometry,
+                GeometryWithImportedGeometry::Solid(_) | GeometryWithImportedGeometry::ImportedGeometry(_)
+            ) && info.path.is_none()
+                && info.surface.is_some()
         })
     }
 }
@@ -817,8 +826,10 @@ impl std::hash::Hash for TagIdentifier {
 pub struct TagEngineInfo {
     /// The id of the tagged object.
     pub id: uuid::Uuid,
+    /// The engine body which owns the tagged object.
+    pub body_id: uuid::Uuid,
     /// The geometry the tag is on.
-    pub geometry: Geometry,
+    pub geometry: GeometryWithImportedGeometry,
     /// The path the tag is on.
     pub path: Option<Path>,
     /// The surface information for the tag.
@@ -2464,6 +2475,44 @@ mod tests {
         assert_eq!(cloned.machine_call_depth_limit, 123);
     }
 
+    #[test]
+    fn imported_geometry_tag_preserves_body_id() {
+        let imported_geometry_id = uuid::Uuid::new_v4();
+        let nested_body_id = uuid::Uuid::new_v4();
+        let tag = TagIdentifier {
+            value: "face".to_owned(),
+            info: vec![(
+                0,
+                TagEngineInfo {
+                    id: uuid::Uuid::new_v4(),
+                    body_id: nested_body_id,
+                    geometry: GeometryWithImportedGeometry::ImportedGeometry(Box::new(ImportedGeometry::new(
+                        imported_geometry_id,
+                        vec!["part.step".to_owned()],
+                        Vec::new(),
+                    ))),
+                    path: None,
+                    surface: None,
+                },
+            )],
+            meta: Vec::new(),
+        };
+
+        assert_eq!(tag.body_id(), Some(nested_body_id));
+        assert!(tag.geometry().is_none());
+    }
+
+    #[test]
+    fn imported_face_parent_uses_resolved_body_id() {
+        let imported_geometry_id = uuid::Uuid::new_v4();
+        let nested_body_id = uuid::Uuid::new_v4();
+        let imported_geometry = ImportedGeometry::new(imported_geometry_id, vec!["part.step".to_owned()], Vec::new());
+
+        let parent = FaceParentSolid::from_imported_geometry(&imported_geometry, Some(nested_body_id));
+
+        assert_eq!(parent.solid_id, nested_body_id);
+    }
+
     #[tokio::test(flavor = "multi_thread")]
     async fn concurrent_foreign_import_preserves_artifact_command() {
         let tmpdir = tempfile::TempDir::with_prefix("zma_foreign_import_artifact").unwrap();
@@ -2493,6 +2542,141 @@ mod tests {
         };
         assert_eq!(artifact.id, artifact_id);
         assert!(!artifact.code_ref.node_path.is_empty());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn imported_brep_supports_primitive_topology_operations() {
+        let tmpdir = tempfile::TempDir::with_prefix("zma_imported_brep_topology").unwrap();
+        let step_fixture = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests")
+            .join("inputs")
+            .join("cube.step");
+        tokio::fs::copy(step_fixture, tmpdir.path().join("part.step"))
+            .await
+            .unwrap();
+
+        let program = crate::Program::parse_no_errs(
+            r#"@settings(kclVersion = 2.0, experimentalFeatures = allow)
+
+import "part.step" as importedPart
+
+importedBody = bodyOf(importedPart, path = [0, 2])
+selectedFace = faceId(importedBody, index = 0)
+selectedEdge = edgeId(importedBody, index = 0)
+sketchFace = faceOf(importedBody, face = selectedFace)
+gdt::datum(face = selectedFace, name = "A")
+gdt::straightness(edges = [selectedEdge], tolerance = 0.1mm)
+result = deleteFace(importedBody, faces = selectedFace)
+"#,
+        )
+        .unwrap();
+        let ctx = new_mock_executor_context(
+            Some(crate::TypedPath(tmpdir.path().into())),
+            machine::ExecutorKind::resolve(),
+        );
+        let outcome = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        ctx.close().await;
+
+        assert!(matches!(
+            outcome.variables["selectedFace"],
+            KclValueView::TagIdentifier(_)
+        ));
+        assert!(matches!(outcome.variables["selectedEdge"], KclValueView::Uuid { .. }));
+        assert!(matches!(outcome.variables["sketchFace"], KclValueView::Face { .. }));
+        assert!(matches!(outcome.variables["result"], KclValueView::ImportedGeometry(_)));
+        let KclValueView::ImportedGeometry(imported_body) = &outcome.variables["importedBody"] else {
+            panic!("importedBody should be imported geometry");
+        };
+        let Some(Artifact::ImportedGeometry(imported_body_artifact)) =
+            outcome.artifact_graph.get(&ArtifactId::new(imported_body.id))
+        else {
+            panic!("importedBody should produce an imported geometry artifact");
+        };
+        assert!(!imported_body_artifact.code_ref.node_path.is_empty());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn imported_brep_body_of_is_resolved_through_engine() {
+        let tmpdir = tempfile::TempDir::with_prefix("zma_imported_brep_body_of").unwrap();
+        let step_fixture = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests")
+            .join("inputs")
+            .join("cube.step");
+        tokio::fs::copy(step_fixture, tmpdir.path().join("part.step"))
+            .await
+            .unwrap();
+
+        let program = crate::Program::parse_no_errs(
+            r#"@settings(kclVersion = 2.0)
+
+import "part.step" as importedPart
+
+rootFace = faceId(importedPart, index = 0)
+parentBody = bodyOf(importedPart, path = [3])
+importedBody = bodyOf(parentBody, path = [7])
+selectedFace = faceId(importedBody, index = 4)
+"#,
+        )
+        .unwrap();
+        let ctx = ExecutorContext::new_with_engine(
+            Arc::new(EngineManager::new_mock()),
+            ExecutorSettings {
+                project_directory: Some(crate::TypedPath(tmpdir.path().into())),
+                ..Default::default()
+            },
+        );
+        let mut exec_state = ExecState::new(&ctx);
+        let (main_ref, _) = ctx.run(&program, &mut exec_state).await.unwrap();
+
+        let KclValue::ImportedGeometry(imported_body) = exec_state
+            .stack()
+            .memory
+            .get_from_unchecked("importedBody", main_ref)
+            .unwrap()
+        else {
+            panic!("importedBody should be imported geometry");
+        };
+        let nested_body_id = imported_body.id;
+        let KclValue::TagIdentifier(root_face) = exec_state
+            .stack()
+            .memory
+            .get_from_unchecked("rootFace", main_ref)
+            .unwrap()
+        else {
+            panic!("rootFace should be a tag identifier");
+        };
+        let root_body_id = root_face
+            .get_cur_info()
+            .expect("rootFace should retain engine ownership")
+            .geometry
+            .raw_id();
+        let KclValue::TagIdentifier(selected_face) = exec_state
+            .stack()
+            .memory
+            .get_from_unchecked("selectedFace", main_ref)
+            .unwrap()
+        else {
+            panic!("selectedFace should be a tag identifier");
+        };
+        let selected_face_info = selected_face
+            .get_cur_info()
+            .expect("selectedFace should retain engine ownership");
+
+        let child_uuid = |entity_id: uuid::Uuid, child_index: u32| {
+            uuid::Uuid::from_u128(
+                entity_id
+                    .as_u128()
+                    .wrapping_mul(37)
+                    .wrapping_add(u128::from(child_index) + 1),
+            )
+        };
+        let expected_body_id = child_uuid(child_uuid(root_body_id, 3), 7);
+        assert_eq!(nested_body_id, expected_body_id);
+        assert_eq!(selected_face.body_id(), Some(expected_body_id));
+        assert_eq!(selected_face_info.geometry.raw_id(), expected_body_id);
+        assert_ne!(expected_body_id, root_body_id);
+
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
