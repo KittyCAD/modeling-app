@@ -57,10 +57,19 @@ test.describe('Zookeeper tests', { tag: ZOOKEEPER_TEST_TAGS }, () => {
       )
       await expect(copilot.placeHolderResponse).toBeVisible()
 
+      const zookeeperPaneButton = page.getByTestId(
+        `${DefaultLayoutPaneID.Zookeeper}-pane-button`
+      )
       await toolbar.closePane(DefaultLayoutPaneID.Zookeeper)
+      await expect(
+        zookeeperPaneButton.locator('svg[aria-label="loading"]')
+      ).toBeVisible()
       expect(zookeeperConnectionCount).toBe(1)
       holdResponses = false
       releaseResponses()
+      await expect(
+        zookeeperPaneButton.locator('svg[aria-label="sparkles"]')
+      ).toBeVisible({ timeout: 30_000 })
       expect(zookeeperConnectionCount).toBe(1)
 
       await toolbar.openPane(DefaultLayoutPaneID.Code)

@@ -14,17 +14,23 @@ import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { Spinner } from '@src/components/Spinner'
 import type { KclManager, ZDSProject } from '@src/lang/KclManager'
 import type { BillingRegistryService } from '@src/lib/billing'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import { AreaType, type AreaTypeComponentProps } from '@src/lib/layout/types'
+import { getOpenPanes } from '@src/lib/layout/utils'
 import type {
   ZookeeperSessionController,
   ZookeeperSessionControllerDependencies,
 } from '@src/lib/zookeeper/registry/controller'
+import { zookeeperPromptRunningSignal } from '@src/lib/zookeeper/zookeeperPromptState'
 import {
   type AuthRegistryService,
   authService,
 } from '@src/registry/contracts/auth'
 import { billingService } from '@src/registry/contracts/billing'
-import { layoutAreaLibraryValueSpec } from '@src/registry/contracts/layout'
+import {
+  layoutAreaLibraryValueSpec,
+  layoutService,
+} from '@src/registry/contracts/layout'
 import {
   type ProjectSessionService,
   projectSession,
@@ -394,6 +400,7 @@ export function ZookeeperPaneOutlet({
 }
 
 export const zookeeperRuntimeRegistryItem = defineRegistryItemFactory((ctx) => {
+  const layout = ctx.services.signal(layoutService)
   const runtime = createZookeeperRuntime({
     auth: ctx.services.signal(authService),
     billing: ctx.services.signal(billingService),
@@ -405,23 +412,35 @@ export const zookeeperRuntimeRegistryItem = defineRegistryItemFactory((ctx) => {
   const PaneOutlet = (props: AreaTypeComponentProps) => (
     <ZookeeperPaneOutlet {...props} runtime={runtime} />
   )
+  const areaLibrary = computed(() => {
+    const layoutSystem = layout.value
+    const isOpen =
+      layoutSystem !== undefined &&
+      getOpenPanes({ rootLayout: layoutSystem.signal.value }).includes(
+        DefaultLayoutPaneID.Zookeeper
+      )
+
+    return {
+      [AreaType.Zookeeper]: {
+        hide: () => false,
+        shortcut: 'Ctrl + T',
+        cssClassOverrides: {
+          button:
+            'bg-ml-green pressed:bg-transparent dark:!text-chalkboard-100 hover:dark:!text-inherit dark:pressed:!text-inherit',
+        },
+        icon:
+          !isOpen && zookeeperPromptRunningSignal.value
+            ? ('loading' as const)
+            : undefined,
+        Component: PaneOutlet,
+      },
+    }
+  })
 
   return {
     item: defineRuntimeRegistryItem({
       id: 'zookeeper.runtime',
-      provides: [
-        provide(layoutAreaLibraryValueSpec, {
-          [AreaType.Zookeeper]: {
-            hide: () => false,
-            shortcut: 'Ctrl + T',
-            cssClassOverrides: {
-              button:
-                'bg-ml-green pressed:bg-transparent dark:!text-chalkboard-100 hover:dark:!text-inherit dark:pressed:!text-inherit',
-            },
-            Component: PaneOutlet,
-          },
-        }),
-      ],
+      provides: [provide(layoutAreaLibraryValueSpec, areaLibrary)],
       dispose: () => runtime.dispose(),
     }),
   }

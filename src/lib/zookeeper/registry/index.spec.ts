@@ -15,6 +15,7 @@ import {
   type LayoutService,
   LayoutType,
 } from '@src/lib/layout/types'
+import { zookeeperPromptRunningSignal } from '@src/lib/zookeeper/zookeeperPromptState'
 import {
   layoutAreaLibraryValueSpec,
   layoutService,
@@ -72,7 +73,7 @@ function createTestLayoutServiceRegistryItem(layoutSignal: Signal<Layout>) {
 }
 
 describe('zookeeper plugin', () => {
-  it('contributes the conversation pane and credits', async () => {
+  it('contributes the conversation pane, running indicator, and credits', async () => {
     const { default: zookeeper } = await import('.')
     const layoutSignal = signal(zookeeperPaneLayout())
     const registry = new Registry()
@@ -93,6 +94,10 @@ describe('zookeeper plugin', () => {
     expect(zookeeperArea).toMatchObject({
       shortcut: 'Ctrl + T',
     })
+    zookeeperPromptRunningSignal.value = true
+    expect(
+      registry.get(layoutAreaLibraryValueSpec)[AreaType.Zookeeper]?.icon
+    ).toBeUndefined()
     expect(
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
     ).toContain('zookeeper-credits')
@@ -100,8 +105,22 @@ describe('zookeeper plugin', () => {
     layoutSignal.value = zookeeperPaneLayout([])
 
     expect(
+      registry.get(layoutAreaLibraryValueSpec)[AreaType.Zookeeper]?.icon
+    ).toBe('loading')
+    expect(
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
     ).not.toContain('zookeeper-credits')
+
+    layoutSignal.value = zookeeperPaneLayout()
+    expect(
+      registry.get(layoutAreaLibraryValueSpec)[AreaType.Zookeeper]?.icon
+    ).toBeUndefined()
+
+    layoutSignal.value = zookeeperPaneLayout([])
+    zookeeperPromptRunningSignal.value = false
+    expect(
+      registry.get(layoutAreaLibraryValueSpec)[AreaType.Zookeeper]?.icon
+    ).toBeUndefined()
   })
 
   it('removes and restores zookeeper contributions when toggled', async () => {
