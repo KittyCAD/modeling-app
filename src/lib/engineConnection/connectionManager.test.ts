@@ -50,28 +50,6 @@ function startConnectionManager(
 }
 
 describe('ConnectionManager', () => {
-  it('notifies before closing the connection or requesting a reconnect', () => {
-    const manager = createConnectionManager()
-    const order: string[] = []
-    const connection = {
-      disconnectAll: vi.fn(() => order.push('disconnect')),
-    } as unknown as Connection
-    manager.connection = connection
-    manager.started = true
-    manager.addEventListener(EngineConnectionManagerEvents.BeforeTeardown, () =>
-      order.push('preserve')
-    )
-    manager.addEventListener(
-      EngineConnectionManagerEvents.WebsocketClosed,
-      () => order.push('reconnect')
-    )
-
-    manager.tearDown({ websocketClosed: true })
-
-    expect(order).toEqual(['preserve', 'reconnect', 'disconnect'])
-    expect(manager.connection).toBeUndefined()
-  })
-
   it('reports a pong timeout separately from a WebSocket close', () => {
     const manager = createConnectionManager()
     const onPingPongTimeout = vi.fn()

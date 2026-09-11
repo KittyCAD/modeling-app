@@ -7,6 +7,11 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 class TestPeerConnection extends EventTarget {
   connectionState: RTCPeerConnectionState = 'new'
+
+  transition(state: RTCPeerConnectionState) {
+    this.connectionState = state
+    this.dispatchEvent(new Event('connectionstatechange'))
+  }
 }
 
 const setup = () => {
@@ -37,13 +42,10 @@ describe('createOnConnectionStateChange', () => {
   it('allows the same peer connection to recover', () => {
     const { peerConnection, tearDownManager } = setup()
 
-    peerConnection.connectionState = 'disconnected'
-    peerConnection.dispatchEvent(new Event('connectionstatechange'))
-    peerConnection.connectionState = 'connecting'
-    peerConnection.dispatchEvent(new Event('connectionstatechange'))
+    peerConnection.transition('disconnected')
+    peerConnection.transition('connecting')
     vi.advanceTimersByTime(PEER_CONNECTION_DISCONNECTED_GRACE_PERIOD_MS)
-    peerConnection.connectionState = 'connected'
-    peerConnection.dispatchEvent(new Event('connectionstatechange'))
+    peerConnection.transition('connected')
 
     expect(tearDownManager).not.toHaveBeenCalled()
   })
@@ -51,8 +53,7 @@ describe('createOnConnectionStateChange', () => {
   it('tears down a connection that remains disconnected', () => {
     const { peerConnection, dispatchEvent, tearDownManager } = setup()
 
-    peerConnection.connectionState = 'disconnected'
-    peerConnection.dispatchEvent(new Event('connectionstatechange'))
+    peerConnection.transition('disconnected')
     vi.advanceTimersByTime(PEER_CONNECTION_DISCONNECTED_GRACE_PERIOD_MS)
 
     expect(dispatchEvent).toHaveBeenCalledWith(

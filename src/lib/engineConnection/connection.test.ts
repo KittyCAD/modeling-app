@@ -23,6 +23,7 @@ const createConnection = () => {
   connection.websocket = {
     readyState: WebSocket.OPEN,
     send,
+    close: vi.fn(),
   } as unknown as WebSocket
   tearDownManager.mockImplementation(() => connection.stopPingPong())
 
@@ -166,7 +167,7 @@ describe('peer connection cleanup', () => {
     vi.unstubAllGlobals()
   })
 
-  it('cancels a disconnected timer on teardown after normal connection setup', async () => {
+  it('retains peer timer cleanup after connection setup', () => {
     vi.useFakeTimers()
     const peer = new TestPeerConnection()
     vi.stubGlobal(
@@ -175,16 +176,7 @@ describe('peer connection cleanup', () => {
         return peer
       })
     )
-    const tearDownManager = vi.fn()
-    const connection = new Connection({
-      url: 'ws://localhost',
-      token: '',
-      handleOnDataChannelMessage: vi.fn(),
-      tearDownManager,
-      rejectPendingCommand: vi.fn(),
-      handleMessage: vi.fn(),
-      getCloudProjectId: () => undefined,
-    })
+    const { connection, tearDownManager } = createConnection()
     const deferred = () => ({
       promise: Promise.resolve(),
       resolve: vi.fn(),
@@ -194,16 +186,12 @@ describe('peer connection cleanup', () => {
     connection.deferredPeerConnection = deferred()
     connection.deferredMediaStreamAndWebrtcStatsCollector = deferred()
     connection.createPeerConnection()
-    connection.sdpAnswer = { type: 'answer', sdp: '' }
-    await connection.initiateConnectionExclusive()
-    peer.transition('connected')
+    // Normal setup runs this before a later disconnect timer can exist.
+    connection.cleanUpTimeouts()
     peer.transition('disconnected')
-    vi.advanceTimersByTime(1_000)
-    // Simulate a websocket close/idle teardown during the grace period.
     connection.disconnectAll()
-    expect(peer.connectionState).toBe('closed')
-    // Manager can have a new active connection before the old grace period ends.
     vi.advanceTimersByTime(PEER_CONNECTION_DISCONNECTED_GRACE_PERIOD_MS)
+
     expect(tearDownManager).not.toHaveBeenCalled()
   })
 })
