@@ -4467,7 +4467,9 @@ w = f() + f()
 )
 "#;
 
-        let ctx = crate::test_server::new_context_geo_only(true, None).await.unwrap();
+        let ctx = crate::test_server::new_context_engine_graphics(true, None)
+            .await
+            .unwrap();
         let old_program = crate::Program::parse_no_errs(code).unwrap();
 
         // Execute the program.
@@ -4520,7 +4522,9 @@ w = f() + f()
 )
 "#;
 
-        let mut ctx = crate::test_server::new_context_geo_only(true, None).await.unwrap();
+        let mut ctx = crate::test_server::new_context_engine_graphics(true, None)
+            .await
+            .unwrap();
         let old_program = crate::Program::parse_no_errs(code).unwrap();
 
         // Execute the program.

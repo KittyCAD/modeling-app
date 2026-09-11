@@ -25,7 +25,7 @@ pub struct RequestBody {
 
 /// Executes a KCL program. Only returns success or error.
 pub async fn execute(code: &str, current_file: Option<PathBuf>) -> Result<(), ExecError> {
-    let ctx = new_context_geo_only(true, current_file).await?;
+    let ctx = new_context_engine_graphics(true, current_file).await?;
     let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
     let res = do_execute(&ctx, program, None)
         .await
@@ -165,11 +165,11 @@ pub async fn kcl_doc_execute_and_snapshot(
 
 /// Executes a kcl program and takes a snapshot of the result.
 /// This returns the bytes of the snapshot.
-pub async fn execute_and_snapshot_no3d(
+pub async fn execute_and_snapshot_legacy_sim_test(
     code: &str,
     current_file: Option<PathBuf>,
 ) -> Result<image::DynamicImage, ExecError> {
-    let ctx = new_context(true, current_file, false).await?;
+    let ctx = new_context_engine_graphics(true, current_file).await?;
     let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
     let res = execute_locally_and_render_on_engine(&ctx, program, None)
         .await
@@ -198,7 +198,7 @@ async fn execute_and_snapshot_ast_with_heartbeats(
     deprecation_version_override: Option<&str>,
     heartbeats: Option<u64>,
 ) -> Result<(ExecState, ExecutorContext, EnvironmentRef, Snapshot3d), ExecErrorWithState> {
-    let ctx = new_context_with_heartbeats(true, current_file, heartbeats, true).await?;
+    let ctx = new_context_with_heartbeats(true, current_file, heartbeats, false).await?;
     let (exec_state, env, snap_3d) =
         match execute_export_and_render_locally(&ctx, ast, deprecation_version_override).await {
             Ok((exec_state, env_ref, snap_3d)) => (exec_state, env_ref, snap_3d),
@@ -216,11 +216,11 @@ pub async fn execute_and_snapshot_no_auth(
     code: &str,
     current_file: Option<PathBuf>,
 ) -> Result<(image::DynamicImage, EnvironmentRef), ExecError> {
-    let ctx = new_context_geo_only(false, current_file).await?;
+    let ctx = new_context_engine_graphics(false, current_file).await?;
     let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
-    let res = execute_export_and_render_locally(&ctx, program, None)
+    let res = execute_locally_and_render_on_engine(&ctx, program, None)
         .await
-        .map(|(_, env_ref, snap_3d)| (snap_3d.image, env_ref))
+        .map(|(_, env_ref, image)| (image, env_ref))
         .map_err(|err| err.error);
     ctx.close().await;
     res
@@ -260,11 +260,11 @@ async fn do_execute(
     Ok((exec_state, result.0))
 }
 
-pub async fn new_context_geo_only(
+pub async fn new_context_engine_graphics(
     with_auth: bool,
     current_file: Option<PathBuf>,
 ) -> Result<ExecutorContext, ConnectionError> {
-    new_context_with_heartbeats(with_auth, current_file, None, true).await
+    new_context_with_heartbeats(with_auth, current_file, None, false).await
 }
 
 pub async fn new_context(
@@ -323,7 +323,7 @@ pub async fn execute_and_export_step(
     ),
     ExecErrorWithState,
 > {
-    let ctx = new_context_geo_only(true, current_file).await?;
+    let ctx = new_context_engine_graphics(true, current_file).await?;
     let mut exec_state = ExecState::new(&ctx);
     let program = Program::parse_no_errs(code).map_err(|err| {
         ExecErrorWithState::new(KclErrorWithOutputs::no_outputs(err).into(), exec_state.clone(), None)
