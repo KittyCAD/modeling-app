@@ -7,11 +7,11 @@ description: Variables in memory after executing out_of_band_sketches.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -28,7 +28,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
         },
         {
           "__geoMeta": {
-            "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -46,8 +46,8 @@ description: Variables in memory after executing out_of_band_sketches.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
-        "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "XZ",
         "origin": {
@@ -87,12 +87,12 @@ description: Variables in memory after executing out_of_band_sketches.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
-      "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "no"
     }
@@ -101,11 +101,11 @@ description: Variables in memory after executing out_of_band_sketches.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -122,7 +122,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
         },
         {
           "__geoMeta": {
-            "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -139,7 +139,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
         },
         {
           "__geoMeta": {
-            "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -156,7 +156,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
         },
         {
           "__geoMeta": {
-            "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -174,8 +174,8 @@ description: Variables in memory after executing out_of_band_sketches.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
-        "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "XZ",
         "origin": {
@@ -215,12 +215,12 @@ description: Variables in memory after executing out_of_band_sketches.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
-      "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -229,11 +229,11 @@ description: Variables in memory after executing out_of_band_sketches.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "41c630c9-9d44-581b-98af-caee575bea48",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -250,7 +250,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
         },
         {
           "__geoMeta": {
-            "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -268,8 +268,8 @@ description: Variables in memory after executing out_of_band_sketches.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "523b9fc1-d681-5ef3-b407-128525533bfe",
-        "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 1,
         "kind": "XY",
         "origin": {
@@ -309,12 +309,12 @@ description: Variables in memory after executing out_of_band_sketches.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
-      "artifactId": "41c630c9-9d44-581b-98af-caee575bea48",
-      "originalId": "41c630c9-9d44-581b-98af-caee575bea48",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "no"
     }
@@ -323,11 +323,11 @@ description: Variables in memory after executing out_of_band_sketches.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "41c630c9-9d44-581b-98af-caee575bea48",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -344,7 +344,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
         },
         {
           "__geoMeta": {
-            "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -361,7 +361,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
         },
         {
           "__geoMeta": {
-            "id": "7b681387-29ea-57f1-8713-d63280827139",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -378,7 +378,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
         },
         {
           "__geoMeta": {
-            "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -396,8 +396,8 @@ description: Variables in memory after executing out_of_band_sketches.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "523b9fc1-d681-5ef3-b407-128525533bfe",
-        "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 1,
         "kind": "XY",
         "origin": {
@@ -437,12 +437,12 @@ description: Variables in memory after executing out_of_band_sketches.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
-      "artifactId": "41c630c9-9d44-581b-98af-caee575bea48",
-      "originalId": "41c630c9-9d44-581b-98af-caee575bea48",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -450,8 +450,8 @@ description: Variables in memory after executing out_of_band_sketches.kcl
   "sketch001": {
     "type": "Plane",
     "value": {
-      "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
-      "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "objectId": 0,
       "kind": "XZ",
       "origin": {
@@ -483,8 +483,8 @@ description: Variables in memory after executing out_of_band_sketches.kcl
   "sketch002": {
     "type": "Plane",
     "value": {
-      "artifactId": "523b9fc1-d681-5ef3-b407-128525533bfe",
-      "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "objectId": 1,
       "kind": "XY",
       "origin": {

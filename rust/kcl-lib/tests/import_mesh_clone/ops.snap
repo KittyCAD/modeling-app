@@ -24,7 +24,7 @@ description: Operations executed import_mesh_clone.kcl
       "unlabeledArg": {
         "value": {
           "type": "ImportedGeometry",
-          "artifact_id": "3b9b7e44-df88-5f85-82a2-d6c192b9ae40"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -77,7 +77,7 @@ description: Operations executed import_mesh_clone.kcl
       "unlabeledArg": {
         "value": {
           "type": "ImportedGeometry",
-          "artifact_id": "3b9b7e44-df88-5f85-82a2-d6c192b9ae40"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -109,7 +109,7 @@ description: Operations executed import_mesh_clone.kcl
       "unlabeledArg": {
         "value": {
           "type": "ImportedGeometry",
-          "artifact_id": "3b9b7e44-df88-5f85-82a2-d6c192b9ae40"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -140,7 +140,7 @@ description: Operations executed import_mesh_clone.kcl
       "unlabeledArg": {
         "value": {
           "type": "ImportedGeometry",
-          "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -184,7 +184,7 @@ description: Operations executed import_mesh_clone.kcl
       "unlabeledArg": {
         "value": {
           "type": "ImportedGeometry",
-          "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -216,7 +216,7 @@ description: Operations executed import_mesh_clone.kcl
       "unlabeledArg": {
         "value": {
           "type": "ImportedGeometry",
-          "artifact_id": "3b9b7e44-df88-5f85-82a2-d6c192b9ae40"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -247,7 +247,7 @@ description: Operations executed import_mesh_clone.kcl
       "unlabeledArg": {
         "value": {
           "type": "ImportedGeometry",
-          "artifact_id": "89316223-2ea1-5731-9c72-0492bc30fbe2"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -291,7 +291,7 @@ description: Operations executed import_mesh_clone.kcl
       "unlabeledArg": {
         "value": {
           "type": "ImportedGeometry",
-          "artifact_id": "89316223-2ea1-5731-9c72-0492bc30fbe2"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -323,7 +323,7 @@ description: Operations executed import_mesh_clone.kcl
       "unlabeledArg": {
         "value": {
           "type": "ImportedGeometry",
-          "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -354,7 +354,7 @@ description: Operations executed import_mesh_clone.kcl
       "unlabeledArg": {
         "value": {
           "type": "ImportedGeometry",
-          "artifact_id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -398,7 +398,7 @@ description: Operations executed import_mesh_clone.kcl
       "unlabeledArg": {
         "value": {
           "type": "ImportedGeometry",
-          "artifact_id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
