@@ -876,7 +876,9 @@ export class Connection extends EventTarget {
       },
     })
 
-    this.peerConnection.close()
+    if (this.peerConnection.connectionState !== 'closed') {
+      this.peerConnection.close()
+    }
   }
 
   removeAllEventListeners() {

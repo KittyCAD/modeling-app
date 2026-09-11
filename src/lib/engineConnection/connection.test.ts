@@ -74,6 +74,23 @@ describe('Connection heartbeat', () => {
   })
 })
 
+it('closes an active peer without closing an already closed peer', () => {
+  const { connection } = createConnection()
+  const close = vi.fn()
+  connection.peerConnection = {
+    connectionState: 'connected',
+    close,
+  } as unknown as RTCPeerConnection
+  connection.disconnectPeerConnection()
+  connection.peerConnection = {
+    connectionState: 'closed',
+    close,
+  } as unknown as RTCPeerConnection
+  connection.disconnectPeerConnection()
+
+  expect(close).toHaveBeenCalledOnce()
+})
+
 class TestWebSocket extends EventTarget {
   static instances: TestWebSocket[] = []
 
