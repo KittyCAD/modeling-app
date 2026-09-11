@@ -92,6 +92,8 @@ __all__ = [
     "parse",
     "parse_code",
     "relevant_file_extensions",
+    "try_render_sketch_instance",
+    "try_render_sketch_instance_code",
 ]
 
 @typing.final
@@ -1435,6 +1437,17 @@ def parse_code(code: builtins.str) -> builtins.bool:
 def relevant_file_extensions() -> builtins.list[builtins.str]:
     r"""
     Get the allowed relevant file extensions (imports + kcl).
+    """
+
+async def try_render_sketch_instance(path: builtins.str, sketch_name: builtins.str, instance_index: builtins.int) -> typing.Optional[builtins.list[builtins.int]]:
+    r"""
+    Render the first instance of an eligible solver-sketch solid helper without
+    unrelated geometry. Returns None when ordinary execution is required.
+    """
+
+async def try_render_sketch_instance_code(code: builtins.str, sketch_name: builtins.str, instance_index: builtins.int) -> typing.Optional[builtins.list[builtins.int]]:
+    r"""
+    Code-string counterpart of try_render_sketch_instance.
     """
 
 
