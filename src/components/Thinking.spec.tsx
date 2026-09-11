@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react'
+import { StrictMode } from 'react'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
 import type { MlCopilotFile, MlCopilotServerMessage } from '@kittycad/lib'
@@ -31,7 +32,10 @@ describe('FilesSnapshot', () => {
   let revokeObjectURLMock: ReturnType<typeof vi.fn>
 
   beforeEach(() => {
-    createObjectURLMock = vi.fn((blob: Blob) => `blob:mock-url-${blob.type}`)
+    let nextUrl = 0
+    createObjectURLMock = vi.fn(
+      (blob: Blob) => `blob:mock-url-${blob.type}-${++nextUrl}`
+    )
     revokeObjectURLMock = vi.fn()
 
     global.URL.createObjectURL =
@@ -134,6 +138,162 @@ describe('FilesSnapshot', () => {
 
     expect(screen.getByAltText('reference.png')).toBeInTheDocument()
     expect(createObjectURLMock).toHaveBeenCalledOnce()
+  })
+
+  test('preserves image URLs when the reasoning parent rerenders', () => {
+    const file: MlCopilotFile = {
+      name: 'snapshot.png',
+      mimetype: 'image/png',
+      data: MOCK_PNG_DATA,
+    }
+    const view = () => (
+      <Thinking
+        thoughts={[{ files: { files: [{ ...file }] } }]}
+        isDone={true}
+        onlyShowImmediateThought={false}
+      />
+    )
+    const { rerender } = render(view())
+    const image = screen.getByAltText(file.name)
+    const url = image.getAttribute('src')
+
+    rerender(view())
+    rerender(view())
+
+    expect(screen.getByAltText(file.name)).toBe(image)
+    expect(image).toHaveAttribute('src', url)
+    expect(createObjectURLMock).toHaveBeenCalledOnce()
+    expect(revokeObjectURLMock).not.toHaveBeenCalled()
+  })
+
+  test('keeps a loaded image while another attachment loads', () => {
+    const firstRef = { prompt_id: 'prompt', seq: 1, index: 0 }
+    const secondRef = { ...firstRef, index: 1 }
+    const first: MlCopilotFile = {
+      name: 'first.png',
+      mimetype: 'image/png',
+      data: [],
+      attachment_ref: firstRef,
+    }
+    const second = { ...first, name: 'second.png', attachment_ref: secondRef }
+    const loadedFirst = { ...first, data: MOCK_PNG_DATA }
+    const loadedSecond = { ...second, data: MOCK_PNG_DATA }
+    const onFetchAttachment = vi.fn()
+    const { rerender, unmount } = render(
+      <FilesSnapshot
+        files={[first, second]}
+        attachmentFetches={{
+          'prompt:1:0': { status: 'loaded', file: loadedFirst },
+        }}
+        onFetchAttachment={onFetchAttachment}
+      />
+    )
+    const firstUrl = screen.getByAltText(first.name).getAttribute('src')
+
+    fireEvent.click(screen.getByRole('button', { name: /second.png: Load/ }))
+    expect(onFetchAttachment).toHaveBeenCalledExactlyOnceWith(secondRef)
+    rerender(
+      <FilesSnapshot
+        files={[first, second]}
+        attachmentFetches={{
+          'prompt:1:0': { status: 'loaded', file: loadedFirst },
+          'prompt:1:1': { status: 'loading' },
+        }}
+        onFetchAttachment={onFetchAttachment}
+      />
+    )
+    expect(screen.getByAltText(first.name)).toHaveAttribute('src', firstUrl)
+    expect(createObjectURLMock).toHaveBeenCalledOnce()
+    expect(revokeObjectURLMock).not.toHaveBeenCalled()
+
+    rerender(
+      <FilesSnapshot
+        files={[first, second]}
+        attachmentFetches={{
+          'prompt:1:0': { status: 'loaded', file: loadedFirst },
+          'prompt:1:1': { status: 'loaded', file: loadedSecond },
+        }}
+        onFetchAttachment={onFetchAttachment}
+      />
+    )
+    expect(screen.getByAltText(first.name)).toHaveAttribute('src', firstUrl)
+    expect(screen.getByAltText(second.name)).toBeInTheDocument()
+    expect(createObjectURLMock).toHaveBeenCalledTimes(2)
+    expect(revokeObjectURLMock).not.toHaveBeenCalled()
+    unmount()
+    expect(revokeObjectURLMock).toHaveBeenCalledTimes(2)
+  })
+
+  test('detaches an old image source before revoking it on replacement', () => {
+    const revokedWhileDisplayed: string[] = []
+    revokeObjectURLMock.mockImplementation((url: string) => {
+      if (
+        screen
+          .queryAllByRole('img')
+          .some((image) => image.getAttribute('src') === url)
+      ) {
+        revokedWhileDisplayed.push(url)
+      }
+    })
+    const file: MlCopilotFile = {
+      name: 'snapshot.png',
+      mimetype: 'image/png',
+      data: MOCK_PNG_DATA,
+    }
+    const { rerender, unmount } = render(<FilesSnapshot files={[file]} />)
+    const oldUrl = screen.getByAltText(file.name).getAttribute('src')
+
+    rerender(
+      <FilesSnapshot files={[{ ...file, data: [...MOCK_PNG_DATA, 0] }]} />
+    )
+    expect(screen.getByAltText(file.name)).not.toHaveAttribute('src', oldUrl)
+    expect(revokeObjectURLMock).toHaveBeenCalledExactlyOnceWith(oldUrl)
+    unmount()
+    expect(revokedWhileDisplayed).toEqual([])
+    expect(revokeObjectURLMock).toHaveBeenCalledTimes(2)
+  })
+
+  test('retries image rendering when a failed source is replaced', () => {
+    const file: MlCopilotFile = {
+      name: 'snapshot.png',
+      mimetype: 'image/png',
+      data: MOCK_PNG_DATA,
+    }
+    const { rerender } = render(<FilesSnapshot files={[file]} />)
+    fireEvent.error(screen.getByAltText(file.name))
+    expect(screen.queryByAltText(file.name)).not.toBeInTheDocument()
+
+    rerender(
+      <FilesSnapshot files={[{ ...file, data: [...MOCK_PNG_DATA, 0] }]} />
+    )
+    expect(screen.getByAltText(file.name)).toBeInTheDocument()
+  })
+
+  test('releases each URL once through StrictMode setup and final unmount', () => {
+    const file: MlCopilotFile = {
+      name: 'snapshot.png',
+      mimetype: 'image/png',
+      data: MOCK_PNG_DATA,
+    }
+    const view = () => (
+      <StrictMode>
+        <FilesSnapshot files={[file]} />
+      </StrictMode>
+    )
+    const { rerender, unmount } = render(view())
+    const url = screen.getByAltText(file.name).getAttribute('src')
+    const created = createObjectURLMock.mock.calls.length
+    rerender(view())
+    expect(screen.getByAltText(file.name)).toHaveAttribute('src', url)
+    expect(createObjectURLMock).toHaveBeenCalledTimes(created)
+    expect(revokeObjectURLMock).not.toHaveBeenCalledWith(url)
+    unmount()
+    const createdUrls = createObjectURLMock.mock.results.map(
+      ({ value }) => value
+    )
+    expect(revokeObjectURLMock.mock.calls.map(([url]) => url).sort()).toEqual(
+      createdUrls.sort()
+    )
   })
 
   test('renders a single image file with correct filename', () => {

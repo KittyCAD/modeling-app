@@ -476,9 +476,9 @@ const ImageFileItem = (props: {
   url: string | undefined
   onDownload: (url: string, filename: string) => void
 }) => {
-  const [imageError, setImageError] = useState(false)
+  const [failedUrl, setFailedUrl] = useState<string>()
 
-  if (!props.url || imageError) {
+  if (!props.url || props.url === failedUrl) {
     // Fallback to file icon if image fails to load
     return (
       <button
@@ -509,16 +509,64 @@ const ImageFileItem = (props: {
           src={props.url}
           alt={props.file.name}
           className="block h-auto max-w-full"
-          onError={() => setImageError(true)}
+          onError={() => setFailedUrl(props.url)}
         />
       </button>
     </div>
   )
 }
 
-const FileList = (props: { files: MlCopilotFile[] } & AttachmentFetchProps) => {
-  const [objectUrls, setObjectUrls] = useState<Array<string | undefined>>([])
+// Each rendered file owns its URL independently of the surrounding file list.
+const LoadedFileItem = (props: { file: MlCopilotFile }) => {
+  const { data, mimetype } = props.file
+  const [objectUrl, setObjectUrl] = useState<{
+    data: number[]
+    mimetype: string
+    url: string
+  }>()
 
+  useEffect(() => {
+    if (data.length === 0) return
+    const url = bytesToDataUrl(data, mimetype)
+    setObjectUrl({ data, mimetype, url })
+    return () => URL.revokeObjectURL(url)
+  }, [data, mimetype])
+
+  // Detach a replaced source in the commit before its effect cleanup revokes it.
+  const url =
+    objectUrl?.data === data && objectUrl.mimetype === mimetype
+      ? objectUrl.url
+      : undefined
+
+  const handleDownload = (url: string, filename: string) => {
+    const link = document.createElement('a')
+    link.href = url
+    link.download = filename
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
+  if (isImageMimetype(mimetype)) {
+    return (
+      <ImageFileItem file={props.file} url={url} onDownload={handleDownload} />
+    )
+  }
+
+  return (
+    <button
+      onClick={() => url && handleDownload(url, props.file.name)}
+      className="flex flex-row gap-2 items-center cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-90 p-2 rounded transition-colors text-left w-full"
+      title={`Click to download ${props.file.name}`}
+    >
+      <CustomIcon name="file" className="w-5 h-5 flex-shrink-0" />
+      <span className="text-sm truncate">{props.file.name}</span>
+      <CustomIcon name="download" className="w-4 h-4 ml-auto flex-shrink-0" />
+    </button>
+  )
+}
+
+const FileList = (props: { files: MlCopilotFile[] } & AttachmentFetchProps) => {
   const resolvedFiles = useMemo(
     () =>
       props.files.map((file) => {
@@ -531,34 +579,6 @@ const FileList = (props: { files: MlCopilotFile[] } & AttachmentFetchProps) => {
       }),
     [props.attachmentFetches, props.files]
   )
-
-  useEffect(() => {
-    // Create object URLs for all files
-    const urls = resolvedFiles.map((file) =>
-      isReplayAttachmentUnavailable(file) || file.data.length === 0
-        ? undefined
-        : bytesToDataUrl(file.data, file.mimetype)
-    )
-    setObjectUrls(urls)
-
-    // Cleanup object URLs when component unmounts
-    return () => {
-      urls.forEach((url) => {
-        if (url) {
-          URL.revokeObjectURL(url)
-        }
-      })
-    }
-  }, [resolvedFiles])
-
-  const handleDownload = (url: string, filename: string) => {
-    const link = document.createElement('a')
-    link.href = url
-    link.download = filename
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-  }
 
   const fileItems = resolvedFiles.map((file, index) => ({ file, index }))
   const imageFiles = fileItems.filter(({ file }) =>
@@ -599,15 +619,7 @@ const FileList = (props: { files: MlCopilotFile[] } & AttachmentFetchProps) => {
         const fetchItem = attachmentFetchItem(index)
         if (fetchItem) return fetchItem
 
-        const url = objectUrls[index]
-        return (
-          <ImageFileItem
-            key={`${file.name}-${index}`}
-            file={file}
-            url={url}
-            onDownload={handleDownload}
-          />
-        )
+        return <LoadedFileItem key={`${file.name}-${index}`} file={file} />
       })}
       {otherFiles.map(({ file, index }) => {
         if (isReplayAttachmentUnavailable(file)) {
@@ -618,22 +630,7 @@ const FileList = (props: { files: MlCopilotFile[] } & AttachmentFetchProps) => {
         const fetchItem = attachmentFetchItem(index)
         if (fetchItem) return fetchItem
 
-        const url = objectUrls[index]
-        return (
-          <button
-            key={`${file.name}-${index}`}
-            onClick={() => url && handleDownload(url, file.name)}
-            className="flex flex-row gap-2 items-center cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-90 p-2 rounded transition-colors text-left w-full"
-            title={`Click to download ${file.name}`}
-          >
-            <CustomIcon name="file" className="w-5 h-5 flex-shrink-0" />
-            <span className="text-sm truncate">{file.name}</span>
-            <CustomIcon
-              name="download"
-              className="w-4 h-4 ml-auto flex-shrink-0"
-            />
-          </button>
-        )
+        return <LoadedFileItem key={`${file.name}-${index}`} file={file} />
       })}
     </div>
   )
