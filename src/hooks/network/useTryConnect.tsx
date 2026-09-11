@@ -7,10 +7,7 @@ import { NUMBER_OF_ENGINE_RETRIES } from '@src/lib/constants'
 import { EngineDebugger } from '@src/lib/debugger'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { getDimensions } from '@src/lib/engineConnection/utils'
-import {
-  isUnsupportedEngineVideoCodecError,
-  preflightEngineVideoCodecSupport,
-} from '@src/lib/engineConnection/videoCodecSupport'
+import { preflightEngineVideoCodecSupport } from '@src/lib/engineConnection/videoCodecSupport'
 import { reapplyActiveViewAfterReconnect } from '@src/lib/kclNamedViewActivation'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import type RustContext from '@src/lib/rustContext'
@@ -44,19 +41,19 @@ const attemptToConnectToEngine = async ({
   engineCommandManager: ConnectionManager
   rustContext: RustContext
 }) => {
-  const codecSupport = await preflightEngineVideoCodecSupport()
-  if (isUnsupportedEngineVideoCodecError(codecSupport)) {
-    engineCommandManager.lastConnectionError = codecSupport
+  const codecError = await preflightEngineVideoCodecSupport()
+  if (codecError) {
+    engineCommandManager.lastConnectionError = codecError
     void reportClientError({
       code: ClientErrorCode.EngineUnsupportedVideoCodec,
-      error: codecSupport,
+      error: codecError,
       dedupeKey: ClientErrorCode.EngineUnsupportedVideoCodec,
       extra: {
-        browserVideoCodecs: codecSupport.browserCodecs,
-        engineVideoCodecs: codecSupport.engineCodecs,
+        browserVideoCodecs: codecError.browserCodecs,
+        engineVideoCodecs: codecError.engineCodecs,
       },
     })
-    return Promise.reject(codecSupport)
+    return Promise.reject(codecError)
   }
 
   const connection = new Promise<boolean>((resolve, reject) => {

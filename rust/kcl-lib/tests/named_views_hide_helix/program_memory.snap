@@ -6,8 +6,8 @@ description: Variables in memory after executing named_views_hide_helix.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
-      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -44,7 +44,7 @@ description: Variables in memory after executing named_views_hide_helix.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+                "id": "[uuid]",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -118,8 +118,8 @@ description: Variables in memory after executing named_views_hide_helix.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-                  "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -148,7 +148,7 @@ description: Variables in memory after executing named_views_hide_helix.kcl
                     "units": null
                   }
                 },
-                "sketchId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -164,7 +164,7 @@ description: Variables in memory after executing named_views_hide_helix.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                "id": "[uuid]",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -238,8 +238,8 @@ description: Variables in memory after executing named_views_hide_helix.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-                  "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -268,7 +268,7 @@ description: Variables in memory after executing named_views_hide_helix.kcl
                     "units": null
                   }
                 },
-                "sketchId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -284,7 +284,7 @@ description: Variables in memory after executing named_views_hide_helix.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+                "id": "[uuid]",
                 "objectId": 10,
                 "kind": {
                   "line": {
@@ -358,8 +358,8 @@ description: Variables in memory after executing named_views_hide_helix.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-                  "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -388,7 +388,7 @@ description: Variables in memory after executing named_views_hide_helix.kcl
                     "units": null
                   }
                 },
-                "sketchId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -404,7 +404,7 @@ description: Variables in memory after executing named_views_hide_helix.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+                "id": "[uuid]",
                 "objectId": 13,
                 "kind": {
                   "line": {
@@ -478,8 +478,8 @@ description: Variables in memory after executing named_views_hide_helix.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-                  "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -508,7 +508,7 @@ description: Variables in memory after executing named_views_hide_helix.kcl
                     "units": null
                   }
                 },
-                "sketchId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -525,11 +525,11 @@ description: Variables in memory after executing named_views_hide_helix.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -553,7 +553,7 @@ description: Variables in memory after executing named_views_hide_helix.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -577,7 +577,7 @@ description: Variables in memory after executing named_views_hide_helix.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -601,7 +601,7 @@ description: Variables in memory after executing named_views_hide_helix.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -626,8 +626,8 @@ description: Variables in memory after executing named_views_hide_helix.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 0,
                 "kind": "Custom",
                 "origin": {
@@ -667,7 +667,7 @@ description: Variables in memory after executing named_views_hide_helix.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -689,8 +689,8 @@ description: Variables in memory after executing named_views_hide_helix.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
-              "originalId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -705,14 +705,14 @@ description: Variables in memory after executing named_views_hide_helix.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
-      "originalId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
-      "topologyId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
-      "artifactId": "59bc8baf-257f-5783-ad91-95db236aa6b0",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "e628cf9a-c8ce-55b0-bb34-465a2b8f75f2",
-          "id": "c4f9a00a-3e9d-5f20-b0da-ed3760ce5c0b",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 466,
@@ -725,8 +725,8 @@ description: Variables in memory after executing named_views_hide_helix.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "c5d18838-435b-51c6-bdc5-10a9ff2bc999",
-          "id": "4f41ddde-b62a-57ea-9759-be9e5d1ec109",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 529,
@@ -739,8 +739,8 @@ description: Variables in memory after executing named_views_hide_helix.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "462dd653-b1ce-54cf-9ba8-7ddc88b2560c",
-          "id": "c8ff24c1-8498-5ee9-bccb-5f80d2429aa6",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 593,
@@ -753,8 +753,8 @@ description: Variables in memory after executing named_views_hide_helix.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "747ead14-4b3c-582f-bd9b-60a361193164",
-          "id": "348addf4-a7bf-5d18-a8d1-fa1c52cb243d",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 658,
@@ -770,11 +770,11 @@ description: Variables in memory after executing named_views_hide_helix.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "c4f9a00a-3e9d-5f20-b0da-ed3760ce5c0b",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -798,7 +798,7 @@ description: Variables in memory after executing named_views_hide_helix.kcl
           },
           {
             "__geoMeta": {
-              "id": "4f41ddde-b62a-57ea-9759-be9e5d1ec109",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -822,7 +822,7 @@ description: Variables in memory after executing named_views_hide_helix.kcl
           },
           {
             "__geoMeta": {
-              "id": "c8ff24c1-8498-5ee9-bccb-5f80d2429aa6",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -846,7 +846,7 @@ description: Variables in memory after executing named_views_hide_helix.kcl
           },
           {
             "__geoMeta": {
-              "id": "348addf4-a7bf-5d18-a8d1-fa1c52cb243d",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -871,8 +871,8 @@ description: Variables in memory after executing named_views_hide_helix.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-          "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -912,7 +912,7 @@ description: Variables in memory after executing named_views_hide_helix.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -934,13 +934,13 @@ description: Variables in memory after executing named_views_hide_helix.kcl
             "value": "line4"
           }
         },
-        "artifactId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
-        "originalId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "b8bff4df-a82d-5272-8a2e-9d4fed38f987",
-      "endCapId": "3e0b3368-2b07-5b7c-b891-28cdcf33ce36",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -948,8 +948,8 @@ description: Variables in memory after executing named_views_hide_helix.kcl
   "helixHidden": {
     "type": "Helix",
     "value": {
-      "value": "3c085bb9-a401-55d5-8042-5a9095193d55",
-      "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
+      "value": "[uuid]",
+      "artifactId": "[uuid]",
       "revolutions": 5.0,
       "angleStart": 0.0,
       "ccw": false,
@@ -960,8 +960,8 @@ description: Variables in memory after executing named_views_hide_helix.kcl
   "helixVisible": {
     "type": "Helix",
     "value": {
-      "value": "f7696437-0c54-515c-9a57-315967ca9a9d",
-      "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+      "value": "[uuid]",
+      "artifactId": "[uuid]",
       "revolutions": 5.0,
       "angleStart": 0.0,
       "ccw": false,

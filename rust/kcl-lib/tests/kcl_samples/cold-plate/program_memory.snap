@@ -6,8 +6,8 @@ description: Variables in memory after executing cold-plate.kcl
   "__sketch_178_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "6f85cbad-5e6d-549c-850d-909283a25e83",
-      "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "objectId": 177,
       "kind": "Custom",
       "origin": {
@@ -39,8 +39,8 @@ description: Variables in memory after executing cold-plate.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
-      "id": "7c4571e0-7b14-576f-a82e-22280b05874d",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -71,8 +71,8 @@ description: Variables in memory after executing cold-plate.kcl
   "__sketch_297_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
-      "id": "7c4571e0-7b14-576f-a82e-22280b05874d",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -103,8 +103,8 @@ description: Variables in memory after executing cold-plate.kcl
   "__sketch_338_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "f17f2574-657c-597f-b5c5-83541ffc9f7f",
-      "id": "f17f2574-657c-597f-b5c5-83541ffc9f7f",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "objectId": 337,
       "kind": "Custom",
       "origin": {
@@ -199,14 +199,14 @@ description: Variables in memory after executing cold-plate.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
-          "originalId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
-          "topologyId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
-          "artifactId": "cb96bce2-64b3-5697-9ac4-41978548d779",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "ebbc1184-7965-5bea-a830-8fcb881b875a",
-              "id": "818ea15b-89b6-5b6c-b1fc-e8b433c0c0aa",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 15835,
@@ -219,8 +219,8 @@ description: Variables in memory after executing cold-plate.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "948746e3-3112-51f8-adb2-410a02d3bff8",
-              "id": "c79a94a7-7bf7-533d-920f-5fe82715be72",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 15946,
@@ -233,8 +233,8 @@ description: Variables in memory after executing cold-plate.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "b3f4d4d9-65e4-5911-97de-1b478540e799",
-              "id": "ff493dd0-eae7-56fd-9760-1645122dd40c",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 16027,
@@ -247,8 +247,8 @@ description: Variables in memory after executing cold-plate.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "0e56253e-15c1-5090-acda-cb1c54bd956f",
-              "id": "ef34d887-2105-5efb-935a-6787e27b163c",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 16138,
@@ -264,11 +264,11 @@ description: Variables in memory after executing cold-plate.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "818ea15b-89b6-5b6c-b1fc-e8b433c0c0aa",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -298,7 +298,7 @@ description: Variables in memory after executing cold-plate.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "c79a94a7-7bf7-533d-920f-5fe82715be72",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -322,7 +322,7 @@ description: Variables in memory after executing cold-plate.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "ff493dd0-eae7-56fd-9760-1645122dd40c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -352,7 +352,7 @@ description: Variables in memory after executing cold-plate.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "ef34d887-2105-5efb-935a-6787e27b163c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -377,8 +377,8 @@ description: Variables in memory after executing cold-plate.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "cbd0a735-3417-50fd-a670-41b483234c04",
-              "id": "cbd0a735-3417-50fd-a670-41b483234c04",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 296,
               "kind": "Custom",
               "origin": {
@@ -418,7 +418,7 @@ description: Variables in memory after executing cold-plate.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "5e069ec3-b22a-5c34-ae73-15c55f4f871f",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -440,13 +440,13 @@ description: Variables in memory after executing cold-plate.kcl
                 "value": "line4"
               }
             },
-            "artifactId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
-            "originalId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "c029eddd-4856-5095-97b8-6d7735bed617",
-          "endCapId": "1b9d155b-8d80-5026-aacc-bd7f56b81768",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -455,14 +455,14 @@ description: Variables in memory after executing cold-plate.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "be0592ee-a1e3-547d-9a8c-9c3702a9acf2",
-          "originalId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
-          "topologyId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
-          "artifactId": "be0592ee-a1e3-547d-9a8c-9c3702a9acf2",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "ebbc1184-7965-5bea-a830-8fcb881b875a",
-              "id": "818ea15b-89b6-5b6c-b1fc-e8b433c0c0aa",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 15835,
@@ -475,8 +475,8 @@ description: Variables in memory after executing cold-plate.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "948746e3-3112-51f8-adb2-410a02d3bff8",
-              "id": "c79a94a7-7bf7-533d-920f-5fe82715be72",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 15946,
@@ -489,8 +489,8 @@ description: Variables in memory after executing cold-plate.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "b3f4d4d9-65e4-5911-97de-1b478540e799",
-              "id": "ff493dd0-eae7-56fd-9760-1645122dd40c",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 16027,
@@ -503,8 +503,8 @@ description: Variables in memory after executing cold-plate.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "0e56253e-15c1-5090-acda-cb1c54bd956f",
-              "id": "ef34d887-2105-5efb-935a-6787e27b163c",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 16138,
@@ -520,11 +520,11 @@ description: Variables in memory after executing cold-plate.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "be0592ee-a1e3-547d-9a8c-9c3702a9acf2",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "818ea15b-89b6-5b6c-b1fc-e8b433c0c0aa",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -554,7 +554,7 @@ description: Variables in memory after executing cold-plate.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "c79a94a7-7bf7-533d-920f-5fe82715be72",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -578,7 +578,7 @@ description: Variables in memory after executing cold-plate.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "ff493dd0-eae7-56fd-9760-1645122dd40c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -608,7 +608,7 @@ description: Variables in memory after executing cold-plate.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "ef34d887-2105-5efb-935a-6787e27b163c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -633,8 +633,8 @@ description: Variables in memory after executing cold-plate.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "cbd0a735-3417-50fd-a670-41b483234c04",
-              "id": "cbd0a735-3417-50fd-a670-41b483234c04",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 296,
               "kind": "Custom",
               "origin": {
@@ -674,7 +674,7 @@ description: Variables in memory after executing cold-plate.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "5e069ec3-b22a-5c34-ae73-15c55f4f871f",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -696,13 +696,13 @@ description: Variables in memory after executing cold-plate.kcl
                 "value": "line4"
               }
             },
-            "artifactId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
-            "originalId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "c029eddd-4856-5095-97b8-6d7735bed617",
-          "endCapId": "1b9d155b-8d80-5026-aacc-bd7f56b81768",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -711,14 +711,14 @@ description: Variables in memory after executing cold-plate.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "3edc8b0a-c205-55ac-9e46-2b51deaeab65",
-          "originalId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
-          "topologyId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
-          "artifactId": "3edc8b0a-c205-55ac-9e46-2b51deaeab65",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "ebbc1184-7965-5bea-a830-8fcb881b875a",
-              "id": "818ea15b-89b6-5b6c-b1fc-e8b433c0c0aa",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 15835,
@@ -731,8 +731,8 @@ description: Variables in memory after executing cold-plate.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "948746e3-3112-51f8-adb2-410a02d3bff8",
-              "id": "c79a94a7-7bf7-533d-920f-5fe82715be72",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 15946,
@@ -745,8 +745,8 @@ description: Variables in memory after executing cold-plate.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "b3f4d4d9-65e4-5911-97de-1b478540e799",
-              "id": "ff493dd0-eae7-56fd-9760-1645122dd40c",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 16027,
@@ -759,8 +759,8 @@ description: Variables in memory after executing cold-plate.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "0e56253e-15c1-5090-acda-cb1c54bd956f",
-              "id": "ef34d887-2105-5efb-935a-6787e27b163c",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 16138,
@@ -776,11 +776,11 @@ description: Variables in memory after executing cold-plate.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "3edc8b0a-c205-55ac-9e46-2b51deaeab65",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "818ea15b-89b6-5b6c-b1fc-e8b433c0c0aa",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -810,7 +810,7 @@ description: Variables in memory after executing cold-plate.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "c79a94a7-7bf7-533d-920f-5fe82715be72",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -834,7 +834,7 @@ description: Variables in memory after executing cold-plate.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "ff493dd0-eae7-56fd-9760-1645122dd40c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -864,7 +864,7 @@ description: Variables in memory after executing cold-plate.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "ef34d887-2105-5efb-935a-6787e27b163c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -889,8 +889,8 @@ description: Variables in memory after executing cold-plate.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "cbd0a735-3417-50fd-a670-41b483234c04",
-              "id": "cbd0a735-3417-50fd-a670-41b483234c04",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 296,
               "kind": "Custom",
               "origin": {
@@ -930,7 +930,7 @@ description: Variables in memory after executing cold-plate.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "5e069ec3-b22a-5c34-ae73-15c55f4f871f",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -952,13 +952,13 @@ description: Variables in memory after executing cold-plate.kcl
                 "value": "line4"
               }
             },
-            "artifactId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
-            "originalId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "c029eddd-4856-5095-97b8-6d7735bed617",
-          "endCapId": "1b9d155b-8d80-5026-aacc-bd7f56b81768",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -967,14 +967,14 @@ description: Variables in memory after executing cold-plate.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "9e05a952-badd-5a9c-897b-a46d38793558",
-          "originalId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
-          "topologyId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
-          "artifactId": "9e05a952-badd-5a9c-897b-a46d38793558",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "ebbc1184-7965-5bea-a830-8fcb881b875a",
-              "id": "818ea15b-89b6-5b6c-b1fc-e8b433c0c0aa",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 15835,
@@ -987,8 +987,8 @@ description: Variables in memory after executing cold-plate.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "948746e3-3112-51f8-adb2-410a02d3bff8",
-              "id": "c79a94a7-7bf7-533d-920f-5fe82715be72",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 15946,
@@ -1001,8 +1001,8 @@ description: Variables in memory after executing cold-plate.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "b3f4d4d9-65e4-5911-97de-1b478540e799",
-              "id": "ff493dd0-eae7-56fd-9760-1645122dd40c",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 16027,
@@ -1015,8 +1015,8 @@ description: Variables in memory after executing cold-plate.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "0e56253e-15c1-5090-acda-cb1c54bd956f",
-              "id": "ef34d887-2105-5efb-935a-6787e27b163c",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 16138,
@@ -1032,11 +1032,11 @@ description: Variables in memory after executing cold-plate.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "9e05a952-badd-5a9c-897b-a46d38793558",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "818ea15b-89b6-5b6c-b1fc-e8b433c0c0aa",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1066,7 +1066,7 @@ description: Variables in memory after executing cold-plate.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "c79a94a7-7bf7-533d-920f-5fe82715be72",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -1090,7 +1090,7 @@ description: Variables in memory after executing cold-plate.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "ff493dd0-eae7-56fd-9760-1645122dd40c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1120,7 +1120,7 @@ description: Variables in memory after executing cold-plate.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "ef34d887-2105-5efb-935a-6787e27b163c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -1145,8 +1145,8 @@ description: Variables in memory after executing cold-plate.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "cbd0a735-3417-50fd-a670-41b483234c04",
-              "id": "cbd0a735-3417-50fd-a670-41b483234c04",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 296,
               "kind": "Custom",
               "origin": {
@@ -1186,7 +1186,7 @@ description: Variables in memory after executing cold-plate.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "5e069ec3-b22a-5c34-ae73-15c55f4f871f",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -1208,13 +1208,13 @@ description: Variables in memory after executing cold-plate.kcl
                 "value": "line4"
               }
             },
-            "artifactId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
-            "originalId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "c029eddd-4856-5095-97b8-6d7735bed617",
-          "endCapId": "1b9d155b-8d80-5026-aacc-bd7f56b81768",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -1225,14 +1225,14 @@ description: Variables in memory after executing cold-plate.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
-      "originalId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
-      "topologyId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
-      "artifactId": "cb96bce2-64b3-5697-9ac4-41978548d779",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "ebbc1184-7965-5bea-a830-8fcb881b875a",
-          "id": "818ea15b-89b6-5b6c-b1fc-e8b433c0c0aa",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 15835,
@@ -1245,8 +1245,8 @@ description: Variables in memory after executing cold-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "948746e3-3112-51f8-adb2-410a02d3bff8",
-          "id": "c79a94a7-7bf7-533d-920f-5fe82715be72",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 15946,
@@ -1259,8 +1259,8 @@ description: Variables in memory after executing cold-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "b3f4d4d9-65e4-5911-97de-1b478540e799",
-          "id": "ff493dd0-eae7-56fd-9760-1645122dd40c",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 16027,
@@ -1273,8 +1273,8 @@ description: Variables in memory after executing cold-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "0e56253e-15c1-5090-acda-cb1c54bd956f",
-          "id": "ef34d887-2105-5efb-935a-6787e27b163c",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 16138,
@@ -1290,11 +1290,11 @@ description: Variables in memory after executing cold-plate.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "818ea15b-89b6-5b6c-b1fc-e8b433c0c0aa",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -1324,7 +1324,7 @@ description: Variables in memory after executing cold-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "c79a94a7-7bf7-533d-920f-5fe82715be72",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1348,7 +1348,7 @@ description: Variables in memory after executing cold-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "ff493dd0-eae7-56fd-9760-1645122dd40c",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -1378,7 +1378,7 @@ description: Variables in memory after executing cold-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "ef34d887-2105-5efb-935a-6787e27b163c",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1403,8 +1403,8 @@ description: Variables in memory after executing cold-plate.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "cbd0a735-3417-50fd-a670-41b483234c04",
-          "id": "cbd0a735-3417-50fd-a670-41b483234c04",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 296,
           "kind": "Custom",
           "origin": {
@@ -1444,7 +1444,7 @@ description: Variables in memory after executing cold-plate.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "5e069ec3-b22a-5c34-ae73-15c55f4f871f",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -1466,13 +1466,13 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "line4"
           }
         },
-        "artifactId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
-        "originalId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
-      "startCapId": "c029eddd-4856-5095-97b8-6d7735bed617",
-      "endCapId": "1b9d155b-8d80-5026-aacc-bd7f56b81768",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "in",
       "sectional": false
     }
@@ -1484,14 +1484,14 @@ description: Variables in memory after executing cold-plate.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
-          "originalId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
-          "topologyId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
-          "artifactId": "cb96bce2-64b3-5697-9ac4-41978548d779",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "ebbc1184-7965-5bea-a830-8fcb881b875a",
-              "id": "818ea15b-89b6-5b6c-b1fc-e8b433c0c0aa",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 15835,
@@ -1504,8 +1504,8 @@ description: Variables in memory after executing cold-plate.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "948746e3-3112-51f8-adb2-410a02d3bff8",
-              "id": "c79a94a7-7bf7-533d-920f-5fe82715be72",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 15946,
@@ -1518,8 +1518,8 @@ description: Variables in memory after executing cold-plate.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "b3f4d4d9-65e4-5911-97de-1b478540e799",
-              "id": "ff493dd0-eae7-56fd-9760-1645122dd40c",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 16027,
@@ -1532,8 +1532,8 @@ description: Variables in memory after executing cold-plate.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "0e56253e-15c1-5090-acda-cb1c54bd956f",
-              "id": "ef34d887-2105-5efb-935a-6787e27b163c",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 16138,
@@ -1549,11 +1549,11 @@ description: Variables in memory after executing cold-plate.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "818ea15b-89b6-5b6c-b1fc-e8b433c0c0aa",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1583,7 +1583,7 @@ description: Variables in memory after executing cold-plate.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "c79a94a7-7bf7-533d-920f-5fe82715be72",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -1607,7 +1607,7 @@ description: Variables in memory after executing cold-plate.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "ff493dd0-eae7-56fd-9760-1645122dd40c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1637,7 +1637,7 @@ description: Variables in memory after executing cold-plate.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "ef34d887-2105-5efb-935a-6787e27b163c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -1662,8 +1662,8 @@ description: Variables in memory after executing cold-plate.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "cbd0a735-3417-50fd-a670-41b483234c04",
-              "id": "cbd0a735-3417-50fd-a670-41b483234c04",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 296,
               "kind": "Custom",
               "origin": {
@@ -1703,7 +1703,7 @@ description: Variables in memory after executing cold-plate.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "5e069ec3-b22a-5c34-ae73-15c55f4f871f",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -1725,13 +1725,13 @@ description: Variables in memory after executing cold-plate.kcl
                 "value": "line4"
               }
             },
-            "artifactId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
-            "originalId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "c029eddd-4856-5095-97b8-6d7735bed617",
-          "endCapId": "1b9d155b-8d80-5026-aacc-bd7f56b81768",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -1740,14 +1740,14 @@ description: Variables in memory after executing cold-plate.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "be0592ee-a1e3-547d-9a8c-9c3702a9acf2",
-          "originalId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
-          "topologyId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
-          "artifactId": "be0592ee-a1e3-547d-9a8c-9c3702a9acf2",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "ebbc1184-7965-5bea-a830-8fcb881b875a",
-              "id": "818ea15b-89b6-5b6c-b1fc-e8b433c0c0aa",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 15835,
@@ -1760,8 +1760,8 @@ description: Variables in memory after executing cold-plate.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "948746e3-3112-51f8-adb2-410a02d3bff8",
-              "id": "c79a94a7-7bf7-533d-920f-5fe82715be72",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 15946,
@@ -1774,8 +1774,8 @@ description: Variables in memory after executing cold-plate.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "b3f4d4d9-65e4-5911-97de-1b478540e799",
-              "id": "ff493dd0-eae7-56fd-9760-1645122dd40c",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 16027,
@@ -1788,8 +1788,8 @@ description: Variables in memory after executing cold-plate.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "0e56253e-15c1-5090-acda-cb1c54bd956f",
-              "id": "ef34d887-2105-5efb-935a-6787e27b163c",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 16138,
@@ -1805,11 +1805,11 @@ description: Variables in memory after executing cold-plate.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "be0592ee-a1e3-547d-9a8c-9c3702a9acf2",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "818ea15b-89b6-5b6c-b1fc-e8b433c0c0aa",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1839,7 +1839,7 @@ description: Variables in memory after executing cold-plate.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "c79a94a7-7bf7-533d-920f-5fe82715be72",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -1863,7 +1863,7 @@ description: Variables in memory after executing cold-plate.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "ff493dd0-eae7-56fd-9760-1645122dd40c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1893,7 +1893,7 @@ description: Variables in memory after executing cold-plate.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "ef34d887-2105-5efb-935a-6787e27b163c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -1918,8 +1918,8 @@ description: Variables in memory after executing cold-plate.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "cbd0a735-3417-50fd-a670-41b483234c04",
-              "id": "cbd0a735-3417-50fd-a670-41b483234c04",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 296,
               "kind": "Custom",
               "origin": {
@@ -1959,7 +1959,7 @@ description: Variables in memory after executing cold-plate.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "5e069ec3-b22a-5c34-ae73-15c55f4f871f",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -1981,13 +1981,13 @@ description: Variables in memory after executing cold-plate.kcl
                 "value": "line4"
               }
             },
-            "artifactId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
-            "originalId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "c029eddd-4856-5095-97b8-6d7735bed617",
-          "endCapId": "1b9d155b-8d80-5026-aacc-bd7f56b81768",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -1996,14 +1996,14 @@ description: Variables in memory after executing cold-plate.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "3edc8b0a-c205-55ac-9e46-2b51deaeab65",
-          "originalId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
-          "topologyId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
-          "artifactId": "3edc8b0a-c205-55ac-9e46-2b51deaeab65",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "ebbc1184-7965-5bea-a830-8fcb881b875a",
-              "id": "818ea15b-89b6-5b6c-b1fc-e8b433c0c0aa",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 15835,
@@ -2016,8 +2016,8 @@ description: Variables in memory after executing cold-plate.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "948746e3-3112-51f8-adb2-410a02d3bff8",
-              "id": "c79a94a7-7bf7-533d-920f-5fe82715be72",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 15946,
@@ -2030,8 +2030,8 @@ description: Variables in memory after executing cold-plate.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "b3f4d4d9-65e4-5911-97de-1b478540e799",
-              "id": "ff493dd0-eae7-56fd-9760-1645122dd40c",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 16027,
@@ -2044,8 +2044,8 @@ description: Variables in memory after executing cold-plate.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "0e56253e-15c1-5090-acda-cb1c54bd956f",
-              "id": "ef34d887-2105-5efb-935a-6787e27b163c",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 16138,
@@ -2061,11 +2061,11 @@ description: Variables in memory after executing cold-plate.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "3edc8b0a-c205-55ac-9e46-2b51deaeab65",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "818ea15b-89b6-5b6c-b1fc-e8b433c0c0aa",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2095,7 +2095,7 @@ description: Variables in memory after executing cold-plate.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "c79a94a7-7bf7-533d-920f-5fe82715be72",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -2119,7 +2119,7 @@ description: Variables in memory after executing cold-plate.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "ff493dd0-eae7-56fd-9760-1645122dd40c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2149,7 +2149,7 @@ description: Variables in memory after executing cold-plate.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "ef34d887-2105-5efb-935a-6787e27b163c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -2174,8 +2174,8 @@ description: Variables in memory after executing cold-plate.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "cbd0a735-3417-50fd-a670-41b483234c04",
-              "id": "cbd0a735-3417-50fd-a670-41b483234c04",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 296,
               "kind": "Custom",
               "origin": {
@@ -2215,7 +2215,7 @@ description: Variables in memory after executing cold-plate.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "5e069ec3-b22a-5c34-ae73-15c55f4f871f",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -2237,13 +2237,13 @@ description: Variables in memory after executing cold-plate.kcl
                 "value": "line4"
               }
             },
-            "artifactId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
-            "originalId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "c029eddd-4856-5095-97b8-6d7735bed617",
-          "endCapId": "1b9d155b-8d80-5026-aacc-bd7f56b81768",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -2252,14 +2252,14 @@ description: Variables in memory after executing cold-plate.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "9e05a952-badd-5a9c-897b-a46d38793558",
-          "originalId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
-          "topologyId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
-          "artifactId": "9e05a952-badd-5a9c-897b-a46d38793558",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "ebbc1184-7965-5bea-a830-8fcb881b875a",
-              "id": "818ea15b-89b6-5b6c-b1fc-e8b433c0c0aa",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 15835,
@@ -2272,8 +2272,8 @@ description: Variables in memory after executing cold-plate.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "948746e3-3112-51f8-adb2-410a02d3bff8",
-              "id": "c79a94a7-7bf7-533d-920f-5fe82715be72",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 15946,
@@ -2286,8 +2286,8 @@ description: Variables in memory after executing cold-plate.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "b3f4d4d9-65e4-5911-97de-1b478540e799",
-              "id": "ff493dd0-eae7-56fd-9760-1645122dd40c",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 16027,
@@ -2300,8 +2300,8 @@ description: Variables in memory after executing cold-plate.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "0e56253e-15c1-5090-acda-cb1c54bd956f",
-              "id": "ef34d887-2105-5efb-935a-6787e27b163c",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 16138,
@@ -2317,11 +2317,11 @@ description: Variables in memory after executing cold-plate.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "9e05a952-badd-5a9c-897b-a46d38793558",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "818ea15b-89b6-5b6c-b1fc-e8b433c0c0aa",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2351,7 +2351,7 @@ description: Variables in memory after executing cold-plate.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "c79a94a7-7bf7-533d-920f-5fe82715be72",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -2375,7 +2375,7 @@ description: Variables in memory after executing cold-plate.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "ff493dd0-eae7-56fd-9760-1645122dd40c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2405,7 +2405,7 @@ description: Variables in memory after executing cold-plate.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "ef34d887-2105-5efb-935a-6787e27b163c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -2430,8 +2430,8 @@ description: Variables in memory after executing cold-plate.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "cbd0a735-3417-50fd-a670-41b483234c04",
-              "id": "cbd0a735-3417-50fd-a670-41b483234c04",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 296,
               "kind": "Custom",
               "origin": {
@@ -2471,7 +2471,7 @@ description: Variables in memory after executing cold-plate.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "5e069ec3-b22a-5c34-ae73-15c55f4f871f",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -2493,13 +2493,13 @@ description: Variables in memory after executing cold-plate.kcl
                 "value": "line4"
               }
             },
-            "artifactId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
-            "originalId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "c029eddd-4856-5095-97b8-6d7735bed617",
-          "endCapId": "1b9d155b-8d80-5026-aacc-bd7f56b81768",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -2515,7 +2515,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "5d2a2786-5258-5364-b1b2-b28334229017",
+                "id": "[uuid]",
                 "objectId": 307,
                 "kind": {
                   "arc": {
@@ -2621,8 +2621,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "cbd0a735-3417-50fd-a670-41b483234c04",
-                  "id": "cbd0a735-3417-50fd-a670-41b483234c04",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 296,
                   "origin": {
@@ -2651,7 +2651,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "3322387d-5b58-56ea-8103-4d2112d432af",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc1"
@@ -2667,7 +2667,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "5e1dab3c-521b-58cf-85c3-1a827d68f2b4",
+                "id": "[uuid]",
                 "objectId": 314,
                 "kind": {
                   "arc": {
@@ -2773,8 +2773,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "cbd0a735-3417-50fd-a670-41b483234c04",
-                  "id": "cbd0a735-3417-50fd-a670-41b483234c04",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 296,
                   "origin": {
@@ -2803,7 +2803,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "3322387d-5b58-56ea-8103-4d2112d432af",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc3"
@@ -2819,7 +2819,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "5e11c45c-4e86-5b88-8029-f0565bc2f6cc",
+                "id": "[uuid]",
                 "objectId": 300,
                 "kind": {
                   "line": {
@@ -2894,8 +2894,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "cbd0a735-3417-50fd-a670-41b483234c04",
-                  "id": "cbd0a735-3417-50fd-a670-41b483234c04",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 296,
                   "origin": {
@@ -2924,7 +2924,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "3322387d-5b58-56ea-8103-4d2112d432af",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bottomCenterGuide"
@@ -2940,7 +2940,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "77ac15fd-2d5b-5522-8e03-3d29dfb3c1c7",
+                "id": "[uuid]",
                 "objectId": 310,
                 "kind": {
                   "line": {
@@ -3014,8 +3014,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "cbd0a735-3417-50fd-a670-41b483234c04",
-                  "id": "cbd0a735-3417-50fd-a670-41b483234c04",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 296,
                   "origin": {
@@ -3044,7 +3044,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "3322387d-5b58-56ea-8103-4d2112d432af",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -3060,7 +3060,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "0e5111f2-33bb-50f3-812c-3fe7fe747c41",
+                "id": "[uuid]",
                 "objectId": 317,
                 "kind": {
                   "line": {
@@ -3134,8 +3134,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "cbd0a735-3417-50fd-a670-41b483234c04",
-                  "id": "cbd0a735-3417-50fd-a670-41b483234c04",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 296,
                   "origin": {
@@ -3164,7 +3164,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "3322387d-5b58-56ea-8103-4d2112d432af",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -3181,11 +3181,11 @@ description: Variables in memory after executing cold-plate.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "3322387d-5b58-56ea-8103-4d2112d432af",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "5d2a2786-5258-5364-b1b2-b28334229017",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -3215,7 +3215,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "77ac15fd-2d5b-5522-8e03-3d29dfb3c1c7",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -3239,7 +3239,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "5e1dab3c-521b-58cf-85c3-1a827d68f2b4",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -3269,7 +3269,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "0e5111f2-33bb-50f3-812c-3fe7fe747c41",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -3294,8 +3294,8 @@ description: Variables in memory after executing cold-plate.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "cbd0a735-3417-50fd-a670-41b483234c04",
-                "id": "cbd0a735-3417-50fd-a670-41b483234c04",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 296,
                 "kind": "Custom",
                 "origin": {
@@ -3335,7 +3335,7 @@ description: Variables in memory after executing cold-plate.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "5e069ec3-b22a-5c34-ae73-15c55f4f871f",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -3357,8 +3357,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "3322387d-5b58-56ea-8103-4d2112d432af",
-              "originalId": "3322387d-5b58-56ea-8103-4d2112d432af",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "in",
               "isClosed": "implicitly"
             }
@@ -3372,7 +3372,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "c9d8522f-60d2-513b-9c62-a4a3110e5970",
+                "id": "[uuid]",
                 "objectId": 303,
                 "kind": {
                   "line": {
@@ -3447,8 +3447,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "cbd0a735-3417-50fd-a670-41b483234c04",
-                  "id": "cbd0a735-3417-50fd-a670-41b483234c04",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 296,
                   "origin": {
@@ -3477,7 +3477,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "3322387d-5b58-56ea-8103-4d2112d432af",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "topCenterGuide"
@@ -3494,11 +3494,11 @@ description: Variables in memory after executing cold-plate.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "818ea15b-89b6-5b6c-b1fc-e8b433c0c0aa",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -3528,7 +3528,7 @@ description: Variables in memory after executing cold-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "c79a94a7-7bf7-533d-920f-5fe82715be72",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3552,7 +3552,7 @@ description: Variables in memory after executing cold-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "ff493dd0-eae7-56fd-9760-1645122dd40c",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -3582,7 +3582,7 @@ description: Variables in memory after executing cold-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "ef34d887-2105-5efb-935a-6787e27b163c",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3607,8 +3607,8 @@ description: Variables in memory after executing cold-plate.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "cbd0a735-3417-50fd-a670-41b483234c04",
-        "id": "cbd0a735-3417-50fd-a670-41b483234c04",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 296,
         "kind": "Custom",
         "origin": {
@@ -3648,7 +3648,7 @@ description: Variables in memory after executing cold-plate.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "5e069ec3-b22a-5c34-ae73-15c55f4f871f",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -3670,8 +3670,8 @@ description: Variables in memory after executing cold-plate.kcl
           "value": "line4"
         }
       },
-      "artifactId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
-      "originalId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "in",
       "isClosed": "explicitly"
     }
@@ -3703,14 +3703,14 @@ description: Variables in memory after executing cold-plate.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "bae7e631-b71d-5980-89ea-29b2140a8a32",
-      "originalId": "bae7e631-b71d-5980-89ea-29b2140a8a32",
-      "topologyId": "bae7e631-b71d-5980-89ea-29b2140a8a32",
-      "artifactId": "76d81d0d-ef16-5794-bc58-3132468566e9",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "ac23d43a-11ef-5e93-b0ea-8a9bd985d01c",
-          "id": "d1f3a375-5481-5dfa-9f65-5cf33b5f72b4",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4551,
@@ -3723,8 +3723,8 @@ description: Variables in memory after executing cold-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "a08aca96-7a77-5507-ae4d-1de0c00fb24a",
-          "id": "01dffa0a-8e31-56fe-996d-1a0a6acf85b4",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4629,
@@ -3737,8 +3737,8 @@ description: Variables in memory after executing cold-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "e017764e-68d3-5eb4-a911-046eab33cf55",
-          "id": "b45b08b7-0944-5f77-9ac0-4dab44a9d65e",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4710,
@@ -3751,8 +3751,8 @@ description: Variables in memory after executing cold-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "e3b2a02f-e8a0-51e1-9d18-bacf1634d6be",
-          "id": "dede8451-3e10-5006-b49e-56bc5f615f92",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4821,
@@ -3765,8 +3765,8 @@ description: Variables in memory after executing cold-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "5ca98009-1906-5549-86cf-01df304c39d2",
-          "id": "1f7c390d-8f3c-577d-b71a-538bc9b56a8a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4902,
@@ -3779,8 +3779,8 @@ description: Variables in memory after executing cold-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "1390db89-90eb-505e-ab8d-6e4eb830325f",
-          "id": "c1d1bd47-6417-5d2d-8386-f0d45e3d8622",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4983,
@@ -3793,8 +3793,8 @@ description: Variables in memory after executing cold-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "955b5a04-eb86-5772-a6d7-669212c05d54",
-          "id": "7a1e4f40-7361-5fba-b6fb-94e5aa48233b",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 5064,
@@ -3807,8 +3807,8 @@ description: Variables in memory after executing cold-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "5c8d72ff-51aa-5e0f-9a71-296423dbf8b2",
-          "id": "e2bf7a92-9d06-53de-8f17-fa9bff9f68d2",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 5175,
@@ -3821,8 +3821,8 @@ description: Variables in memory after executing cold-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "c8699b99-a975-5522-83ce-42b900ac7831",
-          "id": "ab8db195-9d18-5863-80ce-8ed8a9bf4915",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 5256,
@@ -3835,8 +3835,8 @@ description: Variables in memory after executing cold-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "1620832f-f272-51d7-91e7-cc5735f62d3c",
-          "id": "6d0018c3-96e9-5824-a880-5417ed73276a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 5334,
@@ -3849,8 +3849,8 @@ description: Variables in memory after executing cold-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "12e8a49b-a092-5264-91f3-8293fd73f97b",
-          "id": "c90e295a-4eea-515c-947c-d4c88ee05f90",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 5413,
@@ -3863,8 +3863,8 @@ description: Variables in memory after executing cold-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "090fe85c-ee64-5fd8-8501-9a5d7d152c23",
-          "id": "bd4f2747-3446-5514-ac25-d6a878190fa9",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 5528,
@@ -3877,8 +3877,8 @@ description: Variables in memory after executing cold-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "f24ec400-7373-50db-95aa-473ea3bb4177",
-          "id": "ca1eb218-932e-5bab-84fb-21439a59cfa7",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 5610,
@@ -3891,8 +3891,8 @@ description: Variables in memory after executing cold-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "5bc91bcc-f74e-51ed-89e7-1737ebdad7f7",
-          "id": "15e2cdab-527a-5310-a829-8c30e394ddd8",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 5689,
@@ -3905,8 +3905,8 @@ description: Variables in memory after executing cold-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "2321e861-55f6-564d-b1d6-8da17b188588",
-          "id": "71e5667f-120b-5cc6-9f34-84cf4c22f940",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 5766,
@@ -3919,8 +3919,8 @@ description: Variables in memory after executing cold-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "e3fa8d2b-f16a-52dd-9c8e-0ceb5fcb8474",
-          "id": "5776e9de-55fd-57fa-9216-48f9a730ba14",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 5847,
@@ -3933,8 +3933,8 @@ description: Variables in memory after executing cold-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "fa846097-aa70-56dd-b381-195791e38dd8",
-          "id": "c626a2f3-e471-590e-a6e0-82e3975d5f93",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 5931,
@@ -3947,8 +3947,8 @@ description: Variables in memory after executing cold-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "f03dc7d4-151f-5239-8c24-40bfae9bdb01",
-          "id": "40ac79ef-f1bb-57ed-afaa-ea4efb8c6fa2",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 6049,
@@ -3961,8 +3961,8 @@ description: Variables in memory after executing cold-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "07f003aa-ad14-5cd7-87d1-a6c88f9caf7c",
-          "id": "c5fb8efc-97be-583a-92b7-66a30a022af5",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 6130,
@@ -3975,8 +3975,8 @@ description: Variables in memory after executing cold-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "454c30ed-edc8-5b50-a7df-03bd67677041",
-          "id": "89c01bb6-a73c-5bec-9a57-80613ab46316",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 6211,
@@ -3989,8 +3989,8 @@ description: Variables in memory after executing cold-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "cb8e671d-8859-5686-a594-0540d6576386",
-          "id": "b1038f25-e90b-585e-b612-6d51a51e5ae2",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 6295,
@@ -4003,8 +4003,8 @@ description: Variables in memory after executing cold-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "93c0466a-072d-5bf7-8e0c-2fbbb0280511",
-          "id": "3a8de36a-3d51-5f43-83d4-d1412748cb8d",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 6410,
@@ -4017,8 +4017,8 @@ description: Variables in memory after executing cold-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "50eb5ba0-0039-5c08-9b07-632ec6100899",
-          "id": "f896a166-113e-525d-a9ca-5ac54459d702",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 6494,
@@ -4031,8 +4031,8 @@ description: Variables in memory after executing cold-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "bbd7943a-ffcf-51f2-8ff4-1c2443aefe64",
-          "id": "ca21a329-1119-5eb4-8765-85340b98194d",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 6578,
@@ -4045,8 +4045,8 @@ description: Variables in memory after executing cold-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "3e3491d6-8cb5-5f11-a6a0-46be03eff104",
-          "id": "75eff1d2-3dfa-5c79-97d7-57d103210069",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 6662,
@@ -4059,8 +4059,8 @@ description: Variables in memory after executing cold-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "9821a597-ce46-50bd-834f-5e185d7b5fa4",
-          "id": "3b9f38a4-dea0-5ed2-b0d0-dbe839c91e41",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 6777,
@@ -4073,8 +4073,8 @@ description: Variables in memory after executing cold-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "07826b6a-f8d5-5d0d-801c-05ad65144ea5",
-          "id": "308c5ac0-f1e0-579d-b904-03b34b3554e6",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 6861,
@@ -4090,11 +4090,11 @@ description: Variables in memory after executing cold-plate.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "bae7e631-b71d-5980-89ea-29b2140a8a32",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "d1f3a375-5481-5dfa-9f65-5cf33b5f72b4",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4118,7 +4118,7 @@ description: Variables in memory after executing cold-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "01dffa0a-8e31-56fe-996d-1a0a6acf85b4",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4142,7 +4142,7 @@ description: Variables in memory after executing cold-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "b45b08b7-0944-5f77-9ac0-4dab44a9d65e",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -4172,7 +4172,7 @@ description: Variables in memory after executing cold-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "dede8451-3e10-5006-b49e-56bc5f615f92",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4196,7 +4196,7 @@ description: Variables in memory after executing cold-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "1f7c390d-8f3c-577d-b71a-538bc9b56a8a",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4220,7 +4220,7 @@ description: Variables in memory after executing cold-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "c1d1bd47-6417-5d2d-8386-f0d45e3d8622",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4244,7 +4244,7 @@ description: Variables in memory after executing cold-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "7a1e4f40-7361-5fba-b6fb-94e5aa48233b",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -4274,7 +4274,7 @@ description: Variables in memory after executing cold-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "e2bf7a92-9d06-53de-8f17-fa9bff9f68d2",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4298,7 +4298,7 @@ description: Variables in memory after executing cold-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "ab8db195-9d18-5863-80ce-8ed8a9bf4915",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4322,7 +4322,7 @@ description: Variables in memory after executing cold-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "6d0018c3-96e9-5824-a880-5417ed73276a",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4346,7 +4346,7 @@ description: Variables in memory after executing cold-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "c90e295a-4eea-515c-947c-d4c88ee05f90",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -4376,7 +4376,7 @@ description: Variables in memory after executing cold-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "bd4f2747-3446-5514-ac25-d6a878190fa9",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4400,7 +4400,7 @@ description: Variables in memory after executing cold-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "ca1eb218-932e-5bab-84fb-21439a59cfa7",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4424,7 +4424,7 @@ description: Variables in memory after executing cold-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "15e2cdab-527a-5310-a829-8c30e394ddd8",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4448,7 +4448,7 @@ description: Variables in memory after executing cold-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "71e5667f-120b-5cc6-9f34-84cf4c22f940",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4472,7 +4472,7 @@ description: Variables in memory after executing cold-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "5776e9de-55fd-57fa-9216-48f9a730ba14",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4496,7 +4496,7 @@ description: Variables in memory after executing cold-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "c626a2f3-e471-590e-a6e0-82e3975d5f93",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -4526,7 +4526,7 @@ description: Variables in memory after executing cold-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "40ac79ef-f1bb-57ed-afaa-ea4efb8c6fa2",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4550,7 +4550,7 @@ description: Variables in memory after executing cold-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "c5fb8efc-97be-583a-92b7-66a30a022af5",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4574,7 +4574,7 @@ description: Variables in memory after executing cold-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "89c01bb6-a73c-5bec-9a57-80613ab46316",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4598,7 +4598,7 @@ description: Variables in memory after executing cold-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "b1038f25-e90b-585e-b612-6d51a51e5ae2",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -4628,7 +4628,7 @@ description: Variables in memory after executing cold-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "3a8de36a-3d51-5f43-83d4-d1412748cb8d",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4652,7 +4652,7 @@ description: Variables in memory after executing cold-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "f896a166-113e-525d-a9ca-5ac54459d702",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4676,7 +4676,7 @@ description: Variables in memory after executing cold-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "ca21a329-1119-5eb4-8765-85340b98194d",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4700,7 +4700,7 @@ description: Variables in memory after executing cold-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "75eff1d2-3dfa-5c79-97d7-57d103210069",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -4730,7 +4730,7 @@ description: Variables in memory after executing cold-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "3b9f38a4-dea0-5ed2-b0d0-dbe839c91e41",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4754,7 +4754,7 @@ description: Variables in memory after executing cold-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "308c5ac0-f1e0-579d-b904-03b34b3554e6",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4779,8 +4779,8 @@ description: Variables in memory after executing cold-plate.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -4820,7 +4820,7 @@ description: Variables in memory after executing cold-plate.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "1f5ca073-184d-543b-9da6-2db6719123a8",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -4934,13 +4934,13 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "line9"
           }
         },
-        "artifactId": "bae7e631-b71d-5980-89ea-29b2140a8a32",
-        "originalId": "bae7e631-b71d-5980-89ea-29b2140a8a32",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
-      "startCapId": "e461d7e9-a7ff-5a9e-a21d-0062adddc06e",
-      "endCapId": "482e29f0-31bc-56c3-a529-39c2b648feb8",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "in",
       "sectional": false
     }
@@ -4954,7 +4954,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+                "id": "[uuid]",
                 "objectId": 37,
                 "kind": {
                   "arc": {
@@ -5060,8 +5060,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5090,7 +5090,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc11"
@@ -5106,7 +5106,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "7b681387-29ea-57f1-8713-d63280827139",
+                "id": "[uuid]",
                 "objectId": 56,
                 "kind": {
                   "arc": {
@@ -5212,8 +5212,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5242,7 +5242,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc16"
@@ -5258,7 +5258,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "f084ad07-5777-5607-a544-c69f455c2aab",
+                "id": "[uuid]",
                 "objectId": 69,
                 "kind": {
                   "arc": {
@@ -5364,8 +5364,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5394,7 +5394,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc20"
@@ -5410,7 +5410,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                "id": "[uuid]",
                 "objectId": 82,
                 "kind": {
                   "arc": {
@@ -5516,8 +5516,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5546,7 +5546,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc24"
@@ -5562,7 +5562,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+                "id": "[uuid]",
                 "objectId": 11,
                 "kind": {
                   "arc": {
@@ -5668,8 +5668,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5698,7 +5698,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc3"
@@ -5714,7 +5714,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+                "id": "[uuid]",
                 "objectId": 24,
                 "kind": {
                   "arc": {
@@ -5820,8 +5820,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5850,7 +5850,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc7"
@@ -5866,7 +5866,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "id": "[uuid]",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -5940,8 +5940,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5970,7 +5970,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -5986,7 +5986,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+                "id": "[uuid]",
                 "objectId": 33,
                 "kind": {
                   "line": {
@@ -6060,8 +6060,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -6090,7 +6090,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line10"
@@ -6106,7 +6106,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+                "id": "[uuid]",
                 "objectId": 40,
                 "kind": {
                   "line": {
@@ -6180,8 +6180,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -6210,7 +6210,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line12"
@@ -6226,7 +6226,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+                "id": "[uuid]",
                 "objectId": 43,
                 "kind": {
                   "line": {
@@ -6300,8 +6300,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -6330,7 +6330,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line13"
@@ -6346,7 +6346,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+                "id": "[uuid]",
                 "objectId": 46,
                 "kind": {
                   "line": {
@@ -6420,8 +6420,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -6450,7 +6450,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line14"
@@ -6466,7 +6466,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
+                "id": "[uuid]",
                 "objectId": 49,
                 "kind": {
                   "line": {
@@ -6540,8 +6540,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -6570,7 +6570,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line15"
@@ -6586,7 +6586,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+                "id": "[uuid]",
                 "objectId": 52,
                 "kind": {
                   "line": {
@@ -6660,8 +6660,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -6690,7 +6690,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line16"
@@ -6706,7 +6706,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+                "id": "[uuid]",
                 "objectId": 59,
                 "kind": {
                   "line": {
@@ -6780,8 +6780,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -6810,7 +6810,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line17"
@@ -6826,7 +6826,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
+                "id": "[uuid]",
                 "objectId": 62,
                 "kind": {
                   "line": {
@@ -6900,8 +6900,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -6930,7 +6930,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line18"
@@ -6946,7 +6946,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+                "id": "[uuid]",
                 "objectId": 65,
                 "kind": {
                   "line": {
@@ -7020,8 +7020,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -7050,7 +7050,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line19"
@@ -7066,7 +7066,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                "id": "[uuid]",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -7140,8 +7140,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -7170,7 +7170,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -7186,7 +7186,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+                "id": "[uuid]",
                 "objectId": 72,
                 "kind": {
                   "line": {
@@ -7260,8 +7260,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -7290,7 +7290,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line21"
@@ -7306,7 +7306,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+                "id": "[uuid]",
                 "objectId": 75,
                 "kind": {
                   "line": {
@@ -7380,8 +7380,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -7410,7 +7410,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line22"
@@ -7426,7 +7426,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+                "id": "[uuid]",
                 "objectId": 78,
                 "kind": {
                   "line": {
@@ -7500,8 +7500,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -7530,7 +7530,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line23"
@@ -7546,7 +7546,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+                "id": "[uuid]",
                 "objectId": 85,
                 "kind": {
                   "line": {
@@ -7620,8 +7620,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -7650,7 +7650,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line25"
@@ -7666,7 +7666,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                "id": "[uuid]",
                 "objectId": 88,
                 "kind": {
                   "line": {
@@ -7740,8 +7740,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -7770,7 +7770,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line26"
@@ -7786,7 +7786,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                "id": "[uuid]",
                 "objectId": 14,
                 "kind": {
                   "line": {
@@ -7860,8 +7860,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -7890,7 +7890,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -7906,7 +7906,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+                "id": "[uuid]",
                 "objectId": 17,
                 "kind": {
                   "line": {
@@ -7980,8 +7980,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -8010,7 +8010,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -8026,7 +8026,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+                "id": "[uuid]",
                 "objectId": 20,
                 "kind": {
                   "line": {
@@ -8100,8 +8100,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -8130,7 +8130,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -8146,7 +8146,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
+                "id": "[uuid]",
                 "objectId": 27,
                 "kind": {
                   "line": {
@@ -8220,8 +8220,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -8250,7 +8250,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line8"
@@ -8266,7 +8266,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "41c630c9-9d44-581b-98af-caee575bea48",
+                "id": "[uuid]",
                 "objectId": 30,
                 "kind": {
                   "line": {
@@ -8340,8 +8340,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -8370,7 +8370,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line9"
@@ -8387,11 +8387,11 @@ description: Variables in memory after executing cold-plate.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -8415,7 +8415,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -8439,7 +8439,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -8469,7 +8469,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -8486,7 +8486,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -8510,7 +8510,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -8534,7 +8534,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -8558,7 +8558,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -8588,7 +8588,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "f2e3fae3-4069-58be-a5a5-17ae327df966",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -8605,7 +8605,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -8629,7 +8629,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "41c630c9-9d44-581b-98af-caee575bea48",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -8653,7 +8653,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -8677,7 +8677,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -8707,7 +8707,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -8724,7 +8724,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -8748,7 +8748,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -8772,7 +8772,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -8796,7 +8796,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -8820,7 +8820,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -8844,7 +8844,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "7b681387-29ea-57f1-8713-d63280827139",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -8874,7 +8874,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -8891,7 +8891,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -8915,7 +8915,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -8939,7 +8939,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -8963,7 +8963,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "f084ad07-5777-5607-a544-c69f455c2aab",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -8993,7 +8993,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -9010,7 +9010,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -9034,7 +9034,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -9058,7 +9058,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -9082,7 +9082,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -9112,7 +9112,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "b6048962-8de8-56e0-bd4c-204ee5451b34",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -9129,7 +9129,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -9153,7 +9153,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -9178,8 +9178,8 @@ description: Variables in memory after executing cold-plate.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 0,
                 "kind": "Custom",
                 "origin": {
@@ -9219,7 +9219,7 @@ description: Variables in memory after executing cold-plate.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "1f5ca073-184d-543b-9da6-2db6719123a8",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -9333,8 +9333,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "value": "line9"
                 }
               },
-              "artifactId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
-              "originalId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "in",
               "isClosed": "implicitly"
             }
@@ -9349,11 +9349,11 @@ description: Variables in memory after executing cold-plate.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "bae7e631-b71d-5980-89ea-29b2140a8a32",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "d1f3a375-5481-5dfa-9f65-5cf33b5f72b4",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -9377,7 +9377,7 @@ description: Variables in memory after executing cold-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "01dffa0a-8e31-56fe-996d-1a0a6acf85b4",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -9401,7 +9401,7 @@ description: Variables in memory after executing cold-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "b45b08b7-0944-5f77-9ac0-4dab44a9d65e",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -9431,7 +9431,7 @@ description: Variables in memory after executing cold-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "dede8451-3e10-5006-b49e-56bc5f615f92",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -9455,7 +9455,7 @@ description: Variables in memory after executing cold-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "1f7c390d-8f3c-577d-b71a-538bc9b56a8a",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -9479,7 +9479,7 @@ description: Variables in memory after executing cold-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "c1d1bd47-6417-5d2d-8386-f0d45e3d8622",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -9503,7 +9503,7 @@ description: Variables in memory after executing cold-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "7a1e4f40-7361-5fba-b6fb-94e5aa48233b",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -9533,7 +9533,7 @@ description: Variables in memory after executing cold-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "e2bf7a92-9d06-53de-8f17-fa9bff9f68d2",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -9557,7 +9557,7 @@ description: Variables in memory after executing cold-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "ab8db195-9d18-5863-80ce-8ed8a9bf4915",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -9581,7 +9581,7 @@ description: Variables in memory after executing cold-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "6d0018c3-96e9-5824-a880-5417ed73276a",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -9605,7 +9605,7 @@ description: Variables in memory after executing cold-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "c90e295a-4eea-515c-947c-d4c88ee05f90",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -9635,7 +9635,7 @@ description: Variables in memory after executing cold-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "bd4f2747-3446-5514-ac25-d6a878190fa9",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -9659,7 +9659,7 @@ description: Variables in memory after executing cold-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "ca1eb218-932e-5bab-84fb-21439a59cfa7",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -9683,7 +9683,7 @@ description: Variables in memory after executing cold-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "15e2cdab-527a-5310-a829-8c30e394ddd8",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -9707,7 +9707,7 @@ description: Variables in memory after executing cold-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "71e5667f-120b-5cc6-9f34-84cf4c22f940",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -9731,7 +9731,7 @@ description: Variables in memory after executing cold-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "5776e9de-55fd-57fa-9216-48f9a730ba14",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -9755,7 +9755,7 @@ description: Variables in memory after executing cold-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "c626a2f3-e471-590e-a6e0-82e3975d5f93",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -9785,7 +9785,7 @@ description: Variables in memory after executing cold-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "40ac79ef-f1bb-57ed-afaa-ea4efb8c6fa2",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -9809,7 +9809,7 @@ description: Variables in memory after executing cold-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "c5fb8efc-97be-583a-92b7-66a30a022af5",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -9833,7 +9833,7 @@ description: Variables in memory after executing cold-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "89c01bb6-a73c-5bec-9a57-80613ab46316",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -9857,7 +9857,7 @@ description: Variables in memory after executing cold-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "b1038f25-e90b-585e-b612-6d51a51e5ae2",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -9887,7 +9887,7 @@ description: Variables in memory after executing cold-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "3a8de36a-3d51-5f43-83d4-d1412748cb8d",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -9911,7 +9911,7 @@ description: Variables in memory after executing cold-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "f896a166-113e-525d-a9ca-5ac54459d702",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -9935,7 +9935,7 @@ description: Variables in memory after executing cold-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "ca21a329-1119-5eb4-8765-85340b98194d",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -9959,7 +9959,7 @@ description: Variables in memory after executing cold-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "75eff1d2-3dfa-5c79-97d7-57d103210069",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -9989,7 +9989,7 @@ description: Variables in memory after executing cold-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "3b9f38a4-dea0-5ed2-b0d0-dbe839c91e41",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -10013,7 +10013,7 @@ description: Variables in memory after executing cold-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "308c5ac0-f1e0-579d-b904-03b34b3554e6",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -10038,8 +10038,8 @@ description: Variables in memory after executing cold-plate.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -10079,7 +10079,7 @@ description: Variables in memory after executing cold-plate.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "1f5ca073-184d-543b-9da6-2db6719123a8",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -10193,8 +10193,8 @@ description: Variables in memory after executing cold-plate.kcl
           "value": "line9"
         }
       },
-      "artifactId": "bae7e631-b71d-5980-89ea-29b2140a8a32",
-      "originalId": "bae7e631-b71d-5980-89ea-29b2140a8a32",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "in",
       "isClosed": "explicitly"
     }
@@ -10208,7 +10208,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "0807f469-38fd-5e01-a326-82a66aa0f1d0",
+                "id": "[uuid]",
                 "objectId": 218,
                 "kind": {
                   "arc": {
@@ -10314,8 +10314,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f85cbad-5e6d-549c-850d-909283a25e83",
-                  "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 177,
                   "origin": {
@@ -10344,7 +10344,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc2"
@@ -10360,7 +10360,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
+                "id": "[uuid]",
                 "objectId": 225,
                 "kind": {
                   "arc": {
@@ -10466,8 +10466,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f85cbad-5e6d-549c-850d-909283a25e83",
-                  "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 177,
                   "origin": {
@@ -10496,7 +10496,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc4"
@@ -10512,7 +10512,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "ae192af4-cbf2-5f1b-a2e5-767390f86588",
+                "id": "[uuid]",
                 "objectId": 232,
                 "kind": {
                   "arc": {
@@ -10618,8 +10618,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f85cbad-5e6d-549c-850d-909283a25e83",
-                  "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 177,
                   "origin": {
@@ -10648,7 +10648,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc6"
@@ -10664,7 +10664,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "2b45af9b-6b90-5530-b9b7-b193031152d8",
+                "id": "[uuid]",
                 "objectId": 181,
                 "kind": {
                   "line": {
@@ -10739,8 +10739,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f85cbad-5e6d-549c-850d-909283a25e83",
-                  "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 177,
                   "origin": {
@@ -10769,7 +10769,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "inletGuide"
@@ -10785,7 +10785,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
+                "id": "[uuid]",
                 "objectId": 205,
                 "kind": {
                   "line": {
@@ -10860,8 +10860,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f85cbad-5e6d-549c-850d-909283a25e83",
-                  "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 177,
                   "origin": {
@@ -10890,7 +10890,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leftArcEndGuide"
@@ -10906,7 +10906,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "ba769d4c-3a67-5309-824d-fd59f263bb46",
+                "id": "[uuid]",
                 "objectId": 202,
                 "kind": {
                   "line": {
@@ -10981,8 +10981,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f85cbad-5e6d-549c-850d-909283a25e83",
-                  "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 177,
                   "origin": {
@@ -11011,7 +11011,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leftArcStartGuide"
@@ -11027,7 +11027,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "7b8ae56e-c9b0-55b7-a0b6-d20f44780498",
+                "id": "[uuid]",
                 "objectId": 187,
                 "kind": {
                   "line": {
@@ -11102,8 +11102,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f85cbad-5e6d-549c-850d-909283a25e83",
-                  "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 177,
                   "origin": {
@@ -11132,7 +11132,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leftLoopGuide"
@@ -11148,7 +11148,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
+                "id": "[uuid]",
                 "objectId": 214,
                 "kind": {
                   "line": {
@@ -11222,8 +11222,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f85cbad-5e6d-549c-850d-909283a25e83",
-                  "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 177,
                   "origin": {
@@ -11252,7 +11252,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -11268,7 +11268,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "0616b09c-75f9-545b-bd98-b7fbaf5b3587",
+                "id": "[uuid]",
                 "objectId": 221,
                 "kind": {
                   "line": {
@@ -11342,8 +11342,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f85cbad-5e6d-549c-850d-909283a25e83",
-                  "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 177,
                   "origin": {
@@ -11372,7 +11372,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -11388,7 +11388,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
+                "id": "[uuid]",
                 "objectId": 228,
                 "kind": {
                   "line": {
@@ -11462,8 +11462,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f85cbad-5e6d-549c-850d-909283a25e83",
-                  "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 177,
                   "origin": {
@@ -11492,7 +11492,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -11508,7 +11508,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "95b7331f-664e-5be5-b9c0-fdd7570bf701",
+                "id": "[uuid]",
                 "objectId": 235,
                 "kind": {
                   "line": {
@@ -11582,8 +11582,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f85cbad-5e6d-549c-850d-909283a25e83",
-                  "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 177,
                   "origin": {
@@ -11612,7 +11612,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line7"
@@ -11629,11 +11629,11 @@ description: Variables in memory after executing cold-plate.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -11657,7 +11657,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "0807f469-38fd-5e01-a326-82a66aa0f1d0",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -11687,7 +11687,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "0616b09c-75f9-545b-bd98-b7fbaf5b3587",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -11711,7 +11711,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -11741,7 +11741,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -11765,7 +11765,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "ae192af4-cbf2-5f1b-a2e5-767390f86588",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -11795,7 +11795,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "95b7331f-664e-5be5-b9c0-fdd7570bf701",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -11820,8 +11820,8 @@ description: Variables in memory after executing cold-plate.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "6f85cbad-5e6d-549c-850d-909283a25e83",
-                "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 177,
                 "kind": "Custom",
                 "origin": {
@@ -11861,7 +11861,7 @@ description: Variables in memory after executing cold-plate.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "9bc907a5-bec7-5f87-9105-27ffee0da4e4",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -11895,8 +11895,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "value": "line7"
                 }
               },
-              "artifactId": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
-              "originalId": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "in",
               "isClosed": "no"
             }
@@ -11910,7 +11910,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "44b2dfb0-0721-57cd-a796-4401a664e194",
+                "id": "[uuid]",
                 "objectId": 193,
                 "kind": {
                   "line": {
@@ -11985,8 +11985,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f85cbad-5e6d-549c-850d-909283a25e83",
-                  "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 177,
                   "origin": {
@@ -12015,7 +12015,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "outletGuide"
@@ -12031,7 +12031,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "c72a5b97-c42a-573c-bbdf-1ce176bd07cd",
+                "id": "[uuid]",
                 "objectId": 199,
                 "kind": {
                   "line": {
@@ -12106,8 +12106,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f85cbad-5e6d-549c-850d-909283a25e83",
-                  "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 177,
                   "origin": {
@@ -12136,7 +12136,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rightLowerArcEndGuide"
@@ -12152,7 +12152,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "906a1f18-6a62-5deb-b39b-61d540081804",
+                "id": "[uuid]",
                 "objectId": 196,
                 "kind": {
                   "line": {
@@ -12227,8 +12227,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f85cbad-5e6d-549c-850d-909283a25e83",
-                  "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 177,
                   "origin": {
@@ -12257,7 +12257,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rightLowerArcStartGuide"
@@ -12273,7 +12273,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "08138142-a558-56a4-a23f-2f334e02b011",
+                "id": "[uuid]",
                 "objectId": 184,
                 "kind": {
                   "line": {
@@ -12348,8 +12348,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f85cbad-5e6d-549c-850d-909283a25e83",
-                  "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 177,
                   "origin": {
@@ -12378,7 +12378,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rightLowerLoopGuide"
@@ -12394,7 +12394,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a",
+                "id": "[uuid]",
                 "objectId": 211,
                 "kind": {
                   "line": {
@@ -12469,8 +12469,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f85cbad-5e6d-549c-850d-909283a25e83",
-                  "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 177,
                   "origin": {
@@ -12499,7 +12499,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rightUpperArcEndGuide"
@@ -12515,7 +12515,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "bc2bd889-33e8-5f5e-94c6-3c456f236e9a",
+                "id": "[uuid]",
                 "objectId": 208,
                 "kind": {
                   "line": {
@@ -12590,8 +12590,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f85cbad-5e6d-549c-850d-909283a25e83",
-                  "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 177,
                   "origin": {
@@ -12620,7 +12620,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rightUpperArcStartGuide"
@@ -12636,7 +12636,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "e37f0c41-fa06-5331-9fe6-fafe466ea8fa",
+                "id": "[uuid]",
                 "objectId": 190,
                 "kind": {
                   "line": {
@@ -12711,8 +12711,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f85cbad-5e6d-549c-850d-909283a25e83",
-                  "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 177,
                   "origin": {
@@ -12741,7 +12741,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rightUpperLoopGuide"
@@ -12763,7 +12763,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
+                "id": "[uuid]",
                 "objectId": 214,
                 "kind": {
                   "line": {
@@ -12837,8 +12837,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f85cbad-5e6d-549c-850d-909283a25e83",
-                  "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 177,
                   "origin": {
@@ -12867,7 +12867,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -12883,7 +12883,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "0807f469-38fd-5e01-a326-82a66aa0f1d0",
+                "id": "[uuid]",
                 "objectId": 218,
                 "kind": {
                   "arc": {
@@ -12989,8 +12989,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f85cbad-5e6d-549c-850d-909283a25e83",
-                  "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 177,
                   "origin": {
@@ -13019,7 +13019,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc2"
@@ -13035,7 +13035,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "0616b09c-75f9-545b-bd98-b7fbaf5b3587",
+                "id": "[uuid]",
                 "objectId": 221,
                 "kind": {
                   "line": {
@@ -13109,8 +13109,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f85cbad-5e6d-549c-850d-909283a25e83",
-                  "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 177,
                   "origin": {
@@ -13139,7 +13139,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -13155,7 +13155,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
+                "id": "[uuid]",
                 "objectId": 225,
                 "kind": {
                   "arc": {
@@ -13261,8 +13261,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f85cbad-5e6d-549c-850d-909283a25e83",
-                  "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 177,
                   "origin": {
@@ -13291,7 +13291,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc4"
@@ -13307,7 +13307,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
+                "id": "[uuid]",
                 "objectId": 228,
                 "kind": {
                   "line": {
@@ -13381,8 +13381,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f85cbad-5e6d-549c-850d-909283a25e83",
-                  "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 177,
                   "origin": {
@@ -13411,7 +13411,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -13427,7 +13427,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "ae192af4-cbf2-5f1b-a2e5-767390f86588",
+                "id": "[uuid]",
                 "objectId": 232,
                 "kind": {
                   "arc": {
@@ -13533,8 +13533,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f85cbad-5e6d-549c-850d-909283a25e83",
-                  "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 177,
                   "origin": {
@@ -13563,7 +13563,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc6"
@@ -13579,7 +13579,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "95b7331f-664e-5be5-b9c0-fdd7570bf701",
+                "id": "[uuid]",
                 "objectId": 235,
                 "kind": {
                   "line": {
@@ -13653,8 +13653,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f85cbad-5e6d-549c-850d-909283a25e83",
-                  "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 177,
                   "origin": {
@@ -13683,7 +13683,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line7"
@@ -15156,11 +15156,11 @@ description: Variables in memory after executing cold-plate.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "bcea99ab-ad5b-5250-892e-7591c3803c32",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "ea0272fc-44b9-5f2a-89b2-f3029febc961",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -15190,7 +15190,7 @@ description: Variables in memory after executing cold-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "cb72641e-9995-57aa-a1d8-e6ac7d4a8fc6",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -15221,8 +15221,8 @@ description: Variables in memory after executing cold-plate.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "f17f2574-657c-597f-b5c5-83541ffc9f7f",
-        "id": "f17f2574-657c-597f-b5c5-83541ffc9f7f",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 337,
         "kind": "Custom",
         "origin": {
@@ -15262,7 +15262,7 @@ description: Variables in memory after executing cold-plate.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "71136424-dffe-5ef9-9646-f40c0804ce04",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -15276,8 +15276,8 @@ description: Variables in memory after executing cold-plate.kcl
           "value": "outerCircle"
         }
       },
-      "artifactId": "bcea99ab-ad5b-5250-892e-7591c3803c32",
-      "originalId": "bcea99ab-ad5b-5250-892e-7591c3803c32",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "in",
       "isClosed": "explicitly"
     }
@@ -15291,7 +15291,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "f86f4e23-13b8-55ee-8316-48b3edea035e",
+                "id": "[uuid]",
                 "objectId": 341,
                 "kind": {
                   "line": {
@@ -15366,8 +15366,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f17f2574-657c-597f-b5c5-83541ffc9f7f",
-                  "id": "f17f2574-657c-597f-b5c5-83541ffc9f7f",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 337,
                   "origin": {
@@ -15396,7 +15396,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "d1e38581-6d4a-5346-9b30-84adae73d10c",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "centerGuide"
@@ -15412,7 +15412,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "13284012-5aa9-5cfb-8236-12f94ca6550e",
+                "id": "[uuid]",
                 "objectId": 353,
                 "kind": {
                   "circle": {
@@ -15486,8 +15486,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f17f2574-657c-597f-b5c5-83541ffc9f7f",
-                  "id": "f17f2574-657c-597f-b5c5-83541ffc9f7f",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 337,
                   "origin": {
@@ -15516,7 +15516,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "d1e38581-6d4a-5346-9b30-84adae73d10c",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "innerCircle"
@@ -15532,7 +15532,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "d8d7c083-add8-5a2a-be8b-22654c3bacfc",
+                "id": "[uuid]",
                 "objectId": 347,
                 "kind": {
                   "line": {
@@ -15607,8 +15607,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f17f2574-657c-597f-b5c5-83541ffc9f7f",
-                  "id": "f17f2574-657c-597f-b5c5-83541ffc9f7f",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 337,
                   "origin": {
@@ -15637,7 +15637,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "d1e38581-6d4a-5346-9b30-84adae73d10c",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "innerRadiusGuide"
@@ -15654,11 +15654,11 @@ description: Variables in memory after executing cold-plate.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "d1e38581-6d4a-5346-9b30-84adae73d10c",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "29fea619-5b87-50e6-8f7f-c8ae57816964",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -15688,7 +15688,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "611f15e9-bff8-53b7-b7e4-4d59a86ecb97",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -15705,7 +15705,7 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "13284012-5aa9-5cfb-8236-12f94ca6550e",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -15736,8 +15736,8 @@ description: Variables in memory after executing cold-plate.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "f17f2574-657c-597f-b5c5-83541ffc9f7f",
-                "id": "f17f2574-657c-597f-b5c5-83541ffc9f7f",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 337,
                 "kind": "Custom",
                 "origin": {
@@ -15777,7 +15777,7 @@ description: Variables in memory after executing cold-plate.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "71136424-dffe-5ef9-9646-f40c0804ce04",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -15791,8 +15791,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "value": "outerCircle"
                 }
               },
-              "artifactId": "d1e38581-6d4a-5346-9b30-84adae73d10c",
-              "originalId": "d1e38581-6d4a-5346-9b30-84adae73d10c",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "in",
               "isClosed": "no"
             }
@@ -15806,7 +15806,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "29fea619-5b87-50e6-8f7f-c8ae57816964",
+                "id": "[uuid]",
                 "objectId": 350,
                 "kind": {
                   "circle": {
@@ -15880,8 +15880,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f17f2574-657c-597f-b5c5-83541ffc9f7f",
-                  "id": "f17f2574-657c-597f-b5c5-83541ffc9f7f",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 337,
                   "origin": {
@@ -15910,7 +15910,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "d1e38581-6d4a-5346-9b30-84adae73d10c",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "outerCircle"
@@ -15926,7 +15926,7 @@ description: Variables in memory after executing cold-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "f1288296-2fab-5d3c-b852-464b1f48007a",
+                "id": "[uuid]",
                 "objectId": 344,
                 "kind": {
                   "line": {
@@ -16001,8 +16001,8 @@ description: Variables in memory after executing cold-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f17f2574-657c-597f-b5c5-83541ffc9f7f",
-                  "id": "f17f2574-657c-597f-b5c5-83541ffc9f7f",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 337,
                   "origin": {
@@ -16031,7 +16031,7 @@ description: Variables in memory after executing cold-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "d1e38581-6d4a-5346-9b30-84adae73d10c",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "outerRadiusGuide"
@@ -16075,14 +16075,14 @@ description: Variables in memory after executing cold-plate.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "bcea99ab-ad5b-5250-892e-7591c3803c32",
-      "originalId": "bcea99ab-ad5b-5250-892e-7591c3803c32",
-      "topologyId": "bcea99ab-ad5b-5250-892e-7591c3803c32",
-      "artifactId": "b1cdf7ed-6958-5e8e-89b9-a5267c842343",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "6ed33eab-14f4-52ee-9924-f811c5b7d312",
-          "id": "ea0272fc-44b9-5f2a-89b2-f3029febc961",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 17989,
@@ -16098,11 +16098,11 @@ description: Variables in memory after executing cold-plate.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "bcea99ab-ad5b-5250-892e-7591c3803c32",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "ea0272fc-44b9-5f2a-89b2-f3029febc961",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -16132,7 +16132,7 @@ description: Variables in memory after executing cold-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "cb72641e-9995-57aa-a1d8-e6ac7d4a8fc6",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -16163,8 +16163,8 @@ description: Variables in memory after executing cold-plate.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f17f2574-657c-597f-b5c5-83541ffc9f7f",
-          "id": "f17f2574-657c-597f-b5c5-83541ffc9f7f",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 337,
           "kind": "Custom",
           "origin": {
@@ -16204,7 +16204,7 @@ description: Variables in memory after executing cold-plate.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "71136424-dffe-5ef9-9646-f40c0804ce04",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -16218,13 +16218,13 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "outerCircle"
           }
         },
-        "artifactId": "bcea99ab-ad5b-5250-892e-7591c3803c32",
-        "originalId": "bcea99ab-ad5b-5250-892e-7591c3803c32",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
-      "startCapId": "f099c46e-cbf9-5b04-bd59-fe1d24610633",
-      "endCapId": "3f12abb8-959e-5603-8492-a08f14aeffd7",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "in",
       "sectional": false
     }
@@ -16233,14 +16233,14 @@ description: Variables in memory after executing cold-plate.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "bcea99ab-ad5b-5250-892e-7591c3803c32",
-      "originalId": "bcea99ab-ad5b-5250-892e-7591c3803c32",
-      "topologyId": "bcea99ab-ad5b-5250-892e-7591c3803c32",
-      "artifactId": "b1cdf7ed-6958-5e8e-89b9-a5267c842343",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "6ed33eab-14f4-52ee-9924-f811c5b7d312",
-          "id": "ea0272fc-44b9-5f2a-89b2-f3029febc961",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 17989,
@@ -16256,11 +16256,11 @@ description: Variables in memory after executing cold-plate.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "bcea99ab-ad5b-5250-892e-7591c3803c32",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "ea0272fc-44b9-5f2a-89b2-f3029febc961",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -16290,7 +16290,7 @@ description: Variables in memory after executing cold-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "cb72641e-9995-57aa-a1d8-e6ac7d4a8fc6",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -16321,8 +16321,8 @@ description: Variables in memory after executing cold-plate.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f17f2574-657c-597f-b5c5-83541ffc9f7f",
-          "id": "f17f2574-657c-597f-b5c5-83541ffc9f7f",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 337,
           "kind": "Custom",
           "origin": {
@@ -16362,7 +16362,7 @@ description: Variables in memory after executing cold-plate.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "71136424-dffe-5ef9-9646-f40c0804ce04",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -16376,13 +16376,13 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "outerCircle"
           }
         },
-        "artifactId": "bcea99ab-ad5b-5250-892e-7591c3803c32",
-        "originalId": "bcea99ab-ad5b-5250-892e-7591c3803c32",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
-      "startCapId": "f099c46e-cbf9-5b04-bd59-fe1d24610633",
-      "endCapId": "3f12abb8-959e-5603-8492-a08f14aeffd7",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "in",
       "sectional": false
     }

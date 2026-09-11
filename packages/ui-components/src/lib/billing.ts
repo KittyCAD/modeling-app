@@ -5,9 +5,7 @@
 import {
   type Client,
   type CustomerBalance,
-  type UserOrgInfo,
   type ZooProductSubscriptions,
-  orgs,
   payments,
 } from '@kittycad/lib'
 
@@ -162,91 +160,49 @@ export async function getBillingInfo(
     { client: Client }
   >(payments.get_user_subscription, { client })
 
-  const org = await fetchBilling<UserOrgInfo, { client: Client }>(
-    orgs.get_user_org,
-    { client }
-  )
-  const hasOrgError = BillingError.from(org)
-  const payAsYouGoApiCreditPrice = BillingError.from(subscriptions)
-    ? undefined
-    : subscriptions.modeling_app.pay_as_you_go_api_credit_price
-
-  if (!hasOrgError) {
-    return {
-      balance: Number.POSITIVE_INFINITY,
-      userPaymentBalance: billing,
-      payAsYouGoApiCreditPrice,
-      isOrg: true,
-      hasSubscription: true,
-    }
-  }
-
   if (BillingError.from(subscriptions)) {
     return subscriptions
   }
 
-  const tier = subscriptions.modeling_app.name
-  const ratioSec = subscriptions.modeling_app.pay_as_you_go_api_credit_price
-  const toMinutes = (value: number, ratioSec: number) => value / ratioSec / 60
-  const computedAllowance =
-    subscriptions.modeling_app.monthly_pay_as_you_go_api_credits_monetary_value
-  let balance = 0
-  let allowance: number | undefined
-  let hasSubscription = false
-  let isOrg = false
+  const plan = subscriptions.modeling_app
+  const isOrg = plan.type.type === 'organization'
+  const tier = plan.name
+  const ratioSec = plan.pay_as_you_go_api_credit_price
+  const hasUnlimitedCredits = Boolean(
+    plan.zoo_tools_included?.includes('modeling_app') &&
+      plan.endpoints_included?.includes('ml')
+  )
 
-  switch (tier) {
-    case 'enterprise':
-    case 'team':
-      balance = Number.POSITIVE_INFINITY
-      hasSubscription = true
-      isOrg = true
-      break
-    case 'pro':
-      balance = Number.POSITIVE_INFINITY
-      hasSubscription = true
-      isOrg = false
-      break
-    case 'plus':
-      if (ratioSec === undefined || computedAllowance === undefined) {
-        return createInvalidBillingDataError(
-          'Missing ratioSec or computedAllowance for plus tier'
-        )
-      }
-      allowance = toMinutes(computedAllowance, ratioSec)
-      balance = toMinutes(
-        billing.monthly_api_credits_remaining_monetary_value +
-          billing.stable_api_credits_remaining_monetary_value,
-        ratioSec
-      )
-      isOrg = false
-      hasSubscription = true
-      break
-    case 'free':
-      if (ratioSec === undefined || computedAllowance === undefined) {
-        return createInvalidBillingDataError(
-          'Missing ratioSec or computedAllowance for free tier'
-        )
-      }
-      allowance = toMinutes(computedAllowance, ratioSec)
-      balance = toMinutes(
-        billing.monthly_api_credits_remaining_monetary_value +
-          billing.stable_api_credits_remaining_monetary_value,
-        ratioSec
-      )
-      isOrg = false
-      hasSubscription = false
-      break
-    default: {
-      return createInvalidBillingDataError(
-        `Unhandled subscription tier: ${tier}`
-      )
+  if (hasUnlimitedCredits) {
+    return {
+      balance: Number.POSITIVE_INFINITY,
+      userPaymentBalance: billing,
+      payAsYouGoApiCreditPrice: ratioSec,
+      isOrg,
+      hasSubscription: true,
     }
   }
 
+  const toMinutes = (value: number, ratioSec: number) => value / ratioSec / 60
+  const computedAllowance =
+    plan.monthly_pay_as_you_go_api_credits_monetary_value
+
+  if (ratioSec === undefined || computedAllowance === undefined) {
+    return createInvalidBillingDataError(
+      `Missing ratioSec or computedAllowance for ${tier} tier`
+    )
+  }
+
+  // This slug check is not ideal: the API has no explicit free-tier flag.
+  const hasSubscription = tier !== 'free'
+
   return {
-    balance,
-    allowance,
+    balance: toMinutes(
+      billing.monthly_api_credits_remaining_monetary_value +
+        billing.stable_api_credits_remaining_monetary_value,
+      ratioSec
+    ),
+    allowance: toMinutes(computedAllowance, ratioSec),
     userPaymentBalance: billing,
     payAsYouGoApiCreditPrice: ratioSec,
     hasSubscription,
