@@ -1,9 +1,8 @@
 import { join } from 'node:path'
 import fsSync from 'node:fs'
-import { FILE_EXT } from '@src/lib/constants'
+import { FILE_EXT, OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 
 import {
-  closeOnboardingModalIfPresent,
   getUtils,
   waitForWebKitBillingToSettle,
 } from '@e2e/playwright/test-utils'
@@ -149,6 +148,7 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
 })
 
 test.describe('Query parameter command', { tag: '@web' }, () => {
+  test.use({ userFeatures: [OPFS_CLOUD_FEATURE_FLAG] })
   test('applies the ttc layout without opening the command palette', async ({
     page,
     cmdBar,
@@ -171,8 +171,6 @@ test.describe('Query parameter command', { tag: '@web' }, () => {
     toolbar,
     editor,
   }) => {
-    await closeOnboardingModalIfPresent(page)
-
     // Avoid interrupting WebKit's in-flight billing request when the query
     // command replaces the current document.
     await waitForWebKitBillingToSettle(page)

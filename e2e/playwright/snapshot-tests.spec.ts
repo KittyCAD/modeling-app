@@ -5,6 +5,7 @@ import {
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
+import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { Themes } from '@src/lib/theme'
 
 const SCREENSHOT_SIZE = { width: 1200, height: 900 }
@@ -32,6 +33,8 @@ async function waitForThemeApplied(page: Page, mode: Themes) {
     .toBe(expectDark)
 }
 
+test.use({ userFeatures: [OPFS_CLOUD_FEATURE_FLAG] })
+
 test(
   'Create a sketch in a new project: light theme',
   { tag: '@snapshot' },
@@ -46,12 +49,19 @@ test(
 
 type SnapshotTestContext = Pick<
   Fixtures,
-  'cmdBar' | 'editor' | 'toolbar' | 'scene' | 'fs' | 'folderSetupFn'
+  | 'cmdBar'
+  | 'editor'
+  | 'toolbar'
+  | 'scene'
+  | 'fs'
+  | 'folderSetupFn'
+  | 'homePage'
 > & { page: Page }
 
 function runTestForTheme(mode: Themes) {
   return async ({
     page,
+    homePage,
     scene,
     toolbar,
     editor,
@@ -91,6 +101,7 @@ function runTestForTheme(mode: Themes) {
     })
 
     await page.setViewportSize(SCREENSHOT_SIZE)
+    await homePage.openProject('demo-project')
     await scene.settled()
     await waitForThemeApplied(page, mode)
     let step = 1
