@@ -1142,7 +1142,7 @@ impl ExecutorContext {
                 },
                 replay: settings.replay.clone(),
                 show_grid: if settings.show_grid { Some(true) } else { None },
-                pool: None,
+                pool: settings.geometry_only.then_some("cpu".to_string()),
                 pr,
                 unlocked_framerate: None,
                 webrtc: Some(false),
