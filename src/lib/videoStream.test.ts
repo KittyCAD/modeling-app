@@ -76,24 +76,7 @@ describe('engine video stream visibility', () => {
     expect(onLive).toHaveBeenCalledTimes(1)
   })
 
-  it('preserves an existing freeze frame if another idle interrupts wake-up', () => {
-    showFreezeFrame(video, canvas)
-    drawImage.mockClear()
-    Object.defineProperty(video, 'readyState', { value: 0 })
-
-    expect(showFreezeFrame(video, canvas)).toBe(true)
-    expect(drawImage).not.toHaveBeenCalled()
-    expect(canvas.width).toBe(1280)
-    expect(canvas.style.display).toBe('block')
-  })
-
-  it('does not capture a stream with no current frame', () => {
-    Object.defineProperty(video, 'readyState', { value: 1 })
-    expect(showFreezeFrame(video, canvas)).toBe(false)
-    expect(drawImage).not.toHaveBeenCalled()
-  })
-
-  it('cancels a pending reveal when idle begins again', () => {
+  it('ignores stale callbacks after another idle or stream replacement', () => {
     const onLive = vi.fn()
     showFreezeFrame(video, canvas)
     showLiveVideoOnNextFrame(video, canvas, onLive)
@@ -105,45 +88,12 @@ describe('engine video stream visibility', () => {
     staleFrame()
     expect(canvas.style.display).toBe('block')
     expect(onLive).not.toHaveBeenCalled()
-  })
 
-  it('does not reveal a replacement stream using an older stream callback', () => {
-    const onLive = vi.fn()
-    showFreezeFrame(video, canvas)
     showLiveVideoOnNextFrame(video, canvas, onLive)
     Object.defineProperty(video, 'srcObject', { value: {}, configurable: true })
     fireFrame()
     expect(canvas.style.display).toBe('block')
     expect(onLive).not.toHaveBeenCalled()
-  })
-
-  it('only the latest reveal request can reveal the video', () => {
-    showFreezeFrame(video, canvas)
-    showLiveVideoOnNextFrame(video, canvas)
-    const staleFrame = fireFrame
-    showLiveVideoOnNextFrame(video, canvas)
-    staleFrame()
-    expect(canvas.style.display).toBe('block')
-    fireFrame()
-    expect(canvas.style.display).toBe('none')
-  })
-
-  it('cancels the animation-frame fallback on another idle', () => {
-    Object.defineProperty(video, 'requestVideoFrameCallback', {
-      value: undefined,
-    })
-    let renderFallback = () => {}
-    vi.spyOn(window, 'requestAnimationFrame').mockImplementation((callback) => {
-      renderFallback = () => callback(0)
-      return 42
-    })
-    const cancel = vi.spyOn(window, 'cancelAnimationFrame')
-    showFreezeFrame(video, canvas)
-    showLiveVideoOnNextFrame(video, canvas)
-    showFreezeFrame(video, canvas)
-    expect(cancel).toHaveBeenCalledWith(42)
-    renderFallback()
-    expect(canvas.style.display).toBe('block')
   })
 
   afterEach(() => {

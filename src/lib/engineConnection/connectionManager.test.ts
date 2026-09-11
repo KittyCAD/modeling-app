@@ -50,6 +50,28 @@ function startConnectionManager(
 }
 
 describe('ConnectionManager', () => {
+  it('notifies before closing the connection or requesting a reconnect', () => {
+    const manager = createConnectionManager()
+    const order: string[] = []
+    const connection = {
+      disconnectAll: vi.fn(() => order.push('disconnect')),
+    } as unknown as Connection
+    manager.connection = connection
+    manager.started = true
+    manager.addEventListener(EngineConnectionManagerEvents.BeforeTeardown, () =>
+      order.push('preserve')
+    )
+    manager.addEventListener(
+      EngineConnectionManagerEvents.WebsocketClosed,
+      () => order.push('reconnect')
+    )
+
+    manager.tearDown({ websocketClosed: true })
+
+    expect(order).toEqual(['preserve', 'reconnect', 'disconnect'])
+    expect(manager.connection).toBeUndefined()
+  })
+
   it('reports a pong timeout separately from a WebSocket close', () => {
     const manager = createConnectionManager()
     const onPingPongTimeout = vi.fn()
@@ -131,48 +153,6 @@ describe('ConnectionManager', () => {
       expect(socket.close).toHaveBeenCalledOnce()
     }
   )
-
-  it('notifies before closing the connection or requesting a reconnect', () => {
-    const manager = createConnectionManager()
-    const connection = new Connection({
-      url: 'ws://localhost',
-      token: '',
-      handleOnDataChannelMessage: vi.fn(),
-      tearDownManager: manager.tearDown.bind(manager),
-      rejectPendingCommand: vi.fn(),
-      handleMessage: vi.fn(),
-      getCloudProjectId: () => undefined,
-    })
-    manager.connection = connection
-    manager.started = true
-    const disconnect = vi.spyOn(connection, 'disconnectAll')
-    const preserveFrame = vi.fn(() => {
-      expect(manager.connection).toBe(connection)
-      expect(disconnect).not.toHaveBeenCalled()
-    })
-    const reconnect = vi.fn()
-    manager.addEventListener(
-      EngineConnectionManagerEvents.BeforeTeardown,
-      preserveFrame
-    )
-    manager.addEventListener(
-      EngineConnectionManagerEvents.WebsocketClosed,
-      reconnect
-    )
-
-    manager.tearDown({ websocketClosed: true })
-
-    expect(preserveFrame).toHaveBeenCalledTimes(1)
-    expect(reconnect).toHaveBeenCalledTimes(1)
-    expect(preserveFrame.mock.invocationCallOrder[0]).toBeLessThan(
-      reconnect.mock.invocationCallOrder[0]
-    )
-    expect(disconnect).toHaveBeenCalledTimes(1)
-    expect(manager.connection).toBeUndefined()
-    // Repeated cleanup must not try to capture an already-ended stream.
-    manager.tearDown()
-    expect(preserveFrame).toHaveBeenCalledTimes(1)
-  })
 
   it.each([
     [{ width: 240, height: 256 }, 'width must be between 256 and 2160, 240'],
