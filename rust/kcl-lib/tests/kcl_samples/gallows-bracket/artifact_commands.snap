@@ -5,7 +5,7 @@ description: Artifact commands gallows-bracket.kcl
 {
   "public/kcl-samples/gallows-bracket/main.kcl": [
     {
-      "cmdId": "3c085bb9-a401-55d5-8042-5a9095193d55",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,20 +30,20 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "2f481fd4-203e-57d7-b5d6-b16289577621",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -55,18 +55,18 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "e383621f-755a-5f2e-ada3-608aff393dab",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+        "path": "[uuid]",
         "to": {
           "x": 0.0,
           "y": 0.0,
@@ -75,18 +75,18 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "91226189-7e64-5690-9203-67ee33a6eb03",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -99,11 +99,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -116,11 +116,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -133,11 +133,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -150,11 +150,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -167,11 +167,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -184,24 +184,24 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "72dddee3-1330-5c4f-b767-659f762ad674",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
-        "segment": "91226189-7e64-5690-9203-67ee33a6eb03",
-        "intersection_segment": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -213,11 +213,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "eedabccb-e42b-5224-a499-7c2981b239e5",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "72dddee3-1330-5c4f-b767-659f762ad674",
+        "target": "[uuid]",
         "distance": 2402.0,
         "faces": null,
         "opposite": "None",
@@ -226,53 +226,53 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "72dddee3-1330-5c4f-b767-659f762ad674"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "72dddee3-1330-5c4f-b767-659f762ad674",
-        "edge_id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "25999981-b7b8-57e2-8ac5-655907dfffdc",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "72dddee3-1330-5c4f-b767-659f762ad674",
-        "edge_id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "72dddee3-1330-5c4f-b767-659f762ad674",
+        "object_id": "[uuid]",
         "transforms": [
           {
             "translate": null,
@@ -294,11 +294,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "72dddee3-1330-5c4f-b767-659f762ad674",
+        "object_id": "[uuid]",
         "transforms": [
           {
             "translate": {
@@ -320,7 +320,7 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -345,20 +345,20 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "5288de96-84bb-518a-848b-5092b5d33e48",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -370,18 +370,18 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "226ae769-fcaa-56af-ac65-5807ed297dad",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "1da187cf-4f25-596d-a170-2007a75f41c6",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "226ae769-fcaa-56af-ac65-5807ed297dad",
+        "path": "[uuid]",
         "to": {
           "x": 0.0,
           "y": 0.0,
@@ -390,18 +390,18 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "226ae769-fcaa-56af-ac65-5807ed297dad",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -414,11 +414,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "cc312d38-2fa6-5583-a605-44880f646499",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "226ae769-fcaa-56af-ac65-5807ed297dad",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -431,11 +431,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "226ae769-fcaa-56af-ac65-5807ed297dad",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -448,11 +448,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "226ae769-fcaa-56af-ac65-5807ed297dad",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -465,11 +465,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "226ae769-fcaa-56af-ac65-5807ed297dad",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -482,11 +482,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "cc4847ec-3187-5c84-8aa1-14794bc7e98d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "226ae769-fcaa-56af-ac65-5807ed297dad",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -499,24 +499,24 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "226ae769-fcaa-56af-ac65-5807ed297dad",
-        "segment": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
-        "intersection_segment": "cc312d38-2fa6-5583-a605-44880f646499",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -528,11 +528,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+        "target": "[uuid]",
         "distance": 1252.0,
         "faces": null,
         "opposite": "None",
@@ -541,49 +541,49 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "b1c16b58-be5f-5c43-aab8-81b97df08cbc",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "f88ee97f-bd8d-58c2-8a13-430790ee61a8"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
-        "edge_id": "83404203-6665-545a-a917-6f16f2f897e3"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
-        "edge_id": "83404203-6665-545a-a917-6f16f2f897e3"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "226ae769-fcaa-56af-ac65-5807ed297dad",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -608,20 +608,20 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -633,18 +633,18 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
+        "path": "[uuid]",
         "to": {
           "x": 0.2928932188134521,
           "y": 1251.7071067811864,
@@ -653,18 +653,18 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "44621ebd-5856-5dfd-9426-dda5d969f375",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "a54ad82c-be8d-599a-9764-c6498922dd5c",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -677,11 +677,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "724b87fd-c709-5232-b7a1-547c15affb9b",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -694,11 +694,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -711,11 +711,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "f611456b-82df-55af-a95e-b0c5e1ba1457",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -728,24 +728,24 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
-        "segment": "a54ad82c-be8d-599a-9764-c6498922dd5c",
-        "intersection_segment": "724b87fd-c709-5232-b7a1-547c15affb9b",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -757,11 +757,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
+        "target": "[uuid]",
         "distance": -77.0,
         "faces": null,
         "opposite": "None",
@@ -770,44 +770,44 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
-        "edge_id": "97c5f16e-9706-5b8e-b046-e4810e28dffe"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "1e31790b-7616-51eb-9bbe-0d46f611d053",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
-        "edge_id": "97c5f16e-9706-5b8e-b046-e4810e28dffe"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
+        "object_id": "[uuid]",
         "transforms": [
           {
             "translate": null,
@@ -829,43 +829,43 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "03cd9cd9-3406-55e1-ae54-f1d9525eb3ba",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_flip",
-        "object_id": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "f88ee97f-bd8d-58c2-8a13-430790ee61a8"
+          "[uuid]"
         ],
         "tool_ids": [
-          "dd55e140-6df1-5fb8-9388-bd59c5c7ddde"
+          "[uuid]"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "19107e89-bf40-5541-88a5-5106b6de636d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
+        "object_id": "[uuid]",
         "transforms": [
           {
             "translate": null,
@@ -887,7 +887,7 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -912,11 +912,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
+        "plane_id": "[uuid]",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -926,20 +926,20 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "2b8704a7-15b4-5ef7-8498-4a0c612057d6",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "e80fd4da-2562-5d4d-be7f-42b434d6e397",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -951,18 +951,18 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "a0df0eb6-009b-594d-815d-31646979be80",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
+        "path": "[uuid]",
         "to": {
           "x": -33.00000001425,
           "y": 75.0,
@@ -971,18 +971,18 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "e02115f0-d853-5684-82c8-298aa25e4541",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -1003,24 +1003,24 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "594993e6-1056-5d16-9f2e-5770c7b5e4e7",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
-        "segment": "e02115f0-d853-5684-82c8-298aa25e4541",
-        "intersection_segment": "e02115f0-d853-5684-82c8-298aa25e4541",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "c444b134-67e1-507a-bb00-d4998ba97afb",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1032,11 +1032,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "594993e6-1056-5d16-9f2e-5770c7b5e4e7",
+        "target": "[uuid]",
         "distance": 8.0,
         "faces": null,
         "opposite": "None",
@@ -1045,53 +1045,53 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "88600ae1-c4f2-5277-8c4e-117866e83f6e",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "acb6b8b6-e024-57d9-a856-353e5c4d001f",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "594993e6-1056-5d16-9f2e-5770c7b5e4e7"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "5a7368ed-12c7-59b9-88f4-186289245e86",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "594993e6-1056-5d16-9f2e-5770c7b5e4e7",
-        "edge_id": "bce84af9-411a-54b3-9769-3b04679253d5"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "1f5ca073-184d-543b-9da6-2db6719123a8",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "594993e6-1056-5d16-9f2e-5770c7b5e4e7",
-        "edge_id": "bce84af9-411a-54b3-9769-3b04679253d5"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "c8da3189-2eee-5307-9477-076b12db84a5",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "594993e6-1056-5d16-9f2e-5770c7b5e4e7",
+        "entity_id": "[uuid]",
         "transform": [],
         "transforms": [
           [
@@ -1156,24 +1156,24 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "f2e3fae3-4069-58be-a5a5-17ae327df966",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "4e30dd66-e64d-5d2d-92d4-2d15c2237140"
+          "[uuid]"
         ],
         "tool_ids": [
-          "594993e6-1056-5d16-9f2e-5770c7b5e4e7",
-          "52a58279-4e4c-5e63-8a25-c76e002b85fc",
-          "e753211b-9ca1-52a2-8ae3-9e42de6ef01a"
+          "[uuid]",
+          "[uuid]",
+          "[uuid]"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1198,20 +1198,20 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "8eada7d4-6cff-576e-9660-4b58911de9a7",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "fc66f518-029e-5b30-8772-13859f39ce6d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1223,18 +1223,18 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "61b354b3-059b-5095-a0b8-2636217c6cee",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
+        "path": "[uuid]",
         "to": {
           "x": 0.0,
           "y": 0.0,
@@ -1243,18 +1243,18 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "b45580d1-28b2-5700-a6b3-7be443b3bfd8",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "b6048962-8de8-56e0-bd4c-204ee5451b34",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -1267,11 +1267,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "bae7e631-b71d-5980-89ea-29b2140a8a32",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -1284,11 +1284,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "76d81d0d-ef16-5794-bc58-3132468566e9",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -1301,11 +1301,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -1318,11 +1318,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "d5e2f4d6-228a-502b-94db-3100e57ccc81",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -1335,11 +1335,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -1352,24 +1352,24 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "7239bb75-ea9c-5e04-812d-426e933ce851",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
-        "segment": "b6048962-8de8-56e0-bd4c-204ee5451b34",
-        "intersection_segment": "bae7e631-b71d-5980-89ea-29b2140a8a32",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "e0f4a9e9-b7cb-55fa-b527-08fd1f320cd2",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1381,11 +1381,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "7239bb75-ea9c-5e04-812d-426e933ce851",
+        "target": "[uuid]",
         "distance": 452.0,
         "faces": null,
         "opposite": "None",
@@ -1394,49 +1394,49 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "ff863943-02de-5b48-baf7-471ff32b980f",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "7239bb75-ea9c-5e04-812d-426e933ce851"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "662e081e-0c36-5b97-b2b8-ea0464220525",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "7239bb75-ea9c-5e04-812d-426e933ce851",
-        "edge_id": "c4b5520a-0ec6-5a10-ac66-1d270d511967"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "5b060302-5d33-5353-bd5e-3f938c80ea7f",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "7239bb75-ea9c-5e04-812d-426e933ce851",
-        "edge_id": "c4b5520a-0ec6-5a10-ac66-1d270d511967"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "fd9de7dd-b79f-57cc-9aca-d5f0c32b8322",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "bd2c7879-5553-55c3-bc25-46df0c8081fc",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1461,20 +1461,20 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "1583b450-a578-582f-8d23-686bccf95d8b",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "bd2c7879-5553-55c3-bc25-46df0c8081fc",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "7faa0516-2581-52ca-b80e-97150bf2f040",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "bd2c7879-5553-55c3-bc25-46df0c8081fc",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1486,18 +1486,18 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "9afb6023-b93a-59ec-afe5-e351f8385d69",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "ab136157-9d5c-5ca2-93db-6deedd96b088",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "9afb6023-b93a-59ec-afe5-e351f8385d69",
+        "path": "[uuid]",
         "to": {
           "x": 0.2928932188134521,
           "y": 0.29289321881345226,
@@ -1506,18 +1506,18 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "9afb6023-b93a-59ec-afe5-e351f8385d69",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -1530,11 +1530,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "880f0f46-f5a4-5d69-b352-2aabbd0c7ed4",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "9afb6023-b93a-59ec-afe5-e351f8385d69",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -1547,11 +1547,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "d4cbda13-cf30-51b5-adde-debccd5ae685",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "9afb6023-b93a-59ec-afe5-e351f8385d69",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -1564,11 +1564,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "9afb6023-b93a-59ec-afe5-e351f8385d69",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -1581,24 +1581,24 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "1c0dcb9c-b83b-520e-ab8f-34fc30f33e66",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "9afb6023-b93a-59ec-afe5-e351f8385d69",
-        "segment": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
-        "intersection_segment": "880f0f46-f5a4-5d69-b352-2aabbd0c7ed4",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "8166dfa8-fbe2-57c9-a383-b66e8c8b9070",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "bd2c7879-5553-55c3-bc25-46df0c8081fc",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1610,11 +1610,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "4dc144d3-9f54-5d45-b06a-a8410f6a5222",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "1c0dcb9c-b83b-520e-ab8f-34fc30f33e66",
+        "target": "[uuid]",
         "distance": -77.0,
         "faces": null,
         "opposite": "None",
@@ -1623,44 +1623,44 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "f6528d6a-e531-5b37-a104-5e45fe757c9f",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "c349d1a9-19a0-5db8-b19d-4e0dc473c583",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "1c0dcb9c-b83b-520e-ab8f-34fc30f33e66"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "f0a7732a-2f75-5407-b203-7382d01c3918",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "1c0dcb9c-b83b-520e-ab8f-34fc30f33e66",
-        "edge_id": "0e465ae9-fdc3-5a3a-b3ad-633fa2dda1b8"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "e45a1872-b6f4-5ae2-9e86-803375beafa6",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "1c0dcb9c-b83b-520e-ab8f-34fc30f33e66",
-        "edge_id": "0e465ae9-fdc3-5a3a-b3ad-633fa2dda1b8"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "f41b64cc-a0bb-5a3a-a1a2-6bb37bda7c26",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "1c0dcb9c-b83b-520e-ab8f-34fc30f33e66",
+        "object_id": "[uuid]",
         "transforms": [
           {
             "translate": null,
@@ -1682,43 +1682,43 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "065d6e6f-62af-500d-aae0-fe097d5f952b",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_flip",
-        "object_id": "1c0dcb9c-b83b-520e-ab8f-34fc30f33e66"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "fed04fa9-172b-5dd7-8ef3-f2c390c0a3f4",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "9afb6023-b93a-59ec-afe5-e351f8385d69",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "fe6e67eb-7a61-566b-b101-f63111291cbc",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "7239bb75-ea9c-5e04-812d-426e933ce851"
+          "[uuid]"
         ],
         "tool_ids": [
-          "1c0dcb9c-b83b-520e-ab8f-34fc30f33e66"
+          "[uuid]"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "c91b9ebe-ef24-5090-8a15-d377717956bf",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "fe6e67eb-7a61-566b-b101-f63111291cbc",
+        "object_id": "[uuid]",
         "transforms": [
           {
             "translate": null,
@@ -1740,11 +1740,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "ff7ee7c9-c639-51f1-8d87-df7f7aaf95ec",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "fe6e67eb-7a61-566b-b101-f63111291cbc",
+        "object_id": "[uuid]",
         "transforms": [
           {
             "translate": {
@@ -1766,7 +1766,7 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "94906884-1803-5336-93e6-0aca938f73f1",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1791,11 +1791,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "c7d3a70e-3921-5009-ad0e-e05ef0d30709",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "94906884-1803-5336-93e6-0aca938f73f1",
+        "plane_id": "[uuid]",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -1805,20 +1805,20 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "c42bee5e-b2b1-5cbc-8ff1-ab224da718f1",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "94906884-1803-5336-93e6-0aca938f73f1",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "c93c1163-3f23-5d1e-bca1-1a555fc8ee8b",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "94906884-1803-5336-93e6-0aca938f73f1",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1830,18 +1830,18 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "edad1eb5-5562-5615-b23f-ee6623df14ee",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "f3e5d974-3ee8-52ce-a294-da34987457f8",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "edad1eb5-5562-5615-b23f-ee6623df14ee",
+        "path": "[uuid]",
         "to": {
           "x": 417.00000001425,
           "y": -37.500000013000005,
@@ -1850,18 +1850,18 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "72e4fb1c-adcb-54a7-99b3-2a3ed589227e",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "4728ade4-a3a9-5b06-851f-c0795fb8ba92",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "edad1eb5-5562-5615-b23f-ee6623df14ee",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -1882,24 +1882,24 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "c9e17bd3-c74a-55cb-86c0-84f065310bc3",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "edad1eb5-5562-5615-b23f-ee6623df14ee",
-        "segment": "4728ade4-a3a9-5b06-851f-c0795fb8ba92",
-        "intersection_segment": "4728ade4-a3a9-5b06-851f-c0795fb8ba92",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "9ccb7921-1d61-55b9-bd52-98bcc5a34efa",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "94906884-1803-5336-93e6-0aca938f73f1",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1911,11 +1911,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "ed7cc7fd-91e4-5472-8050-1a6c63179e46",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "c9e17bd3-c74a-55cb-86c0-84f065310bc3",
+        "target": "[uuid]",
         "distance": 8.0,
         "faces": null,
         "opposite": "None",
@@ -1924,64 +1924,64 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "e6ed3605-69e2-53c9-bebb-df82937c0962",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "e54f67fd-5312-580f-b00e-e78b0877011e",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "c9e17bd3-c74a-55cb-86c0-84f065310bc3"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "c902ac1e-80c0-5a28-b5a8-0ef58e8fd399",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "c9e17bd3-c74a-55cb-86c0-84f065310bc3",
-        "edge_id": "6947ea4f-1e6c-5343-bc46-1b274c445e35"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "b5fd1215-9080-56e3-9845-e939e4245bdb",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "c9e17bd3-c74a-55cb-86c0-84f065310bc3",
-        "edge_id": "6947ea4f-1e6c-5343-bc46-1b274c445e35"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "f24ed84c-9623-59b6-bf31-be6202c5a133",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "edad1eb5-5562-5615-b23f-ee6623df14ee",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "60f59271-6b58-59b1-94ae-dad793e5c6cd",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "fe6e67eb-7a61-566b-b101-f63111291cbc"
+          "[uuid]"
         ],
         "tool_ids": [
-          "c9e17bd3-c74a-55cb-86c0-84f065310bc3"
+          "[uuid]"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "9bc907a5-bec7-5f87-9105-27ffee0da4e4",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -2006,20 +2006,20 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "d60ddbad-e06f-5b11-9ef8-b52ac282856c",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "9bc907a5-bec7-5f87-9105-27ffee0da4e4",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "1ebd4bb2-74ae-5a2f-a7a7-a778232f13a4",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "9bc907a5-bec7-5f87-9105-27ffee0da4e4",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2031,18 +2031,18 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "0d85720f-31f4-5aac-90ae-672aa1715f9d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "855fafc2-5621-5264-953e-1be6964b7a16",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "0d85720f-31f4-5aac-90ae-672aa1715f9d",
+        "path": "[uuid]",
         "to": {
           "x": 0.0,
           "y": 0.0,
@@ -2051,18 +2051,18 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "aa0e2533-e8d9-5b33-ac82-b003e1e03207",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "cbd0a735-3417-50fd-a670-41b483234c04",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "0d85720f-31f4-5aac-90ae-672aa1715f9d",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -2075,11 +2075,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "0d85720f-31f4-5aac-90ae-672aa1715f9d",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -2092,11 +2092,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "5e11c45c-4e86-5b88-8029-f0565bc2f6cc",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "0d85720f-31f4-5aac-90ae-672aa1715f9d",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -2109,11 +2109,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "c9d8522f-60d2-513b-9c62-a4a3110e5970",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "0d85720f-31f4-5aac-90ae-672aa1715f9d",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -2126,11 +2126,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "5d2a2786-5258-5364-b1b2-b28334229017",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "0d85720f-31f4-5aac-90ae-672aa1715f9d",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -2143,11 +2143,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "77ac15fd-2d5b-5522-8e03-3d29dfb3c1c7",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "0d85720f-31f4-5aac-90ae-672aa1715f9d",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -2160,24 +2160,24 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "1eb67267-23ae-55ad-a211-5f61fb90442f",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "0d85720f-31f4-5aac-90ae-672aa1715f9d",
-        "segment": "cbd0a735-3417-50fd-a670-41b483234c04",
-        "intersection_segment": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "5e0ef8cd-86d0-539e-b5b7-45c22f6c2ecd",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "9bc907a5-bec7-5f87-9105-27ffee0da4e4",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2189,11 +2189,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "ce0f2476-67d7-5345-810e-e93bbaf612ef",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "1eb67267-23ae-55ad-a211-5f61fb90442f",
+        "target": "[uuid]",
         "distance": 629.9108216936542,
         "faces": null,
         "opposite": "None",
@@ -2202,49 +2202,49 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "3160ffad-2e46-5554-be76-1b632140926c",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "5e069ec3-b22a-5c34-ae73-15c55f4f871f",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "1eb67267-23ae-55ad-a211-5f61fb90442f"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "5906c65e-a86e-5e74-ad3b-71b0fd95ea81",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "1eb67267-23ae-55ad-a211-5f61fb90442f",
-        "edge_id": "4d165fb3-6000-5ce2-addd-e558a8aeb285"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "1eb67267-23ae-55ad-a211-5f61fb90442f",
-        "edge_id": "4d165fb3-6000-5ce2-addd-e558a8aeb285"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "cb96bce2-64b3-5697-9ac4-41978548d779",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "0d85720f-31f4-5aac-90ae-672aa1715f9d",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "f72a5f9c-40cd-5f21-ba89-b0c45afa0f22",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -2269,20 +2269,20 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "d9bbf8b8-59d6-5d87-a075-0dac9e20e173",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "f72a5f9c-40cd-5f21-ba89-b0c45afa0f22",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "0b959a9c-ff6d-5ea4-9bd6-d41bfb0c0525",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "f72a5f9c-40cd-5f21-ba89-b0c45afa0f22",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2294,18 +2294,18 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "9a7c20e4-9c0a-5dc1-8d8d-3ba13c7be126",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "fe9dcb80-3187-5ea7-ba83-fe14f1a75891",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "9a7c20e4-9c0a-5dc1-8d8d-3ba13c7be126",
+        "path": "[uuid]",
         "to": {
           "x": -69.29289321881345,
           "y": 0.29289321881345226,
@@ -2314,18 +2314,18 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "ae9b8e6a-e42c-5886-830e-517108f76e7f",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "27284bc1-5676-5b5a-baa2-003a7224d266",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "9a7c20e4-9c0a-5dc1-8d8d-3ba13c7be126",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -2338,11 +2338,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "47ae25d7-94a7-5b84-85ef-b0a4633920cd",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "9a7c20e4-9c0a-5dc1-8d8d-3ba13c7be126",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -2355,11 +2355,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "10afce2b-40ff-5ee3-a44b-bd101e341780",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "9a7c20e4-9c0a-5dc1-8d8d-3ba13c7be126",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -2372,11 +2372,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "cdfcbbd0-d34e-5191-8ac3-35754fd4e366",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "9a7c20e4-9c0a-5dc1-8d8d-3ba13c7be126",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -2389,24 +2389,24 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "585c0507-64ec-597f-addc-f52df0ac2e7f",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "9a7c20e4-9c0a-5dc1-8d8d-3ba13c7be126",
-        "segment": "27284bc1-5676-5b5a-baa2-003a7224d266",
-        "intersection_segment": "47ae25d7-94a7-5b84-85ef-b0a4633920cd",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "7a96966c-8df1-5353-a0a1-c191f9108448",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "f72a5f9c-40cd-5f21-ba89-b0c45afa0f22",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2418,11 +2418,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "e8fa8cfb-5619-5bad-a6f8-bfb3bfe36b79",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "585c0507-64ec-597f-addc-f52df0ac2e7f",
+        "target": "[uuid]",
         "distance": -71.0,
         "faces": null,
         "opposite": "None",
@@ -2431,44 +2431,44 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "9deb8b6d-7844-5e18-8757-8a0874e53b4d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "b470d865-8ffe-5e00-b769-eb89b95fa907",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "585c0507-64ec-597f-addc-f52df0ac2e7f"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "0cae07ff-9f05-55d7-aa3b-48e0f7956432",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "585c0507-64ec-597f-addc-f52df0ac2e7f",
-        "edge_id": "84e224e0-4e0a-5699-aca9-24f78cb22e8d"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "22eefce0-f976-5e04-8aaa-0e0718baacdf",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "585c0507-64ec-597f-addc-f52df0ac2e7f",
-        "edge_id": "84e224e0-4e0a-5699-aca9-24f78cb22e8d"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "2f492218-88c4-58fb-b433-2edbfe64d7db",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "585c0507-64ec-597f-addc-f52df0ac2e7f",
+        "object_id": "[uuid]",
         "transforms": [
           {
             "translate": {
@@ -2490,31 +2490,31 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "e5e4e756-f536-5058-ac08-88b61ffce4e3",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "9a7c20e4-9c0a-5dc1-8d8d-3ba13c7be126",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "f955175a-2142-57a5-a066-84dd5c24cf81",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "1eb67267-23ae-55ad-a211-5f61fb90442f"
+          "[uuid]"
         ],
         "tool_ids": [
-          "585c0507-64ec-597f-addc-f52df0ac2e7f"
+          "[uuid]"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "50a84d8a-72ec-5bad-8017-05f4b519172d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -2539,20 +2539,20 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "23ae09dd-bfd8-58fb-a4a4-49da191174fe",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "50a84d8a-72ec-5bad-8017-05f4b519172d",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "810ee821-abbc-5cea-a7de-e079dbe0c1de",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "50a84d8a-72ec-5bad-8017-05f4b519172d",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2564,18 +2564,18 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "c3df3fc6-c09a-5bdd-8ebe-0efe60f1711d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "e4bd49fb-f0b4-57f1-aa21-3c8ee7764cee",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "c3df3fc6-c09a-5bdd-8ebe-0efe60f1711d",
+        "path": "[uuid]",
         "to": {
           "x": -69.29289321881345,
           "y": 629.6179284748407,
@@ -2584,18 +2584,18 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "79e86604-4aa6-566d-9617-1f1721955eb2",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "9cbc0821-9ccb-59b5-8a88-96912ec71e5e",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "c3df3fc6-c09a-5bdd-8ebe-0efe60f1711d",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -2608,11 +2608,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "71136424-dffe-5ef9-9646-f40c0804ce04",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "c3df3fc6-c09a-5bdd-8ebe-0efe60f1711d",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -2625,11 +2625,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "8a0bb768-ecd5-5a98-afa4-b22c9e2461f5",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "c3df3fc6-c09a-5bdd-8ebe-0efe60f1711d",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -2642,11 +2642,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "611f15e9-bff8-53b7-b7e4-4d59a86ecb97",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "c3df3fc6-c09a-5bdd-8ebe-0efe60f1711d",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -2659,24 +2659,24 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "6aa5aed0-b871-5456-a13d-c13c223ba521",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "c3df3fc6-c09a-5bdd-8ebe-0efe60f1711d",
-        "segment": "9cbc0821-9ccb-59b5-8a88-96912ec71e5e",
-        "intersection_segment": "71136424-dffe-5ef9-9646-f40c0804ce04",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "0b663ab0-47c0-55a6-9515-92d93b2b9ae6",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "50a84d8a-72ec-5bad-8017-05f4b519172d",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2688,11 +2688,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "dc339cd1-ef80-56b6-8a39-06e7e7c74e72",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "6aa5aed0-b871-5456-a13d-c13c223ba521",
+        "target": "[uuid]",
         "distance": -71.0,
         "faces": null,
         "opposite": "None",
@@ -2701,44 +2701,44 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "231fdc8e-7db8-57be-817d-bb786c4edc0b",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "e6e62a43-bd44-5278-ba8a-920293303adb",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "6aa5aed0-b871-5456-a13d-c13c223ba521"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "f8a4f959-6a67-573d-a52e-b915999bcc80",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "6aa5aed0-b871-5456-a13d-c13c223ba521",
-        "edge_id": "b69db8aa-3357-5db3-8288-bc2b167c0c02"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "f4765855-7134-5064-a88e-19f1cd4e84de",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "6aa5aed0-b871-5456-a13d-c13c223ba521",
-        "edge_id": "b69db8aa-3357-5db3-8288-bc2b167c0c02"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "f8675931-ab2b-5494-9fb8-5c9575d5cb1d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "6aa5aed0-b871-5456-a13d-c13c223ba521",
+        "object_id": "[uuid]",
         "transforms": [
           {
             "translate": {
@@ -2760,35 +2760,35 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "91e2b666-c0db-5d3c-875d-c0cfd8b5dd9e",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "c3df3fc6-c09a-5bdd-8ebe-0efe60f1711d",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "b19a9f9b-8301-5d8c-a1c0-0e5bbb346ba0",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "f955175a-2142-57a5-a066-84dd5c24cf81"
+          "[uuid]"
         ],
         "tool_ids": [
-          "6aa5aed0-b871-5456-a13d-c13c223ba521"
+          "[uuid]"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "57441093-dfdf-5e5c-b0eb-9525e256fd63",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "b19a9f9b-8301-5d8c-a1c0-0e5bbb346ba0",
+        "object_id": "[uuid]",
         "transforms": [
           {
             "translate": null,
@@ -2810,11 +2810,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "c9a45a79-666c-55bc-a066-80e3fc2ca11c",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "b19a9f9b-8301-5d8c-a1c0-0e5bbb346ba0",
+        "object_id": "[uuid]",
         "transforms": [
           {
             "translate": {
@@ -2836,11 +2836,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "eab0138f-4d34-5ad1-be64-4c06e431cd98",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "b19a9f9b-8301-5d8c-a1c0-0e5bbb346ba0",
+        "object_id": "[uuid]",
         "transforms": [
           {
             "translate": null,
@@ -2862,11 +2862,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "a191b91a-b1f1-5715-bc25-25a1f106866e",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "b19a9f9b-8301-5d8c-a1c0-0e5bbb346ba0",
+        "object_id": "[uuid]",
         "transforms": [
           {
             "translate": {
@@ -2888,7 +2888,7 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "42bc78b9-4b08-5bc9-bc7d-76e8c6158b42",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -2913,20 +2913,20 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "843cd911-f601-52da-9a02-c9b168aa49a4",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "42bc78b9-4b08-5bc9-bc7d-76e8c6158b42",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "3f7f5047-af98-5f62-a2f5-70fb6b5d1787",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "42bc78b9-4b08-5bc9-bc7d-76e8c6158b42",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2938,18 +2938,18 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "b05ba4c9-ccf7-5d0a-a9a2-950f363725c8",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "0fa6ca6a-d783-58fe-9a15-adf1c3200e81",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "b05ba4c9-ccf7-5d0a-a9a2-950f363725c8",
+        "path": "[uuid]",
         "to": {
           "x": 0.0,
           "y": 0.0,
@@ -2958,18 +2958,18 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "d4a58bb1-6e9a-567c-9a22-4e8a1d8a3d75",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "a3fed421-ce33-5a4f-b048-d3a68dfce32d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "b05ba4c9-ccf7-5d0a-a9a2-950f363725c8",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -2982,11 +2982,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "296133c8-94a5-5fd9-851a-d484fa3dc66a",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "b05ba4c9-ccf7-5d0a-a9a2-950f363725c8",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -2999,11 +2999,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "09bc7d66-414a-560e-9855-7a04ab7b5e7e",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "b05ba4c9-ccf7-5d0a-a9a2-950f363725c8",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -3016,11 +3016,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "c9419ead-8fe3-58ae-821f-b6a562bd113d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "b05ba4c9-ccf7-5d0a-a9a2-950f363725c8",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -3033,33 +3033,33 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "1e2b65ac-2924-54ff-bec0-ab0c7d7dcc8f",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "b05ba4c9-ccf7-5d0a-a9a2-950f363725c8",
-        "segment": "a3fed421-ce33-5a4f-b048-d3a68dfce32d",
-        "intersection_segment": "296133c8-94a5-5fd9-851a-d484fa3dc66a",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "f3bb49a2-9c39-5528-8f44-a3337b76b362",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "b05ba4c9-ccf7-5d0a-a9a2-950f363725c8",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "3ba624ec-0a0b-564c-90e4-cfa74956d06b",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "42bc78b9-4b08-5bc9-bc7d-76e8c6158b42",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3071,11 +3071,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "0f69e9fb-8cfe-5f9d-b54f-96265c6afc83",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "1e2b65ac-2924-54ff-bec0-ab0c7d7dcc8f",
+        "target": "[uuid]",
         "distance": 100.0,
         "faces": null,
         "opposite": "None",
@@ -3084,44 +3084,44 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "d34a0ded-ed1b-5139-836b-e00b779bd892",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "ce3966c0-d3aa-5d09-95fe-a587aa26e2fd",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "1e2b65ac-2924-54ff-bec0-ab0c7d7dcc8f"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "bcc1a6e3-753e-566e-b68e-67e374552a75",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "1e2b65ac-2924-54ff-bec0-ab0c7d7dcc8f",
-        "edge_id": "096de996-6c69-5797-ba95-49e61599d8a5"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "5b5bd21f-4e8b-5eb5-b86b-6c5a708d5a3d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "1e2b65ac-2924-54ff-bec0-ab0c7d7dcc8f",
-        "edge_id": "096de996-6c69-5797-ba95-49e61599d8a5"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "3cff0e16-6db2-54dd-a35f-1609f20de855",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "1e2b65ac-2924-54ff-bec0-ab0c7d7dcc8f",
+        "object_id": "[uuid]",
         "transforms": [
           {
             "translate": {
@@ -3143,11 +3143,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "286b9632-8f7e-58a1-9be7-c68cdb74bd58",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "f2e3fae3-4069-58be-a5a5-17ae327df966",
+        "entity_id": "[uuid]",
         "transform": [],
         "transforms": [
           [
@@ -3299,11 +3299,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "4b13501d-0c35-5367-95cd-29691ec63825",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "60f59271-6b58-59b1-94ae-dad793e5c6cd",
+        "entity_id": "[uuid]",
         "transform": [],
         "transforms": [
           [
@@ -3455,11 +3455,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "9794ca46-f9b1-580c-a79d-2169f4b5a877",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "b19a9f9b-8301-5d8c-a1c0-0e5bbb346ba0",
+        "entity_id": "[uuid]",
         "transform": [],
         "transforms": [
           [
@@ -3611,11 +3611,11 @@ description: Artifact commands gallows-bracket.kcl
       }
     },
     {
-      "cmdId": "abbeb3b2-3421-545a-b53f-5519bb63b75b",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "1e2b65ac-2924-54ff-bec0-ab0c7d7dcc8f",
+        "entity_id": "[uuid]",
         "transform": [],
         "transforms": [
           [

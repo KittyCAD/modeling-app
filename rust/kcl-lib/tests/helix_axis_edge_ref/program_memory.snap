@@ -12,14 +12,14 @@ description: Variables in memory after executing helix_axis_edge_ref.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "topologyId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "artifactId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "eb9d56c1-169a-5445-ae15-f24345ec7c75",
-          "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 222,
@@ -32,22 +32,22 @@ description: Variables in memory after executing helix_axis_edge_ref.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "4b38ed2e-2ab0-52cc-891e-107ea704e9c3",
-          "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "cbbb4f65-6ab2-564b-ab3f-1e225724a282",
-          "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "de7be92e-614b-5db2-af67-45ab2a0e944d",
-          "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 485,
@@ -60,8 +60,8 @@ description: Variables in memory after executing helix_axis_edge_ref.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "33aa9496-5ecf-5157-ab0b-51ae219ee4df",
-          "id": "33aa9496-5ecf-5157-ab0b-51ae219ee4df",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 562,
@@ -83,11 +83,11 @@ description: Variables in memory after executing helix_axis_edge_ref.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -111,7 +111,7 @@ description: Variables in memory after executing helix_axis_edge_ref.kcl
           },
           {
             "__geoMeta": {
-              "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -128,7 +128,7 @@ description: Variables in memory after executing helix_axis_edge_ref.kcl
           },
           {
             "__geoMeta": {
-              "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -145,7 +145,7 @@ description: Variables in memory after executing helix_axis_edge_ref.kcl
           },
           {
             "__geoMeta": {
-              "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -170,8 +170,8 @@ description: Variables in memory after executing helix_axis_edge_ref.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
-          "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "XY",
           "origin": {
@@ -211,7 +211,7 @@ description: Variables in memory after executing helix_axis_edge_ref.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -229,13 +229,13 @@ description: Variables in memory after executing helix_axis_edge_ref.kcl
             "value": "seg01"
           }
         },
-        "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-        "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "33aa9496-5ecf-5157-ab0b-51ae219ee4df",
-      "endCapId": "db676f42-098b-5f8a-b4c7-abb41d3ee6dc",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -243,8 +243,8 @@ description: Variables in memory after executing helix_axis_edge_ref.kcl
   "he": {
     "type": "Helix",
     "value": {
-      "value": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
-      "artifactId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+      "value": "[uuid]",
+      "artifactId": "[uuid]",
       "revolutions": 10.0,
       "angleStart": 0.0,
       "ccw": false,
@@ -256,11 +256,11 @@ description: Variables in memory after executing helix_axis_edge_ref.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -284,7 +284,7 @@ description: Variables in memory after executing helix_axis_edge_ref.kcl
         },
         {
           "__geoMeta": {
-            "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -301,7 +301,7 @@ description: Variables in memory after executing helix_axis_edge_ref.kcl
         },
         {
           "__geoMeta": {
-            "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -318,7 +318,7 @@ description: Variables in memory after executing helix_axis_edge_ref.kcl
         },
         {
           "__geoMeta": {
-            "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -343,8 +343,8 @@ description: Variables in memory after executing helix_axis_edge_ref.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
-        "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "XY",
         "origin": {
@@ -384,7 +384,7 @@ description: Variables in memory after executing helix_axis_edge_ref.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -402,8 +402,8 @@ description: Variables in memory after executing helix_axis_edge_ref.kcl
           "value": "seg01"
         }
       },
-      "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -421,8 +421,8 @@ description: Variables in memory after executing helix_axis_edge_ref.kcl
   "sketch001": {
     "type": "Plane",
     "value": {
-      "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
-      "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "objectId": 0,
       "kind": "XY",
       "origin": {

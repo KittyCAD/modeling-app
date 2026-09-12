@@ -6,8 +6,8 @@ description: Variables in memory after executing food-service-spatula.kcl
   "__sketch_100_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "03cd9cd9-3406-55e1-ae54-f1d9525eb3ba",
-      "id": "03cd9cd9-3406-55e1-ae54-f1d9525eb3ba",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 208.593833,
@@ -38,8 +38,8 @@ description: Variables in memory after executing food-service-spatula.kcl
   "__sketch_138_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "30efa5e2-105e-56b9-85d8-16e0935167b0",
-      "id": "30efa5e2-105e-56b9-85d8-16e0935167b0",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 190.56114818,
@@ -70,8 +70,8 @@ description: Variables in memory after executing food-service-spatula.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
-      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -102,8 +102,8 @@ description: Variables in memory after executing food-service-spatula.kcl
   "__sketch_74_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
-      "id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "objectId": 73,
       "kind": "Custom",
       "origin": {
@@ -176,14 +176,14 @@ description: Variables in memory after executing food-service-spatula.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "14d4f28b-98bf-5f5d-9542-446598cbea13",
-      "originalId": "14d4f28b-98bf-5f5d-9542-446598cbea13",
-      "topologyId": "14d4f28b-98bf-5f5d-9542-446598cbea13",
-      "artifactId": "d5eaf678-0440-563f-ac19-e473850b9270",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "363124dc-e9ab-52fc-9de3-0830ce3f961e",
-          "id": "feb83338-f9ef-5ff2-867b-b4c05a0bc3c5",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 372,
@@ -196,8 +196,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "05c93606-d84a-50fa-b88a-827cfa41ba82",
-          "id": "ab6eb2a5-a75a-561d-b676-ddd724155503",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 447,
@@ -210,8 +210,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "dd19a5dc-8fce-5458-8cb7-fcf6d8b7c93e",
-          "id": "a5d6aa6c-00ef-56ec-a86a-d284810451da",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 519,
@@ -224,8 +224,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "87f4c597-d6a4-5bf8-a1fb-5aad01265a3f",
-          "id": "ba3b7e85-d32c-51f8-8d92-7b07c207d159",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 592,
@@ -238,8 +238,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "7887ce7a-175d-597c-b5d5-a933d3f49031",
-          "id": "a80250d3-b686-51a3-abed-c9f6717726ba",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 861,
@@ -252,8 +252,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "d304a222-a09b-58ce-91b9-61e5d54eb2b4",
-          "id": "882580af-4a8f-5a96-b6a7-a339e5bf03c7",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 944,
@@ -266,8 +266,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "f590f6e6-f1dc-5885-b479-50f20aa9d85d",
-          "id": "4dd21888-048f-55ee-a851-9884c1b16195",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1057,
@@ -280,8 +280,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "83761dbf-3508-5df7-ae78-3f594552c61f",
-          "id": "f8d01819-6270-582b-b038-05b10e3097a2",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1142,
@@ -294,8 +294,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "b1107967-bdf3-5ce2-9cec-7fe8a56e1352",
-          "id": "ae7a5ce5-adeb-5cde-a32e-18a98cb6b3cb",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1536,
@@ -308,8 +308,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "d7838414-dca9-535e-84ba-4b339ae34249",
-          "id": "f5a6e3b7-10e8-5c9d-954c-7b2481d5a3c6",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1709,
@@ -322,8 +322,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "d71729ba-82a9-55d2-9048-db417417013e",
-          "id": "fd4bef00-3f61-598d-b821-e1e9d8cefe92",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1916,
@@ -336,8 +336,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "1917fbc6-b106-5538-ae34-a0d3bb783089",
-          "id": "9d87edb8-3a51-54ff-9506-b6ceb6fc319a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2089,
@@ -350,8 +350,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "3a1f61e9-e5d3-5438-b1f7-3ed2d3cee9d3",
-          "id": "790a53c2-e9c7-5c32-abb3-75e5197684a6",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2569,
@@ -364,8 +364,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "33fdf310-3484-5160-bcda-c312b9eb8d92",
-          "id": "344e4357-b19d-5be6-b291-fcad13347ea0",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2744,
@@ -378,8 +378,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "4c37634d-7593-5eda-85a5-cee7aa6ffeca",
-          "id": "55774615-8dca-58dd-8ee1-5a4396bb601b",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2954,
@@ -392,8 +392,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "981359fc-37a6-57ea-a82e-6c56402cd92a",
-          "id": "1f5e8aea-443e-5f32-a0ee-fd5b60a89b2d",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3129,
@@ -409,11 +409,11 @@ description: Variables in memory after executing food-service-spatula.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "14d4f28b-98bf-5f5d-9542-446598cbea13",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "feb83338-f9ef-5ff2-867b-b4c05a0bc3c5",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -437,7 +437,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "ab6eb2a5-a75a-561d-b676-ddd724155503",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -461,7 +461,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "a5d6aa6c-00ef-56ec-a86a-d284810451da",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -485,7 +485,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "ba3b7e85-d32c-51f8-8d92-7b07c207d159",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -515,7 +515,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "a80250d3-b686-51a3-abed-c9f6717726ba",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -539,7 +539,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "882580af-4a8f-5a96-b6a7-a339e5bf03c7",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -569,7 +569,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "4dd21888-048f-55ee-a851-9884c1b16195",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -593,7 +593,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "f8d01819-6270-582b-b038-05b10e3097a2",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -623,7 +623,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "ae7a5ce5-adeb-5cde-a32e-18a98cb6b3cb",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -647,7 +647,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "f5a6e3b7-10e8-5c9d-954c-7b2481d5a3c6",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -677,7 +677,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "fd4bef00-3f61-598d-b821-e1e9d8cefe92",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -701,7 +701,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "9d87edb8-3a51-54ff-9506-b6ceb6fc319a",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -731,7 +731,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "790a53c2-e9c7-5c32-abb3-75e5197684a6",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -755,7 +755,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "344e4357-b19d-5be6-b291-fcad13347ea0",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -785,7 +785,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "55774615-8dca-58dd-8ee1-5a4396bb601b",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -809,7 +809,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "1f5e8aea-443e-5f32-a0ee-fd5b60a89b2d",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -840,8 +840,8 @@ description: Variables in memory after executing food-service-spatula.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -881,7 +881,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "4593843c-7d41-5ede-b7fa-ab9201f55957",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -951,17 +951,17 @@ description: Variables in memory after executing food-service-spatula.kcl
             "value": "upperSlotLine3"
           }
         },
-        "artifactId": "14d4f28b-98bf-5f5d-9542-446598cbea13",
-        "originalId": "14d4f28b-98bf-5f5d-9542-446598cbea13",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "f74c8a70-484b-5efb-97b9-9d5bebb32c6b",
-      "endCapId": "5ba80a96-94a4-5be9-b056-66ad21697ee4",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+          "id": "[uuid]",
           "radius": {
             "n": 5.0,
             "ty": {
@@ -970,12 +970,12 @@ description: Variables in memory after executing food-service-spatula.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "7e739592-39e0-5d0f-b35c-5e50f7f9f73a",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+          "id": "[uuid]",
           "radius": {
             "n": 5.0,
             "ty": {
@@ -984,7 +984,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "0674952c-793e-5ead-8b6c-c9d9cddbaf1c",
+          "edgeId": "[uuid]",
           "tag": null
         }
       ],
@@ -996,14 +996,14 @@ description: Variables in memory after executing food-service-spatula.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "14d4f28b-98bf-5f5d-9542-446598cbea13",
-      "originalId": "14d4f28b-98bf-5f5d-9542-446598cbea13",
-      "topologyId": "14d4f28b-98bf-5f5d-9542-446598cbea13",
-      "artifactId": "d5eaf678-0440-563f-ac19-e473850b9270",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "363124dc-e9ab-52fc-9de3-0830ce3f961e",
-          "id": "feb83338-f9ef-5ff2-867b-b4c05a0bc3c5",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 372,
@@ -1016,8 +1016,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "05c93606-d84a-50fa-b88a-827cfa41ba82",
-          "id": "ab6eb2a5-a75a-561d-b676-ddd724155503",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 447,
@@ -1030,8 +1030,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "dd19a5dc-8fce-5458-8cb7-fcf6d8b7c93e",
-          "id": "a5d6aa6c-00ef-56ec-a86a-d284810451da",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 519,
@@ -1044,8 +1044,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "87f4c597-d6a4-5bf8-a1fb-5aad01265a3f",
-          "id": "ba3b7e85-d32c-51f8-8d92-7b07c207d159",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 592,
@@ -1058,8 +1058,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "7887ce7a-175d-597c-b5d5-a933d3f49031",
-          "id": "a80250d3-b686-51a3-abed-c9f6717726ba",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 861,
@@ -1072,8 +1072,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "d304a222-a09b-58ce-91b9-61e5d54eb2b4",
-          "id": "882580af-4a8f-5a96-b6a7-a339e5bf03c7",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 944,
@@ -1086,8 +1086,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "f590f6e6-f1dc-5885-b479-50f20aa9d85d",
-          "id": "4dd21888-048f-55ee-a851-9884c1b16195",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1057,
@@ -1100,8 +1100,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "83761dbf-3508-5df7-ae78-3f594552c61f",
-          "id": "f8d01819-6270-582b-b038-05b10e3097a2",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1142,
@@ -1114,8 +1114,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "b1107967-bdf3-5ce2-9cec-7fe8a56e1352",
-          "id": "ae7a5ce5-adeb-5cde-a32e-18a98cb6b3cb",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1536,
@@ -1128,8 +1128,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "d7838414-dca9-535e-84ba-4b339ae34249",
-          "id": "f5a6e3b7-10e8-5c9d-954c-7b2481d5a3c6",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1709,
@@ -1142,8 +1142,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "d71729ba-82a9-55d2-9048-db417417013e",
-          "id": "fd4bef00-3f61-598d-b821-e1e9d8cefe92",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1916,
@@ -1156,8 +1156,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "1917fbc6-b106-5538-ae34-a0d3bb783089",
-          "id": "9d87edb8-3a51-54ff-9506-b6ceb6fc319a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2089,
@@ -1170,8 +1170,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "3a1f61e9-e5d3-5438-b1f7-3ed2d3cee9d3",
-          "id": "790a53c2-e9c7-5c32-abb3-75e5197684a6",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2569,
@@ -1184,8 +1184,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "33fdf310-3484-5160-bcda-c312b9eb8d92",
-          "id": "344e4357-b19d-5be6-b291-fcad13347ea0",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2744,
@@ -1198,8 +1198,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "4c37634d-7593-5eda-85a5-cee7aa6ffeca",
-          "id": "55774615-8dca-58dd-8ee1-5a4396bb601b",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2954,
@@ -1212,8 +1212,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "981359fc-37a6-57ea-a82e-6c56402cd92a",
-          "id": "1f5e8aea-443e-5f32-a0ee-fd5b60a89b2d",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3129,
@@ -1229,11 +1229,11 @@ description: Variables in memory after executing food-service-spatula.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "14d4f28b-98bf-5f5d-9542-446598cbea13",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "feb83338-f9ef-5ff2-867b-b4c05a0bc3c5",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1257,7 +1257,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "ab6eb2a5-a75a-561d-b676-ddd724155503",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1281,7 +1281,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "a5d6aa6c-00ef-56ec-a86a-d284810451da",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1305,7 +1305,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "ba3b7e85-d32c-51f8-8d92-7b07c207d159",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -1335,7 +1335,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "a80250d3-b686-51a3-abed-c9f6717726ba",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1359,7 +1359,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "882580af-4a8f-5a96-b6a7-a339e5bf03c7",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -1389,7 +1389,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "4dd21888-048f-55ee-a851-9884c1b16195",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1413,7 +1413,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "f8d01819-6270-582b-b038-05b10e3097a2",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -1443,7 +1443,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "ae7a5ce5-adeb-5cde-a32e-18a98cb6b3cb",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1467,7 +1467,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "f5a6e3b7-10e8-5c9d-954c-7b2481d5a3c6",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -1497,7 +1497,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "fd4bef00-3f61-598d-b821-e1e9d8cefe92",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1521,7 +1521,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "9d87edb8-3a51-54ff-9506-b6ceb6fc319a",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -1551,7 +1551,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "790a53c2-e9c7-5c32-abb3-75e5197684a6",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1575,7 +1575,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "344e4357-b19d-5be6-b291-fcad13347ea0",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -1605,7 +1605,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "55774615-8dca-58dd-8ee1-5a4396bb601b",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1629,7 +1629,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "1f5e8aea-443e-5f32-a0ee-fd5b60a89b2d",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -1660,8 +1660,8 @@ description: Variables in memory after executing food-service-spatula.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -1701,7 +1701,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "4593843c-7d41-5ede-b7fa-ab9201f55957",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -1771,13 +1771,13 @@ description: Variables in memory after executing food-service-spatula.kcl
             "value": "upperSlotLine3"
           }
         },
-        "artifactId": "14d4f28b-98bf-5f5d-9542-446598cbea13",
-        "originalId": "14d4f28b-98bf-5f5d-9542-446598cbea13",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "f74c8a70-484b-5efb-97b9-9d5bebb32c6b",
-      "endCapId": "5ba80a96-94a4-5be9-b056-66ad21697ee4",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -1795,11 +1795,11 @@ description: Variables in memory after executing food-service-spatula.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "14d4f28b-98bf-5f5d-9542-446598cbea13",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "feb83338-f9ef-5ff2-867b-b4c05a0bc3c5",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -1823,7 +1823,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         {
           "__geoMeta": {
-            "id": "ab6eb2a5-a75a-561d-b676-ddd724155503",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -1847,7 +1847,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         {
           "__geoMeta": {
-            "id": "a5d6aa6c-00ef-56ec-a86a-d284810451da",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -1871,7 +1871,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         {
           "__geoMeta": {
-            "id": "ba3b7e85-d32c-51f8-8d92-7b07c207d159",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -1901,7 +1901,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         {
           "__geoMeta": {
-            "id": "a80250d3-b686-51a3-abed-c9f6717726ba",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -1925,7 +1925,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         {
           "__geoMeta": {
-            "id": "882580af-4a8f-5a96-b6a7-a339e5bf03c7",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -1955,7 +1955,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         {
           "__geoMeta": {
-            "id": "4dd21888-048f-55ee-a851-9884c1b16195",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -1979,7 +1979,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         {
           "__geoMeta": {
-            "id": "f8d01819-6270-582b-b038-05b10e3097a2",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -2009,7 +2009,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         {
           "__geoMeta": {
-            "id": "ae7a5ce5-adeb-5cde-a32e-18a98cb6b3cb",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -2033,7 +2033,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         {
           "__geoMeta": {
-            "id": "f5a6e3b7-10e8-5c9d-954c-7b2481d5a3c6",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -2063,7 +2063,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         {
           "__geoMeta": {
-            "id": "fd4bef00-3f61-598d-b821-e1e9d8cefe92",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -2087,7 +2087,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         {
           "__geoMeta": {
-            "id": "9d87edb8-3a51-54ff-9506-b6ceb6fc319a",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -2117,7 +2117,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         {
           "__geoMeta": {
-            "id": "790a53c2-e9c7-5c32-abb3-75e5197684a6",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -2141,7 +2141,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         {
           "__geoMeta": {
-            "id": "344e4357-b19d-5be6-b291-fcad13347ea0",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -2171,7 +2171,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         {
           "__geoMeta": {
-            "id": "55774615-8dca-58dd-8ee1-5a4396bb601b",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -2195,7 +2195,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         {
           "__geoMeta": {
-            "id": "1f5e8aea-443e-5f32-a0ee-fd5b60a89b2d",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -2226,8 +2226,8 @@ description: Variables in memory after executing food-service-spatula.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -2267,7 +2267,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "4593843c-7d41-5ede-b7fa-ab9201f55957",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -2337,8 +2337,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "value": "upperSlotLine3"
         }
       },
-      "artifactId": "14d4f28b-98bf-5f5d-9542-446598cbea13",
-      "originalId": "14d4f28b-98bf-5f5d-9542-446598cbea13",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -2352,7 +2352,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                "id": "[uuid]",
                 "objectId": 14,
                 "kind": {
                   "arc": {
@@ -2458,8 +2458,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2488,7 +2488,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                     "units": null
                   }
                 },
-                "sketchId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc4"
@@ -2504,7 +2504,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+                "id": "[uuid]",
                 "objectId": 25,
                 "kind": {
                   "arc": {
@@ -2610,8 +2610,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2640,7 +2640,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                     "units": null
                   }
                 },
-                "sketchId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "centerSlotArc2"
@@ -2656,7 +2656,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+                "id": "[uuid]",
                 "objectId": 32,
                 "kind": {
                   "arc": {
@@ -2762,8 +2762,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2792,7 +2792,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                     "units": null
                   }
                 },
-                "sketchId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "centerSlotArc4"
@@ -2808,7 +2808,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "41c630c9-9d44-581b-98af-caee575bea48",
+                "id": "[uuid]",
                 "objectId": 21,
                 "kind": {
                   "line": {
@@ -2882,8 +2882,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2912,7 +2912,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                     "units": null
                   }
                 },
-                "sketchId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "centerSlotLine1"
@@ -2928,7 +2928,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+                "id": "[uuid]",
                 "objectId": 28,
                 "kind": {
                   "line": {
@@ -3002,8 +3002,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3032,7 +3032,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                     "units": null
                   }
                 },
-                "sketchId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "centerSlotLine3"
@@ -3048,7 +3048,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "id": "[uuid]",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -3122,8 +3122,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3152,7 +3152,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                     "units": null
                   }
                 },
-                "sketchId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -3168,7 +3168,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                "id": "[uuid]",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -3242,8 +3242,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3272,7 +3272,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                     "units": null
                   }
                 },
-                "sketchId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -3288,7 +3288,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+                "id": "[uuid]",
                 "objectId": 10,
                 "kind": {
                   "line": {
@@ -3362,8 +3362,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3392,7 +3392,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                     "units": null
                   }
                 },
-                "sketchId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -3408,7 +3408,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+                "id": "[uuid]",
                 "objectId": 61,
                 "kind": {
                   "arc": {
@@ -3514,8 +3514,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3544,7 +3544,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                     "units": null
                   }
                 },
-                "sketchId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "lowerSlotArc2"
@@ -3560,7 +3560,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+                "id": "[uuid]",
                 "objectId": 68,
                 "kind": {
                   "arc": {
@@ -3666,8 +3666,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3696,7 +3696,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                     "units": null
                   }
                 },
-                "sketchId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "lowerSlotArc4"
@@ -3712,7 +3712,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                "id": "[uuid]",
                 "objectId": 57,
                 "kind": {
                   "line": {
@@ -3786,8 +3786,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3816,7 +3816,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                     "units": null
                   }
                 },
-                "sketchId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "lowerSlotLine1"
@@ -3832,7 +3832,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                "id": "[uuid]",
                 "objectId": 64,
                 "kind": {
                   "line": {
@@ -3906,8 +3906,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3936,7 +3936,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                     "units": null
                   }
                 },
-                "sketchId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "lowerSlotLine3"
@@ -3953,11 +3953,11 @@ description: Variables in memory after executing food-service-spatula.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -3981,7 +3981,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -4005,7 +4005,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -4029,7 +4029,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -4059,7 +4059,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -4076,7 +4076,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "41c630c9-9d44-581b-98af-caee575bea48",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -4100,7 +4100,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -4130,7 +4130,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -4154,7 +4154,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -4184,7 +4184,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "1a0ade6f-d355-5121-9adb-351976a78284",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -4201,7 +4201,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "7b681387-29ea-57f1-8713-d63280827139",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -4225,7 +4225,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -4255,7 +4255,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -4279,7 +4279,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -4309,7 +4309,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -4326,7 +4326,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -4350,7 +4350,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -4380,7 +4380,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -4404,7 +4404,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -4435,8 +4435,8 @@ description: Variables in memory after executing food-service-spatula.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 0,
                 "kind": "Custom",
                 "origin": {
@@ -4476,7 +4476,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "4593843c-7d41-5ede-b7fa-ab9201f55957",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -4546,8 +4546,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   "value": "upperSlotLine3"
                 }
               },
-              "artifactId": "cc141785-f204-5d03-bdf3-aa7163368c30",
-              "originalId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -4561,7 +4561,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+                "id": "[uuid]",
                 "objectId": 43,
                 "kind": {
                   "arc": {
@@ -4667,8 +4667,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4697,7 +4697,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                     "units": null
                   }
                 },
-                "sketchId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "upperSlotArc2"
@@ -4713,7 +4713,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+                "id": "[uuid]",
                 "objectId": 50,
                 "kind": {
                   "arc": {
@@ -4819,8 +4819,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4849,7 +4849,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                     "units": null
                   }
                 },
-                "sketchId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "upperSlotArc4"
@@ -4865,7 +4865,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "7b681387-29ea-57f1-8713-d63280827139",
+                "id": "[uuid]",
                 "objectId": 39,
                 "kind": {
                   "line": {
@@ -4939,8 +4939,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4969,7 +4969,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                     "units": null
                   }
                 },
-                "sketchId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "upperSlotLine1"
@@ -4985,7 +4985,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
+                "id": "[uuid]",
                 "objectId": 46,
                 "kind": {
                   "line": {
@@ -5059,8 +5059,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5089,7 +5089,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                     "units": null
                   }
                 },
-                "sketchId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "upperSlotLine3"
@@ -5115,14 +5115,14 @@ description: Variables in memory after executing food-service-spatula.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "fc66f518-029e-5b30-8772-13859f39ce6d",
-      "originalId": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
-      "topologyId": "fc66f518-029e-5b30-8772-13859f39ce6d",
-      "artifactId": "fc66f518-029e-5b30-8772-13859f39ce6d",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "7f98e8bd-80c9-58e2-aef4-f2ac70239bc6",
-          "id": "b9cf551c-f4ec-51a1-9c43-af16b77ecdf7",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 5525,
@@ -5135,8 +5135,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "744ce3cf-b240-5f57-a42d-f17d051bca9a",
-          "id": "5469c6c7-f0cf-5e0c-8c5c-ccd620ba4e07",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 5616,
@@ -5149,8 +5149,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "8548e213-6af3-52d9-bd88-c0361579e7e9",
-          "id": "42cbbab7-c9d2-558b-9ee0-d486dfc3a028",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 5743,
@@ -5163,8 +5163,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "ce044ef5-48f3-53e7-b92b-f7e4fa9a1ec1",
-          "id": "7e9db3ba-7bfe-5a19-acd2-4dfac1dfedc7",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 5831,
@@ -5177,8 +5177,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "36ab0ef8-a1f0-5058-878e-58a9cc4b90b3",
-          "id": "a23de1dc-ba09-574d-82cd-ec7962ea5f6d",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 5955,
@@ -5191,8 +5191,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "349cc802-4633-5fb2-b442-5346d78aaff8",
-          "id": "6b9f54f6-0c0e-5eca-94c7-88516984b51f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 6044,
@@ -5205,8 +5205,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "e9011c26-a382-591e-98fd-8dd43eb50060",
-          "id": "54f05287-4c73-5610-ac1a-974df306d7df",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 6168,
@@ -5219,8 +5219,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "ca0efb2a-19e6-5438-93e5-528c3184da30",
-          "id": "efce580b-9da5-536e-9e1a-f8b664984c31",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 6256,
@@ -5236,11 +5236,11 @@ description: Variables in memory after executing food-service-spatula.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "fc66f518-029e-5b30-8772-13859f39ce6d",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "b9cf551c-f4ec-51a1-9c43-af16b77ecdf7",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5264,7 +5264,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "5469c6c7-f0cf-5e0c-8c5c-ccd620ba4e07",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -5294,7 +5294,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "42cbbab7-c9d2-558b-9ee0-d486dfc3a028",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5318,7 +5318,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "7e9db3ba-7bfe-5a19-acd2-4dfac1dfedc7",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -5348,7 +5348,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "a23de1dc-ba09-574d-82cd-ec7962ea5f6d",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5372,7 +5372,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "6b9f54f6-0c0e-5eca-94c7-88516984b51f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -5402,7 +5402,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "54f05287-4c73-5610-ac1a-974df306d7df",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5426,7 +5426,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "efce580b-9da5-536e-9e1a-f8b664984c31",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -5457,8 +5457,8 @@ description: Variables in memory after executing food-service-spatula.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
-          "id": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 99,
           "kind": "Custom",
           "origin": {
@@ -5498,7 +5498,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -5536,13 +5536,13 @@ description: Variables in memory after executing food-service-spatula.kcl
             "value": "line7"
           }
         },
-        "artifactId": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
-        "originalId": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "e1e5342f-0499-528c-8bcb-f1b170e2cba8",
-      "endCapId": "5e76c105-9b93-5442-b391-001a1154879d",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -5551,14 +5551,14 @@ description: Variables in memory after executing food-service-spatula.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
-      "originalId": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
-      "topologyId": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
-      "artifactId": "b6048962-8de8-56e0-bd4c-204ee5451b34",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "7f98e8bd-80c9-58e2-aef4-f2ac70239bc6",
-          "id": "b9cf551c-f4ec-51a1-9c43-af16b77ecdf7",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 5525,
@@ -5571,8 +5571,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "744ce3cf-b240-5f57-a42d-f17d051bca9a",
-          "id": "5469c6c7-f0cf-5e0c-8c5c-ccd620ba4e07",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 5616,
@@ -5585,8 +5585,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "8548e213-6af3-52d9-bd88-c0361579e7e9",
-          "id": "42cbbab7-c9d2-558b-9ee0-d486dfc3a028",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 5743,
@@ -5599,8 +5599,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "ce044ef5-48f3-53e7-b92b-f7e4fa9a1ec1",
-          "id": "7e9db3ba-7bfe-5a19-acd2-4dfac1dfedc7",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 5831,
@@ -5613,8 +5613,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "36ab0ef8-a1f0-5058-878e-58a9cc4b90b3",
-          "id": "a23de1dc-ba09-574d-82cd-ec7962ea5f6d",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 5955,
@@ -5627,8 +5627,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "349cc802-4633-5fb2-b442-5346d78aaff8",
-          "id": "6b9f54f6-0c0e-5eca-94c7-88516984b51f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 6044,
@@ -5641,8 +5641,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "e9011c26-a382-591e-98fd-8dd43eb50060",
-          "id": "54f05287-4c73-5610-ac1a-974df306d7df",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 6168,
@@ -5655,8 +5655,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "ca0efb2a-19e6-5438-93e5-528c3184da30",
-          "id": "efce580b-9da5-536e-9e1a-f8b664984c31",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 6256,
@@ -5672,11 +5672,11 @@ description: Variables in memory after executing food-service-spatula.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "b9cf551c-f4ec-51a1-9c43-af16b77ecdf7",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5700,7 +5700,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "5469c6c7-f0cf-5e0c-8c5c-ccd620ba4e07",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -5730,7 +5730,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "42cbbab7-c9d2-558b-9ee0-d486dfc3a028",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5754,7 +5754,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "7e9db3ba-7bfe-5a19-acd2-4dfac1dfedc7",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -5784,7 +5784,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "a23de1dc-ba09-574d-82cd-ec7962ea5f6d",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5808,7 +5808,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "6b9f54f6-0c0e-5eca-94c7-88516984b51f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -5838,7 +5838,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "54f05287-4c73-5610-ac1a-974df306d7df",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5862,7 +5862,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "efce580b-9da5-536e-9e1a-f8b664984c31",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -5893,8 +5893,8 @@ description: Variables in memory after executing food-service-spatula.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
-          "id": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 99,
           "kind": "Custom",
           "origin": {
@@ -5934,7 +5934,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -5972,13 +5972,13 @@ description: Variables in memory after executing food-service-spatula.kcl
             "value": "line7"
           }
         },
-        "artifactId": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
-        "originalId": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "e1e5342f-0499-528c-8bcb-f1b170e2cba8",
-      "endCapId": "5e76c105-9b93-5442-b391-001a1154879d",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -5996,14 +5996,14 @@ description: Variables in memory after executing food-service-spatula.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "2ab8a671-6218-5516-901a-d1a83480ded7",
-      "originalId": "2ab8a671-6218-5516-901a-d1a83480ded7",
-      "topologyId": "2ab8a671-6218-5516-901a-d1a83480ded7",
-      "artifactId": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "19644314-deac-5e0e-992e-eb8f841574ba",
-          "id": "690f4081-0088-59ad-a56f-4e4bf4445f49",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 7012,
@@ -6016,8 +6016,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "9455a530-1eb2-546c-aee7-02822a34e9bf",
-          "id": "b23c24b0-1c1a-57fb-8686-2fe1c2b894dd",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 7083,
@@ -6030,8 +6030,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "c17f0a18-eb7f-5ae1-9787-0dbc4afe88d3",
-          "id": "3e0be136-4d1d-53ee-b110-76611d848d7b",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 7186,
@@ -6044,8 +6044,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "6eec447f-66ce-5b9b-bc54-b0dc9c6441a4",
-          "id": "c83b1853-1002-5ace-81d5-0c11feb318a5",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 7259,
@@ -6061,11 +6061,11 @@ description: Variables in memory after executing food-service-spatula.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "2ab8a671-6218-5516-901a-d1a83480ded7",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "690f4081-0088-59ad-a56f-4e4bf4445f49",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6089,7 +6089,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "b23c24b0-1c1a-57fb-8686-2fe1c2b894dd",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -6119,7 +6119,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "3e0be136-4d1d-53ee-b110-76611d848d7b",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6143,7 +6143,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "c83b1853-1002-5ace-81d5-0c11feb318a5",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -6174,8 +6174,8 @@ description: Variables in memory after executing food-service-spatula.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
-          "id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 137,
           "kind": "Custom",
           "origin": {
@@ -6215,7 +6215,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "2d22753f-e63a-506c-bc84-6006343b9a0b",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -6237,13 +6237,13 @@ description: Variables in memory after executing food-service-spatula.kcl
             "value": "line3"
           }
         },
-        "artifactId": "2ab8a671-6218-5516-901a-d1a83480ded7",
-        "originalId": "2ab8a671-6218-5516-901a-d1a83480ded7",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "dffe63c3-8639-5bff-b527-6f78b3027f1e",
-      "endCapId": "11c2772f-d4b4-58bd-ae8c-6a64259e3e9d",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -6391,7 +6391,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "035728b5-01db-5e9b-b285-181bc5693d5a",
+                "id": "[uuid]",
                 "objectId": 145,
                 "kind": {
                   "arc": {
@@ -6497,8 +6497,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
-                  "id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 137,
                   "origin": {
@@ -6527,7 +6527,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                     "units": null
                   }
                 },
-                "sketchId": "906a1f18-6a62-5deb-b39b-61d540081804",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc2"
@@ -6543,7 +6543,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "2b45af9b-6b90-5530-b9b7-b193031152d8",
+                "id": "[uuid]",
                 "objectId": 152,
                 "kind": {
                   "arc": {
@@ -6649,8 +6649,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
-                  "id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 137,
                   "origin": {
@@ -6679,7 +6679,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                     "units": null
                   }
                 },
-                "sketchId": "906a1f18-6a62-5deb-b39b-61d540081804",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc4"
@@ -6695,7 +6695,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
+                "id": "[uuid]",
                 "objectId": 141,
                 "kind": {
                   "line": {
@@ -6769,8 +6769,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
-                  "id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 137,
                   "origin": {
@@ -6799,7 +6799,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                     "units": null
                   }
                 },
-                "sketchId": "906a1f18-6a62-5deb-b39b-61d540081804",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -6815,7 +6815,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
+                "id": "[uuid]",
                 "objectId": 148,
                 "kind": {
                   "line": {
@@ -6889,8 +6889,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
-                  "id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 137,
                   "origin": {
@@ -6919,7 +6919,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                     "units": null
                   }
                 },
-                "sketchId": "906a1f18-6a62-5deb-b39b-61d540081804",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -6936,11 +6936,11 @@ description: Variables in memory after executing food-service-spatula.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "906a1f18-6a62-5deb-b39b-61d540081804",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -6964,7 +6964,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "035728b5-01db-5e9b-b285-181bc5693d5a",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -6994,7 +6994,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -7018,7 +7018,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "2b45af9b-6b90-5530-b9b7-b193031152d8",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -7049,8 +7049,8 @@ description: Variables in memory after executing food-service-spatula.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
-                "id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 137,
                 "kind": "Custom",
                 "origin": {
@@ -7090,7 +7090,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "2d22753f-e63a-506c-bc84-6006343b9a0b",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -7112,8 +7112,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   "value": "line3"
                 }
               },
-              "artifactId": "906a1f18-6a62-5deb-b39b-61d540081804",
-              "originalId": "906a1f18-6a62-5deb-b39b-61d540081804",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -7142,7 +7142,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
+                "id": "[uuid]",
                 "objectId": 107,
                 "kind": {
                   "arc": {
@@ -7248,8 +7248,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
-                  "id": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 99,
                   "origin": {
@@ -7278,7 +7278,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                     "units": null
                   }
                 },
-                "sketchId": "89273a0b-b55b-5457-9b1c-de1d777240e8",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc2"
@@ -7294,7 +7294,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "020035cf-ab88-50f3-91b0-886b7f399647",
+                "id": "[uuid]",
                 "objectId": 114,
                 "kind": {
                   "arc": {
@@ -7400,8 +7400,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
-                  "id": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 99,
                   "origin": {
@@ -7430,7 +7430,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                     "units": null
                   }
                 },
-                "sketchId": "89273a0b-b55b-5457-9b1c-de1d777240e8",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc4"
@@ -7446,7 +7446,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
+                "id": "[uuid]",
                 "objectId": 121,
                 "kind": {
                   "arc": {
@@ -7552,8 +7552,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
-                  "id": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 99,
                   "origin": {
@@ -7582,7 +7582,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                     "units": null
                   }
                 },
-                "sketchId": "89273a0b-b55b-5457-9b1c-de1d777240e8",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc6"
@@ -7598,7 +7598,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "e02115f0-d853-5684-82c8-298aa25e4541",
+                "id": "[uuid]",
                 "objectId": 128,
                 "kind": {
                   "arc": {
@@ -7704,8 +7704,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
-                  "id": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 99,
                   "origin": {
@@ -7734,7 +7734,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                     "units": null
                   }
                 },
-                "sketchId": "89273a0b-b55b-5457-9b1c-de1d777240e8",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc8"
@@ -7750,7 +7750,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "19107e89-bf40-5541-88a5-5106b6de636d",
+                "id": "[uuid]",
                 "objectId": 103,
                 "kind": {
                   "line": {
@@ -7824,8 +7824,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
-                  "id": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 99,
                   "origin": {
@@ -7854,7 +7854,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                     "units": null
                   }
                 },
-                "sketchId": "89273a0b-b55b-5457-9b1c-de1d777240e8",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -7870,7 +7870,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+                "id": "[uuid]",
                 "objectId": 110,
                 "kind": {
                   "line": {
@@ -7944,8 +7944,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
-                  "id": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 99,
                   "origin": {
@@ -7974,7 +7974,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                     "units": null
                   }
                 },
-                "sketchId": "89273a0b-b55b-5457-9b1c-de1d777240e8",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -7990,7 +7990,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc",
+                "id": "[uuid]",
                 "objectId": 117,
                 "kind": {
                   "line": {
@@ -8064,8 +8064,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
-                  "id": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 99,
                   "origin": {
@@ -8094,7 +8094,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                     "units": null
                   }
                 },
-                "sketchId": "89273a0b-b55b-5457-9b1c-de1d777240e8",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -8110,7 +8110,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "2489202c-0475-5b18-97c8-c3f239bd1947",
+                "id": "[uuid]",
                 "objectId": 124,
                 "kind": {
                   "line": {
@@ -8184,8 +8184,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
-                  "id": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 99,
                   "origin": {
@@ -8214,7 +8214,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                     "units": null
                   }
                 },
-                "sketchId": "89273a0b-b55b-5457-9b1c-de1d777240e8",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line7"
@@ -8231,11 +8231,11 @@ description: Variables in memory after executing food-service-spatula.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "89273a0b-b55b-5457-9b1c-de1d777240e8",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "19107e89-bf40-5541-88a5-5106b6de636d",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -8259,7 +8259,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -8289,7 +8289,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -8313,7 +8313,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "020035cf-ab88-50f3-91b0-886b7f399647",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -8343,7 +8343,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -8367,7 +8367,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -8397,7 +8397,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "2489202c-0475-5b18-97c8-c3f239bd1947",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -8421,7 +8421,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "e02115f0-d853-5684-82c8-298aa25e4541",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -8452,8 +8452,8 @@ description: Variables in memory after executing food-service-spatula.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
-                "id": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 99,
                 "kind": "Custom",
                 "origin": {
@@ -8493,7 +8493,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -8531,8 +8531,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   "value": "line7"
                 }
               },
-              "artifactId": "89273a0b-b55b-5457-9b1c-de1d777240e8",
-              "originalId": "89273a0b-b55b-5457-9b1c-de1d777240e8",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -8556,14 +8556,14 @@ description: Variables in memory after executing food-service-spatula.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
-      "originalId": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
-      "topologyId": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
-      "artifactId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "54a2ca32-d33c-561b-8537-8465cd21a9e8",
-          "id": "97a3d752-dbb1-5c42-9e11-a975ca47f788",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4117,
@@ -8576,8 +8576,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "dc3c5e09-168a-5685-ae5b-e5fa6f2a1299",
-          "id": "c58a1660-b1a7-5e01-9374-1f9c6feca8b5",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4204,
@@ -8590,8 +8590,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "12755a48-6fe9-56d1-b454-f53fa453ea56",
-          "id": "341089f0-6587-5848-b4dc-6f397da4dd97",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4306,
@@ -8604,8 +8604,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "4addd1bb-54a9-50d2-bf08-c3879aaf7dcb",
-          "id": "d287da6e-5072-52ee-8e45-dc6ac4ae0906",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4409,
@@ -8618,8 +8618,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "01e76c6e-fc58-5e57-abe1-e5681abb4a02",
-          "id": "36064a20-5532-5920-941b-6b7243f9c01f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4510,
@@ -8632,8 +8632,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "539326d3-ebde-5158-a05a-9c59491b085e",
-          "id": "c8f59c83-963e-5ec3-b575-ede3b322618a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4609,
@@ -8649,11 +8649,11 @@ description: Variables in memory after executing food-service-spatula.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "97a3d752-dbb1-5c42-9e11-a975ca47f788",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -8677,7 +8677,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "c58a1660-b1a7-5e01-9374-1f9c6feca8b5",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -8701,7 +8701,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "341089f0-6587-5848-b4dc-6f397da4dd97",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -8725,7 +8725,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "d287da6e-5072-52ee-8e45-dc6ac4ae0906",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -8749,7 +8749,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "36064a20-5532-5920-941b-6b7243f9c01f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -8773,7 +8773,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "c8f59c83-963e-5ec3-b575-ede3b322618a",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -8798,8 +8798,8 @@ description: Variables in memory after executing food-service-spatula.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
-          "id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 73,
           "kind": "Custom",
           "origin": {
@@ -8839,7 +8839,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -8869,17 +8869,17 @@ description: Variables in memory after executing food-service-spatula.kcl
             "value": "line6"
           }
         },
-        "artifactId": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
-        "originalId": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "8a7450be-ef42-53ee-8ced-2300e692697d",
-      "endCapId": "9bb45742-2c6c-5c6d-98ac-0dabe1d8edf4",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "1e31790b-7616-51eb-9bbe-0d46f611d053",
+          "id": "[uuid]",
           "radius": {
             "n": 4.0,
             "ty": {
@@ -8888,12 +8888,12 @@ description: Variables in memory after executing food-service-spatula.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "84ad88b6-5e6f-5805-9feb-89e1adfc557a",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "1e31790b-7616-51eb-9bbe-0d46f611d053",
+          "id": "[uuid]",
           "radius": {
             "n": 4.0,
             "ty": {
@@ -8902,7 +8902,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "a019d5ab-10b9-5413-b771-d7a5c8dd65eb",
+          "edgeId": "[uuid]",
           "tag": null
         }
       ],
@@ -8914,14 +8914,14 @@ description: Variables in memory after executing food-service-spatula.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
-      "originalId": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
-      "topologyId": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
-      "artifactId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "54a2ca32-d33c-561b-8537-8465cd21a9e8",
-          "id": "97a3d752-dbb1-5c42-9e11-a975ca47f788",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4117,
@@ -8934,8 +8934,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "dc3c5e09-168a-5685-ae5b-e5fa6f2a1299",
-          "id": "c58a1660-b1a7-5e01-9374-1f9c6feca8b5",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4204,
@@ -8948,8 +8948,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "12755a48-6fe9-56d1-b454-f53fa453ea56",
-          "id": "341089f0-6587-5848-b4dc-6f397da4dd97",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4306,
@@ -8962,8 +8962,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "4addd1bb-54a9-50d2-bf08-c3879aaf7dcb",
-          "id": "d287da6e-5072-52ee-8e45-dc6ac4ae0906",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4409,
@@ -8976,8 +8976,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "01e76c6e-fc58-5e57-abe1-e5681abb4a02",
-          "id": "36064a20-5532-5920-941b-6b7243f9c01f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4510,
@@ -8990,8 +8990,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "539326d3-ebde-5158-a05a-9c59491b085e",
-          "id": "c8f59c83-963e-5ec3-b575-ede3b322618a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4609,
@@ -9007,11 +9007,11 @@ description: Variables in memory after executing food-service-spatula.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "97a3d752-dbb1-5c42-9e11-a975ca47f788",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -9035,7 +9035,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "c58a1660-b1a7-5e01-9374-1f9c6feca8b5",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -9059,7 +9059,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "341089f0-6587-5848-b4dc-6f397da4dd97",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -9083,7 +9083,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "d287da6e-5072-52ee-8e45-dc6ac4ae0906",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -9107,7 +9107,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "36064a20-5532-5920-941b-6b7243f9c01f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -9131,7 +9131,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           {
             "__geoMeta": {
-              "id": "c8f59c83-963e-5ec3-b575-ede3b322618a",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -9156,8 +9156,8 @@ description: Variables in memory after executing food-service-spatula.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
-          "id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 73,
           "kind": "Custom",
           "origin": {
@@ -9197,7 +9197,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -9227,13 +9227,13 @@ description: Variables in memory after executing food-service-spatula.kcl
             "value": "line6"
           }
         },
-        "artifactId": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
-        "originalId": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "8a7450be-ef42-53ee-8ced-2300e692697d",
-      "endCapId": "9bb45742-2c6c-5c6d-98ac-0dabe1d8edf4",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -9376,11 +9376,11 @@ description: Variables in memory after executing food-service-spatula.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "97a3d752-dbb1-5c42-9e11-a975ca47f788",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -9404,7 +9404,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         {
           "__geoMeta": {
-            "id": "c58a1660-b1a7-5e01-9374-1f9c6feca8b5",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -9428,7 +9428,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         {
           "__geoMeta": {
-            "id": "341089f0-6587-5848-b4dc-6f397da4dd97",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -9452,7 +9452,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         {
           "__geoMeta": {
-            "id": "d287da6e-5072-52ee-8e45-dc6ac4ae0906",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -9476,7 +9476,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         {
           "__geoMeta": {
-            "id": "36064a20-5532-5920-941b-6b7243f9c01f",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -9500,7 +9500,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         {
           "__geoMeta": {
-            "id": "c8f59c83-963e-5ec3-b575-ede3b322618a",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -9525,8 +9525,8 @@ description: Variables in memory after executing food-service-spatula.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
-        "id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 73,
         "kind": "Custom",
         "origin": {
@@ -9566,7 +9566,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -9596,8 +9596,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "value": "line6"
         }
       },
-      "artifactId": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
-      "originalId": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -9611,7 +9611,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+                "id": "[uuid]",
                 "objectId": 77,
                 "kind": {
                   "line": {
@@ -9685,8 +9685,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
-                  "id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 73,
                   "origin": {
@@ -9715,7 +9715,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -9731,7 +9731,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
+                "id": "[uuid]",
                 "objectId": 80,
                 "kind": {
                   "line": {
@@ -9805,8 +9805,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
-                  "id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 73,
                   "origin": {
@@ -9835,7 +9835,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -9851,7 +9851,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+                "id": "[uuid]",
                 "objectId": 83,
                 "kind": {
                   "line": {
@@ -9925,8 +9925,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
-                  "id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 73,
                   "origin": {
@@ -9955,7 +9955,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -9971,7 +9971,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
+                "id": "[uuid]",
                 "objectId": 86,
                 "kind": {
                   "line": {
@@ -10045,8 +10045,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
-                  "id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 73,
                   "origin": {
@@ -10075,7 +10075,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -10091,7 +10091,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+                "id": "[uuid]",
                 "objectId": 89,
                 "kind": {
                   "line": {
@@ -10165,8 +10165,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
-                  "id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 73,
                   "origin": {
@@ -10195,7 +10195,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -10211,7 +10211,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "a54ad82c-be8d-599a-9764-c6498922dd5c",
+                "id": "[uuid]",
                 "objectId": 92,
                 "kind": {
                   "line": {
@@ -10285,8 +10285,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
-                  "id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 73,
                   "origin": {
@@ -10315,7 +10315,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -10332,11 +10332,11 @@ description: Variables in memory after executing food-service-spatula.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -10360,7 +10360,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -10384,7 +10384,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -10408,7 +10408,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -10432,7 +10432,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -10456,7 +10456,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "a54ad82c-be8d-599a-9764-c6498922dd5c",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -10481,8 +10481,8 @@ description: Variables in memory after executing food-service-spatula.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
-                "id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 73,
                 "kind": "Custom",
                 "origin": {
@@ -10522,7 +10522,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -10552,8 +10552,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                   "value": "line6"
                 }
               },
-              "artifactId": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
-              "originalId": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "implicitly"
             }

@@ -634,7 +634,7 @@ impl RuntimeFlagResolve for LexerMode {
 
 impl LexerMode {
     /// The mode used when `KCL_LEXER` is unset.
-    const DEFAULT: Self = Self::Old;
+    const DEFAULT: Self = Self::New;
 
     /// Resolve the active lexer mode (see precedence on [`LexerMode`]).
     pub fn resolve() -> Self {
@@ -645,7 +645,7 @@ impl LexerMode {
                 // Invalid-unicode env var: warn and fall back rather than crash.
                 Self::warn_once(|| {
                     format!(
-                        "{KCL_LEXER_ENV_VAR} must be valid unicode; got `{}`. Defaulting to `old`.",
+                        "{KCL_LEXER_ENV_VAR} must be valid unicode; got `{}`. Defaulting to `new`.",
                         value.to_string_lossy()
                     )
                 });
@@ -684,11 +684,11 @@ impl LexerMode {
         }
 
         // A mistyped `KCL_LEXER` should not crash the process: warn and fall back
-        // to the old lexer (the conservative choice for a misconfiguration).
+        // to the new lexer (the conservative choice for a misconfiguration).
         Self::warn_once(|| {
-            format!("Unsupported {KCL_LEXER_ENV_VAR} value `{value}`; expected `old` or `new`. Defaulting to `old`.")
+            format!("Unsupported {KCL_LEXER_ENV_VAR} value `{value}`; expected `old` or `new`. Defaulting to `new`.")
         });
-        Self::Old
+        Self::New
     }
 
     /// Emit a one-time configuration warning through `crate::log` (gated on
@@ -813,9 +813,9 @@ mod lexer_mode_tests {
     }
 
     #[test]
-    fn default_mode_is_old() {
+    fn default_mode_is_new() {
         reset_runtime_lexer_flags();
-        assert_eq!(LexerMode::DEFAULT, LexerMode::Old);
+        assert_eq!(LexerMode::DEFAULT, LexerMode::New);
     }
 
     #[test]
@@ -825,9 +825,9 @@ mod lexer_mode_tests {
     }
 
     #[test]
-    fn parse_falls_back_to_old_on_unknown_value() {
-        // An unknown value warns and defaults to the old lexer instead of panicking.
-        assert_eq!(LexerMode::parse("rowan"), LexerMode::Old);
+    fn parse_falls_back_to_new_on_unknown_value() {
+        // An unknown value warns and defaults to the new lexer instead of panicking.
+        assert_eq!(LexerMode::parse("rowan"), LexerMode::New);
     }
 
     #[test]

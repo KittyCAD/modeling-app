@@ -5,7 +5,7 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
 {
   "rust/kcl-lib/tests/circular_pattern3d_a_pattern/input.kcl": [
     {
-      "cmdId": "3c085bb9-a401-55d5-8042-5a9095193d55",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,11 +30,11 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
       }
     },
     {
-      "cmdId": "91226189-7e64-5690-9203-67ee33a6eb03",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -46,18 +46,18 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
       }
     },
     {
-      "cmdId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "path": "[uuid]",
         "to": {
           "x": 0.0,
           "y": 0.0,
@@ -66,18 +66,18 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
       }
     },
     {
-      "cmdId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -90,11 +90,11 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
       }
     },
     {
-      "cmdId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -107,11 +107,11 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
       }
     },
     {
-      "cmdId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -124,19 +124,19 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
       }
     },
     {
-      "cmdId": "523b9fc1-d681-5ef3-b407-128525533bfe",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "close_path",
-        "path_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+        "path_id": "[uuid]"
       }
     },
     {
-      "cmdId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -148,11 +148,11 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
       }
     },
     {
-      "cmdId": "41c630c9-9d44-581b-98af-caee575bea48",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "target": "[uuid]",
         "distance": 1.0,
         "faces": null,
         "opposite": "None",
@@ -161,44 +161,44 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
       }
     },
     {
-      "cmdId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-        "edge_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-        "edge_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "entity_id": "[uuid]",
         "transform": [],
         "transforms": [
           [
@@ -379,11 +379,11 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
       }
     },
     {
-      "cmdId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "entity_id": "[uuid]",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -400,11 +400,11 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
       }
     },
     {
-      "cmdId": "7b681387-29ea-57f1-8713-d63280827139",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "b9270abb-8013-5214-8010-1b3a0e977704",
+        "entity_id": "[uuid]",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -421,11 +421,11 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
       }
     },
     {
-      "cmdId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "ca9867af-1894-5c15-8194-0cf94af2018e",
+        "entity_id": "[uuid]",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -442,11 +442,11 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
       }
     },
     {
-      "cmdId": "e00e9caf-6e9e-5221-8545-b199546c367f",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "35772b6a-b5dc-5e89-b75c-a70d7c850968",
+        "entity_id": "[uuid]",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -463,11 +463,11 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
       }
     },
     {
-      "cmdId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "31c57205-0699-5c9a-8723-527dead48cb0",
+        "entity_id": "[uuid]",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -484,11 +484,11 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
       }
     },
     {
-      "cmdId": "f084ad07-5777-5607-a544-c69f455c2aab",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "26ac3e3a-d2c4-57f6-a00d-b3d5584ade1a",
+        "entity_id": "[uuid]",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -505,11 +505,11 @@ description: Artifact commands circular_pattern3d_a_pattern.kcl
       }
     },
     {
-      "cmdId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "78f9fbb1-4644-505b-8150-e6db5ad7ddd8",
+        "entity_id": "[uuid]",
         "axis": {
           "x": 0.0,
           "y": 0.0,

@@ -6,8 +6,8 @@ description: Variables in memory after executing usb-c.kcl
   "__sketch_101_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
-      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,8 +38,8 @@ description: Variables in memory after executing usb-c.kcl
   "__sketch_115_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
-      "id": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "objectId": 114,
       "kind": "Custom",
       "origin": {
@@ -71,8 +71,8 @@ description: Variables in memory after executing usb-c.kcl
   "__sketch_18_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
-      "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "objectId": 17,
       "kind": "Custom",
       "origin": {
@@ -104,8 +104,8 @@ description: Variables in memory after executing usb-c.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
-      "id": "7c4571e0-7b14-576f-a82e-22280b05874d",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -136,8 +136,8 @@ description: Variables in memory after executing usb-c.kcl
   "__sketch_35_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
-      "id": "7c4571e0-7b14-576f-a82e-22280b05874d",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -169,14 +169,14 @@ description: Variables in memory after executing usb-c.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "acb6b8b6-e024-57d9-a856-353e5c4d001f",
-      "originalId": "acb6b8b6-e024-57d9-a856-353e5c4d001f",
-      "topologyId": "acb6b8b6-e024-57d9-a856-353e5c4d001f",
-      "artifactId": "5a7368ed-12c7-59b9-88f4-186289245e86",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "0a8a2515-6c26-5104-9df0-cd27808638fa",
-          "id": "f74c8a70-484b-5efb-97b9-9d5bebb32c6b",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 5844,
@@ -192,11 +192,11 @@ description: Variables in memory after executing usb-c.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "acb6b8b6-e024-57d9-a856-353e5c4d001f",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "f74c8a70-484b-5efb-97b9-9d5bebb32c6b",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -227,8 +227,8 @@ description: Variables in memory after executing usb-c.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
-          "id": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 114,
           "kind": "Custom",
           "origin": {
@@ -268,7 +268,7 @@ description: Variables in memory after executing usb-c.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "c444b134-67e1-507a-bb00-d4998ba97afb",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -278,13 +278,13 @@ description: Variables in memory after executing usb-c.kcl
             "value": "circle1"
           }
         },
-        "artifactId": "acb6b8b6-e024-57d9-a856-353e5c4d001f",
-        "originalId": "acb6b8b6-e024-57d9-a856-353e5c4d001f",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "2c73a6b1-0ce8-582e-9bc8-77e3de2d86a7",
-      "endCapId": "9bb68d18-12dd-5a8b-b35e-98e07027c0c7",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -316,7 +316,7 @@ description: Variables in memory after executing usb-c.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "ca431487-8e9a-59ce-a472-84fe45652fab",
+                "id": "[uuid]",
                 "objectId": 108,
                 "kind": {
                   "arc": {
@@ -422,8 +422,8 @@ description: Variables in memory after executing usb-c.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "e02115f0-d853-5684-82c8-298aa25e4541",
-                  "id": "e02115f0-d853-5684-82c8-298aa25e4541",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 100,
                   "origin": {
@@ -452,7 +452,7 @@ description: Variables in memory after executing usb-c.kcl
                     "units": null
                   }
                 },
-                "sketchId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc2"
@@ -468,7 +468,7 @@ description: Variables in memory after executing usb-c.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
+                "id": "[uuid]",
                 "objectId": 104,
                 "kind": {
                   "line": {
@@ -542,8 +542,8 @@ description: Variables in memory after executing usb-c.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "e02115f0-d853-5684-82c8-298aa25e4541",
-                  "id": "e02115f0-d853-5684-82c8-298aa25e4541",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 100,
                   "origin": {
@@ -572,7 +572,7 @@ description: Variables in memory after executing usb-c.kcl
                     "units": null
                   }
                 },
-                "sketchId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -588,7 +588,7 @@ description: Variables in memory after executing usb-c.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "20f09319-bab0-5dd8-8c40-ce90cd688483",
+                "id": "[uuid]",
                 "objectId": 112,
                 "kind": {
                   "line": {
@@ -662,8 +662,8 @@ description: Variables in memory after executing usb-c.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "e02115f0-d853-5684-82c8-298aa25e4541",
-                  "id": "e02115f0-d853-5684-82c8-298aa25e4541",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 100,
                   "origin": {
@@ -692,7 +692,7 @@ description: Variables in memory after executing usb-c.kcl
                     "units": null
                   }
                 },
-                "sketchId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -709,11 +709,11 @@ description: Variables in memory after executing usb-c.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -737,7 +737,7 @@ description: Variables in memory after executing usb-c.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "ca431487-8e9a-59ce-a472-84fe45652fab",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -767,7 +767,7 @@ description: Variables in memory after executing usb-c.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "20f09319-bab0-5dd8-8c40-ce90cd688483",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -792,8 +792,8 @@ description: Variables in memory after executing usb-c.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "e02115f0-d853-5684-82c8-298aa25e4541",
-                "id": "e02115f0-d853-5684-82c8-298aa25e4541",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 100,
                 "kind": "Custom",
                 "origin": {
@@ -833,7 +833,7 @@ description: Variables in memory after executing usb-c.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "f58fd62a-578c-542c-94f8-dd627caab5d0",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -851,8 +851,8 @@ description: Variables in memory after executing usb-c.kcl
                   "value": "line3"
                 }
               },
-              "artifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
-              "originalId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "no"
             }
@@ -904,14 +904,14 @@ description: Variables in memory after executing usb-c.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
-      "originalId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
-      "topologyId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
-      "artifactId": "19107e89-bf40-5541-88a5-5106b6de636d",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "f5a6e3b7-10e8-5c9d-954c-7b2481d5a3c6",
-          "id": "0f087f6a-5700-52cf-be1b-2510d7a6ef54",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3259,
@@ -924,8 +924,8 @@ description: Variables in memory after executing usb-c.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "fd4bef00-3f61-598d-b821-e1e9d8cefe92",
-          "id": "2e073517-0bf5-54db-976e-66972729caf1",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3378,
@@ -938,8 +938,8 @@ description: Variables in memory after executing usb-c.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "9d87edb8-3a51-54ff-9506-b6ceb6fc319a",
-          "id": "9871db8c-dbc9-5cab-87c1-e9ce1500acd4",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3558,
@@ -952,8 +952,8 @@ description: Variables in memory after executing usb-c.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "b61fa422-9e95-5647-81ed-d0c3cb2c04c1",
-          "id": "4d3615c9-596a-5c0f-87ee-1415fda3e3a7",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3678,
@@ -966,8 +966,8 @@ description: Variables in memory after executing usb-c.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "0d9f43a5-8dba-548e-bf1c-6f95794350f8",
-          "id": "20131566-81e2-550b-8b96-3fbac591eb6b",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3855,
@@ -980,8 +980,8 @@ description: Variables in memory after executing usb-c.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "b1da2303-1b48-50b2-bfb9-df10432cfc99",
-          "id": "96515728-a999-5cfb-8766-43fc20df5cc6",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3975,
@@ -994,8 +994,8 @@ description: Variables in memory after executing usb-c.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "a1f8f202-5aee-5cde-a8c4-7156a0e1d644",
-          "id": "8a9eb00d-aa59-56a8-9971-c782c5807af7",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4155,
@@ -1008,8 +1008,8 @@ description: Variables in memory after executing usb-c.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "6ff54ea6-c584-54b6-a882-bab5196f3a4a",
-          "id": "62b0b731-8ced-594d-b04e-50396107f4dc",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4277,
@@ -1022,8 +1022,8 @@ description: Variables in memory after executing usb-c.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "4f65ec47-e4d4-5841-b555-0e992fa6845d",
-          "id": "33aec927-931e-5f49-8116-0124e9b2809d",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4460,
@@ -1039,11 +1039,11 @@ description: Variables in memory after executing usb-c.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "0f087f6a-5700-52cf-be1b-2510d7a6ef54",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1067,7 +1067,7 @@ description: Variables in memory after executing usb-c.kcl
           },
           {
             "__geoMeta": {
-              "id": "2e073517-0bf5-54db-976e-66972729caf1",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -1097,7 +1097,7 @@ description: Variables in memory after executing usb-c.kcl
           },
           {
             "__geoMeta": {
-              "id": "9871db8c-dbc9-5cab-87c1-e9ce1500acd4",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1121,7 +1121,7 @@ description: Variables in memory after executing usb-c.kcl
           },
           {
             "__geoMeta": {
-              "id": "4d3615c9-596a-5c0f-87ee-1415fda3e3a7",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -1151,7 +1151,7 @@ description: Variables in memory after executing usb-c.kcl
           },
           {
             "__geoMeta": {
-              "id": "20131566-81e2-550b-8b96-3fbac591eb6b",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1175,7 +1175,7 @@ description: Variables in memory after executing usb-c.kcl
           },
           {
             "__geoMeta": {
-              "id": "96515728-a999-5cfb-8766-43fc20df5cc6",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -1205,7 +1205,7 @@ description: Variables in memory after executing usb-c.kcl
           },
           {
             "__geoMeta": {
-              "id": "8a9eb00d-aa59-56a8-9971-c782c5807af7",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1229,7 +1229,7 @@ description: Variables in memory after executing usb-c.kcl
           },
           {
             "__geoMeta": {
-              "id": "62b0b731-8ced-594d-b04e-50396107f4dc",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -1259,7 +1259,7 @@ description: Variables in memory after executing usb-c.kcl
           },
           {
             "__geoMeta": {
-              "id": "33aec927-931e-5f49-8116-0124e9b2809d",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1284,8 +1284,8 @@ description: Variables in memory after executing usb-c.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
-          "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 34,
           "kind": "Custom",
           "origin": {
@@ -1325,7 +1325,7 @@ description: Variables in memory after executing usb-c.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "03cd9cd9-3406-55e1-ae54-f1d9525eb3ba",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -1371,13 +1371,13 @@ description: Variables in memory after executing usb-c.kcl
             "value": "line6"
           }
         },
-        "artifactId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
-        "originalId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "1d8b7eeb-3c28-516d-9f52-22c2a9c34488",
-      "endCapId": "38f98fce-43c2-52d2-807a-e8033c70100b",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -1418,7 +1418,7 @@ description: Variables in memory after executing usb-c.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
+                "id": "[uuid]",
                 "objectId": 48,
                 "kind": {
                   "arc": {
@@ -1524,8 +1524,8 @@ description: Variables in memory after executing usb-c.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
-                  "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 34,
                   "origin": {
@@ -1554,7 +1554,7 @@ description: Variables in memory after executing usb-c.kcl
                     "units": null
                   }
                 },
-                "sketchId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc1"
@@ -1570,7 +1570,7 @@ description: Variables in memory after executing usb-c.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
+                "id": "[uuid]",
                 "objectId": 58,
                 "kind": {
                   "arc": {
@@ -1676,8 +1676,8 @@ description: Variables in memory after executing usb-c.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
-                  "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 34,
                   "origin": {
@@ -1706,7 +1706,7 @@ description: Variables in memory after executing usb-c.kcl
                     "units": null
                   }
                 },
-                "sketchId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc2"
@@ -1722,7 +1722,7 @@ description: Variables in memory after executing usb-c.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+                "id": "[uuid]",
                 "objectId": 68,
                 "kind": {
                   "arc": {
@@ -1828,8 +1828,8 @@ description: Variables in memory after executing usb-c.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
-                  "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 34,
                   "origin": {
@@ -1858,7 +1858,7 @@ description: Variables in memory after executing usb-c.kcl
                     "units": null
                   }
                 },
-                "sketchId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc3"
@@ -1874,7 +1874,7 @@ description: Variables in memory after executing usb-c.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "5288de96-84bb-518a-848b-5092b5d33e48",
+                "id": "[uuid]",
                 "objectId": 78,
                 "kind": {
                   "arc": {
@@ -1980,8 +1980,8 @@ description: Variables in memory after executing usb-c.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
-                  "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 34,
                   "origin": {
@@ -2010,7 +2010,7 @@ description: Variables in memory after executing usb-c.kcl
                     "units": null
                   }
                 },
-                "sketchId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc4"
@@ -2026,7 +2026,7 @@ description: Variables in memory after executing usb-c.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+                "id": "[uuid]",
                 "objectId": 38,
                 "kind": {
                   "line": {
@@ -2100,8 +2100,8 @@ description: Variables in memory after executing usb-c.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
-                  "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 34,
                   "origin": {
@@ -2130,7 +2130,7 @@ description: Variables in memory after executing usb-c.kcl
                     "units": null
                   }
                 },
-                "sketchId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -2146,7 +2146,7 @@ description: Variables in memory after executing usb-c.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "62f92a38-07e6-5321-9e56-be9dd50f1d7b",
+                "id": "[uuid]",
                 "objectId": 43,
                 "kind": {
                   "line": {
@@ -2220,8 +2220,8 @@ description: Variables in memory after executing usb-c.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
-                  "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 34,
                   "origin": {
@@ -2250,7 +2250,7 @@ description: Variables in memory after executing usb-c.kcl
                     "units": null
                   }
                 },
-                "sketchId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -2266,7 +2266,7 @@ description: Variables in memory after executing usb-c.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "4593843c-7d41-5ede-b7fa-ab9201f55957",
+                "id": "[uuid]",
                 "objectId": 53,
                 "kind": {
                   "line": {
@@ -2340,8 +2340,8 @@ description: Variables in memory after executing usb-c.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
-                  "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 34,
                   "origin": {
@@ -2370,7 +2370,7 @@ description: Variables in memory after executing usb-c.kcl
                     "units": null
                   }
                 },
-                "sketchId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -2386,7 +2386,7 @@ description: Variables in memory after executing usb-c.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "14d4f28b-98bf-5f5d-9542-446598cbea13",
+                "id": "[uuid]",
                 "objectId": 63,
                 "kind": {
                   "line": {
@@ -2460,8 +2460,8 @@ description: Variables in memory after executing usb-c.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
-                  "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 34,
                   "origin": {
@@ -2490,7 +2490,7 @@ description: Variables in memory after executing usb-c.kcl
                     "units": null
                   }
                 },
-                "sketchId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -2506,7 +2506,7 @@ description: Variables in memory after executing usb-c.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
+                "id": "[uuid]",
                 "objectId": 73,
                 "kind": {
                   "line": {
@@ -2580,8 +2580,8 @@ description: Variables in memory after executing usb-c.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
-                  "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 34,
                   "origin": {
@@ -2610,7 +2610,7 @@ description: Variables in memory after executing usb-c.kcl
                     "units": null
                   }
                 },
-                "sketchId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -2626,7 +2626,7 @@ description: Variables in memory after executing usb-c.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
+                "id": "[uuid]",
                 "objectId": 83,
                 "kind": {
                   "line": {
@@ -2700,8 +2700,8 @@ description: Variables in memory after executing usb-c.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
-                  "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 34,
                   "origin": {
@@ -2730,7 +2730,7 @@ description: Variables in memory after executing usb-c.kcl
                     "units": null
                   }
                 },
-                "sketchId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -2747,11 +2747,11 @@ description: Variables in memory after executing usb-c.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -2775,7 +2775,7 @@ description: Variables in memory after executing usb-c.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "62f92a38-07e6-5321-9e56-be9dd50f1d7b",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -2799,7 +2799,7 @@ description: Variables in memory after executing usb-c.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -2829,7 +2829,7 @@ description: Variables in memory after executing usb-c.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "4593843c-7d41-5ede-b7fa-ab9201f55957",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -2853,7 +2853,7 @@ description: Variables in memory after executing usb-c.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -2883,7 +2883,7 @@ description: Variables in memory after executing usb-c.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "14d4f28b-98bf-5f5d-9542-446598cbea13",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -2907,7 +2907,7 @@ description: Variables in memory after executing usb-c.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -2937,7 +2937,7 @@ description: Variables in memory after executing usb-c.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -2961,7 +2961,7 @@ description: Variables in memory after executing usb-c.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "5288de96-84bb-518a-848b-5092b5d33e48",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -2991,7 +2991,7 @@ description: Variables in memory after executing usb-c.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -3016,8 +3016,8 @@ description: Variables in memory after executing usb-c.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
-                "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 34,
                 "kind": "Custom",
                 "origin": {
@@ -3057,7 +3057,7 @@ description: Variables in memory after executing usb-c.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "03cd9cd9-3406-55e1-ae54-f1d9525eb3ba",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -3103,8 +3103,8 @@ description: Variables in memory after executing usb-c.kcl
                   "value": "line6"
                 }
               },
-              "artifactId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
-              "originalId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "no"
             }
@@ -3137,11 +3137,11 @@ description: Variables in memory after executing usb-c.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3165,7 +3165,7 @@ description: Variables in memory after executing usb-c.kcl
         },
         {
           "__geoMeta": {
-            "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3189,7 +3189,7 @@ description: Variables in memory after executing usb-c.kcl
         },
         {
           "__geoMeta": {
-            "id": "eb116575-1f8f-50df-810e-a61970915fe0",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3213,7 +3213,7 @@ description: Variables in memory after executing usb-c.kcl
         },
         {
           "__geoMeta": {
-            "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3238,8 +3238,8 @@ description: Variables in memory after executing usb-c.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -3279,7 +3279,7 @@ description: Variables in memory after executing usb-c.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -3309,8 +3309,8 @@ description: Variables in memory after executing usb-c.kcl
           "value": "line4"
         }
       },
-      "artifactId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
-      "originalId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -3319,11 +3319,11 @@ description: Variables in memory after executing usb-c.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "de8b5395-856b-5209-9fc1-e28044c88eb3",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3347,7 +3347,7 @@ description: Variables in memory after executing usb-c.kcl
         },
         {
           "__geoMeta": {
-            "id": "79cf1af4-9393-58db-8f84-67a77cbbdf93",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3371,7 +3371,7 @@ description: Variables in memory after executing usb-c.kcl
         },
         {
           "__geoMeta": {
-            "id": "83d2a052-4fdd-5308-8e9f-f8e30c42b1c7",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3395,7 +3395,7 @@ description: Variables in memory after executing usb-c.kcl
         },
         {
           "__geoMeta": {
-            "id": "753381f0-8d5d-5db7-af71-76c9ca44363c",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3420,8 +3420,8 @@ description: Variables in memory after executing usb-c.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
-        "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 17,
         "kind": "Custom",
         "origin": {
@@ -3461,7 +3461,7 @@ description: Variables in memory after executing usb-c.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "01e801cc-22ef-5071-814b-847d3fcf22d5",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -3483,8 +3483,8 @@ description: Variables in memory after executing usb-c.kcl
           "value": "line4"
         }
       },
-      "artifactId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
-      "originalId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -3493,11 +3493,11 @@ description: Variables in memory after executing usb-c.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "0f087f6a-5700-52cf-be1b-2510d7a6ef54",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3521,7 +3521,7 @@ description: Variables in memory after executing usb-c.kcl
         },
         {
           "__geoMeta": {
-            "id": "2e073517-0bf5-54db-976e-66972729caf1",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -3551,7 +3551,7 @@ description: Variables in memory after executing usb-c.kcl
         },
         {
           "__geoMeta": {
-            "id": "9871db8c-dbc9-5cab-87c1-e9ce1500acd4",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3575,7 +3575,7 @@ description: Variables in memory after executing usb-c.kcl
         },
         {
           "__geoMeta": {
-            "id": "4d3615c9-596a-5c0f-87ee-1415fda3e3a7",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -3605,7 +3605,7 @@ description: Variables in memory after executing usb-c.kcl
         },
         {
           "__geoMeta": {
-            "id": "20131566-81e2-550b-8b96-3fbac591eb6b",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3629,7 +3629,7 @@ description: Variables in memory after executing usb-c.kcl
         },
         {
           "__geoMeta": {
-            "id": "96515728-a999-5cfb-8766-43fc20df5cc6",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -3659,7 +3659,7 @@ description: Variables in memory after executing usb-c.kcl
         },
         {
           "__geoMeta": {
-            "id": "8a9eb00d-aa59-56a8-9971-c782c5807af7",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3683,7 +3683,7 @@ description: Variables in memory after executing usb-c.kcl
         },
         {
           "__geoMeta": {
-            "id": "62b0b731-8ced-594d-b04e-50396107f4dc",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -3713,7 +3713,7 @@ description: Variables in memory after executing usb-c.kcl
         },
         {
           "__geoMeta": {
-            "id": "33aec927-931e-5f49-8116-0124e9b2809d",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3738,8 +3738,8 @@ description: Variables in memory after executing usb-c.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
-        "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 34,
         "kind": "Custom",
         "origin": {
@@ -3779,7 +3779,7 @@ description: Variables in memory after executing usb-c.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "03cd9cd9-3406-55e1-ae54-f1d9525eb3ba",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -3825,8 +3825,8 @@ description: Variables in memory after executing usb-c.kcl
           "value": "line6"
         }
       },
-      "artifactId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
-      "originalId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -3835,11 +3835,11 @@ description: Variables in memory after executing usb-c.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "acb6b8b6-e024-57d9-a856-353e5c4d001f",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "f74c8a70-484b-5efb-97b9-9d5bebb32c6b",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -3870,8 +3870,8 @@ description: Variables in memory after executing usb-c.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
-        "id": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 114,
         "kind": "Custom",
         "origin": {
@@ -3911,7 +3911,7 @@ description: Variables in memory after executing usb-c.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "c444b134-67e1-507a-bb00-d4998ba97afb",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -3921,8 +3921,8 @@ description: Variables in memory after executing usb-c.kcl
           "value": "circle1"
         }
       },
-      "artifactId": "acb6b8b6-e024-57d9-a856-353e5c4d001f",
-      "originalId": "acb6b8b6-e024-57d9-a856-353e5c4d001f",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -3931,14 +3931,14 @@ description: Variables in memory after executing usb-c.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
-      "originalId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
-      "topologyId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
-      "artifactId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "092755e4-e002-58b9-a194-69b526ae6929",
-          "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 913,
@@ -3951,8 +3951,8 @@ description: Variables in memory after executing usb-c.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "bb04bee5-f92e-54fd-b9d8-0e476678cb88",
-          "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 993,
@@ -3965,8 +3965,8 @@ description: Variables in memory after executing usb-c.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "a49b9612-c4dc-5d46-9c14-74c0b7247edd",
-          "id": "eb116575-1f8f-50df-810e-a61970915fe0",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1110,
@@ -3979,8 +3979,8 @@ description: Variables in memory after executing usb-c.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "00f8003d-3b65-5f10-b911-9092660fca40",
-          "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1227,
@@ -3993,8 +3993,8 @@ description: Variables in memory after executing usb-c.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
-          "id": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1550,
@@ -4007,8 +4007,8 @@ description: Variables in memory after executing usb-c.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
-          "id": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1525,
@@ -4034,11 +4034,11 @@ description: Variables in memory after executing usb-c.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4062,7 +4062,7 @@ description: Variables in memory after executing usb-c.kcl
           },
           {
             "__geoMeta": {
-              "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4086,7 +4086,7 @@ description: Variables in memory after executing usb-c.kcl
           },
           {
             "__geoMeta": {
-              "id": "eb116575-1f8f-50df-810e-a61970915fe0",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4110,7 +4110,7 @@ description: Variables in memory after executing usb-c.kcl
           },
           {
             "__geoMeta": {
-              "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4135,8 +4135,8 @@ description: Variables in memory after executing usb-c.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -4176,7 +4176,7 @@ description: Variables in memory after executing usb-c.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -4206,17 +4206,17 @@ description: Variables in memory after executing usb-c.kcl
             "value": "line4"
           }
         },
-        "artifactId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
-        "originalId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
-      "endCapId": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+          "id": "[uuid]",
           "radius": {
             "n": 1.1,
             "ty": {
@@ -4225,12 +4225,12 @@ description: Variables in memory after executing usb-c.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "db427524-76a6-553d-bb6b-6ac873083b95",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+          "id": "[uuid]",
           "radius": {
             "n": 1.1,
             "ty": {
@@ -4239,12 +4239,12 @@ description: Variables in memory after executing usb-c.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "bed0fa8f-1dee-58d5-a44d-fc003a3ff62b",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+          "id": "[uuid]",
           "radius": {
             "n": 1.1,
             "ty": {
@@ -4253,12 +4253,12 @@ description: Variables in memory after executing usb-c.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+          "id": "[uuid]",
           "radius": {
             "n": 1.1,
             "ty": {
@@ -4267,7 +4267,7 @@ description: Variables in memory after executing usb-c.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "d5187f6e-f4ca-53c7-bdee-80c0ba5cbb59",
+          "edgeId": "[uuid]",
           "tag": null
         }
       ],
@@ -4279,14 +4279,14 @@ description: Variables in memory after executing usb-c.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
-      "originalId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
-      "topologyId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
-      "artifactId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "092755e4-e002-58b9-a194-69b526ae6929",
-          "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 913,
@@ -4299,8 +4299,8 @@ description: Variables in memory after executing usb-c.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "bb04bee5-f92e-54fd-b9d8-0e476678cb88",
-          "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 993,
@@ -4313,8 +4313,8 @@ description: Variables in memory after executing usb-c.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "a49b9612-c4dc-5d46-9c14-74c0b7247edd",
-          "id": "eb116575-1f8f-50df-810e-a61970915fe0",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1110,
@@ -4327,8 +4327,8 @@ description: Variables in memory after executing usb-c.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "00f8003d-3b65-5f10-b911-9092660fca40",
-          "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1227,
@@ -4341,8 +4341,8 @@ description: Variables in memory after executing usb-c.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
-          "id": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1550,
@@ -4355,8 +4355,8 @@ description: Variables in memory after executing usb-c.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
-          "id": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1525,
@@ -4382,11 +4382,11 @@ description: Variables in memory after executing usb-c.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4410,7 +4410,7 @@ description: Variables in memory after executing usb-c.kcl
           },
           {
             "__geoMeta": {
-              "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4434,7 +4434,7 @@ description: Variables in memory after executing usb-c.kcl
           },
           {
             "__geoMeta": {
-              "id": "eb116575-1f8f-50df-810e-a61970915fe0",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4458,7 +4458,7 @@ description: Variables in memory after executing usb-c.kcl
           },
           {
             "__geoMeta": {
-              "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4483,8 +4483,8 @@ description: Variables in memory after executing usb-c.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -4524,7 +4524,7 @@ description: Variables in memory after executing usb-c.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -4554,17 +4554,17 @@ description: Variables in memory after executing usb-c.kcl
             "value": "line4"
           }
         },
-        "artifactId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
-        "originalId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
-      "endCapId": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+          "id": "[uuid]",
           "radius": {
             "n": 1.1,
             "ty": {
@@ -4573,12 +4573,12 @@ description: Variables in memory after executing usb-c.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "db427524-76a6-553d-bb6b-6ac873083b95",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+          "id": "[uuid]",
           "radius": {
             "n": 1.1,
             "ty": {
@@ -4587,12 +4587,12 @@ description: Variables in memory after executing usb-c.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "bed0fa8f-1dee-58d5-a44d-fc003a3ff62b",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+          "id": "[uuid]",
           "radius": {
             "n": 1.1,
             "ty": {
@@ -4601,12 +4601,12 @@ description: Variables in memory after executing usb-c.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+          "id": "[uuid]",
           "radius": {
             "n": 1.1,
             "ty": {
@@ -4615,7 +4615,7 @@ description: Variables in memory after executing usb-c.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "d5187f6e-f4ca-53c7-bdee-80c0ba5cbb59",
+          "edgeId": "[uuid]",
           "tag": null
         }
       ],
@@ -4659,7 +4659,7 @@ description: Variables in memory after executing usb-c.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "id": "[uuid]",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -4733,8 +4733,8 @@ description: Variables in memory after executing usb-c.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4763,7 +4763,7 @@ description: Variables in memory after executing usb-c.kcl
                     "units": null
                   }
                 },
-                "sketchId": "523b9fc1-d681-5ef3-b407-128525533bfe",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -4779,7 +4779,7 @@ description: Variables in memory after executing usb-c.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                "id": "[uuid]",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -4853,8 +4853,8 @@ description: Variables in memory after executing usb-c.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4883,7 +4883,7 @@ description: Variables in memory after executing usb-c.kcl
                     "units": null
                   }
                 },
-                "sketchId": "523b9fc1-d681-5ef3-b407-128525533bfe",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -4899,7 +4899,7 @@ description: Variables in memory after executing usb-c.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                "id": "[uuid]",
                 "objectId": 11,
                 "kind": {
                   "line": {
@@ -4973,8 +4973,8 @@ description: Variables in memory after executing usb-c.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5003,7 +5003,7 @@ description: Variables in memory after executing usb-c.kcl
                     "units": null
                   }
                 },
-                "sketchId": "523b9fc1-d681-5ef3-b407-128525533bfe",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -5019,7 +5019,7 @@ description: Variables in memory after executing usb-c.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+                "id": "[uuid]",
                 "objectId": 15,
                 "kind": {
                   "line": {
@@ -5093,8 +5093,8 @@ description: Variables in memory after executing usb-c.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5123,7 +5123,7 @@ description: Variables in memory after executing usb-c.kcl
                     "units": null
                   }
                 },
-                "sketchId": "523b9fc1-d681-5ef3-b407-128525533bfe",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -5140,11 +5140,11 @@ description: Variables in memory after executing usb-c.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -5168,7 +5168,7 @@ description: Variables in memory after executing usb-c.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -5192,7 +5192,7 @@ description: Variables in memory after executing usb-c.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -5216,7 +5216,7 @@ description: Variables in memory after executing usb-c.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -5241,8 +5241,8 @@ description: Variables in memory after executing usb-c.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 0,
                 "kind": "Custom",
                 "origin": {
@@ -5282,7 +5282,7 @@ description: Variables in memory after executing usb-c.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -5304,8 +5304,8 @@ description: Variables in memory after executing usb-c.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "523b9fc1-d681-5ef3-b407-128525533bfe",
-              "originalId": "523b9fc1-d681-5ef3-b407-128525533bfe",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -5343,7 +5343,7 @@ description: Variables in memory after executing usb-c.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "eedabccb-e42b-5224-a499-7c2981b239e5",
+                "id": "[uuid]",
                 "objectId": 21,
                 "kind": {
                   "line": {
@@ -5417,8 +5417,8 @@ description: Variables in memory after executing usb-c.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
-                  "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 17,
                   "origin": {
@@ -5447,7 +5447,7 @@ description: Variables in memory after executing usb-c.kcl
                     "units": null
                   }
                 },
-                "sketchId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -5463,7 +5463,7 @@ description: Variables in memory after executing usb-c.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+                "id": "[uuid]",
                 "objectId": 24,
                 "kind": {
                   "line": {
@@ -5537,8 +5537,8 @@ description: Variables in memory after executing usb-c.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
-                  "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 17,
                   "origin": {
@@ -5567,7 +5567,7 @@ description: Variables in memory after executing usb-c.kcl
                     "units": null
                   }
                 },
-                "sketchId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -5583,7 +5583,7 @@ description: Variables in memory after executing usb-c.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
+                "id": "[uuid]",
                 "objectId": 28,
                 "kind": {
                   "line": {
@@ -5657,8 +5657,8 @@ description: Variables in memory after executing usb-c.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
-                  "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 17,
                   "origin": {
@@ -5687,7 +5687,7 @@ description: Variables in memory after executing usb-c.kcl
                     "units": null
                   }
                 },
-                "sketchId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -5703,7 +5703,7 @@ description: Variables in memory after executing usb-c.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "25999981-b7b8-57e2-8ac5-655907dfffdc",
+                "id": "[uuid]",
                 "objectId": 32,
                 "kind": {
                   "line": {
@@ -5777,8 +5777,8 @@ description: Variables in memory after executing usb-c.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
-                  "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 17,
                   "origin": {
@@ -5807,7 +5807,7 @@ description: Variables in memory after executing usb-c.kcl
                     "units": null
                   }
                 },
-                "sketchId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -5824,11 +5824,11 @@ description: Variables in memory after executing usb-c.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "eedabccb-e42b-5224-a499-7c2981b239e5",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -5852,7 +5852,7 @@ description: Variables in memory after executing usb-c.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -5876,7 +5876,7 @@ description: Variables in memory after executing usb-c.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -5900,7 +5900,7 @@ description: Variables in memory after executing usb-c.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "25999981-b7b8-57e2-8ac5-655907dfffdc",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -5925,8 +5925,8 @@ description: Variables in memory after executing usb-c.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
-                "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 17,
                 "kind": "Custom",
                 "origin": {
@@ -5966,7 +5966,7 @@ description: Variables in memory after executing usb-c.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "01e801cc-22ef-5071-814b-847d3fcf22d5",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -5988,8 +5988,8 @@ description: Variables in memory after executing usb-c.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
-              "originalId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -6009,7 +6009,7 @@ description: Variables in memory after executing usb-c.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "4ea8409b-834f-5214-b812-e276f2ff01f4",
+                "id": "[uuid]",
                 "objectId": 118,
                 "kind": {
                   "circle": {
@@ -6083,8 +6083,8 @@ description: Variables in memory after executing usb-c.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
-                  "id": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 114,
                   "origin": {
@@ -6113,7 +6113,7 @@ description: Variables in memory after executing usb-c.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2b8704a7-15b4-5ef7-8498-4a0c612057d6",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -6130,11 +6130,11 @@ description: Variables in memory after executing usb-c.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "2b8704a7-15b4-5ef7-8498-4a0c612057d6",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "4ea8409b-834f-5214-b812-e276f2ff01f4",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -6165,8 +6165,8 @@ description: Variables in memory after executing usb-c.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
-                "id": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 114,
                 "kind": "Custom",
                 "origin": {
@@ -6206,7 +6206,7 @@ description: Variables in memory after executing usb-c.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "c444b134-67e1-507a-bb00-d4998ba97afb",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -6216,8 +6216,8 @@ description: Variables in memory after executing usb-c.kcl
                   "value": "circle1"
                 }
               },
-              "artifactId": "2b8704a7-15b4-5ef7-8498-4a0c612057d6",
-              "originalId": "2b8704a7-15b4-5ef7-8498-4a0c612057d6",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "no"
             }
@@ -6232,14 +6232,14 @@ description: Variables in memory after executing usb-c.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
-      "originalId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
-      "topologyId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
-      "artifactId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "29a663bb-814f-52bd-92d6-fb45ca0f9edd",
-          "id": "de8b5395-856b-5209-9fc1-e28044c88eb3",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2400,
@@ -6252,8 +6252,8 @@ description: Variables in memory after executing usb-c.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "1f1759f5-45a9-5050-b50a-80826c5eb35c",
-          "id": "79cf1af4-9393-58db-8f84-67a77cbbdf93",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2480,
@@ -6266,8 +6266,8 @@ description: Variables in memory after executing usb-c.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "09955da4-cdab-556c-84d5-9e794e7cd4d0",
-          "id": "83d2a052-4fdd-5308-8e9f-f8e30c42b1c7",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2597,
@@ -6280,8 +6280,8 @@ description: Variables in memory after executing usb-c.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "66e3ae85-e552-5737-b5b3-e96c485cc2e2",
-          "id": "753381f0-8d5d-5db7-af71-76c9ca44363c",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2714,
@@ -6297,11 +6297,11 @@ description: Variables in memory after executing usb-c.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "de8b5395-856b-5209-9fc1-e28044c88eb3",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6325,7 +6325,7 @@ description: Variables in memory after executing usb-c.kcl
           },
           {
             "__geoMeta": {
-              "id": "79cf1af4-9393-58db-8f84-67a77cbbdf93",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6349,7 +6349,7 @@ description: Variables in memory after executing usb-c.kcl
           },
           {
             "__geoMeta": {
-              "id": "83d2a052-4fdd-5308-8e9f-f8e30c42b1c7",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6373,7 +6373,7 @@ description: Variables in memory after executing usb-c.kcl
           },
           {
             "__geoMeta": {
-              "id": "753381f0-8d5d-5db7-af71-76c9ca44363c",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6398,8 +6398,8 @@ description: Variables in memory after executing usb-c.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
-          "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 17,
           "kind": "Custom",
           "origin": {
@@ -6439,7 +6439,7 @@ description: Variables in memory after executing usb-c.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "01e801cc-22ef-5071-814b-847d3fcf22d5",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -6461,13 +6461,13 @@ description: Variables in memory after executing usb-c.kcl
             "value": "line4"
           }
         },
-        "artifactId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
-        "originalId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "08eaee7a-bbb1-5782-a55e-e93f0b6e015f",
-      "endCapId": "17146177-3f48-5401-bab9-fbc879d85d1b",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
