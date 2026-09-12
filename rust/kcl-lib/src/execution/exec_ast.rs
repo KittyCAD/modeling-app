@@ -1030,6 +1030,12 @@ impl ExecutorContext {
     ) -> Result<ModuleExecutionOutcome, (KclError, Option<EnvironmentRef>, Option<ModuleArtifactState>)> {
         crate::log::log(format!("enter module {path} {}", exec_state.stack()));
 
+        // KCL 3.0: reject an imported file whose declared kclVersion differs
+        // from the entry point's before any of it executes.
+        exec_state
+            .check_imported_module_kcl_version(path, program, None)
+            .map_err(|err| (err, None, None))?;
+
         // When executing only the new statements in incremental execution or
         // mock executing for sketch mode, we need the scene objects that were
         // created during the last execution, which are in the execution cache.
@@ -1290,6 +1296,19 @@ impl ExecutorContext {
         let module_id = self
             .open_module(&import_stmt.path, attrs, &module_path, exec_state, source_range)
             .await?;
+
+        // KCL 3.0: check the imported file's declared kclVersion at the import
+        // site as well. Mock execution runs a whole-module import's body only
+        // when the module is referenced, so for an unreferenced one this is
+        // the only place the check can run. In engine execution, every
+        // imported module's body (and so this check) ran before the root body
+        // got here.
+        if let ImportPath::Kcl { .. } = &import_stmt.path
+            && let Some(ModuleRepr::Kcl(program, _)) =
+                exec_state.global.module_infos.get(&module_id).map(|info| &info.repr)
+        {
+            exec_state.check_imported_module_kcl_version(&module_path, program, Some(source_range))?;
+        }
 
         if let ModulePath::Local { value, .. } = &module_path {
             let name = import_stmt

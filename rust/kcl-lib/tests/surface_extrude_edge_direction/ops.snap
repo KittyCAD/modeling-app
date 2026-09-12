@@ -425,7 +425,7 @@ description: Operations executed surface_extrude_edge_direction.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "89316223-2ea1-5731-9c72-0492bc30fbe2"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -484,15 +484,15 @@ description: Operations executed surface_extrude_edge_direction.kcl
             "value": {
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+                "artifact_id": "[uuid]"
               },
               "circle2": {
                 "type": "Segment",
-                "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
+                "artifact_id": "[uuid]"
               },
               "line1": {
                 "type": "Segment",
-                "artifact_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -500,7 +500,7 @@ description: Operations executed surface_extrude_edge_direction.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "89316223-2ea1-5731-9c72-0492bc30fbe2"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -533,7 +533,7 @@ description: Operations executed surface_extrude_edge_direction.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -581,7 +581,7 @@ description: Operations executed surface_extrude_edge_direction.kcl
       "unlabeledArg": {
         "value": {
           "type": "Uuid",
-          "value": "5b010224-2823-5bc8-b783-67a1d63cd2d0"
+          "value": "[uuid]"
         },
         "sourceRange": []
       },
@@ -763,7 +763,7 @@ description: Operations executed surface_extrude_edge_direction.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -787,7 +787,7 @@ description: Operations executed surface_extrude_edge_direction.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -811,7 +811,7 @@ description: Operations executed surface_extrude_edge_direction.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -835,7 +835,7 @@ description: Operations executed surface_extrude_edge_direction.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -859,7 +859,7 @@ description: Operations executed surface_extrude_edge_direction.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -883,7 +883,7 @@ description: Operations executed surface_extrude_edge_direction.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -907,7 +907,7 @@ description: Operations executed surface_extrude_edge_direction.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -931,7 +931,7 @@ description: Operations executed surface_extrude_edge_direction.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

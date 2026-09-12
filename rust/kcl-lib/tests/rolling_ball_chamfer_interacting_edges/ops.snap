@@ -155,7 +155,7 @@ description: Operations executed rolling_ball_chamfer_interacting_edges.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -183,7 +183,7 @@ description: Operations executed rolling_ball_chamfer_interacting_edges.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -244,7 +244,7 @@ description: Operations executed rolling_ball_chamfer_interacting_edges.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "89316223-2ea1-5731-9c72-0492bc30fbe2"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -254,7 +254,7 @@ description: Operations executed rolling_ball_chamfer_interacting_edges.kcl
           "value": {
             "type": "TagIdentifier",
             "value": "shaftEnd",
-            "artifact_id": "cd65f73d-2282-5b22-8533-f78e6a5bb5ca"
+            "artifact_id": "[uuid]"
           },
           "sourceRange": []
         }
@@ -286,7 +286,7 @@ description: Operations executed rolling_ball_chamfer_interacting_edges.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -335,7 +335,7 @@ description: Operations executed rolling_ball_chamfer_interacting_edges.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "89316223-2ea1-5731-9c72-0492bc30fbe2"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -348,7 +348,7 @@ description: Operations executed rolling_ball_chamfer_interacting_edges.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "f084ad07-5777-5607-a544-c69f455c2aab"
+                  "artifactId": "[uuid]"
                 }
               }
             ]
@@ -379,7 +379,7 @@ description: Operations executed rolling_ball_chamfer_interacting_edges.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -403,11 +403,11 @@ description: Operations executed rolling_ball_chamfer_interacting_edges.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "6fe0649f-cdd5-50ea-ad12-53597d9acb63"
+                "value": "[uuid]"
               },
               {
                 "type": "Uuid",
-                "value": "4c3c9d1b-e1d8-505b-954b-155e069e484d"
+                "value": "[uuid]"
               }
             ]
           },
@@ -540,7 +540,7 @@ description: Operations executed rolling_ball_chamfer_interacting_edges.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -564,7 +564,7 @@ description: Operations executed rolling_ball_chamfer_interacting_edges.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -588,7 +588,7 @@ description: Operations executed rolling_ball_chamfer_interacting_edges.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -612,7 +612,7 @@ description: Operations executed rolling_ball_chamfer_interacting_edges.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -636,7 +636,7 @@ description: Operations executed rolling_ball_chamfer_interacting_edges.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -660,7 +660,7 @@ description: Operations executed rolling_ball_chamfer_interacting_edges.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -684,7 +684,7 @@ description: Operations executed rolling_ball_chamfer_interacting_edges.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -708,7 +708,7 @@ description: Operations executed rolling_ball_chamfer_interacting_edges.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

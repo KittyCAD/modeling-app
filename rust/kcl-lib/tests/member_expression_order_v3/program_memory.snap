@@ -13,14 +13,14 @@ description: Variables in memory after executing member_expression_order_v3.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
-      "originalId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
-      "topologyId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
-      "artifactId": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "9f4eb1aa-edde-5423-b838-744539667ee8",
-          "id": "e445bc8a-9094-57cc-b3ce-a572fc71ab16",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 831,
@@ -33,8 +33,8 @@ description: Variables in memory after executing member_expression_order_v3.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "9b3ed7b2-ab34-5e27-aa76-78d32accbb8f",
-          "id": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 905,
@@ -47,8 +47,8 @@ description: Variables in memory after executing member_expression_order_v3.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "5ac5e12d-2e01-543e-98d2-cb87b8695e72",
-          "id": "375909ca-005f-5bf2-83c9-5f0b348dac37",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 979,
@@ -61,8 +61,8 @@ description: Variables in memory after executing member_expression_order_v3.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "46ef413e-7f7d-51c7-92e8-52410b572f94",
-          "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1052,
@@ -78,11 +78,11 @@ description: Variables in memory after executing member_expression_order_v3.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "e445bc8a-9094-57cc-b3ce-a572fc71ab16",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -106,7 +106,7 @@ description: Variables in memory after executing member_expression_order_v3.kcl
           },
           {
             "__geoMeta": {
-              "id": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -130,7 +130,7 @@ description: Variables in memory after executing member_expression_order_v3.kcl
           },
           {
             "__geoMeta": {
-              "id": "375909ca-005f-5bf2-83c9-5f0b348dac37",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -154,7 +154,7 @@ description: Variables in memory after executing member_expression_order_v3.kcl
           },
           {
             "__geoMeta": {
-              "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -179,8 +179,8 @@ description: Variables in memory after executing member_expression_order_v3.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "59bc8baf-257f-5783-ad91-95db236aa6b0",
-          "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 14,
           "kind": "Custom",
           "origin": {
@@ -220,7 +220,7 @@ description: Variables in memory after executing member_expression_order_v3.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -242,13 +242,13 @@ description: Variables in memory after executing member_expression_order_v3.kcl
             "value": "top"
           }
         },
-        "artifactId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
-        "originalId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "0c8445ab-4d19-5096-a4c1-6ba4e51a6eca",
-      "endCapId": "8c0deb2f-1671-58eb-a5a0-7f73ec91728e",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }

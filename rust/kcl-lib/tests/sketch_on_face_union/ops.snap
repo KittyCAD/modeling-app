@@ -97,7 +97,7 @@ description: Operations executed sketch_on_face_union.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -125,7 +125,7 @@ description: Operations executed sketch_on_face_union.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -135,7 +135,7 @@ description: Operations executed sketch_on_face_union.kcl
           "value": {
             "type": "Sketch",
             "value": {
-              "artifactId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79"
+              "artifactId": "[uuid]"
             }
           },
           "sourceRange": []
@@ -164,7 +164,7 @@ description: Operations executed sketch_on_face_union.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -174,7 +174,7 @@ description: Operations executed sketch_on_face_union.kcl
           "value": {
             "type": "Sketch",
             "value": {
-              "artifactId": "19fe8534-2bed-5e2a-afe9-63f57b621004"
+              "artifactId": "[uuid]"
             }
           },
           "sourceRange": []
@@ -200,7 +200,7 @@ description: Operations executed sketch_on_face_union.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -241,7 +241,7 @@ description: Operations executed sketch_on_face_union.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -284,7 +284,7 @@ description: Operations executed sketch_on_face_union.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "b680fe3e-a804-583c-99d9-1693b2432aeb"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -312,7 +312,7 @@ description: Operations executed sketch_on_face_union.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "deb86259-17a0-5782-a352-d25992246cc0"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -358,7 +358,7 @@ description: Operations executed sketch_on_face_union.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "25999981-b7b8-57e2-8ac5-655907dfffdc"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -404,7 +404,7 @@ description: Operations executed sketch_on_face_union.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "2f87eb95-71f2-5911-bdbf-6255b335334d"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -414,7 +414,7 @@ description: Operations executed sketch_on_face_union.kcl
           "value": {
             "type": "TagIdentifier",
             "value": "bottomFace",
-            "artifact_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
+            "artifact_id": "[uuid]"
           },
           "sourceRange": []
         }
@@ -442,7 +442,7 @@ description: Operations executed sketch_on_face_union.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "7b3604da-cb7d-56b0-8f93-648a91817ee2"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -488,7 +488,7 @@ description: Operations executed sketch_on_face_union.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "468f6520-a683-5392-9492-de009fdcddef"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -661,7 +661,7 @@ description: Operations executed sketch_on_face_union.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -685,7 +685,7 @@ description: Operations executed sketch_on_face_union.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -709,7 +709,7 @@ description: Operations executed sketch_on_face_union.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -733,7 +733,7 @@ description: Operations executed sketch_on_face_union.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -757,7 +757,7 @@ description: Operations executed sketch_on_face_union.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -781,7 +781,7 @@ description: Operations executed sketch_on_face_union.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -805,7 +805,7 @@ description: Operations executed sketch_on_face_union.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -829,7 +829,7 @@ description: Operations executed sketch_on_face_union.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

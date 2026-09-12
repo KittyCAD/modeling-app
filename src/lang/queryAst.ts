@@ -227,7 +227,7 @@ export function getNodeFromPathCurry(
   }
 }
 
-type KCLNode = Node<
+export type KCLNode = Node<
   | Program
   | Expr
   | ExpressionStatement
@@ -253,6 +253,22 @@ export function traverse(
   option?.enter?.(node, pathToNode)
   const _traverse = (node: KCLNode, pathToNode: PathToNode) =>
     traverse(node, option, pathToNode)
+  // If-expression arm bodies are Program nodes, but their items' path labels
+  // predate container visits and differ from what the Program branch below
+  // emits, so arm bodies are visited manually: visitors get enter/leave for
+  // the arm container itself (at `[key, 'IfExpression']`), and item paths
+  // stay exactly as they were.
+  const _traverseIfArmBody = (
+    arm: Node<Program>,
+    key: 'then_val' | 'final_else'
+  ) => {
+    const armPath: PathToNode = [...pathToNode, [key, 'IfExpression']]
+    option?.enter?.(arm, armPath)
+    arm.body.forEach((item, index) =>
+      _traverse(item, [...armPath, ['body', 'IfExpression'], [index, 'index']])
+    )
+    option?.leave?.(arm)
+  }
 
   if (node.type === 'VariableDeclaration') {
     _traverse(node.declaration, [
@@ -360,14 +376,7 @@ export function traverse(
     _traverse(node.property, [...pathToNode, ['property', 'MemberExpression']])
   } else if (node.type === 'IfExpression') {
     _traverse(node.cond, [...pathToNode, ['cond', 'IfExpression']])
-    node.then_val.body.forEach((item, index) =>
-      _traverse(item, [
-        ...pathToNode,
-        ['then_val', 'IfExpression'],
-        ['body', 'IfExpression'],
-        [index, 'index'],
-      ])
-    )
+    _traverseIfArmBody(node.then_val, 'then_val')
     node.else_ifs.forEach((elseIf, index) =>
       _traverse(elseIf, [
         ...pathToNode,
@@ -375,24 +384,10 @@ export function traverse(
         [index, 'index'],
       ])
     )
-    node.final_else.body.forEach((item, index) =>
-      _traverse(item, [
-        ...pathToNode,
-        ['final_else', 'IfExpression'],
-        ['body', 'IfExpression'],
-        [index, 'index'],
-      ])
-    )
+    _traverseIfArmBody(node.final_else, 'final_else')
   } else if (node.type === 'ElseIf') {
     _traverse(node.cond, [...pathToNode, ['cond', 'IfExpression']])
-    node.then_val.body.forEach((item, index) =>
-      _traverse(item, [
-        ...pathToNode,
-        ['then_val', 'IfExpression'],
-        ['body', 'IfExpression'],
-        [index, 'index'],
-      ])
-    )
+    _traverseIfArmBody(node.then_val, 'then_val')
   } else if (node.type === 'LabelledExpression') {
     _traverse(node.expr, [...pathToNode, ['expr', 'LabelledExpression']])
     _traverse(node.label, [...pathToNode, ['label', 'LabelledExpression']])
@@ -407,14 +402,10 @@ export function traverse(
         ['arg', LABELED_ARG_FIELD],
       ])
     )
-    node.body.items.forEach((item, index) =>
-      _traverse(item, [
-        ...pathToNode,
-        ['body', 'SketchBlock'],
-        ['items', 'Block'],
-        [index, 'index'],
-      ])
-    )
+    // The Block branch below emits the same item paths this branch used to
+    // build inline, and visitors additionally get enter/leave for the body's
+    // Block node itself.
+    _traverse(node.body, [...pathToNode, ['body', 'SketchBlock']])
   } else if (node.type === 'SketchVar') {
     if (node.initial) {
       _traverse(node.initial, [...pathToNode, ['initial', 'SketchVar']])
@@ -423,6 +414,8 @@ export function traverse(
     node.items.forEach((item, index) =>
       _traverse(item, [...pathToNode, ['items', 'Block'], [index, 'index']])
     )
+  } else if (node.type === 'ReturnStatement') {
+    _traverse(node.argument, [...pathToNode, ['argument', 'ReturnStatement']])
   } else if (node.type === 'ImportStatement') {
     // Do nothing.
   } else if (node.type === 'Program') {
