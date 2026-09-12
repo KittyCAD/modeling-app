@@ -1,0 +1,13 @@
+profile = sketch(on = XY) {
+  bottom = line(start = [var 0mm, var 0mm], end = [var 40mm, var 0mm])
+  right = line(start = [var 40mm, var 0mm], end = [var 40mm, var 24mm])
+  top = line(start = [var 40mm, var 24mm], end = [var 0mm, var 24mm])
+  left = line(start = [var 0mm, var 24mm], end = [var 0mm, var 0mm])
+
+  coincident([bottom.end, right.start])
+  coincident([right.end, top.start])
+  coincident([top.end, left.start])
+  coincident([left.end, bottom.start])
+}
+
+selectedRegion = region(segments = [profile.bottom, profile.right])
