@@ -1,0 +1,39 @@
+// Real Flanges trace 01a0927d-c015-700d-9b02-0aad90977fa9, before
+// visualization 01a09285-51e6-760f-af0e-8d14ebd49d7a. These declarations
+// are copied verbatim; unrelated 3D construction is omitted for this test.
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
+overallThickness = 1.25in
+webThickness = 0.60in
+
+fn curvedCapsuleSolid(trackRadius, trackWidth, halfAngle, depth) {
+  curvedProfile = sketch(on = XY) {
+    outer = arc(start = [var 1.58in, var 8.12in], end = [var -1.58in, var 8.12in], center = [var 0in, var 0in])
+    left = arc(start = [var -1.58in, var 8.12in], end = [var -1.40in, var 7.19in], center = [var -1.49in, var 7.66in])
+    inner = arc(start = [var -1.40in, var 7.19in], end = [var 1.40in, var 7.19in], center = [var 0in, var 0in], direction = CW)
+    right = arc(start = [var 1.40in, var 7.19in], end = [var 1.58in, var 8.12in], center = [var 1.49in, var 7.66in])
+    coincident([outer.end, left.start])
+    coincident([left.end, inner.start])
+    coincident([inner.end, right.start])
+    coincident([right.end, outer.start])
+    coincident([outer.center, ORIGIN])
+    coincident([inner.center, ORIGIN])
+    radius(outer) == trackRadius + trackWidth / 2
+    radius(inner) == trackRadius - trackWidth / 2
+    tangent([outer, left])
+    tangent([left, inner])
+    tangent([inner, right])
+    tangent([right, outer])
+    horizontalDistance([ORIGIN, outer.start]) == (trackRadius + trackWidth / 2) * sin(halfAngle)
+    horizontalDistance([ORIGIN, outer.end]) == -(trackRadius + trackWidth / 2) * sin(halfAngle)
+  }
+  curvedBody = extrude(region(segments = [curvedProfile.outer, curvedProfile.left], intersectionIndex = -1, direction = CCW), length = depth)
+  hide(curvedProfile)
+  return curvedBody
+}
+
+rimTrackRadius = 7.78in
+rimTrackHalfAngle = 10.5deg
+rimPad = curvedCapsuleSolid(trackRadius = rimTrackRadius, trackWidth = 1.00in, halfAngle = rimTrackHalfAngle, depth = 0.45in)
+  |> translate(xyz = [0in, 0in, webThickness - 0.05in], global = true)
+rimPocket = curvedCapsuleSolid(trackRadius = rimTrackRadius, trackWidth = 0.68in, halfAngle = rimTrackHalfAngle, depth = overallThickness)
+  |> translate(xyz = [0in, 0in, webThickness + 0.02in], global = true)
