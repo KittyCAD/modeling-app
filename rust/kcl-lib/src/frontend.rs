@@ -15315,7 +15315,8 @@ sketch001 = sketch(on = XY) {
         let project_id = ProjectId(0);
         let file_id = FileId(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let outcome = frontend.hack_set_program(&ctx, program).await.unwrap();
+        assert!(matches!(outcome, SetProgramOutcome::Success { .. }), "{outcome:?}");
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
