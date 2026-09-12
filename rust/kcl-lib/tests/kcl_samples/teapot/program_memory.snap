@@ -6,8 +6,8 @@ description: Variables in memory after executing teapot.kcl
   "__sketch_109_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
-      "id": "7c4571e0-7b14-576f-a82e-22280b05874d",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,8 +38,8 @@ description: Variables in memory after executing teapot.kcl
   "__sketch_114_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
-      "id": "7c4571e0-7b14-576f-a82e-22280b05874d",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -70,8 +70,8 @@ description: Variables in memory after executing teapot.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
-      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -102,8 +102,8 @@ description: Variables in memory after executing teapot.kcl
   "__sketch_20_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-      "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "objectId": 19,
       "kind": "Custom",
       "origin": {
@@ -135,8 +135,8 @@ description: Variables in memory after executing teapot.kcl
   "__sketch_31_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
-      "id": "7c4571e0-7b14-576f-a82e-22280b05874d",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -167,8 +167,8 @@ description: Variables in memory after executing teapot.kcl
   "__sketch_59_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
-      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -199,8 +199,8 @@ description: Variables in memory after executing teapot.kcl
   "__sketch_88_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
-      "id": "7c4571e0-7b14-576f-a82e-22280b05874d",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -241,14 +241,14 @@ description: Variables in memory after executing teapot.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "93fe6743-e0aa-5d65-834b-87a82208c703",
-      "originalId": "ff863943-02de-5b48-baf7-471ff32b980f",
-      "topologyId": "93fe6743-e0aa-5d65-834b-87a82208c703",
-      "artifactId": "93fe6743-e0aa-5d65-834b-87a82208c703",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "f26ae4ce-9547-56c8-b1de-42947a3f6c56",
-          "id": "b49c9041-776b-589d-9f6c-689e8188c4c1",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4356,
@@ -261,8 +261,8 @@ description: Variables in memory after executing teapot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "053c273b-dd94-54ff-a6e9-f17ddc2bdcae",
-          "id": "59442cd3-b044-5b9c-a4ed-5ba8b1a36eb9",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4426,
@@ -275,8 +275,8 @@ description: Variables in memory after executing teapot.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "06a943cc-b282-5f97-9b1d-075ece008d80",
-          "id": "06be176e-65fa-5ee1-92f5-c6018a839c44",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4571,
@@ -289,8 +289,8 @@ description: Variables in memory after executing teapot.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "680a14a3-686a-52f8-8d58-c3046ae40d1b",
-          "id": "fa5eb2ab-73b3-5f59-a061-a66a6a242338",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4728,
@@ -303,8 +303,8 @@ description: Variables in memory after executing teapot.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "4a5d880a-5ea0-5465-a931-b42eebe59eea",
-          "id": "803c9213-de12-5796-9d70-3d0110dbff12",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4882,
@@ -317,8 +317,8 @@ description: Variables in memory after executing teapot.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "dd43ee3a-c2f9-50d9-a5e8-db57857cf4e6",
-          "id": "d23f82af-14d9-5d53-843e-22d30472729f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 5036,
@@ -331,8 +331,8 @@ description: Variables in memory after executing teapot.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "246f27da-3731-5c83-9a0c-485e8798f6b2",
-          "id": "5c84f187-7831-556e-83f2-c9e273e9f2bf",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 5194,
@@ -345,8 +345,8 @@ description: Variables in memory after executing teapot.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "537085a6-4bce-5742-8269-052a6d9a6351",
-          "id": "deecd4ec-08dc-52ae-a0d7-c6a81da08d73",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 5350,
@@ -359,8 +359,8 @@ description: Variables in memory after executing teapot.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "b7f7ed1a-a272-5c8e-9a5f-a8be742302a4",
-          "id": "1e11e156-15c7-593d-ae0d-529d90dd6f59",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 5497,
@@ -376,11 +376,11 @@ description: Variables in memory after executing teapot.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "93fe6743-e0aa-5d65-834b-87a82208c703",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "b49c9041-776b-589d-9f6c-689e8188c4c1",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -404,7 +404,7 @@ description: Variables in memory after executing teapot.kcl
           },
           {
             "__geoMeta": {
-              "id": "59442cd3-b044-5b9c-a4ed-5ba8b1a36eb9",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -434,7 +434,7 @@ description: Variables in memory after executing teapot.kcl
           },
           {
             "__geoMeta": {
-              "id": "06be176e-65fa-5ee1-92f5-c6018a839c44",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -464,7 +464,7 @@ description: Variables in memory after executing teapot.kcl
           },
           {
             "__geoMeta": {
-              "id": "fa5eb2ab-73b3-5f59-a061-a66a6a242338",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -494,7 +494,7 @@ description: Variables in memory after executing teapot.kcl
           },
           {
             "__geoMeta": {
-              "id": "803c9213-de12-5796-9d70-3d0110dbff12",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -524,7 +524,7 @@ description: Variables in memory after executing teapot.kcl
           },
           {
             "__geoMeta": {
-              "id": "d23f82af-14d9-5d53-843e-22d30472729f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -554,7 +554,7 @@ description: Variables in memory after executing teapot.kcl
           },
           {
             "__geoMeta": {
-              "id": "5c84f187-7831-556e-83f2-c9e273e9f2bf",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -584,7 +584,7 @@ description: Variables in memory after executing teapot.kcl
           },
           {
             "__geoMeta": {
-              "id": "deecd4ec-08dc-52ae-a0d7-c6a81da08d73",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -614,7 +614,7 @@ description: Variables in memory after executing teapot.kcl
           },
           {
             "__geoMeta": {
-              "id": "1e11e156-15c7-593d-ae0d-529d90dd6f59",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -638,7 +638,7 @@ description: Variables in memory after executing teapot.kcl
           },
           {
             "__geoMeta": {
-              "id": "cf1ab9f4-df9a-56e0-bfe0-7eb7ef786be2",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -663,8 +663,8 @@ description: Variables in memory after executing teapot.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
-          "id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 113,
           "kind": "Custom",
           "origin": {
@@ -704,7 +704,7 @@ description: Variables in memory after executing teapot.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "e0f4a9e9-b7cb-55fa-b527-08fd1f320cd2",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -750,8 +750,8 @@ description: Variables in memory after executing teapot.kcl
             "value": "line9"
           }
         },
-        "artifactId": "ff863943-02de-5b48-baf7-471ff32b980f",
-        "originalId": "ff863943-02de-5b48-baf7-471ff32b980f",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
@@ -765,14 +765,14 @@ description: Variables in memory after executing teapot.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
-      "originalId": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
-      "topologyId": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
-      "artifactId": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "0faa08f2-3fbe-56c3-b57e-4556858e14cf",
-          "id": "85b768a8-2aea-5f82-bbd3-5db9dfcd5bc0",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3336,
@@ -785,8 +785,8 @@ description: Variables in memory after executing teapot.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "942ac8db-5678-5acc-88e8-eae41fa3210b",
-          "id": "11dd4e7b-111a-5df1-8acf-ce66c1b7efee",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3445,
@@ -799,8 +799,8 @@ description: Variables in memory after executing teapot.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "c03d2f01-9a2c-57b7-9b22-28e1a2cea7ae",
-          "id": "a8cc21e1-644f-5e00-b0e8-556599f22685",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3590,
@@ -813,8 +813,8 @@ description: Variables in memory after executing teapot.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "920c563e-54e9-51f0-9e47-e2ce87f6125c",
-          "id": "89c4d714-c793-5072-b0c8-8bdf35c94d49",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3736,
@@ -830,11 +830,11 @@ description: Variables in memory after executing teapot.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "85b768a8-2aea-5f82-bbd3-5db9dfcd5bc0",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -864,7 +864,7 @@ description: Variables in memory after executing teapot.kcl
           },
           {
             "__geoMeta": {
-              "id": "11dd4e7b-111a-5df1-8acf-ce66c1b7efee",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -894,7 +894,7 @@ description: Variables in memory after executing teapot.kcl
           },
           {
             "__geoMeta": {
-              "id": "a8cc21e1-644f-5e00-b0e8-556599f22685",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -924,7 +924,7 @@ description: Variables in memory after executing teapot.kcl
           },
           {
             "__geoMeta": {
-              "id": "89c4d714-c793-5072-b0c8-8bdf35c94d49",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -955,8 +955,8 @@ description: Variables in memory after executing teapot.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
-          "id": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 87,
           "kind": "Custom",
           "origin": {
@@ -996,7 +996,7 @@ description: Variables in memory after executing teapot.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -1018,13 +1018,13 @@ description: Variables in memory after executing teapot.kcl
             "value": "arc4"
           }
         },
-        "artifactId": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
-        "originalId": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "2dc75dad-12a6-50ae-8ed5-5bc994bc4647",
-      "endCapId": "9585fbe4-1f04-530d-b4f6-76dec10069da",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -1038,7 +1038,7 @@ description: Variables in memory after executing teapot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+                "id": "[uuid]",
                 "objectId": 66,
                 "kind": {
                   "arc": {
@@ -1144,8 +1144,8 @@ description: Variables in memory after executing teapot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "d005938d-7477-557a-bef2-28dfc45d0fce",
-                  "id": "d005938d-7477-557a-bef2-28dfc45d0fce",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 58,
                   "origin": {
@@ -1174,7 +1174,7 @@ description: Variables in memory after executing teapot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc2"
@@ -1190,7 +1190,7 @@ description: Variables in memory after executing teapot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+                "id": "[uuid]",
                 "objectId": 71,
                 "kind": {
                   "arc": {
@@ -1296,8 +1296,8 @@ description: Variables in memory after executing teapot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "d005938d-7477-557a-bef2-28dfc45d0fce",
-                  "id": "d005938d-7477-557a-bef2-28dfc45d0fce",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 58,
                   "origin": {
@@ -1326,7 +1326,7 @@ description: Variables in memory after executing teapot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc3"
@@ -1342,7 +1342,7 @@ description: Variables in memory after executing teapot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
+                "id": "[uuid]",
                 "objectId": 76,
                 "kind": {
                   "arc": {
@@ -1448,8 +1448,8 @@ description: Variables in memory after executing teapot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "d005938d-7477-557a-bef2-28dfc45d0fce",
-                  "id": "d005938d-7477-557a-bef2-28dfc45d0fce",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 58,
                   "origin": {
@@ -1478,7 +1478,7 @@ description: Variables in memory after executing teapot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc4"
@@ -1494,7 +1494,7 @@ description: Variables in memory after executing teapot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "e8637a6d-00c2-5b87-831e-2db8c2223948",
+                "id": "[uuid]",
                 "objectId": 81,
                 "kind": {
                   "arc": {
@@ -1600,8 +1600,8 @@ description: Variables in memory after executing teapot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "d005938d-7477-557a-bef2-28dfc45d0fce",
-                  "id": "d005938d-7477-557a-bef2-28dfc45d0fce",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 58,
                   "origin": {
@@ -1630,7 +1630,7 @@ description: Variables in memory after executing teapot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc5"
@@ -1646,7 +1646,7 @@ description: Variables in memory after executing teapot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
+                "id": "[uuid]",
                 "objectId": 62,
                 "kind": {
                   "line": {
@@ -1720,8 +1720,8 @@ description: Variables in memory after executing teapot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "d005938d-7477-557a-bef2-28dfc45d0fce",
-                  "id": "d005938d-7477-557a-bef2-28dfc45d0fce",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 58,
                   "origin": {
@@ -1750,7 +1750,7 @@ description: Variables in memory after executing teapot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1766,7 +1766,7 @@ description: Variables in memory after executing teapot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
+                "id": "[uuid]",
                 "objectId": 85,
                 "kind": {
                   "line": {
@@ -1840,8 +1840,8 @@ description: Variables in memory after executing teapot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "d005938d-7477-557a-bef2-28dfc45d0fce",
-                  "id": "d005938d-7477-557a-bef2-28dfc45d0fce",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 58,
                   "origin": {
@@ -1870,7 +1870,7 @@ description: Variables in memory after executing teapot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -1887,11 +1887,11 @@ description: Variables in memory after executing teapot.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1915,7 +1915,7 @@ description: Variables in memory after executing teapot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -1945,7 +1945,7 @@ description: Variables in memory after executing teapot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -1975,7 +1975,7 @@ description: Variables in memory after executing teapot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -2005,7 +2005,7 @@ description: Variables in memory after executing teapot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "e8637a6d-00c2-5b87-831e-2db8c2223948",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -2035,7 +2035,7 @@ description: Variables in memory after executing teapot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -2060,8 +2060,8 @@ description: Variables in memory after executing teapot.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "d005938d-7477-557a-bef2-28dfc45d0fce",
-                "id": "d005938d-7477-557a-bef2-28dfc45d0fce",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 58,
                 "kind": "Custom",
                 "origin": {
@@ -2101,7 +2101,7 @@ description: Variables in memory after executing teapot.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -2131,8 +2131,8 @@ description: Variables in memory after executing teapot.kcl
                   "value": "line6"
                 }
               },
-              "artifactId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
-              "originalId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "no"
             }
@@ -2156,11 +2156,11 @@ description: Variables in memory after executing teapot.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "e4d86d21-9981-55f8-b772-9a96dda046b1",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -2190,7 +2190,7 @@ description: Variables in memory after executing teapot.kcl
         },
         {
           "__geoMeta": {
-            "id": "e0421466-e4b2-5029-ba05-7ef966ff3370",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -2221,8 +2221,8 @@ description: Variables in memory after executing teapot.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-        "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 19,
         "kind": "Custom",
         "origin": {
@@ -2262,7 +2262,7 @@ description: Variables in memory after executing teapot.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -2276,8 +2276,8 @@ description: Variables in memory after executing teapot.kcl
           "value": "circle2"
         }
       },
-      "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
-      "originalId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -2286,11 +2286,11 @@ description: Variables in memory after executing teapot.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "1a0ade6f-d355-5121-9adb-351976a78284",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "554a9ab6-0ebd-5919-a740-e994a170727e",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -2314,7 +2314,7 @@ description: Variables in memory after executing teapot.kcl
         },
         {
           "__geoMeta": {
-            "id": "4137d40a-f7cf-58fb-b525-3c1f82bebabc",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -2344,7 +2344,7 @@ description: Variables in memory after executing teapot.kcl
         },
         {
           "__geoMeta": {
-            "id": "a0ffcee2-903e-55fd-872e-d6190deef24f",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -2374,7 +2374,7 @@ description: Variables in memory after executing teapot.kcl
         },
         {
           "__geoMeta": {
-            "id": "4b38b3a7-c102-502c-ae15-a4803f505e28",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -2404,7 +2404,7 @@ description: Variables in memory after executing teapot.kcl
         },
         {
           "__geoMeta": {
-            "id": "a9cb5d5b-b465-544f-97d8-25c4ba4036f9",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -2428,7 +2428,7 @@ description: Variables in memory after executing teapot.kcl
         },
         {
           "__geoMeta": {
-            "id": "4c0bd59f-2b3f-599c-b045-1d31500779fb",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -2453,8 +2453,8 @@ description: Variables in memory after executing teapot.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
-        "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 30,
         "kind": "Custom",
         "origin": {
@@ -2494,7 +2494,7 @@ description: Variables in memory after executing teapot.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -2524,8 +2524,8 @@ description: Variables in memory after executing teapot.kcl
           "value": "line6"
         }
       },
-      "artifactId": "1a0ade6f-d355-5121-9adb-351976a78284",
-      "originalId": "1a0ade6f-d355-5121-9adb-351976a78284",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -2534,11 +2534,11 @@ description: Variables in memory after executing teapot.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "85b768a8-2aea-5f82-bbd3-5db9dfcd5bc0",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -2568,7 +2568,7 @@ description: Variables in memory after executing teapot.kcl
         },
         {
           "__geoMeta": {
-            "id": "11dd4e7b-111a-5df1-8acf-ce66c1b7efee",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -2598,7 +2598,7 @@ description: Variables in memory after executing teapot.kcl
         },
         {
           "__geoMeta": {
-            "id": "a8cc21e1-644f-5e00-b0e8-556599f22685",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -2628,7 +2628,7 @@ description: Variables in memory after executing teapot.kcl
         },
         {
           "__geoMeta": {
-            "id": "89c4d714-c793-5072-b0c8-8bdf35c94d49",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -2659,8 +2659,8 @@ description: Variables in memory after executing teapot.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
-        "id": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 87,
         "kind": "Custom",
         "origin": {
@@ -2700,7 +2700,7 @@ description: Variables in memory after executing teapot.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -2722,8 +2722,8 @@ description: Variables in memory after executing teapot.kcl
           "value": "arc4"
         }
       },
-      "artifactId": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
-      "originalId": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -2732,11 +2732,11 @@ description: Variables in memory after executing teapot.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "a964fa5b-bd02-576f-adf0-1b2f2fce2421",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -2767,8 +2767,8 @@ description: Variables in memory after executing teapot.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
-        "id": "29f44732-9f58-5550-8e28-aea348bd8ebb",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 108,
         "kind": "Custom",
         "origin": {
@@ -2808,7 +2808,7 @@ description: Variables in memory after executing teapot.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "f58fd62a-578c-542c-94f8-dd627caab5d0",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -2818,8 +2818,8 @@ description: Variables in memory after executing teapot.kcl
           "value": "circle1"
         }
       },
-      "artifactId": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
-      "originalId": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -2828,11 +2828,11 @@ description: Variables in memory after executing teapot.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "ff863943-02de-5b48-baf7-471ff32b980f",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "b49c9041-776b-589d-9f6c-689e8188c4c1",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -2856,7 +2856,7 @@ description: Variables in memory after executing teapot.kcl
         },
         {
           "__geoMeta": {
-            "id": "59442cd3-b044-5b9c-a4ed-5ba8b1a36eb9",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -2886,7 +2886,7 @@ description: Variables in memory after executing teapot.kcl
         },
         {
           "__geoMeta": {
-            "id": "06be176e-65fa-5ee1-92f5-c6018a839c44",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -2916,7 +2916,7 @@ description: Variables in memory after executing teapot.kcl
         },
         {
           "__geoMeta": {
-            "id": "fa5eb2ab-73b3-5f59-a061-a66a6a242338",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -2946,7 +2946,7 @@ description: Variables in memory after executing teapot.kcl
         },
         {
           "__geoMeta": {
-            "id": "803c9213-de12-5796-9d70-3d0110dbff12",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -2976,7 +2976,7 @@ description: Variables in memory after executing teapot.kcl
         },
         {
           "__geoMeta": {
-            "id": "d23f82af-14d9-5d53-843e-22d30472729f",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": false,
@@ -3006,7 +3006,7 @@ description: Variables in memory after executing teapot.kcl
         },
         {
           "__geoMeta": {
-            "id": "5c84f187-7831-556e-83f2-c9e273e9f2bf",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": false,
@@ -3036,7 +3036,7 @@ description: Variables in memory after executing teapot.kcl
         },
         {
           "__geoMeta": {
-            "id": "deecd4ec-08dc-52ae-a0d7-c6a81da08d73",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": false,
@@ -3066,7 +3066,7 @@ description: Variables in memory after executing teapot.kcl
         },
         {
           "__geoMeta": {
-            "id": "1e11e156-15c7-593d-ae0d-529d90dd6f59",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3090,7 +3090,7 @@ description: Variables in memory after executing teapot.kcl
         },
         {
           "__geoMeta": {
-            "id": "cf1ab9f4-df9a-56e0-bfe0-7eb7ef786be2",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3115,8 +3115,8 @@ description: Variables in memory after executing teapot.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
-        "id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 113,
         "kind": "Custom",
         "origin": {
@@ -3156,7 +3156,7 @@ description: Variables in memory after executing teapot.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "e0f4a9e9-b7cb-55fa-b527-08fd1f320cd2",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -3202,8 +3202,8 @@ description: Variables in memory after executing teapot.kcl
           "value": "line9"
         }
       },
-      "artifactId": "ff863943-02de-5b48-baf7-471ff32b980f",
-      "originalId": "ff863943-02de-5b48-baf7-471ff32b980f",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -3217,7 +3217,7 @@ description: Variables in memory after executing teapot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
+                "id": "[uuid]",
                 "objectId": 23,
                 "kind": {
                   "circle": {
@@ -3291,8 +3291,8 @@ description: Variables in memory after executing teapot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-                  "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 19,
                   "origin": {
@@ -3321,7 +3321,7 @@ description: Variables in memory after executing teapot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "53a9149e-1246-5c44-9e3c-558201ff438c",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -3337,7 +3337,7 @@ description: Variables in memory after executing teapot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+                "id": "[uuid]",
                 "objectId": 26,
                 "kind": {
                   "circle": {
@@ -3411,8 +3411,8 @@ description: Variables in memory after executing teapot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-                  "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 19,
                   "origin": {
@@ -3441,7 +3441,7 @@ description: Variables in memory after executing teapot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "53a9149e-1246-5c44-9e3c-558201ff438c",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle2"
@@ -3458,11 +3458,11 @@ description: Variables in memory after executing teapot.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "53a9149e-1246-5c44-9e3c-558201ff438c",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -3492,7 +3492,7 @@ description: Variables in memory after executing teapot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -3509,7 +3509,7 @@ description: Variables in memory after executing teapot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -3540,8 +3540,8 @@ description: Variables in memory after executing teapot.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-                "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 19,
                 "kind": "Custom",
                 "origin": {
@@ -3581,7 +3581,7 @@ description: Variables in memory after executing teapot.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -3595,8 +3595,8 @@ description: Variables in memory after executing teapot.kcl
                   "value": "circle2"
                 }
               },
-              "artifactId": "53a9149e-1246-5c44-9e3c-558201ff438c",
-              "originalId": "53a9149e-1246-5c44-9e3c-558201ff438c",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "no"
             }
@@ -3616,7 +3616,7 @@ description: Variables in memory after executing teapot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "7d4c814d-f292-503d-a012-68ab58c77524",
+                "id": "[uuid]",
                 "objectId": 38,
                 "kind": {
                   "arc": {
@@ -3722,8 +3722,8 @@ description: Variables in memory after executing teapot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
-                  "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 30,
                   "origin": {
@@ -3752,7 +3752,7 @@ description: Variables in memory after executing teapot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc2"
@@ -3768,7 +3768,7 @@ description: Variables in memory after executing teapot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
+                "id": "[uuid]",
                 "objectId": 43,
                 "kind": {
                   "arc": {
@@ -3874,8 +3874,8 @@ description: Variables in memory after executing teapot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
-                  "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 30,
                   "origin": {
@@ -3904,7 +3904,7 @@ description: Variables in memory after executing teapot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc3"
@@ -3920,7 +3920,7 @@ description: Variables in memory after executing teapot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "cc312d38-2fa6-5583-a605-44880f646499",
+                "id": "[uuid]",
                 "objectId": 48,
                 "kind": {
                   "arc": {
@@ -4026,8 +4026,8 @@ description: Variables in memory after executing teapot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
-                  "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 30,
                   "origin": {
@@ -4056,7 +4056,7 @@ description: Variables in memory after executing teapot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc4"
@@ -4072,7 +4072,7 @@ description: Variables in memory after executing teapot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+                "id": "[uuid]",
                 "objectId": 34,
                 "kind": {
                   "line": {
@@ -4146,8 +4146,8 @@ description: Variables in memory after executing teapot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
-                  "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 30,
                   "origin": {
@@ -4176,7 +4176,7 @@ description: Variables in memory after executing teapot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -4192,7 +4192,7 @@ description: Variables in memory after executing teapot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+                "id": "[uuid]",
                 "objectId": 52,
                 "kind": {
                   "line": {
@@ -4266,8 +4266,8 @@ description: Variables in memory after executing teapot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
-                  "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 30,
                   "origin": {
@@ -4296,7 +4296,7 @@ description: Variables in memory after executing teapot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -4312,7 +4312,7 @@ description: Variables in memory after executing teapot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "cc4847ec-3187-5c84-8aa1-14794bc7e98d",
+                "id": "[uuid]",
                 "objectId": 56,
                 "kind": {
                   "line": {
@@ -4386,8 +4386,8 @@ description: Variables in memory after executing teapot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
-                  "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 30,
                   "origin": {
@@ -4416,7 +4416,7 @@ description: Variables in memory after executing teapot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -4433,11 +4433,11 @@ description: Variables in memory after executing teapot.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -4461,7 +4461,7 @@ description: Variables in memory after executing teapot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "7d4c814d-f292-503d-a012-68ab58c77524",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -4491,7 +4491,7 @@ description: Variables in memory after executing teapot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -4521,7 +4521,7 @@ description: Variables in memory after executing teapot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "cc312d38-2fa6-5583-a605-44880f646499",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -4551,7 +4551,7 @@ description: Variables in memory after executing teapot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -4575,7 +4575,7 @@ description: Variables in memory after executing teapot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "cc4847ec-3187-5c84-8aa1-14794bc7e98d",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -4600,8 +4600,8 @@ description: Variables in memory after executing teapot.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
-                "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 30,
                 "kind": "Custom",
                 "origin": {
@@ -4641,7 +4641,7 @@ description: Variables in memory after executing teapot.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -4671,8 +4671,8 @@ description: Variables in memory after executing teapot.kcl
                   "value": "line6"
                 }
               },
-              "artifactId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
-              "originalId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -4692,7 +4692,7 @@ description: Variables in memory after executing teapot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "0030d44a-e936-52d0-b5b6-efd80f2f6770",
+                "id": "[uuid]",
                 "objectId": 92,
                 "kind": {
                   "arc": {
@@ -4798,8 +4798,8 @@ description: Variables in memory after executing teapot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
-                  "id": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 87,
                   "origin": {
@@ -4828,7 +4828,7 @@ description: Variables in memory after executing teapot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc1"
@@ -4844,7 +4844,7 @@ description: Variables in memory after executing teapot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
+                "id": "[uuid]",
                 "objectId": 96,
                 "kind": {
                   "arc": {
@@ -4950,8 +4950,8 @@ description: Variables in memory after executing teapot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
-                  "id": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 87,
                   "origin": {
@@ -4980,7 +4980,7 @@ description: Variables in memory after executing teapot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc2"
@@ -4996,7 +4996,7 @@ description: Variables in memory after executing teapot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
+                "id": "[uuid]",
                 "objectId": 101,
                 "kind": {
                   "arc": {
@@ -5102,8 +5102,8 @@ description: Variables in memory after executing teapot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
-                  "id": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 87,
                   "origin": {
@@ -5132,7 +5132,7 @@ description: Variables in memory after executing teapot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc3"
@@ -5148,7 +5148,7 @@ description: Variables in memory after executing teapot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "ca502980-7bdd-5694-85c5-3eb8ffa8242b",
+                "id": "[uuid]",
                 "objectId": 106,
                 "kind": {
                   "arc": {
@@ -5254,8 +5254,8 @@ description: Variables in memory after executing teapot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
-                  "id": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 87,
                   "origin": {
@@ -5284,7 +5284,7 @@ description: Variables in memory after executing teapot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc4"
@@ -5301,11 +5301,11 @@ description: Variables in memory after executing teapot.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "0030d44a-e936-52d0-b5b6-efd80f2f6770",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -5335,7 +5335,7 @@ description: Variables in memory after executing teapot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "2489202c-0475-5b18-97c8-c3f239bd1947",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -5352,7 +5352,7 @@ description: Variables in memory after executing teapot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -5382,7 +5382,7 @@ description: Variables in memory after executing teapot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "e02115f0-d853-5684-82c8-298aa25e4541",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -5399,7 +5399,7 @@ description: Variables in memory after executing teapot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -5429,7 +5429,7 @@ description: Variables in memory after executing teapot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -5446,7 +5446,7 @@ description: Variables in memory after executing teapot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "ca502980-7bdd-5694-85c5-3eb8ffa8242b",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -5477,8 +5477,8 @@ description: Variables in memory after executing teapot.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
-                "id": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 87,
                 "kind": "Custom",
                 "origin": {
@@ -5518,7 +5518,7 @@ description: Variables in memory after executing teapot.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -5540,8 +5540,8 @@ description: Variables in memory after executing teapot.kcl
                   "value": "arc4"
                 }
               },
-              "artifactId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
-              "originalId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -5561,7 +5561,7 @@ description: Variables in memory after executing teapot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
+                "id": "[uuid]",
                 "objectId": 112,
                 "kind": {
                   "circle": {
@@ -5635,8 +5635,8 @@ description: Variables in memory after executing teapot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
-                  "id": "29f44732-9f58-5550-8e28-aea348bd8ebb",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 108,
                   "origin": {
@@ -5665,7 +5665,7 @@ description: Variables in memory after executing teapot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "d7d0ea25-9730-5767-b40a-0f2fd595f8fb",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -5682,11 +5682,11 @@ description: Variables in memory after executing teapot.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "d7d0ea25-9730-5767-b40a-0f2fd595f8fb",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -5717,8 +5717,8 @@ description: Variables in memory after executing teapot.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
-                "id": "29f44732-9f58-5550-8e28-aea348bd8ebb",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 108,
                 "kind": "Custom",
                 "origin": {
@@ -5758,7 +5758,7 @@ description: Variables in memory after executing teapot.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "f58fd62a-578c-542c-94f8-dd627caab5d0",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -5768,8 +5768,8 @@ description: Variables in memory after executing teapot.kcl
                   "value": "circle1"
                 }
               },
-              "artifactId": "d7d0ea25-9730-5767-b40a-0f2fd595f8fb",
-              "originalId": "d7d0ea25-9730-5767-b40a-0f2fd595f8fb",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "no"
             }
@@ -5789,7 +5789,7 @@ description: Variables in memory after executing teapot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "c444b134-67e1-507a-bb00-d4998ba97afb",
+                "id": "[uuid]",
                 "objectId": 121,
                 "kind": {
                   "arc": {
@@ -5895,8 +5895,8 @@ description: Variables in memory after executing teapot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
-                  "id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 113,
                   "origin": {
@@ -5925,7 +5925,7 @@ description: Variables in memory after executing teapot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc2"
@@ -5941,7 +5941,7 @@ description: Variables in memory after executing teapot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "acb6b8b6-e024-57d9-a856-353e5c4d001f",
+                "id": "[uuid]",
                 "objectId": 126,
                 "kind": {
                   "arc": {
@@ -6047,8 +6047,8 @@ description: Variables in memory after executing teapot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
-                  "id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 113,
                   "origin": {
@@ -6077,7 +6077,7 @@ description: Variables in memory after executing teapot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc3"
@@ -6093,7 +6093,7 @@ description: Variables in memory after executing teapot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "1f5ca073-184d-543b-9da6-2db6719123a8",
+                "id": "[uuid]",
                 "objectId": 131,
                 "kind": {
                   "arc": {
@@ -6199,8 +6199,8 @@ description: Variables in memory after executing teapot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
-                  "id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 113,
                   "origin": {
@@ -6229,7 +6229,7 @@ description: Variables in memory after executing teapot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc4"
@@ -6245,7 +6245,7 @@ description: Variables in memory after executing teapot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
+                "id": "[uuid]",
                 "objectId": 136,
                 "kind": {
                   "arc": {
@@ -6351,8 +6351,8 @@ description: Variables in memory after executing teapot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
-                  "id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 113,
                   "origin": {
@@ -6381,7 +6381,7 @@ description: Variables in memory after executing teapot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc5"
@@ -6397,7 +6397,7 @@ description: Variables in memory after executing teapot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
+                "id": "[uuid]",
                 "objectId": 141,
                 "kind": {
                   "arc": {
@@ -6503,8 +6503,8 @@ description: Variables in memory after executing teapot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
-                  "id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 113,
                   "origin": {
@@ -6533,7 +6533,7 @@ description: Variables in memory after executing teapot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc6"
@@ -6549,7 +6549,7 @@ description: Variables in memory after executing teapot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
+                "id": "[uuid]",
                 "objectId": 146,
                 "kind": {
                   "arc": {
@@ -6655,8 +6655,8 @@ description: Variables in memory after executing teapot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
-                  "id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 113,
                   "origin": {
@@ -6685,7 +6685,7 @@ description: Variables in memory after executing teapot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc7"
@@ -6701,7 +6701,7 @@ description: Variables in memory after executing teapot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "bae7e631-b71d-5980-89ea-29b2140a8a32",
+                "id": "[uuid]",
                 "objectId": 151,
                 "kind": {
                   "arc": {
@@ -6807,8 +6807,8 @@ description: Variables in memory after executing teapot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
-                  "id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 113,
                   "origin": {
@@ -6837,7 +6837,7 @@ description: Variables in memory after executing teapot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc8"
@@ -6853,7 +6853,7 @@ description: Variables in memory after executing teapot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
+                "id": "[uuid]",
                 "objectId": 117,
                 "kind": {
                   "line": {
@@ -6927,8 +6927,8 @@ description: Variables in memory after executing teapot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
-                  "id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 113,
                   "origin": {
@@ -6957,7 +6957,7 @@ description: Variables in memory after executing teapot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -6973,7 +6973,7 @@ description: Variables in memory after executing teapot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
+                "id": "[uuid]",
                 "objectId": 159,
                 "kind": {
                   "line": {
@@ -7047,8 +7047,8 @@ description: Variables in memory after executing teapot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
-                  "id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 113,
                   "origin": {
@@ -7077,7 +7077,7 @@ description: Variables in memory after executing teapot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line10"
@@ -7093,7 +7093,7 @@ description: Variables in memory after executing teapot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
+                "id": "[uuid]",
                 "objectId": 155,
                 "kind": {
                   "line": {
@@ -7167,8 +7167,8 @@ description: Variables in memory after executing teapot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
-                  "id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 113,
                   "origin": {
@@ -7197,7 +7197,7 @@ description: Variables in memory after executing teapot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line9"
@@ -7214,11 +7214,11 @@ description: Variables in memory after executing teapot.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -7242,7 +7242,7 @@ description: Variables in memory after executing teapot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "c444b134-67e1-507a-bb00-d4998ba97afb",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -7272,7 +7272,7 @@ description: Variables in memory after executing teapot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "acb6b8b6-e024-57d9-a856-353e5c4d001f",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -7302,7 +7302,7 @@ description: Variables in memory after executing teapot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "1f5ca073-184d-543b-9da6-2db6719123a8",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -7332,7 +7332,7 @@ description: Variables in memory after executing teapot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -7362,7 +7362,7 @@ description: Variables in memory after executing teapot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -7392,7 +7392,7 @@ description: Variables in memory after executing teapot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -7422,7 +7422,7 @@ description: Variables in memory after executing teapot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "bae7e631-b71d-5980-89ea-29b2140a8a32",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -7452,7 +7452,7 @@ description: Variables in memory after executing teapot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -7476,7 +7476,7 @@ description: Variables in memory after executing teapot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -7501,8 +7501,8 @@ description: Variables in memory after executing teapot.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
-                "id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 113,
                 "kind": "Custom",
                 "origin": {
@@ -7542,7 +7542,7 @@ description: Variables in memory after executing teapot.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "e0f4a9e9-b7cb-55fa-b527-08fd1f320cd2",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -7588,8 +7588,8 @@ description: Variables in memory after executing teapot.kcl
                   "value": "line9"
                 }
               },
-              "artifactId": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511",
-              "originalId": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -7604,14 +7604,14 @@ description: Variables in memory after executing teapot.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
-      "originalId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
-      "topologyId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
-      "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "4c78139f-2bda-5c75-8121-26fba609f7d5",
-          "id": "e4d86d21-9981-55f8-b772-9a96dda046b1",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1042,
@@ -7627,11 +7627,11 @@ description: Variables in memory after executing teapot.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "e4d86d21-9981-55f8-b772-9a96dda046b1",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -7661,7 +7661,7 @@ description: Variables in memory after executing teapot.kcl
           },
           {
             "__geoMeta": {
-              "id": "e0421466-e4b2-5029-ba05-7ef966ff3370",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -7692,8 +7692,8 @@ description: Variables in memory after executing teapot.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-          "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 19,
           "kind": "Custom",
           "origin": {
@@ -7733,7 +7733,7 @@ description: Variables in memory after executing teapot.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -7747,13 +7747,13 @@ description: Variables in memory after executing teapot.kcl
             "value": "circle2"
           }
         },
-        "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
-        "originalId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "ad94bacf-5c64-59bc-b96a-922c6fa5336f",
-      "endCapId": "209f23e4-753a-5196-b295-e380fc40589d",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -7771,14 +7771,14 @@ description: Variables in memory after executing teapot.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
-      "originalId": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
-      "topologyId": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
-      "artifactId": "d848303b-8f89-5fe5-9391-dbf9dbcbfed9",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "8e20f920-a738-53a8-b74b-7afa4e64cd5f",
-          "id": "a964fa5b-bd02-576f-adf0-1b2f2fce2421",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4099,
@@ -7794,11 +7794,11 @@ description: Variables in memory after executing teapot.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "a964fa5b-bd02-576f-adf0-1b2f2fce2421",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -7829,8 +7829,8 @@ description: Variables in memory after executing teapot.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
-          "id": "29f44732-9f58-5550-8e28-aea348bd8ebb",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 108,
           "kind": "Custom",
           "origin": {
@@ -7870,7 +7870,7 @@ description: Variables in memory after executing teapot.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "f58fd62a-578c-542c-94f8-dd627caab5d0",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -7880,13 +7880,13 @@ description: Variables in memory after executing teapot.kcl
             "value": "circle1"
           }
         },
-        "artifactId": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
-        "originalId": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "57736a69-354c-5cfd-bafb-ee0c7e4bc28b",
-      "endCapId": "88a22472-4dc8-5d43-8e6f-01c997557b5d",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -7900,7 +7900,7 @@ description: Variables in memory after executing teapot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                "id": "[uuid]",
                 "objectId": 8,
                 "kind": {
                   "arc": {
@@ -8006,8 +8006,8 @@ description: Variables in memory after executing teapot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -8036,7 +8036,7 @@ description: Variables in memory after executing teapot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "523b9fc1-d681-5ef3-b407-128525533bfe",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc2"
@@ -8052,7 +8052,7 @@ description: Variables in memory after executing teapot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+                "id": "[uuid]",
                 "objectId": 17,
                 "kind": {
                   "arc": {
@@ -8158,8 +8158,8 @@ description: Variables in memory after executing teapot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -8188,7 +8188,7 @@ description: Variables in memory after executing teapot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "523b9fc1-d681-5ef3-b407-128525533bfe",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc4"
@@ -8204,7 +8204,7 @@ description: Variables in memory after executing teapot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "id": "[uuid]",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -8278,8 +8278,8 @@ description: Variables in memory after executing teapot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -8308,7 +8308,7 @@ description: Variables in memory after executing teapot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "523b9fc1-d681-5ef3-b407-128525533bfe",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -8324,7 +8324,7 @@ description: Variables in memory after executing teapot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                "id": "[uuid]",
                 "objectId": 12,
                 "kind": {
                   "line": {
@@ -8398,8 +8398,8 @@ description: Variables in memory after executing teapot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -8428,7 +8428,7 @@ description: Variables in memory after executing teapot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "523b9fc1-d681-5ef3-b407-128525533bfe",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -8445,11 +8445,11 @@ description: Variables in memory after executing teapot.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -8473,7 +8473,7 @@ description: Variables in memory after executing teapot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -8503,7 +8503,7 @@ description: Variables in memory after executing teapot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -8527,7 +8527,7 @@ description: Variables in memory after executing teapot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -8558,8 +8558,8 @@ description: Variables in memory after executing teapot.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 0,
                 "kind": "Custom",
                 "origin": {
@@ -8599,7 +8599,7 @@ description: Variables in memory after executing teapot.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -8621,8 +8621,8 @@ description: Variables in memory after executing teapot.kcl
                   "value": "line3"
                 }
               },
-              "artifactId": "523b9fc1-d681-5ef3-b407-128525533bfe",
-              "originalId": "523b9fc1-d681-5ef3-b407-128525533bfe",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "no"
             }
@@ -8646,14 +8646,14 @@ description: Variables in memory after executing teapot.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "1a0ade6f-d355-5121-9adb-351976a78284",
-      "originalId": "1a0ade6f-d355-5121-9adb-351976a78284",
-      "topologyId": "1a0ade6f-d355-5121-9adb-351976a78284",
-      "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "5adc8264-6773-5ca4-8417-a2b07c85a7c4",
-          "id": "554a9ab6-0ebd-5919-a740-e994a170727e",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1544,
@@ -8666,8 +8666,8 @@ description: Variables in memory after executing teapot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "dc6e863e-ff53-550f-8d2a-2106f30f588e",
-          "id": "4137d40a-f7cf-58fb-b525-3c1f82bebabc",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1614,
@@ -8680,8 +8680,8 @@ description: Variables in memory after executing teapot.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "3df09d96-c1d3-5096-8629-ce0ff72f0272",
-          "id": "a0ffcee2-903e-55fd-872e-d6190deef24f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1759,
@@ -8694,8 +8694,8 @@ description: Variables in memory after executing teapot.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "7142237a-9da1-5154-8aad-f26d980bc3c0",
-          "id": "4b38b3a7-c102-502c-ae15-a4803f505e28",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1916,
@@ -8708,8 +8708,8 @@ description: Variables in memory after executing teapot.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "4071419e-687d-5f06-8989-55ac8fc70af7",
-          "id": "a9cb5d5b-b465-544f-97d8-25c4ba4036f9",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2070,
@@ -8725,11 +8725,11 @@ description: Variables in memory after executing teapot.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "1a0ade6f-d355-5121-9adb-351976a78284",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "554a9ab6-0ebd-5919-a740-e994a170727e",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -8753,7 +8753,7 @@ description: Variables in memory after executing teapot.kcl
           },
           {
             "__geoMeta": {
-              "id": "4137d40a-f7cf-58fb-b525-3c1f82bebabc",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -8783,7 +8783,7 @@ description: Variables in memory after executing teapot.kcl
           },
           {
             "__geoMeta": {
-              "id": "a0ffcee2-903e-55fd-872e-d6190deef24f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -8813,7 +8813,7 @@ description: Variables in memory after executing teapot.kcl
           },
           {
             "__geoMeta": {
-              "id": "4b38b3a7-c102-502c-ae15-a4803f505e28",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -8843,7 +8843,7 @@ description: Variables in memory after executing teapot.kcl
           },
           {
             "__geoMeta": {
-              "id": "a9cb5d5b-b465-544f-97d8-25c4ba4036f9",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -8867,7 +8867,7 @@ description: Variables in memory after executing teapot.kcl
           },
           {
             "__geoMeta": {
-              "id": "4c0bd59f-2b3f-599c-b045-1d31500779fb",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -8892,8 +8892,8 @@ description: Variables in memory after executing teapot.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
-          "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 30,
           "kind": "Custom",
           "origin": {
@@ -8933,7 +8933,7 @@ description: Variables in memory after executing teapot.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -8963,8 +8963,8 @@ description: Variables in memory after executing teapot.kcl
             "value": "line6"
           }
         },
-        "artifactId": "1a0ade6f-d355-5121-9adb-351976a78284",
-        "originalId": "1a0ade6f-d355-5121-9adb-351976a78284",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },

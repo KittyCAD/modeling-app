@@ -739,7 +739,7 @@ description: Operations executed single-impeller-blade.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -1396,13 +1396,13 @@ description: Operations executed single-impeller-blade.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "6023bee8-3980-5182-88ac-ac06420ce00f"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -1525,7 +1525,7 @@ description: Operations executed single-impeller-blade.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1549,7 +1549,7 @@ description: Operations executed single-impeller-blade.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1573,7 +1573,7 @@ description: Operations executed single-impeller-blade.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1597,7 +1597,7 @@ description: Operations executed single-impeller-blade.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1621,7 +1621,7 @@ description: Operations executed single-impeller-blade.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1645,7 +1645,7 @@ description: Operations executed single-impeller-blade.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1669,7 +1669,7 @@ description: Operations executed single-impeller-blade.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1693,7 +1693,7 @@ description: Operations executed single-impeller-blade.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

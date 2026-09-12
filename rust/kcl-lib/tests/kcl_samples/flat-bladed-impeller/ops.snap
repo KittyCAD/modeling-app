@@ -329,7 +329,7 @@ description: Operations executed flat-bladed-impeller.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -1446,11 +1446,11 @@ description: Operations executed flat-bladed-impeller.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "efd1e3b2-5268-50fd-858e-26540f8146e5"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -1480,7 +1480,7 @@ description: Operations executed flat-bladed-impeller.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "f084ad07-5777-5607-a544-c69f455c2aab"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1506,7 +1506,7 @@ description: Operations executed flat-bladed-impeller.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "6023bee8-3980-5182-88ac-ac06420ce00f"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1548,7 +1548,7 @@ description: Operations executed flat-bladed-impeller.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "e342814e-d7c1-537b-959c-f7fd92c90294"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1670,7 +1670,7 @@ description: Operations executed flat-bladed-impeller.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -2156,7 +2156,7 @@ description: Operations executed flat-bladed-impeller.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "25999981-b7b8-57e2-8ac5-655907dfffdc"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -2186,7 +2186,7 @@ description: Operations executed flat-bladed-impeller.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2212,7 +2212,7 @@ description: Operations executed flat-bladed-impeller.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "01e801cc-22ef-5071-814b-847d3fcf22d5"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2699,7 +2699,7 @@ description: Operations executed flat-bladed-impeller.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -2729,7 +2729,7 @@ description: Operations executed flat-bladed-impeller.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "82295fd4-30e7-52f8-bbfa-45b71b8986dd"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2755,7 +2755,7 @@ description: Operations executed flat-bladed-impeller.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "d5eaf678-0440-563f-ac19-e473850b9270"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3242,7 +3242,7 @@ description: Operations executed flat-bladed-impeller.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "f88ee97f-bd8d-58c2-8a13-430790ee61a8"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -3272,7 +3272,7 @@ description: Operations executed flat-bladed-impeller.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3298,7 +3298,7 @@ description: Operations executed flat-bladed-impeller.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3347,7 +3347,7 @@ description: Operations executed flat-bladed-impeller.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "d005938d-7477-557a-bef2-28dfc45d0fce"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3360,7 +3360,7 @@ description: Operations executed flat-bladed-impeller.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "129583cc-c953-5cdf-8ea4-5e7d50b41896"
+                  "artifactId": "[uuid]"
                 }
               }
             ]
@@ -3483,7 +3483,7 @@ description: Operations executed flat-bladed-impeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3507,7 +3507,7 @@ description: Operations executed flat-bladed-impeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3531,7 +3531,7 @@ description: Operations executed flat-bladed-impeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3555,7 +3555,7 @@ description: Operations executed flat-bladed-impeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3579,7 +3579,7 @@ description: Operations executed flat-bladed-impeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3603,7 +3603,7 @@ description: Operations executed flat-bladed-impeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3627,7 +3627,7 @@ description: Operations executed flat-bladed-impeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3651,7 +3651,7 @@ description: Operations executed flat-bladed-impeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

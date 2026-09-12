@@ -27,11 +27,11 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -62,8 +62,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
       ],
       "on": {
         "type": "face",
-        "id": "ddef8c0a-3e52-5104-a47e-0a3e543b216c",
-        "artifactId": "ddef8c0a-3e52-5104-a47e-0a3e543b216c",
+        "id": "[uuid]",
+        "artifactId": "[uuid]",
         "objectId": 1,
         "value": "c",
         "xAxis": {
@@ -79,8 +79,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-          "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "solidId": "[uuid]",
+          "creatorSketchId": "[uuid]",
           "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
@@ -97,7 +97,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "7b681387-29ea-57f1-8713-d63280827139",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -107,8 +107,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           "value": "arc_tag"
         }
       },
-      "artifactId": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
-      "originalId": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -117,11 +117,11 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -152,8 +152,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
       ],
       "on": {
         "type": "face",
-        "id": "a1082c7a-5832-50c7-987f-13537fbfa437",
-        "artifactId": "a1082c7a-5832-50c7-987f-13537fbfa437",
+        "id": "[uuid]",
+        "artifactId": "[uuid]",
         "objectId": 2,
         "value": "a",
         "xAxis": {
@@ -169,8 +169,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-          "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "solidId": "[uuid]",
+          "creatorSketchId": "[uuid]",
           "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
@@ -187,7 +187,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "53a9149e-1246-5c44-9e3c-558201ff438c",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -197,8 +197,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           "value": "arc_tag"
         }
       },
-      "artifactId": "cc141785-f204-5d03-bdf3-aa7163368c30",
-      "originalId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -210,14 +210,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "topologyId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "artifactId": "523b9fc1-d681-5ef3-b407-128525533bfe",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "a1082c7a-5832-50c7-987f-13537fbfa437",
-          "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 178,
@@ -230,8 +230,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "2fbdb3e0-8faf-5d53-b266-6c4a2882dd60",
-          "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 239,
@@ -244,8 +244,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "ddef8c0a-3e52-5104-a47e-0a3e543b216c",
-          "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 300,
@@ -261,11 +261,11 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -289,7 +289,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           },
           {
             "__geoMeta": {
-              "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -313,7 +313,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           },
           {
             "__geoMeta": {
-              "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -338,8 +338,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
-          "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "XY",
           "origin": {
@@ -379,7 +379,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -397,13 +397,13 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             "value": "c"
           }
         },
-        "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-        "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "3c471a23-6585-55cb-9f78-dd40f49f2552",
-      "endCapId": "b08f2bc9-ac74-55b2-bfad-3e77c43688f7",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -412,14 +412,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "originalId": "cc141785-f204-5d03-bdf3-aa7163368c30",
-      "topologyId": "cc141785-f204-5d03-bdf3-aa7163368c30",
-      "artifactId": "deb86259-17a0-5782-a352-d25992246cc0",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "73f7bfd3-6044-5270-8b81-b1e589f2c3de",
-          "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 564,
@@ -435,11 +435,11 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -470,8 +470,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         ],
         "on": {
           "type": "face",
-          "id": "a1082c7a-5832-50c7-987f-13537fbfa437",
-          "artifactId": "a1082c7a-5832-50c7-987f-13537fbfa437",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
           "objectId": 2,
           "value": "a",
           "xAxis": {
@@ -487,8 +487,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-            "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+            "solidId": "[uuid]",
+            "creatorSketchId": "[uuid]",
             "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
@@ -505,7 +505,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "53a9149e-1246-5c44-9e3c-558201ff438c",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -515,17 +515,17 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             "value": "arc_tag"
           }
         },
-        "artifactId": "cc141785-f204-5d03-bdf3-aa7163368c30",
-        "originalId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
       "startCapId": null,
-      "endCapId": "9c48c2c0-9242-52e0-abf7-92f07408aa37",
+      "endCapId": "[uuid]",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "72dddee3-1330-5c4f-b767-659f762ad674",
+          "id": "[uuid]",
           "radius": {
             "n": 5.0,
             "ty": {
@@ -534,12 +534,12 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "2c522d90-5fef-5750-b489-b008732bd2c3",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "72dddee3-1330-5c4f-b767-659f762ad674",
+          "id": "[uuid]",
           "radius": {
             "n": 5.0,
             "ty": {
@@ -548,7 +548,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "3192ee7e-3acd-5ca1-b486-c05ef9f249c8",
+          "edgeId": "[uuid]",
           "tag": null
         }
       ],
@@ -560,14 +560,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "originalId": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
-      "topologyId": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
-      "artifactId": "f084ad07-5777-5607-a544-c69f455c2aab",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "13f3e170-5395-5816-b6dc-323fa3f4da34",
-          "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 564,
@@ -583,11 +583,11 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -618,8 +618,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         ],
         "on": {
           "type": "face",
-          "id": "ddef8c0a-3e52-5104-a47e-0a3e543b216c",
-          "artifactId": "ddef8c0a-3e52-5104-a47e-0a3e543b216c",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
           "objectId": 1,
           "value": "c",
           "xAxis": {
@@ -635,8 +635,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-            "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+            "solidId": "[uuid]",
+            "creatorSketchId": "[uuid]",
             "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
@@ -653,7 +653,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "7b681387-29ea-57f1-8713-d63280827139",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -663,17 +663,17 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             "value": "arc_tag"
           }
         },
-        "artifactId": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
-        "originalId": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
       "startCapId": null,
-      "endCapId": "bc2d79c7-ab42-5ba0-a809-65d14ac7dd6d",
+      "endCapId": "[uuid]",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
+          "id": "[uuid]",
           "radius": {
             "n": 5.0,
             "ty": {
@@ -682,12 +682,12 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "e00e9caf-6e9e-5221-8545-b199546c367f",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
+          "id": "[uuid]",
           "radius": {
             "n": 5.0,
             "ty": {
@@ -696,7 +696,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "f8586284-8783-53cf-9764-2730ccc64bfe",
+          "edgeId": "[uuid]",
           "tag": null
         }
       ],

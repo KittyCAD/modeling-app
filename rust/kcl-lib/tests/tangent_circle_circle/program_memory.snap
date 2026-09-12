@@ -6,8 +6,8 @@ description: Variables in memory after executing tangent_circle_circle.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
-      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -44,7 +44,7 @@ description: Variables in memory after executing tangent_circle_circle.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                "id": "[uuid]",
                 "objectId": 9,
                 "kind": {
                   "arc": {
@@ -150,8 +150,8 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -180,7 +180,7 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                     "units": null
                   }
                 },
-                "sketchId": "7b681387-29ea-57f1-8713-d63280827139",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "a_bot"
@@ -196,7 +196,7 @@ description: Variables in memory after executing tangent_circle_circle.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "id": "[uuid]",
                 "objectId": 5,
                 "kind": {
                   "arc": {
@@ -302,8 +302,8 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -332,7 +332,7 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                     "units": null
                   }
                 },
-                "sketchId": "7b681387-29ea-57f1-8713-d63280827139",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "a_top"
@@ -348,7 +348,7 @@ description: Variables in memory after executing tangent_circle_circle.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+                "id": "[uuid]",
                 "objectId": 20,
                 "kind": {
                   "arc": {
@@ -454,8 +454,8 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -484,7 +484,7 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                     "units": null
                   }
                 },
-                "sketchId": "7b681387-29ea-57f1-8713-d63280827139",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "b_bot"
@@ -500,7 +500,7 @@ description: Variables in memory after executing tangent_circle_circle.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+                "id": "[uuid]",
                 "objectId": 16,
                 "kind": {
                   "arc": {
@@ -606,8 +606,8 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -636,7 +636,7 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                     "units": null
                   }
                 },
-                "sketchId": "7b681387-29ea-57f1-8713-d63280827139",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "b_top"
@@ -653,11 +653,11 @@ description: Variables in memory after executing tangent_circle_circle.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "7b681387-29ea-57f1-8713-d63280827139",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -687,7 +687,7 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -717,7 +717,7 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -734,7 +734,7 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -764,7 +764,7 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -795,8 +795,8 @@ description: Variables in memory after executing tangent_circle_circle.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 0,
                 "kind": "Custom",
                 "origin": {
@@ -836,7 +836,7 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "b680fe3e-a804-583c-99d9-1693b2432aeb",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -858,8 +858,8 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                   "value": "b_top"
                 }
               },
-              "artifactId": "7b681387-29ea-57f1-8713-d63280827139",
-              "originalId": "7b681387-29ea-57f1-8713-d63280827139",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "implicitly"
             }

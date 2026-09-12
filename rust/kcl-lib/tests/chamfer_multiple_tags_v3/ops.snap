@@ -414,11 +414,11 @@ description: Operations executed chamfer_multiple_tags_v3.kcl
             "value": {
               "bottom": {
                 "type": "Segment",
-                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+                "artifact_id": "[uuid]"
               },
               "left": {
                 "type": "Segment",
-                "artifact_id": "efd1e3b2-5268-50fd-858e-26540f8146e5"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -426,18 +426,18 @@ description: Operations executed chamfer_multiple_tags_v3.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
               },
               "right": {
                 "type": "Segment",
-                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
+                "artifact_id": "[uuid]"
               },
               "top": {
                 "type": "Segment",
-                "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
+                "artifact_id": "[uuid]"
               }
             }
           },
@@ -467,7 +467,7 @@ description: Operations executed chamfer_multiple_tags_v3.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -509,7 +509,7 @@ description: Operations executed chamfer_multiple_tags_v3.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -533,19 +533,19 @@ description: Operations executed chamfer_multiple_tags_v3.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88"
+                "value": "[uuid]"
               },
               {
                 "type": "Uuid",
-                "value": "bed0fa8f-1dee-58d5-a44d-fc003a3ff62b"
+                "value": "[uuid]"
               },
               {
                 "type": "Uuid",
-                "value": "db427524-76a6-553d-bb6b-6ac873083b95"
+                "value": "[uuid]"
               },
               {
                 "type": "Uuid",
-                "value": "d5187f6e-f4ca-53c7-bdee-80c0ba5cbb59"
+                "value": "[uuid]"
               }
             ]
           },
@@ -667,7 +667,7 @@ description: Operations executed chamfer_multiple_tags_v3.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -691,7 +691,7 @@ description: Operations executed chamfer_multiple_tags_v3.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -715,7 +715,7 @@ description: Operations executed chamfer_multiple_tags_v3.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -739,7 +739,7 @@ description: Operations executed chamfer_multiple_tags_v3.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -763,7 +763,7 @@ description: Operations executed chamfer_multiple_tags_v3.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -787,7 +787,7 @@ description: Operations executed chamfer_multiple_tags_v3.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -811,7 +811,7 @@ description: Operations executed chamfer_multiple_tags_v3.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -835,7 +835,7 @@ description: Operations executed chamfer_multiple_tags_v3.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

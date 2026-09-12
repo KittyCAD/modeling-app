@@ -184,7 +184,7 @@ description: Operations executed rectangle-table.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -936,11 +936,11 @@ description: Operations executed rectangle-table.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -970,7 +970,7 @@ description: Operations executed rectangle-table.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1726,11 +1726,11 @@ description: Operations executed rectangle-table.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "8accf664-7097-5b74-b4cf-22cfff115a4f"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "6023bee8-3980-5182-88ac-ac06420ce00f"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -1760,7 +1760,7 @@ description: Operations executed rectangle-table.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1806,7 +1806,7 @@ description: Operations executed rectangle-table.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "2f87eb95-71f2-5911-bdbf-6255b335334d"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1938,13 +1938,13 @@ description: Operations executed rectangle-table.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "2f87eb95-71f2-5911-bdbf-6255b335334d"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "41696963-7465-5326-96cf-d83705f95c35"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -2167,7 +2167,7 @@ description: Operations executed rectangle-table.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2191,7 +2191,7 @@ description: Operations executed rectangle-table.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2215,7 +2215,7 @@ description: Operations executed rectangle-table.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2239,7 +2239,7 @@ description: Operations executed rectangle-table.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2263,7 +2263,7 @@ description: Operations executed rectangle-table.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2287,7 +2287,7 @@ description: Operations executed rectangle-table.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2311,7 +2311,7 @@ description: Operations executed rectangle-table.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2335,7 +2335,7 @@ description: Operations executed rectangle-table.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"
