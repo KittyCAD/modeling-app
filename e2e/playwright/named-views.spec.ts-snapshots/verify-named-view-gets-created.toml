@@ -1,9 +1,6 @@
 title = "named-views"
 default_file = "main.kcl"
 
-[settings]
-modeling = { }
-
 [settings.app.named_views.0656fb1a-9640-473e-b334-591dc70c0138]
 eye_offset = 20.907703
 fov_y = 45
@@ -15,3 +12,6 @@ pivot_position = [ 0, 0, 0 ]
 pivot_rotation = [ 0.4247082, 0.1759199, 0.33985114, 0.8204732 ]
 version = 1
 world_coord_system = "right_handed_up_z"
+
+[settings.modeling]
+kcl_version = "2.0"
