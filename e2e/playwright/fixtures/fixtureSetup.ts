@@ -139,6 +139,8 @@ export interface Fixtures {
 }
 
 export class ElectronZoo {
+  private disposed = false
+  private disposal: Promise<void> | undefined
   public available: boolean = true
   public electron!: ElectronApplication
   public firstUrl = ''
@@ -149,6 +151,13 @@ export class ElectronZoo {
   public context!: BrowserContext
 
   constructor() {}
+
+  async dispose() {
+    this.disposed = true
+    this.available = false
+    this.disposal ??= this.electron?.close()
+    await this.disposal
+  }
 
   // Help remote end by signaling we're done with the connection.
   // If it takes longer than 10s to stop, just resolve.
@@ -198,8 +207,12 @@ export class ElectronZoo {
 
   async createInstanceIfMissing(
     testInfo: TestInfo,
-    userFeatures: readonly Feature[] = []
+    userFeatures: readonly Feature[] = [],
+    setupTimeout = 120_000
   ) {
+    if (this.disposed) {
+      throw new Error('Electron fixture has been disposed')
+    }
     // Create or otherwise clear the folder.
     this.projectDirName = testInfo.outputPath('electron-test-projects-dir')
 
@@ -210,6 +223,7 @@ export class ElectronZoo {
 
     const options = {
       args: ['.', '--no-sandbox'],
+      timeout: setupTimeout,
       env: {
         ...process.env,
         NODE_ENV: 'test',
@@ -233,15 +247,25 @@ export class ElectronZoo {
     // Do this once and then reuse window on subsequent calls.
     if (!this.electron) {
       this.electron = await electron.launch(options)
+      // A launch can finish after the setup deadline. Dispose that late process
+      // instead of configuring a fixture whose test has already failed.
+      if (this.disposed) {
+        await this.dispose()
+        throw new Error('Electron fixture setup was cancelled')
+      }
 
       // Mac takes quite a long time to create the first window in CI.
       // Turns out we can't trust firstWindow() either. So loop.
       let timeoutId: ReturnType<typeof setTimeout>
       const tryToGetWindowPage = () =>
-        new Promise((resolve) => {
+        new Promise((resolve, reject) => {
           const fn = () => {
             this.page = this.electron.windows()[0]
             timeoutId = setTimeout(() => {
+              if (this.disposed) {
+                reject(new Error('Electron fixture setup was cancelled'))
+                return
+              }
               if (this.page) {
                 clearTimeout(timeoutId)
                 return resolve(undefined)
