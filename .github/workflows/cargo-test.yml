@@ -23,7 +23,7 @@ jobs:
     # Keep host-user Cargo outputs separate from the root-run MUSL build.
     runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-rust-host-v2
     steps:
-      - uses: runs-on/action@v2.3.0
+      - uses: runs-on/action@v2.3.1
       - uses: actions/create-github-app-token@v3.2.0
         id: app-token
         with:
@@ -181,7 +181,7 @@ jobs:
         partitionIndex: [1, 2, 3]
         partitionTotal: [3]
     steps:
-      - uses: runs-on/action@v2.3.0
+      - uses: runs-on/action@v2.3.1
       - uses: actions/create-github-app-token@v3.2.0
         id: app-token
         with:
