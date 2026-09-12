@@ -23,15 +23,7 @@ export const useOnPageIdle = ({
   const idleTimeMsRef = useRef(Number(streamIdleMode))
   const wasBusyRef = useRef(false)
   const timeoutStart = useRef<number | null>(null)
-
-  useEffect(() => {
-    return () => {
-      if (intervalId.current) {
-        clearInterval(intervalId.current)
-        intervalId.current = null
-      }
-    }
-  }, [])
+  const idleCheckVersion = useRef(0)
 
   useEffect(() => {
     startCallbackRef.current = startCallback
@@ -46,6 +38,7 @@ export const useOnPageIdle = ({
   }, [modelingMachineState])
 
   useEffect(() => {
+    idleCheckVersion.current++
     idleTimeMsRef.current = Number(streamIdleMode)
     timeoutStart.current = idleTimeMsRef.current ? Date.now() : null
   }, [streamIdleMode])
@@ -54,6 +47,7 @@ export const useOnPageIdle = ({
     if (intervalId.current) {
       return
     }
+    let disposed = false
 
     // Check every 1 second to see if you are idle.
     const interval = setInterval(() => {
@@ -73,6 +67,7 @@ export const useOnPageIdle = ({
         // Only start the idle timer once KCL execution and other modeling
         // interactions have fully finished.
         if (isBusy) {
+          idleCheckVersion.current++
           timeoutStart.current = null
           wasBusyRef.current = true
           return
@@ -87,6 +82,7 @@ export const useOnPageIdle = ({
         if (timeoutStart.current) {
           const elapsed = Date.now() - timeoutStart.current
           if (elapsed >= idleTimeMs) {
+            const version = idleCheckVersion.current
             timeoutStart.current = null
             try {
               await kclManager.sceneInfra.camControls.saveRemoteCameraState()
@@ -94,8 +90,14 @@ export const useOnPageIdle = ({
               console.warn('unable to save old camera state on idle', e)
               kclManager.sceneInfra.camControls.clearOldCameraState()
             }
-            // A prompt may have started while the camera state was being saved.
-            if (zookeeperPromptRunningSignal.value) {
+            // Input, settings, or lifecycle changes invalidate this idle check
+            // while camera saving is pending, including when the save rejects.
+            if (disposed || version !== idleCheckVersion.current) return
+            if (
+              kclManager.isExecuting ||
+              !modelingMachineStateRef.current.matches('idle') ||
+              zookeeperPromptRunningSignal.value
+            ) {
               wasBusyRef.current = true
               return
             }
@@ -113,12 +115,18 @@ export const useOnPageIdle = ({
       })()
     }, 1_000)
     intervalId.current = interval
+    return () => {
+      disposed = true
+      clearInterval(interval)
+      intervalId.current = null
+    }
   }, [kclManager])
 
   useEffect(() => {
     if (!idleTimeMsRef.current) return
 
     const onAnyInput = () => {
+      idleCheckVersion.current++
       // Just in case it happens in the middle of the user turning off
       // idle mode.
       if (!idleTimeMsRef.current) {
