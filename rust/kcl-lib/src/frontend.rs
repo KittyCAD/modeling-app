@@ -11700,7 +11700,8 @@ sketch(on = XY) {
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let outcome = frontend.hack_set_program(&ctx, program).await.unwrap();
+        assert!(matches!(outcome, SetProgramOutcome::Success { .. }), "{outcome:?}");
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -11997,7 +11998,8 @@ sketch(on = XY) {
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let outcome = frontend.hack_set_program(&ctx, program).await.unwrap();
+        assert!(matches!(outcome, SetProgramOutcome::Success { .. }), "{outcome:?}");
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
