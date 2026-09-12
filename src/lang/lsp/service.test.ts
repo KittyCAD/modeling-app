@@ -1,4 +1,4 @@
-import type { Feature } from '@kittycad/lib'
+import type { UserFeature } from '@src/lib/userFeatures'
 import { createLspService } from '@src/lang/lsp/service'
 import type { KclLspEditor } from '@src/lang/lsp/types'
 import {
@@ -107,7 +107,7 @@ function createAuth(initialToken = 'token-a') {
 
 function createUserFeatures(
   initialState: UserFeaturesState,
-  initialFeatureIds: Set<Feature> = new Set()
+  initialFeatureIds: Set<UserFeature> = new Set()
 ) {
   let state = initialState
   let featureIds = initialFeatureIds
@@ -130,10 +130,13 @@ function createUserFeatures(
     listenerCount: () => listeners.size,
     service: {
       actor,
-      has: (featureFlagId: Feature, defaultValue: boolean) =>
+      has: (featureFlagId: UserFeature, defaultValue: boolean) =>
         featureIds.has(featureFlagId) ? true : defaultValue,
     } as unknown as UserFeaturesRegistryService,
-    update: (nextState: UserFeaturesState, nextFeatureIds: Set<Feature>) => {
+    update: (
+      nextState: UserFeaturesState,
+      nextFeatureIds: Set<UserFeature>
+    ) => {
       state = nextState
       featureIds = nextFeatureIds
       fetchedAt = nextState === UserFeaturesState.Ready ? new Date() : undefined

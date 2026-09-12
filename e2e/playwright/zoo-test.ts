@@ -1,11 +1,11 @@
 import { interactionDiscoveryFixtures } from '@e2e/playwright/fixtures/interactionDiscoveryFixture'
+import type { UserFeature } from '@src/lib/userFeatures'
 import { expect, test as playwrightTestFn } from '@e2e/playwright/base-test'
 import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'
 import {
   ElectronZoo,
   fixturesBasedOnProcessEnvPlatform,
 } from '@e2e/playwright/fixtures/fixtureSetup'
-import type { Feature } from '@kittycad/lib'
 
 export { expect }
 
@@ -33,7 +33,7 @@ let isFirstRun = true
 // switch between web and electron if needed.
 const playwrightTestFnWithFixtures_ = playwrightTestFn.extend<{
   tronApp?: ElectronZoo
-  userFeatures: Feature[]
+  userFeatures: UserFeature[]
 }>({
   userFeatures: [[], { option: true }],
   tronApp: [
