@@ -37,6 +37,9 @@ const attempts = JSON.parse(fs.readFileSync('attempts.json', 'utf8'));
 const count = fs.existsSync('calls') ? Number(fs.readFileSync('calls', 'utf8')) : 0;
 const attempt = attempts[count];
 fs.writeFileSync('calls', String(count + 1));
+const invocations = fs.existsSync('invocations.json') ? JSON.parse(fs.readFileSync('invocations.json', 'utf8')) : [];
+invocations.push(process.argv.slice(2));
+fs.writeFileSync('invocations.json', JSON.stringify(invocations));
 if (!attempt) process.exit(99);
 fs.writeFileSync('test-results/.last-run.json', JSON.stringify({ status: attempt.status, failedTests: attempt.status === 'failed' ? ['test-id'] : [] }));
 fs.writeFileSync('test-results/report.json', JSON.stringify({ suites: [], errors: attempt.errors }));
@@ -78,6 +81,8 @@ process.exit(attempt.exitCode ?? (attempt.status === 'failed' ? 1 : 0));
     dir,
     run,
     calls: () => Number(readFileSync(path.join(dir, 'calls'), 'utf8')),
+    invocations: () =>
+      JSON.parse(readFileSync(path.join(dir, 'invocations.json'), 'utf8')),
   }
 }
 
@@ -99,31 +104,40 @@ test('retains the one retry for individual test failures', (t) => {
   const f = fixture(t, [testFailure, passed])
   assert.equal(f.run().status, 0)
   assert.equal(f.calls(), 2)
+  assert.ok(f.invocations()[1].includes('--last-failed'))
 })
 
-test('fails a global error even when the saved test status is passed', (t) => {
-  const f = fixture(t, [teardownFailure])
+test('reruns the full shard after a global error', (t) => {
+  const f = fixture(t, [teardownFailure, passed])
   const result = f.run()
   assert.equal(result.status, 1)
   assert.match(result.stderr, /Worker teardown timeout/)
   assert.equal(f.calls(), 1)
-  // Reproduce the outer action retry: it must not turn the same saved run green.
-  assert.equal(f.run().status, 1)
-  assert.equal(f.calls(), 1)
+  assert.equal(f.run().status, 0)
+  assert.equal(f.calls(), 2)
+  assert.ok(f.invocations()[1].includes('--shard=1/6'))
+  assert.ok(!f.invocations()[1].includes('--last-failed'))
 })
 
-test('fails a global error after the last-failed retry', (t) => {
-  const f = fixture(t, [testFailure, teardownFailure])
+test('reruns the full shard after a last-failed retry has a global error', (t) => {
+  const f = fixture(t, [testFailure, teardownFailure, passed])
   assert.equal(f.run().status, 1)
   assert.equal(f.calls(), 2)
-  assert.equal(f.run().status, 1)
-  assert.equal(f.calls(), 2)
+  assert.equal(f.run().status, 0)
+  assert.equal(f.calls(), 3)
+  assert.ok(f.invocations()[2].includes('--shard=1/6'))
+  assert.ok(!f.invocations()[2].includes('--last-failed'))
 })
 
-test('does not replay test selection when the run also had a global error', (t) => {
-  const f = fixture(t, [{ ...teardownFailure, status: 'failed' }])
-  assert.equal(f.run().status, 1)
+test('reruns the full shard when restored results have a global error', (t) => {
+  const f = fixture(t, [passed], {
+    ...teardownFailure,
+    status: 'failed',
+  })
+  assert.equal(f.run().status, 0)
   assert.equal(f.calls(), 1)
+  assert.ok(f.invocations()[0].includes('--shard=1/6'))
+  assert.ok(!f.invocations()[0].includes('--last-failed'))
 })
 
 test('fails closed for an incomplete or missing saved report', (t) => {

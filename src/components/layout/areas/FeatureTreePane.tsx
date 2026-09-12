@@ -283,8 +283,11 @@ export const FeatureTreePaneContents = memo(() => {
     : disableModelingForUnrenderedChanges
       ? kclManager.lastSuccessfulCode || kclManager.codeSignal.value
       : kclManager.codeSignal.value
+  // Live operation rows arrive before the completed artifact graph.
   const isReadOnlyFeatureTree =
-    hasParseErrors || disableModelingForUnrenderedChanges
+    kclManager.isExecuting ||
+    hasParseErrors ||
+    disableModelingForUnrenderedChanges
 
   // We filter out operations that are not useful to show in the feature tree
   const operationList = buildOperationTree(
