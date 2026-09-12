@@ -1,0 +1,21 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing tests/import_async/completion.kcl
+---
+@settings(defaultLengthUnit = mm)
+
+@(lengthUnit = mm)
+import "completion.obj" as imported
+
+// A native 2 x 3 x 4 mm cuboid, disjoint from the imported one.
+native = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> xLine(length = 2)
+  |> yLine(length = 3)
+  |> xLine(length = -2)
+  |> close()
+  |> extrude(length = 4)
+
+// No transform or other command that has to wait for this import. Completion
+// of the whole KCL program must still wait for the imported geometry.
+imported
