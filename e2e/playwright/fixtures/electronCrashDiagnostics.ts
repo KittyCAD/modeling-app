@@ -42,8 +42,9 @@ export async function attachRendererCrashDiagnostics(
   try {
     const failures = await electron.evaluate(
       ({ app }) =>
-        (app as typeof app & { playwrightRendererFailures?: unknown[] })
-          .playwrightRendererFailures ?? []
+        (
+          app as typeof app & { playwrightRendererFailures?: unknown[] }
+        ).playwrightRendererFailures?.splice(0) ?? []
     )
     if (failures.length === 0) return
     const body = JSON.stringify(failures, null, 2)
