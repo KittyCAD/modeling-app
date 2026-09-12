@@ -1,4 +1,5 @@
-import { type Feature, type UserFeatureList, users } from '@kittycad/lib'
+import type { UserFeature } from '@src/lib/userFeatures'
+import { type UserFeatureList, users } from '@kittycad/lib'
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { isErr } from '@src/lib/trap'
@@ -31,14 +32,14 @@ type FetchUserFeaturesInput = {
 }
 
 type FetchUserFeaturesOutput = {
-  featureIds: Set<Feature>
+  featureIds: Set<UserFeature>
 }
 type FetchUserFeaturesResult = FetchUserFeaturesOutput | Error
 type FetchUserFeaturesDoneEvent = DoneActorEvent<FetchUserFeaturesResult>
 type FetchUserFeaturesErrorEvent = ErrorActorEvent<Error>
 
 export interface UserFeaturesContext {
-  featureIds: Set<Feature>
+  featureIds: Set<UserFeature>
   token?: string
   fetchedAt?: Date
   error?: Error
@@ -52,7 +53,7 @@ export type UserFeaturesEvent =
   | FetchUserFeaturesErrorEvent
 
 export type UserFeaturesService = {
-  has: (featureFlagId: Feature, defaultValue: boolean) => boolean
+  has: (featureFlagId: UserFeature, defaultValue: boolean) => boolean
 }
 
 /**
@@ -157,7 +158,7 @@ export function waitForUserFeaturesSettled(
 
 function createDefaultContext(): UserFeaturesContext {
   return {
-    featureIds: new Set<Feature>(),
+    featureIds: new Set<UserFeature>(),
     token: undefined,
     fetchedAt: undefined,
     error: undefined,
@@ -187,7 +188,7 @@ function hasEventToken(
   return typeof token === 'string' && token.length > 0
 }
 
-function featureIdsFromResponse(data: UserFeatureList): Set<Feature> {
+function featureIdsFromResponse(data: UserFeatureList): Set<UserFeature> {
   return new Set(data.features.map(({ id }) => id))
 }
 
@@ -201,7 +202,7 @@ function userFeaturesErrorContext(context: UserFeaturesContext) {
 
 export function userFeaturesContextHas(
   context: UserFeaturesContext,
-  featureFlagId: Feature,
+  featureFlagId: UserFeature,
   defaultValue: boolean
 ): boolean {
   return context.featureIds.has(featureFlagId) ? true : defaultValue
@@ -269,7 +270,7 @@ export const userFeaturesMachine = setup({
         ...(context.token === token
           ? {}
           : {
-              featureIds: new Set<Feature>(),
+              featureIds: new Set<UserFeature>(),
               fetchedAt: undefined,
             }),
       }

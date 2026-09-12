@@ -1,5 +1,5 @@
 import { useAppState } from '@src/AppState'
-import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
+import { ModeScene } from '@src/components/ModeScene'
 import Loading from '@src/components/Loading'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
 import { useOnOfflineToExitSketchMode } from '@src/hooks/network/useOnOfflineToExitSketchMode'
@@ -655,13 +655,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       >
         No canvas support
       </canvas>
-      <ClientSideScene
-        cameraControls={settingsValues.modeling.mouseControls.current}
-        enableTouchControls={
-          settingsValues.modeling.enableTouchControls.current
-        }
-        sketchSolveStreamDimming={props.sketchSolveStreamDimming}
-      />
+      <ModeScene {...props.streamLayerProps} />
       {props.streamLayers.map((layer) => {
         return (
           <div

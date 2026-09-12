@@ -1,4 +1,4 @@
-import type { Feature } from '@kittycad/lib'
+import type { UserFeature } from '@src/lib/userFeatures'
 import type { KclRuntimeFlags } from '@rust/kcl-lib/bindings/KclRuntimeFlags'
 import {
   KCL_CEK_EXECUTOR_FEATURE_FLAG,
@@ -16,9 +16,9 @@ import {
 } from '@src/machines/userFeaturesMachine'
 import { describe, expect, it, vi } from 'vitest'
 
-function userFeaturesWith(features: Set<Feature>) {
+function userFeaturesWith(features: Set<UserFeature>) {
   return {
-    has: (featureFlagId: Feature, defaultValue: boolean) =>
+    has: (featureFlagId: UserFeature, defaultValue: boolean) =>
       features.has(featureFlagId) ? true : defaultValue,
   }
 }
@@ -116,7 +116,7 @@ describe('kclRuntimeFlagsEqual', () => {
 describe('waitForSettledKclRuntimeFlags', () => {
   function gatedUserFeatures() {
     let settled = false
-    let featureIds = new Set<Feature>()
+    let featureIds = new Set<UserFeature>()
     const listeners = new Set<(snapshot: UserFeaturesSettleSnapshot) => void>()
     const snapshot = (): UserFeaturesSettleSnapshot => ({
       matches: (state) => settled && state === UserFeaturesState.Ready,
@@ -124,7 +124,7 @@ describe('waitForSettledKclRuntimeFlags', () => {
     })
     return {
       userFeatures: {
-        has: (featureFlagId: Feature, defaultValue: boolean) =>
+        has: (featureFlagId: UserFeature, defaultValue: boolean) =>
           featureIds.has(featureFlagId) ? true : defaultValue,
         actor: {
           getSnapshot: snapshot,
@@ -136,7 +136,7 @@ describe('waitForSettledKclRuntimeFlags', () => {
           },
         },
       },
-      settleWith: (nextFeatureIds: Set<Feature>) => {
+      settleWith: (nextFeatureIds: Set<UserFeature>) => {
         settled = true
         featureIds = nextFeatureIds
         for (const listener of listeners) {

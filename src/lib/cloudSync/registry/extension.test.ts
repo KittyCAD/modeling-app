@@ -1,4 +1,4 @@
-import type { Feature } from '@kittycad/lib'
+import type { UserFeature } from '@src/lib/userFeatures'
 import {
   defineRegistryItem,
   provideService,
@@ -243,7 +243,7 @@ describe('cloud sync extension', () => {
       id: 'test.user-features',
       providesServices: [
         provideService(userFeaturesService, {
-          has: (featureFlagId: Feature, defaultValue: boolean) =>
+          has: (featureFlagId: UserFeature, defaultValue: boolean) =>
             featureFlagId === OPFS_CLOUD_FEATURE_FLAG
               ? featureEnabled.value
               : defaultValue,

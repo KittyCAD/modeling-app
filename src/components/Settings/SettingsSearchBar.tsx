@@ -1,5 +1,5 @@
+import type { UserFeature } from '@src/lib/userFeatures'
 import { Combobox } from '@headlessui/react'
-import type { Feature } from '@kittycad/lib'
 import { useSignalEffect } from '@preact/signals-react'
 import { useSignals } from '@preact/signals-react/runtime'
 import { getKeybindingRows } from '@src/components/Settings/keybindingRows'
@@ -75,7 +75,7 @@ export function SettingsSearchBar({
   const settingsValues = settings.useSettings()
   const userFeaturesContext = userFeatures.useContext()
   const hasFeature = useCallback(
-    (feature: Feature) =>
+    (feature: UserFeature) =>
       userFeaturesContextHas(userFeaturesContext, feature, false),
     [userFeaturesContext]
   )

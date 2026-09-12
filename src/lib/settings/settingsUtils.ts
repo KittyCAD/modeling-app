@@ -1,8 +1,8 @@
+import type { UserFeature } from '@src/lib/userFeatures'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 import type { JsonValue } from '@rust/kcl-lib/bindings/serde_json/JsonValue'
-import type { Feature } from '@kittycad/lib'
 import {
   serializeConfiguration,
   serializeProjectConfiguration,
@@ -1287,7 +1287,7 @@ export function setSettingsAtLevel(
 export function shouldHideSetting(
   setting: Setting<unknown>,
   settingsLevel: SettingsLevel,
-  hasFeature?: (feature: Feature) => boolean
+  hasFeature?: (feature: UserFeature) => boolean
 ): boolean {
   // Async functions should have been resolved in loadAndValidateSettings,
   // but if we encounter one (shouldn't happen), default to hidden
@@ -1317,7 +1317,7 @@ export function shouldHideSetting(
 export function shouldShowSettingInput(
   setting: Setting<unknown>,
   settingsLevel: SettingsLevel,
-  hasFeature?: (feature: Feature) => boolean
+  hasFeature?: (feature: UserFeature) => boolean
 ): boolean {
   const isHidden = shouldHideSetting(setting, settingsLevel, hasFeature)
   if (isHidden) {
@@ -1381,7 +1381,7 @@ export function jsAppSettings(s: SettingsType | SettingsActorType) {
 export function hiddenOnPlatform(
   setting: Setting,
   desktop: boolean,
-  hasFeature?: (feature: Feature) => boolean
+  hasFeature?: (feature: UserFeature) => boolean
 ): boolean {
   const hideOnPlatform = setting.hideOnPlatform
 
@@ -1409,7 +1409,7 @@ export function hiddenOnPlatform(
 function hiddenWithoutFeature(
   setting: Setting<unknown>,
   desktop: boolean,
-  hasFeature?: (feature: Feature) => boolean
+  hasFeature?: (feature: UserFeature) => boolean
 ): boolean {
   if (setting.hideWithoutFeature && !hasFeature?.(setting.hideWithoutFeature)) {
     return true

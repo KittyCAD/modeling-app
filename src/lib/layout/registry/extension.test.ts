@@ -1,4 +1,4 @@
-import type { Feature } from '@kittycad/lib'
+import type { UserFeature } from '@src/lib/userFeatures'
 import {
   Registry,
   defineRegistryItem,
@@ -106,9 +106,9 @@ function createRuntimeService(runtimeInfo = playwrightRuntime) {
 }
 
 function createUserFeaturesService(
-  featureIds: readonly Feature[] = []
+  featureIds: readonly UserFeature[] = []
 ): UserFeaturesRegistryService & {
-  setFeatureIds: (featureIds: readonly Feature[]) => void
+  setFeatureIds: (featureIds: readonly UserFeature[]) => void
 } {
   const context = signal({ featureIds: new Set(featureIds) })
   const snapshot = {
@@ -130,14 +130,15 @@ function createUserFeaturesService(
     context,
     contextSignal: context,
     ready,
-    has: (_featureFlagId: Feature, defaultValue: boolean) => defaultValue,
+    has: (_featureFlagId: UserFeature, defaultValue: boolean) => defaultValue,
     useContext: () => context.value,
-    useHas: (_featureFlagId: Feature, defaultValue: boolean) => defaultValue,
-    setFeatureIds: (nextFeatureIds: readonly Feature[]) => {
+    useHas: (_featureFlagId: UserFeature, defaultValue: boolean) =>
+      defaultValue,
+    setFeatureIds: (nextFeatureIds: readonly UserFeature[]) => {
       context.value = { featureIds: new Set(nextFeatureIds) }
     },
   } as unknown as UserFeaturesRegistryService & {
-    setFeatureIds: (featureIds: readonly Feature[]) => void
+    setFeatureIds: (featureIds: readonly UserFeature[]) => void
   }
 }
 

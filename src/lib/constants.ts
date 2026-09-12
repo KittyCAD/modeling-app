@@ -1,4 +1,5 @@
 import type { Feature, WebSocketResponse } from '@kittycad/lib'
+import type { UserFeature } from '@src/lib/userFeatures'
 
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
@@ -33,6 +34,7 @@ export const DEFAULT_KCL_VERSION = '2.0'
 export const EXPERIMENTAL_POINT_AND_CLICK_FLAG: Feature =
   'sketch_experimental_features'
 export const OPFS_CLOUD_FEATURE_FLAG: Feature = 'web_app_file_browser'
+export const DFM_REVIEW_FEATURE_FLAG: UserFeature = 'dfm_review'
 export const SEGMENTS_BASED_REGIONS_FEATURE_FLAG: Feature =
   'segments_based_regions'
 export const KCL_CEK_EXECUTOR_FEATURE_FLAG: Feature = 'kcl_cek_executor'
