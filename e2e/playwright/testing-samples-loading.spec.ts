@@ -187,6 +187,10 @@ test.describe('Query parameter command', { tag: '@web' }, () => {
     const queryString = `?cmd=add-kcl-file-to-project&groupId=application&projectName=browser&source=kcl-samples&sample=${sampleSlug}/main.kcl`
     await page.goto(page.url() + queryString)
 
+    await page.evaluate(async () => {
+      await window.app.wasmPromise
+    })
+
     await toolbar.openPane(DefaultLayoutPaneID.Code)
     await editor.expectEditor.toContain(sampleTitle, { timeout: 30_000 })
     await expect(page).toHaveURL(/socket-head-cap-screw%2Fmain\.kcl$/)
