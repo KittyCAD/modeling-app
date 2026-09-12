@@ -30,8 +30,8 @@ npm start
 ```
 
 The Bevy build script checks out the experimental renderer under `vendor/`,
-applies `scripts/bevy-zoo-kclean.patch` idempotently, and installs the generated
-JavaScript, WASM, and assets in their Vite locations.
+applies the Kclean integration and certified-checkpoint patches idempotently,
+and installs the generated JavaScript, WASM, and assets in their Vite locations.
 
 In **Settings → Modeling**:
 
@@ -46,3 +46,10 @@ revision cannot replace a newer model. The Kclean GLB currently has body names
 but no Zoo topology extension, so faces render while selection and sketching
 remain unavailable in this viewport. The Bevy clear color follows ZDS's resolved
 light or dark theme immediately, including changes to the system theme.
+
+Kernel failures can also carry a `certification: "checkpoint"` GLB. Bevy loads
+that artifact and ZDS keeps the kernel diagnostic visible, so the last geometry
+proved during the current evaluation remains inspectable. A rejected solver
+candidate is reported separately and is never presented as certified geometry;
+when no current checkpoint solid exists, the renderer leaves the previous model
+in place instead of blanking the viewport.

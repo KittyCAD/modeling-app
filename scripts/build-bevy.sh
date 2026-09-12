@@ -15,6 +15,7 @@ BEVY_ZOO_DIR="${BEVY_ZOO_DIR:-$ROOT/vendor/bevy-zoo}"
 BEVY_ZOO_REMOTE="${BEVY_ZOO_REMOTE:-https://github.com/KittyCAD/bevy-zoo.git}"
 BEVY_ZOO_REF="${BEVY_ZOO_REF:-frank/embeddable-viewport}"
 BEVY_ZOO_KCLEAN_PATCH="$ROOT/scripts/bevy-zoo-kclean.patch"
+BEVY_ZOO_CHECKPOINT_PATCH="$ROOT/scripts/bevy-zoo-checkpoint.patch"
 
 for tool in cargo wasm-bindgen wasm-opt; do
   if ! command -v "$tool" >/dev/null 2>&1; then
@@ -44,6 +45,16 @@ elif git -C "$BEVY_ZOO_DIR" apply --check "$BEVY_ZOO_KCLEAN_PATCH"; then
   echo "Applied Kclean execution patch"
 else
   echo "error: Kclean execution patch does not apply cleanly to $BEVY_ZOO_DIR" >&2
+  exit 1
+fi
+
+if git -C "$BEVY_ZOO_DIR" apply --reverse --check "$BEVY_ZOO_CHECKPOINT_PATCH" >/dev/null 2>&1; then
+  echo "Certified checkpoint patch is already applied"
+elif git -C "$BEVY_ZOO_DIR" apply --check "$BEVY_ZOO_CHECKPOINT_PATCH"; then
+  git -C "$BEVY_ZOO_DIR" apply "$BEVY_ZOO_CHECKPOINT_PATCH"
+  echo "Applied certified checkpoint patch"
+else
+  echo "error: certified checkpoint patch does not apply cleanly to $BEVY_ZOO_DIR" >&2
   exit 1
 fi
 
