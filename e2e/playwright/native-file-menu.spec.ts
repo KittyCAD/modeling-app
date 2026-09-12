@@ -104,7 +104,7 @@ test.describe(
       nativeMenu,
     }) => {
       if (!tronApp) {
-        throw new Error('tronApp is missing.')
+        throwTronAppMissing()
       }
 
       await test.step('Home.File.New window', async () => {
