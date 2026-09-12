@@ -14,26 +14,17 @@ import {
   insertVariableAndOffsetPathToNode,
   setCallInAst as setBaseCallInAst,
 } from '@src/lang/modifyAst'
-import { insertPrimitiveEdgeVariablesAndOffsetPathToNode } from '@src/lang/modifyAst/edges'
+import {
+  getPrimitiveEdgeReference,
+  insertPrimitiveEdgeVariablesAndOffsetPathToNode,
+} from '@src/lang/modifyAst/edges'
 import {
   insertFacePrimitiveVariablesAndOffsetPathToNode,
   isFaceArtifact,
 } from '@src/lang/modifyAst/faces'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
-import {
-  getNodeFromPath,
-  isCallExprWithName,
-  traverse,
-  valueOrVariable,
-} from '@src/lang/queryAst'
-import type {
-  ArtifactGraph,
-  CallExpressionKw,
-  Expr,
-  PathToNode,
-  Program,
-  VariableDeclaration,
-} from '@src/lang/wasm'
+import { traverse, valueOrVariable } from '@src/lang/queryAst'
+import type { ArtifactGraph, Expr, PathToNode, Program } from '@src/lang/wasm'
 import { modelingStdLibCall } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { isEnginePrimitiveSelection } from '@src/lib/selections'
@@ -75,39 +66,9 @@ type GdtTargetExpr = {
   expr: Expr
 }
 
-function getPrimitiveEdgeExpression(
-  ast: Node<Program>,
-  selection: Selections['graphSelections'][number],
-  wasmInstance: ModuleType
-): Expr | Error {
-  const variableLookup = getNodeFromPath<VariableDeclaration>(
-    ast,
-    selection.codeRef.pathToNode,
-    wasmInstance,
-    'VariableDeclaration',
-    false,
-    true
-  )
-  if (
-    !err(variableLookup) &&
-    isCallExprWithName(variableLookup.node.declaration.init, 'edgeId')
-  ) {
-    return createLocalName(variableLookup.node.declaration.id.name)
-  }
-
-  const directLookup = getNodeFromPath<Node<CallExpressionKw>>(
-    ast,
-    selection.codeRef.pathToNode,
-    wasmInstance,
-    'CallExpressionKw',
-    false,
-    true
-  )
-  if (err(directLookup)) return directLookup
-  if (!isCallExprWithName(directLookup.node, 'edgeId')) {
-    return new Error('Failed to retrieve primitive edge')
-  }
-  return structuredClone(directLookup.node)
+type OrderedGdtTargetExpr = GdtTargetExpr & {
+  selectionOrder?: number
+  fallbackOrder: number
 }
 
 function buildGdtTargetExprs({
@@ -121,7 +82,17 @@ function buildGdtTargetExprs({
   objects: Selections
   wasmInstance: ModuleType
 }): Error | { modifiedAst: Node<Program>; targets: GdtTargetExpr[] } {
-  const targets: GdtTargetExpr[] = []
+  const targets: OrderedGdtTargetExpr[] = []
+  const pushTarget = (
+    selection: Selections['graphSelections'][number] | EnginePrimitiveSelection,
+    target: GdtTargetExpr
+  ) => {
+    targets.push({
+      ...target,
+      selectionOrder: selection.selectionOrder,
+      fallbackOrder: targets.length,
+    })
+  }
 
   for (const selection of objects.graphSelections) {
     const kind = isFaceArtifact(selection.artifact)
@@ -132,13 +103,13 @@ function buildGdtTargetExprs({
     if (!kind) continue
 
     if (selection.artifact?.type === 'primitiveEdge') {
-      const expr = getPrimitiveEdgeExpression(
+      const edgeReference = getPrimitiveEdgeReference(
         modifiedAst,
         selection,
         wasmInstance
       )
-      if (err(expr)) return expr
-      targets.push({ kind, expr })
+      if (err(edgeReference)) return edgeReference
+      pushTarget(selection, { kind, expr: edgeReference.edgeExpr })
       continue
     }
 
@@ -155,7 +126,7 @@ function buildGdtTargetExprs({
     modifiedAst = tagResult.modifiedAst
 
     if (kind === 'face') {
-      targets.push({ kind, expr: tagResult.exprs[0] })
+      pushTarget(selection, { kind, expr: tagResult.exprs[0] })
       continue
     }
     if (tagResult.exprs.length < 2) {
@@ -165,7 +136,7 @@ function buildGdtTargetExprs({
       )
       continue
     }
-    targets.push({
+    pushTarget(selection, {
       kind,
       expr: createCallExpressionStdLibKw('getCommonEdge', null, [
         createLabeledArg('faces', createArrayExpression(tagResult.exprs)),
@@ -224,10 +195,26 @@ function buildGdtTargetExprs({
 
   for (const selection of primitiveSelections) {
     const target = primitiveTargets.get(selection)
-    if (target) targets.push(target)
+    if (target) pushTarget(selection, target)
   }
 
-  return { modifiedAst, targets }
+  targets.sort((left, right) => {
+    if (left.selectionOrder === undefined) {
+      return right.selectionOrder === undefined
+        ? left.fallbackOrder - right.fallbackOrder
+        : -1
+    }
+    if (right.selectionOrder === undefined) return 1
+    return (
+      left.selectionOrder - right.selectionOrder ||
+      left.fallbackOrder - right.fallbackOrder
+    )
+  })
+
+  return {
+    modifiedAst,
+    targets: targets.map(({ kind, expr }) => ({ kind, expr })),
+  }
 }
 
 function buildFaceAndEdgeGdtExprs({
@@ -1084,10 +1071,18 @@ export function addProfileGdt({
     return new Error('No valid selections found. Please select faces or edges.')
   }
 
-  if (profileFunction === 'profileLine' && faceExprs.length > 0) {
+  if (
+    !mNodeToEdit &&
+    profileFunction === 'profileLine' &&
+    faceExprs.length > 0
+  ) {
     return new Error('profileLine requires edge selections.')
   }
-  if (profileFunction === 'profileSurface' && edgeExprs.length > 0) {
+  if (
+    !mNodeToEdit &&
+    profileFunction === 'profileSurface' &&
+    edgeExprs.length > 0
+  ) {
     return new Error('profileSurface requires face selections.')
   }
 

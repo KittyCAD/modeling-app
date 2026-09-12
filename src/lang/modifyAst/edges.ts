@@ -61,6 +61,7 @@ import type {
   MemberExpression,
   PathToNode,
   Program,
+  VariableDeclaration,
   VariableDeclarator,
 } from '@src/lang/wasm'
 import { recast } from '@src/lang/wasm'
@@ -77,7 +78,7 @@ import {
   createPrimitiveIndexCallExpression,
   insertBodyOfVariableAndOffsetPathToNode,
 } from '@src/lang/modifyAst/enginePrimitiveReference'
-import { err } from '@src/lib/trap'
+import { err, isErr } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
@@ -629,6 +630,55 @@ export function getPrimitiveEdgeSelections(
 
 // Utility functions
 
+export function getPrimitiveEdgeReference(
+  ast: Node<Program>,
+  selection: Selection,
+  wasmInstance: ModuleType
+): { bodyExpr: Expr; edgeExpr: Expr } | Error {
+  const variableLookup = getNodeFromPath<VariableDeclaration>(
+    ast,
+    selection.codeRef.pathToNode,
+    wasmInstance,
+    'VariableDeclaration',
+    false,
+    true
+  )
+  const variable =
+    !isErr(variableLookup) && variableLookup.node.type === 'VariableDeclaration'
+      ? variableLookup.node.declaration
+      : undefined
+  const directLookup = getNodeFromPath<Expr>(
+    ast,
+    selection.codeRef.pathToNode,
+    wasmInstance,
+    'CallExpressionKw',
+    false,
+    true
+  )
+  if (isErr(directLookup)) return directLookup
+
+  const edgeIdCall = isCallExprWithName(directLookup.node, 'edgeId')
+    ? directLookup.node
+    : variable && isCallExprWithName(variable.init, 'edgeId')
+      ? variable.init
+      : undefined
+  if (!edgeIdCall?.unlabeled) {
+    return new Error(
+      'Could not resolve the selected primitive edge body in code.'
+    )
+  }
+
+  return {
+    bodyExpr: structuredClone(edgeIdCall.unlabeled),
+    // Only reuse a variable when it names the selected edge, not an enclosing
+    // annotation or another call that contains the edgeId expression.
+    edgeExpr:
+      variable?.init === edgeIdCall
+        ? createLocalName(variable.id.name)
+        : structuredClone(edgeIdCall),
+  }
+}
+
 /**
  * Groups selections by body and adds tags to the AST.
  * Must be called BEFORE variable insertion to keep artifactGraph paths valid.
@@ -706,24 +756,16 @@ export function groupSelectionsByBodyAndAddTags(
   for (const selection of selections.graphSelections) {
     if (selection.artifact?.type !== 'primitiveEdge') continue
 
-    const variable = locateVariableWithCallOrPipe(
+    const edgeReference = getPrimitiveEdgeReference(
       ast,
-      selection.codeRef.pathToNode,
+      selection,
       wasmInstance
     )
-    if (err(variable)) return variable
+    if (err(edgeReference)) return edgeReference
 
-    const edgeIdCall = variable.variableDeclarator.init
-    if (!isCallExprWithName(edgeIdCall, 'edgeId') || !edgeIdCall.unlabeled) {
-      return new Error(
-        'Could not resolve the selected primitive edge body in code.'
-      )
-    }
-
+    const { bodyExpr, edgeExpr } = edgeReference
     const solidsExpr =
-      edgeIdCall.unlabeled.type === 'Name'
-        ? createLocalName(edgeIdCall.unlabeled.name.name)
-        : structuredClone(edgeIdCall.unlabeled)
+      bodyExpr.type === 'Name' ? createLocalName(bodyExpr.name.name) : bodyExpr
     const bodyKey = getEdgeBodyKey(solidsExpr)
     const bodyData = bodies.get(bodyKey)
     const tagsExprs: Expr[] = bodyData
@@ -731,7 +773,7 @@ export function groupSelectionsByBodyAndAddTags(
         ? [...bodyData.tagsExpr.elements]
         : [bodyData.tagsExpr]
       : []
-    tagsExprs.push(createLocalName(variable.variableDeclarator.id.name))
+    tagsExprs.push(edgeExpr)
 
     const tagsExpr = createVariableExpressionsArray(tagsExprs)
     if (!tagsExpr) return new Error('No edges found in the selection')

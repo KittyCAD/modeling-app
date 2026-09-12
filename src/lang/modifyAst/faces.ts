@@ -1479,7 +1479,10 @@ export function insertFacePrimitiveVariablesAndOffsetPathToNode({
         )
       }
       if (!rootBodyExprs.has(kclBodyId)) {
-        rootBodyExprs.set(kclBodyId, structuredClone(resolvedBodyExpr))
+        rootBodyExprs.set(
+          kclBodyId,
+          getRootBodyOfInputExpression(resolvedBodyExpr, modifiedAst)
+        )
       }
       const bodyOfResult = insertBodyOfVariableAndOffsetPathToNode({
         bodyExpr: resolvedBodyExpr,

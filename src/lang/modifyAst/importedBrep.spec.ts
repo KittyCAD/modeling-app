@@ -336,6 +336,62 @@ ${secondFaceSource}
   )
 })
 
+test('deletes mixed coded and uncoded faces through their shared root import', async () => {
+  const { instance } = await buildTheWorldAndNoEngineConnection()
+  const importSource = 'import "part.step" as importedPart'
+  const bodySource = 'body001 = bodyOf(importedPart, path = [0])'
+  const faceSource = 'face001 = faceId(body001, index = 4)'
+  const code = `${importSource}
+${bodySource}
+${faceSource}
+`
+  const ast = assertParse(code, instance)
+  const importedGeometry = {
+    type: 'importedGeometry',
+    id: 'imported-body',
+    codeRef: codeRefFor(code, ast, importSource),
+  } as Artifact
+  const body = {
+    type: 'importedGeometry',
+    id: 'nested-body',
+    codeRef: codeRefFor(code, ast, bodySource),
+  } as Artifact
+  const face = {
+    type: 'primitiveFace',
+    id: 'coded-face',
+    solidId: body.id,
+    codeRef: codeRefFor(code, ast, faceSource),
+  } as Extract<Artifact, { type: 'primitiveFace' }>
+  const artifactGraph = new Map<string, Artifact>(
+    [importedGeometry, body, face].map((artifact) => [artifact.id, artifact])
+  )
+  const primitiveFace: EnginePrimitiveSelection = {
+    type: 'enginePrimitive',
+    entityId: 'uncoded-face',
+    parentEntityId: 'nested-engine-body',
+    kclBodyId: body.id,
+    kclBodyArtifactType: 'importedGeometry',
+    primitiveIndex: 5,
+    primitiveType: 'face',
+  }
+
+  const result = addDeleteFace({
+    ast,
+    artifactGraph,
+    faces: {
+      graphSelections: [{ artifact: face, codeRef: face.codeRef }],
+      otherSelections: [primitiveFace],
+    },
+    wasmInstance: instance,
+  })
+  if (err(result)) throw result
+
+  expect(
+    recast(result.modifiedAst, instance)
+  ).toContain(`${code}face002 = faceId(body001, index = 5)
+surface001 = deleteFace(importedPart, faces = [face001, face002])`)
+})
+
 test('keeps equal edge indices from different nested imported bodies', async () => {
   const { instance } = await buildTheWorldAndNoEngineConnection()
   const code = 'import "part.step" as importedPart\n'
@@ -690,6 +746,63 @@ test('preserves imported BREP selection order for GD&T distance', async () => {
   const newCode = recast(result.modifiedAst, instance)
   expect(newCode).toContain('from = edge001')
   expect(newCode).toContain('to = face001')
+})
+
+test('preserves mixed coded and uncoded BREP selection order for GD&T distance', async () => {
+  const { instance } = await buildTheWorldAndNoEngineConnection()
+  const importSource = 'import "part.step" as importedPart'
+  const edgeSource = 'edge001 = edgeId(body001, index = 4)'
+  const code = `${importSource}
+body001 = bodyOf(importedPart, path = [0])
+${edgeSource}
+`
+  const ast = assertParse(code, instance)
+  const importedGeometry = {
+    type: 'importedGeometry',
+    id: 'imported-body',
+    codeRef: codeRefFor(code, ast, importSource),
+  } as Artifact
+  const primitiveEdge = {
+    type: 'primitiveEdge',
+    id: 'coded-imported-edge',
+    solidId: importedGeometry.id,
+    codeRef: codeRefFor(code, ast, edgeSource),
+  } as Extract<Artifact, { type: 'primitiveEdge' }>
+  const uncodedFace: EnginePrimitiveSelection = {
+    type: 'enginePrimitive',
+    selectionOrder: 0,
+    entityId: 'uncoded-imported-face',
+    parentEntityId: 'imported-engine-body',
+    kclBodyId: importedGeometry.id,
+    kclBodyArtifactType: 'importedGeometry',
+    bodyPath: [0],
+    primitiveIndex: 5,
+    primitiveType: 'face',
+  }
+
+  const result = addDistanceGdt({
+    ast,
+    artifactGraph: new Map([
+      [importedGeometry.id, importedGeometry],
+      [primitiveEdge.id, primitiveEdge],
+    ]),
+    objects: {
+      graphSelections: [
+        {
+          selectionOrder: 1,
+          artifact: primitiveEdge,
+          codeRef: primitiveEdge.codeRef,
+        },
+      ],
+      otherSelections: [uncodedFace],
+    },
+    wasmInstance: instance,
+  })
+  if (err(result)) throw result
+
+  const newCode = recast(result.modifiedAst, instance)
+  expect(newCode).toContain('from = face001')
+  expect(newCode).toContain('to = edge001')
 })
 
 for (const operation of ['fillet', 'chamfer'] as const) {
