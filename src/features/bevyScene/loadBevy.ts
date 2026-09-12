@@ -1,5 +1,6 @@
 import { signal } from '@preact/signals'
 import type { ModelingEngineKind } from '@src/features/bevyScene/settings'
+import type { KcleanSourceDiagnostic } from '@src/features/bevyScene/kcleanDiagnostics'
 import type { CameraFrame, Vector3 } from '@src/lib/scene/projection'
 /**
  * The wasm-bindgen surface of bevy-zoo's embed build.
@@ -93,6 +94,8 @@ export interface BevyJobState {
   revision: number | null
   stage: string | null
   message: string | null
+  /** Kclean failures reverse-mapped to project-relative KCL source bytes. */
+  diagnostics: readonly KcleanSourceDiagnostic[]
   timings: {
     solveMs: number | null
     exportResponseMs: number | null

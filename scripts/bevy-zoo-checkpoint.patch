@@ -1,65 +1,238 @@
-diff --git a/Cargo.toml b/Cargo.toml
-index 9c98632..14cef5c 100644
---- a/Cargo.toml
-+++ b/Cargo.toml
-@@ -48,6 +48,7 @@ path = "src/main.rs"
- required-features = ["shell"]
- 
- [dependencies]
-+base64 = "0.22"
- bevy = { version = "0.19.1", default-features = false, features = ["3d", "ui", "webgpu"] }
- bevy_panorbit_camera = "0.35"
- crossbeam-channel = "0.5"
 diff --git a/Cargo.lock b/Cargo.lock
 index 0e2b351..2459764 100644
 --- a/Cargo.lock
 +++ b/Cargo.lock
-@@ -470,6 +470,7 @@ dependencies = [
- name = "bevy-zoo"
+@@ -471,4 +471,5 @@ name = "bevy-zoo"
  version = "0.1.0"
  dependencies = [
 + "base64",
   "bevy",
   "bevy_panorbit_camera",
-  "console_error_panic_hook",
+diff --git a/Cargo.toml b/Cargo.toml
+index 9c98632..14cef5c 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -49,4 +49,5 @@ required-features = ["shell"]
+ 
+ [dependencies]
++base64 = "0.22"
+ bevy = { version = "0.19.1", default-features = false, features = ["3d", "ui", "webgpu"] }
+ bevy_panorbit_camera = "0.35"
+diff --git a/src/embed.rs b/src/embed.rs
+index 6025159..7f5ce3e 100644
+--- a/src/embed.rs
++++ b/src/embed.rs
+@@ -297,8 +297,9 @@ fn describe(state: &ZooJobState, timings: &ZooTimings) -> serde_json::Value {
+             stage,
+             message,
++            diagnostics,
+         } => (
+             "failed",
+             Some(*revision),
+-            Some((stage_name(*stage), message.clone())),
++            Some((stage_name(*stage), message.clone(), diagnostics.clone())),
+         ),
+     };
+@@ -306,6 +307,10 @@ fn describe(state: &ZooJobState, timings: &ZooTimings) -> serde_json::Value {
+         "status": status,
+         "revision": revision,
+-        "stage": message.as_ref().map(|(stage, _)| *stage),
+-        "message": message.as_ref().map(|(_, message)| message.clone()),
++        "stage": message.as_ref().map(|(stage, _, _)| *stage),
++        "message": message.as_ref().map(|(_, message, _)| message.clone()),
++        "diagnostics": message
++            .as_ref()
++            .map(|(_, _, diagnostics)| diagnostics.as_slice())
++            .unwrap_or_default(),
+         "timings": {
+             "solveMs": millis(timings.solve),
+diff --git a/src/zoo/mod.rs b/src/zoo/mod.rs
+index 73b373a..43f07b8 100644
+--- a/src/zoo/mod.rs
++++ b/src/zoo/mod.rs
+@@ -41,4 +41,30 @@ pub struct KclProject {
+ }
+ 
++/// One Kclean execution failure mapped back to KCL source bytes.
++#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
++#[serde(rename_all = "camelCase")]
++pub struct SourceDiagnostic {
++    pub source: String,
++    pub start: usize,
++    pub end: usize,
++    pub severity: SourceDiagnosticSeverity,
++    pub message: String,
++}
++
++#[derive(Clone, Copy, Debug, serde::Deserialize, serde::Serialize)]
++#[serde(rename_all = "camelCase")]
++pub enum SourceDiagnosticSeverity {
++    Error,
++    Warning,
++    Info,
++}
++
++/// Structured failure information retained across the renderer boundary.
++#[derive(Clone, Debug)]
++pub struct ExecutionDiagnostic {
++    pub message: String,
++    pub source_diagnostics: Vec<SourceDiagnostic>,
++}
++
+ #[derive(Message)]
+ pub struct ExecuteKclProject(pub KclProject);
+@@ -65,4 +91,5 @@ pub enum ZooJobState {
+         stage: ZooOperation,
+         message: String,
++        diagnostics: Vec<SourceDiagnostic>,
+     },
+ }
+@@ -129,4 +156,5 @@ enum ZooResult {
+         stage: ZooOperation,
+         message: String,
++        diagnostics: Vec<SourceDiagnostic>,
+     },
+ }
+@@ -255,4 +283,5 @@ fn spawn_execution(revision: u64, project: KclProject, result_tx: Sender<ZooResu
+                     },
+                     message,
++                    diagnostics: vec![],
+                 },
+             };
+@@ -291,4 +320,5 @@ fn spawn_execution(revision: u64, project: KclProject, result_tx: Sender<ZooResu
+                 },
+                 message,
++                diagnostics: vec![],
+             },
+         };
+@@ -345,4 +375,5 @@ fn receive_zoo_results(
+                 let remote::ExecutionExport {
+                     glb,
++                    diagnostic,
+                     solve_time,
+                     solve_finished: _,
+@@ -354,4 +385,20 @@ fn receive_zoo_results(
+                 progress.timings.export_response_started = None;
+                 progress.timings.download_started = Some(response_finished);
++                if glb.is_empty() {
++                    if let Some(diagnostic) = diagnostic.as_ref() {
++                        progress.timings.download_started = None;
++                        progress.timings.failure = Some(ZooFailure {
++                            operation: ZooOperation::KclSolve,
++                            message: diagnostic.message.clone(),
++                        });
++                        *state = ZooJobState::Failed {
++                            revision,
++                            stage: ZooOperation::KclSolve,
++                            message: diagnostic.message.clone(),
++                            diagnostics: diagnostic.source_diagnostics.clone(),
++                        };
++                        continue;
++                    }
++                }
+                 if glb.len() < 12 || glb.get(..4) != Some(&b"glTF"[..]) {
+                     let message = "downloaded export is not a valid GLB file".to_string();
+@@ -365,4 +412,5 @@ fn receive_zoo_results(
+                         stage: ZooOperation::Download,
+                         message,
++                        diagnostics: vec![],
+                     };
+                     continue;
+@@ -423,6 +471,22 @@ fn receive_zoo_results(
+                 progress.timings.scene_load = None;
+                 progress.timings.scene_load_started = Some(Instant::now());
+-                *state = ZooJobState::Ready { revision, glb };
+-                info!("loaded Zoo GLB revision {revision} into the Bevy scene");
++                if let Some(diagnostic) = diagnostic {
++                    progress.timings.failure = Some(ZooFailure {
++                        operation: ZooOperation::KclSolve,
++                        message: diagnostic.message.clone(),
++                    });
++                    *state = ZooJobState::Failed {
++                        revision,
++                        stage: ZooOperation::KclSolve,
++                        message: diagnostic.message,
++                        diagnostics: diagnostic.source_diagnostics,
++                    };
++                    info!(
++                        "loaded certified checkpoint GLB revision {revision} into the Bevy scene"
++                    );
++                } else {
++                    *state = ZooJobState::Ready { revision, glb };
++                    info!("loaded Zoo GLB revision {revision} into the Bevy scene");
++                }
+             }
+             ZooResult::Failed {
+@@ -430,4 +494,5 @@ fn receive_zoo_results(
+                 stage,
+                 message,
++                diagnostics,
+             } => {
+                 if revision != requested.0 {
+@@ -449,4 +514,5 @@ fn receive_zoo_results(
+                     stage,
+                     message,
++                    diagnostics,
+                 };
+             }
+@@ -481,4 +547,5 @@ fn fit_camera_to_loaded_model(
+                 stage: ZooOperation::SceneLoad,
+                 message,
++                diagnostics: vec![],
+             };
+             commands.entity(root).remove::<PendingCameraFit>();
 diff --git a/src/zoo/remote.rs b/src/zoo/remote.rs
-index fd2ba8f..0f96b06 100644
+index fd2ba8f..ce24586 100644
 --- a/src/zoo/remote.rs
 +++ b/src/zoo/remote.rs
-@@ -28,6 +28,7 @@ const RESPONSE_TIMEOUT: Duration = Duration::from_secs(600);
+@@ -19,5 +19,5 @@ use uuid::Uuid;
+ use web_time::Instant;
  
+-use super::KclProject;
++use super::{ExecutionDiagnostic, KclProject};
+ 
+ type DirectWebSocket = WebSocketStream<reqwest::Upgraded>;
+@@ -29,4 +29,5 @@ const RESPONSE_TIMEOUT: Duration = Duration::from_secs(600);
  pub struct ExecutionExport {
      pub glb: Vec<u8>,
-+    pub diagnostic: Option<String>,
++    pub diagnostic: Option<ExecutionDiagnostic>,
      pub solve_time: Duration,
      pub solve_finished: Instant,
-     pub response_time: Duration,
-@@ -139,6 +140,7 @@ pub async fn execute_and_export(
-                     .ok_or_else(|| "Zoo export returned no GLB file".to_string())?;
+@@ -140,4 +141,5 @@ pub async fn execute_and_export(
                  return Ok(ExecutionExport {
                      glb,
 +                    diagnostic: None,
                      solve_time,
                      solve_finished,
-                     response_time: response_finished.duration_since(response_started),
 diff --git a/src/zoo/remote_wasm.rs b/src/zoo/remote_wasm.rs
-index e0a5808..5d1128c 100644
+index e0a5808..c50efbb 100644
 --- a/src/zoo/remote_wasm.rs
 +++ b/src/zoo/remote_wasm.rs
-@@ -3,6 +3,7 @@ use std::{
-     time::Duration,
+@@ -4,4 +4,5 @@ use std::{
  };
  
 +use base64::{Engine as _, engine::general_purpose::STANDARD as BASE64};
  use futures_util::{SinkExt, StreamExt, stream::SplitSink, stream::SplitStream};
  use gloo_net::{
-     http::{Request, Response},
-@@ -50,6 +51,18 @@ struct KcleanEvaluateRequest<'a> {
- #[derive(Deserialize)]
+@@ -24,5 +25,5 @@ use uuid::Uuid;
+ use web_time::Instant;
+ 
+-use super::KclProject;
++use super::{ExecutionDiagnostic, KclProject, SourceDiagnostic};
+ 
+ type BrowserRead = SplitStream<WebSocket>;
+@@ -51,4 +52,23 @@ struct KcleanEvaluateRequest<'a> {
  struct KcleanErrorEnvelope {
      error: KcleanError,
++    diagnostic: KcleanExecutionReport,
 +    #[serde(rename = "modelState")]
 +    model_state: Option<KcleanModelState>,
++}
++
++#[derive(Deserialize)]
++struct KcleanExecutionReport {
++    #[serde(default)]
++    diagnostics: Vec<SourceDiagnostic>,
 +}
 +
 +#[derive(Deserialize)]
@@ -72,26 +245,20 @@ index e0a5808..5d1128c 100644
 +    data_base64: String,
  }
  
- #[derive(Deserialize)]
-@@ -61,6 +74,8 @@ struct KcleanError {
- 
+@@ -62,4 +82,6 @@ struct KcleanError {
  pub struct ExecutionExport {
      pub glb: Vec<u8>,
 +    /// Present when the GLB is a certified checkpoint from a halted execution.
-+    pub diagnostic: Option<String>,
++    pub diagnostic: Option<ExecutionDiagnostic>,
      pub solve_time: Duration,
      pub solve_finished: Instant,
-     pub response_time: Duration,
-@@ -214,6 +229,7 @@ async fn execute_with_zoo(
-                     .ok_or_else(|| "Zoo export returned no GLB file".to_string())?;
+@@ -215,4 +237,5 @@ async fn execute_with_zoo(
                  return Ok(ExecutionExport {
                      glb,
 +                    diagnostic: None,
                      solve_time,
                      solve_finished,
-                     response_time: response_finished.duration_since(response_started),
-@@ -247,15 +263,26 @@ async fn execute_with_kclean(
-         .await
+@@ -248,8 +271,4 @@ async fn execute_with_kclean(
          .map_err(|error| format!("could not connect to Kclean: {error}"))?;
  
 -    if !response.ok() {
@@ -100,42 +267,35 @@ index e0a5808..5d1128c 100644
 -
      let solve_finished = Instant::now();
      let solve_time = solve_finished.duration_since(solve_started);
-     on_solved(solve_time, solve_finished);
+@@ -257,4 +276,16 @@ async fn execute_with_kclean(
  
      let response_started = Instant::now();
 +    if !response.ok() {
 +        let failure = kclean_failure(response).await;
 +        let response_finished = Instant::now();
-+        return match failure.glb {
-+            Some(glb) => Ok(ExecutionExport {
-+                glb,
-+                diagnostic: Some(failure.message),
-+                solve_time,
-+                solve_finished,
-+                response_time: response_finished.duration_since(response_started),
-+                response_finished,
-+            }),
-+            None => Err(failure.message),
-+        };
++        return Ok(ExecutionExport {
++            glb: failure.glb.unwrap_or_default(),
++            diagnostic: Some(failure.diagnostic),
++            solve_time,
++            solve_finished,
++            response_time: response_finished.duration_since(response_started),
++            response_finished,
++        });
 +    }
      let glb = response
          .binary()
-         .await
-@@ -263,6 +290,7 @@ async fn execute_with_kclean(
-     let response_finished = Instant::now();
+@@ -264,4 +295,5 @@ async fn execute_with_kclean(
      Ok(ExecutionExport {
          glb,
 +        diagnostic: None,
          solve_time,
          solve_finished,
-         response_time: response_finished.duration_since(response_started),
-@@ -282,18 +310,47 @@ fn kclean_evaluation_url(host: &str) -> Result<String, String> {
-     }
+@@ -283,16 +315,60 @@ fn kclean_evaluation_url(host: &str) -> Result<String, String> {
  }
  
 -async fn kclean_failure(response: Response) -> String {
 +struct KcleanFailure {
-+    message: String,
++    diagnostic: ExecutionDiagnostic,
 +    glb: Option<Vec<u8>>,
 +}
 +
@@ -166,60 +326,36 @@ index e0a5808..5d1128c 100644
 +                        .ok()
 +                        .filter(|bytes| bytes.len() == state.byte_length)
 +                });
-+                KcleanFailure { message, glb }
++                KcleanFailure {
++                    diagnostic: ExecutionDiagnostic {
++                        message,
++                        source_diagnostics: problem.diagnostic.diagnostics,
++                    },
++                    glb,
++                }
 +            }
 +            Err(_) if body.trim().is_empty() => KcleanFailure {
-+                message: format!("Kclean request failed with HTTP {status}"),
++                diagnostic: ExecutionDiagnostic {
++                    message: format!("Kclean request failed with HTTP {status}"),
++                    source_diagnostics: vec![],
++                },
 +                glb: None,
 +            },
 +            Err(_) => KcleanFailure {
-+                message: format!("Kclean request failed with HTTP {status}: {}", body.trim()),
++                diagnostic: ExecutionDiagnostic {
++                    message: format!("Kclean request failed with HTTP {status}: {}", body.trim()),
++                    source_diagnostics: vec![],
++                },
 +                glb: None,
 +            },
 +        },
 +        Err(error) => KcleanFailure {
-+            message: format!("Kclean request failed with HTTP {status}: {error}"),
++            diagnostic: ExecutionDiagnostic {
++                message: format!("Kclean request failed with HTTP {status}: {error}"),
++                source_diagnostics: vec![],
++            },
 +            glb: None,
          },
 -        Err(error) => format!("Kclean request failed with HTTP {status}: {error}"),
      }
  }
- 
-diff --git a/src/zoo/mod.rs b/src/zoo/mod.rs
-index 73b373a..5c91bb1 100644
---- a/src/zoo/mod.rs
-+++ b/src/zoo/mod.rs
-@@ -344,6 +344,7 @@ fn receive_zoo_results(
-                 }
-                 let remote::ExecutionExport {
-                     glb,
-+                    diagnostic,
-                     solve_time,
-                     solve_finished: _,
-                     response_time,
-@@ -422,8 +423,23 @@ fn receive_zoo_results(
-                 progress.timings.download_started = None;
-                 progress.timings.scene_load = None;
-                 progress.timings.scene_load_started = Some(Instant::now());
--                *state = ZooJobState::Ready { revision, glb };
--                info!("loaded Zoo GLB revision {revision} into the Bevy scene");
-+                if let Some(message) = diagnostic {
-+                    progress.timings.failure = Some(ZooFailure {
-+                        operation: ZooOperation::KclSolve,
-+                        message: message.clone(),
-+                    });
-+                    *state = ZooJobState::Failed {
-+                        revision,
-+                        stage: ZooOperation::KclSolve,
-+                        message,
-+                    };
-+                    info!(
-+                        "loaded certified checkpoint GLB revision {revision} into the Bevy scene"
-+                    );
-+                } else {
-+                    *state = ZooJobState::Ready { revision, glb };
-+                    info!("loaded Zoo GLB revision {revision} into the Bevy scene");
-+                }
-             }
-             ZooResult::Failed {
-                 revision,

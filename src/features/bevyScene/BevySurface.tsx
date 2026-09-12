@@ -1,12 +1,18 @@
 import { effect, useSignal } from '@preact/signals'
+import { setDiagnostics } from '@codemirror/lint'
 import { useService, useValueSpec } from '@src/app/context'
 import { authService } from '@src/contracts/auth'
 import { fileSystemService } from '@src/contracts/fileSystem'
-import { projectSessionService } from '@src/contracts/projectSession'
+import {
+  type ProjectSession,
+  projectSessionService,
+} from '@src/contracts/projectSession'
 import { sceneInteractionsValueSpec } from '@src/contracts/scene'
 import { settingsService } from '@src/contracts/settings'
 import { themeService } from '@src/contracts/theme'
 import { collectProject } from '@src/features/bevyScene/collectProject'
+import type { KclProjectPayload } from '@src/features/bevyScene/collectProject'
+import { kcleanDiagnosticsForSource } from '@src/features/bevyScene/kcleanDiagnostics'
 import { type BevyJobState, startBevy } from '@src/features/bevyScene/loadBevy'
 import {
   kcleanServerSetting,
@@ -14,6 +20,7 @@ import {
   modelingEngineSetting,
 } from '@src/features/bevyScene/settings'
 import { useEffect, useRef } from 'preact/hooks'
+import { bufferOrigin } from '@src/lib/buffers/annotations'
 import '@src/features/bevyScene/bevyScene.css'
 
 /** The canvas bevy-zoo is told to take over. */
@@ -77,6 +84,7 @@ export function BevySurface() {
 
   useEffect(() => {
     let cancelled = false
+    let submitted: KclProjectPayload | null = null
     const started = startBevy({
       canvas: `#${CANVAS_ID}`,
       token: auth.token.value,
@@ -87,6 +95,9 @@ export function BevySurface() {
       darkMode: theme.resolved.peek() === 'dark',
       onState: (next) => {
         state.value = next
+        if (engine === 'kclean' && submitted) {
+          publishKcleanDiagnostics(sessions.current.peek(), submitted, next)
+        }
       },
     })
     started.catch((reason: unknown) => {
@@ -135,6 +146,7 @@ export function BevySurface() {
             collectProject(session, fileSystem),
           ])
           if (cancelled || !payload) return
+          submitted = payload
           module.push_project(payload.entrypoint, JSON.stringify(payload.files))
         })().catch((reason: unknown) => {
           if (cancelled) return
@@ -159,6 +171,36 @@ export function BevySurface() {
       <BevyNotice engine={engine} state={state.value} error={error.value} />
     </div>
   )
+}
+
+/**
+ * Publish only against the exact project snapshot Kclean evaluated. A buffer
+ * edited while the request was in flight is deliberately left untouched.
+ */
+function publishKcleanDiagnostics(
+  session: ProjectSession | null,
+  project: KclProjectPayload,
+  state: BevyJobState
+) {
+  if (!session || (state.status !== 'failed' && state.status !== 'ready'))
+    return
+
+  const diagnostics = state.status === 'failed' ? state.diagnostics : []
+  for (const [source, contents] of Object.entries(project.files)) {
+    const buffer =
+      session.bufferForPath(source) ??
+      (source === project.entrypoint ? session.executingBuffer.peek() : null)
+    if (!buffer || buffer.text.peek() !== contents) continue
+
+    const mapped = kcleanDiagnosticsForSource(
+      contents,
+      diagnostics.filter((diagnostic) => diagnostic.source === source)
+    )
+    buffer.dispatch({
+      ...setDiagnostics(buffer.state.peek(), mapped),
+      annotations: bufferOrigin.of('semantic'),
+    })
+  }
 }
 
 /**
