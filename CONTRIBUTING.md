@@ -291,10 +291,8 @@ To display logging (to the terminal or console) set `ZOO_LOG=1`. This will log s
 
 For native Engine WebSocket investigations, set `ZOO_ENGINE_CONNECTION_DIAGNOSTICS=1`.
 This emits JSON error records to stderr even in LSP builds with `disable-println`.
-Each record includes the HTTP upgrade's `x-request-id` (or `null` if unavailable),
-the operation, timestamp, error, and whether local close had been requested.
-The close flag records local intent; it does not establish which peer caused a disconnect.
-Only this request-ID header is retained, and successful traffic is not logged.
+Records include only the upgrade's `x-request-id`, operation, timestamp, error,
+and local-close intent, which does not establish the disconnect's cause.
 The sharded Rust CI tests enable these diagnostics; they are otherwise off by default.
 
 To enable memory metrics, build with `--features dhat-heap`.

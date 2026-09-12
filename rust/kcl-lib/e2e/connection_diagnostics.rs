@@ -8,7 +8,6 @@ use kcl_lib::ExecutorContext;
 use kcl_lib::ExecutorSettings;
 use kcl_lib::SourceRange;
 use kittycad_modeling_cmds::websocket::WebSocketRequest;
-use tokio_tungstenite::tungstenite::Message as WsMsg;
 use uuid::Uuid;
 
 const DIAGNOSTICS_ENV: &str = "ZOO_ENGINE_CONNECTION_DIAGNOSTICS";
@@ -96,13 +95,12 @@ async fn connection_diagnostics_fixture() {
             )
             .await
             .unwrap();
+                // Wait for client close or its first send before dropping TCP.
+                let message = websocket.next().await.unwrap().unwrap();
                 if local_close {
-                    // Match an API that tears down TCP after receiving our Close frame.
-                    assert!(matches!(websocket.next().await.unwrap().unwrap(), WsMsg::Close(_)));
+                    assert!(message.is_close());
                 } else {
-                    // Let a request finish sending before dropping TCP, so its caller
-                    // observes the read failure before trying the subsequent send.
-                    assert!(matches!(websocket.next().await.unwrap().unwrap(), WsMsg::Text(_)));
+                    assert!(message.is_text());
                 }
                 // Drop without session data or a WebSocket close handshake.
             });

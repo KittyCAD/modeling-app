@@ -42,8 +42,6 @@ use crate::settings::types::default_backface_color_struct;
 
 pub enum TransportCloseError {}
 
-#[cfg(not(target_arch = "wasm32"))]
-mod connection_diagnostics;
 mod engine_transport;
 mod mock_transport;
 #[cfg(target_arch = "wasm32")]
@@ -161,7 +159,7 @@ impl EngineManager {
             Arc::clone(&session_data),
             Arc::clone(&pending_errors),
             Arc::clone(&socket_health),
-            connection_diagnostics::upgrade_request_id(headers),
+            ws_transport::upgrade_request_id(headers),
         )
         .await;
 
