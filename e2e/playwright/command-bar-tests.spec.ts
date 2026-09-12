@@ -387,34 +387,10 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     cmdBar,
     toolbar,
     context,
-    tronApp,
   }) => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
-      const diagnostic = {
-        keys: [] as {
-          key: string
-          code: string
-          ctrl: boolean
-          meta: boolean
-        }[],
-      }
-      ;(window as any).__case04 = diagnostic
-      window.addEventListener(
-        'keydown',
-        (event) => {
-          if (event.code === 'KeyK') {
-            diagnostic.keys.push({
-              key: event.key,
-              code: event.code,
-              ctrl: event.ctrlKey,
-              meta: event.metaKey,
-            })
-          }
-        },
-        { capture: true }
-      )
     }, `sketch001 = startSketchOn(XZ)`)
     await homePage.goToModelingScene()
     await scene.settled()
@@ -448,33 +424,8 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     await rectangleToolButton.click()
     await expect(rectangleToolButton).toHaveAttribute('aria-pressed', 'true')
 
-    const reportCommandOpen = async (phase: string) => {
-      console.log(
-        'CASE04',
-        JSON.stringify({
-          phase,
-          renderer: await page.evaluate(() => ({
-            state: window.app.commands.actor.getSnapshot().value,
-            keys: (window as any).__case04.keys,
-            focused: document.hasFocus(),
-            activeTag: document.activeElement?.tagName,
-          })),
-          native: await tronApp?.electron.evaluate(({ BrowserWindow }) =>
-            BrowserWindow.getAllWindows().map((window) => ({
-              focused: window.isFocused(),
-              visible: window.isVisible(),
-            }))
-          ),
-        })
-      )
-    }
-    await reportCommandOpen('before')
     await page.keyboard.press('ControlOrMeta+K')
-    try {
-      await expect(page.getByPlaceholder('Search commands')).toBeFocused()
-    } finally {
-      await reportCommandOpen('after')
-    }
+    await expect(page.getByPlaceholder('Search commands')).toBeFocused()
     await expect(
       page.getByRole('option', { name: 'Reset view', exact: false })
     ).toBeVisible()
