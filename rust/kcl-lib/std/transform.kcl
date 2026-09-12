@@ -52,7 +52,7 @@ import Axis2d, Axis3d, Edge, GdtAnnotation, Helix, Plane, Point3d, Segment, Sket
 /// // example = extrude(sketch001, length = 10)
 /// ```
 ///
-/// ```kcl,sketchSolve
+/// ```kcl,sketchSolve,no3d
 /// // Mirror an un-closed sketch across a line from a sketch block.
 /// helper001 = sketch(on = XZ) {
 ///   line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 10mm])
@@ -386,7 +386,7 @@ export fn translate(
   @(includeInSnippet = true)
   z?: number(Length) = 0,
   /// If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move.
-  global?: bool = false,  
+  global?: bool = false,
   /// If given, interpret this point as 3 distances, along each of [X, Y, Z] and translate by each of them.
   xyz?: [number(Length); 3]
 ): [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry {}
@@ -692,7 +692,7 @@ export fn rotate(
 /// button1 = startSketchOn(XY)
 ///   |> circle(center = [0, 0], radius = 1.53)
 ///   |> extrude(length = 1)
-/// 
+///
 /// // Duplicate it, but use `scale` to make it smaller.
 /// button2 = startSketchOn(XY)
 ///   |> circle(center = [0, 0], radius = 1.53)
@@ -749,7 +749,7 @@ export fn scale(
   @(includeInSnippet = true)
   z?: number(Count) = 1,
   /// If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move.
-  global?: bool = false,  
+  global?: bool = false,
   /// If given, scale the solid by this dimensionless factor.
   /// Equivalent to setting `x`, `y` and `z` all to this number.
   /// Incompatible with `x`, `y` or `z`.
@@ -762,7 +762,7 @@ export fn scale(
 /// Hiding can be useful to see hard-to-reach vantages, or clarify overlapping geometry
 /// while you work.
 ///
-/// ```kcl,legacySketch
+/// ```kcl,legacySketch,no3d
 /// // Hide a body, leaving a sketch on face intact
 /// cylinder = startSketchOn(XY)
 ///   |> circle(center = [0, 0], radius = 2)
@@ -771,7 +771,7 @@ export fn scale(
 ///   |> circle(center = [0, 0], radius = 1)
 /// hide(cylinder)
 /// ```
-/// ```kcl,legacySketch
+/// ```kcl,legacySketch,no3d
 /// // Hide an imported model, leaving a local sketch.
 /// import "tests/inputs/cube.sldprt" as cube
 ///
@@ -790,10 +790,10 @@ export fn scale(
 /// ```
 /// ```kcl,legacySketch
 /// @settings(defaultLengthUnit = in)
-/// 
+///
 /// // Example of hiding GDT annotations
 /// width = 5
-/// 
+///
 /// startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [width, 0], tag = $side1)
@@ -802,14 +802,14 @@ export fn scale(
 ///   |> line(end = [0, -width], tag = $side4)
 ///   |> close()
 ///   |> extrude(length = 5, tagStart = $bottom, tagEnd = $top)
-/// 
+///
 /// label = gdt::datum(
 ///   face = side2,
 ///   name = "A",
 ///   framePosition = [5, 0],
 ///   framePlane = XZ,
 /// )
-/// 
+///
 /// hide(label)
 /// ```
 @(impl = std_rust, feature_tree = true)
@@ -820,7 +820,7 @@ export fn hide(
 
 /// Deletes something from the scene. Once it's deleted, you can't use it anymore.
 /// This means deleting something twice is an error, as is hiding something after you delete it.
-/// ```kcl,sketchSolve
+/// ```kcl,sketchSolve,no3d
 /// // Basic example, showing deleting something.
 /// @settings(kclVersion = 2.0, experimentalFeatures = allow)
 ///
@@ -845,7 +845,7 @@ export fn hide(
 ///   tag = $seg01,
 /// )
 /// cylinder = extrude(profile001, length = 5)
-/// 
+///
 /// // Make a wedge that splits the cylinder down the middle.
 /// sketch002 = startSketchOn(XY)
 /// profile002 = startProfile(sketch002, at = [0, -4.75])
@@ -855,10 +855,10 @@ export fn hide(
 ///   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 ///   |> close()
 /// wedge = extrude(profile002, length = 15, symmetric = true)
-/// 
+///
 /// // Split the cylinder down the wedge.
 /// result = split([cylinder], tools = [wedge])
-/// 
+///
 /// // Delete the left and right split parts.
 /// delete([result[2], result[0]])
 /// ```

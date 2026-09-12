@@ -2324,7 +2324,7 @@ export fn segStartY(
 
 /// Extract the 'x' axis value of the last line segment in the provided 2-d sketch.
 ///
-/// ```kcl,legacySketch
+/// ```kcl,legacySketch,no3d
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [5, 0])
