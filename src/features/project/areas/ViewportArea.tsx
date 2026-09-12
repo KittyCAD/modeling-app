@@ -10,7 +10,11 @@ import {
 } from '@src/contracts/execution'
 import { projectSessionService } from '@src/contracts/projectSession'
 import { settingsService } from '@src/contracts/settings'
-import { rendererSetting } from '@src/features/bevyScene/settings'
+import {
+  effectiveRenderer,
+  modelingEngineSetting,
+  rendererSetting,
+} from '@src/features/bevyScene/settings'
 import { EngineStream } from '@src/features/engineScene/EngineStream'
 import { SceneZones } from '@src/features/engineScene/SceneZones'
 import type { ComponentChildren } from 'preact'
@@ -120,7 +124,12 @@ export function ViewportArea() {
   /** One path for every "connect" affordance, so sign-in is never skipped. */
   const connect = () => commands.run('engine.connect')
 
-  const renderer = useComputed(() => settings.value(rendererSetting).value)
+  const renderer = useComputed(() =>
+    effectiveRenderer(
+      settings.value(modelingEngineSetting).value,
+      settings.value(rendererSetting).value
+    )
+  )
   const session = useComputed(() => sessions.current.value)
   const executing = useComputed(
     () => session.value?.executingBuffer.value ?? null

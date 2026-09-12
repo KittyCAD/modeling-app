@@ -1,4 +1,5 @@
 import { signal } from '@preact/signals'
+import type { ModelingEngineKind } from '@src/features/bevyScene/settings'
 import type { CameraFrame, Vector3 } from '@src/lib/scene/projection'
 /**
  * The wasm-bindgen surface of bevy-zoo's embed build.
@@ -17,7 +18,13 @@ export interface BevyModule {
    */
   default: (moduleOrPath?: unknown) => Promise<unknown>
   /** Take over the canvas matching a CSS selector and start rendering. */
-  start: (canvas: string, token?: string | null, host?: string | null) => void
+  start: (
+    canvas: string,
+    token?: string | null,
+    host?: string | null,
+    engine?: ModelingEngineKind | null,
+    kcleanHost?: string | null
+  ) => void
   /** `files` is a JSON object of name to contents; `entrypoint` names one of them. */
   push_project: (entrypoint: string, files: string) => void
   set_state_callback: (callback: (payload: string) => void) => void
@@ -159,6 +166,8 @@ export interface StartOptions {
   canvas: string
   token: string | null
   host: string | null
+  engine: ModelingEngineKind
+  kcleanHost: string | null
   onState?: (state: BevyJobState) => void
 }
 
@@ -222,7 +231,13 @@ async function start(options: StartOptions): Promise<BevyModule> {
     }
   })
 
-  module.start(options.canvas, options.token, options.host)
+  module.start(
+    options.canvas,
+    options.token,
+    options.host,
+    options.engine,
+    options.kcleanHost
+  )
   announceStarted(module)
   return module
 }

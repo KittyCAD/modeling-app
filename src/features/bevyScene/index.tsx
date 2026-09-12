@@ -16,6 +16,8 @@ import { createBevyProjection } from '@src/features/bevyScene/createBevyProjecti
 import { whenBevyStarted } from '@src/features/bevyScene/loadBevy'
 import {
   bevySceneSettings,
+  effectiveRenderer,
+  modelingEngineSetting,
   rendererSetting,
 } from '@src/features/bevyScene/settings'
 
@@ -114,10 +116,11 @@ export default defineRegistryItemFactory((ctx) => {
       // it would hand the camera over and immediately take it back.
       if (!store.hydrated.value) return
 
-      const wanted =
-        store.value(rendererSetting).value === 'bevy'
-          ? BEVY_CAMERA
-          : ENGINE_CAMERA
+      const renderer = effectiveRenderer(
+        store.value(modelingEngineSetting).value,
+        store.value(rendererSetting).value
+      )
+      const wanted = renderer === 'bevy' ? BEVY_CAMERA : ENGINE_CAMERA
 
       // Swapped outside this effect deliberately. Reconfiguring a slot is
       // forbidden while the graph is being flattened, and reading the plugin list
@@ -154,9 +157,15 @@ export default defineRegistryItemFactory((ctx) => {
           id: 'bevyScene.surface',
           zone: 'fill',
           order: -1000,
-          visible: computed(
-            () => settings().value(rendererSetting).value === 'bevy'
-          ),
+          visible: computed(() => {
+            const store = settings()
+            return (
+              effectiveRenderer(
+                store.value(modelingEngineSetting).value,
+                store.value(rendererSetting).value
+              ) === 'bevy'
+            )
+          }),
           render: () => <BevySurface />,
         }),
       ],

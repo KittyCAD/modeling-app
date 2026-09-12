@@ -10,9 +10,9 @@ export interface KclProjectPayload {
 /**
  * The whole project as text, keyed by path relative to its root.
  *
- * Every file has to be here. bevy-zoo sends the project to Zoo's engine to be
- * solved, and the engine cannot see this machine's disk — so a file the
- * entrypoint imports but nobody has opened still has to be read and sent.
+ * Every file has to be here. The selected remote engine cannot see this
+ * machine's disk, whether Bevy sends the snapshot to Zoo or Kclean — so a file
+ * the entrypoint imports but nobody has opened still has to be read and sent.
  *
  * Disk is the source, then unsaved buffers are laid over it. The other way round
  * would render the last saved version of whatever is being edited, which reads as

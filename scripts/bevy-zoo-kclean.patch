@@ -1,0 +1,298 @@
+diff --git a/src/embed.rs b/src/embed.rs
+index b9af118..d79fe36 100644
+--- a/src/embed.rs
++++ b/src/embed.rs
+@@ -50,12 +50,23 @@ struct PushedCamera(Receiver<CameraRequest>);
+ ///
+ /// `canvas` is a CSS selector for a canvas the host has already put in the
+ /// document — the host owns the element's size and position, and Bevy tracks it.
+-/// `token` and `host` are written to the same local-storage keys the standalone
+-/// browser build reads, so the Zoo client is unchanged by being embedded.
++/// Connection settings are written to local storage before the render app
++/// starts. The asynchronous execution client reads them when a project arrives.
+ #[wasm_bindgen]
+-pub fn start(canvas: String, token: Option<String>, host: Option<String>) {
++pub fn start(
++    canvas: String,
++    token: Option<String>,
++    host: Option<String>,
++    engine: Option<String>,
++    kclean_host: Option<String>,
++) {
+     console_error_panic_hook::set_once();
+-    store_credentials(token.as_deref(), host.as_deref());
++    store_connection(
++        token.as_deref(),
++        host.as_deref(),
++        engine.as_deref(),
++        kclean_host.as_deref(),
++    );
+ 
+     let mut app = App::new();
+     register_runtime_asset_source(&mut app);
+@@ -141,7 +152,12 @@ pub fn set_state_callback(callback: js_sys::Function) {
+     STATE_CALLBACK.with(|slot| *slot.borrow_mut() = Some(callback));
+ }
+ 
+-fn store_credentials(token: Option<&str>, host: Option<&str>) {
++fn store_connection(
++    token: Option<&str>,
++    host: Option<&str>,
++    engine: Option<&str>,
++    kclean_host: Option<&str>,
++) {
+     let Some(storage) = web_sys::window().and_then(|window| window.local_storage().ok().flatten())
+     else {
+         return;
+@@ -152,6 +168,12 @@ fn store_credentials(token: Option<&str>, host: Option<&str>) {
+     if let Some(host) = host.map(str::trim).filter(|host| !host.is_empty()) {
+         let _ = storage.set_item("zoo-api-host", host);
+     }
++    if let Some(engine) = engine.map(str::trim).filter(|engine| !engine.is_empty()) {
++        let _ = storage.set_item("zds-modeling-engine", engine);
++    }
++    if let Some(host) = kclean_host.map(str::trim).filter(|host| !host.is_empty()) {
++        let _ = storage.set_item("zds-kclean-host", host);
++    }
+ }
+ 
+ /// Be told where the camera is, whenever it moves.
+diff --git a/src/zoo/remote_wasm.rs b/src/zoo/remote_wasm.rs
+index ce5f7ab..e0a5808 100644
+--- a/src/zoo/remote_wasm.rs
++++ b/src/zoo/remote_wasm.rs
+@@ -1,7 +1,13 @@
+-use std::{collections::HashMap, time::Duration};
++use std::{
++    collections::{BTreeMap, HashMap},
++    time::Duration,
++};
+ 
+ use futures_util::{SinkExt, StreamExt, stream::SplitSink, stream::SplitStream};
+-use gloo_net::websocket::{Message, futures::WebSocket};
++use gloo_net::{
++    http::{Request, Response},
++    websocket::{Message, futures::WebSocket},
++};
+ use gloo_timers::future::TimeoutFuture;
+ use kittycad_modeling_cmds::{
+     ModelingCmd, each_cmd as mcmd,
+@@ -13,6 +19,7 @@ use kittycad_modeling_cmds::{
+         WebSocketResponse,
+     },
+ };
++use serde::{Deserialize, Serialize};
+ use uuid::Uuid;
+ use web_time::Instant;
+ 
+@@ -23,6 +30,34 @@ type BrowserWrite = SplitSink<WebSocket, Message>;
+ 
+ const RESPONSE_TIMEOUT: Duration = Duration::from_secs(600);
+ const DEFAULT_ZOO_HOST: &str = "https://api.zoo.dev";
++const DEFAULT_KCLEAN_HOST: &str = "http://127.0.0.1:3001";
++
++/// A fully parsed execution target. Downstream request code cannot observe an
++/// engine name without the connection data that engine requires.
++enum ExecutionBackend {
++    Zoo { token: String, host: String },
++    Kclean { host: String },
++}
++
++#[derive(Serialize)]
++#[serde(rename_all = "camelCase")]
++struct KcleanEvaluateRequest<'a> {
++    entrypoint: &'a str,
++    files: &'a BTreeMap<String, String>,
++    output_format: &'static str,
++}
++
++#[derive(Deserialize)]
++struct KcleanErrorEnvelope {
++    error: KcleanError,
++}
++
++#[derive(Deserialize)]
++struct KcleanError {
++    code: String,
++    phase: String,
++    message: String,
++}
+ 
+ pub struct ExecutionExport {
+     pub glb: Vec<u8>,
+@@ -36,23 +71,59 @@ pub async fn execute_and_export(
+     project: KclProject,
+     on_solved: impl FnOnce(Duration, Instant),
+ ) -> Result<ExecutionExport, String> {
++    match execution_backend()? {
++        ExecutionBackend::Zoo { token, host } => {
++            execute_with_zoo(project, token, host, on_solved).await
++        }
++        ExecutionBackend::Kclean { host } => execute_with_kclean(project, host, on_solved).await,
++    }
++}
++
++fn execution_backend() -> Result<ExecutionBackend, String> {
+     let storage = web_sys::window()
+         .ok_or_else(|| "browser window is unavailable".to_string())?
+         .local_storage()
+         .map_err(|_| "could not access browser local storage".to_string())?
+         .ok_or_else(|| "browser local storage is unavailable".to_string())?;
+-    let token = storage
+-        .get_item("zoo-api-token")
+-        .map_err(|_| "could not read Zoo API token from browser storage".to_string())?
+-        .filter(|token| !token.is_empty())
+-        .ok_or_else(|| {
+-            "set localStorage['zoo-api-token'] to a Zoo API token and reload".to_string()
+-        })?;
+-    let host = storage
+-        .get_item("zoo-api-host")
+-        .ok()
+-        .flatten()
+-        .unwrap_or_else(|| DEFAULT_ZOO_HOST.into());
++    let engine = storage
++        .get_item("zds-modeling-engine")
++        .map_err(|_| "could not read the modeling engine from browser storage".to_string())?;
++    match engine.as_deref().unwrap_or("zoo") {
++        "zoo" => {
++            let token = storage
++                .get_item("zoo-api-token")
++                .map_err(|_| "could not read Zoo API token from browser storage".to_string())?
++                .filter(|token| !token.is_empty())
++                .ok_or_else(|| {
++                    "set localStorage['zoo-api-token'] to a Zoo API token and reload".to_string()
++                })?;
++            let host = storage
++                .get_item("zoo-api-host")
++                .ok()
++                .flatten()
++                .unwrap_or_else(|| DEFAULT_ZOO_HOST.into());
++            Ok(ExecutionBackend::Zoo { token, host })
++        }
++        "kclean" => {
++            let host = storage
++                .get_item("zds-kclean-host")
++                .map_err(|_| {
++                    "could not read the Kclean server URL from browser storage".to_string()
++                })?
++                .filter(|host| !host.trim().is_empty())
++                .unwrap_or_else(|| DEFAULT_KCLEAN_HOST.into());
++            Ok(ExecutionBackend::Kclean { host })
++        }
++        other => Err(format!("unsupported modeling engine `{other}`")),
++    }
++}
++
++async fn execute_with_zoo(
++    project: KclProject,
++    token: String,
++    host: String,
++    on_solved: impl FnOnce(Duration, Instant),
++) -> Result<ExecutionExport, String> {
+     let websocket_url = modeling_websocket_url(&host);
+     let stream = WebSocket::open(&websocket_url)
+         .map_err(|error| format!("could not connect to Zoo modeling service: {error}"))?;
+@@ -155,6 +226,77 @@ pub async fn execute_and_export(
+     }
+ }
+ 
++async fn execute_with_kclean(
++    project: KclProject,
++    host: String,
++    on_solved: impl FnOnce(Duration, Instant),
++) -> Result<ExecutionExport, String> {
++    let request = KcleanEvaluateRequest {
++        entrypoint: &project.entrypoint,
++        files: &project.files,
++        output_format: "glb",
++    };
++    let body = serde_json::to_string(&request)
++        .map_err(|error| format!("could not encode Kclean request: {error}"))?;
++    let solve_started = Instant::now();
++    let response = Request::post(&kclean_evaluation_url(&host)?)
++        .header("Content-Type", "application/json")
++        .body(body)
++        .map_err(|error| format!("could not build Kclean request: {error}"))?
++        .send()
++        .await
++        .map_err(|error| format!("could not connect to Kclean: {error}"))?;
++
++    if !response.ok() {
++        return Err(kclean_failure(response).await);
++    }
++
++    let solve_finished = Instant::now();
++    let solve_time = solve_finished.duration_since(solve_started);
++    on_solved(solve_time, solve_finished);
++
++    let response_started = Instant::now();
++    let glb = response
++        .binary()
++        .await
++        .map_err(|error| format!("could not read Kclean GLB response: {error}"))?;
++    let response_finished = Instant::now();
++    Ok(ExecutionExport {
++        glb,
++        solve_time,
++        solve_finished,
++        response_time: response_finished.duration_since(response_started),
++        response_finished,
++    })
++}
++
++fn kclean_evaluation_url(host: &str) -> Result<String, String> {
++    let host = host.trim().trim_end_matches('/');
++    if host.is_empty() {
++        return Err("Kclean server URL is empty".into());
++    }
++    if host.ends_with("/v1/evaluations") {
++        Ok(host.into())
++    } else {
++        Ok(format!("{host}/v1/evaluations"))
++    }
++}
++
++async fn kclean_failure(response: Response) -> String {
++    let status = response.status();
++    match response.text().await {
++        Ok(body) => match serde_json::from_str::<KcleanErrorEnvelope>(&body) {
++            Ok(problem) => format!(
++                "Kclean {} failed [{}]: {}",
++                problem.error.phase, problem.error.code, problem.error.message
++            ),
++            Err(_) if body.trim().is_empty() => format!("Kclean request failed with HTTP {status}"),
++            Err(_) => format!("Kclean request failed with HTTP {status}: {}", body.trim()),
++        },
++        Err(error) => format!("Kclean request failed with HTTP {status}: {error}"),
++    }
++}
++
+ fn modeling_websocket_url(host: &str) -> String {
+     let host = host.trim_end_matches('/');
+     let host = host
+@@ -232,7 +374,7 @@ fn failure_message(errors: Vec<kittycad_modeling_cmds::websocket::ApiError>) ->
+ 
+ #[cfg(test)]
+ mod tests {
+-    use super::modeling_websocket_url;
++    use super::{kclean_evaluation_url, modeling_websocket_url};
+ 
+     #[test]
+     fn converts_https_api_hosts_to_browser_websockets() {
+@@ -241,4 +383,16 @@ mod tests {
+             "wss://api.zoo.dev/ws/modeling/commands?show_grid=false&webrtc=false"
+         );
+     }
++
++    #[test]
++    fn appends_the_kclean_evaluation_path_once() {
++        assert_eq!(
++            kclean_evaluation_url("http://127.0.0.1:3001/").unwrap(),
++            "http://127.0.0.1:3001/v1/evaluations"
++        );
++        assert_eq!(
++            kclean_evaluation_url("https://demo.test/v1/evaluations").unwrap(),
++            "https://demo.test/v1/evaluations"
++        );
++    }
+ }

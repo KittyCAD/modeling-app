@@ -4,8 +4,14 @@ import { authService } from '@src/contracts/auth'
 import { fileSystemService } from '@src/contracts/fileSystem'
 import { projectSessionService } from '@src/contracts/projectSession'
 import { sceneInteractionsValueSpec } from '@src/contracts/scene'
+import { settingsService } from '@src/contracts/settings'
 import { collectProject } from '@src/features/bevyScene/collectProject'
 import { type BevyJobState, startBevy } from '@src/features/bevyScene/loadBevy'
+import {
+  kcleanServerSetting,
+  type ModelingEngineKind,
+  modelingEngineSetting,
+} from '@src/features/bevyScene/settings'
 import { useEffect, useRef } from 'preact/hooks'
 import '@src/features/bevyScene/bevyScene.css'
 
@@ -31,6 +37,8 @@ export function BevySurface() {
   const auth = useService(authService)
   const sessions = useService(projectSessionService)
   const fileSystem = useService(fileSystemService)
+  const settings = useService(settingsService)
+  const engine = settings.read(modelingEngineSetting)
 
   const state = useSignal<BevyJobState | null>(null)
   const error = useSignal<string | null>(null)
@@ -72,6 +80,8 @@ export function BevySurface() {
       token: auth.token.value,
       host:
         (import.meta.env?.VITE_KC_API_BASE_URL as string | undefined) ?? null,
+      engine,
+      kcleanHost: settings.read(kcleanServerSetting),
       onState: (next) => {
         state.value = next
       },
@@ -126,12 +136,12 @@ export function BevySurface() {
       stop()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [auth, sessions, fileSystem])
+  }, [auth, sessions, fileSystem, settings, engine])
 
   return (
     <div class="zds-bevy">
       <canvas ref={canvas} id={CANVAS_ID} class="zds-bevy__canvas" />
-      <BevyNotice state={state.value} error={error.value} />
+      <BevyNotice engine={engine} state={state.value} error={error.value} />
     </div>
   )
 }
@@ -144,9 +154,11 @@ export function BevySurface() {
  * that fetches geometry and draws it here.
  */
 function BevyNotice({
+  engine,
   state,
   error,
 }: {
+  engine: ModelingEngineKind
   state: BevyJobState | null
   error: string | null
 }) {
@@ -168,13 +180,14 @@ function BevyNotice({
   if (state.status === 'idle') return null
   return (
     <div class="zds-bevy__notice" role="status">
-      {LABELS[state.status]}
+      {state.status === 'connecting'
+        ? `Connecting to ${engine === 'kclean' ? 'Kclean' : 'Zoo'}…`
+        : LABELS[state.status]}
     </div>
   )
 }
 
 const LABELS = {
-  connecting: 'Connecting to Zoo…',
   executing: 'Solving the program…',
   exporting: 'Exporting geometry…',
 } as const

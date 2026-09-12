@@ -14,6 +14,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 BEVY_ZOO_DIR="${BEVY_ZOO_DIR:-$ROOT/vendor/bevy-zoo}"
 BEVY_ZOO_REMOTE="${BEVY_ZOO_REMOTE:-https://github.com/KittyCAD/bevy-zoo.git}"
 BEVY_ZOO_REF="${BEVY_ZOO_REF:-frank/embeddable-viewport}"
+BEVY_ZOO_KCLEAN_PATCH="$ROOT/scripts/bevy-zoo-kclean.patch"
 
 for tool in cargo wasm-bindgen wasm-opt; do
   if ! command -v "$tool" >/dev/null 2>&1; then
@@ -27,9 +28,23 @@ if [ ! -d "$BEVY_ZOO_DIR/.git" ]; then
   echo "Cloning bevy-zoo into $BEVY_ZOO_DIR"
   git clone --branch "$BEVY_ZOO_REF" "$BEVY_ZOO_REMOTE" "$BEVY_ZOO_DIR"
 else
-  # An existing checkout is left exactly as it is. This branch may only exist
-  # locally, and silently checking something else out would throw away work.
+  # This branch may only exist locally, and silently checking something else out
+  # would throw away work.
   echo "Using bevy-zoo at $BEVY_ZOO_DIR ($(git -C "$BEVY_ZOO_DIR" rev-parse --abbrev-ref HEAD))"
+fi
+
+# The first-principles branch consumes an experimental bevy-zoo branch that does
+# not yet know about Kclean. Keep that small integration delta reviewable here,
+# beside the host contract that calls it. Refuse conflicts instead of disturbing
+# unrelated work in an explicitly supplied checkout.
+if git -C "$BEVY_ZOO_DIR" apply --reverse --check "$BEVY_ZOO_KCLEAN_PATCH" >/dev/null 2>&1; then
+  echo "Kclean execution patch is already applied"
+elif git -C "$BEVY_ZOO_DIR" apply --check "$BEVY_ZOO_KCLEAN_PATCH"; then
+  git -C "$BEVY_ZOO_DIR" apply "$BEVY_ZOO_KCLEAN_PATCH"
+  echo "Applied Kclean execution patch"
+else
+  echo "error: Kclean execution patch does not apply cleanly to $BEVY_ZOO_DIR" >&2
+  exit 1
 fi
 
 if [ ! -x "$BEVY_ZOO_DIR/scripts/build-embed.sh" ]; then
@@ -66,4 +81,4 @@ echo "  $ROOT/vendor/bevy/bevy_zoo.js       (imported as a module)"
 echo "  $ROOT/public/bevy/bevy_zoo_bg.wasm  (fetched by URL)"
 echo "  $ROOT/public/assets/                (Bevy asset root)"
 echo
-echo "Choose it in Settings -> Modeling -> Renderer, then reload."
+echo "Choose an engine and renderer in Settings -> Modeling, then reload."

@@ -12,7 +12,10 @@ import { sceneProjectionService } from '@src/contracts/sceneProjection'
 import type { SettingsService } from '@src/contracts/settings'
 import { settingsService } from '@src/contracts/settings'
 import bevySceneFeature from '@src/features/bevyScene'
-import { rendererSetting } from '@src/features/bevyScene/settings'
+import {
+  modelingEngineSetting,
+  rendererSetting,
+} from '@src/features/bevyScene/settings'
 import { describe, expect, it } from 'vitest'
 
 /**
@@ -27,12 +30,20 @@ const ENGINE_CAMERA = 'engineScene.camera'
 const engineDriver = { id: 'engine' } as unknown as CameraDriver
 const engineProjection = { id: 'engine' } as unknown as SceneProjection
 
-function harness(renderer: 'engine' | 'bevy', hydrated = true) {
+function harness(
+  renderer: 'engine' | 'bevy',
+  hydrated = true,
+  engine: 'zoo' | 'kclean' = 'zoo'
+) {
   const choice = signal(renderer)
+  const engineChoice = signal(engine)
   const settings = {
     hydrated: signal(hydrated),
-    value: (setting: unknown) =>
-      setting === rendererSetting ? choice : signal(undefined),
+    value: (setting: unknown) => {
+      if (setting === rendererSetting) return choice
+      if (setting === modelingEngineSetting) return engineChoice
+      return signal(undefined)
+    },
     read: () => undefined,
   } as unknown as SettingsService
 
@@ -72,7 +83,7 @@ function harness(renderer: 'engine' | 'bevy', hydrated = true) {
    */
   registry.get(cameraDriverService)
 
-  return { registry, choice }
+  return { registry, choice, engineChoice }
 }
 
 /** The arbiter defers out of the flatten, so give the microtask a turn. */
@@ -95,6 +106,23 @@ describe('the renderer arbiter', () => {
     await settle()
 
     expect(registry.get(cameraDriverService).id).toBe('bevy')
+  })
+
+  it('uses bevy whenever Kclean is the modeling engine', async () => {
+    const { registry } = harness('engine', true, 'kclean')
+    await settle()
+
+    expect(registry.get(cameraDriverService).id).toBe('bevy')
+  })
+
+  it('restores the Zoo renderer preference after leaving Kclean', async () => {
+    const { registry, engineChoice } = harness('engine', true, 'kclean')
+    await settle()
+    expect(registry.get(cameraDriverService).id).toBe('bevy')
+
+    engineChoice.value = 'zoo'
+    await settle()
+    expect(registry.get(cameraDriverService).id).toBe('engine')
   })
 
   /**

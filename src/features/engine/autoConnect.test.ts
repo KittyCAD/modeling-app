@@ -1,6 +1,6 @@
 import { signal } from '@preact/signals'
-import { describe, expect, it, vi } from 'vitest'
 import { autoConnectOnProjectOpen } from '@src/features/engine/autoConnect'
+import { describe, expect, it, vi } from 'vitest'
 
 const harness = (
   overrides: {
@@ -11,12 +11,14 @@ const harness = (
   } = {}
 ) => {
   const project = signal<string | null>(overrides.project ?? null)
+  const enabled = signal(true)
   const executing = signal(overrides.executing ?? true)
   const signedIn = signal(overrides.signedIn ?? true)
   const offline = signal(overrides.offline ?? true)
   const connect = vi.fn(async () => {})
 
   const stop = autoConnectOnProjectOpen({
+    enabled,
     project,
     executing,
     signedIn,
@@ -24,7 +26,7 @@ const harness = (
     connect,
   })
 
-  return { project, executing, signedIn, offline, connect, stop }
+  return { enabled, project, executing, signedIn, offline, connect, stop }
 }
 
 describe('connecting when a project opens', () => {
@@ -34,6 +36,16 @@ describe('connecting when a project opens', () => {
     app.project.value = 'local:/projects/bracket'
 
     expect(app.connect).toHaveBeenCalledTimes(1)
+    app.stop()
+  })
+
+  it('does not connect when another modeling engine is selected', () => {
+    const app = harness()
+    app.enabled.value = false
+
+    app.project.value = 'local:/projects/bracket'
+
+    expect(app.connect).not.toHaveBeenCalled()
     app.stop()
   })
 
@@ -131,6 +143,7 @@ describe('connecting when a project opens', () => {
     const project = signal<string | null>(null)
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
     const stop = autoConnectOnProjectOpen({
+      enabled: signal(true),
       project,
       executing: signal(true),
       signedIn: signal(true),

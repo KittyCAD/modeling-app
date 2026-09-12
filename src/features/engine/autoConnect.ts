@@ -1,6 +1,8 @@
-import { type ReadonlySignal, effect } from '@preact/signals'
+import { effect, type ReadonlySignal } from '@preact/signals'
 
 export interface AutoConnectDependencies {
+  /** Whether Zoo is the selected modeling engine. */
+  enabled: ReadonlySignal<boolean>
   /** The open project's id, or null when none is open. */
   project: ReadonlySignal<string | null>
   /** Whether that project has a buffer to render. */
@@ -19,8 +21,9 @@ export interface AutoConnectDependencies {
  * see the geometry — leaving that behind a button meant every session began with
  * the same click for no decision.
  *
- * Four conditions, each guarding against a distinct kind of annoyance:
+ * Five conditions, each guarding against a distinct kind of annoyance:
  *
+ * - Zoo selected, because another modeling engine owns execution otherwise.
  * - Something executing, because a project whose default file did not resolve
  *   has nothing to show and a connection it does not need.
  * - Signed in already. The engine's own command asks for an account when
@@ -34,12 +37,15 @@ export interface AutoConnectDependencies {
 export function autoConnectOnProjectOpen(
   dependencies: AutoConnectDependencies
 ): () => void {
-  const { project, executing, signedIn, offline, connect } = dependencies
+  const { enabled, project, executing, signedIn, offline, connect } =
+    dependencies
 
   let connectedFor: string | null = null
 
   return effect(() => {
     const projectId = project.value
+
+    if (!enabled.value) return
 
     if (projectId === null) {
       // Closing the project forgets the attempt: opening it again is a new

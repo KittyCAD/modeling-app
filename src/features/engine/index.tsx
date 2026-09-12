@@ -15,7 +15,9 @@ import {
 } from '@src/contracts/engine'
 import { streamParamsValueSpec } from '@src/contracts/engineScene'
 import { projectSessionService } from '@src/contracts/projectSession'
+import { settingsService } from '@src/contracts/settings'
 import { statusBarItemsValueSpec } from '@src/contracts/shell'
+import { modelingEngineSetting } from '@src/features/bevyScene/settings'
 import { autoConnectOnProjectOpen } from '@src/features/engine/autoConnect'
 import { createEngineConnection } from '@src/features/engine/createEngineConnection'
 import { setWasmEngineTransport } from '@src/wasm/bridge'
@@ -114,6 +116,11 @@ function EngineField() {
  * runtime sends through this connection.
  */
 export default defineRegistryItemFactory((ctx) => {
+  const zooSelected = computed(
+    () =>
+      ctx.services.get(settingsService).value(modelingEngineSetting).value ===
+      'zoo'
+  )
   const connection = createEngineConnection({
     baseUrl: engineBaseUrl(),
     token: () => ctx.services.get(authService).token.peek(),
@@ -164,6 +171,7 @@ export default defineRegistryItemFactory((ctx) => {
    * not look like an arbitrary demand.
    */
   const connectOrSignIn = async () => {
+    if (!zooSelected.value) return
     await whenAuthSettled()
 
     const auth = ctx.services.get(authService)
@@ -196,6 +204,7 @@ export default defineRegistryItemFactory((ctx) => {
     const auth = ctx.services.get(authService)
 
     stopAutoConnect = autoConnectOnProjectOpen({
+      enabled: zooSelected,
       project: computed(() => sessions.current.value?.project.value.id ?? null),
       executing: computed(() =>
         Boolean(sessions.current.value?.executingBuffer.value)
@@ -241,8 +250,9 @@ export default defineRegistryItemFactory((ctx) => {
           // feature has no home screen to hide from either.
           visible: computed(
             () =>
+              zooSelected.value &&
               ctx.services.optional(projectSessionService)?.current.value !==
-              null
+                null
           ),
           render: () => <EngineField />,
         }),
@@ -251,7 +261,7 @@ export default defineRegistryItemFactory((ctx) => {
           title: 'Connect to the modeling engine',
           category: 'Model',
           icon: 'play',
-          enabled: computed(() => !connected.value),
+          enabled: computed(() => zooSelected.value && !connected.value),
           run: connectOrSignIn,
         }),
         provide(commandsValueSpec, {
@@ -259,7 +269,7 @@ export default defineRegistryItemFactory((ctx) => {
           title: 'Disconnect from the modeling engine',
           category: 'Model',
           icon: 'unplugged',
-          enabled: connected,
+          enabled: computed(() => zooSelected.value && connected.value),
           run: () => connection.disconnect(),
         }),
         provide(commandsValueSpec, {
@@ -267,7 +277,7 @@ export default defineRegistryItemFactory((ctx) => {
           title: 'Fit the model in view',
           category: 'Model',
           icon: 'grid',
-          enabled: connected,
+          enabled: computed(() => zooSelected.value && connected.value),
           /**
            * Frame whatever the engine currently has.
            *
@@ -295,7 +305,7 @@ export default defineRegistryItemFactory((ctx) => {
           title: 'Restart the engine session',
           category: 'Model',
           icon: 'refresh',
-          enabled: connected,
+          enabled: computed(() => zooSelected.value && connected.value),
           run: () => connection.startNewSession(),
         }),
       ],
