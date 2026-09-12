@@ -8,7 +8,7 @@ import {
   EngineConnectionManagerEvents,
   WebSocketCloseCode,
 } from '@src/lib/engineConnection/utils'
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 
 export interface IUseOnWebsocketClose {
   callback: (code: string | undefined, reconnectRequested: boolean) => void
@@ -18,6 +18,7 @@ export interface IUseOnWebsocketClose {
     code: string | undefined
   ) => void
   engineCommandManager: ConnectionManager
+  abnormalCloseRetries: React.RefObject<number>
 }
 
 /**
@@ -30,9 +31,8 @@ export function useOnWebsocketClose({
   infiniteDetectionLoopCallback,
   terminalErrorCallback,
   engineCommandManager,
+  abnormalCloseRetries,
 }: IUseOnWebsocketClose) {
-  const abnormalCloseRetries = useRef(0)
-
   useEffect(() => {
     const onWebsocketClose = (
       event: CustomEvent<EngineDisconnectEventDetail>
@@ -86,6 +86,6 @@ export function useOnWebsocketClose({
     infiniteDetectionLoopCallback,
     terminalErrorCallback,
     engineCommandManager,
+    abnormalCloseRetries,
   ])
-  return abnormalCloseRetries
 }
