@@ -8,7 +8,9 @@ import {
   EngineConnectionManagerEvents,
   WebSocketCloseCode,
 } from '@src/lib/engineConnection/utils'
-import { useEffect } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
+
+const MAX_AUTOMATIC_ABNORMAL_RECOVERIES = 3
 
 export interface IUseOnWebsocketClose {
   callback: (code: string | undefined, reconnectRequested: boolean) => void
@@ -31,6 +33,13 @@ export function useOnWebsocketClose({
   terminalErrorCallback,
   engineCommandManager,
 }: IUseOnWebsocketClose) {
+  const abnormalRecoveries = useRef(0)
+  // Only explicit manual recovery resets the budget. A successful handshake
+  // alone does not prove that replaying the model will keep the Engine alive.
+  const resetAbnormalCloseRetries = useCallback(() => {
+    abnormalRecoveries.current = 0
+  }, [])
+
   useEffect(() => {
     const onWebsocketClose = (
       event: CustomEvent<EngineDisconnectEventDetail>
@@ -54,14 +63,17 @@ export function useOnWebsocketClose({
         code === WebSocketCloseCode.AbnormalClosure.toString() &&
         !reconnectRequested
       ) {
-        EngineDebugger.addLog({
-          label: 'useOnWebsocketClose',
-          message: 'detected infinite loop',
-          metadata: { code },
-        })
+        if (abnormalRecoveries.current >= MAX_AUTOMATIC_ABNORMAL_RECOVERIES) {
+          EngineDebugger.addLog({
+            label: 'useOnWebsocketClose',
+            message: 'abnormal close recovery budget exhausted',
+            metadata: { code, automaticRecoveries: abnormalRecoveries.current },
+          })
 
-        infiniteDetectionLoopCallback(code)
-        return
+          infiniteDetectionLoopCallback(code)
+          return
+        }
+        abnormalRecoveries.current++
       }
 
       callback(code, reconnectRequested)
@@ -84,4 +96,5 @@ export function useOnWebsocketClose({
     terminalErrorCallback,
     engineCommandManager,
   ])
+  return { resetAbnormalCloseRetries }
 }

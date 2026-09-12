@@ -455,7 +455,9 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       settings,
     ]
   )
-  useOnWebsocketClose(onWebSocketCloseParams)
+  const { resetAbnormalCloseRetries } = useOnWebsocketClose(
+    onWebSocketCloseParams
+  )
 
   const onVitestEngineOnline = useMemo(
     () => ({
@@ -686,6 +688,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           className="absolute inset-0 h-screen"
           showManualConnect={showManualConnect}
           callback={() => {
+            resetAbnormalCloseRetries()
             setShowManualConnect(false)
             tryConnecting({
               authToken: props.authToken || '',

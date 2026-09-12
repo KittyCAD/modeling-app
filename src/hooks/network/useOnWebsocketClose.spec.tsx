@@ -105,7 +105,7 @@ describe('useOnWebsocketClose', () => {
       unmount()
     })
 
-    test('should call infinite detection loop callback on close event', async () => {
+    test('recovers from three abnormal closes, then requires manual recovery', async () => {
       const callback = vi.fn(() => 1)
       const infiniteLoopCallback = vi.fn(() => 1)
       const { engineCommandManager } =
@@ -125,11 +125,104 @@ describe('useOnWebsocketClose', () => {
           },
         }
       )
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        engineCommandManager.dispatchEvent(infiniteEvent)
+        expect(callback).toHaveBeenCalledTimes(attempt)
+        expect(callback).toHaveBeenLastCalledWith('1006', false)
+        expect(infiniteLoopCallback).not.toHaveBeenCalled()
+      }
       engineCommandManager.dispatchEvent(infiniteEvent)
       unmount()
-      expect(callback).toHaveBeenCalledTimes(0)
+      expect(callback).toHaveBeenCalledTimes(3)
       expect(infiniteLoopCallback).toHaveBeenCalledTimes(1)
       expect(infiniteLoopCallback).toHaveBeenCalledWith('1006')
+    })
+
+    test('keeps the abnormal-close budget across rerenders and successful handshakes', async () => {
+      const { engineCommandManager } =
+        await buildTheWorldAndNoEngineConnection(true)
+      const callback = vi.fn()
+      const infiniteDetectionLoopCallback = vi.fn()
+      const { rerender, unmount } = renderHook(() =>
+        useOnWebsocketClose({
+          callback: (...args) => callback(...args),
+          infiniteDetectionLoopCallback,
+          engineCommandManager,
+        })
+      )
+      for (let attempt = 0; attempt < 4; attempt++) {
+        engineCommandManager.tearDown({ websocketClosed: true, code: '1006' })
+        // A successful reconnect must not make a crash/reconnect cycle unbounded.
+        engineCommandManager.dispatchEvent(
+          new Event(EngineConnectionManagerEvents.EngineAvailable)
+        )
+        rerender()
+      }
+      expect(callback).toHaveBeenCalledTimes(3)
+      expect(infiniteDetectionLoopCallback).toHaveBeenCalledExactlyOnceWith(
+        '1006'
+      )
+      unmount()
+    })
+
+    test('manual recovery explicitly grants another bounded abnormal-close budget', async () => {
+      const { engineCommandManager } =
+        await buildTheWorldAndNoEngineConnection(true)
+      const callback = vi.fn()
+      const infiniteDetectionLoopCallback = vi.fn()
+      const { result, unmount } = renderHook(() =>
+        useOnWebsocketClose({
+          callback,
+          infiniteDetectionLoopCallback,
+          engineCommandManager,
+        })
+      )
+      for (let budget = 0; budget < 2; budget++) {
+        for (let attempt = 0; attempt < 4; attempt++) {
+          engineCommandManager.tearDown({ websocketClosed: true, code: '1006' })
+        }
+        expect(callback).toHaveBeenCalledTimes((budget + 1) * 3)
+        expect(infiniteDetectionLoopCallback).toHaveBeenCalledTimes(budget + 1)
+        result.current.resetAbnormalCloseRetries()
+      }
+      unmount()
+    })
+
+    test('normal and requested closes neither consume nor reset the abnormal budget', async () => {
+      const { engineCommandManager } =
+        await buildTheWorldAndNoEngineConnection(true)
+      const callback = vi.fn()
+      const infiniteDetectionLoopCallback = vi.fn()
+      const { unmount } = renderHook(() =>
+        useOnWebsocketClose({
+          callback,
+          infiniteDetectionLoopCallback,
+          engineCommandManager,
+        })
+      )
+      for (let attempt = 0; attempt < 3; attempt++) {
+        engineCommandManager.tearDown({ websocketClosed: true, code: '1000' })
+        engineCommandManager.tearDown({
+          websocketClosed: true,
+          code: '1006',
+          reconnectRequested: true,
+        })
+        engineCommandManager.tearDown({ websocketClosed: true, code: '1006' })
+        expect(callback).toHaveBeenCalledTimes((attempt + 1) * 3)
+        expect(infiniteDetectionLoopCallback).not.toHaveBeenCalled()
+      }
+      engineCommandManager.tearDown({ websocketClosed: true, code: '1006' })
+      expect(callback).toHaveBeenCalledTimes(9)
+      expect(infiniteDetectionLoopCallback).toHaveBeenCalledOnce()
+      // Requested recovery still passes through after the abnormal budget is spent.
+      engineCommandManager.tearDown({
+        websocketClosed: true,
+        code: '1006',
+        reconnectRequested: true,
+      })
+      expect(callback).toHaveBeenCalledTimes(10)
+      expect(callback).toHaveBeenLastCalledWith('1006', true)
+      unmount()
     })
     test.each([false, true])(
       'routes terminal errors without reconnecting (reconnectRequested=%s)',
