@@ -1,0 +1,290 @@
+--- a/src/zoo/mod.rs
++++ b/src/zoo/mod.rs
+@@ -106,6 +106,34 @@
+ pub struct ZooFailure {
+     pub operation: ZooOperation,
+     pub message: String,
++}
++
++/// Stage timings produced by Kclean's bridge/server boundary. These are
++/// measurements only and carry no certification authority.
++#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
++#[serde(default, rename_all = "camelCase")]
++pub struct KcleanPipelineTimings {
++    pub project_materialization_ms: f64,
++    pub source_read_ms: f64,
++    pub lowering_ms: f64,
++    pub transport_validation_ms: f64,
++    pub kernel_execution_ms: f64,
++    pub artifact_export_ms: f64,
++    pub artifact_read_ms: f64,
++    pub bridge_total_ms: f64,
++    pub server_total_ms: f64,
++}
++
++/// One complete Kclean response profile, including the amount of certified
++/// command work avoided by the persistent runner.
++#[derive(Clone, Debug, Default, serde::Serialize)]
++#[serde(rename_all = "camelCase")]
++pub struct KcleanEvaluationProfile {
++    pub duration_ms: f64,
++    pub reused_commands: usize,
++    pub executed_commands: usize,
++    pub websocket_transfer_ms: f64,
++    pub timings: KcleanPipelineTimings,
+ }
+ 
+ #[derive(Resource, Clone, Copy, Debug, Default)]
+@@ -117,6 +145,7 @@
+     pub export_response: Option<Duration>,
+     pub download: Option<Duration>,
+     pub scene_load: Option<Duration>,
++    pub kclean: Option<KcleanEvaluationProfile>,
+     pub(crate) solve_started: Option<Instant>,
+     pub(crate) export_response_started: Option<Instant>,
+     pub(crate) download_started: Option<Instant>,
+@@ -429,9 +458,11 @@
+                     solve_finished: _,
+                     response_time,
+                     response_finished,
++                    kclean_profile,
+                 } = execution;
+                 progress.timings.solve = Some(solve_time);
+                 progress.timings.export_response = Some(response_time);
++                progress.timings.kclean = kclean_profile;
+                 progress.timings.export_response_started = None;
+                 progress.timings.download_started = Some(response_finished);
+                 if glb.is_empty() {
+--- a/src/zoo/remote.rs
++++ b/src/zoo/remote.rs
+@@ -18,7 +18,7 @@
+ use uuid::Uuid;
+ use web_time::Instant;
+ 
+-use super::{ExecutionDiagnostic, KclProject};
++use super::{ExecutionDiagnostic, KclProject, KcleanEvaluationProfile};
+ 
+ type DirectWebSocket = WebSocketStream<reqwest::Upgraded>;
+ type DirectRead = futures_util::stream::SplitStream<DirectWebSocket>;
+@@ -33,6 +33,7 @@
+     pub solve_finished: Instant,
+     pub response_time: Duration,
+     pub response_finished: Instant,
++    pub kclean_profile: Option<KcleanEvaluationProfile>,
+ }
+ 
+ /// A remote run either produces a revision or is intentionally discarded
+@@ -152,6 +153,7 @@
+                     solve_finished,
+                     response_time: response_finished.duration_since(response_started),
+                     response_finished,
++                    kclean_profile: None,
+                 }));
+             }
+             WebSocketResponse::Failure(error) => return Err(failure_message(error.errors)),
+--- a/src/zoo/remote_wasm.rs
++++ b/src/zoo/remote_wasm.rs
+@@ -27,7 +27,10 @@
+ use uuid::Uuid;
+ use web_time::Instant;
+ 
+-use super::{ExecutionDiagnostic, KclProject, SourceDiagnostic};
++use super::{
++    ExecutionDiagnostic, KclProject, KcleanEvaluationProfile, KcleanPipelineTimings,
++    SourceDiagnostic,
++};
+ 
+ type BrowserRead = SplitStream<WebSocket>;
+ type BrowserWrite = SplitSink<WebSocket, Message>;
+@@ -81,6 +84,17 @@
+         request_id: String,
+         #[serde(rename = "byteLength")]
+         byte_length: usize,
++        #[serde(rename = "durationMs")]
++        #[serde(default)]
++        duration_ms: f64,
++        #[serde(rename = "reusedCommands")]
++        #[serde(default)]
++        reused_commands: usize,
++        #[serde(rename = "executedCommands")]
++        #[serde(default)]
++        executed_commands: usize,
++        #[serde(default)]
++        timings: KcleanPipelineTimings,
+     },
+     Failed {
+         #[serde(rename = "requestId")]
+@@ -92,6 +106,11 @@
+         request_id: String,
+         #[serde(rename = "byteLength")]
+         byte_length: usize,
++        #[serde(rename = "durationMs")]
++        #[serde(default)]
++        duration_ms: f64,
++        #[serde(default)]
++        timings: KcleanPipelineTimings,
+         diagnostic: KcleanExecutionReport,
+     },
+     Superseded {
+@@ -105,6 +124,10 @@
+     error: Option<String>,
+     #[serde(default)]
+     diagnostics: Vec<SourceDiagnostic>,
++    #[serde(default, rename = "reusedCommands")]
++    reused_commands: usize,
++    #[serde(default, rename = "executedCommands")]
++    executed_commands: usize,
+ }
+ 
+ #[derive(Deserialize)]
+@@ -124,12 +147,14 @@
+         glb: Vec<u8>,
+         solve_finished: Instant,
+         response_finished: Instant,
++        profile: KcleanEvaluationProfile,
+     },
+     Halted {
+         glb: Vec<u8>,
+         diagnostic: KcleanExecutionReport,
+         solve_finished: Instant,
+         response_finished: Instant,
++        profile: KcleanEvaluationProfile,
+     },
+     Failed {
+         error: KcleanError,
+@@ -155,6 +180,7 @@
+     pub solve_finished: Instant,
+     pub response_time: Duration,
+     pub response_finished: Instant,
++    pub kclean_profile: Option<KcleanEvaluationProfile>,
+ }
+ 
+ /// A remote run either produces a revision or is intentionally discarded
+@@ -316,6 +342,7 @@
+                     solve_finished,
+                     response_time: response_finished.duration_since(response_started),
+                     response_finished,
++                    kclean_profile: None,
+                 });
+             }
+             WebSocketResponse::Failure(error) => return Err(failure_message(error.errors)),
+@@ -410,20 +437,33 @@
+                 glb,
+                 solve_finished,
+                 response_finished,
+-            } => Ok(ExecutionOutcome::Exported(ExecutionExport {
+-                glb,
+-                diagnostic: None,
+-                solve_time: solve_finished.duration_since(solve_started),
+-                solve_finished,
+-                response_time: response_finished.duration_since(solve_finished),
+-                response_finished,
+-            })),
++                mut profile,
++            } => {
++                profile.websocket_transfer_ms = response_finished
++                    .duration_since(solve_finished)
++                    .as_secs_f64()
++                    * 1_000.0;
++                Ok(ExecutionOutcome::Exported(ExecutionExport {
++                    glb,
++                    diagnostic: None,
++                    solve_time: solve_finished.duration_since(solve_started),
++                    solve_finished,
++                    response_time: response_finished.duration_since(solve_finished),
++                    response_finished,
++                    kclean_profile: Some(profile),
++                }))
++            }
+             KcleanResponse::Halted {
+                 glb,
+                 diagnostic,
+                 solve_finished,
+                 response_finished,
++                mut profile,
+             } => {
++                profile.websocket_transfer_ms = response_finished
++                    .duration_since(solve_finished)
++                    .as_secs_f64()
++                    * 1_000.0;
+                 let message = diagnostic
+                     .error
+                     .unwrap_or_else(|| "kernel execution halted".into());
+@@ -437,6 +477,7 @@
+                     solve_finished,
+                     response_time: response_finished.duration_since(solve_finished),
+                     response_finished,
++                    kclean_profile: Some(profile),
+                 }))
+             }
+             KcleanResponse::Failed { error, finished } => {
+@@ -453,6 +494,7 @@
+                     solve_finished: finished,
+                     response_time: Duration::ZERO,
+                     response_finished: finished,
++                    kclean_profile: None,
+                 }))
+             }
+             KcleanResponse::Superseded => Ok(ExecutionOutcome::Superseded),
+@@ -566,6 +608,10 @@
+             KcleanServerMessage::Succeeded {
+                 request_id,
+                 byte_length,
++                duration_ms,
++                reused_commands,
++                executed_commands,
++                timings,
+             } => {
+                 let solve_finished = Instant::now();
+                 let glb = match read_kclean_binary(&mut read, byte_length).await {
+@@ -581,15 +627,26 @@
+                         glb,
+                         solve_finished,
+                         response_finished: Instant::now(),
++                        profile: KcleanEvaluationProfile {
++                            duration_ms,
++                            reused_commands,
++                            executed_commands,
++                            websocket_transfer_ms: 0.0,
++                            timings,
++                        },
+                     },
+                 )
+             }
+             KcleanServerMessage::Halted {
+                 request_id,
+                 byte_length,
++                duration_ms,
++                timings,
+                 diagnostic,
+             } => {
+                 let solve_finished = Instant::now();
++                let reused_commands = diagnostic.reused_commands;
++                let executed_commands = diagnostic.executed_commands;
+                 let glb = if byte_length == 0 {
+                     Vec::new()
+                 } else {
+@@ -608,6 +665,13 @@
+                         diagnostic,
+                         solve_finished,
+                         response_finished: Instant::now(),
++                        profile: KcleanEvaluationProfile {
++                            duration_ms,
++                            reused_commands,
++                            executed_commands,
++                            websocket_transfer_ms: 0.0,
++                            timings,
++                        },
+                     },
+                 )
+             }
+--- a/src/embed.rs
++++ b/src/embed.rs
+@@ -315,6 +315,7 @@
+             "exportResponseMs": millis(timings.export_response),
+             "downloadMs": millis(timings.download),
+             "sceneLoadMs": millis(timings.scene_load),
++            "kclean": timings.kclean,
+         },
+     })
+ }

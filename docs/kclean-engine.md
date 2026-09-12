@@ -61,6 +61,14 @@ Later GLB revisions preserve the current camera position, orientation, target,
 zoom, and projection; they only refresh the bounds used by the explicit
 **Zoom to fit** command.
 
+Every completed Kclean revision also logs a structured `Kclean evaluation
+profile` in the browser developer console. It separates project materializing,
+source reads, KCL lowering, transport validation, incremental kernel execution,
+artifact export, artifact reads, WebSocket transfer, and Bevy scene loading;
+the same profile includes reused and executed command counts. REST clients
+receive the server-owned stages through `Server-Timing`, and WebSocket clients
+receive them in the terminal message's `timings` object.
+
 Kernel failures can also carry a `certification: "checkpoint"` GLB. Bevy loads
 that artifact and ZDS keeps the kernel diagnostic visible, so the last geometry
 proved during the current evaluation remains inspectable. A rejected solver

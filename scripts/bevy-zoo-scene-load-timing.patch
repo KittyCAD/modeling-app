@@ -1,0 +1,12 @@
+--- a/src/zoo/mod.rs
++++ b/src/zoo/mod.rs
+@@ -701,6 +701,9 @@
+         status.progress.bounds.size = Some(size);
+         if let Some(started) = status.progress.timings.scene_load_started.take() {
+             status.progress.timings.scene_load = Some(started.elapsed());
++            // The semantic job state is unchanged, but its completed profile now
++            // includes a measurement that did not exist when the GLB was queued.
++            status.state.set_changed();
+         }
+         match camera_policy {
+             LoadedModelCamera::Fit => info!(

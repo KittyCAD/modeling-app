@@ -19,6 +19,8 @@ BEVY_ZOO_CHECKPOINT_PATCH="$ROOT/scripts/bevy-zoo-checkpoint.patch"
 BEVY_ZOO_WEBSOCKET_PATCH="$ROOT/scripts/bevy-zoo-kclean-websocket.patch"
 BEVY_ZOO_LATEST_WINS_PATCH="$ROOT/scripts/bevy-zoo-kclean-latest-wins.patch"
 BEVY_ZOO_PRESERVE_CAMERA_PATCH="$ROOT/scripts/bevy-zoo-preserve-camera.patch"
+BEVY_ZOO_TIMINGS_PATCH="$ROOT/scripts/bevy-zoo-kclean-timings.patch"
+BEVY_ZOO_SCENE_LOAD_TIMING_PATCH="$ROOT/scripts/bevy-zoo-scene-load-timing.patch"
 
 for tool in cargo wasm-bindgen wasm-opt; do
   if ! command -v "$tool" >/dev/null 2>&1; then
@@ -88,6 +90,26 @@ elif git -C "$BEVY_ZOO_DIR" apply --check "$BEVY_ZOO_PRESERVE_CAMERA_PATCH"; the
   echo "Applied camera preservation patch"
 else
   echo "error: camera preservation patch does not apply cleanly to $BEVY_ZOO_DIR" >&2
+  exit 1
+fi
+
+if grep -q 'struct KcleanPipelineTimings' "$BEVY_ZOO_DIR/src/zoo/mod.rs"; then
+  echo "Kclean timing patch is already applied"
+elif git -C "$BEVY_ZOO_DIR" apply --check "$BEVY_ZOO_TIMINGS_PATCH"; then
+  git -C "$BEVY_ZOO_DIR" apply "$BEVY_ZOO_TIMINGS_PATCH"
+  echo "Applied Kclean timing patch"
+else
+  echo "error: Kclean timing patch does not apply cleanly to $BEVY_ZOO_DIR" >&2
+  exit 1
+fi
+
+if grep -q 'completed profile now' "$BEVY_ZOO_DIR/src/zoo/mod.rs"; then
+  echo "Scene-load timing patch is already applied"
+elif git -C "$BEVY_ZOO_DIR" apply --check "$BEVY_ZOO_SCENE_LOAD_TIMING_PATCH"; then
+  git -C "$BEVY_ZOO_DIR" apply "$BEVY_ZOO_SCENE_LOAD_TIMING_PATCH"
+  echo "Applied scene-load timing patch"
+else
+  echo "error: scene-load timing patch does not apply cleanly to $BEVY_ZOO_DIR" >&2
   exit 1
 fi
 

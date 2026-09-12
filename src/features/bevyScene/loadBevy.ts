@@ -88,6 +88,28 @@ export interface BevyCameraReport {
   orthographic: boolean
 }
 
+/** Producer-owned Kclean pipeline measurements, in milliseconds. */
+export interface KcleanPipelineTimings {
+  projectMaterializationMs: number
+  sourceReadMs: number
+  loweringMs: number
+  transportValidationMs: number
+  kernelExecutionMs: number
+  artifactExportMs: number
+  artifactReadMs: number
+  bridgeTotalMs: number
+  serverTotalMs: number
+}
+
+/** Timing and certified-prefix reuse reported for one Kclean revision. */
+export interface KcleanEvaluationProfile {
+  durationMs: number
+  reusedCommands: number
+  executedCommands: number
+  websocketTransferMs: number
+  timings: KcleanPipelineTimings
+}
+
 /** What bevy-zoo reports about the solve it is running. */
 export interface BevyJobState {
   status: 'idle' | 'connecting' | 'executing' | 'exporting' | 'ready' | 'failed'
@@ -101,6 +123,7 @@ export interface BevyJobState {
     exportResponseMs: number | null
     downloadMs: number | null
     sceneLoadMs: number | null
+    kclean: KcleanEvaluationProfile | null
   }
 }
 

@@ -93,6 +93,22 @@ export function BevySurface() {
       darkMode: theme.resolved.peek() === 'dark',
       onState: (next) => {
         state.value = next
+        if (
+          engine === 'kclean' &&
+          next.status === 'ready' &&
+          next.timings.sceneLoadMs !== null
+        ) {
+          const profile = next.timings.kclean
+          if (profile) {
+            console.info('Kclean evaluation profile', {
+              reusedCommands: profile.reusedCommands,
+              executedCommands: profile.executedCommands,
+              ...profile.timings,
+              websocketTransferMs: profile.websocketTransferMs,
+              sceneLoadMs: next.timings.sceneLoadMs,
+            })
+          }
+        }
         if (engine === 'kclean' && submitted) {
           publishKcleanDiagnostics(sessions.current.peek(), submitted, next)
         }
