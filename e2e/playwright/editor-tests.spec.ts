@@ -876,9 +876,9 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
 
     await page.locator('.cm-lint-marker.cm-lint-marker-error').hover()
     await expect(page.locator('.cm-diagnosticText').first()).toBeVisible()
-    await expect(
-      page.getByText('Cannot redefine `topAng`').first()
-    ).toBeVisible()
+    const diagnostic = page.getByText('Cannot redefine topAng').first()
+    await expect(diagnostic).toBeVisible()
+    await expect(diagnostic.locator('code')).toHaveText('topAng')
 
     const secondTopAng = page.getByText('topAng').first()
     await secondTopAng?.dblclick()

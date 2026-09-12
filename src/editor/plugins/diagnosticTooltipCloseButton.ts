@@ -76,6 +76,13 @@ export function diagnosticTooltipCloseButton(): Extension {
         position: 'relative',
         paddingRight: '1.75rem',
       },
+      '.cm-tooltip-lint .cm-diagnosticText code': {
+        borderRadius: '0.25rem',
+        backgroundColor: 'rgba(127, 127, 127, 0.18)',
+        fontFamily:
+          'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+        padding: '0.1rem 0.25rem',
+      },
       '.cm-tooltip-lint .cm-diagnosticAction.cm-diagnosticClose': {
         position: 'absolute',
         top: '0.25rem',
