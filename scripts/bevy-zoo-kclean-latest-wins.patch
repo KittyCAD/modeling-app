@@ -1,0 +1,652 @@
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -52,6 +52,7 @@
+ bevy = { version = "0.19.1", default-features = false, features = ["3d", "ui", "webgpu"] }
+ bevy_panorbit_camera = "0.35"
+ crossbeam-channel = "0.5"
++futures-channel = "0.3"
+ futures-util = { version = "0.3", features = ["sink"] }
+ kittycad-modeling-cmds = { version = "0.2.224", features = ["exec-kcl", "websocket"] }
+ rfd = { version = "0.15", optional = true }
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -475,6 +475,7 @@
+  "bevy_panorbit_camera",
+  "console_error_panic_hook",
+  "crossbeam-channel",
++ "futures-channel",
+  "futures-util",
+  "gloo-net",
+  "gloo-timers",
+--- a/src/zoo/mod.rs
++++ b/src/zoo/mod.rs
+@@ -151,6 +151,9 @@
+         revision: u64,
+         execution: remote::ExecutionExport,
+     },
++    Superseded {
++        revision: u64,
++    },
+     Failed {
+         revision: u64,
+         stage: ZooOperation,
+@@ -235,22 +238,27 @@
+     mut state: ResMut<ZooJobState>,
+     mut timings: ResMut<ZooTimings>,
+ ) {
++    let mut latest = None;
+     for ExecuteKclProject(project) in projects.read() {
+         requested.0 += 1;
+-        let revision = requested.0;
+-        *timings = ZooTimings::default();
+-        timings.solve_started = Some(Instant::now());
+-        #[cfg(target_arch = "wasm32")]
+-        let connection_is_warm = remote::has_warm_kclean_connection();
+-        #[cfg(not(target_arch = "wasm32"))]
+-        let connection_is_warm = false;
+-        *state = if connection_is_warm {
+-            ZooJobState::Executing { revision }
+-        } else {
+-            ZooJobState::Connecting { revision }
+-        };
+-        spawn_execution(revision, project.clone(), results.0.clone());
++        latest = Some((requested.0, project.clone()));
+     }
++    let Some((revision, project)) = latest else {
++        return;
++    };
++
++    *timings = ZooTimings::default();
++    timings.solve_started = Some(Instant::now());
++    #[cfg(target_arch = "wasm32")]
++    let connection_is_warm = remote::has_warm_kclean_connection();
++    #[cfg(not(target_arch = "wasm32"))]
++    let connection_is_warm = false;
++    *state = if connection_is_warm {
++        ZooJobState::Executing { revision }
++    } else {
++        ZooJobState::Connecting { revision }
++    };
++    spawn_execution(revision, project, results.0.clone());
+ }
+ 
+ #[cfg(not(target_arch = "wasm32"))]
+@@ -278,10 +286,11 @@
+                     ))
+                 });
+             let message = match result {
+-                Ok(execution) => ZooResult::Exported {
++                Ok(remote::ExecutionOutcome::Exported(execution)) => ZooResult::Exported {
+                     revision,
+                     execution,
+                 },
++                Ok(remote::ExecutionOutcome::Superseded) => ZooResult::Superseded { revision },
+                 Err(message) => ZooResult::Failed {
+                     revision,
+                     stage: if solved.load(Ordering::Acquire) {
+@@ -315,10 +324,11 @@
+         })
+         .await;
+         let message = match result {
+-            Ok(execution) => ZooResult::Exported {
++            Ok(remote::ExecutionOutcome::Exported(execution)) => ZooResult::Exported {
+                 revision,
+                 execution,
+             },
++            Ok(remote::ExecutionOutcome::Superseded) => ZooResult::Superseded { revision },
+             Err(message) => ZooResult::Failed {
+                 revision,
+                 stage: if solved.get() {
+@@ -355,6 +365,9 @@
+ ) {
+     while let Ok(result) = results.0.try_recv() {
+         match result {
++            ZooResult::Superseded { revision } => {
++                debug!("discarded superseded Zoo revision {revision}");
++            }
+             ZooResult::Solved {
+                 revision,
+                 solve_time,
+--- a/src/zoo/remote.rs
++++ b/src/zoo/remote.rs
+@@ -35,10 +35,17 @@
+     pub response_finished: Instant,
+ }
+ 
++/// A remote run either produces a revision or is intentionally discarded
++/// because a newer editor revision has replaced it.
++pub enum ExecutionOutcome {
++    Exported(ExecutionExport),
++    Superseded,
++}
++
+ pub async fn execute_and_export(
+     project: KclProject,
+     on_solved: impl FnOnce(Duration, Instant),
+-) -> Result<ExecutionExport, String> {
++) -> Result<ExecutionOutcome, String> {
+     let token = env::var("ZOO_API_TOKEN")
+         .or_else(|_| env::var("KITTYCAD_API_TOKEN"))
+         .map_err(|_| "set ZOO_API_TOKEN before launching the app".to_string())?;
+@@ -138,14 +145,14 @@
+                     .find(|file| file.name.ends_with(".glb"))
+                     .map(|file| file.contents)
+                     .ok_or_else(|| "Zoo export returned no GLB file".to_string())?;
+-                return Ok(ExecutionExport {
++                return Ok(ExecutionOutcome::Exported(ExecutionExport {
+                     glb,
+                     diagnostic: None,
+                     solve_time,
+                     solve_finished,
+                     response_time: response_finished.duration_since(response_started),
+                     response_finished,
+-                });
++                }));
+             }
+             WebSocketResponse::Failure(error) => return Err(failure_message(error.errors)),
+             other => return Err(format!("unexpected GLB export response: {other:?}")),
+--- a/src/zoo/remote_wasm.rs
++++ b/src/zoo/remote_wasm.rs
+@@ -5,6 +5,7 @@
+     time::Duration,
+ };
+ 
++use futures_channel::oneshot;
+ use futures_util::{
+     SinkExt, StreamExt,
+     lock::Mutex,
+@@ -36,8 +37,8 @@
+ const DEFAULT_KCLEAN_HOST: &str = "http://127.0.0.1:3001";
+ 
+ thread_local! {
+-    /// One serialized browser session keeps connection setup out of the edit loop.
+-    static KCLEAN_SESSION: Rc<Mutex<Option<KcleanSession>>> = Rc::new(Mutex::new(None));
++    /// One multiplexed browser session keeps connection setup out of the edit loop.
++    static KCLEAN_SESSION: RefCell<Option<KcleanSession>> = const { RefCell::new(None) };
+     /// Synchronous hint used only to choose the viewport's initial progress label.
+     static KCLEAN_WARM_ENDPOINT: RefCell<Option<String>> = const { RefCell::new(None) };
+ }
+@@ -91,6 +92,10 @@
+         byte_length: usize,
+         diagnostic: KcleanExecutionReport,
+     },
++    Superseded {
++        #[serde(rename = "requestId")]
++        request_id: String,
++    },
+ }
+ 
+ #[derive(Deserialize)]
+@@ -107,11 +112,37 @@
+     message: String,
+ }
+ 
+-/** A Kclean socket and its halves, owned together so a closed session is discarded atomically. */
++type PendingKcleanRequests =
++    Rc<RefCell<HashMap<String, oneshot::Sender<Result<KcleanResponse, String>>>>>;
++
++/// A parsed terminal response. The request ID has already selected its waiting
++/// caller, so impossible response combinations cannot leak beyond the reader.
++enum KcleanResponse {
++    Succeeded {
++        glb: Vec<u8>,
++        solve_finished: Instant,
++        response_finished: Instant,
++    },
++    Halted {
++        glb: Vec<u8>,
++        diagnostic: KcleanExecutionReport,
++        solve_finished: Instant,
++        response_finished: Instant,
++    },
++    Failed {
++        error: KcleanError,
++        finished: Instant,
++    },
++    Superseded,
++}
++
++/** A cloneable handle to one multiplexed Kclean browser session. */
++#[derive(Clone)]
+ struct KcleanSession {
+     endpoint: String,
+-    read: BrowserRead,
+-    write: BrowserWrite,
++    generation: Uuid,
++    write: Rc<Mutex<BrowserWrite>>,
++    pending: PendingKcleanRequests,
+ }
+ 
+ pub struct ExecutionExport {
+@@ -124,14 +155,21 @@
+     pub response_finished: Instant,
+ }
+ 
++/// A remote run either produces a revision or is intentionally discarded
++/// because a newer editor revision has replaced it.
++pub enum ExecutionOutcome {
++    Exported(ExecutionExport),
++    Superseded,
++}
++
+ pub async fn execute_and_export(
+     project: KclProject,
+     on_solved: impl FnOnce(Duration, Instant),
+-) -> Result<ExecutionExport, String> {
++) -> Result<ExecutionOutcome, String> {
+     match execution_backend()? {
+-        ExecutionBackend::Zoo { token, host } => {
+-            execute_with_zoo(project, token, host, on_solved).await
+-        }
++        ExecutionBackend::Zoo { token, host } => execute_with_zoo(project, token, host, on_solved)
++            .await
++            .map(ExecutionOutcome::Exported),
+         ExecutionBackend::Kclean { host } => execute_with_kclean(project, host, on_solved).await,
+     }
+ }
+@@ -288,44 +326,26 @@
+     project: KclProject,
+     host: String,
+     on_solved: impl FnOnce(Duration, Instant),
+-) -> Result<ExecutionExport, String> {
++) -> Result<ExecutionOutcome, String> {
+     let endpoint = kclean_websocket_url(&host)?;
+-    let shared = KCLEAN_SESSION.with(Clone::clone);
+-    let mut slot = shared.lock().await;
+-    if slot
+-        .as_ref()
+-        .is_none_or(|session| session.endpoint != endpoint)
+-    {
+-        clear_kclean_warm_endpoint();
+-        *slot = None;
+-        *slot = Some(KcleanSession::connect(endpoint.clone())?);
+-    }
+-
+-    let first = slot
+-        .as_mut()
+-        .expect("Kclean session was initialized")
+-        .evaluate(&project)
+-        .await;
+-    let execution = match first {
+-        Ok(execution) => execution,
++    let session = kclean_session(&endpoint)?;
++    let first = session.evaluate(&project).await;
++    let outcome = match first {
++        Ok(outcome) => outcome,
+         Err(_) => {
+-            clear_kclean_warm_endpoint();
+-            *slot = None;
+-            *slot = Some(KcleanSession::connect(endpoint)?);
+-            let retry = slot
+-                .as_mut()
+-                .expect("Kclean retry session was initialized")
+-                .evaluate(&project)
+-                .await;
++            invalidate_kclean_session(&session);
++            let retry_session = kclean_session(&endpoint)?;
++            let retry = retry_session.evaluate(&project).await;
+             if retry.is_err() {
+-                clear_kclean_warm_endpoint();
+-                *slot = None;
++                invalidate_kclean_session(&retry_session);
+             }
+             retry?
+         }
+     };
+-    on_solved(execution.solve_time, execution.solve_finished);
+-    Ok(execution)
++    if let ExecutionOutcome::Exported(execution) = &outcome {
++        on_solved(execution.solve_time, execution.solve_finished);
++    }
++    Ok(outcome)
+ }
+ 
+ impl KcleanSession {
+@@ -333,15 +353,18 @@
+         let stream = WebSocket::open(&endpoint)
+             .map_err(|error| format!("could not connect to Kclean: {error}"))?;
+         let (write, read) = stream.split();
++        let pending = Rc::new(RefCell::new(HashMap::new()));
++        wasm_bindgen_futures::spawn_local(read_kclean_session(read, pending.clone()));
+         KCLEAN_WARM_ENDPOINT.with(|warm| *warm.borrow_mut() = Some(endpoint.clone()));
+         Ok(Self {
+             endpoint,
+-            read,
+-            write,
++            generation: Uuid::new_v4(),
++            write: Rc::new(Mutex::new(write)),
++            pending,
+         })
+     }
+ 
+-    async fn evaluate(&mut self, project: &KclProject) -> Result<ExecutionExport, String> {
++    async fn evaluate(&self, project: &KclProject) -> Result<ExecutionOutcome, String> {
+         let request_id = Uuid::new_v4().to_string();
+         let message = KcleanClientMessage::Evaluate {
+             request_id: &request_id,
+@@ -353,89 +376,118 @@
+         };
+         let body = serde_json::to_string(&message)
+             .map_err(|error| format!("could not encode Kclean request: {error}"))?;
++        let (response_tx, response_rx) = oneshot::channel();
++        self.pending
++            .borrow_mut()
++            .insert(request_id.clone(), response_tx);
+         let solve_started = Instant::now();
+-        self.write
+-            .send(Message::Text(body))
+-            .await
+-            .map_err(|error| format!("could not send Kclean request: {error}"))?;
++        let send = self.write.lock().await.send(Message::Text(body)).await;
++        if let Err(error) = send {
++            self.pending.borrow_mut().remove(&request_id);
++            return Err(format!("could not send Kclean request: {error}"));
++        }
+ 
+-        loop {
+-            let message = read_kclean_message(&mut self.read).await?;
+-            match message {
+-                KcleanServerMessage::Started {
+-                    request_id: received,
+-                } if received == request_id => {}
+-                KcleanServerMessage::Succeeded {
+-                    request_id: received,
+-                    byte_length,
+-                } if received == request_id => {
+-                    let solve_finished = Instant::now();
+-                    let response_started = solve_finished;
+-                    let glb = read_kclean_binary(&mut self.read, byte_length).await?;
+-                    let response_finished = Instant::now();
+-                    return Ok(ExecutionExport {
+-                        glb,
+-                        diagnostic: None,
+-                        solve_time: solve_finished.duration_since(solve_started),
+-                        solve_finished,
+-                        response_time: response_finished.duration_since(response_started),
+-                        response_finished,
+-                    });
+-                }
+-                KcleanServerMessage::Halted {
+-                    request_id: received,
+-                    byte_length,
+-                    diagnostic,
+-                } if received == request_id => {
+-                    let solve_finished = Instant::now();
+-                    let response_started = solve_finished;
+-                    let glb = if byte_length == 0 {
+-                        Vec::new()
+-                    } else {
+-                        read_kclean_binary(&mut self.read, byte_length).await?
+-                    };
+-                    let response_finished = Instant::now();
+-                    let message = diagnostic
+-                        .error
+-                        .unwrap_or_else(|| "kernel execution halted".into());
+-                    return Ok(ExecutionExport {
+-                        glb,
+-                        diagnostic: Some(ExecutionDiagnostic {
+-                            message: format!("Kclean kernel failed [evaluation.halted]: {message}"),
+-                            source_diagnostics: diagnostic.diagnostics,
+-                        }),
+-                        solve_time: solve_finished.duration_since(solve_started),
+-                        solve_finished,
+-                        response_time: response_finished.duration_since(response_started),
+-                        response_finished,
+-                    });
+-                }
+-                KcleanServerMessage::Failed {
+-                    request_id: received,
+-                    error,
+-                } if received == request_id => {
+-                    let solve_finished = Instant::now();
+-                    return Ok(ExecutionExport {
+-                        glb: Vec::new(),
+-                        diagnostic: Some(ExecutionDiagnostic {
+-                            message: format!(
+-                                "Kclean {} failed [{}]: {}",
+-                                error.phase, error.code, error.message
+-                            ),
+-                            source_diagnostics: vec![],
+-                        }),
+-                        solve_time: solve_finished.duration_since(solve_started),
+-                        solve_finished,
+-                        response_time: Duration::ZERO,
+-                        response_finished: solve_finished,
+-                    });
+-                }
+-                _ => {}
++        let response = match futures_util::future::select(
++            Box::pin(response_rx),
++            Box::pin(TimeoutFuture::new(RESPONSE_TIMEOUT.as_millis() as u32)),
++        )
++        .await
++        {
++            futures_util::future::Either::Left((Ok(response), _)) => response?,
++            futures_util::future::Either::Left((Err(_), _)) => {
++                return Err("Kclean session closed unexpectedly".into());
+             }
++            futures_util::future::Either::Right(_) => {
++                self.pending.borrow_mut().remove(&request_id);
++                return Err("Kclean request timed out".into());
++            }
++        };
++
++        match response {
++            KcleanResponse::Succeeded {
++                glb,
++                solve_finished,
++                response_finished,
++            } => Ok(ExecutionOutcome::Exported(ExecutionExport {
++                glb,
++                diagnostic: None,
++                solve_time: solve_finished.duration_since(solve_started),
++                solve_finished,
++                response_time: response_finished.duration_since(solve_finished),
++                response_finished,
++            })),
++            KcleanResponse::Halted {
++                glb,
++                diagnostic,
++                solve_finished,
++                response_finished,
++            } => {
++                let message = diagnostic
++                    .error
++                    .unwrap_or_else(|| "kernel execution halted".into());
++                Ok(ExecutionOutcome::Exported(ExecutionExport {
++                    glb,
++                    diagnostic: Some(ExecutionDiagnostic {
++                        message: format!("Kclean kernel failed [evaluation.halted]: {message}"),
++                        source_diagnostics: diagnostic.diagnostics,
++                    }),
++                    solve_time: solve_finished.duration_since(solve_started),
++                    solve_finished,
++                    response_time: response_finished.duration_since(solve_finished),
++                    response_finished,
++                }))
++            }
++            KcleanResponse::Failed { error, finished } => {
++                Ok(ExecutionOutcome::Exported(ExecutionExport {
++                    glb: Vec::new(),
++                    diagnostic: Some(ExecutionDiagnostic {
++                        message: format!(
++                            "Kclean {} failed [{}]: {}",
++                            error.phase, error.code, error.message
++                        ),
++                        source_diagnostics: vec![],
++                    }),
++                    solve_time: finished.duration_since(solve_started),
++                    solve_finished: finished,
++                    response_time: Duration::ZERO,
++                    response_finished: finished,
++                }))
++            }
++            KcleanResponse::Superseded => Ok(ExecutionOutcome::Superseded),
+         }
+     }
+ }
+ 
++fn kclean_session(endpoint: &str) -> Result<KcleanSession, String> {
++    KCLEAN_SESSION.with(|slot| {
++        let mut slot = slot.borrow_mut();
++        if slot
++            .as_ref()
++            .is_none_or(|session| session.endpoint != endpoint)
++        {
++            clear_kclean_warm_endpoint();
++            *slot = Some(KcleanSession::connect(endpoint.to_owned())?);
++        }
++        Ok(slot
++            .as_ref()
++            .expect("Kclean session was initialized")
++            .clone())
++    })
++}
++
++fn invalidate_kclean_session(session: &KcleanSession) {
++    KCLEAN_SESSION.with(|slot| {
++        let mut slot = slot.borrow_mut();
++        if slot
++            .as_ref()
++            .is_some_and(|active| active.generation == session.generation)
++        {
++            *slot = None;
++            clear_kclean_warm_endpoint();
++        }
++    });
++}
++
+ /** Whether the selected Kclean endpoint already has a reusable browser session. */
+ pub fn has_warm_kclean_connection() -> bool {
+     let Ok(ExecutionBackend::Kclean { host }) = execution_backend() else {
+@@ -471,8 +523,115 @@
+         .or_else(|| host.starts_with("wss://").then(|| host.to_string()))
+         .ok_or_else(|| "Kclean server URL must use HTTP(S) or WS(S)".to_string())?;
+     Ok(format!("{host}/v1/evaluations/ws"))
++}
++
++/// The sole socket reader parses and routes terminal responses by request ID.
++/// This lets newer edits be sent while an older evaluation is still running.
++async fn read_kclean_session(mut read: BrowserRead, pending: PendingKcleanRequests) {
++    loop {
++        let message = match read.next().await {
++            Some(Ok(Message::Text(text))) => {
++                match serde_json::from_str::<KcleanServerMessage>(&text) {
++                    Ok(message) => message,
++                    Err(error) => {
++                        fail_pending(&pending, format!("invalid Kclean JSON response: {error}"));
++                        return;
++                    }
++                }
++            }
++            Some(Ok(Message::Bytes(_))) => {
++                fail_pending(
++                    &pending,
++                    "Kclean sent artifact bytes before result metadata".into(),
++                );
++                return;
++            }
++            Some(Err(error)) => {
++                fail_pending(&pending, format!("failed reading Kclean response: {error}"));
++                return;
++            }
++            None => {
++                fail_pending(&pending, "Kclean session closed unexpectedly".into());
++                return;
++            }
++        };
++
++        let (request_id, response) = match message {
++            KcleanServerMessage::Started { request_id } => {
++                let _ = request_id;
++                continue;
++            }
++            KcleanServerMessage::Succeeded {
++                request_id,
++                byte_length,
++            } => {
++                let solve_finished = Instant::now();
++                let glb = match read_kclean_binary(&mut read, byte_length).await {
++                    Ok(glb) => glb,
++                    Err(error) => {
++                        fail_pending(&pending, error);
++                        return;
++                    }
++                };
++                (
++                    request_id,
++                    KcleanResponse::Succeeded {
++                        glb,
++                        solve_finished,
++                        response_finished: Instant::now(),
++                    },
++                )
++            }
++            KcleanServerMessage::Halted {
++                request_id,
++                byte_length,
++                diagnostic,
++            } => {
++                let solve_finished = Instant::now();
++                let glb = if byte_length == 0 {
++                    Vec::new()
++                } else {
++                    match read_kclean_binary(&mut read, byte_length).await {
++                        Ok(glb) => glb,
++                        Err(error) => {
++                            fail_pending(&pending, error);
++                            return;
++                        }
++                    }
++                };
++                (
++                    request_id,
++                    KcleanResponse::Halted {
++                        glb,
++                        diagnostic,
++                        solve_finished,
++                        response_finished: Instant::now(),
++                    },
++                )
++            }
++            KcleanServerMessage::Failed { request_id, error } => (
++                request_id,
++                KcleanResponse::Failed {
++                    error,
++                    finished: Instant::now(),
++                },
++            ),
++            KcleanServerMessage::Superseded { request_id } => {
++                (request_id, KcleanResponse::Superseded)
++            }
++        };
++        if let Some(waiter) = pending.borrow_mut().remove(&request_id) {
++            let _ = waiter.send(Ok(response));
++        }
++    }
+ }
+ 
++fn fail_pending(pending: &PendingKcleanRequests, message: String) {
++    for (_, waiter) in pending.borrow_mut().drain() {
++        let _ = waiter.send(Err(message.clone()));
++    }
++}
++
+ async fn read_kclean_frame(read: &mut BrowserRead) -> Result<Message, String> {
+     match futures_util::future::select(
+         Box::pin(read.next()),
+@@ -487,14 +646,6 @@
+     }
+ }
+ 
+-async fn read_kclean_message(read: &mut BrowserRead) -> Result<KcleanServerMessage, String> {
+-    match read_kclean_frame(read).await? {
+-        Message::Text(text) => serde_json::from_str(&text)
+-            .map_err(|error| format!("invalid Kclean JSON response: {error}")),
+-        Message::Bytes(_) => Err("Kclean sent artifact bytes before result metadata".into()),
+-    }
+-}
+-
+ async fn read_kclean_binary(read: &mut BrowserRead, byte_length: usize) -> Result<Vec<u8>, String> {
+     match read_kclean_frame(read).await? {
+         Message::Bytes(bytes) if bytes.len() == byte_length => Ok(bytes),

@@ -30,8 +30,9 @@ npm start
 ```
 
 The Bevy build script checks out the experimental renderer under `vendor/`,
-applies the Kclean integration and certified-checkpoint patches idempotently,
-and installs the generated JavaScript, WASM, and assets in their Vite locations.
+applies the Kclean integration, certified-checkpoint, persistent-socket, and
+latest-wins patches idempotently, then installs the generated JavaScript, WASM,
+and assets in their Vite locations.
 
 In **Settings → Modeling**:
 
@@ -42,9 +43,14 @@ In **Settings → Modeling**:
 
 Kclean receives `{ entrypoint, files, outputFormat: "glb" }` over one persistent
 WebSocket. The first edit opens the connection; later edits reuse it and move
-directly to solving. If the socket goes stale, the renderer reconnects and
-retries the current revision once. The renderer keeps its existing revision
-check, so a response for an older editor revision cannot replace a newer model.
+directly to solving. Projects queued in one render frame are coalesced to the
+newest revision. If an edit arrives while Kclean is still evaluating, it is
+sent on the same socket; the server supersedes the old request and cancels that
+request's bridge process group. `superseded` is normal control flow, so Bevy
+keeps the last certified model visible and does not show an error toast. If the
+socket goes stale, the renderer reconnects and retries the current revision
+once. The renderer also keeps its existing revision check, so a response for an
+older editor revision cannot replace a newer model.
 The Kclean GLB currently has body names but no Zoo topology extension, so faces
 render while selection and sketching remain unavailable in this viewport. The
 Bevy clear color follows ZDS's resolved light or dark theme immediately,

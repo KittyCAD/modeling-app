@@ -17,6 +17,7 @@ BEVY_ZOO_REF="${BEVY_ZOO_REF:-frank/embeddable-viewport}"
 BEVY_ZOO_KCLEAN_PATCH="$ROOT/scripts/bevy-zoo-kclean.patch"
 BEVY_ZOO_CHECKPOINT_PATCH="$ROOT/scripts/bevy-zoo-checkpoint.patch"
 BEVY_ZOO_WEBSOCKET_PATCH="$ROOT/scripts/bevy-zoo-kclean-websocket.patch"
+BEVY_ZOO_LATEST_WINS_PATCH="$ROOT/scripts/bevy-zoo-kclean-latest-wins.patch"
 
 for tool in cargo wasm-bindgen wasm-opt; do
   if ! command -v "$tool" >/dev/null 2>&1; then
@@ -66,6 +67,16 @@ elif git -C "$BEVY_ZOO_DIR" apply --check "$BEVY_ZOO_WEBSOCKET_PATCH"; then
   echo "Applied persistent Kclean WebSocket patch"
 else
   echo "error: persistent Kclean WebSocket patch does not apply cleanly to $BEVY_ZOO_DIR" >&2
+  exit 1
+fi
+
+if grep -q 'type PendingKcleanRequests' "$BEVY_ZOO_DIR/src/zoo/remote_wasm.rs"; then
+  echo "Latest-wins Kclean execution patch is already applied"
+elif git -C "$BEVY_ZOO_DIR" apply --check "$BEVY_ZOO_LATEST_WINS_PATCH"; then
+  git -C "$BEVY_ZOO_DIR" apply "$BEVY_ZOO_LATEST_WINS_PATCH"
+  echo "Applied latest-wins Kclean execution patch"
+else
+  echo "error: latest-wins Kclean execution patch does not apply cleanly to $BEVY_ZOO_DIR" >&2
   exit 1
 fi
 
