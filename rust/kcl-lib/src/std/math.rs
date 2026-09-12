@@ -77,8 +77,12 @@ pub async fn sqrt(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     }
 
     let result = input.n.sqrt();
+    let ty = input
+        .ty
+        .pow_type(0.5)
+        .map_err(|message| KclError::new_semantic(KclErrorDetails::new(message, vec![args.source_range])))?;
 
-    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, ty)))
 }
 
 /// Compute the absolute value of a number.
@@ -188,8 +192,12 @@ pub async fn pow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
         );
     }
     let result = libm::pow(input.n, exp.n);
+    let ty = input
+        .ty
+        .pow_type(exp.n)
+        .map_err(|message| KclError::new_semantic(KclErrorDetails::new(message, vec![args.source_range])))?;
 
-    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
+    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, ty)))
 }
 
 /// Compute the arccosine of a number (in radians).

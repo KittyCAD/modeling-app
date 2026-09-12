@@ -1,5 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
+assertion_line: 490
 description: Variables in memory after executing cassette.kcl
 ---
 {
@@ -438,10 +439,10 @@ description: Variables in memory after executing cassette.kcl
                   0.0
                 ],
                 "from": [
-                  0.3070866141732284,
+                  0.30708661417322836,
                   0.0
                 ],
-                "radius": 0.3070866141732284,
+                "radius": 0.30708661417322836,
                 "tag": {
                   "commentStart": 4163,
                   "end": 4168,
@@ -451,7 +452,7 @@ description: Variables in memory after executing cassette.kcl
                   "value": "outer"
                 },
                 "to": [
-                  0.3070866141732284,
+                  0.30708661417322836,
                   0.0
                 ],
                 "type": "Circle",
@@ -468,10 +469,10 @@ description: Variables in memory after executing cassette.kcl
                   0.0
                 ],
                 "from": [
-                  0.2362204724409449,
+                  0.23622047244094488,
                   0.0
                 ],
-                "radius": 0.2362204724409449,
+                "radius": 0.23622047244094488,
                 "tag": {
                   "commentStart": 4237,
                   "end": 4242,
@@ -481,7 +482,7 @@ description: Variables in memory after executing cassette.kcl
                   "value": "inner"
                 },
                 "to": [
-                  0.2362204724409449,
+                  0.23622047244094488,
                   0.0
                 ],
                 "type": "Circle",
@@ -521,11 +522,11 @@ description: Variables in memory after executing cassette.kcl
             },
             "start": {
               "from": [
-                0.3070866141732284,
+                0.30708661417322836,
                 0.0
               ],
               "to": [
-                0.3070866141732284,
+                0.30708661417322836,
                 0.0
               ],
               "units": "in",
@@ -883,10 +884,10 @@ description: Variables in memory after executing cassette.kcl
                   0.0
                 ],
                 "from": [
-                  0.3070866141732284,
+                  0.30708661417322836,
                   0.0
                 ],
-                "radius": 0.3070866141732284,
+                "radius": 0.30708661417322836,
                 "tag": {
                   "commentStart": 4163,
                   "end": 4168,
@@ -896,7 +897,7 @@ description: Variables in memory after executing cassette.kcl
                   "value": "outer"
                 },
                 "to": [
-                  0.3070866141732284,
+                  0.30708661417322836,
                   0.0
                 ],
                 "type": "Circle",
@@ -913,10 +914,10 @@ description: Variables in memory after executing cassette.kcl
                   0.0
                 ],
                 "from": [
-                  0.2362204724409449,
+                  0.23622047244094488,
                   0.0
                 ],
-                "radius": 0.2362204724409449,
+                "radius": 0.23622047244094488,
                 "tag": {
                   "commentStart": 4237,
                   "end": 4242,
@@ -926,7 +927,7 @@ description: Variables in memory after executing cassette.kcl
                   "value": "inner"
                 },
                 "to": [
-                  0.2362204724409449,
+                  0.23622047244094488,
                   0.0
                 ],
                 "type": "Circle",
@@ -966,11 +967,11 @@ description: Variables in memory after executing cassette.kcl
             },
             "start": {
               "from": [
-                0.3070866141732284,
+                0.30708661417322836,
                 0.0
               ],
               "to": [
-                0.3070866141732284,
+                0.30708661417322836,
                 0.0
               ],
               "units": "in",
@@ -1328,10 +1329,10 @@ description: Variables in memory after executing cassette.kcl
                   0.0
                 ],
                 "from": [
-                  0.3070866141732284,
+                  0.30708661417322836,
                   0.0
                 ],
-                "radius": 0.3070866141732284,
+                "radius": 0.30708661417322836,
                 "tag": {
                   "commentStart": 4163,
                   "end": 4168,
@@ -1341,7 +1342,7 @@ description: Variables in memory after executing cassette.kcl
                   "value": "outer"
                 },
                 "to": [
-                  0.3070866141732284,
+                  0.30708661417322836,
                   0.0
                 ],
                 "type": "Circle",
@@ -1358,10 +1359,10 @@ description: Variables in memory after executing cassette.kcl
                   0.0
                 ],
                 "from": [
-                  0.2362204724409449,
+                  0.23622047244094488,
                   0.0
                 ],
-                "radius": 0.2362204724409449,
+                "radius": 0.23622047244094488,
                 "tag": {
                   "commentStart": 4237,
                   "end": 4242,
@@ -1371,7 +1372,7 @@ description: Variables in memory after executing cassette.kcl
                   "value": "inner"
                 },
                 "to": [
-                  0.2362204724409449,
+                  0.23622047244094488,
                   0.0
                 ],
                 "type": "Circle",
@@ -1411,11 +1412,11 @@ description: Variables in memory after executing cassette.kcl
             },
             "start": {
               "from": [
-                0.3070866141732284,
+                0.30708661417322836,
                 0.0
               ],
               "to": [
-                0.3070866141732284,
+                0.30708661417322836,
                 0.0
               ],
               "units": "in",
@@ -1773,10 +1774,10 @@ description: Variables in memory after executing cassette.kcl
                   0.0
                 ],
                 "from": [
-                  0.3070866141732284,
+                  0.30708661417322836,
                   0.0
                 ],
-                "radius": 0.3070866141732284,
+                "radius": 0.30708661417322836,
                 "tag": {
                   "commentStart": 4163,
                   "end": 4168,
@@ -1786,7 +1787,7 @@ description: Variables in memory after executing cassette.kcl
                   "value": "outer"
                 },
                 "to": [
-                  0.3070866141732284,
+                  0.30708661417322836,
                   0.0
                 ],
                 "type": "Circle",
@@ -1803,10 +1804,10 @@ description: Variables in memory after executing cassette.kcl
                   0.0
                 ],
                 "from": [
-                  0.2362204724409449,
+                  0.23622047244094488,
                   0.0
                 ],
-                "radius": 0.2362204724409449,
+                "radius": 0.23622047244094488,
                 "tag": {
                   "commentStart": 4237,
                   "end": 4242,
@@ -1816,7 +1817,7 @@ description: Variables in memory after executing cassette.kcl
                   "value": "inner"
                 },
                 "to": [
-                  0.2362204724409449,
+                  0.23622047244094488,
                   0.0
                 ],
                 "type": "Circle",
@@ -1856,11 +1857,11 @@ description: Variables in memory after executing cassette.kcl
             },
             "start": {
               "from": [
-                0.3070866141732284,
+                0.30708661417322836,
                 0.0
               ],
               "to": [
-                0.3070866141732284,
+                0.30708661417322836,
                 0.0
               ],
               "units": "in",
@@ -2218,10 +2219,10 @@ description: Variables in memory after executing cassette.kcl
                   0.0
                 ],
                 "from": [
-                  0.3070866141732284,
+                  0.30708661417322836,
                   0.0
                 ],
-                "radius": 0.3070866141732284,
+                "radius": 0.30708661417322836,
                 "tag": {
                   "commentStart": 4163,
                   "end": 4168,
@@ -2231,7 +2232,7 @@ description: Variables in memory after executing cassette.kcl
                   "value": "outer"
                 },
                 "to": [
-                  0.3070866141732284,
+                  0.30708661417322836,
                   0.0
                 ],
                 "type": "Circle",
@@ -2248,10 +2249,10 @@ description: Variables in memory after executing cassette.kcl
                   0.0
                 ],
                 "from": [
-                  0.2362204724409449,
+                  0.23622047244094488,
                   0.0
                 ],
-                "radius": 0.2362204724409449,
+                "radius": 0.23622047244094488,
                 "tag": {
                   "commentStart": 4237,
                   "end": 4242,
@@ -2261,7 +2262,7 @@ description: Variables in memory after executing cassette.kcl
                   "value": "inner"
                 },
                 "to": [
-                  0.2362204724409449,
+                  0.23622047244094488,
                   0.0
                 ],
                 "type": "Circle",
@@ -2301,11 +2302,11 @@ description: Variables in memory after executing cassette.kcl
             },
             "start": {
               "from": [
-                0.3070866141732284,
+                0.30708661417322836,
                 0.0
               ],
               "to": [
-                0.3070866141732284,
+                0.30708661417322836,
                 0.0
               ],
               "units": "in",
@@ -2663,10 +2664,10 @@ description: Variables in memory after executing cassette.kcl
                   0.0
                 ],
                 "from": [
-                  0.3070866141732284,
+                  0.30708661417322836,
                   0.0
                 ],
-                "radius": 0.3070866141732284,
+                "radius": 0.30708661417322836,
                 "tag": {
                   "commentStart": 4163,
                   "end": 4168,
@@ -2676,7 +2677,7 @@ description: Variables in memory after executing cassette.kcl
                   "value": "outer"
                 },
                 "to": [
-                  0.3070866141732284,
+                  0.30708661417322836,
                   0.0
                 ],
                 "type": "Circle",
@@ -2693,10 +2694,10 @@ description: Variables in memory after executing cassette.kcl
                   0.0
                 ],
                 "from": [
-                  0.2362204724409449,
+                  0.23622047244094488,
                   0.0
                 ],
-                "radius": 0.2362204724409449,
+                "radius": 0.23622047244094488,
                 "tag": {
                   "commentStart": 4237,
                   "end": 4242,
@@ -2706,7 +2707,7 @@ description: Variables in memory after executing cassette.kcl
                   "value": "inner"
                 },
                 "to": [
-                  0.2362204724409449,
+                  0.23622047244094488,
                   0.0
                 ],
                 "type": "Circle",
@@ -2746,11 +2747,11 @@ description: Variables in memory after executing cassette.kcl
             },
             "start": {
               "from": [
-                0.3070866141732284,
+                0.30708661417322836,
                 0.0
               ],
               "to": [
-                0.3070866141732284,
+                0.30708661417322836,
                 0.0
               ],
               "units": "in",
@@ -3108,10 +3109,10 @@ description: Variables in memory after executing cassette.kcl
                   0.0
                 ],
                 "from": [
-                  0.3070866141732284,
+                  0.30708661417322836,
                   0.0
                 ],
-                "radius": 0.3070866141732284,
+                "radius": 0.30708661417322836,
                 "tag": {
                   "commentStart": 4163,
                   "end": 4168,
@@ -3121,7 +3122,7 @@ description: Variables in memory after executing cassette.kcl
                   "value": "outer"
                 },
                 "to": [
-                  0.3070866141732284,
+                  0.30708661417322836,
                   0.0
                 ],
                 "type": "Circle",
@@ -3138,10 +3139,10 @@ description: Variables in memory after executing cassette.kcl
                   0.0
                 ],
                 "from": [
-                  0.2362204724409449,
+                  0.23622047244094488,
                   0.0
                 ],
-                "radius": 0.2362204724409449,
+                "radius": 0.23622047244094488,
                 "tag": {
                   "commentStart": 4237,
                   "end": 4242,
@@ -3151,7 +3152,7 @@ description: Variables in memory after executing cassette.kcl
                   "value": "inner"
                 },
                 "to": [
-                  0.2362204724409449,
+                  0.23622047244094488,
                   0.0
                 ],
                 "type": "Circle",
@@ -3191,11 +3192,11 @@ description: Variables in memory after executing cassette.kcl
             },
             "start": {
               "from": [
-                0.3070866141732284,
+                0.30708661417322836,
                 0.0
               ],
               "to": [
-                0.3070866141732284,
+                0.30708661417322836,
                 0.0
               ],
               "units": "in",
@@ -3319,10 +3320,10 @@ description: Variables in memory after executing cassette.kcl
               -0.0
             ],
             "from": [
-              0.2362204724409449,
+              0.23622047244094488,
               0.0
             ],
-            "radius": 0.2362204724409449,
+            "radius": 0.23622047244094488,
             "tag": {
               "commentStart": 672,
               "end": 680,
@@ -3332,8 +3333,8 @@ description: Variables in memory after executing cassette.kcl
               "value": "outerArc"
             },
             "to": [
-              0.23263175268004915,
-              0.041019254566991424
+              0.23263175268004913,
+              0.04101925456699142
             ],
             "type": "Arc",
             "units": "in"
@@ -3344,8 +3345,8 @@ description: Variables in memory after executing cassette.kcl
               "sourceRange": []
             },
             "from": [
-              0.23263175268004915,
-              0.041019254566991424
+              0.23263175268004913,
+              0.04101925456699142
             ],
             "tag": {
               "commentStart": 833,
@@ -3369,14 +3370,14 @@ description: Variables in memory after executing cassette.kcl
             },
             "ccw": true,
             "center": [
-              -0.0,
-              0.000000000000000006938893903907228
+              0.000000000000000027755575615628914,
+              0.000000000000000013877787807814457
             ],
             "from": [
               0.2227836751499271,
               0.03928277279032212
             ],
-            "radius": 0.22622047244094493,
+            "radius": 0.2262204724409449,
             "tag": {
               "commentStart": 1034,
               "end": 1042,
@@ -3450,11 +3451,11 @@ description: Variables in memory after executing cassette.kcl
         },
         "start": {
           "from": [
-            0.2362204724409449,
+            0.23622047244094488,
             0.0
           ],
           "to": [
-            0.2362204724409449,
+            0.23622047244094488,
             0.0
           ],
           "units": "in",
@@ -3519,10 +3520,10 @@ description: Variables in memory after executing cassette.kcl
             -0.0
           ],
           "from": [
-            0.2362204724409449,
+            0.23622047244094488,
             0.0
           ],
-          "radius": 0.2362204724409449,
+          "radius": 0.23622047244094488,
           "tag": {
             "commentStart": 672,
             "end": 680,
@@ -3532,8 +3533,8 @@ description: Variables in memory after executing cassette.kcl
             "value": "outerArc"
           },
           "to": [
-            0.23263175268004915,
-            0.041019254566991424
+            0.23263175268004913,
+            0.04101925456699142
           ],
           "type": "Arc",
           "units": "in"
@@ -3544,8 +3545,8 @@ description: Variables in memory after executing cassette.kcl
             "sourceRange": []
           },
           "from": [
-            0.23263175268004915,
-            0.041019254566991424
+            0.23263175268004913,
+            0.04101925456699142
           ],
           "tag": {
             "commentStart": 833,
@@ -3569,14 +3570,14 @@ description: Variables in memory after executing cassette.kcl
           },
           "ccw": true,
           "center": [
-            -0.0,
-            0.000000000000000006938893903907228
+            0.000000000000000027755575615628914,
+            0.000000000000000013877787807814457
           ],
           "from": [
             0.2227836751499271,
             0.03928277279032212
           ],
-          "radius": 0.22622047244094493,
+          "radius": 0.2262204724409449,
           "tag": {
             "commentStart": 1034,
             "end": 1042,
@@ -3650,11 +3651,11 @@ description: Variables in memory after executing cassette.kcl
       },
       "start": {
         "from": [
-          0.2362204724409449,
+          0.23622047244094488,
           0.0
         ],
         "to": [
-          0.2362204724409449,
+          0.23622047244094488,
           0.0
         ],
         "units": "in",
@@ -3705,10 +3706,10 @@ description: Variables in memory after executing cassette.kcl
             -0.0
           ],
           "from": [
-            0.2362204724409449,
+            0.23622047244094488,
             0.0
           ],
-          "radius": 0.2362204724409449,
+          "radius": 0.23622047244094488,
           "tag": {
             "commentStart": 672,
             "end": 680,
@@ -3718,8 +3719,8 @@ description: Variables in memory after executing cassette.kcl
             "value": "outerArc"
           },
           "to": [
-            0.23263175268004915,
-            0.041019254566991424
+            0.23263175268004913,
+            0.04101925456699142
           ],
           "type": "Arc",
           "units": "in"
@@ -3730,8 +3731,8 @@ description: Variables in memory after executing cassette.kcl
             "sourceRange": []
           },
           "from": [
-            0.23263175268004915,
-            0.041019254566991424
+            0.23263175268004913,
+            0.04101925456699142
           ],
           "tag": {
             "commentStart": 833,
@@ -3755,14 +3756,14 @@ description: Variables in memory after executing cassette.kcl
           },
           "ccw": true,
           "center": [
-            -0.0,
-            0.000000000000000006938893903907228
+            0.000000000000000027755575615628914,
+            0.000000000000000013877787807814457
           ],
           "from": [
             0.2227836751499271,
             0.03928277279032212
           ],
-          "radius": 0.22622047244094493,
+          "radius": 0.2262204724409449,
           "tag": {
             "commentStart": 1034,
             "end": 1042,
@@ -3836,11 +3837,11 @@ description: Variables in memory after executing cassette.kcl
       },
       "start": {
         "from": [
-          0.2362204724409449,
+          0.23622047244094488,
           0.0
         ],
         "to": [
-          0.2362204724409449,
+          0.23622047244094488,
           0.0
         ],
         "units": "in",
@@ -3889,7 +3890,7 @@ description: Variables in memory after executing cassette.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 0.2227836751499271,
+                        "n": 0.22278367514992709,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3897,7 +3898,7 @@ description: Variables in memory after executing cassette.kcl
                         }
                       },
                       {
-                        "n": 0.03928277279032212,
+                        "n": 0.039282772790322114,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4049,10 +4050,10 @@ description: Variables in memory after executing cassette.kcl
                     -0.0
                   ],
                   "from": [
-                    0.2362204724409449,
+                    0.23622047244094488,
                     0.0
                   ],
-                  "radius": 0.2362204724409449,
+                  "radius": 0.23622047244094488,
                   "tag": {
                     "commentStart": 672,
                     "end": 680,
@@ -4062,8 +4063,8 @@ description: Variables in memory after executing cassette.kcl
                     "value": "outerArc"
                   },
                   "to": [
-                    0.23263175268004915,
-                    0.041019254566991424
+                    0.23263175268004913,
+                    0.04101925456699142
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -4074,8 +4075,8 @@ description: Variables in memory after executing cassette.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.23263175268004915,
-                    0.041019254566991424
+                    0.23263175268004913,
+                    0.04101925456699142
                   ],
                   "tag": {
                     "commentStart": 833,
@@ -4099,14 +4100,14 @@ description: Variables in memory after executing cassette.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -0.0,
-                    0.000000000000000006938893903907228
+                    0.000000000000000027755575615628914,
+                    0.000000000000000013877787807814457
                   ],
                   "from": [
                     0.2227836751499271,
                     0.03928277279032212
                   ],
-                  "radius": 0.22622047244094493,
+                  "radius": 0.2262204724409449,
                   "tag": {
                     "commentStart": 1034,
                     "end": 1042,
@@ -4180,11 +4181,11 @@ description: Variables in memory after executing cassette.kcl
               },
               "start": {
                 "from": [
-                  0.2362204724409449,
+                  0.23622047244094488,
                   0.0
                 ],
                 "to": [
-                  0.2362204724409449,
+                  0.23622047244094488,
                   0.0
                 ],
                 "units": "in",
@@ -4233,7 +4234,7 @@ description: Variables in memory after executing cassette.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 0.2362204724409449,
+                        "n": 0.23622047244094488,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4251,7 +4252,7 @@ description: Variables in memory after executing cassette.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.23263175268004915,
+                        "n": 0.23263175268004913,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4259,7 +4260,7 @@ description: Variables in memory after executing cassette.kcl
                         }
                       },
                       {
-                        "n": 0.041019254566991424,
+                        "n": 0.04101925456699142,
                         "ty": {
                           "in": null,
                           "type": "Known",

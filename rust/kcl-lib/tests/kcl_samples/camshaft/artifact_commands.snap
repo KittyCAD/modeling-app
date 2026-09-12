@@ -1,5 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
+assertion_line: 549
 description: Artifact commands camshaft.kcl
 ---
 {
@@ -1407,8 +1408,8 @@ description: Artifact commands camshaft.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -5.994299082803077,
-            "y": 31.825408143587193,
+            "x": -5.994299082803083,
+            "y": 31.825408143587186,
             "z": 0.0
           },
           "relative": false
@@ -1442,7 +1443,7 @@ description: Artifact commands camshaft.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -10.921577086552112,
+            "x": -10.921577086552116,
             "y": 24.53026376542572,
             "z": 0.0
           },

@@ -643,6 +643,9 @@ pub trait NumericTypeExt {
     /// Combine two types for division-like operations.
     fn combine_div(a: TyF64, b: TyF64) -> (f64, f64, NumericType);
 
+    /// Apply a numeric exponent while preserving concrete physical dimensions.
+    fn pow_type(&self, exponent: f64) -> Result<NumericType, String>;
+
     /// Combine two types for modulo-like operations.
     fn combine_mod(a: TyF64, b: TyF64) -> (f64, f64, NumericType);
 
@@ -671,6 +674,183 @@ pub trait NumericTypeExt {
     fn coerce(&self, val: &KclValue) -> Result<KclValue, CoercionError>;
 
     fn as_length(&self) -> Option<UnitLength>;
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+struct ConcreteDimensions {
+    length_unit: UnitLength,
+    length_exponent: i8,
+    angle_unit: UnitAngle,
+    angle_exponent: i8,
+}
+
+impl ConcreteDimensions {
+    fn from_unit_type(unit: UnitType) -> Option<Self> {
+        match unit {
+            UnitType::Count => Some(Self {
+                length_unit: UnitLength::Millimeters,
+                length_exponent: 0,
+                angle_unit: UnitAngle::Degrees,
+                angle_exponent: 0,
+            }),
+            UnitType::Length(length_unit) => Some(Self {
+                length_unit,
+                length_exponent: 1,
+                angle_unit: UnitAngle::Degrees,
+                angle_exponent: 0,
+            }),
+            UnitType::Angle(angle_unit) => Some(Self {
+                length_unit: UnitLength::Millimeters,
+                length_exponent: 0,
+                angle_unit,
+                angle_exponent: 1,
+            }),
+            UnitType::Dimensional {
+                length_unit,
+                length_exponent,
+                angle_unit,
+                angle_exponent,
+            } => Some(Self {
+                length_unit,
+                length_exponent,
+                angle_unit,
+                angle_exponent,
+            }),
+            UnitType::GenericLength | UnitType::GenericAngle => None,
+        }
+    }
+
+    fn into_unit_type(self) -> UnitType {
+        match (self.length_exponent, self.angle_exponent) {
+            (0, 0) => UnitType::Count,
+            (1, 0) => UnitType::Length(self.length_unit),
+            (0, 1) => UnitType::Angle(self.angle_unit),
+            _ => UnitType::Dimensional {
+                length_unit: self.length_unit,
+                length_exponent: self.length_exponent,
+                angle_unit: self.angle_unit,
+                angle_exponent: self.angle_exponent,
+            },
+        }
+    }
+
+    fn same_exponents(self, other: Self) -> bool {
+        self.length_exponent == other.length_exponent && self.angle_exponent == other.angle_exponent
+    }
+
+    fn convert_value_to(self, value: f64, target: Self) -> f64 {
+        debug_assert!(self.same_exponents(target));
+        let length_factor = adjust_length(self.length_unit, 1.0, target.length_unit)
+            .0
+            .powi(i32::from(self.length_exponent));
+        let angle_factor = adjust_angle(self.angle_unit, 1.0, target.angle_unit)
+            .0
+            .powi(i32::from(self.angle_exponent));
+        value * length_factor * angle_factor
+    }
+
+    fn common_units(self, other: Self) -> Self {
+        Self {
+            length_unit: if self.length_exponent != 0 {
+                self.length_unit
+            } else {
+                other.length_unit
+            },
+            length_exponent: self.length_exponent,
+            angle_unit: if self.angle_exponent != 0 {
+                self.angle_unit
+            } else {
+                other.angle_unit
+            },
+            angle_exponent: self.angle_exponent,
+        }
+    }
+
+    fn combine(self, other: Self, divide: bool) -> Option<Self> {
+        let length_exponent = if divide {
+            self.length_exponent.checked_sub(other.length_exponent)?
+        } else {
+            self.length_exponent.checked_add(other.length_exponent)?
+        };
+        let angle_exponent = if divide {
+            self.angle_exponent.checked_sub(other.angle_exponent)?
+        } else {
+            self.angle_exponent.checked_add(other.angle_exponent)?
+        };
+        let units = self.common_units(other);
+        Some(Self {
+            length_unit: units.length_unit,
+            length_exponent,
+            angle_unit: units.angle_unit,
+            angle_exponent,
+        })
+    }
+
+    fn pow(self, exponent: f64) -> Result<Self, String> {
+        let length_exponent = scale_dimension_exponent(self.length_exponent, exponent)?;
+        let angle_exponent = scale_dimension_exponent(self.angle_exponent, exponent)?;
+        Ok(Self {
+            length_exponent,
+            angle_exponent,
+            ..self
+        })
+    }
+}
+
+fn scale_dimension_exponent(current: i8, exponent: f64) -> Result<i8, String> {
+    let scaled = f64::from(current) * exponent;
+    let rounded = scaled.round();
+    if !scaled.is_finite()
+        || (scaled - rounded).abs() > 1.0e-10
+        || rounded < f64::from(i8::MIN)
+        || rounded > f64::from(i8::MAX)
+    {
+        return Err(format!(
+            "exponent {exponent} would produce a non-integral or out-of-range physical dimension"
+        ));
+    }
+    Ok(rounded as i8)
+}
+
+fn combine_known_equal(a: TyF64, b: TyF64) -> Option<(f64, f64, NumericType)> {
+    let (NumericType::Known(a_unit), NumericType::Known(b_unit)) = (a.ty, b.ty) else {
+        return None;
+    };
+    let a_dimensions = ConcreteDimensions::from_unit_type(a_unit)?;
+    let b_dimensions = ConcreteDimensions::from_unit_type(b_unit)?;
+    if !a_dimensions.same_exponents(b_dimensions) {
+        return None;
+    }
+    Some((
+        a.n,
+        b_dimensions.convert_value_to(b.n, a_dimensions),
+        NumericType::Known(a_dimensions.into_unit_type()),
+    ))
+}
+
+fn combine_known_product(a: TyF64, b: TyF64, divide: bool) -> Option<(f64, f64, NumericType)> {
+    let (NumericType::Known(a_unit), NumericType::Known(b_unit)) = (a.ty, b.ty) else {
+        return None;
+    };
+    let a_dimensions = ConcreteDimensions::from_unit_type(a_unit)?;
+    let b_dimensions = ConcreteDimensions::from_unit_type(b_unit)?;
+    let common = a_dimensions.common_units(b_dimensions);
+    let left_target = ConcreteDimensions {
+        length_exponent: a_dimensions.length_exponent,
+        angle_exponent: a_dimensions.angle_exponent,
+        ..common
+    };
+    let right_target = ConcreteDimensions {
+        length_exponent: b_dimensions.length_exponent,
+        angle_exponent: b_dimensions.angle_exponent,
+        ..common
+    };
+    let result = a_dimensions.combine(b_dimensions, divide)?;
+    Some((
+        a_dimensions.convert_value_to(a.n, left_target),
+        b_dimensions.convert_value_to(b.n, right_target),
+        NumericType::Known(result.into_unit_type()),
+    ))
 }
 
 impl NumericTypeExt for NumericType {
@@ -716,6 +896,9 @@ impl NumericTypeExt for NumericType {
         exec_state: &mut ExecState,
         source_range: SourceRange,
     ) -> (f64, f64, NumericType) {
+        if let Some(result) = combine_known_equal(a.clone(), b.clone()) {
+            return result;
+        }
         use NumericType::*;
         match (a.ty, b.ty) {
             (at, bt) if at == bt => (a.n, b.n, at),
@@ -770,6 +953,9 @@ impl NumericTypeExt for NumericType {
         b: TyF64,
         for_errs: Option<(&mut ExecState, SourceRange)>,
     ) -> (f64, f64, NumericType) {
+        if let Some(result) = combine_known_equal(a.clone(), b.clone()) {
+            return result;
+        }
         use NumericType::*;
         match (a.ty, b.ty) {
             (at, bt) if at == bt => (a.n, b.n, at),
@@ -840,9 +1026,12 @@ impl NumericTypeExt for NumericType {
                 (a.n, b.n, Self::angle(a2))
             }
 
-            (Known(_), Known(_)) | (Default { .. }, Default { .. }) | (_, Unknown) | (Unknown, _) => {
-                (a.n, b.n, Unknown)
-            }
+            (Known(_), Known(_))
+            | (Known(UnitType::Dimensional { .. }), Default { .. })
+            | (Default { .. }, Known(UnitType::Dimensional { .. }))
+            | (Default { .. }, Default { .. })
+            | (_, Unknown)
+            | (Unknown, _) => (a.n, b.n, Unknown),
         }
     }
 
@@ -891,6 +1080,9 @@ impl NumericTypeExt for NumericType {
 
     /// Combine two types for multiplication-like operations.
     fn combine_mul(a: TyF64, b: TyF64) -> (f64, f64, NumericType) {
+        if let Some(result) = combine_known_product(a.clone(), b.clone(), false) {
+            return result;
+        }
         use NumericType::*;
         match (a.ty, b.ty) {
             (at @ Default { .. }, bt @ Default { .. }) if at == bt => (a.n, b.n, at),
@@ -905,6 +1097,9 @@ impl NumericTypeExt for NumericType {
 
     /// Combine two types for division-like operations.
     fn combine_div(a: TyF64, b: TyF64) -> (f64, f64, NumericType) {
+        if let Some(result) = combine_known_product(a.clone(), b.clone(), true) {
+            return result;
+        }
         use NumericType::*;
         match (a.ty, b.ty) {
             (at @ Default { .. }, bt @ Default { .. }) if at == bt => (a.n, b.n, at),
@@ -919,6 +1114,9 @@ impl NumericTypeExt for NumericType {
 
     /// Combine two types for modulo-like operations.
     fn combine_mod(a: TyF64, b: TyF64) -> (f64, f64, NumericType) {
+        if let Some(result) = combine_known_equal(a.clone(), b.clone()) {
+            return result;
+        }
         use NumericType::*;
         match (a.ty, b.ty) {
             (at @ Default { .. }, bt @ Default { .. }) if at == bt => (a.n, b.n, at),
@@ -928,6 +1126,20 @@ impl NumericTypeExt for NumericType {
             (at @ Known(_), Default { .. }) => (a.n, b.n, at),
             (Known(UnitType::Count), _) => (a.n, b.n, Known(UnitType::Count)),
             _ => (a.n, b.n, Unknown),
+        }
+    }
+
+    fn pow_type(&self, exponent: f64) -> Result<NumericType, String> {
+        match self {
+            NumericType::Known(unit) => {
+                let Some(dimensions) = ConcreteDimensions::from_unit_type(*unit) else {
+                    return Err(format!("cannot apply an exponent to generic unit `{unit}`"));
+                };
+                Ok(NumericType::Known(dimensions.pow(exponent)?.into_unit_type()))
+            }
+            NumericType::Default { .. } => Ok(*self),
+            NumericType::Unknown => Ok(NumericType::Unknown),
+            NumericType::Any => Ok(NumericType::Any),
         }
     }
 
@@ -1093,6 +1305,20 @@ impl NumericTypeExt for NumericType {
             });
         }
 
+        if let (NumericType::Known(from), NumericType::Known(to)) = (ty, self)
+            && let (Some(from_dimensions), Some(to_dimensions)) = (
+                ConcreteDimensions::from_unit_type(*from),
+                ConcreteDimensions::from_unit_type(*to),
+            )
+            && from_dimensions.same_exponents(to_dimensions)
+        {
+            return Ok(KclValue::Number {
+                value: from_dimensions.convert_value_to(*value, to_dimensions),
+                ty: NumericType::Known(to_dimensions.into_unit_type()),
+                meta: meta.clone(),
+            });
+        }
+
         // Not subtypes, but might be able to coerce
         use NumericType::*;
         match (ty, self) {
@@ -1167,6 +1393,12 @@ impl NumericTypeExt for NumericType {
     fn as_length(&self) -> Option<UnitLength> {
         match self {
             Self::Known(UnitType::Length(len)) | Self::Default { len, .. } => Some(*len),
+            Self::Known(UnitType::Dimensional {
+                length_unit,
+                length_exponent: 1,
+                angle_exponent: 0,
+                ..
+            }) => Some(*length_unit),
             _ => None,
         }
     }
@@ -1205,6 +1437,7 @@ impl TryFrom<NumericType> for NumericSuffix {
             NumericType::Known(UnitType::Angle(UnitAngle::Degrees)) => Ok(NumericSuffix::Deg),
             NumericType::Known(UnitType::Angle(UnitAngle::Radians)) => Ok(NumericSuffix::Rad),
             NumericType::Known(UnitType::GenericAngle) => Ok(NumericSuffix::Angle),
+            NumericType::Known(UnitType::Dimensional { .. }) => Err(NumericSuffixTypeConvertError),
             NumericType::Default { .. } => Ok(NumericSuffix::None),
             NumericType::Unknown => Ok(NumericSuffix::Unknown),
             NumericType::Any => Err(NumericSuffixTypeConvertError),
@@ -3219,6 +3452,34 @@ mod test {
         }
     }
 
+    #[track_caller]
+    fn assert_value_and_type_close(name: &str, result: &ExecTestResults, expected: f64, expected_ty: NumericType) {
+        let mem = result.exec_state.stack();
+        match mem
+            .memory
+            .get_from_owned(name, result.mem_env, SourceRange::default(), 0)
+            .unwrap()
+        {
+            KclValue::Number { value, ty, .. } => {
+                assert!(
+                    (value - expected).abs() < 1.0e-9,
+                    "{name}: expected {expected}, found {value}"
+                );
+                assert_eq!(ty, expected_ty, "{name}");
+            }
+            _ => unreachable!(),
+        }
+    }
+
+    fn length_power(unit: UnitLength, exponent: i8) -> NumericType {
+        NumericType::Known(UnitType::Dimensional {
+            length_unit: unit,
+            length_exponent: exponent,
+            angle_unit: UnitAngle::Degrees,
+            angle_exponent: 0,
+        })
+    }
+
     #[tokio::test(flavor = "multi_thread")]
     async fn combine_numeric() {
         let program = r#"a = 5 + 4
@@ -3250,7 +3511,7 @@ u = min([3rad, 4in])
         let result = parse_execute(program).await.unwrap();
         assert_eq!(
             result.exec_state.issues().len(),
-            5,
+            2,
             "errors: {:?}",
             result.exec_state.issues()
         );
@@ -3264,13 +3525,13 @@ u = min([3rad, 4in])
 
         assert_value_and_type("g", &result, 20.0, NumericType::default());
         assert_value_and_type("h", &result, 20.0, NumericType::mm());
-        assert_value_and_type("i", &result, 20.0, NumericType::Unknown);
+        assert_value_and_type("i", &result, 20.0, length_power(UnitLength::Millimeters, 2));
         assert_value_and_type("j", &result, 20.0, NumericType::default());
-        assert_value_and_type("k", &result, 18.0, NumericType::Unknown);
+        assert_value_and_type("k", &result, 18.0, length_power(UnitLength::Millimeters, 2));
 
         assert_value_and_type("l", &result, 0.0, NumericType::default());
         assert_value_and_type("m", &result, 2.0, NumericType::count());
-        assert_value_and_type("n", &result, 5.0, NumericType::Unknown);
+        assert_value_and_type("n", &result, 127.0, NumericType::count());
         assert_value_and_type("o", &result, 1.0, NumericType::mm());
         assert_value_and_type("p", &result, 1.0, NumericType::count());
         assert_value_and_type(
@@ -3284,6 +3545,102 @@ u = min([3rad, 4in])
         assert_value_and_type("s", &result, -42.0, NumericType::mm());
         assert_value_and_type("t", &result, 3.0, NumericType::Unknown);
         assert_value_and_type("u", &result, 3.0, NumericType::Unknown);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn dimensional_arithmetic_preserves_exponents_and_scale() {
+        let program = r#"
+fn requireLength(@value: number(Length)): number(Length) {
+  return value
+}
+
+area = 2cm * 3mm
+length = area / 2mm
+volume = 2mm * 3mm * 4mm
+recovered = volume / (2mm * 3mm)
+ratio = 3mm / 3mm
+root = sqrt(3mm * 3mm + 4mm * 4mm)
+mixedRoot = sqrt(1in * 1in)
+powArea = 2mm ^ 2
+powVolume = pow(2mm, exp = 3)
+inverse = 1_ / 2mm
+cancelInverse = inverse * 4mm
+
+outerRadius = 240mm
+topRadius = 35mm
+deltaZ = 60mm
+centerX = (
+  outerRadius * outerRadius
+  - topRadius * topRadius
+  + deltaZ * deltaZ
+) / (2 * (outerRadius - topRadius))
+acceptedCenterX = requireLength(centerX)
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        assert!(
+            result.exec_state.issues().is_empty(),
+            "issues: {:?}",
+            result.exec_state.issues()
+        );
+
+        assert_value_and_type_close("area", &result, 0.6, length_power(UnitLength::Centimeters, 2));
+        assert_value_and_type_close(
+            "length",
+            &result,
+            3.0,
+            NumericType::Known(UnitType::Length(UnitLength::Centimeters)),
+        );
+        assert_value_and_type_close("volume", &result, 24.0, length_power(UnitLength::Millimeters, 3));
+        assert_value_and_type_close(
+            "recovered",
+            &result,
+            4.0,
+            NumericType::Known(UnitType::Length(UnitLength::Millimeters)),
+        );
+        assert_value_and_type_close("ratio", &result, 1.0, NumericType::count());
+        assert_value_and_type_close(
+            "root",
+            &result,
+            5.0,
+            NumericType::Known(UnitType::Length(UnitLength::Millimeters)),
+        );
+        assert_value_and_type_close(
+            "mixedRoot",
+            &result,
+            1.0,
+            NumericType::Known(UnitType::Length(UnitLength::Inches)),
+        );
+        assert_value_and_type_close("powArea", &result, 4.0, length_power(UnitLength::Millimeters, 2));
+        assert_value_and_type_close("powVolume", &result, 8.0, length_power(UnitLength::Millimeters, 3));
+        assert_value_and_type_close("inverse", &result, 0.5, length_power(UnitLength::Millimeters, -1));
+        assert_value_and_type_close("cancelInverse", &result, 2.0, NumericType::count());
+        assert_value_and_type_close(
+            "acceptedCenterX",
+            &result,
+            146.28048780487805,
+            NumericType::Known(UnitType::Length(UnitLength::Millimeters)),
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn dimensional_arithmetic_rejects_invalid_roots_powers_and_coercions() {
+        for (program, expected) in [
+            ("bad = sqrt(2mm)", "non-integral or out-of-range physical dimension"),
+            ("bad = 2mm ^ 0.5", "non-integral or out-of-range physical dimension"),
+            ("bad = 2mm ^ 3mm", "Exponent must be unitless"),
+            (
+                "fn requireLength(@value: number(Length)) { return value }\nbad = requireLength(2mm * 3mm)",
+                "requires a value with type `number(Length)`",
+            ),
+        ] {
+            let error = parse_execute(program).await.unwrap_err();
+            assert!(
+                error.message().contains(expected),
+                "expected `{expected}` in `{}`",
+                error.message()
+            );
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]

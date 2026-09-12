@@ -1,5 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
+assertion_line: 549
 description: Artifact commands import_async.kcl
 ---
 {
@@ -161,13 +162,13 @@ description: Artifact commands import_async.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.0000000000000017763568394002505,
-            "y": 0.000000000000004884981308350689
+            "x": 0.0000000000000008881784197001252,
+            "y": 0.0000000000000017763568394002505
           },
           "radius": 3.5,
           "start": {
             "unit": "degrees",
-            "value": 343.3984504009797
+            "value": 343.39845040097975
           },
           "end": {
             "unit": "degrees",
@@ -186,8 +187,8 @@ description: Artifact commands import_async.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.0000000000000017763568394002505,
-            "y": 0.000000000000004884981308350689
+            "x": 0.0000000000000008881784197001252,
+            "y": 0.0000000000000017763568394002505
           },
           "radius": 3.5,
           "start": {
@@ -779,7 +780,7 @@ description: Artifact commands import_async.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1.664434246022614,
+            "x": -1.6644342460226054,
             "y": 19.66322604122736,
             "z": 0.0
           },

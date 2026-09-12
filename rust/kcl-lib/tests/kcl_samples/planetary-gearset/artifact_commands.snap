@@ -1,5 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
+assertion_line: 549
 description: Artifact commands planetary-gearset.kcl
 ---
 {
@@ -157,8 +158,8 @@ description: Artifact commands planetary-gearset.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -4.553630786124239,
-            "y": 28.750493273162785,
+            "x": -4.553630786124232,
+            "y": 28.75049327316279,
             "z": 0.0
           },
           "relative": false
