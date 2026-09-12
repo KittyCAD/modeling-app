@@ -1,5 +1,7 @@
 //! Functions for managing engine communications.
 
+#[cfg(not(target_arch = "wasm32"))]
+pub mod api_call_trace;
 pub mod async_tasks;
 #[cfg(target_arch = "wasm32")]
 #[cfg(feature = "engine")]

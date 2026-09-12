@@ -59,6 +59,8 @@ static ALLOC: dhat::Alloc = dhat::Alloc;
 pub mod collections;
 mod docs;
 mod engine;
+#[cfg(not(target_arch = "wasm32"))]
+pub use engine::api_call_trace::ApiCallTrace;
 mod errors;
 mod execution;
 mod fmt;
