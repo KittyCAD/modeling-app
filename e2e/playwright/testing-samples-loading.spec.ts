@@ -133,6 +133,8 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
       await expect(
         page.getByTestId('file-tree-item').getByText(sampleOne.folderName)
       ).toBeVisible()
+      // The folder can appear before navigation closes the command bar.
+      await expect(page).toHaveURL(/ball-bearing(?:%2F|%5C)main\.kcl$/)
     })
 
     await test.step('Load a KCL sample with the command palette', async () => {
@@ -144,6 +146,7 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
       await expect(
         page.getByTestId('file-tree-item').getByText(sampleOne.folderName1)
       ).toBeVisible()
+      await expect(page).toHaveURL(/ball-bearing-1(?:%2F|%5C)main\.kcl$/)
     })
   })
 })
