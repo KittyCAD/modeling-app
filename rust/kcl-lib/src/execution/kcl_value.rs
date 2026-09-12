@@ -220,7 +220,7 @@ pub struct NamedParam {
     pub deprecated_since: Option<VersionConstraint>,
     /// Constraint marking the KCL version at or after which this parameter is
     /// removed. See [`NamedParam::unavailable_reason`].
-    pub removed_since: Option<VersionConstraint>,
+    pub removed_in: Option<VersionConstraint>,
     pub default_value: Option<DefaultParamVal>,
     pub ty: Option<Type>,
     /// The `RuntimeType` that `ty` resolved to when the function declaration
@@ -240,7 +240,7 @@ pub(crate) enum ParamUnavailable<'a> {
     /// The parameter was added in this KCL version, and the executing version
     /// is before it.
     NotYetAdded(&'a VersionConstraint),
-    /// The parameter was removed as of this KCL version, and the executing
+    /// The parameter was removed in this KCL version, and the executing
     /// version is at or after it.
     Removed(&'a VersionConstraint),
 }
@@ -256,10 +256,10 @@ impl NamedParam {
         {
             return Some(ParamUnavailable::NotYetAdded(added));
         }
-        if let Some(since) = &self.removed_since
-            && crate::execution::annotations::version_ge(version, since)
+        if let Some(removed) = &self.removed_in
+            && crate::execution::annotations::version_ge(version, removed)
         {
-            return Some(ParamUnavailable::Removed(since));
+            return Some(ParamUnavailable::Removed(removed));
         }
         None
     }
@@ -366,7 +366,7 @@ impl FunctionSource {
                     added_in: p.added_in.clone(),
                     deprecated: p.deprecated,
                     deprecated_since: p.deprecated_since.clone(),
-                    removed_since: p.removed_since.clone(),
+                    removed_in: p.removed_in.clone(),
                     default_value: p.default_value.clone(),
                     ty: p.param_type.as_ref().map(|t| t.inner.clone()),
                     resolved_ty: None,
@@ -1420,6 +1420,39 @@ impl From<Vec<GeometryWithImportedGeometry>> for KclValue {
 mod tests {
     use super::*;
     use crate::exec::UnitType;
+
+    #[test]
+    fn tag_declaration_bindings_do_not_overwrite_each_other() {
+        use kcl_api::TagDeclaratorView;
+        use ts_rs::TS;
+
+        // View dependencies and AST exports share one output directory in CI.
+        // Both definitions must survive regardless of which exporter runs last.
+        for ast_first in [true, false] {
+            let output = tempfile::tempdir().unwrap();
+            let config = ts_rs::Config::default().with_out_dir(output.path());
+            if ast_first {
+                TagDeclarator::export_all(&config).unwrap();
+                kcl_api::BasePathView::export_all(&config).unwrap();
+            } else {
+                kcl_api::BasePathView::export_all(&config).unwrap();
+                TagDeclarator::export_all(&config).unwrap();
+            }
+
+            for (path, expected) in [
+                (
+                    TagDeclarator::output_path().unwrap(),
+                    TagDeclarator::export_to_string(&config).unwrap(),
+                ),
+                (
+                    TagDeclaratorView::output_path().unwrap(),
+                    TagDeclaratorView::export_to_string(&config).unwrap(),
+                ),
+            ] {
+                assert_eq!(std::fs::read_to_string(output.path().join(path)).unwrap(), expected);
+            }
+        }
+    }
 
     #[test]
     fn test_human_friendly_type() {

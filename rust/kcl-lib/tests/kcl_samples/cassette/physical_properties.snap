@@ -10,9 +10,9 @@ description: Physical properties cassette.kcl
       "z": 0.0
     },
     "dimensions": {
-      "x": 100.0,
+      "x": 91.72648055849297,
       "y": 76.43873379874411,
-      "z": 100.0
+      "z": 91.72648055849294
     },
     "unit": "mm"
   },

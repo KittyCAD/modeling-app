@@ -136,7 +136,7 @@ pub enum TagDeclaratorViewType {
 
 /// The presentational portion of a tag declaration, including its source location.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, ts_rs::TS, JsonSchema)]
-#[ts(export, rename = "TagDeclarator")]
+#[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct TagDeclaratorView {
     pub comment_start: usize,

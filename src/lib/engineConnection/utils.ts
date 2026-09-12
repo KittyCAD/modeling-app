@@ -13,6 +13,12 @@ import { isArray } from '@src/lib/utils'
 // Ping/Pong every 1 second
 export const PING_INTERVAL_MS = 1_000
 
+// The API closes modeling WebSockets after 30 seconds without a heartbeat.
+// Detect an unanswered pong sooner so the client can reconnect instead of
+// waiting for a statusless server close.
+export const PONG_TIMEOUT_MS = 10_000
+export const PONG_TIMEOUT_REASON = 'pong timeout'
+
 export type ModelTypes = OkModelingCmdResponse['type']
 
 /** Normalized result for engine commands whose successful response carries data. */
@@ -323,6 +329,9 @@ export enum EngineConnectionManagerEvents {
   // websocket event listener for close was called
   WebsocketClosed = 'websocket-closed',
 
+  // the client did not receive a pong within the heartbeat timeout
+  pingPongTimeout = 'ping-pong-timeout',
+
   // RTCPeerConnection processed a failed state in onConnectionStateChange
   peerConnectionFailed = 'peer-connection-failed',
 
@@ -336,6 +345,23 @@ export enum EngineConnectionManagerEvents {
 
   // RTCPeerConnection processed a data channel close in createOnDataChannelClose
   dataChannelClose = 'data-channel-closed',
+}
+
+export enum EngineConnectionErrorKind {
+  BackendDisconnect = 'backend-disconnect',
+  UnsupportedVideoCodec = 'unsupported-video-codec',
+}
+
+export type EngineConnectionError = {
+  kind: EngineConnectionErrorKind
+  message: string
+  terminal: boolean
+}
+
+export type EngineDisconnectEventDetail = {
+  reconnectRequested?: boolean
+  code?: string
+  connectionError?: EngineConnectionError
 }
 
 export interface UnreliableSubscription<T extends UnreliableResponses['type']> {
@@ -452,13 +478,21 @@ function validateStreamDimension(dimension: number, label: string) {
   return undefined
 }
 
+export const WebSocketCloseCode = {
+  NormalClosure: 1000,
+  AbnormalClosure: 1006,
+} as const
+
 export interface ManagerTearDown {
   websocketClosed?: boolean
+  pingPongTimeout?: boolean
   peerConnectionFailed?: boolean
   peerConnectionDisconnected?: boolean
   peerConnectionClosed?: boolean
   dataChannelClosed?: boolean
   code?: string
+  connectionError?: EngineConnectionError
+  reconnectRequested?: boolean
 }
 
 // 7.4.1 Defined Status Codes from RFC 6455 The WebSocket Protocol
@@ -468,7 +502,7 @@ export const WebSocketStatusCodes: Readonly<Record<string, string>> =
      * indicates a normal closure, meaning that the purpose for
      * which the connection was established has been fulfilled.
      */
-    '1000': 'normal closure',
+    [WebSocketCloseCode.NormalClosure]: 'normal closure',
     /**
      * indicates that an endpoint is "going away", such as a server
      * going down or a browser having navigated away from a page.
@@ -504,7 +538,7 @@ export const WebSocketStatusCodes: Readonly<Record<string, string>> =
      * connection was closed abnormally, e.g., without sending or
      * receiving a Close control frame.
      */
-    '1006': 'abnormally closed',
+    [WebSocketCloseCode.AbnormalClosure]: 'abnormally closed',
     /**
      * indicates that an endpoint is terminating the connection
      * because it has received data within a message that was not

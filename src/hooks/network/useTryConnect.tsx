@@ -2,8 +2,12 @@ import type { useAppState } from '@src/AppState'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { KclManager } from '@src/lang/KclManager'
 import { useSingletons } from '@src/lib/boot'
+import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { NUMBER_OF_ENGINE_RETRIES } from '@src/lib/constants'
 import { EngineDebugger } from '@src/lib/debugger'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { getDimensions } from '@src/lib/engineConnection/utils'
+import { preflightEngineVideoCodecSupport } from '@src/lib/engineConnection/videoCodecSupport'
 import { reapplyActiveViewAfterReconnect } from '@src/lib/kclNamedViewActivation'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import type RustContext from '@src/lib/rustContext'
@@ -13,8 +17,6 @@ import {
 } from '@src/lib/settings/settingsUtils'
 import { reportRejection } from '@src/lib/trap'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
-import { getDimensions } from '@src/lib/engineConnection/utils'
 import { useRef } from 'react'
 
 /**
@@ -39,6 +41,21 @@ const attemptToConnectToEngine = async ({
   engineCommandManager: ConnectionManager
   rustContext: RustContext
 }) => {
+  const codecError = await preflightEngineVideoCodecSupport()
+  if (codecError) {
+    engineCommandManager.lastConnectionError = codecError
+    void reportClientError({
+      code: ClientErrorCode.EngineUnsupportedVideoCodec,
+      error: codecError,
+      dedupeKey: ClientErrorCode.EngineUnsupportedVideoCodec,
+      extra: {
+        browserVideoCodecs: codecError.browserCodecs,
+        engineVideoCodecs: codecError.engineCodecs,
+      },
+    })
+    return Promise.reject(codecError)
+  }
+
   const connection = new Promise<boolean>((resolve, reject) => {
     const cancelTimeout = setTimeout(() => {
       EngineDebugger.addLog({
@@ -186,7 +203,7 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
  * No part of the system should be trying to directly connect. This file wraps multiple levels of business logic and state management to provide
  * a single safe location to connect to the engine.
  */
-async function tryConnecting({
+export async function tryConnecting({
   isConnecting,
   numberOfConnectionAttempts,
   authToken,
@@ -279,10 +296,20 @@ async function tryConnecting({
         } catch (e) {
           isConnecting.current = false
           setAppState({ isStreamAcceptingInput: false })
+          const terminalConnectionError =
+            engineCommandManager.lastConnectionError?.terminal === true
+              ? engineCommandManager.lastConnectionError
+              : undefined
           EngineDebugger.addLog({
             label: 'useTryConnect.tsx',
-            message: `Attempt ${numberOfConnectionAttempts.current}/${NUMBER_OF_ENGINE_RETRIES} failed, calling tearDown()`,
+            message: `Attempt ${numberOfConnectionAttempts.current}/${NUMBER_OF_ENGINE_RETRIES} failed`,
+            metadata: { terminalConnectionError },
           })
+          if (terminalConnectionError) {
+            numberOfConnectionAttempts.current = 0
+            setShowManualConnect(true)
+            return reject(terminalConnectionError)
+          }
           engineCommandManager.tearDown()
           if (numberOfConnectionAttempts.current >= NUMBER_OF_ENGINE_RETRIES) {
             numberOfConnectionAttempts.current = 0

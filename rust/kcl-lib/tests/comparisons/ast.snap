@@ -965,6 +965,7 @@ description: Result of parsing comparisons.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

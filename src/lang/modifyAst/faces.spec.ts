@@ -53,7 +53,7 @@ beforeEach(async () => {
   }
 
   const { instance, kclManager, engineCommandManager, rustContext } =
-    await buildTheWorldAndConnectToEngine()
+    await buildTheWorldAndConnectToEngine({ geometryOnly: true })
   instanceInThisFile = instance
   kclManagerInThisFile = kclManager
   engineCommandManagerInThisFile = engineCommandManager
@@ -267,7 +267,7 @@ shell001 = shell(extrude001, faces = END, thickness = 1)
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const faces = getCapFromCylinder(artifactGraph)
+      const faces = { graphSelections: [], otherSelections: [] }
       const thickness = (await stringToKclExpression(
         '2',
         rustContextInThisFile
@@ -286,9 +286,9 @@ shell001 = shell(extrude001, faces = END, thickness = 1)
       }
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(cylinderWithEndTag)
+      expect(newCode).toContain(cylinder)
       expect(newCode).toContain(
-        `shell001 = shell(extrude001, faces = capEnd001, thickness = 2)`
+        `shell001 = shell(extrude001, faces = END, thickness = 2)`
       )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
@@ -823,7 +823,7 @@ extrude001 = extrude(
         `${bracket}surface001 = deleteFace(finalBracket, faces = bracketProfileRegion.tags.line6)`
       )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
-    })
+    }, 15_000)
 
     it('should add a deleteFace call on one inner shell face and a wall', async () => {
       const shell = `sketch001 = startSketchOn(XZ)

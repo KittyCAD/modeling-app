@@ -1,4 +1,5 @@
 import path from 'node:path'
+import { signal } from '@preact/signals-core'
 import { App } from '@src/lib/app'
 import { DEFAULT_PROJECT_NAME } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
@@ -6,6 +7,7 @@ import type { Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import {
+  renameFileForSystemIO,
   sharedBulkDeleteWorkflow,
   shouldSendProjectFolderReadProgress,
   sortProjectDirectoryEntriesByModifiedDesc,
@@ -330,6 +332,89 @@ describe('systemIOMachine - XState', () => {
         )
         actor.stop()
       })
+      it('ignores navigation and success for a stale project write', async () => {
+        const wasmInstance = deferred<ModuleType>()
+        const onFileSystemSuccess = vi.fn()
+        const onSuccess = vi.fn()
+        const getPathSpy = vi.spyOn(fsZds, 'getPath').mockResolvedValue('/')
+        const app = {
+          project: {
+            path: '/projects-a/shared-project',
+            name: 'shared-project',
+            executingPath: '/projects-a/shared-project/main.kcl',
+          },
+        } as unknown as App
+
+        const actor = createActor(
+          systemIOMachineImpl.provide({
+            actors: {
+              [SystemIOMachineActors.checkReadWrite]: fromPromise(
+                async (): Promise<{ value: boolean; error: unknown }> => ({
+                  value: true,
+                  error: undefined,
+                })
+              ),
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => [] as Project[]),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: wasmInstance.promise,
+              app,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.setProjectDirectoryPath,
+            data: { requestedProjectDirectoryPath: '/projects-a' },
+          })
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.idle)
+          )
+          const requestedFileNameBefore =
+            actor.getSnapshot().context.requestedFileName
+
+          actor.send({
+            type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
+            data: {
+              files: [],
+              requestedProjectName: 'shared-project',
+              requestedProjectPath: '/projects-a/shared-project',
+              requestedFileNameWithExtension: 'main.kcl',
+              onFileSystemSuccess,
+              onSuccess,
+            },
+          })
+          await waitFor(actor, (state) =>
+            state.matches(
+              SystemIOMachineStates.bulkCreateAndDeletingKCLFilesAndNavigateToFile
+            )
+          )
+
+          app.project = {
+            path: '/projects-b/shared-project',
+            name: 'shared-project',
+            executingPath: '/projects-b/shared-project/other.kcl',
+          } as unknown as NonNullable<App['project']>
+          wasmInstance.resolve(instanceInThisFile)
+
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.idle)
+          )
+
+          expect(onFileSystemSuccess).toHaveBeenCalledOnce()
+          expect(onSuccess).not.toHaveBeenCalled()
+          expect(actor.getSnapshot().context.requestedFileName).toBe(
+            requestedFileNameBefore
+          )
+        } finally {
+          actor.stop()
+          getPathSpy.mockRestore()
+        }
+      })
       it.each([undefined, []])(
         'skips project lookup when filesToDelete is %j',
         async (filesToDelete) => {
@@ -627,6 +712,142 @@ describe('systemIOMachine - XState', () => {
           )
         } finally {
           actor.stop()
+        }
+      })
+      it('rejects a rename collision without flushing or mutating either path', async () => {
+        const oldPath = '/Test Project/cylinder.kcl'
+        const executingPathSignal = signal(oldPath)
+        const flushWriteToFile = vi.fn().mockResolvedValue(true)
+        const previousProject = appInstanceInThisFile.project
+        const joinSpy = vi
+          .spyOn(fsZds, 'join')
+          .mockImplementation((...parts) => path.posix.join(...parts))
+        const dirnameSpy = vi
+          .spyOn(fsZds, 'dirname')
+          .mockImplementation((targetPath) => path.posix.dirname(targetPath))
+        const readdirSpy = vi
+          .spyOn(fsZds, 'readdir')
+          .mockResolvedValue(['cylinder.kcl', 'main.kcl'])
+        const renameSpy = vi.spyOn(fsZds, 'rename')
+
+        appInstanceInThisFile.project = {
+          executingPathSignal: { value: executingPathSignal },
+          editors: new Map([[executingPathSignal, { flushWriteToFile }]]),
+        } as unknown as NonNullable<App['project']>
+
+        try {
+          await expect(
+            renameFileForSystemIO({
+              context: {
+                projectDirectoryPath: '/',
+              } as SystemIOContext,
+              requestedFileNameWithExtension: 'main.kcl',
+              fileNameWithExtension: 'cylinder.kcl',
+              absolutePathToParentDirectory: '/Test Project',
+              app: appInstanceInThisFile,
+            })
+          ).rejects.toThrow('Filename already exists.')
+
+          expect(flushWriteToFile).not.toHaveBeenCalled()
+          expect(renameSpy).not.toHaveBeenCalled()
+          expect(executingPathSignal.value).toBe(oldPath)
+        } finally {
+          appInstanceInThisFile.project = previousProject
+          joinSpy.mockRestore()
+          dirnameSpy.mockRestore()
+          readdirSpy.mockRestore()
+          renameSpy.mockRestore()
+        }
+      })
+      it('flushes the active editor before a successful rename', async () => {
+        const oldPath = '/Test Project/main.kcl'
+        const newPath = '/Test Project/renamed.kcl'
+        const executingPathSignal = signal(oldPath)
+        const flushWriteToFile = vi.fn().mockResolvedValue(true)
+        const previousProject = appInstanceInThisFile.project
+        const joinSpy = vi
+          .spyOn(fsZds, 'join')
+          .mockImplementation((...parts) => path.posix.join(...parts))
+        const dirnameSpy = vi
+          .spyOn(fsZds, 'dirname')
+          .mockImplementation((targetPath) => path.posix.dirname(targetPath))
+        const readdirSpy = vi.spyOn(fsZds, 'readdir').mockResolvedValue([])
+        const renameSpy = vi.spyOn(fsZds, 'rename').mockResolvedValue(undefined)
+
+        appInstanceInThisFile.project = {
+          executingPathSignal: { value: executingPathSignal },
+          editors: new Map([[executingPathSignal, { flushWriteToFile }]]),
+        } as unknown as NonNullable<App['project']>
+
+        try {
+          await renameFileForSystemIO({
+            context: {
+              projectDirectoryPath: '/',
+            } as SystemIOContext,
+            requestedFileNameWithExtension: 'renamed.kcl',
+            fileNameWithExtension: 'main.kcl',
+            absolutePathToParentDirectory: '/Test Project',
+            app: appInstanceInThisFile,
+          })
+
+          expect(flushWriteToFile).toHaveBeenCalledWith({
+            suppressConflictToast: true,
+          })
+          expect(flushWriteToFile.mock.invocationCallOrder[0]).toBeLessThan(
+            renameSpy.mock.invocationCallOrder[0]
+          )
+          expect(renameSpy).toHaveBeenCalledWith(oldPath, newPath)
+          expect(executingPathSignal.value).toBe(newPath)
+        } finally {
+          appInstanceInThisFile.project = previousProject
+          joinSpy.mockRestore()
+          dirnameSpy.mockRestore()
+          readdirSpy.mockRestore()
+          renameSpy.mockRestore()
+        }
+      })
+      it('cancels an active rename when the editor cannot be flushed', async () => {
+        const oldPath = '/Test Project/main.kcl'
+        const executingPathSignal = signal(oldPath)
+        const flushWriteToFile = vi.fn().mockResolvedValue(false)
+        const previousProject = appInstanceInThisFile.project
+        const joinSpy = vi
+          .spyOn(fsZds, 'join')
+          .mockImplementation((...parts) => path.posix.join(...parts))
+        const dirnameSpy = vi
+          .spyOn(fsZds, 'dirname')
+          .mockImplementation((targetPath) => path.posix.dirname(targetPath))
+        const readdirSpy = vi.spyOn(fsZds, 'readdir').mockResolvedValue([])
+        const renameSpy = vi.spyOn(fsZds, 'rename')
+
+        appInstanceInThisFile.project = {
+          executingPathSignal: { value: executingPathSignal },
+          editors: new Map([[executingPathSignal, { flushWriteToFile }]]),
+        } as unknown as NonNullable<App['project']>
+
+        try {
+          await expect(
+            renameFileForSystemIO({
+              context: {
+                projectDirectoryPath: '/',
+              } as SystemIOContext,
+              requestedFileNameWithExtension: 'renamed.kcl',
+              fileNameWithExtension: 'main.kcl',
+              absolutePathToParentDirectory: '/Test Project',
+              app: appInstanceInThisFile,
+            })
+          ).rejects.toThrow(
+            'File has unsaved changes that could not be written. Rename canceled.'
+          )
+
+          expect(renameSpy).not.toHaveBeenCalled()
+          expect(executingPathSignal.value).toBe(oldPath)
+        } finally {
+          appInstanceInThisFile.project = previousProject
+          joinSpy.mockRestore()
+          dirnameSpy.mockRestore()
+          readdirSpy.mockRestore()
+          renameSpy.mockRestore()
         }
       })
       it('should accept file-tree mutations while reading folders', async () => {
@@ -927,6 +1148,83 @@ describe('systemIOMachine - XState', () => {
           actor.stop()
         }
       })
+      it('publishes post-move file navigation only after refreshing folders', async () => {
+        const move = deferred<{
+          message: string
+          requestedAbsolutePath: string
+          requestedProjectName: string
+          requestedFileName: string | undefined
+          target: string
+        }>()
+        const readFolders = deferred<Project[]>()
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.moveRecursive]: fromPromise(
+                async () => move.promise
+              ),
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => readFolders.promise),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.moveRecursiveAndNavigate,
+            data: {
+              src: '/projects/demo-project/delete-me.kcl',
+              target: '/archive/delete-me.kcl',
+              requestedProjectName: 'demo-project',
+              requestedFileName: 'main.kcl',
+            },
+          })
+          move.resolve({
+            message: 'Archived successfully',
+            requestedAbsolutePath: '',
+            requestedProjectName: 'demo-project',
+            requestedFileName: 'main.kcl',
+            target: '/archive/delete-me.kcl',
+          })
+
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.readingFolders)
+          )
+          expect(actor.getSnapshot().context.requestedFileName).toStrictEqual({
+            project: NO_PROJECT_DIRECTORY,
+            file: NO_PROJECT_DIRECTORY,
+          })
+          expect(
+            actor.getSnapshot().context.pendingNavigationAfterFolderRefresh
+          ).toStrictEqual({
+            project: 'demo-project',
+            file: 'main.kcl',
+          })
+
+          readFolders.resolve([mockProject('demo-project')])
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.idle)
+          )
+          expect(actor.getSnapshot().context.folders).toStrictEqual([
+            mockProject('demo-project'),
+          ])
+          expect(actor.getSnapshot().context.requestedFileName).toStrictEqual({
+            project: 'demo-project',
+            file: 'main.kcl',
+          })
+          expect(
+            actor.getSnapshot().context.pendingNavigationAfterFolderRefresh
+          ).toBeUndefined()
+        } finally {
+          actor.stop()
+        }
+      })
       it('should prefer opening the imported entry file over navigating to the project', async () => {
         const actor = createActor(
           systemIOMachine.provide({
@@ -981,6 +1279,69 @@ describe('systemIOMachine - XState', () => {
           ).toStrictEqual({
             name: NO_PROJECT_DIRECTORY,
           })
+        } finally {
+          actor.stop()
+        }
+      })
+      it('should identify a completed bulk-created file navigation', async () => {
+        const onSuccess = vi.fn()
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => [] as Project[]),
+              [SystemIOMachineActors.bulkCreateKCLFilesAndNavigateToFile]:
+                fromPromise(async ({ input }) => ({
+                  message: 'Created',
+                  projectName: 'tutorial-project',
+                  fileName: 'blank.kcl',
+                  subRoute: '/onboarding/desktop/scene',
+                  onProjectLoaderComplete: input.onSuccess,
+                })),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.navigateToProject,
+            data: {
+              requestedProjectName: 'tutorial-project',
+            },
+          })
+
+          actor.send({
+            type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile,
+            data: {
+              files: [],
+              requestedProjectName: 'tutorial-project',
+              requestedFileNameWithExtension: 'blank.kcl',
+              requestedSubRoute: '/onboarding/desktop/scene',
+              onSuccess,
+            },
+          })
+
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.idle)
+          )
+
+          expect(actor.getSnapshot().context).toMatchObject({
+            lastOperation:
+              SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToFile,
+            requestedFileName: {
+              project: 'tutorial-project',
+              file: 'blank.kcl',
+              subRoute: '/onboarding/desktop/scene',
+              onProjectLoaderComplete: onSuccess,
+            },
+          })
+          expect(onSuccess).not.toHaveBeenCalled()
         } finally {
           actor.stop()
         }

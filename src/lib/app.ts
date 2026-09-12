@@ -39,7 +39,6 @@ import {
   buildZookeeperHistoryExtension,
   type PreparedZookeeperPatchFileReplay,
 } from '@src/lib/zookeeper/editorPlugin'
-import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
 import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
 import {
@@ -157,10 +156,6 @@ export type AppLayoutSystem = LayoutService
 
 export type AppRegistrySystem = Registry
 
-export type AppDebug = {
-  zookeeperManagerActor?: ZookeeperManagerActor
-}
-
 /** All of the subsystems needed to run the ZDS app */
 export interface AppSubsystems {
   wasmPromise: Promise<ModuleType>
@@ -186,7 +181,6 @@ export class App implements AppSubsystems {
   public get currentProjectLibraryIdSignal(): Signal<string | undefined> {
     return this.projectSession.currentProjectLibraryId
   }
-  public debug: AppDebug = {}
   get project() {
     return this.projectSession.getProject()
   }
@@ -359,14 +353,35 @@ export class App implements AppSubsystems {
     )
   }
 
-  async openProject(projectIORef: Project) {
-    this.disposeProjectHistoryExtensions?.()
+  private fileRouteLoadGeneration = 0
+
+  beginFileRouteLoad(signal: AbortSignal) {
+    const generation = ++this.fileRouteLoadGeneration
+    return () => {
+      if (signal.aborted || generation !== this.fileRouteLoadGeneration) {
+        // React Router models cancelled loaders as rejected AbortErrors.
+        // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+        throw new DOMException('Superseded file route load', 'AbortError')
+      }
+    }
+  }
+
+  async openProject(
+    projectIORef: Project,
+    assertCurrent: () => void = () => {}
+  ) {
     const ownedProject = await projectWithLibraryOwnership(
       projectIORef,
       this.settings.get().app.libraries.current
     )
+    assertCurrent()
+
     const projectIORefSignal = signal(ownedProject)
-    this.project = await ZDSProject.open(projectIORefSignal, this)
+    const nextProject = await ZDSProject.open(projectIORefSignal, this)
+    assertCurrent()
+
+    this.disposeProjectHistoryExtensions?.()
+    this.project = nextProject
     this.setCloudSyncOpenedProject(ownedProject)
 
     // These extensions make global project operations un/redoable.
