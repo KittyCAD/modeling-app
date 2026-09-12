@@ -31,6 +31,7 @@ import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import {
   LEGACY_SKETCH_MODE_FEATURE_FLAG,
   LEGACY_SKETCH_MODE_REMOVED_MESSAGE,
+  NUMBER_OF_ENGINE_RETRIES,
 } from '@src/lib/constants'
 import { EngineDebugger } from '@src/lib/debugger'
 import { EngineConnectionManagerEvents } from '@src/lib/engineConnection/utils'
@@ -436,6 +437,8 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         })
       },
       infiniteDetectionLoopCallback: (code: string | undefined) => {
+        // Also exhaust any retry already running when the close budget is spent.
+        numberOfConnectionAttempts.current = NUMBER_OF_ENGINE_RETRIES
         reportEngineDisconnect(EngineConnectionManagerEvents.WebsocketClosed, {
           websocketCloseCode: code,
         })
@@ -455,9 +458,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       settings,
     ]
   )
-  const { resetAbnormalCloseRetries } = useOnWebsocketClose(
-    onWebSocketCloseParams
-  )
+  const abnormalCloseRetries = useOnWebsocketClose(onWebSocketCloseParams)
 
   const onVitestEngineOnline = useMemo(
     () => ({
@@ -688,7 +689,8 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           className="absolute inset-0 h-screen"
           showManualConnect={showManualConnect}
           callback={() => {
-            resetAbnormalCloseRetries()
+            abnormalCloseRetries.current = 0
+            numberOfConnectionAttempts.current = 0
             setShowManualConnect(false)
             tryConnecting({
               authToken: props.authToken || '',

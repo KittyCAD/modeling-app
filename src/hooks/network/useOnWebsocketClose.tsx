@@ -8,9 +8,7 @@ import {
   EngineConnectionManagerEvents,
   WebSocketCloseCode,
 } from '@src/lib/engineConnection/utils'
-import { useCallback, useEffect, useRef } from 'react'
-
-const MAX_AUTOMATIC_ABNORMAL_RECOVERIES = 3
+import { useEffect, useRef } from 'react'
 
 export interface IUseOnWebsocketClose {
   callback: (code: string | undefined, reconnectRequested: boolean) => void
@@ -33,12 +31,8 @@ export function useOnWebsocketClose({
   terminalErrorCallback,
   engineCommandManager,
 }: IUseOnWebsocketClose) {
-  const abnormalRecoveries = useRef(0)
-  // Only explicit manual recovery resets the budget. A successful handshake
-  // alone does not prove that replaying the model will keep the Engine alive.
-  const resetAbnormalCloseRetries = useCallback(() => {
-    abnormalRecoveries.current = 0
-  }, [])
+  // A successful handshake can still crash on replay; only manual recovery resets this.
+  const abnormalCloseRetries = useRef(0)
 
   useEffect(() => {
     const onWebsocketClose = (
@@ -61,19 +55,17 @@ export function useOnWebsocketClose({
       const reconnectRequested = event.detail?.reconnectRequested ?? false
       if (
         code === WebSocketCloseCode.AbnormalClosure.toString() &&
-        !reconnectRequested
+        !reconnectRequested &&
+        ++abnormalCloseRetries.current > 3
       ) {
-        if (abnormalRecoveries.current >= MAX_AUTOMATIC_ABNORMAL_RECOVERIES) {
-          EngineDebugger.addLog({
-            label: 'useOnWebsocketClose',
-            message: 'abnormal close recovery budget exhausted',
-            metadata: { code, automaticRecoveries: abnormalRecoveries.current },
-          })
+        EngineDebugger.addLog({
+          label: 'useOnWebsocketClose',
+          message: 'abnormal close recovery budget exhausted',
+          metadata: { code },
+        })
 
-          infiniteDetectionLoopCallback(code)
-          return
-        }
-        abnormalRecoveries.current++
+        infiniteDetectionLoopCallback(code)
+        return
       }
 
       callback(code, reconnectRequested)
@@ -96,5 +88,5 @@ export function useOnWebsocketClose({
     terminalErrorCallback,
     engineCommandManager,
   ])
-  return { resetAbnormalCloseRetries }
+  return abnormalCloseRetries
 }

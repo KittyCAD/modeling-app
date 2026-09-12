@@ -294,8 +294,6 @@ export async function tryConnecting({
           })
           resolve('connected')
         } catch (e) {
-          // Keep ownership through teardown and automatic retries so another
-          // caller cannot start a competing connection sequence.
           setAppState({ isStreamAcceptingInput: false })
           const terminalConnectionError =
             engineCommandManager.lastConnectionError?.terminal === true
