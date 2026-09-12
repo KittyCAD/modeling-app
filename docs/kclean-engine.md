@@ -12,7 +12,7 @@ From a Kclean checkout, build the kernel bridge and server as described in
 `tools/kclean-server/README.md`, then run:
 
 ```sh
-tools/kclean-server/target/debug/kclean-server
+tools/kclean-server/target/release/kclean-server
 ```
 
 It listens on `http://127.0.0.1:3001` by default so it can run beside ZDS's port
