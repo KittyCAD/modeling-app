@@ -31,7 +31,6 @@ export function useOnWebsocketClose({
   terminalErrorCallback,
   engineCommandManager,
 }: IUseOnWebsocketClose) {
-  // A successful handshake can still crash on replay; only manual recovery resets this.
   const abnormalCloseRetries = useRef(0)
 
   useEffect(() => {

@@ -204,6 +204,7 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
  * a single safe location to connect to the engine.
  */
 export async function tryConnecting({
+  onConnected,
   isConnecting,
   numberOfConnectionAttempts,
   authToken,
@@ -219,6 +220,7 @@ export async function tryConnecting({
   kclManager,
   rustContext,
 }: {
+  onConnected?: () => void
   isConnecting: React.RefObject<boolean>
   numberOfConnectionAttempts: React.RefObject<number>
   authToken: string
@@ -284,6 +286,7 @@ export async function tryConnecting({
             )
           }
 
+          onConnected?.()
           isConnecting.current = false
           setAppState({ isStreamAcceptingInput: true })
           numberOfConnectionAttempts.current = 0
@@ -324,13 +327,13 @@ export async function tryConnecting({
   })
   return connection
 }
-export const useTryConnect = () => {
+export const useTryConnect = (onConnected: () => void) => {
   const { kclManager } = useSingletons()
   const isConnecting = useRef(false)
   const numberOfConnectionAttempts = useRef(0)
   type TryConnectingArgs = Omit<
     Parameters<typeof tryConnecting>[0],
-    'engineCommandManager' | 'kclManager' | 'rustContext'
+    'engineCommandManager' | 'kclManager' | 'rustContext' | 'onConnected'
   >
 
   return {
@@ -340,6 +343,7 @@ export const useTryConnect = () => {
         engineCommandManager: kclManager.engineCommandManager,
         kclManager,
         rustContext: kclManager.rustContext,
+        onConnected,
       }),
     isConnecting,
     numberOfConnectionAttempts,

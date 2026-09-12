@@ -98,7 +98,9 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
     overallState === NetworkHealthState.Ok ||
     overallState === NetworkHealthState.Weak
   const { tryConnecting, isConnecting, numberOfConnectionAttempts } =
-    useTryConnect()
+    useTryConnect(() => {
+      abnormalCloseRetries.current = 0
+    })
   const safariObjectFitClass = useMemo(() => {
     // on safari we want to apply object-fit: fill to fix video resize bug
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
