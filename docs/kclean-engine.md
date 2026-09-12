@@ -40,12 +40,15 @@ In **Settings → Modeling**:
    base URL of another demo server.
 3. Reload ZDS.
 
-Kclean receives `{ entrypoint, files, outputFormat: "glb" }` over REST. The
-renderer keeps its existing revision check, so a response for an older editor
-revision cannot replace a newer model. The Kclean GLB currently has body names
-but no Zoo topology extension, so faces render while selection and sketching
-remain unavailable in this viewport. The Bevy clear color follows ZDS's resolved
-light or dark theme immediately, including changes to the system theme.
+Kclean receives `{ entrypoint, files, outputFormat: "glb" }` over one persistent
+WebSocket. The first edit opens the connection; later edits reuse it and move
+directly to solving. If the socket goes stale, the renderer reconnects and
+retries the current revision once. The renderer keeps its existing revision
+check, so a response for an older editor revision cannot replace a newer model.
+The Kclean GLB currently has body names but no Zoo topology extension, so faces
+render while selection and sketching remain unavailable in this viewport. The
+Bevy clear color follows ZDS's resolved light or dark theme immediately,
+including changes to the system theme.
 
 Kernel failures can also carry a `certification: "checkpoint"` GLB. Bevy loads
 that artifact and ZDS keeps the kernel diagnostic visible, so the last geometry
