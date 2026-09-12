@@ -478,7 +478,7 @@ fn dfs_mut_object_properties<V: Visitor>(
 ///
 /// Comments nested inside the deleted body item's expression, or inline on the
 /// same line, are still discarded along with the deleted code.
-pub(super) fn delete_body_item_preserving_pre_comments(
+pub(crate) fn delete_body_item_preserving_pre_comments(
     body: &mut Vec<ast::BodyItem>,
     non_code_meta: &mut ast::NonCodeMeta,
     index: usize,
