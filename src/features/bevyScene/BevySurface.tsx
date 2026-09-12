@@ -12,6 +12,7 @@ import { settingsService } from '@src/contracts/settings'
 import { themeService } from '@src/contracts/theme'
 import { collectProject } from '@src/features/bevyScene/collectProject'
 import type { KclProjectPayload } from '@src/features/bevyScene/collectProject'
+import { projectPushDebounceMs } from '@src/features/bevyScene/executionTiming'
 import { kcleanDiagnosticsForSource } from '@src/features/bevyScene/kcleanDiagnostics'
 import { type BevyJobState, startBevy } from '@src/features/bevyScene/loadBevy'
 import {
@@ -25,9 +26,6 @@ import '@src/features/bevyScene/bevyScene.css'
 
 /** The canvas bevy-zoo is told to take over. */
 const CANVAS_ID = 'zds-bevy-canvas'
-
-/** Long enough that a held keystroke is one solve, short enough to feel live. */
-const PUSH_DEBOUNCE_MS = 500
 
 /**
  * bevy-zoo, rendering into a canvas this app owns.
@@ -153,7 +151,7 @@ export function BevySurface() {
           error.value =
             reason instanceof Error ? reason.message : String(reason)
         })
-      }, PUSH_DEBOUNCE_MS)
+      }, projectPushDebounceMs(engine))
     })
 
     return () => {
