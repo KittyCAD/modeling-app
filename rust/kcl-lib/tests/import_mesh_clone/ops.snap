@@ -5,7 +5,7 @@ description: Operations executed import_mesh_clone.kcl
 {
   "rust/kcl-lib/tests/import_mesh_clone/input.kcl": [
     {
-      "type": "ModuleInstance",
+      "type": "ImportedGeometry",
       "name": "yellow",
       "moduleId": 0,
       "nodePath": {

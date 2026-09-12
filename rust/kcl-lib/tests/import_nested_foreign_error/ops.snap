@@ -5,7 +5,7 @@ description: Operations executed import_nested_foreign_error.kcl
 {
   "rust/kcl-lib/tests/import_nested_foreign_error/assembly.kcl": [
     {
-      "type": "ModuleInstance",
+      "type": "ImportedGeometry",
       "name": "bad",
       "moduleId": 0,
       "nodePath": {
