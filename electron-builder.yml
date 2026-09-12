@@ -7,6 +7,9 @@ files:
   - "!node_modules/win-ca/pem/**"
   - "!node_modules/*esbuild/**"
   - "!node_modules/@napi-rs/**"
+extraResources:
+  - from: assets/icon.png
+    to: icon.png
 mac:
   category: public.app-category.developer-tools
   artifactName: "${productName}-${version}-universal-${os}.${ext}"
@@ -48,6 +51,8 @@ nsis:
   buildUniversalInstaller: true
 linux:
   artifactName: "${productName}-${version}-${arch}-${os}.${ext}"
+  executableName: zoo-modeling-app
+  icon: "assets/icon.png"
   target:
     - target: appImage
       arch:
