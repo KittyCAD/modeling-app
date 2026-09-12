@@ -166,7 +166,19 @@
      /// Synchronous hint used only to choose the viewport's initial progress label.
      static KCLEAN_WARM_ENDPOINT: RefCell<Option<String>> = const { RefCell::new(None) };
  }
-@@ -91,6 +92,10 @@
+@@ -78,6 +79,7 @@
+     Succeeded {
+         #[serde(rename = "requestId")]
+         request_id: String,
++        #[serde(rename = "byteLength")]
+         byte_length: usize,
+     },
+     Failed {
+@@ -88,9 +90,14 @@
+     Halted {
+         #[serde(rename = "requestId")]
+         request_id: String,
++        #[serde(rename = "byteLength")]
          byte_length: usize,
          diagnostic: KcleanExecutionReport,
      },
@@ -177,7 +189,7 @@
  }
  
  #[derive(Deserialize)]
-@@ -107,11 +112,37 @@
+@@ -107,11 +114,37 @@
      message: String,
  }
  
@@ -218,7 +230,7 @@
  }
  
  pub struct ExecutionExport {
-@@ -124,14 +155,21 @@
+@@ -124,14 +157,21 @@
      pub response_finished: Instant,
  }
  
@@ -244,7 +256,7 @@
          ExecutionBackend::Kclean { host } => execute_with_kclean(project, host, on_solved).await,
      }
  }
-@@ -288,44 +326,26 @@
+@@ -288,44 +328,26 @@
      project: KclProject,
      host: String,
      on_solved: impl FnOnce(Duration, Instant),
@@ -302,7 +314,7 @@
  }
  
  impl KcleanSession {
-@@ -333,15 +353,18 @@
+@@ -333,15 +355,18 @@
          let stream = WebSocket::open(&endpoint)
              .map_err(|error| format!("could not connect to Kclean: {error}"))?;
          let (write, read) = stream.split();
@@ -324,7 +336,7 @@
          let request_id = Uuid::new_v4().to_string();
          let message = KcleanClientMessage::Evaluate {
              request_id: &request_id,
-@@ -353,89 +376,118 @@
+@@ -353,89 +378,118 @@
          };
          let body = serde_json::to_string(&message)
              .map_err(|error| format!("could not encode Kclean request: {error}"))?;
@@ -519,12 +531,10 @@
  /** Whether the selected Kclean endpoint already has a reusable browser session. */
  pub fn has_warm_kclean_connection() -> bool {
      let Ok(ExecutionBackend::Kclean { host }) = execution_backend() else {
-@@ -471,8 +523,115 @@
-         .or_else(|| host.starts_with("wss://").then(|| host.to_string()))
-         .ok_or_else(|| "Kclean server URL must use HTTP(S) or WS(S)".to_string())?;
+@@ -473,6 +527,113 @@
      Ok(format!("{host}/v1/evaluations/ws"))
-+}
-+
+ }
+ 
 +/// The sole socket reader parses and routes terminal responses by request ID.
 +/// This lets newer edits be sent while an older evaluation is still running.
 +async fn read_kclean_session(mut read: BrowserRead, pending: PendingKcleanRequests) {
@@ -624,8 +634,8 @@
 +            let _ = waiter.send(Ok(response));
 +        }
 +    }
- }
- 
++}
++
 +fn fail_pending(pending: &PendingKcleanRequests, message: String) {
 +    for (_, waiter) in pending.borrow_mut().drain() {
 +        let _ = waiter.send(Err(message.clone()));
@@ -635,7 +645,7 @@
  async fn read_kclean_frame(read: &mut BrowserRead) -> Result<Message, String> {
      match futures_util::future::select(
          Box::pin(read.next()),
-@@ -487,14 +646,6 @@
+@@ -487,14 +648,6 @@
      }
  }
  
