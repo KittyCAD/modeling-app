@@ -172,9 +172,9 @@ npm run playwright -- install webkit
 npm run test:e2e:web:webkit
 ```
 
-#### Snapshot tests (Google Chrome on Ubuntu only)
+#### Snapshot tests (macOS)
 
-If you are running Ubuntu locally, in a VM, or using GitHub Codespaces:
+To run the canonical Google Chrome snapshots:
 
 ```
 npm run playwright -- install chrome
@@ -183,7 +183,16 @@ npm run test:snapshots
 
 Append `-- --update-snapshots` if you made significant UI changes.
 
-Alternatively, you can simply delete `e2e/playwright/snapshot-tests.spec.ts-snapshots/` to let the GitHub Actions job create a fresh snapshots commit automatically.
+WebKit snapshots use separate baselines and run on macOS:
+
+```
+npm run playwright -- install webkit
+npm run test:snapshots:webkit
+```
+
+Append `-- --update-snapshots` to update only the selected browser's
+baselines. WebKit snapshot differences fail CI but are not updated or committed
+automatically.
 
 #### Debugger
 
