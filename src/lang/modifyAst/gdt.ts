@@ -152,7 +152,6 @@ type GdtTargetExpr = {
 
 type OrderedGdtTargetExpr = GdtTargetExpr & {
   selectionOrder?: number
-  fallbackOrder: number
 }
 
 function buildGdtTargetExprs({
@@ -174,7 +173,6 @@ function buildGdtTargetExprs({
     targets.push({
       ...target,
       selectionOrder: selection.selectionOrder,
-      fallbackOrder: targets.length,
     })
   }
 
@@ -303,17 +301,13 @@ function buildGdtTargetExprs({
     if (target) pushTarget(selection, target)
   }
 
+  // Stable sorting keeps collection order for selections without an explicit order.
   targets.sort((left, right) => {
     if (left.selectionOrder === undefined) {
-      return right.selectionOrder === undefined
-        ? left.fallbackOrder - right.fallbackOrder
-        : -1
+      return right.selectionOrder === undefined ? 0 : -1
     }
     if (right.selectionOrder === undefined) return 1
-    return (
-      left.selectionOrder - right.selectionOrder ||
-      left.fallbackOrder - right.fallbackOrder
-    )
+    return left.selectionOrder - right.selectionOrder
   })
 
   return {

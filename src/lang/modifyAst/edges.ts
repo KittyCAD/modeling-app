@@ -3,6 +3,7 @@ import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import {
   createArrayExpression,
   createCallExpressionStdLibKw,
+  createIdentifier,
   createLabeledArg,
   createLiteral,
   createLocalName,
@@ -3119,8 +3120,17 @@ export function groupSelectionsByBodyAndAddTags(
     )
     if (err(reference)) return reference
     const { bodyExpr, edgeExpr } = reference
+    // Strip source positions so references to the same body share one edge cut.
     const solidsExpr =
-      bodyExpr.type === 'Name' ? createLocalName(bodyExpr.name.name) : bodyExpr
+      bodyExpr.type === 'Name'
+        ? {
+            ...createLocalName(
+              bodyExpr.name.name,
+              bodyExpr.path.map(({ name }) => createIdentifier(name))
+            ),
+            abs_path: bodyExpr.abs_path,
+          }
+        : bodyExpr
     const bodyKey = getEdgeBodyKey(solidsExpr)
     const existing = bodies.get(bodyKey)
     const tags = existing
@@ -4034,17 +4044,9 @@ export function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
     ])
     const byBody = primitiveSelectionsByBody.get(bodyKey)
     if (byBody) {
-      const primitiveKey = JSON.stringify([
-        selection.bodyPath ?? [],
-        selection.primitiveIndex,
-      ])
       if (
         !byBody.primitiveSelections.some(
-          (existing) =>
-            JSON.stringify([
-              existing.bodyPath ?? [],
-              existing.primitiveIndex,
-            ]) === primitiveKey
+          (existing) => existing.primitiveIndex === selection.primitiveIndex
         )
       ) {
         byBody.primitiveSelections.push(selection)

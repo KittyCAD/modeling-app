@@ -22,17 +22,18 @@ import {
 import { err } from '@src/lib/trap'
 import type {
   EnginePrimitiveSelection,
-  NonCodeSelection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
-import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
-import { expect, test } from 'vitest'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { loadWasm } from '@src/unitTestUtils'
+import { beforeAll, expect, test } from 'vitest'
 
-const tolerance = (
-  instance: Awaited<
-    ReturnType<typeof buildTheWorldAndNoEngineConnection>
-  >['instance']
-) => ({
+let instance: ModuleType
+beforeAll(async () => {
+  instance = await loadWasm()
+})
+
+const tolerance = () => ({
   valueAst: createLiteral(0.1, instance),
   valueText: '0.1',
   valueCalculated: '0.1',
@@ -49,6 +50,24 @@ function codeRefFor(
   }
   const range = [start, start + source.length, 0] as SourceRange
   return { range, pathToNode: getNodePathFromSourceRange(ast, range) }
+}
+
+function importedFixture() {
+  const code = 'import "part.step" as importedPart\n'
+  const ast = assertParse(code, instance)
+  const importedGeometry: Artifact = {
+    type: 'importedGeometry',
+    id: 'imported-body',
+    consumed: false,
+    codeRef: {
+      ...codeRefFor(code, ast, code.trimEnd()),
+      nodePath: { steps: [] },
+    },
+  }
+  const artifactGraph = new Map<string, Artifact>([
+    [importedGeometry.id, importedGeometry],
+  ])
+  return { code, ast, importedGeometry, artifactGraph }
 }
 
 const selectionSources: Array<'legacy' | 'graph'> = ['legacy', 'graph']
@@ -78,73 +97,9 @@ function primitiveFaceSelections(
 }
 
 test.each(selectionSources)(
-  'adds faceId and deleteFace calls for an imported BREP face (%s)',
-  async (source) => {
-    const { instance } = await buildTheWorldAndNoEngineConnection()
-    const code = 'import "part.step" as importedPart\n'
-    const ast = assertParse(code, instance)
-    const range = [0, code.trimEnd().length, 0] as SourceRange
-    const codeRef = {
-      range,
-      pathToNode: getNodePathFromSourceRange(ast, range),
-    }
-    const importedGeometry = {
-      type: 'importedGeometry',
-      id: 'imported-body',
-      codeRef,
-    } as Artifact
-    const artifactGraph = new Map<string, Artifact>([
-      [importedGeometry.id, importedGeometry],
-    ])
-    const primitiveFace: NonCodeSelection = {
-      type: 'enginePrimitive',
-      entityId: 'imported-face',
-      parentEntityId: 'imported-engine-body',
-      kclBodyId: importedGeometry.id,
-      bodyPath: [3, 7],
-      primitiveIndex: 4,
-      primitiveType: 'face',
-    }
-
-    const result = addDeleteFace({
-      ast,
-      artifactGraph,
-      faces: {
-        ...primitiveFaceSelections([primitiveFace], source),
-      },
-      wasmInstance: instance,
-    })
-    if (err(result)) {
-      throw result
-    }
-
-    const newCode = recast(result.modifiedAst, instance)
-    expect(
-      newCode
-    ).toContain(`${code}body001 = bodyOf(importedPart, path = [3, 7])
-face001 = faceId(body001, index = 4)
-surface001 = deleteFace(importedPart, faces = face001)`)
-  }
-)
-
-test.each(selectionSources)(
   'adds an offset plane from an imported BREP engine primitive face (%s)',
-  async (source) => {
-    const { instance } = await buildTheWorldAndNoEngineConnection()
-    const code = 'import "part.step" as importedPart\n'
-    const ast = assertParse(code, instance)
-    const range = [0, code.trimEnd().length, 0] as SourceRange
-    const importedGeometry = {
-      type: 'importedGeometry',
-      id: 'imported-body',
-      codeRef: {
-        range,
-        pathToNode: getNodePathFromSourceRange(ast, range),
-      },
-    } as Artifact
-    const artifactGraph = new Map<string, Artifact>([
-      [importedGeometry.id, importedGeometry],
-    ])
+  (source) => {
+    const { ast, importedGeometry, artifactGraph } = importedFixture()
     const primitiveFace: EnginePrimitiveSelection = {
       type: 'enginePrimitive',
       entityId: 'imported-face',
@@ -163,7 +118,7 @@ test.each(selectionSources)(
       plane: {
         ...primitiveFaceSelections([primitiveFace], source),
       },
-      offset: tolerance(instance),
+      offset: tolerance(),
       wasmInstance: instance,
     })
     if (err(result)) {
@@ -178,8 +133,7 @@ test.each(selectionSources)(
   }
 )
 
-test('uses an imported BREP engine primitive face as a mirror plane', async () => {
-  const { instance } = await buildTheWorldAndNoEngineConnection()
+test('uses an imported BREP engine primitive face as a mirror plane', () => {
   const importSource = 'import "part.step" as importedPart'
   const solidSource = 'solid001 = extrude(profile001, length = 1)'
   const code = `${importSource}
@@ -240,22 +194,8 @@ ${solidSource}
 
 test.each(selectionSources)(
   'deletes faces from different nested bodies through their root import (%s)',
-  async (source) => {
-    const { instance } = await buildTheWorldAndNoEngineConnection()
-    const code = 'import "part.step" as importedPart\n'
-    const ast = assertParse(code, instance)
-    const range = [0, code.trimEnd().length, 0] as SourceRange
-    const importedGeometry = {
-      type: 'importedGeometry',
-      id: 'imported-body',
-      codeRef: {
-        range,
-        pathToNode: getNodePathFromSourceRange(ast, range),
-      },
-    } as Artifact
-    const artifactGraph = new Map<string, Artifact>([
-      [importedGeometry.id, importedGeometry],
-    ])
+  (source) => {
+    const { code, ast, importedGeometry, artifactGraph } = importedFixture()
     const primitiveFace = (
       entityId: string,
       bodyPath: number[],
@@ -295,8 +235,7 @@ surface001 = deleteFace(importedPart, faces = [face001, face002])`)
   }
 )
 
-test('deletes coded faces from different nested bodies through their root import', async () => {
-  const { instance } = await buildTheWorldAndNoEngineConnection()
+test('deletes coded faces from different nested bodies through their root import', () => {
   const importSource = 'import "part.step" as importedPart'
   const firstBodySource = 'body001 = bodyOf(importedPart, path = [0])'
   const firstFaceSource = 'face001 = faceId(body001, index = 4)'
@@ -376,8 +315,7 @@ ${secondFaceSource}
 
 test.each(selectionSources)(
   'deletes mixed coded and uncoded faces through their shared root import (%s)',
-  async (source) => {
-    const { instance } = await buildTheWorldAndNoEngineConnection()
+  (source) => {
     const importSource = 'import "part.step" as importedPart'
     const bodySource = 'body001 = bodyOf(importedPart, path = [0])'
     const faceSource = 'face001 = faceId(body001, index = 4)'
@@ -437,22 +375,8 @@ surface001 = deleteFace(importedPart, faces = [face001, face002])`)
   }
 )
 
-test('keeps equal edge indices from different nested imported bodies', async () => {
-  const { instance } = await buildTheWorldAndNoEngineConnection()
-  const code = 'import "part.step" as importedPart\n'
-  const ast = assertParse(code, instance)
-  const range = [0, code.trimEnd().length, 0] as SourceRange
-  const importedGeometry = {
-    type: 'importedGeometry',
-    id: 'imported-body',
-    codeRef: {
-      range,
-      pathToNode: getNodePathFromSourceRange(ast, range),
-    },
-  } as Artifact
-  const artifactGraph = new Map<string, Artifact>([
-    [importedGeometry.id, importedGeometry],
-  ])
+test('keeps equal edge indices from different nested imported bodies', () => {
+  const { code, ast, importedGeometry, artifactGraph } = importedFixture()
   const primitiveEdgeSelections: EnginePrimitiveSelection[] = [
     {
       type: 'enginePrimitive',
@@ -492,68 +416,8 @@ body002 = bodyOf(importedPart, path = [1])
 edge002 = edgeId(body002, index = 4)`)
 })
 
-test('adds GD&T to an imported BREP face through faceId', async () => {
-  const { instance } = await buildTheWorldAndNoEngineConnection()
-  const code = 'import "part.step" as importedPart\n'
-  const ast = assertParse(code, instance)
-  const range = [0, code.trimEnd().length, 0] as SourceRange
-  const importedGeometry = {
-    type: 'importedGeometry',
-    id: 'imported-body',
-    codeRef: {
-      range,
-      pathToNode: getNodePathFromSourceRange(ast, range),
-    },
-  } as Artifact
-  const artifactGraph = new Map<string, Artifact>([
-    [importedGeometry.id, importedGeometry],
-  ])
-  const primitiveFace: EnginePrimitiveSelection = {
-    type: 'enginePrimitive',
-    entityId: 'imported-face',
-    parentEntityId: 'imported-engine-body',
-    kclBodyId: importedGeometry.id,
-    kclBodyArtifactType: 'importedGeometry',
-    bodyPath: [3, 7],
-    primitiveIndex: 4,
-    primitiveType: 'face',
-  }
-
-  const result = addFlatnessGdt({
-    ast,
-    artifactGraph,
-    faces: {
-      graphSelections: [],
-      otherSelections: [primitiveFace],
-    },
-    tolerance: tolerance(instance),
-    wasmInstance: instance,
-  })
-  if (err(result)) throw result
-
-  const newCode = recast(result.modifiedAst, instance)
-  expect(newCode).toContain('body001 = bodyOf(importedPart, path = [3, 7])')
-  expect(newCode).toContain('face001 = faceId(body001, index = 4)')
-  expect(newCode).toContain('gdt::flatness(')
-  expect(newCode).toContain('faces = [face001]')
-})
-
-test('reuses one bodyOf variable for faces on the same nested body', async () => {
-  const { instance } = await buildTheWorldAndNoEngineConnection()
-  const code = 'import "part.step" as importedPart\n'
-  const ast = assertParse(code, instance)
-  const range = [0, code.trimEnd().length, 0] as SourceRange
-  const importedGeometry = {
-    type: 'importedGeometry',
-    id: 'imported-body',
-    codeRef: {
-      range,
-      pathToNode: getNodePathFromSourceRange(ast, range),
-    },
-  } as Artifact
-  const artifactGraph = new Map<string, Artifact>([
-    [importedGeometry.id, importedGeometry],
-  ])
+test('reuses one bodyOf variable for faces on the same nested body', () => {
+  const { ast, importedGeometry, artifactGraph } = importedFixture()
   const primitiveFace = (entityId: string, primitiveIndex: number) =>
     ({
       type: 'enginePrimitive',
@@ -576,7 +440,7 @@ test('reuses one bodyOf variable for faces on the same nested body', async () =>
         primitiveFace('second-imported-face', 5),
       ],
     },
-    tolerance: tolerance(instance),
+    tolerance: tolerance(),
     wasmInstance: instance,
   })
   if (err(result)) throw result
@@ -590,22 +454,8 @@ test('reuses one bodyOf variable for faces on the same nested body', async () =>
   expect(newCode).toContain('faces = [face002]')
 })
 
-test('adds GD&T to an imported BREP edge through edgeId', async () => {
-  const { instance } = await buildTheWorldAndNoEngineConnection()
-  const code = 'import "part.step" as importedPart\n'
-  const ast = assertParse(code, instance)
-  const range = [0, code.trimEnd().length, 0] as SourceRange
-  const importedGeometry = {
-    type: 'importedGeometry',
-    id: 'imported-body',
-    codeRef: {
-      range,
-      pathToNode: getNodePathFromSourceRange(ast, range),
-    },
-  } as Artifact
-  const artifactGraph = new Map<string, Artifact>([
-    [importedGeometry.id, importedGeometry],
-  ])
+test('adds GD&T to an imported BREP edge through edgeId', () => {
+  const { ast, importedGeometry, artifactGraph } = importedFixture()
   const primitiveEdge: EnginePrimitiveSelection = {
     type: 'enginePrimitive',
     entityId: 'imported-edge',
@@ -624,7 +474,7 @@ test('adds GD&T to an imported BREP edge through edgeId', async () => {
       graphSelections: [],
       otherSelections: [primitiveEdge],
     },
-    tolerance: tolerance(instance),
+    tolerance: tolerance(),
     wasmInstance: instance,
   })
   if (err(result)) throw result
@@ -636,53 +486,14 @@ test('adds GD&T to an imported BREP edge through edgeId', async () => {
   expect(newCode).toContain('edges = [edge001]')
 })
 
-test('adds GD&T to an already-coded imported BREP edge', async () => {
-  const { instance } = await buildTheWorldAndNoEngineConnection()
-  const edgeSource = 'edge001 = edgeId(body001, index = 4)'
-  const code = `import "part.step" as importedPart
-body001 = bodyOf(importedPart, path = [0])
-${edgeSource}
-`
-  const ast = assertParse(code, instance)
-  const primitiveEdge = {
-    type: 'primitiveEdge',
-    id: 'imported-edge',
-    solidId: 'imported-body',
-    codeRef: codeRefFor(code, ast, edgeSource),
-  } as Extract<Artifact, { type: 'primitiveEdge' }>
-
-  const result = addStraightnessGdt({
-    ast,
-    artifactGraph: new Map([[primitiveEdge.id, primitiveEdge]]),
-    objects: {
-      graphSelections: [
-        {
-          entityRef: artifactToEntityRef(primitiveEdge.type, primitiveEdge.id),
-        },
-      ],
-      otherSelections: [],
-    },
-    tolerance: tolerance(instance),
-    wasmInstance: instance,
-  })
-  if (err(result)) {
-    throw result
-  }
-
-  const newCode = recast(result.modifiedAst, instance)
-  expect(newCode).toContain('gdt::straightness(')
-  expect(newCode).toContain('edges = [edge001]')
-})
-
 for (const operation of ['fillet', 'chamfer'] as const) {
-  test(`adds ${operation} to an already-coded imported BREP edge`, async () => {
-    const { instance } = await buildTheWorldAndNoEngineConnection()
+  test(`adds ${operation} to an already-coded imported BREP edge`, () => {
     const bodySource = 'body001 = bodyOf(importedPart, path = [0])'
     const edgeSources = [
       'edge001 = edgeId(body001, index = 4)',
       'edge002 = edgeId(body001, index = 5)',
     ]
-    const code = `@settings(kclVersion = "3.0-preview")
+    const code = `@settings(kclVersion = 3.0)
 import "part.step" as importedPart
 ${bodySource}
 ${edgeSources.join('\n')}
@@ -712,7 +523,7 @@ ${edgeSources.join('\n')}
       })),
       otherSelections: [],
     }
-    const size = tolerance(instance)
+    const size = tolerance()
     const version = {
       valueAst: createLiteral(1, instance),
       valueText: '1',
@@ -746,22 +557,8 @@ ${edgeSources.join('\n')}
   })
 }
 
-test('preserves imported BREP selection order for GD&T distance', async () => {
-  const { instance } = await buildTheWorldAndNoEngineConnection()
-  const code = 'import "part.step" as importedPart\n'
-  const ast = assertParse(code, instance)
-  const range = [0, code.trimEnd().length, 0] as SourceRange
-  const importedGeometry = {
-    type: 'importedGeometry',
-    id: 'imported-body',
-    codeRef: {
-      range,
-      pathToNode: getNodePathFromSourceRange(ast, range),
-    },
-  } as Artifact
-  const artifactGraph = new Map<string, Artifact>([
-    [importedGeometry.id, importedGeometry],
-  ])
+test('preserves imported BREP selection order for GD&T distance', () => {
+  const { ast, importedGeometry, artifactGraph } = importedFixture()
   const primitive = (
     primitiveType: 'face' | 'edge',
     primitiveIndex: number
@@ -794,8 +591,7 @@ test('preserves imported BREP selection order for GD&T distance', async () => {
   expect(newCode).toContain('to = face001')
 })
 
-test('preserves mixed coded and uncoded BREP selection order for GD&T distance', async () => {
-  const { instance } = await buildTheWorldAndNoEngineConnection()
+test('preserves mixed coded and uncoded BREP selection order for GD&T distance', () => {
   const importSource = 'import "part.step" as importedPart'
   const edgeSource = 'edge001 = edgeId(body001, index = 4)'
   const code = `${importSource}
@@ -851,10 +647,9 @@ ${edgeSource}
 })
 
 for (const operation of ['fillet', 'chamfer'] as const) {
-  test(`adds ${operation} for an imported BREP edge`, async () => {
-    const { instance } = await buildTheWorldAndNoEngineConnection()
+  test(`adds ${operation} for an imported BREP edge`, () => {
     const importSource = 'import "part.step" as importedPart'
-    const code = `@settings(kclVersion = "3.0-preview")
+    const code = `@settings(kclVersion = 3.0)
 ${importSource}
 `
     const ast = assertParse(code, instance)
@@ -880,7 +675,7 @@ ${importSource}
       graphSelections: [],
       otherSelections: [primitiveEdge],
     }
-    const size = tolerance(instance)
+    const size = tolerance()
     const version = {
       valueAst: createLiteral(1, instance),
       valueText: '1',

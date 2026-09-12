@@ -1,6 +1,7 @@
 import { createLiteral } from '@src/lang/create'
 import { addChamfer, addFillet } from '@src/lang/modifyAst/edges'
 import { addStraightnessGdt } from '@src/lang/modifyAst/gdt'
+import { artifactToEntityRef } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   type Artifact,
@@ -13,40 +14,75 @@ import {
 } from '@src/lang/wasm'
 import { isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
-import { beforeAll, describe, expect, it } from 'vitest'
+import { loadWasm } from '@src/unitTestUtils'
+import { beforeAll, expect, it } from 'vitest'
 
 let wasmInstance: ModuleType
 beforeAll(async () => {
-  wasmInstance = (await buildTheWorldAndNoEngineConnection()).instance
+  wasmInstance = await loadWasm()
 })
 
 const edgeCall = 'edgeId(body001, index = 4)'
-const sources = [
+const cases = [
   {
-    label: 'standalone reference',
+    label: 'fillet on a named edge',
+    command: 'fillet',
     source: `edge001 = ${edgeCall}`,
     expected: 'edge001',
+    selectionSource: 'artifact',
   },
   {
-    label: 'inline annotation argument',
-    source: `gdt::straightness(edges = [${edgeCall}], tolerance = 0.1mm)`,
-    expected: edgeCall,
+    label: 'chamfer on an edge selected by entity reference',
+    command: 'chamfer',
+    source: `edge001 = ${edgeCall}`,
+    expected: 'edge001',
+    selectionSource: 'entityRef',
   },
   {
-    label: 'inline named annotation argument',
+    label: 'GD&T reuses a named edge selected by entity reference',
+    command: 'straightness',
+    source: `edge001 = ${edgeCall}`,
+    expected: 'edge001',
+    selectionSource: 'entityRef',
+  },
+  {
+    label: 'fillet on an inline edge in a named annotation selected by code',
+    command: 'fillet',
     source: `annotation001 = gdt::straightness(edges = [${edgeCall}], tolerance = 0.1mm)`,
     expected: edgeCall,
+    selectionSource: 'codeRef',
   },
   {
-    label: 'inline array element',
+    label: 'GD&T on an inline annotation edge',
+    command: 'straightness',
+    source: `gdt::straightness(edges = [${edgeCall}], tolerance = 0.1mm)`,
+    expected: edgeCall,
+    selectionSource: 'artifact',
+  },
+  {
+    label: 'GD&T on an inline array edge selected by code',
+    command: 'straightness',
     source: `edges001 = [${edgeCall}]`,
     expected: edgeCall,
+    selectionSource: 'codeRef',
   },
-]
+  {
+    label: 'fillet groups two edges on the same module-qualified body',
+    command: 'fillet',
+    source: `edge001 = edgeId(parts::body, index = 4)
+edge002 = edgeId(parts::body, index = 5)`,
+    expected: '[edge001, edge002]',
+    indices: [4, 5],
+    selectionSource: 'artifact',
+    body: 'parts::body',
+  },
+] as const
 
-function setup(source: string, codeRefOnly = false) {
-  const code = `@settings(kclVersion = 2.0)
+it.each(cases)('$label', (testCase) => {
+  const { source, command, expected, selectionSource } = testCase
+  const body = 'body' in testCase ? testCase.body : 'body001'
+  const indices = 'indices' in testCase ? testCase.indices : [4]
+  const code = `@settings(kclVersion = 3.0)
 import "part.step" as importedPart
 body001 = bodyOf(importedPart, path = [0])
 ${source}
@@ -61,95 +97,55 @@ ${source}
       pathToNode: getNodePathFromSourceRange(ast, range),
     }
   }
-  const body: Artifact = {
+  const bodyArtifact: Artifact = {
     type: 'importedGeometry',
     id: 'body',
     consumed: false,
     codeRef: codeRefFor('bodyOf(importedPart, path = [0])'),
   }
-  const edge: Artifact = {
-    type: 'primitiveEdge',
-    id: 'edge',
-    solidId: body.id,
-    codeRef: codeRefFor(edgeCall),
-  }
+  const edges = indices.map((index) => ({
+    type: 'primitiveEdge' as const,
+    id: `edge-${index}`,
+    solidId: bodyArtifact.id,
+    codeRef: codeRefFor(`edgeId(${body}, index = ${index})`),
+  }))
   const artifactGraph: ArtifactGraph = new Map<string, Artifact>([
-    [body.id, body],
-    [edge.id, edge],
+    [bodyArtifact.id, bodyArtifact],
+    ...edges.map((edge) => [edge.id, edge] as const),
   ])
-  return {
-    code,
-    ast,
-    artifactGraph,
-    selection: {
-      graphSelections: [
-        { ...(codeRefOnly ? {} : { artifact: edge }), codeRef: edge.codeRef },
-      ],
-      otherSelections: [],
-    },
-    size: {
-      valueAst: createLiteral(0.2, wasmInstance),
-      valueText: '0.2',
-      valueCalculated: '0.2',
-    },
+  const selection = {
+    graphSelections: edges.map((edge) =>
+      selectionSource === 'entityRef'
+        ? { entityRef: artifactToEntityRef(edge.type, edge.id) }
+        : {
+            ...(selectionSource === 'artifact' ? { artifact: edge } : {}),
+            codeRef: edge.codeRef,
+          }
+    ),
+    otherSelections: [],
   }
-}
+  const size = {
+    valueAst: createLiteral(0.2, wasmInstance),
+    valueText: '0.2',
+    valueCalculated: '0.2',
+  }
+  const args = { ast, artifactGraph, wasmInstance }
+  const result =
+    command === 'fillet'
+      ? addFillet({ ...args, selection, radius: size })
+      : command === 'chamfer'
+        ? addChamfer({ ...args, selection, length: size })
+        : addStraightnessGdt({ ...args, objects: selection, tolerance: size })
+  if (isErr(result)) throw result
 
-describe.each(
-  sources.flatMap((source) => [
-    { ...source, codeRefOnly: false },
-    {
-      ...source,
-      label: source.label + ' with only a code ref',
-      codeRefOnly: true,
-    },
-  ])
-)('primitive edge from $label', ({ source, expected, codeRefOnly }) => {
-  it.each(['fillet', 'chamfer'] as const)(
-    'adds %s using the selected edge and body',
-    (command) => {
-      const { ast, code, artifactGraph, selection, size } = setup(
-        source,
-        codeRefOnly
-      )
-      const args = { ast, artifactGraph, selection, wasmInstance }
-      const result =
-        command === 'fillet'
-          ? addFillet({ ...args, radius: size })
-          : addChamfer({ ...args, length: size })
-      if (isErr(result)) throw result
-
-      const expectedCode = `${code}${command}001 = ${command}(body001, tags = ${expected}, ${command === 'fillet' ? 'radius' : 'length'} = 0.2)`
-      expect(recast(result.modifiedAst, wasmInstance)).toEqual(
-        recast(assertParse(expectedCode, wasmInstance), wasmInstance)
-      )
-      expect(recast(ast, wasmInstance)).toEqual(
-        recast(assertParse(code, wasmInstance), wasmInstance)
-      )
-    }
+  const addedCall =
+    command === 'straightness'
+      ? `gdt::straightness(edges = [${expected}], tolerance = 0.2)`
+      : `${command}001 = ${command}(${body}, tags = ${expected}, ${command === 'fillet' ? 'radius' : 'length'} = 0.2)`
+  expect(recast(result.modifiedAst, wasmInstance)).toEqual(
+    recast(assertParse(`${code}${addedCall}`, wasmInstance), wasmInstance)
   )
-
-  it('adds GD&T using the selected edge without substituting an enclosing variable', () => {
-    const { ast, code, artifactGraph, selection, size } = setup(
-      source,
-      codeRefOnly
-    )
-    const result = addStraightnessGdt({
-      ast,
-      artifactGraph,
-      objects: selection,
-      tolerance: size,
-      wasmInstance,
-    })
-    if (isErr(result)) throw result
-    expect(recast(result.modifiedAst, wasmInstance)).toEqual(
-      recast(
-        assertParse(
-          `${code}gdt::straightness(edges = [${expected}], tolerance = 0.2)`,
-          wasmInstance
-        ),
-        wasmInstance
-      )
-    )
-  })
+  expect(recast(ast, wasmInstance)).toEqual(
+    recast(assertParse(code, wasmInstance), wasmInstance)
+  )
 })

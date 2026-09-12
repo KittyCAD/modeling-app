@@ -904,16 +904,38 @@ export function addOffsetPlane({
   // 2. Prepare unlabeled and labeled arguments
   let planeExpr: Expr | null = null
   if (!mNodeToEdit) {
-    const planeResult = getPlaneExprFromSelection({
-      ast: modifiedAst,
-      artifactGraph,
-      variables,
-      plane,
-      wasmInstance,
-    })
-    if (err(planeResult)) return planeResult
-    modifiedAst = planeResult.modifiedAst
-    planeExpr = planeResult.expr
+    const hasCodedFace = plane.graphSelections.some((selection) =>
+      isFaceArtifact(resolveToCodeRef(selection, artifactGraph)?.artifact)
+    )
+    if (hasCodedFace) {
+      const result = buildSolidsAndFacesExprs(
+        plane,
+        artifactGraph,
+        modifiedAst,
+        wasmInstance,
+        mNodeToEdit
+      )
+      if (err(result)) return result
+      const { solidsExpr, facesExpr } = result
+      modifiedAst = result.modifiedAst
+      if (!facesExpr) {
+        return new Error("Couldn't retrieve face from selection")
+      }
+      planeExpr = createCallExpressionStdLibKw('planeOf', solidsExpr, [
+        createLabeledArg('face', facesExpr),
+      ])
+    } else {
+      const planeResult = getPlaneExprFromSelection({
+        ast: modifiedAst,
+        artifactGraph,
+        variables,
+        plane,
+        wasmInstance,
+      })
+      if (err(planeResult)) return planeResult
+      modifiedAst = planeResult.modifiedAst
+      planeExpr = planeResult.expr
+    }
   }
 
   const call = createCallExpressionStdLibKw(
@@ -973,9 +995,7 @@ export function getPlaneExprFromSelection({
     isFaceArtifact(resolveToCodeRef(sel, artifactGraph)?.artifact)
   )
 
-  // Face selections become a named planeOf(...) first. That keeps mirror3d and
-  // offsetPlane on the same representation and preserves edit paths when we
-  // insert faceId(...) variables before the edited node.
+  // Name the plane so inserted faceId variables preserve the edited node's path.
   if (enginePrimitives.length > 0 || hasFaceSelection) {
     const result = buildSolidsAndFacesExprs(
       plane,

@@ -2376,7 +2376,7 @@ export function getSelectedPlaneId(selectionRanges: Selections): string | null {
   return null
 }
 
-// Returns the plane/wall/cap/edgeCut within the current selection that can be used to start a sketch on.
+// Returns the plane or face within the current selection that can be used to start a sketch on.
 export function getSelectedSketchTarget(
   selectionRanges: Selections
 ): string | null {
@@ -2403,7 +2403,7 @@ export function getSelectedSketchTarget(
     return (
       entityType === 'plane' ||
       entityType === 'face' ||
-      ['plane', 'wall', 'cap'].includes(artifactType) ||
+      ['plane', 'wall', 'cap', 'primitiveFace'].includes(artifactType) ||
       (selection.artifact?.type === 'edgeCut' &&
         selection.artifact?.subType === 'chamfer')
     )

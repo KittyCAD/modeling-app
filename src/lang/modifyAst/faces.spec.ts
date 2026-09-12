@@ -1842,8 +1842,7 @@ plane002 = offsetPlane(plane001, offset = 3)`)
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`${cylinderWithEndTag}
-plane001 = planeOf(extrude001, face = capEnd001)
-plane002 = offsetPlane(plane001, offset = 2)`)
+plane001 = offsetPlane(planeOf(extrude001, face = capEnd001), offset = 2)`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
 
       const newOffset = (await stringToKclExpression(
@@ -1866,8 +1865,7 @@ plane002 = offsetPlane(plane001, offset = 2)`)
       const newCode2 = recast(result2.modifiedAst, instanceInThisFile)
       expect(newCode2).not.toContain(`offset = 2`)
       expect(newCode2).toContain(`${cylinderWithEndTag}
-plane001 = planeOf(extrude001, face = capEnd001)
-plane002 = offsetPlane(plane001, offset = 3)`)
+plane001 = offsetPlane(planeOf(extrude001, face = capEnd001), offset = 3)`)
       await enginelessExecutor(result2.modifiedAst, rustContextInThisFile)
     })
 
@@ -1896,8 +1894,7 @@ plane002 = offsetPlane(plane001, offset = 3)`)
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`${boxWithOneTag}
-plane001 = planeOf(extrude001, face = seg01)
-plane002 = offsetPlane(plane001, offset = 10)`)
+plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 10)`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
 
       const newOffset = (await stringToKclExpression(
@@ -1920,8 +1917,7 @@ plane002 = offsetPlane(plane001, offset = 10)`)
       const newCode2 = recast(result2.modifiedAst, instanceInThisFile)
       expect(newCode2).not.toContain(`offset = 10`)
       expect(newCode2).toContain(`${boxWithOneTag}
-plane001 = planeOf(extrude001, face = seg01)
-plane002 = offsetPlane(plane001, offset = 20)`)
+plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
       await enginelessExecutor(result2.modifiedAst, rustContextInThisFile)
     })
 
@@ -1952,13 +1948,7 @@ plane002 = offsetPlane(plane001, offset = 20)`)
       }
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(
-        boxWithOneTagAndChamferAndPlane.replace(
-          'plane001 = offsetPlane(planeOf(extrude001, face = chamferFace01), offset = 1)',
-          `plane001 = planeOf(extrude001, face = chamferFace01)
-plane002 = offsetPlane(plane001, offset = 1)`
-        )
-      )
+      expect(newCode).toContain(boxWithOneTagAndChamferAndPlane)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
 
       const newOffset = (await stringToKclExpression(
@@ -1981,8 +1971,7 @@ plane002 = offsetPlane(plane001, offset = 1)`
       const newCode2 = recast(result2.modifiedAst, instanceInThisFile)
       expect(newCode2).not.toContain(`offset = 1`)
       expect(newCode2).toContain(
-        `plane001 = planeOf(extrude001, face = chamferFace01)
-plane002 = offsetPlane(plane001, offset = 2)`
+        `plane001 = offsetPlane(planeOf(extrude001, face = chamferFace01), offset = 2)`
       )
       await enginelessExecutor(result2.modifiedAst, rustContextInThisFile)
     })
