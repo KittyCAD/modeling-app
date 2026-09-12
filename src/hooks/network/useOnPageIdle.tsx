@@ -125,12 +125,11 @@ export const useOnPageIdle = ({
         return
       }
       startCallbackRef.current()
-      timeoutStart.current =
+      wasBusyRef.current =
         kclManager.isExecuting ||
         !modelingMachineStateRef.current.matches('idle') ||
         zookeeperPromptRunningSignal.value
-          ? null
-          : Date.now()
+      timeoutStart.current = wasBusyRef.current ? null : Date.now()
     }
 
     // It's possible after a reconnect, the user doesn't move their mouse at
