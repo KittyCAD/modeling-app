@@ -31,6 +31,7 @@ const SKETCH_CALLS: &[&str] = &[
     "parallel",
     "perpendicular",
     "fixed",
+    "sin",
 ];
 
 fn named(name: &Name, expected: &str) -> bool {
@@ -308,6 +309,7 @@ second = makePad(r = 7mm, depth = depth)
             CODE.replace("depth = 5mm", "depth = 2mm + 3mm"),
             CODE.replace("radius(perimeter) == r", "radius(perimeter) == random()"),
             format!("radius = 3mm\n{CODE}"),
+            format!("sin = 3mm\n{CODE}"),
         ] {
             let program = Program::parse_no_errs(&code).unwrap();
             assert!(
@@ -315,6 +317,52 @@ second = makePad(r = 7mm, depth = depth)
                 "unexpectedly accepted {code}"
             );
         }
+    }
+
+    #[test]
+    fn first_instance_accepts_trace_curved_profile() {
+        let code = include_str!("../../tests/sketch_visualizer/curved_instance/input.kcl");
+        let program = Program::parse_no_errs(code).unwrap();
+        assert!(first_instance(&program, "curvedProfile").is_some());
+        let shadowed = Program::parse_no_errs(&format!("sin = 3mm\n{code}")).unwrap();
+        assert!(first_instance(&shadowed, "curvedProfile").is_none());
+    }
+
+    #[tokio::test]
+    async fn first_instance_matches_trace_curved_profile() {
+        let program =
+            Program::parse_no_errs(include_str!("../../tests/sketch_visualizer/curved_instance/input.kcl")).unwrap();
+        let isolated = first_instance(&program, "curvedProfile").unwrap();
+        let full = execute(program).await;
+        let selected = execute(isolated).await;
+        assert_eq!(
+            full.render_sketch_png_instance("curvedProfile", Some(0)).unwrap(),
+            selected.render_sketch_png_instance("curvedProfile", Some(0)).unwrap()
+        );
+        let full_report = full.sketch_constraint_report();
+        let selected_report = selected.sketch_constraint_report();
+        let first = |report: crate::execution::SketchConstraintReport| {
+            report
+                .fully_constrained
+                .into_iter()
+                .chain(report.under_constrained)
+                .chain(report.over_constrained)
+                .find(|sketch| sketch.name == "curvedProfile" && sketch.instance_index == 0)
+                .unwrap()
+        };
+        assert_eq!(first(full_report), first(selected_report));
+        let plane = |outcome: crate::ExecOutcome| {
+            let sketch = outcome
+                .scene_objects
+                .iter()
+                .find(|s| s.label == "curvedProfile")
+                .unwrap();
+            let crate::front::ObjectKind::Sketch(sketch) = &sketch.kind else {
+                panic!()
+            };
+            sketch.args.on.clone()
+        };
+        assert_eq!(plane(full), plane(selected));
     }
 
     #[tokio::test]
