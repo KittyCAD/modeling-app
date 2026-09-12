@@ -16,7 +16,6 @@ export const useOnPageIdle = ({
   const settingsValues = settings.useSettings()
   const streamIdleMode = settingsValues.app.streamIdleMode.current
   const { state: modelingMachineState } = useModelingContext()
-  const intervalId = useRef<NodeJS.Timeout | null>(null)
   const startCallbackRef = useRef(startCallback)
   const idleCallbackRef = useRef(idleCallback)
   const modelingMachineStateRef = useRef(modelingMachineState)
@@ -38,17 +37,12 @@ export const useOnPageIdle = ({
   }, [modelingMachineState])
 
   useEffect(() => {
-    idleCheckVersion.current++
+    idleCheckVersion.current += 1
     idleTimeMsRef.current = Number(streamIdleMode)
     timeoutStart.current = idleTimeMsRef.current ? Date.now() : null
   }, [streamIdleMode])
 
   useEffect(() => {
-    if (intervalId.current) {
-      return
-    }
-    let disposed = false
-
     // Check every 1 second to see if you are idle.
     const interval = setInterval(() => {
       void (async () => {
@@ -67,7 +61,7 @@ export const useOnPageIdle = ({
         // Only start the idle timer once KCL execution and other modeling
         // interactions have fully finished.
         if (isBusy) {
-          idleCheckVersion.current++
+          idleCheckVersion.current += 1
           timeoutStart.current = null
           wasBusyRef.current = true
           return
@@ -90,9 +84,8 @@ export const useOnPageIdle = ({
               console.warn('unable to save old camera state on idle', e)
               kclManager.sceneInfra.camControls.clearOldCameraState()
             }
-            // Input, settings, or lifecycle changes invalidate this idle check
-            // while camera saving is pending, including when the save rejects.
-            if (disposed || version !== idleCheckVersion.current) return
+            // Input, settings changes, or cleanup can invalidate the pending save.
+            if (version !== idleCheckVersion.current) return
             if (
               kclManager.isExecuting ||
               !modelingMachineStateRef.current.matches('idle') ||
@@ -114,11 +107,9 @@ export const useOnPageIdle = ({
         }
       })()
     }, 1_000)
-    intervalId.current = interval
     return () => {
-      disposed = true
+      idleCheckVersion.current += 1
       clearInterval(interval)
-      intervalId.current = null
     }
   }, [kclManager])
 
@@ -126,7 +117,7 @@ export const useOnPageIdle = ({
     if (!idleTimeMsRef.current) return
 
     const onAnyInput = () => {
-      idleCheckVersion.current++
+      idleCheckVersion.current += 1
       // Just in case it happens in the middle of the user turning off
       // idle mode.
       if (!idleTimeMsRef.current) {
