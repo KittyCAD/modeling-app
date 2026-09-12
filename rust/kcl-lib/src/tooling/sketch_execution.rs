@@ -92,14 +92,21 @@ pub fn first_instance(program: &Program, sketch_name: &str) -> Option<Program> {
     };
     // A local sketch returned as geometry could be transformed or cloned later.
     // Restrict this shortcut to helpers returning an extrusion, not the sketch.
-    let [
-        BodyItem::VariableDeclaration(sketch),
-        BodyItem::VariableDeclaration(solid),
-        BodyItem::ExpressionStatement(hidden),
-        BodyItem::ReturnStatement(returned),
-    ] = function.body.body.as_slice()
-    else {
-        return None;
+    let (sketch, region, solid, hidden, returned) = match function.body.body.as_slice() {
+        [
+            BodyItem::VariableDeclaration(sketch),
+            BodyItem::VariableDeclaration(solid),
+            BodyItem::ExpressionStatement(hidden),
+            BodyItem::ReturnStatement(returned),
+        ] => (sketch, None, solid, hidden, returned),
+        [
+            BodyItem::VariableDeclaration(sketch),
+            BodyItem::VariableDeclaration(region),
+            BodyItem::VariableDeclaration(solid),
+            BodyItem::ExpressionStatement(hidden),
+            BodyItem::ReturnStatement(returned),
+        ] => (sketch, Some(region), solid, hidden, returned),
+        _ => return None,
     };
     let Expr::SketchBlock(block) = &sketch.declaration.init else {
         return None;
@@ -113,6 +120,20 @@ pub fn first_instance(program: &Program, sketch_name: &str) -> Option<Program> {
     let Expr::CallExpressionKw(extrusion) = &solid.declaration.init else {
         return None;
     };
+    // Allow a named region feeding this extrusion, not arbitrary helper work.
+    if let Some(region) = region {
+        let Expr::CallExpressionKw(call) = &region.declaration.init else {
+            return None;
+        };
+        if !named(&call.callee, "region")
+            || !extrusion
+                .unlabeled
+                .as_ref()
+                .is_some_and(|value| is_name(value, &region.declaration.id.name))
+        {
+            return None;
+        }
+    }
     let Expr::CallExpressionKw(hide) = &hidden.expression else {
         return None;
     };
@@ -292,6 +313,27 @@ second = makePad(r = 7mm, depth = depth)
     }
 
     #[test]
+    fn first_instance_accepts_only_a_region_feeding_the_extrusion() {
+        let code = CODE.replace(
+            "solid = extrude(region(segments = [profile.perimeter]), length = depth)",
+            "outline = region(segments = [profile.perimeter])\n  solid = extrude(outline, length = depth)",
+        );
+        let program = Program::parse_no_errs(&code).unwrap();
+        assert!(first_instance(&program, "profile").is_some());
+        for unsupported in [
+            code.replace("outline = region(", "outline = otherFunction("),
+            code.replace("extrude(outline,", "extrude(otherOutline,"),
+            code.replace("return solid", "return outline"),
+            code.replace("outline = region(segments = [profile.perimeter])", "outline = profile"),
+            code.replace("outline = region(segments = [profile.perimeter])", "outline = 1mm"),
+            code.replace("length = depth)", "length = depth) |> translate(x = 1mm)"),
+        ] {
+            let program = Program::parse_no_errs(&unsupported).unwrap();
+            assert!(first_instance(&program, "profile").is_none(), "accepted {unsupported}");
+        }
+    }
+
+    #[test]
     fn first_instance_declines_unsafe_dependencies_or_selection() {
         for code in [
             format!("import x from \"helper.kcl\"\n{CODE}"),
@@ -370,7 +412,11 @@ second = makePad(r = 7mm, depth = depth)
         for plane in ["XY", "XZ", "YZ"] {
             let code = CODE
                 .replace("profile = sketch(on = XY)", &format!("profile = sketch(on = {plane})"))
-                .replace("r = 3mm, depth = depth", "r = -(depth - 8mm), depth = depth + 1mm");
+                .replace("r = 3mm, depth = depth", "r = -(depth - 8mm), depth = depth + 1mm")
+                .replace(
+                    "solid = extrude(region(segments = [profile.perimeter]), length = depth)",
+                    "outline = region(segments = [profile.perimeter])\n  solid = extrude(outline, length = depth)",
+                );
             let original = Program::parse_no_errs(&code).unwrap();
             let isolated = first_instance(&original, "profile").unwrap();
             let full = execute(original).await;
