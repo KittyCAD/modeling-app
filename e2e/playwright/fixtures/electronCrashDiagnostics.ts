@@ -1,5 +1,4 @@
 import type { ElectronApplication, TestInfo } from '@playwright/test'
-import type { Event, WebContents, RenderProcessGoneDetails } from 'electron'
 
 // Collect in the main process: a crashed renderer cannot report its own exit.
 export async function startRendererCrashDiagnostics(
@@ -9,34 +8,27 @@ export async function startRendererCrashDiagnostics(
     type Failure = { reason: string; exitCode: number; occurredAt: string }
     const state = app as typeof app & {
       playwrightRendererFailures?: Failure[]
-      playwrightRendererListener?: (
-        event: Event,
-        contents: WebContents,
-        details: RenderProcessGoneDetails
-      ) => void
     }
-    if (state.playwrightRendererListener) {
-      app.removeListener(
-        'render-process-gone',
-        state.playwrightRendererListener
-      )
+    if (state.playwrightRendererFailures) {
+      state.playwrightRendererFailures.length = 0
+      return
     }
-    state.playwrightRendererFailures = []
-    state.playwrightRendererListener = (_event, _contents, details) => {
+    const failures: Failure[] = []
+    state.playwrightRendererFailures = failures
+    app.on('render-process-gone', (_event, _contents, details) => {
       if (details.reason === 'clean-exit') return
-      state.playwrightRendererFailures?.push({
+      failures.push({
         reason: details.reason,
         exitCode: details.exitCode,
         occurredAt: new Date().toISOString(),
       })
-    }
-    app.on('render-process-gone', state.playwrightRendererListener)
+    })
   })
 }
 
 export async function attachRendererCrashDiagnostics(
   electron: ElectronApplication | undefined,
-  testInfo: Pick<TestInfo, 'attach'>
+  testInfo: TestInfo
 ) {
   if (!electron) return
   try {

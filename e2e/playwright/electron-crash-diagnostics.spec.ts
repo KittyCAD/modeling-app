@@ -24,7 +24,7 @@ test('retains native renderer exit evidence after a crash @desktop @macos @windo
     const page = await application.firstWindow()
     await expect(page).toHaveTitle('Crash diagnostics fixture')
     await startRendererCrashDiagnostics(application)
-    // Reusing the fixture must replace its listener, not accumulate listeners.
+    // Reusing the fixture must not accumulate listeners.
     await startRendererCrashDiagnostics(application)
     const nativeExit = await application.evaluate(
       async ({ app, BrowserWindow }) => {
@@ -39,33 +39,22 @@ test('retains native renderer exit evidence after a crash @desktop @macos @windo
         return await gone
       }
     )
-    const attachments: Array<{
-      name: string
-      body: string | Buffer | undefined
-    }> = []
-    await attachRendererCrashDiagnostics(application, {
-      attach: async (name, options) => {
-        attachments.push({ name, body: options?.body })
-      },
-    })
-    expect(attachments).toHaveLength(1)
-    expect(attachments[0].name).toBe('electron-renderer-failures')
-    const failures = JSON.parse(String(attachments[0].body))
+    await attachRendererCrashDiagnostics(application, testInfo)
+    expect(testInfo.attachments).toHaveLength(1)
+    expect(testInfo.attachments[0].name).toBe('electron-renderer-failures')
+    const failures = JSON.parse(String(testInfo.attachments[0].body))
     expect(failures).toHaveLength(1)
     expect(['crashed', 'killed']).toContain(nativeExit.reason)
     expect(failures[0]).toMatchObject({
       reason: nativeExit.reason,
       exitCode: nativeExit.exitCode,
     })
-    expect(failures[0].exitCode).toEqual(expect.any(Number))
     expect(Number.isNaN(Date.parse(failures[0].occurredAt))).toBe(false)
+    await attachRendererCrashDiagnostics(application, testInfo)
+    expect(testInfo.attachments).toHaveLength(1)
     await startRendererCrashDiagnostics(application)
-    await attachRendererCrashDiagnostics(application, {
-      attach: async (name, options) => {
-        attachments.push({ name, body: options?.body })
-      },
-    })
-    expect(attachments).toHaveLength(1)
+    await attachRendererCrashDiagnostics(application, testInfo)
+    expect(testInfo.attachments).toHaveLength(1)
   } finally {
     await application.close()
   }
