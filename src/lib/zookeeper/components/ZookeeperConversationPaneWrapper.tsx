@@ -7,10 +7,6 @@ import { browserSaveFile } from '@src/lib/browserSaveFile'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { ZookeeperConversationPane } from '@src/lib/zookeeper/components/ZookeeperConversationPane'
 import type { ZookeeperSessionController } from '@src/lib/zookeeper/registry/controller'
-import {
-  ZookeeperConversationToMarkdown,
-  type ZookeeperManagerActor,
-} from '@src/lib/zookeeper/zookeeperManagerMachine'
 
 export function ZookeeperConversationPaneWrapper(
   props: Pick<AreaTypeComponentProps, 'layout' | 'onClose'> & {
@@ -34,7 +30,7 @@ export function ZookeeperConversationPaneWrapper(
         icon="sparkles"
         title="Zookeeper"
         onClose={props.onClose}
-        Menu={<ZookeeperConversationMenu actor={controller.actor} />}
+        Menu={<ZookeeperConversationMenu controller={controller} />}
       />
       <ZookeeperConversationPane
         controller={controller}
@@ -53,25 +49,23 @@ export function ZookeeperConversationPaneWrapper(
 }
 
 const ZookeeperConversationMenu = ({
-  actor,
+  controller,
 }: {
-  actor: ZookeeperManagerActor
+  controller: ZookeeperSessionController
 }) => (
   <HeaderMenu>
     <Menu.Item>
       <button
         type="button"
         onClick={() => {
-          const context = actor.getSnapshot().context
-          const markdown = ZookeeperConversationToMarkdown(context.conversation)
-          const blob = new Blob([new TextEncoder().encode(markdown)], {
-            type: 'text/markdown',
-          })
-          void browserSaveFile(
-            blob,
-            `${context.conversationId ?? new Date().toISOString()}.md`,
-            ''
+          const conversationExport = controller.getConversationExport()
+          const blob = new Blob(
+            [new TextEncoder().encode(conversationExport.markdown)],
+            {
+              type: 'text/markdown',
+            }
           )
+          void browserSaveFile(blob, conversationExport.fileName, '')
         }}
         className="menuButton"
       >
