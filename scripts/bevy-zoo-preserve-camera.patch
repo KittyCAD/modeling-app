@@ -1,0 +1,212 @@
+--- a/src/zoo/mod.rs
++++ b/src/zoo/mod.rs
+@@ -134,8 +134,35 @@
+ }
+ 
+ #[derive(Component)]
+-struct PendingCameraFit;
++struct PendingModelLoad;
+ 
++/// Camera policy across model revisions. Loading a GLB is not a request to move
++/// the camera: only the first visible model receives the connection-start fit.
++#[derive(Resource, Clone, Copy, Debug, Default, Eq, PartialEq)]
++enum InitialCameraFit {
++    #[default]
++    Pending,
++    Complete,
++}
++
++#[derive(Clone, Copy, Debug, Eq, PartialEq)]
++enum LoadedModelCamera {
++    Fit,
++    Preserve,
++}
++
++impl InitialCameraFit {
++    fn finish_model_load(&mut self) -> LoadedModelCamera {
++        match self {
++            Self::Pending => {
++                *self = Self::Complete;
++                LoadedModelCamera::Fit
++            }
++            Self::Complete => LoadedModelCamera::Preserve,
++        }
++    }
++}
++
+ #[derive(Resource)]
+ struct ZooResults(Receiver<ZooResult>);
+ 
+@@ -178,10 +205,11 @@
+ }
+ 
+ #[derive(SystemParam)]
+-struct CameraFitStatus<'w> {
++struct ModelLoadStatus<'w> {
+     asset_server: Res<'w, AssetServer>,
+     state: ResMut<'w, ZooJobState>,
+     progress: ModelLoadProgress<'w>,
++    initial_camera_fit: ResMut<'w, InitialCameraFit>,
+ }
+ 
+ type ExistingModelFilter = Or<(With<RuntimeModelRoot>, With<InstanceDuplicate>)>;
+@@ -210,6 +238,7 @@
+             .init_resource::<RequestedRevision>()
+             .init_resource::<ZooTimings>()
+             .init_resource::<LoadedModelBounds>()
++            .init_resource::<InitialCameraFit>()
+             .add_message::<ExecuteKclProject>()
+             .insert_resource(ZooResults(result_rx))
+             .insert_resource(ZooResultSender(result_tx))
+@@ -218,7 +247,7 @@
+                 (
+                     start_project_executions,
+                     receive_zoo_results,
+-                    fit_camera_to_loaded_model,
++                    finish_loaded_model,
+                 ),
+             );
+         if self.submit_bundled {
+@@ -483,7 +512,7 @@
+                     Transform::from_scale(Vec3::splat(ZOO_MODEL_SCALE)),
+                     RuntimeModelRoot,
+                     ModelInstance(0),
+-                    PendingCameraFit,
++                    PendingModelLoad,
+                     ModelRevision(revision),
+                     Name::new(format!("Zoo model revision {revision}")),
+                 ));
+@@ -541,13 +570,13 @@
+     }
+ }
+ 
+-fn fit_camera_to_loaded_model(
++fn finish_loaded_model(
+     mut commands: Commands,
+-    pending_models: Query<(Entity, &WorldAssetRoot, &ModelRevision), With<PendingCameraFit>>,
++    pending_models: Query<(Entity, &WorldAssetRoot, &ModelRevision), With<PendingModelLoad>>,
+     mesh_bounds: Query<(Entity, &Aabb, &GlobalTransform)>,
+     parents: Query<&ChildOf>,
+     windows: Query<&Window>,
+-    mut status: CameraFitStatus,
++    mut status: ModelLoadStatus,
+     mut camera: Query<(&mut Transform, &mut Projection, &mut PanOrbitCamera), With<ViewportCamera>>,
+ ) {
+     let Ok((mut camera_transform, mut projection, mut orbit)) = camera.single_mut() else {
+@@ -569,7 +598,7 @@
+                 message,
+                 diagnostics: vec![],
+             };
+-            commands.entity(root).remove::<PendingCameraFit>();
++            commands.entity(root).remove::<PendingModelLoad>();
+             continue;
+         }
+         let mut minimum = Vec3::splat(f32::INFINITY);
+@@ -600,47 +629,57 @@
+         }
+ 
+         let center = (minimum + maximum) * 0.5;
+-        let radius = ((maximum - minimum).length() * 0.5).max(1.0e-6);
+-        let view_direction = Vec3::new(1.0, 0.8, 1.5).normalize();
+-        let distance = radius * 3.0;
+-        *camera_transform = Transform::from_translation(center + view_direction * distance)
+-            .looking_at(center, Vec3::Y);
++        let size = maximum - minimum;
++        let radius = (size.length() * 0.5).max(1.0e-6);
++        let camera_policy = status.initial_camera_fit.finish_model_load();
+ 
+-        orbit.focus = center;
+-        orbit.target_focus = center;
+-        orbit.radius = Some(distance);
+-        orbit.target_radius = distance;
+-        orbit.force_update = true;
++        if camera_policy == LoadedModelCamera::Fit {
++            let view_direction = Vec3::new(1.0, 0.8, 1.5).normalize();
++            let distance = radius * 3.0;
++            *camera_transform = Transform::from_translation(center + view_direction * distance)
++                .looking_at(center, Vec3::Y);
+ 
+-        match projection.as_mut() {
+-            Projection::Orthographic(orthographic) => {
+-                let aspect_ratio = windows
+-                    .single()
+-                    .ok()
+-                    .map(|window| window.width() / window.height().max(1.0))
+-                    .unwrap_or(1.0);
+-                let portrait_compensation = (1.0 / aspect_ratio).max(1.0);
+-                orthographic.scale = radius * 1.25 * portrait_compensation;
+-                orthographic.near = 0.0;
+-                orthographic.far = (radius * 100.0).max(1.0e-4);
+-            }
+-            Projection::Perspective(perspective) => {
+-                perspective.near = (radius * 0.01).max(1.0e-7);
+-                perspective.far = (radius * 100.0).max(1.0);
++            orbit.focus = center;
++            orbit.target_focus = center;
++            orbit.radius = Some(distance);
++            orbit.target_radius = distance;
++            orbit.force_update = true;
++
++            match projection.as_mut() {
++                Projection::Orthographic(orthographic) => {
++                    let aspect_ratio = windows
++                        .single()
++                        .ok()
++                        .map(|window| window.width() / window.height().max(1.0))
++                        .unwrap_or(1.0);
++                    let portrait_compensation = (1.0 / aspect_ratio).max(1.0);
++                    orthographic.scale = radius * 1.25 * portrait_compensation;
++                    orthographic.near = 0.0;
++                    orthographic.far = (radius * 100.0).max(1.0e-4);
++                }
++                Projection::Perspective(perspective) => {
++                    perspective.near = (radius * 0.01).max(1.0e-7);
++                    perspective.far = (radius * 100.0).max(1.0);
++                }
++                Projection::Custom(_) => {}
+             }
+-            Projection::Custom(_) => {}
+         }
+ 
+-        commands.entity(root).remove::<PendingCameraFit>();
++        commands.entity(root).remove::<PendingModelLoad>();
+         status.progress.bounds.center = Some(center);
+-        status.progress.bounds.size = Some(maximum - minimum);
++        status.progress.bounds.size = Some(size);
+         if let Some(started) = status.progress.timings.scene_load_started.take() {
+             status.progress.timings.scene_load = Some(started.elapsed());
+         }
+-        info!(
+-            "framed Zoo model at {center:?}, diameter {:.6} scene units",
+-            radius * 2.0
+-        );
++        match camera_policy {
++            LoadedModelCamera::Fit => info!(
++                "framed Zoo model at {center:?}, diameter {:.6} scene units",
++                radius * 2.0
++            ),
++            LoadedModelCamera::Preserve => {
++                info!("loaded Zoo model at {center:?}, preserving the current camera")
++            }
++        }
+     }
+ }
+ 
+@@ -654,3 +693,17 @@
+     }
+     false
+ }
++
++#[cfg(test)]
++mod tests {
++    use super::{InitialCameraFit, LoadedModelCamera};
++
++    #[test]
++    fn only_the_first_loaded_model_requests_a_camera_fit() {
++        let mut state = InitialCameraFit::default();
++
++        assert_eq!(state.finish_model_load(), LoadedModelCamera::Fit);
++        assert_eq!(state.finish_model_load(), LoadedModelCamera::Preserve);
++        assert_eq!(state.finish_model_load(), LoadedModelCamera::Preserve);
++    }
++}

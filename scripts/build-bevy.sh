@@ -18,6 +18,7 @@ BEVY_ZOO_KCLEAN_PATCH="$ROOT/scripts/bevy-zoo-kclean.patch"
 BEVY_ZOO_CHECKPOINT_PATCH="$ROOT/scripts/bevy-zoo-checkpoint.patch"
 BEVY_ZOO_WEBSOCKET_PATCH="$ROOT/scripts/bevy-zoo-kclean-websocket.patch"
 BEVY_ZOO_LATEST_WINS_PATCH="$ROOT/scripts/bevy-zoo-kclean-latest-wins.patch"
+BEVY_ZOO_PRESERVE_CAMERA_PATCH="$ROOT/scripts/bevy-zoo-preserve-camera.patch"
 
 for tool in cargo wasm-bindgen wasm-opt; do
   if ! command -v "$tool" >/dev/null 2>&1; then
@@ -77,6 +78,16 @@ elif git -C "$BEVY_ZOO_DIR" apply --check "$BEVY_ZOO_LATEST_WINS_PATCH"; then
   echo "Applied latest-wins Kclean execution patch"
 else
   echo "error: latest-wins Kclean execution patch does not apply cleanly to $BEVY_ZOO_DIR" >&2
+  exit 1
+fi
+
+if grep -q 'enum InitialCameraFit' "$BEVY_ZOO_DIR/src/zoo/mod.rs"; then
+  echo "Camera preservation patch is already applied"
+elif git -C "$BEVY_ZOO_DIR" apply --check "$BEVY_ZOO_PRESERVE_CAMERA_PATCH"; then
+  git -C "$BEVY_ZOO_DIR" apply "$BEVY_ZOO_PRESERVE_CAMERA_PATCH"
+  echo "Applied camera preservation patch"
+else
+  echo "error: camera preservation patch does not apply cleanly to $BEVY_ZOO_DIR" >&2
   exit 1
 fi
 

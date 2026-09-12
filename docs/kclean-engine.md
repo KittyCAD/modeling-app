@@ -56,6 +56,11 @@ render while selection and sketching remain unavailable in this viewport. The
 Bevy clear color follows ZDS's resolved light or dark theme immediately,
 including changes to the system theme.
 
+The first successfully loaded model is framed as part of renderer startup.
+Later GLB revisions preserve the current camera position, orientation, target,
+zoom, and projection; they only refresh the bounds used by the explicit
+**Zoom to fit** command.
+
 Kernel failures can also carry a `certification: "checkpoint"` GLB. Bevy loads
 that artifact and ZDS keeps the kernel diagnostic visible, so the last geometry
 proved during the current evaluation remains inspectable. A rejected solver
