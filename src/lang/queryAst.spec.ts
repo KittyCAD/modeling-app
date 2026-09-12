@@ -1167,6 +1167,27 @@ describe('Testing getSelectedSketchTarget', () => {
 
     expect(getSelectedSketchTarget(selections)).toBe('primitive-face-entity')
   })
+
+  it('returns a graph-backed primitive face entity', () => {
+    const primitiveFace = {
+      type: 'primitiveFace',
+      id: 'coded-primitive-face',
+      solidId: 'imported-body',
+      codeRef: {
+        range: [0, 1, 0],
+        pathToNode: [],
+        nodePath: defaultNodePath(),
+      },
+    } as Extract<Artifact, { type: 'primitiveFace' }>
+    const selections: Selections = {
+      graphSelections: [
+        { artifact: primitiveFace, codeRef: primitiveFace.codeRef },
+      ],
+      otherSelections: [],
+    }
+
+    expect(getSelectedSketchTarget(selections)).toBe('coded-primitive-face')
+  })
 })
 
 describe('Testing getVariableExprsFromSelection', () => {
