@@ -29,6 +29,8 @@ export type DefaultPlaneSelection = {
 
 export type EnginePrimitiveSelection = {
   type: 'enginePrimitive'
+  /** Order in which this item was added to the current multi-selection. */
+  selectionOrder?: number
   entityId: string
   /** Immediate engine body which owns the selected primitive. */
   parentEntityId?: string
@@ -65,6 +67,8 @@ export type NonCodeSelection =
   | EngineRegionSelection
 
 export interface Selection {
+  /** Order in which this item was added to the current multi-selection. */
+  selectionOrder?: number
   artifact?: Artifact
   codeRef: CodeRef
   engineEntityId?: ArtifactId

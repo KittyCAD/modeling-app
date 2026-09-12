@@ -561,9 +561,9 @@ describe('Transform arguments', () => {
       ['Mirror 3D', 'across'],
       ['Delete Face', 'faces'],
     ] as const) {
-      expect(selectionTypesFor(commandName, argName)).toContain(
-        'enginePrimitiveFace'
-      )
+      const selectionTypes = selectionTypesFor(commandName, argName)
+      expect(selectionTypes).toContain('enginePrimitiveFace')
+      expect(selectionTypes).toContain('primitiveFace')
     }
 
     for (const commandName of ['GDT Flatness', 'GDT Datum'] as const) {

@@ -1934,7 +1934,7 @@ export function getSelectedPlaneId(selectionRanges: Selections): string | null {
   return null
 }
 
-// Returns the plane/wall/cap/edgeCut within the current selection that can be used to start a sketch on.
+// Returns the plane or face within the current selection that can be used to start a sketch on.
 export function getSelectedSketchTarget(
   selectionRanges: Selections
 ): string | null {
@@ -1954,11 +1954,11 @@ export function getSelectedSketchTarget(
     return primitiveFace.entityId
   }
 
-  // Try to find an offset plane or wall or cap or chamfer edgeCut
+  // Try to find an offset plane or sketchable graph-backed face
   const planeSelection = selectionRanges.graphSelections.find((selection) => {
     const artifactType = selection.artifact?.type || ''
     return (
-      ['plane', 'wall', 'cap'].includes(artifactType) ||
+      ['plane', 'wall', 'cap', 'primitiveFace'].includes(artifactType) ||
       (selection.artifact?.type === 'edgeCut' &&
         selection.artifact?.subType === 'chamfer')
     )

@@ -75,6 +75,11 @@ type GdtTargetExpr = {
   expr: Expr
 }
 
+type OrderedGdtTargetExpr = GdtTargetExpr & {
+  selectionOrder?: number
+  fallbackOrder: number
+}
+
 function getPrimitiveEdgeExpression(
   ast: Node<Program>,
   selection: Selections['graphSelections'][number],
@@ -121,7 +126,17 @@ function buildGdtTargetExprs({
   objects: Selections
   wasmInstance: ModuleType
 }): Error | { modifiedAst: Node<Program>; targets: GdtTargetExpr[] } {
-  const targets: GdtTargetExpr[] = []
+  const targets: OrderedGdtTargetExpr[] = []
+  const pushTarget = (
+    selection: Selections['graphSelections'][number] | EnginePrimitiveSelection,
+    target: GdtTargetExpr
+  ) => {
+    targets.push({
+      ...target,
+      selectionOrder: selection.selectionOrder,
+      fallbackOrder: targets.length,
+    })
+  }
 
   for (const selection of objects.graphSelections) {
     const kind = isFaceArtifact(selection.artifact)
@@ -138,7 +153,7 @@ function buildGdtTargetExprs({
         wasmInstance
       )
       if (err(expr)) return expr
-      targets.push({ kind, expr })
+      pushTarget(selection, { kind, expr })
       continue
     }
 
@@ -155,7 +170,7 @@ function buildGdtTargetExprs({
     modifiedAst = tagResult.modifiedAst
 
     if (kind === 'face') {
-      targets.push({ kind, expr: tagResult.exprs[0] })
+      pushTarget(selection, { kind, expr: tagResult.exprs[0] })
       continue
     }
     if (tagResult.exprs.length < 2) {
@@ -165,7 +180,7 @@ function buildGdtTargetExprs({
       )
       continue
     }
-    targets.push({
+    pushTarget(selection, {
       kind,
       expr: createCallExpressionStdLibKw('getCommonEdge', null, [
         createLabeledArg('faces', createArrayExpression(tagResult.exprs)),
@@ -224,10 +239,26 @@ function buildGdtTargetExprs({
 
   for (const selection of primitiveSelections) {
     const target = primitiveTargets.get(selection)
-    if (target) targets.push(target)
+    if (target) pushTarget(selection, target)
   }
 
-  return { modifiedAst, targets }
+  targets.sort((left, right) => {
+    if (left.selectionOrder === undefined) {
+      return right.selectionOrder === undefined
+        ? left.fallbackOrder - right.fallbackOrder
+        : -1
+    }
+    if (right.selectionOrder === undefined) return 1
+    return (
+      left.selectionOrder - right.selectionOrder ||
+      left.fallbackOrder - right.fallbackOrder
+    )
+  })
+
+  return {
+    modifiedAst,
+    targets: targets.map(({ kind, expr }) => ({ kind, expr })),
+  }
 }
 
 function buildFaceAndEdgeGdtExprs({

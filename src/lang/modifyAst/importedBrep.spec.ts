@@ -692,6 +692,63 @@ test('preserves imported BREP selection order for GD&T distance', async () => {
   expect(newCode).toContain('to = face001')
 })
 
+test('preserves mixed coded and uncoded BREP selection order for GD&T distance', async () => {
+  const { instance } = await buildTheWorldAndNoEngineConnection()
+  const importSource = 'import "part.step" as importedPart'
+  const edgeSource = 'edge001 = edgeId(body001, index = 4)'
+  const code = `${importSource}
+body001 = bodyOf(importedPart, path = [0])
+${edgeSource}
+`
+  const ast = assertParse(code, instance)
+  const importedGeometry = {
+    type: 'importedGeometry',
+    id: 'imported-body',
+    codeRef: codeRefFor(code, ast, importSource),
+  } as Artifact
+  const primitiveEdge = {
+    type: 'primitiveEdge',
+    id: 'coded-imported-edge',
+    solidId: importedGeometry.id,
+    codeRef: codeRefFor(code, ast, edgeSource),
+  } as Extract<Artifact, { type: 'primitiveEdge' }>
+  const uncodedFace: EnginePrimitiveSelection = {
+    type: 'enginePrimitive',
+    selectionOrder: 0,
+    entityId: 'uncoded-imported-face',
+    parentEntityId: 'imported-engine-body',
+    kclBodyId: importedGeometry.id,
+    kclBodyArtifactType: 'importedGeometry',
+    bodyPath: [0],
+    primitiveIndex: 5,
+    primitiveType: 'face',
+  }
+
+  const result = addDistanceGdt({
+    ast,
+    artifactGraph: new Map([
+      [importedGeometry.id, importedGeometry],
+      [primitiveEdge.id, primitiveEdge],
+    ]),
+    objects: {
+      graphSelections: [
+        {
+          selectionOrder: 1,
+          artifact: primitiveEdge,
+          codeRef: primitiveEdge.codeRef,
+        },
+      ],
+      otherSelections: [uncodedFace],
+    },
+    wasmInstance: instance,
+  })
+  if (err(result)) throw result
+
+  const newCode = recast(result.modifiedAst, instance)
+  expect(newCode).toContain('from = face001')
+  expect(newCode).toContain('to = edge001')
+})
+
 for (const operation of ['fillet', 'chamfer'] as const) {
   test(`adds ${operation} for an imported BREP edge`, async () => {
     const { instance } = await buildTheWorldAndNoEngineConnection()

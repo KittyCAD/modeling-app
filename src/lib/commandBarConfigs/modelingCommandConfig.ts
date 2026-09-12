@@ -1762,6 +1762,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
               'wall',
               'edgeCut',
               'enginePrimitiveFace',
+              'primitiveFace',
               'segment',
               'sweepEdge',
               'edgeCutEdge',
