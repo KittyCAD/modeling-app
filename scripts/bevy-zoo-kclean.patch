@@ -1,8 +1,25 @@
 diff --git a/src/embed.rs b/src/embed.rs
-index b9af118..d79fe36 100644
+index b9af118..6025159 100644
 --- a/src/embed.rs
 +++ b/src/embed.rs
-@@ -50,12 +50,23 @@ struct PushedCamera(Receiver<CameraRequest>);
+@@ -31,6 +31,9 @@ static PROJECTS: LazyLock<(Sender<KclProject>, Receiver<KclProject>)> = LazyLock
+ static CAMERA: LazyLock<(Sender<CameraRequest>, Receiver<CameraRequest>)> =
+     LazyLock::new(unbounded);
+ 
++/// Theme changes pushed from the host after the renderer has started.
++static DARK_MODE: LazyLock<(Sender<bool>, Receiver<bool>)> = LazyLock::new(unbounded);
++
+ thread_local! {
+     /// Where job state is reported. Not a static: `js_sys::Function` is neither
+     /// `Send` nor `Sync`, and the browser build has one thread anyway.
+@@ -46,16 +49,31 @@ struct PushedProjects(Receiver<KclProject>);
+ #[derive(Resource)]
+ struct PushedCamera(Receiver<CameraRequest>);
+ 
++#[derive(Resource)]
++struct PushedDarkMode(Receiver<bool>);
++
+ /// Start the renderer in an existing canvas.
  ///
  /// `canvas` is a CSS selector for a canvas the host has already put in the
  /// document — the host owns the element's size and position, and Bevy tracks it.
@@ -18,6 +35,7 @@ index b9af118..d79fe36 100644
 +    host: Option<String>,
 +    engine: Option<String>,
 +    kclean_host: Option<String>,
++    dark_mode: bool,
 +) {
      console_error_panic_hook::set_once();
 -    store_credentials(token.as_deref(), host.as_deref());
@@ -30,7 +48,55 @@ index b9af118..d79fe36 100644
  
      let mut app = App::new();
      register_runtime_asset_source(&mut app);
-@@ -141,7 +152,12 @@ pub fn set_state_callback(callback: js_sys::Function) {
+@@ -87,7 +105,7 @@ pub fn start(canvas: String, token: Option<String>, host: Option<String>) {
+         });
+ 
+     app.add_plugins(default_plugins)
+-        .insert_resource(ClearColor(Color::WHITE))
++        .insert_resource(ClearColor(viewport_color(dark_mode)))
+         .add_plugins(ZooRenderPlugins {
+             // The host pushes its own project. Solving the bundled sample first
+             // would be charged for and then thrown away.
+@@ -99,11 +117,13 @@ pub fn start(canvas: String, token: Option<String>, host: Option<String>) {
+         })
+         .insert_resource(PushedProjects(PROJECTS.1.clone()))
+         .insert_resource(PushedCamera(CAMERA.1.clone()))
++        .insert_resource(PushedDarkMode(DARK_MODE.1.clone()))
+         .add_systems(
+             Update,
+             (
+                 receive_pushed_projects,
+                 receive_pushed_camera,
++                receive_pushed_dark_mode,
+                 report_job_state,
+                 report_camera,
+             ),
+@@ -111,6 +131,24 @@ pub fn start(canvas: String, token: Option<String>, host: Option<String>) {
+         .run();
+ }
+ 
++/// Match the viewport background to the host's resolved color theme.
++#[wasm_bindgen]
++pub fn set_dark_mode(enabled: bool) -> Result<(), JsError> {
++    DARK_MODE
++        .0
++        .send(enabled)
++        .map_err(|_| JsError::new("the renderer is no longer running"))
++}
++
++fn viewport_color(dark_mode: bool) -> Color {
++    let level = if dark_mode {
++        28.0 / 255.0
++    } else {
++        249.0 / 255.0
++    };
++    Color::srgb(level, level, level)
++}
++
+ /// Solve and draw a KCL project.
+ ///
+ /// `files` is a JSON object of file name to contents; `entrypoint` names which of
+@@ -141,7 +179,12 @@ pub fn set_state_callback(callback: js_sys::Function) {
      STATE_CALLBACK.with(|slot| *slot.borrow_mut() = Some(callback));
  }
  
@@ -44,7 +110,7 @@ index b9af118..d79fe36 100644
      let Some(storage) = web_sys::window().and_then(|window| window.local_storage().ok().flatten())
      else {
          return;
-@@ -152,6 +168,12 @@ fn store_credentials(token: Option<&str>, host: Option<&str>) {
+@@ -152,6 +195,12 @@ fn store_credentials(token: Option<&str>, host: Option<&str>) {
      if let Some(host) = host.map(str::trim).filter(|host| !host.is_empty()) {
          let _ = storage.set_item("zoo-api-host", host);
      }
@@ -57,6 +123,19 @@ index b9af118..d79fe36 100644
  }
  
  /// Be told where the camera is, whenever it moves.
+@@ -206,6 +255,12 @@ fn receive_pushed_camera(
+     }
+ }
+ 
++fn receive_pushed_dark_mode(theme: Res<PushedDarkMode>, mut clear: ResMut<ClearColor>) {
++    while let Ok(enabled) = theme.0.try_recv() {
++        clear.0 = viewport_color(enabled);
++    }
++}
++
+ fn receive_pushed_projects(
+     projects: Res<PushedProjects>,
+     mut executions: MessageWriter<ExecuteKclProject>,
 diff --git a/src/zoo/remote_wasm.rs b/src/zoo/remote_wasm.rs
 index ce5f7ab..e0a5808 100644
 --- a/src/zoo/remote_wasm.rs

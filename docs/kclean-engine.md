@@ -44,4 +44,5 @@ Kclean receives `{ entrypoint, files, outputFormat: "glb" }` over REST. The
 renderer keeps its existing revision check, so a response for an older editor
 revision cannot replace a newer model. The Kclean GLB currently has body names
 but no Zoo topology extension, so faces render while selection and sketching
-remain unavailable in this viewport.
+remain unavailable in this viewport. The Bevy clear color follows ZDS's resolved
+light or dark theme immediately, including changes to the system theme.

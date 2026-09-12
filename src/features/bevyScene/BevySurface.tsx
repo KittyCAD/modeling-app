@@ -5,6 +5,7 @@ import { fileSystemService } from '@src/contracts/fileSystem'
 import { projectSessionService } from '@src/contracts/projectSession'
 import { sceneInteractionsValueSpec } from '@src/contracts/scene'
 import { settingsService } from '@src/contracts/settings'
+import { themeService } from '@src/contracts/theme'
 import { collectProject } from '@src/features/bevyScene/collectProject'
 import { type BevyJobState, startBevy } from '@src/features/bevyScene/loadBevy'
 import {
@@ -38,6 +39,7 @@ export function BevySurface() {
   const sessions = useService(projectSessionService)
   const fileSystem = useService(fileSystemService)
   const settings = useService(settingsService)
+  const theme = useService(themeService)
   const engine = settings.read(modelingEngineSetting)
 
   const state = useSignal<BevyJobState | null>(null)
@@ -82,6 +84,7 @@ export function BevySurface() {
         (import.meta.env?.VITE_KC_API_BASE_URL as string | undefined) ?? null,
       engine,
       kcleanHost: settings.read(kcleanServerSetting),
+      darkMode: theme.resolved.peek() === 'dark',
       onState: (next) => {
         state.value = next
       },
@@ -89,6 +92,17 @@ export function BevySurface() {
     started.catch((reason: unknown) => {
       if (cancelled) return
       error.value = reason instanceof Error ? reason.message : String(reason)
+    })
+
+    /** Keep the GPU clear color in step with ZDS, including system changes. */
+    const stopTheming = effect(() => {
+      const darkMode = theme.resolved.value === 'dark'
+      void started
+        .then((module) => {
+          if (!cancelled) module.set_dark_mode(darkMode)
+        })
+        // Startup failures are already rendered by the handler above.
+        .catch(() => {})
     })
 
     /**
@@ -133,10 +147,11 @@ export function BevySurface() {
     return () => {
       cancelled = true
       if (timer !== null) clearTimeout(timer)
+      stopTheming()
       stop()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [auth, sessions, fileSystem, settings, engine])
+  }, [auth, sessions, fileSystem, settings, theme, engine])
 
   return (
     <div class="zds-bevy">

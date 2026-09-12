@@ -23,10 +23,13 @@ export interface BevyModule {
     token?: string | null,
     host?: string | null,
     engine?: ModelingEngineKind | null,
-    kcleanHost?: string | null
+    kcleanHost?: string | null,
+    darkMode?: boolean
   ) => void
   /** `files` is a JSON object of name to contents; `entrypoint` names one of them. */
   push_project: (entrypoint: string, files: string) => void
+  /** Switch the running viewport between its light and dark palettes. */
+  set_dark_mode: (enabled: boolean) => void
   set_state_callback: (callback: (payload: string) => void) => void
 
   /*
@@ -168,6 +171,7 @@ export interface StartOptions {
   host: string | null
   engine: ModelingEngineKind
   kcleanHost: string | null
+  darkMode: boolean
   onState?: (state: BevyJobState) => void
 }
 
@@ -236,7 +240,8 @@ async function start(options: StartOptions): Promise<BevyModule> {
     options.token,
     options.host,
     options.engine,
-    options.kcleanHost
+    options.kcleanHost,
+    options.darkMode
   )
   announceStarted(module)
   return module
