@@ -1,4 +1,5 @@
 import type { Diagnostic } from '@codemirror/lint'
+import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
 import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import type { PlaneName } from '@rust/kcl-lib/bindings/PlaneName'
 import { type ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
@@ -192,6 +193,25 @@ function openCodePane(layout: Layout, setLayout: (l: Layout) => void) {
       shouldExpand: true,
     })
   )
+}
+
+export function getFeatureTreeSourceNavigationTarget({
+  currentProjectPath,
+  targetModulePath,
+}: {
+  currentProjectPath: string | null | undefined
+  targetModulePath: ModulePath | undefined
+}): string | null {
+  if (targetModulePath?.type !== 'Local' || !currentProjectPath) {
+    return null
+  }
+
+  const targetPath = targetModulePath.value
+  if (!targetPath || currentProjectPath === targetPath) {
+    return null
+  }
+
+  return targetPath
 }
 
 export const FeatureTreePaneContents = memo(() => {
@@ -1091,16 +1111,18 @@ const OperationItem = ({
         openCodePane(l, layout.set)
       }
 
-      if (targetModulePath?.type === 'Local' && app.project) {
-        const targetPath = targetModulePath.value
-        if (app.project.executingPath !== targetPath) {
-          kclManager.pendingFeatureTreeSourceSelection = {
-            path: targetPath,
-            range: providedSourceRange ?? item.sourceRange,
-          }
-          await navigate(`${PATHS.FILE}/${encodeURIComponent(targetPath)}`)
-          return
+      const targetPath = getFeatureTreeSourceNavigationTarget({
+        currentProjectPath: app.project?.executingPath,
+        targetModulePath,
+      })
+
+      if (targetPath !== null) {
+        kclManager.pendingFeatureTreeSourceSelection = {
+          path: targetPath,
+          range: providedSourceRange ?? item.sourceRange,
         }
+        await navigate(`${PATHS.FILE}/${encodeURIComponent(targetPath)}`)
+        return
       }
 
       const moduleStartRange: SourceRange = [0, 0, targetModuleId]

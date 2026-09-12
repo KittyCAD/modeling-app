@@ -2,6 +2,7 @@ import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import {
   buildOperationTree,
   getFeatureTreeSketchSelectionContext,
+  getFeatureTreeSourceNavigationTarget,
   getFeatureTreeValueDetail,
   namedViewTooltipText,
   supportsZ0006AutoFixBeforeFeatureTreeEdit,
@@ -11,6 +12,47 @@ import { defaultNodePath, type OperationsByModule } from '@src/lang/wasm'
 import { describe, expect, it } from 'vitest'
 
 describe('FeatureTreePane', () => {
+  describe('getFeatureTreeSourceNavigationTarget', () => {
+    it('stays in the current editor when the executor reports an empty local module path', () => {
+      expect(
+        getFeatureTreeSourceNavigationTarget({
+          currentProjectPath: '/project/main.kcl',
+          targetModulePath: {
+            type: 'Local',
+            value: '',
+            original_import_path: null,
+          },
+        })
+      ).toBeNull()
+    })
+
+    it('stays in the current editor when the local module path is already executing', () => {
+      expect(
+        getFeatureTreeSourceNavigationTarget({
+          currentProjectPath: '/project/main.kcl',
+          targetModulePath: {
+            type: 'Local',
+            value: '/project/main.kcl',
+            original_import_path: null,
+          },
+        })
+      ).toBeNull()
+    })
+
+    it('navigates to a different local module path', () => {
+      expect(
+        getFeatureTreeSourceNavigationTarget({
+          currentProjectPath: '/project/main.kcl',
+          targetModulePath: {
+            type: 'Local',
+            value: '/project/imported.kcl',
+            original_import_path: './imported.kcl',
+          },
+        })
+      ).toBe('/project/imported.kcl')
+    })
+  })
+
   describe('getFeatureTreeSketchSelectionContext', () => {
     function modelingActor({
       liveSketchNoFace,
