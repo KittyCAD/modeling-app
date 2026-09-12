@@ -1086,7 +1086,7 @@ description: Operations executed consumed_solid_original_issue.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -1123,37 +1123,37 @@ description: Operations executed consumed_solid_original_issue.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "53a9149e-1246-5c44-9e3c-558201ff438c"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "951ea05e-32a3-565d-82e0-c2efadabfa6c"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "de815b4c-817e-5265-b7b5-30ae92f19673"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "85f8f58f-2cc6-5f38-b900-cfa8976705b8"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "67371e94-e78c-5099-ba4c-1f0a90311f2b"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "aa8b1b32-3efd-5da5-aab4-15cd77134859"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -1424,7 +1424,7 @@ description: Operations executed consumed_solid_original_issue.kcl
         "segments": {
           "value": {
             "type": "Segment",
-            "artifact_id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d"
+            "artifact_id": "[uuid]"
           },
           "sourceRange": []
         }
@@ -1456,7 +1456,7 @@ description: Operations executed consumed_solid_original_issue.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "62f92a38-07e6-5321-9e56-be9dd50f1d7b"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1512,37 +1512,37 @@ description: Operations executed consumed_solid_original_issue.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "2c522d90-5fef-5750-b489-b008732bd2c3"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "e342814e-d7c1-537b-959c-f7fd92c90294"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "bbcacf2c-f132-502a-87e1-0b0ffa846931"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "067ed736-8554-5b63-8bf6-a3fbc610eb7a"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -1557,7 +1557,7 @@ description: Operations executed consumed_solid_original_issue.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "82295fd4-30e7-52f8-bbfa-45b71b8986dd"
+                  "artifactId": "[uuid]"
                 }
               }
             ]
@@ -1587,7 +1587,7 @@ description: Operations executed consumed_solid_original_issue.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -2550,7 +2550,7 @@ description: Operations executed consumed_solid_original_issue.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2583,7 +2583,7 @@ description: Operations executed consumed_solid_original_issue.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "d5eaf678-0440-563f-ac19-e473850b9270"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -2613,7 +2613,7 @@ description: Operations executed consumed_solid_original_issue.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "3bcd28fd-2b1b-5bfe-a9ba-ee907292b41f"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2700,43 +2700,43 @@ description: Operations executed consumed_solid_original_issue.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "b5a5f9c1-90db-5435-9bb1-97963b81c501"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "8da7d187-b59d-5114-bdb5-05dcdd70307d"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "951ea05e-32a3-565d-82e0-c2efadabfa6c"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "de815b4c-817e-5265-b7b5-30ae92f19673"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "85f8f58f-2cc6-5f38-b900-cfa8976705b8"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "67371e94-e78c-5099-ba4c-1f0a90311f2b"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "aa8b1b32-3efd-5da5-aab4-15cd77134859"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -2860,7 +2860,7 @@ description: Operations executed consumed_solid_original_issue.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2884,7 +2884,7 @@ description: Operations executed consumed_solid_original_issue.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2908,7 +2908,7 @@ description: Operations executed consumed_solid_original_issue.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2932,7 +2932,7 @@ description: Operations executed consumed_solid_original_issue.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2956,7 +2956,7 @@ description: Operations executed consumed_solid_original_issue.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2980,7 +2980,7 @@ description: Operations executed consumed_solid_original_issue.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3004,7 +3004,7 @@ description: Operations executed consumed_solid_original_issue.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3028,7 +3028,7 @@ description: Operations executed consumed_solid_original_issue.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

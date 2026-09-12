@@ -572,7 +572,8 @@ description: Result of parsing if_arm_scoped_geometry.kcl
               "commentStart": 0,
               "end": 0,
               "moduleId": 0,
-              "start": 0
+              "start": 0,
+              "type": "Program"
             },
             "moduleId": 0,
             "start": 0,
@@ -1194,7 +1195,8 @@ description: Result of parsing if_arm_scoped_geometry.kcl
               "commentStart": 0,
               "end": 0,
               "moduleId": 0,
-              "start": 0
+              "start": 0,
+              "type": "Program"
             },
             "type": "IfExpression",
             "type": "IfExpression"
@@ -1263,6 +1265,7 @@ description: Result of parsing if_arm_scoped_geometry.kcl
       }
     ],
     "moduleId": 0,
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

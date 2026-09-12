@@ -2461,11 +2461,11 @@ description: Operations executed desk-edge-stopper.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -2495,7 +2495,7 @@ description: Operations executed desk-edge-stopper.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "2c522d90-5fef-5750-b489-b008732bd2c3"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2524,7 +2524,7 @@ description: Operations executed desk-edge-stopper.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "7b3604da-cb7d-56b0-8f93-648a91817ee2"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3011,7 +3011,7 @@ description: Operations executed desk-edge-stopper.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -3041,7 +3041,7 @@ description: Operations executed desk-edge-stopper.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "6c096663-896a-5f49-b4a0-b5621e2f3b74"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3070,7 +3070,7 @@ description: Operations executed desk-edge-stopper.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3116,7 +3116,7 @@ description: Operations executed desk-edge-stopper.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "0f805c0b-b523-5978-a0dd-c17f7ac70690"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3193,7 +3193,7 @@ description: Operations executed desk-edge-stopper.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "0f805c0b-b523-5978-a0dd-c17f7ac70690"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3226,7 +3226,7 @@ description: Operations executed desk-edge-stopper.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3279,7 +3279,7 @@ description: Operations executed desk-edge-stopper.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "0f805c0b-b523-5978-a0dd-c17f7ac70690"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3312,7 +3312,7 @@ description: Operations executed desk-edge-stopper.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "724b87fd-c709-5232-b7a1-547c15affb9b"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3368,7 +3368,7 @@ description: Operations executed desk-edge-stopper.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -3383,19 +3383,19 @@ description: Operations executed desk-edge-stopper.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "0f805c0b-b523-5978-a0dd-c17f7ac70690"
+                  "artifactId": "[uuid]"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf"
+                  "artifactId": "[uuid]"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "724b87fd-c709-5232-b7a1-547c15affb9b"
+                  "artifactId": "[uuid]"
                 }
               }
             ]
@@ -3518,7 +3518,7 @@ description: Operations executed desk-edge-stopper.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3542,7 +3542,7 @@ description: Operations executed desk-edge-stopper.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3566,7 +3566,7 @@ description: Operations executed desk-edge-stopper.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3590,7 +3590,7 @@ description: Operations executed desk-edge-stopper.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3614,7 +3614,7 @@ description: Operations executed desk-edge-stopper.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3638,7 +3638,7 @@ description: Operations executed desk-edge-stopper.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3662,7 +3662,7 @@ description: Operations executed desk-edge-stopper.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3686,7 +3686,7 @@ description: Operations executed desk-edge-stopper.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

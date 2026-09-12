@@ -2563,6 +2563,7 @@ description: Result of parsing sketch_block_circle_constants.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

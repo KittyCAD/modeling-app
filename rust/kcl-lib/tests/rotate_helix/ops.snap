@@ -304,7 +304,7 @@ description: Operations executed rotate_helix.kcl
         "value": {
           "type": "Helix",
           "value": {
-            "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -495,7 +495,7 @@ description: Operations executed rotate_helix.kcl
         "value": {
           "type": "Helix",
           "value": {
-            "artifactId": "91226189-7e64-5690-9203-67ee33a6eb03"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -544,13 +544,13 @@ description: Operations executed rotate_helix.kcl
             {
               "type": "Helix",
               "value": {
-                "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Helix",
               "value": {
-                "artifactId": "91226189-7e64-5690-9203-67ee33a6eb03"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -739,7 +739,7 @@ description: Operations executed rotate_helix.kcl
         "value": {
           "type": "Helix",
           "value": {
-            "artifactId": "89316223-2ea1-5731-9c72-0492bc30fbe2"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -912,7 +912,7 @@ description: Operations executed rotate_helix.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -936,7 +936,7 @@ description: Operations executed rotate_helix.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -960,7 +960,7 @@ description: Operations executed rotate_helix.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -984,7 +984,7 @@ description: Operations executed rotate_helix.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1008,7 +1008,7 @@ description: Operations executed rotate_helix.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1032,7 +1032,7 @@ description: Operations executed rotate_helix.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1056,7 +1056,7 @@ description: Operations executed rotate_helix.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1080,7 +1080,7 @@ description: Operations executed rotate_helix.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

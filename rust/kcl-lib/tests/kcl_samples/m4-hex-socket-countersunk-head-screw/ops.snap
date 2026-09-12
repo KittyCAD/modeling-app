@@ -2892,11 +2892,11 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -2926,7 +2926,7 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "4af1ad3f-3b75-5b4f-bc50-687a353931be"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3026,7 +3026,7 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -3056,7 +3056,7 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "5288de96-84bb-518a-848b-5092b5d33e48"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3101,7 +3101,7 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "d005938d-7477-557a-bef2-28dfc45d0fce"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -3116,7 +3116,7 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "9be00e59-09ca-5d92-b815-256daf9fc98e"
+                  "artifactId": "[uuid]"
                 }
               }
             ]
@@ -3151,7 +3151,7 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3214,7 +3214,7 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3243,7 +3243,7 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3364,7 +3364,7 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3388,7 +3388,7 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3412,7 +3412,7 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3436,7 +3436,7 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3460,7 +3460,7 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3484,7 +3484,7 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3508,7 +3508,7 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3532,7 +3532,7 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

@@ -3386,6 +3386,7 @@ description: Result of parsing named_views_baseline_hide.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

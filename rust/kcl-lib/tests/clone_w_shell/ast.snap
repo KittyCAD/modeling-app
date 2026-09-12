@@ -802,6 +802,7 @@ description: Result of parsing clone_w_shell.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

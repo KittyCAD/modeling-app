@@ -6,8 +6,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
   "__sketch_19_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
-      "id": "7c4571e0-7b14-576f-a82e-22280b05874d",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,8 +38,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
-      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -70,8 +70,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
   "__sketch_37_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
-      "id": "7c4571e0-7b14-576f-a82e-22280b05874d",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -115,14 +115,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-          "originalId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-          "topologyId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-          "artifactId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "0f4177ce-9e0b-53ac-9996-866b5413823b",
-              "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2512,
@@ -138,11 +138,11 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -173,8 +173,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
-              "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 36,
               "kind": "Custom",
               "origin": {
@@ -214,7 +214,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -224,13 +224,13 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 "value": "boltHoleCircle"
               }
             },
-            "artifactId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-            "originalId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "mm",
             "isClosed": "explicitly"
           },
-          "startCapId": "8be0689a-5d1b-5b9f-aebb-798330928c88",
-          "endCapId": "46e6f902-cc38-5bfe-8f8f-c834aac19811",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "mm",
           "sectional": false
         }
@@ -239,14 +239,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "f153a951-c271-5455-acd9-35400c149dd2",
-          "originalId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-          "topologyId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-          "artifactId": "f153a951-c271-5455-acd9-35400c149dd2",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "0f4177ce-9e0b-53ac-9996-866b5413823b",
-              "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2512,
@@ -262,11 +262,11 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "f153a951-c271-5455-acd9-35400c149dd2",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -297,8 +297,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
-              "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 36,
               "kind": "Custom",
               "origin": {
@@ -338,7 +338,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -348,13 +348,13 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 "value": "boltHoleCircle"
               }
             },
-            "artifactId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-            "originalId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "mm",
             "isClosed": "explicitly"
           },
-          "startCapId": "8be0689a-5d1b-5b9f-aebb-798330928c88",
-          "endCapId": "46e6f902-cc38-5bfe-8f8f-c834aac19811",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "mm",
           "sectional": false
         }
@@ -363,14 +363,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "01dfd88a-3d23-5401-a4fe-3b70b106c3f6",
-          "originalId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-          "topologyId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-          "artifactId": "01dfd88a-3d23-5401-a4fe-3b70b106c3f6",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "0f4177ce-9e0b-53ac-9996-866b5413823b",
-              "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2512,
@@ -386,11 +386,11 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "01dfd88a-3d23-5401-a4fe-3b70b106c3f6",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -421,8 +421,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
-              "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 36,
               "kind": "Custom",
               "origin": {
@@ -462,7 +462,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -472,13 +472,13 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 "value": "boltHoleCircle"
               }
             },
-            "artifactId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-            "originalId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "mm",
             "isClosed": "explicitly"
           },
-          "startCapId": "8be0689a-5d1b-5b9f-aebb-798330928c88",
-          "endCapId": "46e6f902-cc38-5bfe-8f8f-c834aac19811",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "mm",
           "sectional": false
         }
@@ -487,14 +487,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "50d99e3d-e8f3-5786-bcbf-a50e21e6078f",
-          "originalId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-          "topologyId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-          "artifactId": "50d99e3d-e8f3-5786-bcbf-a50e21e6078f",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "0f4177ce-9e0b-53ac-9996-866b5413823b",
-              "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2512,
@@ -510,11 +510,11 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "50d99e3d-e8f3-5786-bcbf-a50e21e6078f",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -545,8 +545,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
-              "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 36,
               "kind": "Custom",
               "origin": {
@@ -586,7 +586,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -596,13 +596,13 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 "value": "boltHoleCircle"
               }
             },
-            "artifactId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-            "originalId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "mm",
             "isClosed": "explicitly"
           },
-          "startCapId": "8be0689a-5d1b-5b9f-aebb-798330928c88",
-          "endCapId": "46e6f902-cc38-5bfe-8f8f-c834aac19811",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "mm",
           "sectional": false
         }
@@ -611,14 +611,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "8575c95a-6a64-56fb-b6c0-34483e44ff8d",
-          "originalId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-          "topologyId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-          "artifactId": "8575c95a-6a64-56fb-b6c0-34483e44ff8d",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "0f4177ce-9e0b-53ac-9996-866b5413823b",
-              "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2512,
@@ -634,11 +634,11 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "8575c95a-6a64-56fb-b6c0-34483e44ff8d",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -669,8 +669,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
-              "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 36,
               "kind": "Custom",
               "origin": {
@@ -710,7 +710,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -720,13 +720,13 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 "value": "boltHoleCircle"
               }
             },
-            "artifactId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-            "originalId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "mm",
             "isClosed": "explicitly"
           },
-          "startCapId": "8be0689a-5d1b-5b9f-aebb-798330928c88",
-          "endCapId": "46e6f902-cc38-5bfe-8f8f-c834aac19811",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "mm",
           "sectional": false
         }
@@ -735,14 +735,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "fc64c04b-2255-56e9-8dbc-b59b0b235da1",
-          "originalId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-          "topologyId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-          "artifactId": "fc64c04b-2255-56e9-8dbc-b59b0b235da1",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "0f4177ce-9e0b-53ac-9996-866b5413823b",
-              "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2512,
@@ -758,11 +758,11 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "fc64c04b-2255-56e9-8dbc-b59b0b235da1",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -793,8 +793,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
-              "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 36,
               "kind": "Custom",
               "origin": {
@@ -834,7 +834,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -844,13 +844,13 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 "value": "boltHoleCircle"
               }
             },
-            "artifactId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-            "originalId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "mm",
             "isClosed": "explicitly"
           },
-          "startCapId": "8be0689a-5d1b-5b9f-aebb-798330928c88",
-          "endCapId": "46e6f902-cc38-5bfe-8f8f-c834aac19811",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "mm",
           "sectional": false
         }
@@ -859,14 +859,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "11c37c58-758d-5ca9-823e-471b0c5e7db8",
-          "originalId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-          "topologyId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-          "artifactId": "11c37c58-758d-5ca9-823e-471b0c5e7db8",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "0f4177ce-9e0b-53ac-9996-866b5413823b",
-              "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2512,
@@ -882,11 +882,11 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "11c37c58-758d-5ca9-823e-471b0c5e7db8",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -917,8 +917,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
-              "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 36,
               "kind": "Custom",
               "origin": {
@@ -958,7 +958,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -968,13 +968,13 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 "value": "boltHoleCircle"
               }
             },
-            "artifactId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-            "originalId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "mm",
             "isClosed": "explicitly"
           },
-          "startCapId": "8be0689a-5d1b-5b9f-aebb-798330928c88",
-          "endCapId": "46e6f902-cc38-5bfe-8f8f-c834aac19811",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "mm",
           "sectional": false
         }
@@ -983,14 +983,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "94609d1d-fca1-56ab-9b17-eb885b644268",
-          "originalId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-          "topologyId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-          "artifactId": "94609d1d-fca1-56ab-9b17-eb885b644268",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "0f4177ce-9e0b-53ac-9996-866b5413823b",
-              "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2512,
@@ -1006,11 +1006,11 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "94609d1d-fca1-56ab-9b17-eb885b644268",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1041,8 +1041,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
-              "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 36,
               "kind": "Custom",
               "origin": {
@@ -1082,7 +1082,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -1092,13 +1092,13 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 "value": "boltHoleCircle"
               }
             },
-            "artifactId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-            "originalId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "mm",
             "isClosed": "explicitly"
           },
-          "startCapId": "8be0689a-5d1b-5b9f-aebb-798330928c88",
-          "endCapId": "46e6f902-cc38-5bfe-8f8f-c834aac19811",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "mm",
           "sectional": false
         }
@@ -1107,14 +1107,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "aba2b817-9542-59d2-a93b-3f3227630fd3",
-          "originalId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-          "topologyId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-          "artifactId": "aba2b817-9542-59d2-a93b-3f3227630fd3",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "0f4177ce-9e0b-53ac-9996-866b5413823b",
-              "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2512,
@@ -1130,11 +1130,11 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "aba2b817-9542-59d2-a93b-3f3227630fd3",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1165,8 +1165,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
-              "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 36,
               "kind": "Custom",
               "origin": {
@@ -1206,7 +1206,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -1216,13 +1216,13 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 "value": "boltHoleCircle"
               }
             },
-            "artifactId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-            "originalId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "mm",
             "isClosed": "explicitly"
           },
-          "startCapId": "8be0689a-5d1b-5b9f-aebb-798330928c88",
-          "endCapId": "46e6f902-cc38-5bfe-8f8f-c834aac19811",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "mm",
           "sectional": false
         }
@@ -1231,14 +1231,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "015993a5-3f0f-5368-bc38-acedccb3a828",
-          "originalId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-          "topologyId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-          "artifactId": "015993a5-3f0f-5368-bc38-acedccb3a828",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "0f4177ce-9e0b-53ac-9996-866b5413823b",
-              "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2512,
@@ -1254,11 +1254,11 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "015993a5-3f0f-5368-bc38-acedccb3a828",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1289,8 +1289,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
-              "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 36,
               "kind": "Custom",
               "origin": {
@@ -1330,7 +1330,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -1340,13 +1340,13 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 "value": "boltHoleCircle"
               }
             },
-            "artifactId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-            "originalId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "mm",
             "isClosed": "explicitly"
           },
-          "startCapId": "8be0689a-5d1b-5b9f-aebb-798330928c88",
-          "endCapId": "46e6f902-cc38-5bfe-8f8f-c834aac19811",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "mm",
           "sectional": false
         }
@@ -1355,14 +1355,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "51192ec8-515b-5dc0-a02f-1e1455013823",
-          "originalId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-          "topologyId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-          "artifactId": "51192ec8-515b-5dc0-a02f-1e1455013823",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "0f4177ce-9e0b-53ac-9996-866b5413823b",
-              "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2512,
@@ -1378,11 +1378,11 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "51192ec8-515b-5dc0-a02f-1e1455013823",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1413,8 +1413,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
-              "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 36,
               "kind": "Custom",
               "origin": {
@@ -1454,7 +1454,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -1464,13 +1464,13 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 "value": "boltHoleCircle"
               }
             },
-            "artifactId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-            "originalId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "mm",
             "isClosed": "explicitly"
           },
-          "startCapId": "8be0689a-5d1b-5b9f-aebb-798330928c88",
-          "endCapId": "46e6f902-cc38-5bfe-8f8f-c834aac19811",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "mm",
           "sectional": false
         }
@@ -1479,14 +1479,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "4cfe2405-2c52-556c-a7f8-072af94ba1f0",
-          "originalId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-          "topologyId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-          "artifactId": "4cfe2405-2c52-556c-a7f8-072af94ba1f0",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "0f4177ce-9e0b-53ac-9996-866b5413823b",
-              "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2512,
@@ -1502,11 +1502,11 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "4cfe2405-2c52-556c-a7f8-072af94ba1f0",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1537,8 +1537,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
-              "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 36,
               "kind": "Custom",
               "origin": {
@@ -1578,7 +1578,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -1588,13 +1588,13 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 "value": "boltHoleCircle"
               }
             },
-            "artifactId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-            "originalId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "mm",
             "isClosed": "explicitly"
           },
-          "startCapId": "8be0689a-5d1b-5b9f-aebb-798330928c88",
-          "endCapId": "46e6f902-cc38-5bfe-8f8f-c834aac19811",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "mm",
           "sectional": false
         }
@@ -1603,14 +1603,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "2790b4c1-3234-5285-a95e-a4e7d760632b",
-          "originalId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-          "topologyId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-          "artifactId": "2790b4c1-3234-5285-a95e-a4e7d760632b",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "0f4177ce-9e0b-53ac-9996-866b5413823b",
-              "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2512,
@@ -1626,11 +1626,11 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "2790b4c1-3234-5285-a95e-a4e7d760632b",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1661,8 +1661,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
-              "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 36,
               "kind": "Custom",
               "origin": {
@@ -1702,7 +1702,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -1712,13 +1712,13 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 "value": "boltHoleCircle"
               }
             },
-            "artifactId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-            "originalId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "mm",
             "isClosed": "explicitly"
           },
-          "startCapId": "8be0689a-5d1b-5b9f-aebb-798330928c88",
-          "endCapId": "46e6f902-cc38-5bfe-8f8f-c834aac19811",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "mm",
           "sectional": false
         }
@@ -1727,14 +1727,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "16871db5-3fde-549f-a16e-c9c31aa34387",
-          "originalId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-          "topologyId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-          "artifactId": "16871db5-3fde-549f-a16e-c9c31aa34387",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "0f4177ce-9e0b-53ac-9996-866b5413823b",
-              "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2512,
@@ -1750,11 +1750,11 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "16871db5-3fde-549f-a16e-c9c31aa34387",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1785,8 +1785,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
-              "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 36,
               "kind": "Custom",
               "origin": {
@@ -1826,7 +1826,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -1836,13 +1836,13 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 "value": "boltHoleCircle"
               }
             },
-            "artifactId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-            "originalId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "mm",
             "isClosed": "explicitly"
           },
-          "startCapId": "8be0689a-5d1b-5b9f-aebb-798330928c88",
-          "endCapId": "46e6f902-cc38-5bfe-8f8f-c834aac19811",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "mm",
           "sectional": false
         }
@@ -1851,14 +1851,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "dc3fbc2a-1a02-5607-b443-d125fd5c86ab",
-          "originalId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-          "topologyId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-          "artifactId": "dc3fbc2a-1a02-5607-b443-d125fd5c86ab",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "0f4177ce-9e0b-53ac-9996-866b5413823b",
-              "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2512,
@@ -1874,11 +1874,11 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "dc3fbc2a-1a02-5607-b443-d125fd5c86ab",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1909,8 +1909,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
-              "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 36,
               "kind": "Custom",
               "origin": {
@@ -1950,7 +1950,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -1960,13 +1960,13 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 "value": "boltHoleCircle"
               }
             },
-            "artifactId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-            "originalId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "mm",
             "isClosed": "explicitly"
           },
-          "startCapId": "8be0689a-5d1b-5b9f-aebb-798330928c88",
-          "endCapId": "46e6f902-cc38-5bfe-8f8f-c834aac19811",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "mm",
           "sectional": false
         }
@@ -1975,14 +1975,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "8939088f-69b9-5eee-8ec7-45579887ad45",
-          "originalId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-          "topologyId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-          "artifactId": "8939088f-69b9-5eee-8ec7-45579887ad45",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "0f4177ce-9e0b-53ac-9996-866b5413823b",
-              "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2512,
@@ -1998,11 +1998,11 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "8939088f-69b9-5eee-8ec7-45579887ad45",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2033,8 +2033,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
-              "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 36,
               "kind": "Custom",
               "origin": {
@@ -2074,7 +2074,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -2084,13 +2084,13 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 "value": "boltHoleCircle"
               }
             },
-            "artifactId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-            "originalId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "mm",
             "isClosed": "explicitly"
           },
-          "startCapId": "8be0689a-5d1b-5b9f-aebb-798330928c88",
-          "endCapId": "46e6f902-cc38-5bfe-8f8f-c834aac19811",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "mm",
           "sectional": false
         }
@@ -2101,14 +2101,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-      "originalId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-      "topologyId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-      "artifactId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "0f4177ce-9e0b-53ac-9996-866b5413823b",
-          "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2512,
@@ -2124,11 +2124,11 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -2159,8 +2159,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
-          "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 36,
           "kind": "Custom",
           "origin": {
@@ -2200,7 +2200,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -2210,13 +2210,13 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             "value": "boltHoleCircle"
           }
         },
-        "artifactId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-        "originalId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "8be0689a-5d1b-5b9f-aebb-798330928c88",
-      "endCapId": "46e6f902-cc38-5bfe-8f8f-c834aac19811",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -2243,11 +2243,11 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -2278,8 +2278,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
-        "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 36,
         "kind": "Custom",
         "origin": {
@@ -2319,7 +2319,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -2329,8 +2329,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "value": "boltHoleCircle"
         }
       },
-      "artifactId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
-      "originalId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -2344,7 +2344,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
+                "id": "[uuid]",
                 "objectId": 43,
                 "kind": {
                   "line": {
@@ -2419,8 +2419,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
-                  "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 36,
                   "origin": {
@@ -2449,7 +2449,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                     "units": null
                   }
                 },
-                "sketchId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "boltHoleCenterGuide"
@@ -2465,7 +2465,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
+                "id": "[uuid]",
                 "objectId": 40,
                 "kind": {
                   "circle": {
@@ -2539,8 +2539,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
-                  "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 36,
                   "origin": {
@@ -2569,7 +2569,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                     "units": null
                   }
                 },
-                "sketchId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "boltHoleCircle"
@@ -2585,7 +2585,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
+                "id": "[uuid]",
                 "objectId": 46,
                 "kind": {
                   "line": {
@@ -2660,8 +2660,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
-                  "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 36,
                   "origin": {
@@ -2690,7 +2690,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                     "units": null
                   }
                 },
-                "sketchId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "boltHoleOffsetGuide"
@@ -2707,11 +2707,11 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -2742,8 +2742,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
-                "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 36,
                 "kind": "Custom",
                 "origin": {
@@ -2783,7 +2783,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -2793,8 +2793,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   "value": "boltHoleCircle"
                 }
               },
-              "artifactId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
-              "originalId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "no"
             }
@@ -2818,14 +2818,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
-      "originalId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
-      "topologyId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
-      "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "15039510-ef22-59e2-8cb6-ba7d9f1cbb6e",
-          "id": "a77db112-51c4-5a35-b8a5-dbaeb4ea6453",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 664,
@@ -2838,8 +2838,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "6a8d0063-e684-5dcf-aa8c-22d0e49f4bc1",
-          "id": "9f8a93e9-cc1a-56af-9ae2-4c6d178a3446",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1119,
@@ -2855,11 +2855,11 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "a77db112-51c4-5a35-b8a5-dbaeb4ea6453",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -2889,7 +2889,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           },
           {
             "__geoMeta": {
-              "id": "9f8a93e9-cc1a-56af-9ae2-4c6d178a3446",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -2920,8 +2920,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -2961,7 +2961,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -2975,13 +2975,13 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             "value": "elbowOuterCircle"
           }
         },
-        "artifactId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
-        "originalId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "4009ddd2-ba6f-52a2-974e-22fee613b394",
-      "endCapId": "3c283d18-d39d-5a65-9360-9f847fcb9bf8",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -3009,11 +3009,11 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "a77db112-51c4-5a35-b8a5-dbaeb4ea6453",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -3043,7 +3043,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         },
         {
           "__geoMeta": {
-            "id": "9f8a93e9-cc1a-56af-9ae2-4c6d178a3446",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -3074,8 +3074,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -3115,7 +3115,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -3129,8 +3129,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "value": "elbowOuterCircle"
         }
       },
-      "artifactId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
-      "originalId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -3144,7 +3144,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                "id": "[uuid]",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -3219,8 +3219,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3249,7 +3249,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                     "units": null
                   }
                 },
-                "sketchId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "elbowCenterGuide"
@@ -3265,7 +3265,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+                "id": "[uuid]",
                 "objectId": 14,
                 "kind": {
                   "circle": {
@@ -3339,8 +3339,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3369,7 +3369,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                     "units": null
                   }
                 },
-                "sketchId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "elbowInnerCircle"
@@ -3385,7 +3385,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "id": "[uuid]",
                 "objectId": 4,
                 "kind": {
                   "circle": {
@@ -3459,8 +3459,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3489,7 +3489,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                     "units": null
                   }
                 },
-                "sketchId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "elbowOuterCircle"
@@ -3506,11 +3506,11 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -3540,7 +3540,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -3557,7 +3557,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -3588,8 +3588,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 0,
                 "kind": "Custom",
                 "origin": {
@@ -3629,7 +3629,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -3643,8 +3643,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   "value": "elbowOuterCircle"
                 }
               },
-              "artifactId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
-              "originalId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "no"
             }
@@ -3659,14 +3659,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "7d4c814d-f292-503d-a012-68ab58c77524",
-      "originalId": "7d4c814d-f292-503d-a012-68ab58c77524",
-      "topologyId": "7d4c814d-f292-503d-a012-68ab58c77524",
-      "artifactId": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "b9ea2399-1f22-5fc3-9b84-fd3d7a2029df",
-          "id": "86db84ac-4417-5d6d-94f9-5754ec394147",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1600,
@@ -3679,8 +3679,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "36129089-746e-51c1-bb05-6e0b9902480f",
-          "id": "609ac3b8-9ccc-5411-afa5-14b018bbc5df",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2056,
@@ -3696,11 +3696,11 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "7d4c814d-f292-503d-a012-68ab58c77524",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "86db84ac-4417-5d6d-94f9-5754ec394147",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -3730,7 +3730,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           },
           {
             "__geoMeta": {
-              "id": "609ac3b8-9ccc-5411-afa5-14b018bbc5df",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -3761,8 +3761,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
-          "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 18,
           "kind": "Custom",
           "origin": {
@@ -3802,7 +3802,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -3816,13 +3816,13 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             "value": "flangeOuterCircle"
           }
         },
-        "artifactId": "7d4c814d-f292-503d-a012-68ab58c77524",
-        "originalId": "7d4c814d-f292-503d-a012-68ab58c77524",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "86eb186d-4581-5f27-b0ca-755413bf8a04",
-      "endCapId": "722f5dcc-4e20-57a6-83e8-fde41fc11236",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -3859,11 +3859,11 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "7d4c814d-f292-503d-a012-68ab58c77524",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "86db84ac-4417-5d6d-94f9-5754ec394147",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -3893,7 +3893,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         },
         {
           "__geoMeta": {
-            "id": "609ac3b8-9ccc-5411-afa5-14b018bbc5df",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -3924,8 +3924,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
-        "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 18,
         "kind": "Custom",
         "origin": {
@@ -3965,7 +3965,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -3979,8 +3979,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "value": "flangeOuterCircle"
         }
       },
-      "artifactId": "7d4c814d-f292-503d-a012-68ab58c77524",
-      "originalId": "7d4c814d-f292-503d-a012-68ab58c77524",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -3994,7 +3994,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+                "id": "[uuid]",
                 "objectId": 25,
                 "kind": {
                   "line": {
@@ -4069,8 +4069,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
-                  "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 18,
                   "origin": {
@@ -4099,7 +4099,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                     "units": null
                   }
                 },
-                "sketchId": "e342814e-d7c1-537b-959c-f7fd92c90294",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "flangeCenterGuide"
@@ -4115,7 +4115,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "deb86259-17a0-5782-a352-d25992246cc0",
+                "id": "[uuid]",
                 "objectId": 32,
                 "kind": {
                   "circle": {
@@ -4189,8 +4189,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
-                  "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 18,
                   "origin": {
@@ -4219,7 +4219,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                     "units": null
                   }
                 },
-                "sketchId": "e342814e-d7c1-537b-959c-f7fd92c90294",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "flangeInnerCircle"
@@ -4235,7 +4235,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
+                "id": "[uuid]",
                 "objectId": 22,
                 "kind": {
                   "circle": {
@@ -4309,8 +4309,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
-                  "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 18,
                   "origin": {
@@ -4339,7 +4339,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                     "units": null
                   }
                 },
-                "sketchId": "e342814e-d7c1-537b-959c-f7fd92c90294",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "flangeOuterCircle"
@@ -4356,11 +4356,11 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "e342814e-d7c1-537b-959c-f7fd92c90294",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -4390,7 +4390,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -4407,7 +4407,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "deb86259-17a0-5782-a352-d25992246cc0",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -4438,8 +4438,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
-                "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 18,
                 "kind": "Custom",
                 "origin": {
@@ -4479,7 +4479,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -4493,8 +4493,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   "value": "flangeOuterCircle"
                 }
               },
-              "artifactId": "e342814e-d7c1-537b-959c-f7fd92c90294",
-              "originalId": "e342814e-d7c1-537b-959c-f7fd92c90294",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "no"
             }
@@ -4518,19 +4518,19 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
-      "originalId": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
-      "topologyId": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
-      "artifactId": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "93a05de4-f933-5e40-9b2d-c76d1090be2c",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -4560,7 +4560,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           },
           {
             "__geoMeta": {
-              "id": "4be6a3e2-029e-5d15-95f0-170791d14475",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -4591,8 +4591,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
-          "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 18,
           "kind": "Custom",
           "origin": {
@@ -4632,7 +4632,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -4646,8 +4646,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             "value": "flangeOuterCircle"
           }
         },
-        "artifactId": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
-        "originalId": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
@@ -4688,14 +4688,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
-      "originalId": "7d4c814d-f292-503d-a012-68ab58c77524",
-      "topologyId": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
-      "artifactId": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "b9ea2399-1f22-5fc3-9b84-fd3d7a2029df",
-          "id": "86db84ac-4417-5d6d-94f9-5754ec394147",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1600,
@@ -4708,8 +4708,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "36129089-746e-51c1-bb05-6e0b9902480f",
-          "id": "609ac3b8-9ccc-5411-afa5-14b018bbc5df",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2056,
@@ -4725,11 +4725,11 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "86db84ac-4417-5d6d-94f9-5754ec394147",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -4759,7 +4759,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           },
           {
             "__geoMeta": {
-              "id": "609ac3b8-9ccc-5411-afa5-14b018bbc5df",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -4790,8 +4790,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
-          "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 18,
           "kind": "Custom",
           "origin": {
@@ -4831,7 +4831,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -4845,13 +4845,13 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             "value": "flangeOuterCircle"
           }
         },
-        "artifactId": "7d4c814d-f292-503d-a012-68ab58c77524",
-        "originalId": "7d4c814d-f292-503d-a012-68ab58c77524",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "86eb186d-4581-5f27-b0ca-755413bf8a04",
-      "endCapId": "722f5dcc-4e20-57a6-83e8-fde41fc11236",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }

@@ -10,7 +10,7 @@ description: Operations executed crazy_multi_profile.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -38,7 +38,7 @@ description: Operations executed crazy_multi_profile.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -80,7 +80,7 @@ description: Operations executed crazy_multi_profile.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "41c630c9-9d44-581b-98af-caee575bea48"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -90,7 +90,7 @@ description: Operations executed crazy_multi_profile.kcl
           "value": {
             "type": "TagIdentifier",
             "value": "seg01",
-            "artifact_id": "89316223-2ea1-5731-9c72-0492bc30fbe2"
+            "artifact_id": "[uuid]"
           },
           "sourceRange": []
         }
@@ -118,7 +118,7 @@ description: Operations executed crazy_multi_profile.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -139,7 +139,7 @@ description: Operations executed crazy_multi_profile.kcl
         "axis": {
           "value": {
             "type": "Uuid",
-            "value": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f"
+            "value": "[uuid]"
           },
           "sourceRange": []
         }
@@ -167,7 +167,7 @@ description: Operations executed crazy_multi_profile.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -208,7 +208,7 @@ description: Operations executed crazy_multi_profile.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -236,7 +236,7 @@ description: Operations executed crazy_multi_profile.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "1a0ade6f-d355-5121-9adb-351976a78284"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -278,7 +278,7 @@ description: Operations executed crazy_multi_profile.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -300,7 +300,7 @@ description: Operations executed crazy_multi_profile.kcl
           "value": {
             "type": "TagIdentifier",
             "value": "seg02",
-            "artifact_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
+            "artifact_id": "[uuid]"
           },
           "sourceRange": []
         }
@@ -420,7 +420,7 @@ description: Operations executed crazy_multi_profile.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -444,7 +444,7 @@ description: Operations executed crazy_multi_profile.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -468,7 +468,7 @@ description: Operations executed crazy_multi_profile.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -492,7 +492,7 @@ description: Operations executed crazy_multi_profile.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -516,7 +516,7 @@ description: Operations executed crazy_multi_profile.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -540,7 +540,7 @@ description: Operations executed crazy_multi_profile.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -564,7 +564,7 @@ description: Operations executed crazy_multi_profile.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -588,7 +588,7 @@ description: Operations executed crazy_multi_profile.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

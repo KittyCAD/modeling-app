@@ -12,11 +12,11 @@ description: Variables in memory after executing get_opposite_edge_after_fillet_
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -33,7 +33,7 @@ description: Variables in memory after executing get_opposite_edge_after_fillet_
         },
         {
           "__geoMeta": {
-            "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -57,7 +57,7 @@ description: Variables in memory after executing get_opposite_edge_after_fillet_
         },
         {
           "__geoMeta": {
-            "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -74,7 +74,7 @@ description: Variables in memory after executing get_opposite_edge_after_fillet_
         },
         {
           "__geoMeta": {
-            "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -92,8 +92,8 @@ description: Variables in memory after executing get_opposite_edge_after_fillet_
       ],
       "on": {
         "type": "plane",
-        "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
-        "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "XY",
         "origin": {
@@ -133,7 +133,7 @@ description: Variables in memory after executing get_opposite_edge_after_fillet_
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -143,8 +143,8 @@ description: Variables in memory after executing get_opposite_edge_after_fillet_
           "value": "seg01"
         }
       },
-      "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }

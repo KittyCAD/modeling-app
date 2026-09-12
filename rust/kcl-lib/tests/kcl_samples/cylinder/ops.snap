@@ -288,7 +288,7 @@ description: Operations executed cylinder.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -318,7 +318,7 @@ description: Operations executed cylinder.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "efd1e3b2-5268-50fd-858e-26540f8146e5"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -344,7 +344,7 @@ description: Operations executed cylinder.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -478,7 +478,7 @@ description: Operations executed cylinder.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -502,7 +502,7 @@ description: Operations executed cylinder.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -526,7 +526,7 @@ description: Operations executed cylinder.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -550,7 +550,7 @@ description: Operations executed cylinder.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -574,7 +574,7 @@ description: Operations executed cylinder.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -598,7 +598,7 @@ description: Operations executed cylinder.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -622,7 +622,7 @@ description: Operations executed cylinder.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -646,7 +646,7 @@ description: Operations executed cylinder.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"
