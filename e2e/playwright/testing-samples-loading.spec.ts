@@ -155,6 +155,11 @@ test.describe('Query parameter command', { tag: '@web' }, () => {
   }) => {
     await page.goto('/?cmd=set-layout&groupId=application&layoutId=ttc')
 
+    // The root route awaits Wasm before mounting the query-command consumer.
+    await page.evaluate(async () => {
+      await window.app.wasmPromise
+    })
+
     await expect
       .poll(() =>
         page.evaluate(() => {
