@@ -158,6 +158,11 @@ test.describe('Query parameter command', { tag: '@web' }, () => {
   }) => {
     await page.goto('/?cmd=set-layout&groupId=application&layoutId=ttc')
 
+    // The root route awaits Wasm before mounting the query-command consumer.
+    await page.evaluate(async () => {
+      await window.app.wasmPromise
+    })
+
     await expect
       .poll(() =>
         page.evaluate(() => {
@@ -184,6 +189,10 @@ test.describe('Query parameter command', { tag: '@web' }, () => {
     const sampleSlug = 'socket-head-cap-screw'
     const queryString = `?cmd=add-kcl-file-to-project&groupId=application&projectName=browser&source=kcl-samples&sample=${sampleSlug}/main.kcl`
     await page.goto(page.url() + queryString)
+
+    await page.evaluate(async () => {
+      await window.app.wasmPromise
+    })
 
     await toolbar.openPane(DefaultLayoutPaneID.Code)
     await editor.expectEditor.toContain(sampleTitle, { timeout: 30_000 })
