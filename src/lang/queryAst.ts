@@ -1246,7 +1246,7 @@ export function getVariableNameFromNodePath(
   return undefined
 }
 
-type GetVariableExprsOptions = {
+export type GetVariableExprsOptions = {
   lastChildLookup?: boolean
   artifactTypeFilter?: Array<Artifact['type']>
 }

@@ -10,12 +10,12 @@ import {
 import {
   createPathToNodeForLastVariable,
   createVariableExpressionsArray,
-  getSelectionVarsForCall,
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
 import { getPlaneExprFromSelection } from '@src/lang/modifyAst/faces'
 import { getAxisExpression } from '@src/lang/modifyAst/geometry'
+import { resolveSelectionInputPlan } from '@src/lang/modifyAst/selectionInputs'
 import {
   getVariableExprsFromSelection,
   valueOrVariable,
@@ -63,12 +63,13 @@ export function addTranslate({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getSelectionVarsForCall({
+  const vars = resolveSelectionInputPlan({
     selection: objects,
     artifactGraph,
-    modifiedAst,
+    ast: modifiedAst,
     wasmInstance,
     nodeToEdit: mNodeToEdit,
+    options: { lastChildLookup: true },
   })
   if (err(vars)) {
     return vars
@@ -155,12 +156,13 @@ export function addRotate({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getSelectionVarsForCall({
+  const vars = resolveSelectionInputPlan({
     selection: objects,
     artifactGraph,
-    modifiedAst,
+    ast: modifiedAst,
     wasmInstance,
     nodeToEdit: mNodeToEdit,
+    options: { lastChildLookup: true },
   })
   if (err(vars)) {
     return vars
@@ -257,12 +259,13 @@ export function addScale({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getSelectionVarsForCall({
+  const vars = resolveSelectionInputPlan({
     selection: objects,
     artifactGraph,
-    modifiedAst,
+    ast: modifiedAst,
     wasmInstance,
     nodeToEdit: mNodeToEdit,
+    options: { lastChildLookup: true },
   })
   if (err(vars)) {
     return vars
@@ -405,12 +408,13 @@ export function addAppearance({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getSelectionVarsForCall({
+  const vars = resolveSelectionInputPlan({
     selection: objects,
     artifactGraph,
-    modifiedAst,
+    ast: modifiedAst,
     wasmInstance,
     nodeToEdit: mNodeToEdit,
+    options: { lastChildLookup: true },
   })
   if (err(vars)) {
     return vars
@@ -492,16 +496,15 @@ function addObjectTransform({
   const artifact = objects.graphSelections[0].artifact
   const lastChildLookup =
     artifact?.type !== 'helix' && artifact?.type !== 'sketchBlock'
-  const vars = getVariableExprsFromSelection(
-    objects,
+  const vars = resolveSelectionInputPlan({
+    selection: objects,
     artifactGraph,
-    modifiedAst,
+    ast: modifiedAst,
     wasmInstance,
-    undefined,
-    {
+    options: {
       lastChildLookup,
-    }
-  )
+    },
+  })
 
   if (err(vars)) {
     return vars
@@ -514,6 +517,7 @@ function addObjectTransform({
   const pathToNode = setCallInAst({
     ast: modifiedAst,
     call,
+    pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl,
     wasmInstance,
   })
@@ -590,25 +594,23 @@ export function addMirror3D({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
-  let vars: { exprs: Expr[]; pathIfPipe?: PathToNode } = { exprs: [] }
+  const vars = resolveSelectionInputPlan({
+    selection: bodies,
+    artifactGraph,
+    ast: modifiedAst,
+    wasmInstance,
+    nodeToEdit: mNodeToEdit,
+    options: {
+      lastChildLookup: true,
+      artifactTypeFilter: ['compositeSolid', 'sweep'],
+    },
+  })
+  if (err(vars)) {
+    return vars
+  }
+
   let acrossArg: Expr | undefined
   if (!mNodeToEdit) {
-    const selectionVars = getVariableExprsFromSelection(
-      bodies,
-      artifactGraph,
-      modifiedAst,
-      wasmInstance,
-      undefined,
-      {
-        lastChildLookup: true,
-        artifactTypeFilter: ['compositeSolid', 'sweep'],
-      }
-    )
-    if (err(selectionVars)) {
-      return selectionVars
-    }
-    vars = selectionVars
-
     const isEdgeSelection = across.graphSelections.some(
       (selection) =>
         selection.artifact?.type === 'segment' ||
