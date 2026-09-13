@@ -203,6 +203,8 @@ fn test(test_name: &str, entry_point: std::path::PathBuf) -> Test {
         skip_assert_artifact_graph: true,
         snapshot_physical_properties: true,
         expected_deprecation_warnings: Some(0),
+        assert_error: None,
+        retry_config: Default::default(),
     }
 }
 

@@ -134,6 +134,9 @@ struct Test {
     /// If set, redact the test's UUIDs.
     #[cfg_attr(feature = "snapshot-engine-responses", expect(dead_code))]
     redact_uuids: bool,
+    /// Assert a structured execution error instead of its rendered snapshot.
+    assert_error: Option<fn(&crate::KclErrorWithOutputs, &str)>,
+    retry_config: RetryConfig,
 }
 
 const REPO_ROOT: &str = "../..";
@@ -205,6 +208,8 @@ impl Test {
             snapshot_physical_properties: true,
             expected_deprecation_warnings: None,
             redact_uuids,
+            assert_error: None,
+            retry_config: RetryConfig::default(),
         }
     }
 
@@ -755,7 +760,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
     eprintln!("=========");
 
     // Run the program.
-    let exec_res = execute_with_retries(&RetryConfig::default(), || {
+    let exec_res = execute_with_retries(&test.retry_config, || {
         crate::test_server::execute_and_snapshot_ast_no_close(
             ast.clone(),
             Some(test.entry_point.clone()),
@@ -791,6 +796,10 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                 }
             }
             let fail_path = test.output_dir.join("execution_error.snap");
+            if test.assert_error.is_some() {
+                ctx.close().await;
+                panic!("{} was expected to fail, but passed", test.name);
+            }
             if std::fs::exists(&fail_path).unwrap() {
                 panic!(
                     "This test case is expected to fail, but it passed. If this is intended, and the test should actually be passing now, please delete kcl-lib/{}",
@@ -919,9 +928,13 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                     let report = format!("{report:?}");
 
                     let err_result = catch_unwind(AssertUnwindSafe(|| {
-                        assert_snapshot(test, "Error from executing", || {
-                            insta::assert_snapshot!("execution_error", report);
-                        })
+                        if let Some(assert_error) = test.assert_error {
+                            assert_error(&error, &input);
+                        } else {
+                            assert_snapshot(test, "Error from executing", || {
+                                insta::assert_snapshot!("execution_error", report);
+                            });
+                        }
                     }));
 
                     let responses = {
@@ -6929,27 +6942,7 @@ mod gdt_face_api_edge_specifier {
         super::execute(TEST_NAME, true).await
     }
 }
-mod error_large_fillet_radius {
-    const TEST_NAME: &str = "error_large_fillet_radius";
-
-    /// Test parsing KCL.
-    #[test]
-    fn parse() {
-        super::parse(TEST_NAME)
-    }
-
-    /// Test that parsing and unparsing KCL produces the original KCL input.
-    #[tokio::test(flavor = "multi_thread")]
-    async fn unparse() {
-        super::unparse(TEST_NAME).await
-    }
-
-    /// Test that KCL is executed correctly.
-    #[tokio::test(flavor = "multi_thread")]
-    async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
-    }
-}
+mod error_large_fillet_radius;
 mod clone_w_face_tags {
     const TEST_NAME: &str = "clone_w_face_tags";
 
