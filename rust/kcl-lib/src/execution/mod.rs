@@ -75,6 +75,7 @@ pub(crate) use state::PendingEdgeRefactorMeta;
 pub(crate) use state::PendingLegacyAngleRefactorMeta;
 pub use state::RefactorMetadata;
 pub(crate) use state::TangencyMode;
+pub(crate) use state::declared_kcl_version;
 
 use crate::CompilationIssue;
 use crate::ExecError;

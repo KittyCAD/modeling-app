@@ -1184,9 +1184,14 @@ async fn format_dir(dir: String) -> PyResult<()> {
 #[pyfunction]
 fn lint(code: String) -> PyResult<Vec<Discovered>> {
     let program = kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
-    let lints = program
+    let mut lints = program
         .lint(checks::lint_variables)
         .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+    lints.extend(
+        program
+            .lint(checks::lint_sweep_profile_version)
+            .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?,
+    );
 
     Ok(lints)
 }

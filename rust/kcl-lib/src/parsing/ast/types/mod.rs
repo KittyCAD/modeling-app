@@ -605,6 +605,7 @@ impl Node<Program> {
             crate::lint::checks::lint_should_be_offset_plane,
             crate::lint::checks::lint_profiles_should_not_be_chained,
             crate::lint::checks::lint_legacy_angle,
+            crate::lint::checks::lint_sweep_profile_version,
         ];
         if options.z0006_enabled() {
             rules.push(crate::lint::checks::lint_deprecated_edge_stdlib_in_fillet_chamfer);

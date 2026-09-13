@@ -600,6 +600,52 @@ def test_kcl_lint():
         assert len(finding_title) > 0
 
 
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "version", ["", ", version = 0", ", version = 1", ", version = 2"]
+)
+@pytest.mark.parametrize(
+    "flags",
+    [
+        "orientProfilePerpendicular = false",
+        "translateProfileToPath = false",
+        "translateProfileToPath = false, orientProfilePerpendicular = false",
+    ],
+)
+async def test_sweep_profile_version_lint_and_mock(version, flags):
+    code = (
+        """@settings(kclVersion = 2.0)
+profile = sketch(on = XY) {
+  c = circle(start = [1mm, 0mm], center = [0mm, 0mm])
+}
+route = sketch(on = XZ) {
+  l = line(start = [0mm, 0mm], end = [0mm, 10mm])
+}
+body = sweep(region(segments = [profile.c]), path = route, """
+        + flags
+        + version
+        + ")\n"
+    )
+    findings = [
+        finding for finding in kcl.lint(code) if finding.finding.code == "Z0008"
+    ]
+    fixed = kcl.lint_and_fix_all(code)
+    assert fixed.new_code == code
+    assert len(
+        [finding for finding in fixed.unfixed_lints if finding.finding.code == "Z0008"]
+    ) == len(findings)
+    if version == ", version = 2":
+        assert findings == []
+        await kcl.mock_execute_code(code)
+    else:
+        assert len(findings) == 1
+        assert "version = 2" in findings[0].description
+        with pytest.raises(kcl.KclError, match="version = 2") as error:
+            await kcl.mock_execute_code(code)
+        assert "orientProfilePerpendicular" in str(error.value)
+        assert "[8:8]" in str(error.value)
+
+
 def test_kcl_lint_fix():
     # Read from a file.
     # This file has several lint errors.

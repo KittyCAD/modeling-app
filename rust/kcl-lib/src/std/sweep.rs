@@ -35,6 +35,8 @@ use crate::std::extrude::build_segment_surface_sketch;
 use crate::std::extrude::coerce_extrude_targets;
 use crate::std::extrude::do_post_extrude;
 
+pub(crate) const SWEEP_PROFILE_VERSION_ERROR: &str = "In KCL 2.0 and earlier, `translateProfileToPath` and `orientProfilePerpendicular` require `version = 2`, even when set to `false`.";
+
 /// A path to sweep along.
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
@@ -258,6 +260,12 @@ async fn inner_sweep(
         // `relativeTo` (see `removed_in` in sketch.kcl), so from 3.0 on,
         // this is also the case when no flags are set at all.
         (None, translate, orient) => {
+            if version != Some(2) {
+                return Err(KclError::new_argument(KclErrorDetails::new(
+                    SWEEP_PROFILE_VERSION_ERROR.to_owned(),
+                    vec![args.source_range],
+                )));
+            }
             let translate_profile_to_path = translate.unwrap_or_default();
             ProfileTransform::SeparateFlags {
                 translate_profile_to_path,
@@ -424,7 +432,7 @@ mod tests {
         assert_eq!(cmd.translate_profile_to_path, Some(false));
         assert_eq!(cmd.orient_profile_perpendicular, Some(false));
 
-        let cmd = emitted_sweep("2.0", ", translateProfileToPath = true").await;
+        let cmd = emitted_sweep("2.0", ", translateProfileToPath = true, version = 2").await;
         assert_eq!(cmd.translate_profile_to_path, Some(true));
         assert_eq!(cmd.orient_profile_perpendicular, Some(false));
     }
@@ -483,7 +491,11 @@ mod tests {
     /// Sweep a circle along a line under the given KCL version, passing
     /// `extra_args` to `sweep`.
     async fn run_sweep(kcl_version: &str, extra_args: &str) -> ExecTestResults {
-        let code = format!(
+        parse_execute(&sweep_code(kcl_version, extra_args)).await.unwrap()
+    }
+
+    fn sweep_code(kcl_version: &str, extra_args: &str) -> String {
+        format!(
             r#"@settings(defaultLengthUnit = mm, kclVersion = {kcl_version})
 
 profileSketch = sketch(on = XY) {{
@@ -497,8 +509,83 @@ pathSketch = sketch(on = XZ) {{
 
 sweep(profile, path = pathSketch{extra_args})
 "#
-        );
-        parse_execute(&code).await.unwrap()
+        )
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn sweep_profile_flags_reject_incompatible_versions_before_sweep_command() {
+        for flag in ["translateProfileToPath", "orientProfilePerpendicular"] {
+            for value in ["false", "true"] {
+                for version in [
+                    "",
+                    ", version = 0",
+                    ", version = 1",
+                    ", version = 3",
+                    ", version = 1 + 0",
+                ] {
+                    let code = sweep_code("2.0", &format!(", {flag} = {value}{version}"));
+                    let program = crate::Program::parse_no_errs(&code).unwrap();
+                    let ctx = crate::execution::new_mock_executor_context(
+                        None,
+                        crate::execution::machine::ExecutorKind::resolve(),
+                    );
+                    let mut state = ExecState::new(&ctx);
+                    let err = ctx.run(&program, &mut state).await.unwrap_err();
+                    assert!(matches!(err.error, KclError::Argument { .. }), "{err:?}");
+                    assert!(err.error.message().contains("version = 2"), "{err:?}");
+                    assert!(
+                        err.error
+                            .source_ranges()
+                            .iter()
+                            .any(|range| code[range.start()..range.end()].starts_with("sweep("))
+                    );
+                    assert!(
+                        !state
+                            .root_module_artifact_state()
+                            .commands
+                            .iter()
+                            .any(|command| matches!(command.command, ModelingCmd::Sweep(_)))
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn sweep_profile_flags_lint_known_invalid_versions() {
+        for flag in ["translateProfileToPath", "orientProfilePerpendicular"] {
+            for value in ["false", "true"] {
+                for version in ["", ", version = 0", ", version = 1", ", version = 3"] {
+                    let code = sweep_code("2.0", &format!(", {flag} = {value}{version}"));
+                    let findings = crate::Program::parse_no_errs(&code).unwrap().lint_all().unwrap();
+                    let findings: Vec<_> = findings
+                        .iter()
+                        .filter(|finding| finding.finding.code == "Z0008")
+                        .collect();
+                    assert_eq!(findings.len(), 1, "{code}");
+                    assert!(findings[0].finding.title.contains("version = 2"));
+                    assert!(code[findings[0].pos.start()..findings[0].pos.end()].starts_with("sweep("));
+                    assert!(
+                        findings[0].suggestion.is_none(),
+                        "changing algorithms must not be auto-applied"
+                    );
+                }
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn sweep_profile_flags_accept_version_two_and_kcl_three() {
+        for flag in ["translateProfileToPath", "orientProfilePerpendicular"] {
+            for value in ["false", "true"] {
+                for version in ["2", "1 + 1"] {
+                    let cmd = emitted_sweep("2.0", &format!(", {flag} = {value}, version = {version}")).await;
+                    assert_eq!(cmd.version, Some(2));
+                }
+                let cmd = emitted_sweep("\"3.0-preview\"", &format!(", {flag} = {value}")).await;
+                assert_eq!(cmd.version, Some(2));
+            }
+        }
     }
 
     /// The `Sweep` command the run sent to the engine.

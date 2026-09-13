@@ -4,6 +4,7 @@ mod default_plane;
 mod deprecated_edge_stdlib;
 mod legacy_angle;
 mod offset_plane;
+mod sweep_profile_version;
 
 pub use camel_case::Z0001;
 pub use camel_case::lint_object_properties;
@@ -18,3 +19,5 @@ pub use legacy_angle::Z0007;
 pub use legacy_angle::lint_legacy_angle;
 pub use offset_plane::Z0003;
 pub use offset_plane::lint_should_be_offset_plane;
+pub use sweep_profile_version::Z0008;
+pub use sweep_profile_version::lint_sweep_profile_version;
