@@ -2,19 +2,19 @@ import { getNextAvailableDatumName } from '@src/lang/modifyAst/gdt'
 import { type Artifact, assertParse } from '@src/lang/wasm'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
 import {
-  type ModelingCommandSchema,
-  extrudeSelectionRequiresMethod,
   extrudeSelectionRequiresBodyType,
+  extrudeSelectionRequiresMethod,
   getDefaultGdtTolerance,
+  type ModelingCommandSchema,
   modelingMachineCommandConfig,
   profileSelectionRequiresBodyType,
 } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import {
-  type StdLibCommandDriftConfig,
   modelingCommandStdLibDriftConfig,
   modelingStdLibCommandArgs,
   modelingStdLibCommandStatus,
   modelingStdLibCommandUsesExperimentalFeatures,
+  type StdLibCommandDriftConfig,
   stdLibCommandStatus,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import { STD_LIB_COMMANDS } from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
@@ -33,9 +33,12 @@ import {
   type ResolvedSelectionType,
 } from '@src/lib/selections'
 import { isArray } from '@src/lib/utils'
-import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
-import type { Selections } from '@src/machines/modelingSharedTypes'
+import type {
+  ModelingMachineContext,
+  Selections,
+} from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
+import ts from 'typescript-eslint-typescript'
 import { describe, expect, it } from 'vitest'
 
 function selectionsForArtifact(artifact?: Artifact): Selections {
@@ -463,6 +466,106 @@ describe('Transform arguments', () => {
 
 const uniqueSorted = (values: string[]) => [...new Set(values)].sort()
 
+const isDeprecatedStdLibArg = (
+  arg: (typeof STD_LIB_COMMANDS)[keyof typeof STD_LIB_COMMANDS]['args'][number]
+) => arg.deprecated || arg.deprecatedSince !== null
+
+function pointAndClickStdLibArgs(config: StdLibCommandDriftConfig) {
+  const omitted = new Set<string>(config.omittedStdLibArgs ?? [])
+  const includedDeprecated = new Set<string>(config.deprecatedStdLibArgs ?? [])
+
+  return STD_LIB_COMMANDS[config.stdLibName].args
+    .filter(
+      (arg) => !isDeprecatedStdLibArg(arg) || includedDeprecated.has(arg.name)
+    )
+    .filter((arg) => !omitted.has(arg.name))
+}
+
+type AddCodemodFunction = (...args: never[]) => unknown
+
+function consumedObjectParameterKeys(add: AddCodemodFunction) {
+  const source = add.toString()
+  const fileName = `${add.name || 'anonymous-codemod'}.js`
+  const compilerOptions: ts.CompilerOptions = {
+    allowJs: true,
+    noLib: true,
+    target: ts.ScriptTarget.ESNext,
+  }
+  const sourceFile = ts.createSourceFile(
+    fileName,
+    `(${source})`,
+    compilerOptions.target ?? ts.ScriptTarget.ESNext,
+    true,
+    ts.ScriptKind.JS
+  )
+
+  const compilerHost = ts.createCompilerHost(compilerOptions)
+  compilerHost.fileExists = (requestedFileName) =>
+    requestedFileName === fileName
+  compilerHost.readFile = (requestedFileName) =>
+    requestedFileName === fileName ? sourceFile.text : undefined
+  compilerHost.getSourceFile = (requestedFileName) =>
+    requestedFileName === fileName ? sourceFile : undefined
+
+  const program = ts.createProgram([fileName], compilerOptions, compilerHost)
+  const checker = program.getTypeChecker()
+  const statement = sourceFile.statements[0]
+  const expression =
+    statement && ts.isExpressionStatement(statement)
+      ? statement.expression
+      : undefined
+  const functionExpression =
+    expression && ts.isParenthesizedExpression(expression)
+      ? expression.expression
+      : undefined
+  if (!functionExpression || !ts.isFunctionExpression(functionExpression)) {
+    throw new Error(`${add.name} must be a function declaration`)
+  }
+
+  const objectParameter = functionExpression.parameters[0]?.name
+  if (!objectParameter || !ts.isObjectBindingPattern(objectParameter)) {
+    throw new Error(`${add.name} must destructure its command arguments`)
+  }
+
+  const consumedKeys = new Set<string>()
+  for (const binding of objectParameter.elements) {
+    if (!ts.isIdentifier(binding.name)) {
+      throw new Error(`${add.name} must use simple command argument bindings`)
+    }
+
+    const externalNameNode = binding.propertyName ?? binding.name
+    if (!ts.isIdentifier(externalNameNode)) {
+      throw new Error(`${add.name} must use identifier command argument names`)
+    }
+
+    const parameterSymbol = checker.getSymbolAtLocation(binding.name)
+    if (!parameterSymbol) {
+      throw new Error(`${add.name} command argument could not be resolved`)
+    }
+    let isConsumed = false
+    const findReferences = (node: ts.Node) => {
+      const referencedSymbol =
+        ts.isIdentifier(node) && ts.isShorthandPropertyAssignment(node.parent)
+          ? checker.getShorthandAssignmentValueSymbol(node.parent)
+          : ts.isIdentifier(node)
+            ? checker.getSymbolAtLocation(node)
+            : undefined
+      if (ts.isIdentifier(node) && referencedSymbol === parameterSymbol) {
+        isConsumed = true
+        return
+      }
+      ts.forEachChild(node, findReferences)
+    }
+    findReferences(functionExpression.body)
+
+    if (isConsumed) {
+      consumedKeys.add(externalNameNode.text)
+    }
+  }
+
+  return consumedKeys
+}
+
 describe('stdlib command arg derivation', () => {
   it('derives base command-bar arg config from KCL stdlib metadata', () => {
     const args = modelingStdLibCommandArgs<ModelingCommandSchema['Extrude']>(
@@ -550,10 +653,193 @@ describe('stdlib command arg derivation', () => {
 })
 
 describe('modeling command stdlib drift', () => {
+  it('distinguishes consumed args from type-only acknowledgements', () => {
+    function typeOnly({ probe: _probe }: { probe?: number }) {}
+    function propertyNameOnly({ probe: _probe }: { probe?: number }) {
+      return { probe: 1 }
+    }
+    function consumed({ probe }: { probe?: number }) {
+      return probe
+    }
+    function consumedAsShorthand({ probe }: { probe?: number }) {
+      return { probe }
+    }
+    function shadowed({ probe: _probe }: { probe?: number }) {
+      return [1].map((_probe) => _probe)
+    }
+
+    expect(consumedObjectParameterKeys(typeOnly)).not.toContain('probe')
+    expect(consumedObjectParameterKeys(propertyNameOnly)).not.toContain('probe')
+    expect(consumedObjectParameterKeys(shadowed)).not.toContain('probe')
+    expect(consumedObjectParameterKeys(consumed)).toContain('probe')
+    expect(consumedObjectParameterKeys(consumedAsShorthand)).toContain('probe')
+  })
+
   it('covers every shared modeling codemod', () => {
     expect(Object.keys(modelingCommandStdLibDriftConfig).sort()).toEqual(
       Object.keys(modelingCommandCodemods).sort()
     )
+  })
+
+  it('requires deprecated labeled KCL args to be explicitly included or omitted', () => {
+    const unclassifiedArgs = Object.entries(modelingCommandStdLibDriftConfig)
+      .flatMap(([commandName, driftConfig]) => {
+        const config = driftConfig as StdLibCommandDriftConfig
+        const omitted = new Set<string>(config.omittedStdLibArgs ?? [])
+        const included = new Set<string>(config.deprecatedStdLibArgs ?? [])
+
+        return STD_LIB_COMMANDS[config.stdLibName].args
+          .filter((arg) => !arg.special && isDeprecatedStdLibArg(arg))
+          .filter((arg) => !omitted.has(arg.name) && !included.has(arg.name))
+          .map((arg) => `${commandName} (${config.stdLibName}).${arg.name}`)
+      })
+      .sort()
+
+    expect(
+      unclassifiedArgs,
+      'Deprecated labeled KCL args must be listed in omittedStdLibArgs or deprecatedStdLibArgs.'
+    ).toEqual([])
+  })
+
+  it('validates every drift exception', () => {
+    for (const [commandName, driftConfig] of Object.entries(
+      modelingCommandStdLibDriftConfig
+    )) {
+      const config = driftConfig as StdLibCommandDriftConfig
+      const stdLibArgNames = new Set<string>(
+        STD_LIB_COMMANDS[config.stdLibName].args.map((arg) => arg.name)
+      )
+      const includedDeprecated = new Set<string>(
+        config.deprecatedStdLibArgs ?? []
+      )
+      const pointAndClickArgNames = new Set<string>(
+        pointAndClickStdLibArgs(config).map((arg) => arg.name)
+      )
+      const configuredNames = [
+        ...(config.omittedStdLibArgs ?? []),
+        ...(config.deprecatedStdLibArgs ?? []),
+        ...Object.keys(config.argAliases ?? {}),
+      ]
+
+      expect(
+        uniqueSorted(
+          configuredNames.filter((argName) => !stdLibArgNames.has(argName))
+        ),
+        `${commandName} has stale or misspelled KCL argument exceptions.`
+      ).toEqual([])
+
+      expect(
+        (config.omittedStdLibArgs ?? []).filter((argName) =>
+          includedDeprecated.has(argName)
+        ),
+        `${commandName} cannot both omit and include the same deprecated KCL argument.`
+      ).toEqual([])
+
+      expect(
+        (config.deprecatedStdLibArgs ?? []).filter((argName) => {
+          const arg = STD_LIB_COMMANDS[config.stdLibName].args.find(
+            (candidate) => candidate.name === argName
+          )
+          return arg && !isDeprecatedStdLibArg(arg)
+        }),
+        `${commandName} lists active KCL arguments as deprecated.`
+      ).toEqual([])
+
+      expect(
+        Object.keys(config.argAliases ?? {}).filter(
+          (argName) => !pointAndClickArgNames.has(argName)
+        ),
+        `${commandName} aliases KCL arguments that are not exposed.`
+      ).toEqual([])
+    }
+  })
+
+  it('requires new labeled KCL args to be explicitly accepted or omitted', () => {
+    // Keep this as a checked-in contract instead of deriving the expected names
+    // from the command-bar config. A new labeled KCL argument must fail this test
+    // until point-and-click supports it or lists it in omittedStdLibArgs.
+    const labeledArgSignatures = Object.entries(
+      modelingCommandStdLibDriftConfig
+    )
+      .map(([commandName, driftConfig]) => {
+        const config = driftConfig as StdLibCommandDriftConfig
+        const labeledArgs = pointAndClickStdLibArgs(config)
+          .filter((arg) => !arg.special)
+          .map((arg) => arg.name)
+
+        return `${commandName} (${config.stdLibName}): ${labeledArgs.join(', ')}`
+      })
+      .sort()
+
+    expect(labeledArgSignatures).toMatchInlineSnapshot(`
+      [
+        "Appearance (appearance): color, metalness, roughness, opacity",
+        "Blend (blend): ",
+        "Boolean Intersect (intersect): tolerance",
+        "Boolean Split (split): merge, keepTools, tools",
+        "Boolean Subtract (subtract): tools, tolerance",
+        "Boolean Union (union): tolerance",
+        "Chamfer (chamfer): length, tags, secondLength, angle, tag, version",
+        "Clone (clone): ",
+        "Delete (delete): ",
+        "Delete Face (deleteFace): faces",
+        "Extrude (extrude): length, to, symmetric, direction, bidirectionalLength, tagStart, tagEnd, draftAngle, twistAngle, twistAngleStep, twistCenter, method, hideSeams, bodyType",
+        "Fillet (fillet): radius, tags, tolerance, tag, version",
+        "Flip Surface (flipSurface): ",
+        "GDT Angularity (gdt::angularity): tolerance, faces, edges, datums, precision, framePosition, framePlane, leaderScale, fontSize",
+        "GDT Annotation (gdt::annotation): annotation, faces, edges, framePosition, framePlane, leaderScale, fontSize",
+        "GDT Circularity (gdt::circularity): tolerance, faces, edges, precision, framePosition, framePlane, leaderScale, fontSize",
+        "GDT Concentricity (gdt::concentricity): tolerance, datums, faces, edges, precision, framePosition, framePlane, leaderScale, fontSize",
+        "GDT Cylindricity (gdt::cylindricity): tolerance, faces, edges, precision, framePosition, framePlane, leaderScale, fontSize",
+        "GDT Datum (gdt::datum): face, name, framePosition, framePlane, leaderScale, fontSize",
+        "GDT Distance (gdt::distance): tolerance, from, to, edges, precision, framePosition, framePlane, leaderScale, fontSize",
+        "GDT Flatness (gdt::flatness): faces, tolerance, precision, framePosition, framePlane, leaderScale, fontSize",
+        "GDT Note (gdt::note): note, framePlane, framePosition, fontSize",
+        "GDT Parallelism (gdt::parallelism): tolerance, faces, edges, datums, precision, framePosition, framePlane, leaderScale, fontSize",
+        "GDT Perpendicularity (gdt::perpendicularity): tolerance, faces, edges, datums, precision, framePosition, framePlane, leaderScale, fontSize",
+        "GDT Position (gdt::position): tolerance, faces, edges, datums, precision, framePosition, framePlane, leaderScale, fontSize",
+        "GDT Profile (gdt::profileLine): edges, tolerance, datums, precision, framePosition, framePlane, leaderScale, fontSize",
+        "GDT Runout (gdt::runout): tolerance, datums, faces, edges, precision, framePosition, framePlane, leaderScale, fontSize",
+        "GDT Straightness (gdt::straightness): tolerance, faces, edges, precision, framePosition, framePlane, leaderScale, fontSize",
+        "GDT Symmetry (gdt::symmetry): tolerance, datums, faces, edges, precision, framePosition, framePlane, leaderScale, fontSize",
+        "Helical Gear (gear::helical): nTeeth, module, pressureAngle, helixAngle, gearHeight",
+        "Helix (helix): revolutions, angleStart, ccw, radius, axis, length, cylinder",
+        "Herringbone Gear (gear::herringbone): nTeeth, module, pressureAngle, gearHeight, helixAngle",
+        "Hole (hole::hole): face, holeBottom, holeBody, holeType, cutAt",
+        "Join Surfaces (joinSurfaces): tolerance",
+        "Loft (loft): vDegree, bezApproximateRational, baseCurveIndex, tolerance, tagStart, tagEnd, bodyType",
+        "Mirror 3D (mirror3d): across",
+        "Offset plane (offsetPlane): offset",
+        "Pattern Circular 3D (patternCircular3d): instances, axis, center, arcDegrees, rotateDuplicates, useOriginal",
+        "Pattern Linear 3D (patternLinear3d): instances, distance, axis, useOriginal",
+        "Revolve (revolve): axis, angle, tolerance, symmetric, bidirectionalAngle, tagStart, tagEnd, bodyType",
+        "Ring Gear (gear::ring): nTeeth, module, pressureAngle, helixAngle, gearHeight",
+        "Rotate (rotate): roll, pitch, yaw, axis, angle, global",
+        "Scale (scale): x, y, z, global, factor",
+        "Shell (shell): thickness, faces",
+        "Spur Gear (gear::spur): nTeeth, module, pressureAngle, gearHeight",
+        "Sweep (sweep): path, sectional, tolerance, relativeTo, translateProfileToPath, orientProfilePerpendicular, tagStart, tagEnd, bodyType, version",
+        "Translate (translate): x, y, z, global, xyz",
+      ]
+    `)
+  })
+
+  it('requires accepted labeled KCL args to be consumed by their codemod', () => {
+    for (const [commandName, driftConfig] of Object.entries(
+      modelingCommandStdLibDriftConfig
+    ) as [keyof typeof modelingCommandCodemods, StdLibCommandDriftConfig][]) {
+      const expectedConsumedArgs = pointAndClickStdLibArgs(driftConfig)
+        .filter((arg) => !arg.special)
+        .map((arg) => driftConfig.argAliases?.[arg.name] ?? arg.name)
+      const consumedArgs = consumedObjectParameterKeys(
+        modelingCommandCodemods[commandName].add
+      )
+
+      expect(
+        expectedConsumedArgs.filter((arg) => !consumedArgs.has(arg)),
+        `${commandName} accepts labeled KCL args that its codemod does not consume. Handle them in the add* function, or list their KCL names in omittedStdLibArgs.`
+      ).toEqual([])
+    }
   })
 
   it('keeps command-bar args aligned with KCL stdlib signatures', () => {
@@ -574,19 +860,10 @@ describe('modeling command stdlib drift', () => {
         `${commandName} references missing stdlib function ${driftConfig.stdLibName}`
       ).toBeDefined()
 
-      const omittedStdLibArgs = new Set(driftConfig.omittedStdLibArgs ?? [])
-      const deprecatedStdLibArgs = new Set(
-        driftConfig.deprecatedStdLibArgs ?? []
-      )
       const editFlowArgs = driftConfig.editFlow ? ['nodeToEdit'] : []
-      const expectedStdLibArgOrder = stdLibCommand.args
-        .filter(
-          (arg) =>
-            (!arg.deprecated && arg.deprecatedSince === null) ||
-            deprecatedStdLibArgs.has(arg.name)
-        )
-        .filter((arg) => !omittedStdLibArgs.has(arg.name))
-        .map((arg) => driftConfig.argAliases?.[arg.name] ?? arg.name)
+      const expectedStdLibArgOrder = pointAndClickStdLibArgs(driftConfig).map(
+        (arg) => driftConfig.argAliases?.[arg.name] ?? arg.name
+      )
       const expectedArgs = uniqueSorted([
         ...expectedStdLibArgOrder,
         ...(driftConfig.uiOnlyArgs ?? []),
