@@ -1377,33 +1377,40 @@ export fn getPreviousAdjacentEdge(
 
 /// Get the shared edge between two faces.
 ///
+/// Both face references must refer to the same underlying geometry and share an
+/// edge. The geometry recorded in the tags must match; touching faces or a shared
+/// sketch origin are not enough. Do not mix references from a body and its clone
+/// or mirror. A geometry mismatch produces the error `getCommonEdge requires the
+/// faces to be in the same original sketch`.
+///
+/// After a Boolean operation, carried face tags can still refer to consumed source
+/// bodies, even when accessed through the result's `faces`. Unioning separately
+/// constructed parts does not make their original face tags valid for selecting
+/// the new junction with `getCommonEdge`.
+///
+/// For a simple L-shaped junction, one supported approach is to extrude a single
+/// profile, then fillet the edge between its two inner side faces:
+///
 /// ```kcl,sketchSolve
 /// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
 ///
-/// scale = 20mm
 /// partSketch = sketch(on = XY) {
-///   left = line(start = [var 0mm, var 0mm], end = [var 0mm, var 20mm])
-///   top = line(start = [var 0mm, var 20mm], end = [var 20mm, var 20mm])
-///   right = line(start = [var 20mm, var 20mm], end = [var 20mm, var 0mm])
-///   line0 = line(start = [var 20mm, var 0mm], end = [var 0mm, var 0mm])
-///   coincident([left.end, top.start])
-///   coincident([top.end, right.start])
-///   coincident([right.end, line0.start])
-///   coincident([line0.end, left.start])
+///   bottom = line(start = [0mm, 0mm], end = [20mm, 0mm])
+///   right = line(start = [20mm, 0mm], end = [20mm, 5mm])
+///   innerHorizontal = line(start = [20mm, 5mm], end = [5mm, 5mm])
+///   innerVertical = line(start = [5mm, 5mm], end = [5mm, 20mm])
+///   top = line(start = [5mm, 20mm], end = [0mm, 20mm])
+///   left = line(start = [0mm, 20mm], end = [0mm, 0mm])
 /// }
-/// partRegion = region(segments = [partSketch.left, partSketch.top])
-/// part001 = extrude(partRegion, length = scale, tagEnd = $end0)
-///   |> chamfer(
-///        length = 10mm,
-///        tags = [getOppositeEdge(partRegion.tags.line0)],
-///        tag = $chamfer0,
-///      )
-///
-/// // Select the edge shared by the chamfer and the extrusion's end face.
+/// partRegion = region(segments = [partSketch.bottom])
+/// part = extrude(partRegion, length = 10mm)
+/// // Both tags belong to this one extruded profile. Original tags from separate
+/// // parts cannot select a new junction after union.
 /// commonEdge = getCommonEdge(faces = [
-///   part001.faces.chamfer0,
-///   part001.faces.end0,
+///   partRegion.tags.innerHorizontal,
+///   partRegion.tags.innerVertical,
 /// ])
+/// roundedPart = fillet(part, radius = 2mm, tags = [commonEdge])
 /// ```
 @(impl = std_rust, feature_tree = false)
 export fn getCommonEdge(
