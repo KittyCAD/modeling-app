@@ -35,11 +35,14 @@ describe('wasm utils', () => {
     })
   })
 
-  it('notifies listeners after browser wasm initialization', async () => {
+  it('loads the generated wasm package and notifies listeners', async () => {
     const { initialiseWasm } = await import('@src/lang/wasmUtils')
 
     await expect(initialiseWasm()).resolves.toBe(wasmModule)
 
+    expect(globalThis.fetch).toHaveBeenCalledWith(
+      expect.stringMatching(/\/rust\/kcl-wasm-lib\/pkg\/kcl_wasm_lib_bg\.wasm$/)
+    )
     expect(mocks.reloadModule).toHaveBeenCalled()
     expect(mocks.init).toHaveBeenCalled()
     expect(mocks.notifyActiveWasmInstance).toHaveBeenCalledWith(wasmModule)
