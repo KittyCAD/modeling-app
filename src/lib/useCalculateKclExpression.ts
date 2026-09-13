@@ -55,15 +55,13 @@ export function useCalculateKclExpression({
   // is asynchronous. Use this state variable to track if execution
   // has completed
   const [isExecuting, setIsExecuting] = useState(false)
-  // If there is no selection, use the end of the code
-  // so all variables are available
   const selectionRange: SourceRange | undefined =
     selectionRanges.graphSelections[0]?.codeRef?.range
-  // If there is no selection, use the end of the code
-  // If we don't memoize this, we risk an infinite set/read state loop
-  const endingSourceRange = useMemo(
-    () => sourceRange || selectionRange || [code.length, code.length],
-    [code, selectionRange, sourceRange]
+  // An undefined range means the new expression will be inserted at the end
+  // of the program, where every top-level variable is available.
+  const previousVariablesSourceRange = useMemo(
+    () => sourceRange || selectionRange,
+    [selectionRange, sourceRange]
   )
   const inputRef = useRef<HTMLInputElement>(null)
   const [availableVarInfo, setAvailableVarInfo] = useState<
@@ -129,12 +127,12 @@ export function useCalculateKclExpression({
     const varInfo = findAllPreviousVariables(
       ast,
       variables,
-      endingSourceRange,
+      previousVariablesSourceRange,
       wasmInstance
     )
     setAvailableVarInfo(varInfo)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [ast, variables, endingSourceRange])
+  }, [ast, variables, previousVariablesSourceRange])
 
   useEffect(() => {
     const execAstAndSetResult = async () => {
