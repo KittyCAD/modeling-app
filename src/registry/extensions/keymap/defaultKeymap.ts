@@ -409,7 +409,7 @@ export const defaultKeymap: KeymapDocument = {
     },
     {
       id: 'toolbar.modeling.insert',
-      title: 'Insert',
+      title: 'Import',
       when: [MODE_MODELING_KEYMAP_SCOPE],
       keystrokes: ['i'],
       command: 'code:Insert',

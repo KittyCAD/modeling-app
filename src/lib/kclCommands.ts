@@ -191,8 +191,10 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
     },
     {
       scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
-      name: 'Insert',
-      description: 'Insert from a file in the current project directory',
+      // Keep the persisted shortcut identity stable across the display rename.
+      id: 'code:Insert',
+      name: 'Import',
+      description: 'Import from a file in the current project directory',
       icon: 'import',
       groupId: 'code',
       hide: 'web',
