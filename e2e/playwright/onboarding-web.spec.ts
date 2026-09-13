@@ -63,11 +63,11 @@ test(
       )}/onboarding/desktop/scene`
     )
 
-    await expect(page.getByRole('heading', { name: 'Scene' })).toBeVisible()
     await expect(page).toHaveURL(
       /tutorial-project%2Fblank\.kcl\/onboarding\/desktop\/scene/,
       { timeout: 15_000 }
     )
+    await expect(page.getByRole('heading', { name: 'Scene' })).toBeVisible()
     await expect
       .poll(() =>
         opfsPathExists(page, `${PROJECT_DIR}/tutorial-project/blank.kcl`)
