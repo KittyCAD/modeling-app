@@ -447,7 +447,12 @@ export function PhysicalAnalysisTool() {
   ])
 
   if (!isIdle) {
-    return null
+    return (
+      <div className="flex min-h-0 min-w-64 flex-1 p-2 text-xs text-chalkboard-70 dark:text-chalkboard-40">
+        Physical analysis is unavailable during an active modeling operation.
+        Exit sketch mode or finish the current operation to analyze the model.
+      </div>
+    )
   }
 
   return (
