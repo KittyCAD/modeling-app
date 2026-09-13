@@ -97,6 +97,7 @@ pub(crate) async fn inner_union(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
+    let _inputs = exec_state.lock_solid_inputs(&solids).await?;
     validate_solids_not_consumed(&solids, exec_state, args.source_range)?;
 
     let solid_out_id = exec_state.next_uuid();
@@ -107,7 +108,7 @@ pub(crate) async fn inner_union(
     let mut new_solids = vec![solid.clone()];
 
     if args.ctx.no_engine_commands().await {
-        record_consumed_solids(exec_state, &solids, ConsumedSolidOperation::Union, &new_solids);
+        record_consumed_solids(exec_state, &solids, ConsumedSolidOperation::Union, &new_solids)?;
         return Ok(new_solids);
     }
 
@@ -161,7 +162,7 @@ pub(crate) async fn inner_union(
         new_solids.push(new_solid);
     }
 
-    record_consumed_solids(exec_state, &solids, ConsumedSolidOperation::Union, &new_solids);
+    record_consumed_solids(exec_state, &solids, ConsumedSolidOperation::Union, &new_solids)?;
 
     Ok(new_solids)
 }
@@ -192,6 +193,7 @@ pub(crate) async fn inner_intersect(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
+    let _inputs = exec_state.lock_solid_inputs(&solids).await?;
     validate_solids_not_consumed(&solids, exec_state, args.source_range)?;
 
     let solid_out_id = exec_state.next_uuid();
@@ -202,7 +204,7 @@ pub(crate) async fn inner_intersect(
     let mut new_solids = vec![solid.clone()];
 
     if args.ctx.no_engine_commands().await {
-        record_consumed_solids(exec_state, &solids, ConsumedSolidOperation::Intersect, &new_solids);
+        record_consumed_solids(exec_state, &solids, ConsumedSolidOperation::Intersect, &new_solids)?;
         return Ok(new_solids);
     }
 
@@ -255,7 +257,7 @@ pub(crate) async fn inner_intersect(
         new_solids.push(new_solid);
     }
 
-    record_consumed_solids(exec_state, &solids, ConsumedSolidOperation::Intersect, &new_solids);
+    record_consumed_solids(exec_state, &solids, ConsumedSolidOperation::Intersect, &new_solids)?;
 
     Ok(new_solids)
 }
@@ -282,6 +284,7 @@ pub(crate) async fn inner_subtract(
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
     let combined_solids = solids.iter().chain(tools.iter()).cloned().collect::<Vec<Solid>>();
+    let _inputs = exec_state.lock_solid_inputs(&combined_solids).await?;
     validate_solids_not_consumed(&combined_solids, exec_state, args.source_range)?;
 
     let solid_out_id = exec_state.next_uuid();
@@ -307,8 +310,8 @@ pub(crate) async fn inner_subtract(
                 new_solid
             })
             .collect::<Vec<_>>();
-        record_consumed_solids(exec_state, &solids, ConsumedSolidOperation::Subtract, &new_solids);
-        record_consumed_solids(exec_state, &tools, ConsumedSolidOperation::Subtract, &[]);
+        record_consumed_solids(exec_state, &solids, ConsumedSolidOperation::Subtract, &new_solids)?;
+        record_consumed_solids(exec_state, &tools, ConsumedSolidOperation::Subtract, &[])?;
         return Ok(new_solids);
     }
 
@@ -363,8 +366,8 @@ pub(crate) async fn inner_subtract(
         })
         .collect::<Vec<_>>();
 
-    record_consumed_solids(exec_state, &solids, ConsumedSolidOperation::Subtract, &new_solids);
-    record_consumed_solids(exec_state, &tools, ConsumedSolidOperation::Subtract, &[]);
+    record_consumed_solids(exec_state, &solids, ConsumedSolidOperation::Subtract, &new_solids)?;
+    record_consumed_solids(exec_state, &tools, ConsumedSolidOperation::Subtract, &[])?;
 
     Ok(new_solids)
 }
@@ -415,6 +418,12 @@ pub(crate) async fn inner_imprint(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
+    let inputs = targets
+        .iter()
+        .chain(tools.iter().flatten())
+        .cloned()
+        .collect::<Vec<_>>();
+    let _inputs = exec_state.lock_solid_inputs(&inputs).await?;
     validate_solids_not_consumed(&targets, exec_state, args.source_range)?;
     if let Some(tools) = tools.as_ref() {
         validate_solids_not_consumed(tools, exec_state, args.source_range)?;
@@ -437,9 +446,9 @@ pub(crate) async fn inner_imprint(
             new_solid.become_new_body(extra_solid_id, extra_solid_id.into());
             new_solids.push(new_solid);
         }
-        record_consumed_solids(exec_state, &targets, ConsumedSolidOperation::Split, &new_solids);
+        record_consumed_solids(exec_state, &targets, ConsumedSolidOperation::Split, &new_solids)?;
         if !keep_tools && let Some(tools) = tools.as_ref() {
-            record_consumed_solids(exec_state, tools, ConsumedSolidOperation::Split, &[]);
+            record_consumed_solids(exec_state, tools, ConsumedSolidOperation::Split, &[])?;
         }
         return Ok(new_solids);
     }
@@ -502,9 +511,9 @@ pub(crate) async fn inner_imprint(
         new_solids.push(new_solid);
     }
 
-    record_consumed_solids(exec_state, &targets, ConsumedSolidOperation::Split, &new_solids);
+    record_consumed_solids(exec_state, &targets, ConsumedSolidOperation::Split, &new_solids)?;
     if !keep_tools && let Some(tools) = tools.as_ref() {
-        record_consumed_solids(exec_state, tools, ConsumedSolidOperation::Split, &[]);
+        record_consumed_solids(exec_state, tools, ConsumedSolidOperation::Split, &[])?;
     }
 
     Ok(new_solids)

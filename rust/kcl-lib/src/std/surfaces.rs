@@ -404,6 +404,8 @@ async fn inner_join(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Solid, KclError> {
+    let _inputs = exec_state.lock_solid_inputs(&selection).await?;
+    super::solid_consumption::validate_solids_not_consumed(&selection, exec_state, args.source_range)?;
     if selection.len() == 1 {
         let cmd = mcmd::Solid3dJoin::builder().object_id(selection[0].id).build();
 
@@ -456,7 +458,7 @@ async fn inner_join(
             &selection,
             ConsumedSolidOperation::JoinSurfaces,
             std::slice::from_ref(&solid),
-        );
+        )?;
         Ok(solid)
     }
 }

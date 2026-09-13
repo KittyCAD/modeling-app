@@ -1,6 +1,8 @@
 use std::collections::BTreeMap;
 use std::str::FromStr;
 use std::sync::Arc;
+use std::sync::Mutex;
+use std::sync::MutexGuard;
 
 use ahash::AHashMap;
 use anyhow::Result;
@@ -78,6 +80,8 @@ pub type ModuleInfoMap = IndexMap<ModuleId, ModuleInfo>;
 
 #[derive(Debug, Clone)]
 pub(super) struct GlobalState {
+    /// Imported values and concurrent modules share the same engine bodies.
+    solid_consumption: Arc<Mutex<SolidConsumptionState>>,
     /// The deepest machine-executor call depth reached by executions sharing
     /// this state: the root module, its callbacks, and module bodies executed
     /// inline on it. Imported modules pre-executed in parallel run on cloned
@@ -338,21 +342,19 @@ pub(super) struct ModuleState {
     pub(super) allowed_warnings: Vec<&'static str>,
     pub(super) denied_warnings: Vec<&'static str>,
 
-    /// Map from consumed solid values to information about the operation that
-    /// consumed them. Populated by operations that destroy their inputs so that
-    /// subsequent attempts to use a consumed solid produce a clear KCL-level
-    /// error rather than a cryptic engine error.
-    pub(super) consumed_solids: AHashMap<ConsumedSolidKey, ConsumedSolidInfo>,
-    /// Defensive map from consumed engine UUID to consumption info.
-    /// Rust code may create a `Solid` with a consumed `engine_id` and a
-    /// different `instance_id` that was not recorded in `consumed_solids`. When
-    /// the exact key lookup misses, this map lets us reject that solid by
-    /// `engine_id`, unless the key is a recorded operation output.
-    pub(super) consumed_solid_ids: AHashMap<Uuid, ConsumedSolidInfo>,
     /// Region engine UUIDs consumed by successful modeling operations. Regions
     /// use the KCL `Sketch` representation, so this state keeps stale Region
     /// values from reaching an engine object that has become something else.
     pub(super) consumed_regions: AHashMap<Uuid, ConsumedRegionInfo>,
+}
+
+#[derive(Debug, Default)]
+struct SolidConsumptionState {
+    consumed_solids: AHashMap<ConsumedSolidKey, ConsumedSolidInfo>,
+    /// Catch stale engine IDs even when a Rust-created value has a new instance
+    /// ID; recorded operation outputs may legitimately reuse an engine ID.
+    consumed_solid_ids: AHashMap<Uuid, ConsumedSolidInfo>,
+    input_locks: AHashMap<Uuid, Arc<tokio::sync::Mutex<()>>>,
 }
 
 /// Information about the operation that consumed a Region.
@@ -415,7 +417,7 @@ impl ConsumedSolidKey {
 }
 
 /// Information about a solid value that was consumed by an operation.
-/// Stored in `ModuleState.consumed_solids` so subsequent attempts to use the
+/// Stored in `SolidConsumptionState` so subsequent attempts to use the
 /// solid produce a clear error pointing at the operation that consumed it.
 #[derive(Debug, Clone)]
 pub(crate) struct ConsumedSolidInfo {
@@ -870,27 +872,59 @@ impl ExecState {
         &mut self.mod_local.id_generator
     }
 
-    /// Record that a solid value has been consumed by a CSG boolean operation.
-    pub(crate) fn mark_solid_consumed(&mut self, consumed_key: ConsumedSolidKey, info: ConsumedSolidInfo) {
-        self.mod_local.consumed_solids.insert(consumed_key, info);
+    fn solid_consumption(&self) -> Result<MutexGuard<'_, SolidConsumptionState>, KclError> {
+        self.global.solid_consumption.lock().map_err(|_| {
+            KclError::new_internal(KclErrorDetails::new(
+                "Solid consumption state was poisoned by an earlier panic.".to_owned(),
+                vec![],
+            ))
+        })
     }
 
-    /// Record that an engine body UUID has been consumed by a CSG boolean
-    /// operation.
-    pub(crate) fn mark_solid_id_consumed(&mut self, consumed_id: Uuid, info: ConsumedSolidInfo) {
-        self.mod_local.consumed_solid_ids.insert(consumed_id, info);
+    /// Record a consumed value and its engine body together.
+    pub(crate) fn mark_solid_consumed(
+        &mut self,
+        consumed_key: ConsumedSolidKey,
+        info: ConsumedSolidInfo,
+    ) -> Result<(), KclError> {
+        let mut state = self.solid_consumption()?;
+        state.consumed_solid_ids.insert(consumed_key.engine_id(), info.clone());
+        state.consumed_solids.insert(consumed_key, info);
+        Ok(())
     }
 
     /// Look up whether a solid value was consumed by a previous CSG boolean
     /// operation.
-    pub(crate) fn check_solid_consumed(&self, key: &ConsumedSolidKey) -> Option<&ConsumedSolidInfo> {
-        self.mod_local.consumed_solids.get(key)
+    pub(crate) fn check_solid_consumed(&self, key: &ConsumedSolidKey) -> Result<Option<ConsumedSolidInfo>, KclError> {
+        Ok(self.solid_consumption()?.consumed_solids.get(key).cloned())
     }
 
     /// Look up whether an engine body UUID was consumed by a previous CSG
     /// boolean operation.
-    pub(crate) fn check_solid_id_consumed(&self, id: &Uuid) -> Option<&ConsumedSolidInfo> {
-        self.mod_local.consumed_solid_ids.get(id)
+    pub(crate) fn check_solid_id_consumed(&self, id: &Uuid) -> Result<Option<ConsumedSolidInfo>, KclError> {
+        Ok(self.solid_consumption()?.consumed_solid_ids.get(id).cloned())
+    }
+
+    /// Hold through validation, the consuming command, and recording its result.
+    /// Sort and deduplicate IDs to avoid deadlocks for overlapping input sets.
+    pub(crate) async fn lock_solid_inputs(
+        &self,
+        solids: &[crate::execution::Solid],
+    ) -> Result<Vec<tokio::sync::OwnedMutexGuard<()>>, KclError> {
+        let mut ids: Vec<_> = solids.iter().map(|solid| solid.id).collect();
+        ids.sort_unstable();
+        ids.dedup();
+        let locks = {
+            let mut state = self.solid_consumption()?;
+            ids.into_iter()
+                .map(|id| state.input_locks.entry(id).or_default().clone())
+                .collect::<Vec<_>>()
+        };
+        let mut guards = Vec::with_capacity(locks.len());
+        for lock in locks {
+            guards.push(lock.lock_owned().await);
+        }
+        Ok(guards)
     }
 
     pub(crate) fn mark_region_consumed(&mut self, id: Uuid, info: ConsumedRegionInfo) {
@@ -926,13 +960,15 @@ impl ExecState {
     pub(crate) fn latest_consumed_output(
         &self,
         suggested_replacement_key: Option<ConsumedSolidKey>,
-    ) -> Option<ConsumedSolidKey> {
-        let mut latest = suggested_replacement_key?;
+    ) -> Result<Option<ConsumedSolidKey>, KclError> {
+        let Some(mut latest) = suggested_replacement_key else {
+            return Ok(None);
+        };
         let mut seen = AhashIndexSet::default();
+        let state = self.solid_consumption()?;
 
         while seen.insert(latest) {
-            let Some(next) = self
-                .mod_local
+            let Some(next) = state
                 .consumed_solids
                 .get(&latest)
                 .and_then(|info| info.suggested_replacement_key())
@@ -942,7 +978,7 @@ impl ExecState {
             latest = next;
         }
 
-        Some(latest)
+        Ok(Some(latest))
     }
 
     /// Search the live environment for the name of a variable holding a Solid
@@ -1496,6 +1532,7 @@ pub(crate) fn declared_kcl_version(program: &Node<Program>) -> Result<Option<(Kc
 impl GlobalState {
     fn new(settings: &ExecutorSettings, segment_ids_edited: AhashIndexSet<ObjectId>) -> Self {
         let mut global = GlobalState {
+            solid_consumption: Default::default(),
             machine_depth_high_water: 0,
             path_to_source_id: Default::default(),
             module_infos: Default::default(),
@@ -1691,8 +1728,6 @@ impl ModuleState {
             constraint_state: Default::default(),
             allowed_warnings: Vec::new(),
             denied_warnings: Vec::new(),
-            consumed_solids: AHashMap::default(),
-            consumed_solid_ids: AHashMap::default(),
             consumed_regions: AHashMap::default(),
             inside_stdlib: false,
         }

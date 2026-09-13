@@ -100,14 +100,14 @@ fn validate_solid_not_consumed(
 
 fn consumed_solid_error_message(solid: &Solid, exec_state: &ExecState) -> Result<Option<String>, KclError> {
     let key = consumed_solid_key(solid);
-    let Some(info) = exec_state.check_solid_consumed(&key) else {
-        if let Some(info) = exec_state.check_solid_id_consumed(&solid.id)
+    let Some(info) = exec_state.check_solid_consumed(&key)? else {
+        if let Some(info) = exec_state.check_solid_id_consumed(&solid.id)?
             && info.should_report_reused_engine_id_as_consumed(key)
         {
             let operation = info.operation();
             let current_var = exec_state.find_var_name_for_solid_key(key)?;
             let output_var = exec_state
-                .latest_consumed_output(info.suggested_replacement_key())
+                .latest_consumed_output(info.suggested_replacement_key())?
                 .map(|key| exec_state.find_var_name_for_solid_key(key))
                 .transpose()?
                 .flatten();
@@ -122,7 +122,7 @@ fn consumed_solid_error_message(solid: &Solid, exec_state: &ExecState) -> Result
     let suggested_replacement_key = info.suggested_replacement_key();
     let consumed_var = exec_state.find_var_name_for_solid_key(key)?;
     let output_var = exec_state
-        .latest_consumed_output(suggested_replacement_key)
+        .latest_consumed_output(suggested_replacement_key)?
         .map(|key| exec_state.find_var_name_for_solid_key(key))
         .transpose()?
         .flatten();
@@ -136,13 +136,13 @@ pub(super) fn record_consumed_solids(
     solids: &[Solid],
     operation: ConsumedSolidOperation,
     output_solids: &[Solid],
-) {
+) -> Result<(), KclError> {
     let returned_solid_keys = output_solids.iter().map(consumed_solid_key).collect::<Vec<_>>();
     for solid in solids {
         let info = ConsumedSolidInfo::new(operation, returned_solid_keys.clone());
-        exec_state.mark_solid_consumed(consumed_solid_key(solid), info.clone());
-        exec_state.mark_solid_id_consumed(solid.id, info);
+        exec_state.mark_solid_consumed(consumed_solid_key(solid), info)?;
     }
+    Ok(())
 }
 
 fn consumed_solid_key(solid: &Solid) -> ConsumedSolidKey {
@@ -238,6 +238,134 @@ mod tests {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn imported_solid_consumption() {
+        let seed = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+export fn make(rad) {
+  profile = sketch(on = XY) {
+    rim = circle(center = [var 0mm, var 0mm], start = [var 5mm, var 0mm])
+    coincident([rim.center, ORIGIN])
+    horizontal([rim.center, rim.start])
+    radius(rim) == rad
+  }
+  return extrude(region(segments = [profile.rim]), length = 10mm)
+}
+export solid = make(rad = 10mm)
+"#;
+        for concurrent in [false, true] {
+            for import in ["import \"seed.kcl\" as seed", "import solid as seed from \"seed.kcl\""] {
+                for initial in ["seed", "make(rad = 10mm)", "clone([seed])[0]"] {
+                    let consumer = format!(
+                        r#"
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+{import}
+import make from "seed.kcl"
+result = reduce([2mm, 3mm], initial = {initial}, f = fn(@r, accum) {{
+  tool = make(rad = r)
+  cut = subtract([accum], tools = [tool])
+  return cut[0]
+}})
+"#
+                    );
+                    let project = crate::TypedPath::new("/imported-solid-consumption");
+                    let files = [("seed.kcl", seed), ("a.kcl", &consumer), ("b.kcl", &consumer)]
+                        .into_iter()
+                        .map(|(name, code)| (project.join(name).to_string(), code.as_bytes().to_vec()))
+                        .collect();
+                    let mut ctx = crate::ExecutorContext::new_mock(Some(crate::ExecutorSettings {
+                        project_directory: Some(project.clone()),
+                        current_file: Some(project.join("main.kcl")),
+                        ..Default::default()
+                    }))
+                    .await;
+                    ctx.fs = crate::fs::new_file_system_handle(crate::InMemoryFiles::new(files));
+                    let program = crate::Program::parse_no_errs(
+                        "@settings(kclVersion = 2.0)\nimport \"a.kcl\" as a\nimport \"b.kcl\" as b\nparts = [a,b]\n",
+                    )
+                    .unwrap();
+                    let result = if concurrent {
+                        let mut state = ExecState::new(&ctx);
+                        ctx.run(&program, &mut state).await.map(|_| ())
+                    } else {
+                        ctx.run_mock(
+                            &program,
+                            &MockConfig {
+                                use_prev_memory: false,
+                                ..Default::default()
+                            },
+                        )
+                        .await
+                        .map(|_| ())
+                    };
+                    ctx.close().await;
+                    if initial == "seed" {
+                        let error = result.expect_err("shared imported target must be consumed only once");
+                        assert!(matches!(error.error, KclError::Semantic { .. }), "{error:?}");
+                        assert!(
+                            error
+                                .error
+                                .message()
+                                .contains("already consumed by a `subtract` operation")
+                        );
+                    } else {
+                        result
+                            .unwrap_or_else(|error| panic!("{initial}, {import}, concurrent={concurrent}: {error:?}"));
+                    }
+                }
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn subtract_rechecks_shared_inputs_after_waiting() {
+        use futures::FutureExt;
+
+        use crate::std::Args;
+        use crate::std::csg::CsgAlgorithm;
+
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let mut first = ExecState::new(&ctx);
+        let mut second = first.clone();
+        let target = procedural_solid(Uuid::from_u128(1), Uuid::from_u128(1));
+        let tool = procedural_solid(Uuid::from_u128(2), Uuid::from_u128(2));
+        let other_tool = procedural_solid(Uuid::from_u128(3), Uuid::from_u128(3));
+        let inputs = first.lock_solid_inputs(std::slice::from_ref(&target)).await.unwrap();
+        let args = || Args::new_no_args(SourceRange::synthetic(), None, ctx.clone(), None);
+        let competing = super::super::csg::inner_subtract(
+            vec![target.clone()],
+            vec![tool],
+            None,
+            CsgAlgorithm::legacy(false),
+            &mut second,
+            args(),
+        );
+        tokio::pin!(competing);
+        assert!(futures::poll!(&mut competing).is_pending());
+
+        // A blocked consumer must not serialize operations on other bodies.
+        let mut independent = first.clone();
+        let other = procedural_solid(Uuid::from_u128(4), Uuid::from_u128(4));
+        super::super::csg::inner_subtract(
+            vec![other],
+            vec![other_tool],
+            None,
+            CsgAlgorithm::legacy(false),
+            &mut independent,
+            args(),
+        )
+        .now_or_never()
+        .expect("independent bodies must not wait")
+        .unwrap();
+
+        record_consumed_solids(&mut first, &[target], ConsumedSolidOperation::Subtract, &[]).unwrap();
+        drop(inputs);
+        let error = competing.await.unwrap_err();
+        assert!(matches!(error, KclError::Semantic { .. }));
+        assert!(error.message().contains("already consumed by a `subtract` operation"));
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn consumed_solid_diagnostic_names_match_between_memory_backends() {
         for &backend in MemoryBackendKind::all() {
             let ctx = crate::ExecutorContext::new_mock(None).await;
@@ -263,7 +391,8 @@ mod tests {
                 std::slice::from_ref(&target),
                 ConsumedSolidOperation::Subtract,
                 &[],
-            );
+            )
+            .unwrap();
 
             let err = validate_solids_not_consumed(std::slice::from_ref(&target), &exec_state, SourceRange::default())
                 .expect_err("consumed target should be rejected");
@@ -292,7 +421,8 @@ mod tests {
             std::slice::from_ref(&consumed),
             ConsumedSolidOperation::Subtract,
             std::slice::from_ref(&output),
-        );
+        )
+        .unwrap();
 
         validate_solids_not_consumed(std::slice::from_ref(&output), &exec_state, SourceRange::default())
             .expect("replacement output should remain usable");
@@ -316,7 +446,8 @@ mod tests {
             std::slice::from_ref(&consumed),
             ConsumedSolidOperation::Subtract,
             std::slice::from_ref(&output),
-        );
+        )
+        .unwrap();
 
         let err = validate_solids_not_consumed(std::slice::from_ref(&stale_alias), &exec_state, SourceRange::default())
             .expect_err("stale engine body id should be rejected before the engine sees it");
@@ -342,7 +473,8 @@ mod tests {
             std::slice::from_ref(&consumed),
             ConsumedSolidOperation::Subtract,
             &[primary_output, extra_output.clone()],
-        );
+        )
+        .unwrap();
 
         validate_solids_not_consumed(std::slice::from_ref(&extra_output), &exec_state, SourceRange::default())
             .expect("any replacement output should remain usable");
