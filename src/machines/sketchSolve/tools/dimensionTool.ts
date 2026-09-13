@@ -27,14 +27,16 @@ import {
   subVec,
 } from '@src/lib/utils2d'
 import {
+  buildCircularSizeDimensionConstraintInput,
+  findMatchingDimensionConstraint,
+  getArcPoints,
   getLinePoints,
+  isArcSegment,
+  isCircleSegment,
+  isLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
-import {
-  type SnappingCandidate,
-  getSnappingCandidates,
-} from '@src/machines/sketchSolve/snapping'
 import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
 import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
 import {
@@ -42,6 +44,10 @@ import {
   type SelectionCoordinates,
   type SketchSolveSelectionId,
 } from '@src/machines/sketchSolve/sketchSolveSelection'
+import {
+  getSnappingCandidates,
+  type SnappingCandidate,
+} from '@src/machines/sketchSolve/snapping'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
 import { setup } from 'xstate'
 
@@ -95,11 +101,17 @@ export type PointSelection = {
   point: Coords2d
 }
 
-type DimensionSelection = LineSelection | PointSelection
+type CircularSelection = {
+  type: 'arc' | 'circle'
+  id: number
+  clickPoint: Coords2d
+}
+
+type DimensionSelection = LineSelection | PointSelection | CircularSelection
 
 type DimensionSnapCandidate = Omit<SnappingCandidate, 'target'> & {
   target:
-    | { type: 'line' | 'point'; id: number }
+    | { type: 'line' | 'point' | 'arc' | 'circle'; id: number }
     | { type: typeof ORIGIN_TARGET }
 }
 
@@ -109,6 +121,8 @@ function isDimensionToolCandidate(
   return (
     candidate.target.type === 'line' ||
     candidate.target.type === 'point' ||
+    candidate.target.type === 'arc' ||
+    candidate.target.type === 'circle' ||
     candidate.target.type === ORIGIN_TARGET
   )
 }
@@ -162,10 +176,13 @@ type DraftRuntime = {
   draftContext: DimensionDraftContext | null
   draftConstraintId: number | null
   lastDraftKey: string | null
-  previewInFlight: boolean
+  previewWork: Promise<void> | null
+  previewDeletion: Promise<void> | null
   queuedMousePoint: Coords2d | null
+  matchingConstraintId: number | null
   // Used by async api calls in case tool got deactivated since
   active: boolean
+  cancelled: boolean
 }
 
 type ApiAngleConstraint = Extract<ApiConstraint, { type: 'Angle' }>
@@ -176,8 +193,9 @@ type ApiDistanceConstraint = Extract<
 type ApiDimensionConstraint = ApiAngleConstraint | ApiDistanceConstraint
 export type DimensionDistanceType = ApiDistanceConstraint['type']
 
-const ANGLE_SECTORS = [1, 2, 3, 4] as const satisfies ReadonlyArray<AngleSector>
+const ANGLE_SECTORS = [1, 2, 3, 4] as const satisfies readonly AngleSector[]
 const DIMENSION_PLACEMENT_PROMPT_TOAST_ID = 'dimension-tool-placement-prompt'
+const DIMENSION_ALREADY_EXISTS_TOAST_ID = 'dimension-tool-already-exists'
 
 function getDefaultLengthUnit(kclManager: KclManager): NumericSuffix {
   return baseUnitToNumericSuffix(
@@ -198,9 +216,12 @@ function createRuntime(): DraftRuntime {
     draftContext: null,
     draftConstraintId: null,
     lastDraftKey: null,
-    previewInFlight: false,
+    previewWork: null,
+    previewDeletion: null,
     queuedMousePoint: null,
+    matchingConstraintId: null,
     active: true,
+    cancelled: false,
   }
 }
 
@@ -377,6 +398,45 @@ function pointSelectionFromObject(object: ApiObject | undefined) {
       object.kind.segment.position.y.value,
     ] as Coords2d,
   }
+}
+
+function getLineLengthDraftContext(
+  selection: LineSelection,
+  objects: ApiObject[]
+): DimensionDraftContext | null {
+  const line = objects[selection.id]
+  if (!isLineSegment(line)) {
+    return null
+  }
+
+  const point0 = pointSelectionFromObject(objects[line.kind.segment.start])
+  const point1 = pointSelectionFromObject(objects[line.kind.segment.end])
+  if (!point0 || !point1) {
+    return null
+  }
+
+  return {
+    type: 'distance',
+    distance: { kind: 'pointPoint', point0, point1 },
+  }
+}
+
+function getCircularSizeDimensionConstraint(
+  selection: CircularSelection,
+  objects: ApiObject[],
+  units: NumericSuffix
+) {
+  const segment = objects[selection.id]
+  const arcPoints = getArcPoints(segment, objects)
+  if (!arcPoints || (!isArcSegment(segment) && !isCircleSegment(segment))) {
+    return null
+  }
+
+  return buildCircularSizeDimensionConstraintInput({
+    segment,
+    radius: roundOff(length2d(subVec(arcPoints.start, arcPoints.center))),
+    units,
+  })
 }
 
 function getInitialDistanceSelections(
@@ -632,7 +692,7 @@ function buildDimensionConstraint(
 
 function getConstraintIdFromResult(
   result: { sceneGraphDelta: SceneGraphDelta },
-  constraintType: ApiDimensionConstraint['type']
+  constraintType: ApiConstraint['type']
 ): number | null {
   return (
     [...result.sceneGraphDelta.new_objects].reverse().find((objectId) => {
@@ -643,6 +703,103 @@ function getConstraintIdFromResult(
       )
     }) ?? null
   )
+}
+
+function sendCommittedDimensionResult(
+  context: DimensionToolContext,
+  self: DimensionToolSelf,
+  result: Awaited<ReturnType<RustContext['addConstraint']>>,
+  constraintId: number | null
+) {
+  sendParent(self, {
+    type: 'update sketch outcome',
+    data: {
+      sourceDelta: result.kclSource,
+      sceneGraphDelta: result.sceneGraphDelta,
+      checkpointId: result.checkpointId ?? null,
+    },
+  })
+  sendParent(self, { type: 'clear draft entities' })
+  sendParent(self, {
+    type: 'update selected ids',
+    data: context.keepSelection
+      ? { duringAreaSelectIds: [] }
+      : { selectedIds: [], duringAreaSelectIds: [] },
+  })
+  sendParent(self, {
+    type: 'update hovered id',
+    data: { hoveredId: constraintId },
+  })
+  toastToolbar.dismiss(DIMENSION_PLACEMENT_PROMPT_TOAST_ID)
+  self.send({ type: 'done' })
+}
+
+function showMatchingDimension(
+  self: ParentSketchSolveSender,
+  constraintId: number
+) {
+  sendParent(self, {
+    type: 'update hovered id',
+    data: { hoveredId: constraintId },
+  })
+  toastToolbar('That dimension already exists.', {
+    id: DIMENSION_ALREADY_EXISTS_TOAST_ID,
+  })
+}
+
+async function commitCircularDimension(
+  runtime: DraftRuntime,
+  context: DimensionToolContext,
+  self: DimensionToolSelf,
+  selection: CircularSelection
+) {
+  if (!runtime.active) {
+    return
+  }
+
+  const constraint = getCircularSizeDimensionConstraint(
+    selection,
+    context.initialObjects,
+    getDefaultLengthUnit(context.kclManager)
+  )
+  if (!constraint) {
+    runtime.firstSelection = null
+    return
+  }
+
+  const matchingConstraint = findMatchingDimensionConstraint(
+    constraint,
+    context.initialObjects
+  )
+  if (matchingConstraint) {
+    deactivateRuntime(runtime)
+    showMatchingDimension(self, matchingConstraint.id)
+    self.send({ type: 'done' })
+    return
+  }
+
+  try {
+    deactivateRuntime(runtime)
+    const result = await context.rustContext.addConstraint(
+      SKETCH_FILE_VERSION,
+      context.sketchId,
+      constraint,
+      jsAppSettings(context.rustContext.settingsActor),
+      true
+    )
+    sendCommittedDimensionResult(
+      context,
+      self,
+      result,
+      getConstraintIdFromResult(result, constraint.type)
+    )
+  } catch (error) {
+    if (!runtime.cancelled) {
+      runtime.active = true
+    }
+    runtime.firstSelection = null
+    toastSketchSolveError(error)
+  }
 }
 
 function getDraftKey(constraint: ApiDimensionConstraint) {
@@ -679,6 +836,44 @@ async function deleteInactivePreviewConstraint(
     jsAppSettings(context.rustContext.settingsActor),
     false
   )
+}
+
+async function deleteVisiblePreviewConstraint(
+  runtime: DraftRuntime,
+  context: DimensionToolContext,
+  self: ParentSketchSolveSender
+) {
+  if (runtime.previewDeletion) {
+    await runtime.previewDeletion
+    return
+  }
+
+  const constraintId = runtime.draftConstraintId
+  if (constraintId === null) {
+    return
+  }
+
+  const deletion = context.rustContext
+    .deleteObjects(
+      SKETCH_FILE_VERSION,
+      context.sketchId,
+      [constraintId],
+      [],
+      jsAppSettings(context.rustContext.settingsActor),
+      false
+    )
+    .then((result) => {
+      runtime.draftConstraintId = null
+      runtime.lastDraftKey = null
+      sendPreviewResultToParent(self, result)
+      sendParent(self, { type: 'clear draft entities' })
+    })
+  runtime.previewDeletion = deletion
+  try {
+    await deletion
+  } finally {
+    runtime.previewDeletion = null
+  }
 }
 
 function sendPreviewResultToParent(
@@ -748,6 +943,28 @@ async function updateDraftConstraint(
     mousePoint,
     getDefaultLengthUnit(context.kclManager)
   )
+  const matchingConstraint = findMatchingDimensionConstraint(
+    constraint,
+    context.initialObjects
+  )
+  if (matchingConstraint) {
+    await deleteVisiblePreviewConstraint(runtime, context, self)
+    if (!runtime.active || runtime.cancelled) {
+      return
+    }
+    if (runtime.matchingConstraintId !== matchingConstraint.id) {
+      showMatchingDimension(self, matchingConstraint.id)
+    }
+    runtime.matchingConstraintId = matchingConstraint.id
+    return
+  }
+  if (runtime.matchingConstraintId !== null) {
+    sendParent(self, {
+      type: 'update hovered id',
+      data: { hoveredId: null },
+    })
+    runtime.matchingConstraintId = null
+  }
   const draftKey = getDraftKey(constraint)
   // Skip constraint edits when the mouse moved too little to change the draft.
   if (draftKey === runtime.lastDraftKey) {
@@ -811,12 +1028,11 @@ function requestDraftPreview(
   }
 
   runtime.queuedMousePoint = mousePoint
-  if (runtime.previewInFlight) {
+  if (runtime.previewWork) {
     return
   }
 
-  runtime.previewInFlight = true
-  void (async () => {
+  const previewWork = (async () => {
     try {
       while (runtime.active && runtime.queuedMousePoint) {
         const nextMousePoint = runtime.queuedMousePoint
@@ -826,9 +1042,10 @@ function requestDraftPreview(
     } catch (error) {
       toastSketchSolveError(error)
     } finally {
-      runtime.previewInFlight = false
+      runtime.previewWork = null
     }
   })()
+  runtime.previewWork = previewWork
 }
 
 async function commitDraftConstraint(
@@ -847,8 +1064,35 @@ async function commitDraftConstraint(
     getDefaultLengthUnit(context.kclManager)
   )
 
+  deactivateRuntime(runtime)
   try {
-    deactivateRuntime(runtime)
+    if (runtime.previewWork) {
+      await runtime.previewWork
+    }
+    if (runtime.cancelled) {
+      return
+    }
+
+    const matchingConstraint = findMatchingDimensionConstraint(
+      constraint,
+      context.initialObjects
+    )
+    if (matchingConstraint) {
+      await deleteVisiblePreviewConstraint(runtime, context, self)
+      if (runtime.cancelled) {
+        return
+      }
+      showMatchingDimension(self, matchingConstraint.id)
+      self.send({ type: 'done' })
+      return
+    }
+
+    if (runtime.previewDeletion) {
+      await runtime.previewDeletion
+    }
+    if (runtime.cancelled) {
+      return
+    }
     const settings = jsAppSettings(context.rustContext.settingsActor)
     // This is normally never null, except for edge cases:
     // - click is faster than draft preview creation
@@ -874,29 +1118,11 @@ async function commitDraftConstraint(
     const constraintId =
       existingConstraintId ?? getConstraintIdFromResult(result, constraint.type)
     runtime.draftConstraintId = null
-    sendParent(self, {
-      type: 'update sketch outcome',
-      data: {
-        sourceDelta: result.kclSource,
-        sceneGraphDelta: result.sceneGraphDelta,
-        checkpointId: result.checkpointId ?? null,
-      },
-    })
-    sendParent(self, { type: 'clear draft entities' })
-    sendParent(self, {
-      type: 'update selected ids',
-      data: context.keepSelection
-        ? { duringAreaSelectIds: [] }
-        : { selectedIds: [], duringAreaSelectIds: [] },
-    })
-    sendParent(self, {
-      type: 'update hovered id',
-      data: { hoveredId: constraintId },
-    })
-    toastToolbar.dismiss(DIMENSION_PLACEMENT_PROMPT_TOAST_ID)
-    self.send({ type: 'done' })
+    sendCommittedDimensionResult(context, self, result, constraintId)
   } catch (error) {
-    runtime.active = true
+    if (!runtime.cancelled) {
+      runtime.active = true
+    }
     toastSketchSolveError(error)
   }
 }
@@ -929,6 +1155,17 @@ function getClosestDimensionSelection(
     return pointSelection
   }
 
+  if (
+    closestCandidate.target.type === 'arc' ||
+    closestCandidate.target.type === 'circle'
+  ) {
+    return {
+      type: closestCandidate.target.type,
+      id: closestObject.id,
+      clickPoint: mousePoint,
+    }
+  }
+
   return {
     type: 'line',
     id: closestObject.id,
@@ -937,7 +1174,7 @@ function getClosestDimensionSelection(
 }
 
 function getSelectionPoint(selection: DimensionSelection) {
-  return selection.type === 'line' ? selection.clickPoint : selection.point
+  return selection.type === 'point' ? selection.point : selection.clickPoint
 }
 
 function getDimensionDraftContext(
@@ -1045,6 +1282,7 @@ function addDimensionListener({
 }) {
   const runtime = context.runtime
   runtime.active = true
+  runtime.cancelled = false
   const initialObjects = context.initialObjects
   const initialSelections =
     getInitialAngleLineSelections(
@@ -1099,11 +1337,31 @@ function addDimensionListener({
 
       const mousePoint: Coords2d = [twoD.x, twoD.y]
       if (!runtime.firstSelection) {
-        // First click: choose either a line or a point.
+        // First click: choose a line, point, arc, or circle.
         const selection = getClosestDimensionSelection(mousePoint, context)
         if (selection) {
           runtime.firstSelection = selection
           updateSelectedEntities(self, [selection])
+
+          if (selection.type === 'arc' || selection.type === 'circle') {
+            void commitCircularDimension(runtime, context, self, selection)
+            return
+          }
+
+          if (selection.type === 'line' && !args.mouseEvent.shiftKey) {
+            const draftContext = getLineLengthDraftContext(
+              selection,
+              initialObjects
+            )
+            if (draftContext) {
+              runtime.draftContext = draftContext
+              sendParent(self, {
+                type: 'update hovered id',
+                data: { hoveredId: null },
+              })
+              requestDraftPreview(runtime, context, self, mousePoint)
+            }
+          }
         }
       } else if (!runtime.draftContext) {
         // Second click: complete a line/line, point/point, or point/line pair.
@@ -1134,6 +1392,7 @@ function addDimensionListener({
     onMove: (args) => {
       const twoD = args?.intersectionPoint?.twoD
       if (!twoD) {
+        runtime.matchingConstraintId = null
         sendParent(self, {
           type: 'update hovered id',
           data: { hoveredId: null },
@@ -1162,11 +1421,40 @@ function removeDimensionListener({
   context: DimensionToolContext
 }) {
   deactivateRuntime(context.runtime)
+  context.runtime.cancelled = true
   toastToolbar.dismiss(DIMENSION_PLACEMENT_PROMPT_TOAST_ID)
   context.sceneInfra.setCallbacks({
     onClick: () => {},
     onMove: () => {},
   })
+}
+
+function deleteDraftEntitiesAfterPendingWork({
+  context,
+  self,
+}: {
+  context: DimensionToolContext
+  self: ParentSketchSolveSender
+}) {
+  const previewWork = context.runtime.previewWork
+  void (async () => {
+    if (previewWork) {
+      await previewWork
+    }
+
+    const previewDeletion = context.runtime.previewDeletion
+    if (previewDeletion) {
+      try {
+        await previewDeletion
+      } catch {
+        // The parent cleanup below retries a failed child-owned deletion.
+      }
+    }
+
+    if (context.runtime.draftConstraintId !== null) {
+      sendParent(self, { type: 'delete draft entities' })
+    }
+  })()
 }
 
 export const machine = setup({
@@ -1178,8 +1466,7 @@ export const machine = setup({
   actions: {
     'add dimension listener': addDimensionListener,
     'remove dimension listener': removeDimensionListener,
-    'delete draft entities': ({ self }) =>
-      sendParent(self, { type: 'delete draft entities' }),
+    'delete draft entities': deleteDraftEntitiesAfterPendingWork,
     'toast sketch solve error': ({ event }) => {
       toastSketchSolveError(event)
     },

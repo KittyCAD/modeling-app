@@ -2,7 +2,9 @@ import type {
   ApiConstraint,
   ApiObject,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { OnClickCallbackArgs } from '@src/clientSideScene/sceneInfra'
 import type { Coords2d } from '@src/lang/util'
+import { toastToolbar, toolbarToastsSignal } from '@src/lib/toolbarToast'
 import {
   ORIGIN_TARGET,
   type SelectionCoordinates,
@@ -18,6 +20,8 @@ import {
   getDimensionDistanceType,
 } from '@src/machines/sketchSolve/tools/dimensionTool'
 import {
+  createArcApiObject,
+  createCircleApiObject,
   createLineApiObject,
   createMockKclManager,
   createMockRustContext,
@@ -25,8 +29,13 @@ import {
   createPointApiObject,
   createSceneGraphDelta,
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
-import { describe, expect, it, vi } from 'vitest'
+import { Vector2, Vector3 } from 'three'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { assign, createActor, setup, waitFor } from 'xstate'
+
+afterEach(() => {
+  toastToolbar.dismiss()
+})
 
 function createSketchApiObject({ id }: { id: number }): ApiObject {
   return {
@@ -65,18 +74,24 @@ function createConstraintObject({
   }
 }
 
-function createMouseEvent(point: Coords2d) {
+function createMouseEvent(
+  point: Coords2d,
+  { shiftKey = false }: { shiftKey?: boolean } = {}
+): OnClickCallbackArgs & {
+  intersectionPoint: NonNullable<OnClickCallbackArgs['intersectionPoint']>
+} {
   return {
     mouseEvent: {
       which: 1,
       detail: 1,
-    },
+      shiftKey,
+    } as MouseEvent,
     intersectionPoint: {
-      twoD: {
-        x: point[0],
-        y: point[1],
-      },
+      twoD: new Vector2(point[0], point[1]),
+      threeD: new Vector3(point[0], point[1]),
     },
+    intersects: [],
+    wasmInstance: {} as never,
   }
 }
 
@@ -96,19 +111,23 @@ function createParentHarness(
   let nextConstraintId = 30
   let currentObjects = [...objects]
 
-  rustContext.addConstraint = vi.fn(async (_version, _sketchId, constraint) => {
-    const constraintId = nextConstraintId++
-    currentObjects = [
-      ...currentObjects,
-      createConstraintObject({ id: constraintId, constraint }),
-    ]
+  const addConstraintMock = vi.fn(
+    async (...args: Parameters<typeof rustContext.addConstraint>) => {
+      const constraint = args[2]
+      const constraintId = nextConstraintId++
+      currentObjects = [
+        ...currentObjects,
+        createConstraintObject({ id: constraintId, constraint }),
+      ]
 
-    return {
-      kclSource: { text: '' },
-      sceneGraphDelta: createSceneGraphDelta(currentObjects, [constraintId]),
-      checkpointId: null,
+      return {
+        kclSource: { text: '' },
+        sceneGraphDelta: createSceneGraphDelta(currentObjects, [constraintId]),
+        checkpointId: null,
+      }
     }
-  }) as typeof rustContext.addConstraint
+  )
+  rustContext.addConstraint = addConstraintMock
   rustContext.editAngleConstraint = vi.fn(
     async (_version, _sketchId, constraintId, constraint) => {
       currentObjects = currentObjects.map((object) =>
@@ -124,8 +143,10 @@ function createParentHarness(
       }
     }
   ) as typeof rustContext.editAngleConstraint
-  rustContext.editDistanceConstraint = vi.fn(
-    async (_version, _sketchId, constraintId, constraint) => {
+  const editDistanceConstraintMock = vi.fn(
+    async (...args: Parameters<typeof rustContext.editDistanceConstraint>) => {
+      const constraintId = args[2]
+      const constraint = args[3]
       currentObjects = currentObjects.map((object) =>
         object.id === constraintId
           ? createConstraintObject({ id: constraintId, constraint })
@@ -138,9 +159,11 @@ function createParentHarness(
         checkpointId: null,
       }
     }
-  ) as typeof rustContext.editDistanceConstraint
-  rustContext.deleteObjects = vi.fn(
-    async (_version, _sketchId, constraintIds) => {
+  )
+  rustContext.editDistanceConstraint = editDistanceConstraintMock
+  const deleteObjectsMock = vi.fn(
+    async (...args: Parameters<typeof rustContext.deleteObjects>) => {
+      const constraintIds = args[2]
       currentObjects = currentObjects.filter(
         (object) => !constraintIds.includes(object.id)
       )
@@ -151,7 +174,8 @@ function createParentHarness(
         checkpointId: null,
       }
     }
-  ) as typeof rustContext.deleteObjects
+  )
+  rustContext.deleteObjects = deleteObjectsMock
 
   const sceneGraphDelta = createSceneGraphDelta(objects)
   const parentMachine = setup({
@@ -224,6 +248,9 @@ function createParentHarness(
     actor,
     sceneInfra,
     rustContext,
+    addConstraintMock,
+    editDistanceConstraintMock,
+    deleteObjectsMock,
     events,
   }
 }
@@ -446,6 +473,504 @@ describe('dimensionTool distance selection', () => {
 })
 
 describe('dimensionTool', () => {
+  it.each([
+    {
+      name: 'circle',
+      segment: createCircleApiObject({ id: 10, center: 1, start: 2 }),
+      expectedConstraint: {
+        type: 'Diameter',
+        diameter: { value: 10, units: 'Mm' },
+        arc: 10,
+        source: { expr: '10', is_literal: true },
+      },
+    },
+    {
+      name: 'arc',
+      segment: createArcApiObject({ id: 10, center: 1, start: 2, end: 3 }),
+      expectedConstraint: {
+        type: 'Radius',
+        radius: { value: 5, units: 'Mm' },
+        arc: 10,
+        source: { expr: '5', is_literal: true },
+      },
+    },
+  ])(
+    'creates the default $name dimension on the first click',
+    async ({ segment, expectedConstraint }) => {
+      const sketch = createSketchApiObject({ id: 0 })
+      const center = createPointApiObject({ id: 1, x: 0, y: 0 })
+      const start = createPointApiObject({ id: 2, x: 3, y: 4 })
+      const end = createPointApiObject({ id: 3, x: -3, y: 4 })
+      const { actor, sceneInfra, addConstraintMock, events } =
+        createParentHarness([sketch, center, start, end, segment])
+      const callbacks = vi.mocked(sceneInfra.setCallbacks).mock.calls[0]?.[0]
+      if (!callbacks?.onClick) {
+        throw new Error('Dimension tool did not register its click callback')
+      }
+
+      await callbacks.onClick(createMouseEvent([0, 5]))
+
+      await waitFor(actor, () => addConstraintMock.mock.calls.length === 1)
+      await waitFor(actor, () =>
+        events.some((event) => event.type === 'update sketch outcome')
+      )
+      expect(addConstraintMock.mock.calls[0][2]).toEqual(expectedConstraint)
+      expect(addConstraintMock.mock.calls[0][4]).toBe(true)
+      expect(events.map((event) => event.type)).toEqual(
+        expect.arrayContaining([
+          'update sketch outcome',
+          'clear draft entities',
+          'update hovered id',
+        ])
+      )
+    }
+  )
+
+  it.each([
+    {
+      name: 'circle diameter',
+      segment: createCircleApiObject({ id: 10, center: 1, start: 2 }),
+      constraint: {
+        type: 'Diameter',
+        diameter: { value: 10, units: 'Mm' },
+        arc: 10,
+        source: { expr: '10', is_literal: true },
+      } satisfies ApiConstraint,
+    },
+    {
+      name: 'arc radius',
+      segment: createArcApiObject({ id: 10, center: 1, start: 2, end: 3 }),
+      constraint: {
+        type: 'Radius',
+        radius: { value: 5, units: 'Mm' },
+        arc: 10,
+        source: { expr: '5', is_literal: true },
+      } satisfies ApiConstraint,
+    },
+    {
+      name: 'circle diameter when a radius exists',
+      segment: createCircleApiObject({ id: 10, center: 1, start: 2 }),
+      constraint: {
+        type: 'Radius',
+        radius: { value: 5, units: 'Mm' },
+        arc: 10,
+        source: { expr: '5', is_literal: true },
+      } satisfies ApiConstraint,
+    },
+    {
+      name: 'arc radius when a diameter exists',
+      segment: createArcApiObject({ id: 10, center: 1, start: 2, end: 3 }),
+      constraint: {
+        type: 'Diameter',
+        diameter: { value: 10, units: 'Mm' },
+        arc: 10,
+        source: { expr: '10', is_literal: true },
+      } satisfies ApiConstraint,
+    },
+  ])('does not add a duplicate $name', async ({ segment, constraint }) => {
+    const sketch = createSketchApiObject({ id: 0 })
+    const center = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const start = createPointApiObject({ id: 2, x: 3, y: 4 })
+    const end = createPointApiObject({ id: 3, x: -3, y: 4 })
+    const existingConstraint = createConstraintObject({
+      id: 20,
+      constraint,
+    })
+    const { actor, sceneInfra, addConstraintMock, events } =
+      createParentHarness([
+        sketch,
+        center,
+        start,
+        end,
+        segment,
+        existingConstraint,
+      ])
+    const callbacks = vi.mocked(sceneInfra.setCallbacks).mock.calls[0]?.[0]
+    if (!callbacks?.onClick || !callbacks.onMove) {
+      throw new Error('Dimension tool did not register its callbacks')
+    }
+
+    await callbacks.onClick(createMouseEvent([0, 5]))
+
+    await waitFor(actor, () =>
+      events.some(
+        (event) =>
+          event.type === 'update hovered id' &&
+          (event.data as { hoveredId?: number } | undefined)?.hoveredId ===
+            existingConstraint.id
+      )
+    )
+
+    expect(addConstraintMock).not.toHaveBeenCalled()
+  })
+
+  it('does not add another angle dimension for the same line pair', async () => {
+    const sketch = createSketchApiObject({ id: 0 })
+    const origin = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const line0End = createPointApiObject({ id: 2, x: 10, y: 0 })
+    const line1End = createPointApiObject({
+      id: 3,
+      x: 5,
+      y: 8.660254037844386,
+    })
+    const line0 = createLineApiObject({ id: 10, start: 1, end: 2 })
+    const line1 = createLineApiObject({ id: 11, start: 1, end: 3 })
+    const existingConstraint = createConstraintObject({
+      id: 20,
+      constraint: {
+        type: 'Angle',
+        lines: [11, 10],
+        angle: { value: 300, units: 'Deg' },
+        sector: 3,
+        inverse: true,
+        source: { expr: '300deg', is_literal: true },
+      },
+    })
+    const { actor, sceneInfra, addConstraintMock, events } =
+      createParentHarness(
+        [sketch, origin, line0End, line1End, line0, line1, existingConstraint],
+        { initialSelectionIds: [10, 11] }
+      )
+    const callbacks = vi.mocked(sceneInfra.setCallbacks).mock.calls[0]?.[0]
+    if (!callbacks?.onClick || !callbacks.onMove) {
+      throw new Error('Dimension tool did not register its callbacks')
+    }
+
+    const matchingHoverEvents = () =>
+      events.filter(
+        (event) =>
+          event.type === 'update hovered id' &&
+          (event.data as { hoveredId?: number } | undefined)?.hoveredId ===
+            existingConstraint.id
+      )
+
+    toastToolbar.dismiss()
+    await callbacks.onMove(createMouseEvent([4, 3]))
+    await waitFor(actor, () => matchingHoverEvents().length === 1)
+    expect(
+      toolbarToastsSignal.value.some(
+        (toast) => toast.message === 'That dimension already exists.'
+      )
+    ).toBe(true)
+
+    await callbacks.onMove(undefined as never)
+    await callbacks.onMove(createMouseEvent([4, 3]))
+    await waitFor(actor, () => matchingHoverEvents().length === 2)
+
+    await callbacks.onClick(createMouseEvent([4, 3]))
+    await waitFor(actor, () => matchingHoverEvents().length === 3)
+
+    expect(addConstraintMock).not.toHaveBeenCalled()
+  })
+
+  it('skips a duplicate line length while allowing another distance type', async () => {
+    const sketch = createSketchApiObject({ id: 0 })
+    const lineStart = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const lineEnd = createPointApiObject({ id: 2, x: 4, y: 3 })
+    const line = createLineApiObject({ id: 10, start: 1, end: 2 })
+    const existingConstraint = createConstraintObject({
+      id: 20,
+      constraint: {
+        type: 'Distance',
+        segments: [1, 2],
+        distance: { value: 5, units: 'Mm' },
+        source: { expr: '5', is_literal: true },
+      },
+    })
+    const { actor, sceneInfra, addConstraintMock, events } =
+      createParentHarness([
+        sketch,
+        lineStart,
+        lineEnd,
+        line,
+        existingConstraint,
+      ])
+    const callbacks = vi.mocked(sceneInfra.setCallbacks).mock.calls[0]?.[0]
+    if (!callbacks?.onClick || !callbacks.onMove) {
+      throw new Error('Dimension tool did not register its callbacks')
+    }
+
+    await callbacks.onClick(createMouseEvent([2, 1.5]))
+
+    expect(addConstraintMock).not.toHaveBeenCalled()
+
+    await callbacks.onMove(createMouseEvent([2, 5]))
+    await waitFor(actor, () => addConstraintMock.mock.calls.length === 1)
+    expect(addConstraintMock.mock.calls[0][2]).toMatchObject({
+      type: 'HorizontalDistance',
+      segments: [1, 2],
+    })
+    expect(
+      events.filter((event) => event.type === 'update hovered id').at(-1)?.data
+    ).toEqual({ hoveredId: null })
+  })
+
+  it('removes a draft when its dimension type changes to a duplicate', async () => {
+    const sketch = createSketchApiObject({ id: 0 })
+    const point0 = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const point1 = createPointApiObject({ id: 2, x: 4, y: 3 })
+    const existingConstraint = createConstraintObject({
+      id: 20,
+      constraint: {
+        type: 'HorizontalDistance',
+        segments: [1, 2],
+        distance: { value: 4, units: 'Mm' },
+        source: { expr: '4', is_literal: true },
+      },
+    })
+    const { actor, sceneInfra, addConstraintMock, deleteObjectsMock } =
+      createParentHarness([sketch, point0, point1, existingConstraint], {
+        initialSelectionIds: [1, 2],
+      })
+    const callbacks = vi.mocked(sceneInfra.setCallbacks).mock.calls[0]?.[0]
+    if (!callbacks?.onMove) {
+      throw new Error('Dimension tool did not register its move callback')
+    }
+
+    await callbacks.onMove(createMouseEvent([2, 1.5]))
+    await waitFor(actor, () => addConstraintMock.mock.calls.length === 1)
+    expect(addConstraintMock.mock.calls[0][2]).toMatchObject({
+      type: 'Distance',
+      segments: [1, 2],
+    })
+
+    await callbacks.onMove(createMouseEvent([2, 5]))
+    await waitFor(actor, () => deleteObjectsMock.mock.calls.length === 1)
+
+    expect(deleteObjectsMock.mock.calls[0][2]).toEqual([30])
+    expect(addConstraintMock).toHaveBeenCalledTimes(1)
+  })
+
+  it.each([
+    {
+      name: 'a duplicate click followed by escape',
+      clickPoint: [2, 5] as Coords2d,
+      expectedConstraintType: null,
+      escape: true,
+    },
+    {
+      name: 'a permitted dimension click',
+      clickPoint: [6, 1.5] as Coords2d,
+      expectedConstraintType: 'VerticalDistance',
+      escape: false,
+    },
+  ])('serializes draft cleanup during $name', async (testCase) => {
+    const sketch = createSketchApiObject({ id: 0 })
+    const point0 = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const point1 = createPointApiObject({ id: 2, x: 4, y: 3 })
+    const existingConstraint = createConstraintObject({
+      id: 20,
+      constraint: {
+        type: 'HorizontalDistance',
+        segments: [1, 2],
+        distance: { value: 4, units: 'Mm' },
+        source: { expr: '4', is_literal: true },
+      },
+    })
+    const { actor, sceneInfra, addConstraintMock, deleteObjectsMock, events } =
+      createParentHarness([sketch, point0, point1, existingConstraint], {
+        initialSelectionIds: [1, 2],
+      })
+    const callbacks = vi.mocked(sceneInfra.setCallbacks).mock.calls[0]?.[0]
+    if (!callbacks?.onClick || !callbacks.onMove) {
+      throw new Error('Dimension tool did not register its callbacks')
+    }
+    const deleteObjects = deleteObjectsMock.getMockImplementation()
+    if (!deleteObjects) {
+      throw new Error('Delete objects mock has no implementation')
+    }
+    let finishDelete: () => void = () => {
+      throw new Error('Delete objects mock was not called')
+    }
+    deleteObjectsMock.mockImplementationOnce(async (...args) => {
+      await new Promise<void>((resolve) => {
+        finishDelete = resolve
+      })
+      return deleteObjects(...args)
+    })
+
+    await callbacks.onMove(createMouseEvent([2, 1.5]))
+    await waitFor(actor, () => addConstraintMock.mock.calls.length === 1)
+    toastToolbar.dismiss()
+    await callbacks.onMove(createMouseEvent([2, 5]))
+    await waitFor(actor, () => deleteObjectsMock.mock.calls.length === 1)
+
+    await callbacks.onClick(createMouseEvent(testCase.clickPoint))
+    expect(deleteObjectsMock).toHaveBeenCalledTimes(1)
+    if (testCase.escape) {
+      const childTool = actor.getSnapshot().children.childTool
+      if (!childTool) {
+        throw new Error('Dimension tool child actor was not started')
+      }
+      childTool.send({ type: 'escape' })
+      expect(
+        events.some((event) => event.type === 'delete draft entities')
+      ).toBe(false)
+    }
+
+    finishDelete()
+    if (testCase.expectedConstraintType) {
+      await waitFor(actor, () => addConstraintMock.mock.calls.length === 2)
+      expect(addConstraintMock.mock.calls[1][2]).toMatchObject({
+        type: testCase.expectedConstraintType,
+        segments: [1, 2],
+      })
+      expect(addConstraintMock.mock.calls[1][4]).toBe(true)
+    } else {
+      await waitFor(actor, () =>
+        events.some((event) => event.type === 'clear draft entities')
+      )
+      await new Promise((resolve) => setTimeout(resolve, 0))
+      expect(
+        events.some(
+          (event) =>
+            event.type === 'update hovered id' &&
+            (event.data as { hoveredId?: number } | undefined)?.hoveredId ===
+              existingConstraint.id
+        )
+      ).toBe(false)
+      expect(
+        toolbarToastsSignal.value.some(
+          (toast) => toast.message === 'That dimension already exists.'
+        )
+      ).toBe(false)
+    }
+  })
+
+  it.each([
+    { name: 'deleting a duplicate draft', action: 'duplicate' },
+    { name: 'handling escape cleanup', action: 'escape' },
+  ])('waits for a preview edit before $name', async ({ action }) => {
+    const sketch = createSketchApiObject({ id: 0 })
+    const point0 = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const point1 = createPointApiObject({ id: 2, x: 4, y: 3 })
+    const existingConstraint = createConstraintObject({
+      id: 20,
+      constraint: {
+        type: 'Distance',
+        segments: [1, 2],
+        distance: { value: 5, units: 'Mm' },
+        source: { expr: '5', is_literal: true },
+      },
+    })
+    const {
+      actor,
+      sceneInfra,
+      addConstraintMock,
+      editDistanceConstraintMock,
+      deleteObjectsMock,
+      events,
+    } = createParentHarness([sketch, point0, point1, existingConstraint], {
+      initialSelectionIds: [1, 2],
+    })
+    const callbacks = vi.mocked(sceneInfra.setCallbacks).mock.calls[0]?.[0]
+    if (!callbacks?.onClick || !callbacks.onMove) {
+      throw new Error('Dimension tool did not register its callbacks')
+    }
+    const editDistanceConstraint =
+      editDistanceConstraintMock.getMockImplementation()
+    if (!editDistanceConstraint) {
+      throw new Error('Edit distance constraint mock has no implementation')
+    }
+    let finishEdit: () => void = () => {
+      throw new Error('Edit distance constraint mock was not called')
+    }
+    editDistanceConstraintMock.mockImplementationOnce(async (...args) => {
+      await new Promise<void>((resolve) => {
+        finishEdit = resolve
+      })
+      return editDistanceConstraint(...args)
+    })
+
+    await callbacks.onMove(createMouseEvent([2, 5]))
+    await waitFor(actor, () => addConstraintMock.mock.calls.length === 1)
+    await callbacks.onMove(createMouseEvent([6, 1.5]))
+    await waitFor(
+      actor,
+      () => editDistanceConstraintMock.mock.calls.length === 1
+    )
+
+    if (action === 'duplicate') {
+      await callbacks.onClick(createMouseEvent([2, 1.5]))
+    } else {
+      const childTool = actor.getSnapshot().children.childTool
+      if (!childTool) {
+        throw new Error('Dimension tool child actor was not started')
+      }
+      childTool.send({ type: 'escape' })
+    }
+    expect(deleteObjectsMock).not.toHaveBeenCalled()
+    expect(events.some((event) => event.type === 'delete draft entities')).toBe(
+      false
+    )
+
+    finishEdit()
+    if (action === 'duplicate') {
+      await waitFor(actor, () => deleteObjectsMock.mock.calls.length === 1)
+      expect(deleteObjectsMock.mock.calls[0][2]).toEqual([30])
+    } else {
+      await waitFor(actor, () =>
+        events.some((event) => event.type === 'delete draft entities')
+      )
+      expect(deleteObjectsMock).not.toHaveBeenCalled()
+    }
+    expect(addConstraintMock).toHaveBeenCalledTimes(1)
+  })
+
+  it('starts a smart line-length draft on the first unmodified click', async () => {
+    const sketch = createSketchApiObject({ id: 0 })
+    const lineStart = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const lineEnd = createPointApiObject({ id: 2, x: 4, y: 3 })
+    const line = createLineApiObject({ id: 10, start: 1, end: 2 })
+    const { actor, sceneInfra, addConstraintMock, editDistanceConstraintMock } =
+      createParentHarness([sketch, lineStart, lineEnd, line])
+    const callbacks = vi.mocked(sceneInfra.setCallbacks).mock.calls[0]?.[0]
+    if (!callbacks?.onClick || !callbacks.onMove) {
+      throw new Error('Dimension tool did not register its callbacks')
+    }
+
+    await callbacks.onClick(createMouseEvent([2, 1.5]))
+
+    await waitFor(actor, () => addConstraintMock.mock.calls.length === 1)
+    expect(addConstraintMock.mock.calls[0][2]).toMatchObject({
+      type: 'Distance',
+      segments: [1, 2],
+      distance: { value: 5, units: 'Mm' },
+    })
+
+    await callbacks.onMove(createMouseEvent([2, 5]))
+    await waitFor(
+      actor,
+      () => editDistanceConstraintMock.mock.calls.length === 1
+    )
+    expect(editDistanceConstraintMock.mock.calls[0][3]).toMatchObject({
+      type: 'HorizontalDistance',
+      segments: [1, 2],
+      distance: { value: 4, units: 'Mm' },
+    })
+
+    await callbacks.onMove(createMouseEvent([6, 1]))
+    await waitFor(
+      actor,
+      () => editDistanceConstraintMock.mock.calls.length === 2
+    )
+    expect(editDistanceConstraintMock.mock.calls[1][3]).toMatchObject({
+      type: 'VerticalDistance',
+      segments: [1, 2],
+      distance: { value: 3, units: 'Mm' },
+    })
+
+    await callbacks.onClick(createMouseEvent([6, 1]))
+    await waitFor(
+      actor,
+      () => editDistanceConstraintMock.mock.calls.length === 3
+    )
+    const commitCall = editDistanceConstraintMock.mock.calls[2]
+    expect(commitCall[3].type).toBe('VerticalDistance')
+    expect(commitCall[5]).toBe(true)
+    expect(commitCall[6]).toBe(true)
+  })
+
   it('creates a distance draft after selecting the origin and a point', async () => {
     const sketch = createSketchApiObject({ id: 0 })
     const point = createPointApiObject({ id: 2, x: 4, y: 3 })
@@ -537,7 +1062,10 @@ describe('dimensionTool', () => {
     expect((rustContext.deleteObjects as any).mock.calls).toHaveLength(0)
   })
 
-  async function expectPointLineDraft(clicks: [Coords2d, Coords2d]) {
+  async function expectPointLineDraft(
+    clicks: [Coords2d, Coords2d],
+    { shiftFirst = false }: { shiftFirst?: boolean } = {}
+  ) {
     const sketch = createSketchApiObject({ id: 0 })
     const lineStart = createPointApiObject({ id: 1, x: 0, y: 0 })
     const lineEnd = createPointApiObject({ id: 2, x: 10, y: 0 })
@@ -552,7 +1080,7 @@ describe('dimensionTool', () => {
     ])
     const callbacks = (sceneInfra.setCallbacks as any).mock.calls[0][0]
 
-    callbacks.onClick(createMouseEvent(clicks[0]))
+    callbacks.onClick(createMouseEvent(clicks[0], { shiftKey: shiftFirst }))
     callbacks.onClick(createMouseEvent(clicks[1]))
 
     await waitFor(
@@ -574,10 +1102,13 @@ describe('dimensionTool', () => {
   })
 
   it('creates a point-to-line draft after selecting a line then a point', async () => {
-    await expectPointLineDraft([
-      [5, 0],
-      [5, 4],
-    ])
+    await expectPointLineDraft(
+      [
+        [5, 0],
+        [5, 4],
+      ],
+      { shiftFirst: true }
+    )
   })
 
   it('creates a distance draft after selecting two parallel lines', async () => {
@@ -588,18 +1119,20 @@ describe('dimensionTool', () => {
     const line1End = createPointApiObject({ id: 4, x: 10, y: 4 })
     const line0 = createLineApiObject({ id: 10, start: 1, end: 2 })
     const line1 = createLineApiObject({ id: 11, start: 3, end: 4 })
-    const { actor, sceneInfra, rustContext } = createParentHarness([
-      sketch,
-      line0Start,
-      line0End,
-      line1Start,
-      line1End,
-      line0,
-      line1,
-    ])
+    const { actor, sceneInfra, rustContext, addConstraintMock } =
+      createParentHarness([
+        sketch,
+        line0Start,
+        line0End,
+        line1Start,
+        line1End,
+        line0,
+        line1,
+      ])
     const callbacks = (sceneInfra.setCallbacks as any).mock.calls[0][0]
 
-    callbacks.onClick(createMouseEvent([5, 0]))
+    callbacks.onClick(createMouseEvent([5, 0], { shiftKey: true }))
+    expect(addConstraintMock).not.toHaveBeenCalled()
     callbacks.onClick(createMouseEvent([5, 4]))
 
     await waitFor(
@@ -653,7 +1186,7 @@ describe('dimensionTool', () => {
       ])
       const callbacks = (sceneInfra.setCallbacks as any).mock.calls[0][0]
 
-      callbacks.onClick(createMouseEvent(clicks[0]))
+      callbacks.onClick(createMouseEvent(clicks[0], { shiftKey: true }))
       callbacks.onClick(createMouseEvent(clicks[1]))
 
       await waitFor(
@@ -831,7 +1364,7 @@ describe('dimensionTool', () => {
       createParentHarness(objects)
     const callbacks = (sceneInfra.setCallbacks as any).mock.calls[0][0]
 
-    callbacks.onClick(createMouseEvent([8, 0]))
+    callbacks.onClick(createMouseEvent([8, 0], { shiftKey: true }))
     callbacks.onClick(createMouseEvent([2.5, 4.330127018922193]))
 
     await waitFor(
@@ -927,7 +1460,7 @@ describe('dimensionTool', () => {
     const { actor, sceneInfra, rustContext } = createParentHarness(objects)
     const callbacks = (sceneInfra.setCallbacks as any).mock.calls[0][0]
 
-    callbacks.onClick(createMouseEvent([8, 0]))
+    callbacks.onClick(createMouseEvent([8, 0], { shiftKey: true }))
     callbacks.onClick(createMouseEvent([2.5, 4.330127018922193]))
 
     await waitFor(

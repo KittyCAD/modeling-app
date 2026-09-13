@@ -1,4 +1,7 @@
-import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
+import type {
+  ApiConstraint,
+  ApiObject,
+} from '@rust/kcl-lib/bindings/FrontendApi'
 import {
   buildAngleConstraintInput,
   buildCircularSizeDimensionConstraintInput,
@@ -7,6 +10,7 @@ import {
   buildSymmetricConstraintInput,
   buildSymmetricConstraintInputWithExplicitAxis,
   buildTangentConstraintInput,
+  findMatchingDimensionConstraint,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
   createArcApiObject,
@@ -22,6 +26,20 @@ function createObjectsArray(objects: ApiObject[]) {
     array[object.id] = object
   }
   return array
+}
+
+function createConstraintApiObject(
+  id: number,
+  constraint: ApiConstraint
+): ApiObject {
+  return {
+    id,
+    kind: { type: 'Constraint', constraint },
+    label: '',
+    comments: '',
+    artifact_id: '0',
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
+  }
 }
 
 describe('buildAngleConstraintInput', () => {
@@ -150,6 +168,154 @@ describe('buildArcSizeDimensionConstraintInput', () => {
       arc: 11,
       source: { expr: '10', is_literal: true },
     })
+  })
+})
+
+describe('findMatchingDimensionConstraint', () => {
+  it('matches distance constraints by type and unordered targets', () => {
+    const distance = createConstraintApiObject(20, {
+      type: 'Distance',
+      segments: [1, 2],
+      distance: { value: 5, units: 'Mm' },
+      source: { expr: '5', is_literal: true },
+    })
+    const objects = createObjectsArray([distance])
+
+    expect(
+      findMatchingDimensionConstraint(
+        {
+          type: 'Distance',
+          segments: [2, 1],
+          distance: { value: 10, units: 'Mm' },
+          source: { expr: '10', is_literal: true },
+        },
+        objects
+      )
+    ).toBe(distance)
+    expect(
+      findMatchingDimensionConstraint(
+        {
+          type: 'HorizontalDistance',
+          segments: [1, 2],
+          distance: { value: 5, units: 'Mm' },
+          source: { expr: '5', is_literal: true },
+        },
+        objects
+      )
+    ).toBeNull()
+  })
+
+  it.each([
+    {
+      existing: {
+        type: 'Diameter',
+        arc: 10,
+        diameter: { value: 10, units: 'Mm' },
+        source: { expr: '10', is_literal: true },
+      } satisfies ApiConstraint,
+      candidate: {
+        type: 'Diameter',
+        arc: 10,
+        diameter: { value: 12, units: 'Mm' },
+        source: { expr: '12', is_literal: true },
+      } satisfies ApiConstraint,
+    },
+    {
+      existing: {
+        type: 'Radius',
+        arc: 10,
+        radius: { value: 5, units: 'Mm' },
+        source: { expr: '5', is_literal: true },
+      } satisfies ApiConstraint,
+      candidate: {
+        type: 'Radius',
+        arc: 10,
+        radius: { value: 6, units: 'Mm' },
+        source: { expr: '6', is_literal: true },
+      } satisfies ApiConstraint,
+    },
+    {
+      existing: {
+        type: 'Radius',
+        arc: 10,
+        radius: { value: 5, units: 'Mm' },
+        source: { expr: '5', is_literal: true },
+      } satisfies ApiConstraint,
+      candidate: {
+        type: 'Diameter',
+        arc: 10,
+        diameter: { value: 10, units: 'Mm' },
+        source: { expr: '10', is_literal: true },
+      } satisfies ApiConstraint,
+    },
+  ])(
+    'matches $existing.type constraints by circular target',
+    ({ existing, candidate }) => {
+      const dimension = createConstraintApiObject(20, existing)
+
+      expect(findMatchingDimensionConstraint(candidate, [dimension])).toBe(
+        dimension
+      )
+    }
+  )
+
+  it('does not match circular dimensions on different targets', () => {
+    const radius = createConstraintApiObject(20, {
+      type: 'Radius',
+      arc: 10,
+      radius: { value: 5, units: 'Mm' },
+      source: { expr: '5', is_literal: true },
+    })
+
+    expect(
+      findMatchingDimensionConstraint(
+        {
+          type: 'Diameter',
+          arc: 11,
+          diameter: { value: 10, units: 'Mm' },
+          source: { expr: '10', is_literal: true },
+        },
+        [radius]
+      )
+    ).toBeNull()
+  })
+
+  it('matches angle constraints by unordered line pair', () => {
+    const angle = createConstraintApiObject(20, {
+      type: 'Angle',
+      lines: [10, 11],
+      angle: { value: 60, units: 'Deg' },
+      sector: 1,
+      inverse: false,
+      source: { expr: '60deg', is_literal: true },
+    })
+
+    expect(
+      findMatchingDimensionConstraint(
+        {
+          type: 'Angle',
+          lines: [11, 10],
+          angle: { value: 120, units: 'Deg' },
+          sector: 2,
+          inverse: false,
+          source: { expr: '120deg', is_literal: true },
+        },
+        [angle]
+      )
+    ).toBe(angle)
+    expect(
+      findMatchingDimensionConstraint(
+        {
+          type: 'Angle',
+          lines: [10, 12],
+          angle: { value: 30, units: 'Deg' },
+          sector: 1,
+          inverse: false,
+          source: { expr: '30deg', is_literal: true },
+        },
+        [angle]
+      )
+    ).toBeNull()
   })
 })
 
