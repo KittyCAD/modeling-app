@@ -1,0 +1,3 @@
+import importedSketch from "sketch_constraint_imported.kcl"
+
+sketchFromImport = importedSketch()
