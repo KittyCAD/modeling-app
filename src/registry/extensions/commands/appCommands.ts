@@ -221,7 +221,13 @@ export const appCommands: readonly Command[] = [
     id: APP_COMMAND_IDS.editor.format,
     displayName: 'Format code',
     scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
-    onSubmit: (input) => getKclManager(input)?.format().catch(reportRejection),
+    onSubmit: (input) => {
+      const kclManager = getKclManager(input)
+      return kclManager
+        ?.format()
+        .then(() => kclManager.editorView.focus())
+        .catch(reportRejection)
+    },
   }),
   createAppCommand({
     id: APP_COMMAND_IDS.editor.convertToVariable,
