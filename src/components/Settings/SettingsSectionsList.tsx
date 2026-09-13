@@ -1,4 +1,4 @@
-import type { Feature } from '@kittycad/lib'
+import type { UserFeature } from '@src/lib/userFeatures'
 import { useApp } from '@src/lib/boot'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
 import {
@@ -19,7 +19,7 @@ export function SettingsSectionsList({
   const { settings, userFeatures } = useApp()
   const context = settings.useSettings()
   const userFeaturesContext = userFeatures.useContext()
-  const hasFeature = (feature: Feature) =>
+  const hasFeature = (feature: UserFeature) =>
     userFeaturesContextHas(userFeaturesContext, feature, false)
 
   const visibleCategories = Object.entries(context).filter(

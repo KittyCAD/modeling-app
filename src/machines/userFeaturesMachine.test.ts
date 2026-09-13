@@ -1,4 +1,4 @@
-import type { Feature } from '@kittycad/lib'
+import type { UserFeature } from '@src/lib/userFeatures'
 import type * as ClientErrorsModule from '@src/lib/clientErrors'
 import {
   USER_FEATURES_POLL_INTERVAL_MS,
@@ -33,45 +33,46 @@ type TestFetchUserFeaturesInput = {
   token: string
 }
 
-type TestFetchUserFeaturesResult = { featureIds: Set<Feature> } | Error
+type TestFetchUserFeaturesResult = { featureIds: Set<UserFeature> } | Error
 
 describe('userFeaturesMachine', () => {
   beforeEach(() => {
     mockState.reportClientError.mockClear()
   })
 
-  it('loads feature ids once for a token and answers membership from context', async () => {
-    const fetchFeatures = vi.fn(async () => ({
-      featureIds: new Set<Feature>(['sketch_experimental_features']),
-    }))
-    const actor = createActor(
-      userFeaturesMachine.provide({
-        actors: {
-          [UserFeaturesActor.Fetch]: fromPromise<
-            TestFetchUserFeaturesResult,
-            TestFetchUserFeaturesInput
-          >(fetchFeatures),
-        },
-      })
-    ).start()
+  it.each<UserFeature>(['sketch_experimental_features', 'dfm_review'])(
+    'loads the %s feature once for a token and answers membership from context',
+    async (feature) => {
+      const fetchFeatures = vi.fn(async () => ({
+        featureIds: new Set<UserFeature>([feature]),
+      }))
+      const actor = createActor(
+        userFeaturesMachine.provide({
+          actors: {
+            [UserFeaturesActor.Fetch]: fromPromise<
+              TestFetchUserFeaturesResult,
+              TestFetchUserFeaturesInput
+            >(fetchFeatures),
+          },
+        })
+      ).start()
 
-    try {
-      actor.send({ type: UserFeaturesTransition.Load, token: 'token-a' })
+      try {
+        actor.send({ type: UserFeaturesTransition.Load, token: 'token-a' })
 
-      await waitFor(actor, (state) => state.matches(UserFeaturesState.Ready))
+        await waitFor(actor, (state) => state.matches(UserFeaturesState.Ready))
 
-      actor.send({ type: UserFeaturesTransition.Load, token: 'token-a' })
+        actor.send({ type: UserFeaturesTransition.Load, token: 'token-a' })
 
-      const context = actor.getSnapshot().context
-      expect(fetchFeatures).toHaveBeenCalledTimes(1)
-      expect(context.token).toBe('token-a')
-      expect(
-        userFeaturesContextHas(context, 'sketch_experimental_features', false)
-      ).toBe(true)
-    } finally {
-      actor.stop()
+        const context = actor.getSnapshot().context
+        expect(fetchFeatures).toHaveBeenCalledTimes(1)
+        expect(context.token).toBe('token-a')
+        expect(userFeaturesContextHas(context, feature, false)).toBe(true)
+      } finally {
+        actor.stop()
+      }
     }
-  })
+  )
 
   it('clears feature ids on clear', async () => {
     const actor = createActor(
@@ -81,7 +82,7 @@ describe('userFeaturesMachine', () => {
             TestFetchUserFeaturesResult,
             TestFetchUserFeaturesInput
           >(async () => ({
-            featureIds: new Set<Feature>(['sketch_experimental_features']),
+            featureIds: new Set<UserFeature>(['sketch_experimental_features']),
           })),
         },
       })
@@ -115,7 +116,9 @@ describe('userFeaturesMachine', () => {
             }
 
             return {
-              featureIds: new Set<Feature>(['sketch_experimental_features']),
+              featureIds: new Set<UserFeature>([
+                'sketch_experimental_features',
+              ]),
             }
           }),
         },
@@ -164,9 +167,9 @@ describe('userFeaturesMachine', () => {
     vi.useFakeTimers()
     const fetchFeatures = vi
       .fn()
-      .mockResolvedValueOnce({ featureIds: new Set<Feature>() })
+      .mockResolvedValueOnce({ featureIds: new Set<UserFeature>() })
       .mockResolvedValueOnce({
-        featureIds: new Set<Feature>(['sketch_experimental_features']),
+        featureIds: new Set<UserFeature>(['sketch_experimental_features']),
       })
     const actor = createActor(
       userFeaturesMachine.provide({
@@ -225,7 +228,7 @@ describe('userFeaturesMachine', () => {
       .fn()
       .mockResolvedValueOnce(new Error('feature service unavailable'))
       .mockResolvedValueOnce({
-        featureIds: new Set<Feature>(['sketch_experimental_features']),
+        featureIds: new Set<UserFeature>(['sketch_experimental_features']),
       })
     const actor = createActor(
       userFeaturesMachine.provide({

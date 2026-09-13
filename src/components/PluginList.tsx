@@ -1,4 +1,4 @@
-import type { Feature } from '@kittycad/lib'
+import type { UserFeature } from '@src/lib/userFeatures'
 import type {
   PluginRecord,
   Registry,
@@ -27,7 +27,7 @@ export const PluginsList = forwardRef(
     const app = useApp()
     const settingsContext = app.settings.useSettings()
     const userFeaturesContext = app.userFeatures.useContext()
-    const hasFeature = (feature: Feature) =>
+    const hasFeature = (feature: UserFeature) =>
       userFeaturesContextHas(userFeaturesContext, feature, false)
     const activationSettings = props.registry.get(
       zdsPluginActivationSettingsValueSpec

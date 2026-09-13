@@ -5,6 +5,7 @@ import { ActionButtonDropdown } from '@src/components/ActionButtonDropdown'
 import { ActionButtonRecentDropdown } from '@src/components/ActionButtonRecentDropdown'
 import { LegacySketchModeBanner } from '@src/components/Announcements'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { ModePicker } from '@src/components/ModePicker'
 import Tooltip, {
   RICH_TOOLTIP_SURFACE_CLASS_NAME,
 } from '@src/components/Tooltip'
@@ -21,6 +22,7 @@ import {
 } from '@src/lib/automaticRendering'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { EngineConnectionStateType } from '@src/lib/engineConnection/utils'
+import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
 import { type HotkeySequence, hotkeyDisplay } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
@@ -32,6 +34,7 @@ import type {
   ToolbarItemResolvedDropdown,
 } from '@src/lib/toolbar'
 import {
+  filterExperimentalToolbarItems,
   getDefaultRecentToolbarItemIds,
   getToolbarDropdownDisplay,
   isSketchToolbarTransitioning,
@@ -50,6 +53,10 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { getSymmetricToolSelectionStep } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
+import {
+  modesService,
+  resolveModeKeymapScopes,
+} from '@src/registry/contracts/modes'
 import {
   findKeymapItemForCommand,
   keymapKeystrokesDisplay,
@@ -87,6 +94,10 @@ const Toolbar_ = memo(
     const executionService = app.registry.signal(executingEditorService).value
     const keymapScopes = app.registry.signal(keymapScopesValueSpec).value
     const toolbarConfig = useToolbarConfig()
+    const showExperimentalFeatures = app.userFeatures.useHas(
+      EXPERIMENTAL_POINT_AND_CLICK_FLAG,
+      false
+    )
     const wasmInstance = use(kclManager.wasmInstancePromise)
     const iconClassName =
       'group-disabled:text-chalkboard-50 !text-inherit dark:group-enabled:group-hover:!text-inherit'
@@ -125,14 +136,25 @@ const Toolbar_ = memo(
       !props.isStreamReady ||
       !props.isStreamAcceptingInput
 
-    // Load bearing logic for determining the items in the toolbar
-    // Based on the state of the modeling machine determine what toolbar should be rendered
-    const toolbarConfigurationName = modelingMachineStateToToolbarModeName(
-      props.state
+    const activeMode = app.registry.get(modesService).activeMode.value
+    const toolbarConfigurationName = activeMode?.id ?? 'modeling'
+    const modeToolbar = activeMode?.toolbar ?? 'modeling'
+    const toolbarItems = useMemo(
+      () =>
+        typeof modeToolbar === 'string'
+          ? toolbarConfig[modeToolbar].items
+          : filterExperimentalToolbarItems(
+              modeToolbar,
+              showExperimentalFeatures
+            ),
+      [modeToolbar, toolbarConfig, showExperimentalFeatures]
     )
-    const currentToolbarKeymapScopes = [
-      toolbarModeNameToKeymapScope[toolbarConfigurationName],
-    ]
+    const currentToolbarKeymapScopes = resolveModeKeymapScopes(
+      activeMode,
+      toolbarModeNameToKeymapScope[
+        modelingMachineStateToToolbarModeName(props.state)
+      ]
+    )
     const unrenderedExecuteHotkeyLabel = keymapKeystrokesDisplay(
       findKeymapItemForCommand(
         keymapTree,
@@ -233,25 +255,23 @@ const Toolbar_ = memo(
       | ToolbarItemResolvedDropdown
       | 'break'
     )[] = useMemo(() => {
-      return toolbarConfig[toolbarConfigurationName].items.map(
-        (maybeIconConfig) => {
-          if (maybeIconConfig === 'break') {
-            return 'break'
-          } else if (isToolbarDropdown(maybeIconConfig)) {
-            return {
-              id: maybeIconConfig.id,
-              display: maybeIconConfig.display,
-              visibleItemCount: maybeIconConfig.visibleItemCount,
-              defaultVisibleItemIds: maybeIconConfig.defaultVisibleItemIds,
-              array: maybeIconConfig.array.map((item) =>
-                resolveItemConfig(item, wasmInstance)
-              ),
-            }
-          } else {
-            return resolveItemConfig(maybeIconConfig, wasmInstance)
+      return toolbarItems.map((maybeIconConfig) => {
+        if (maybeIconConfig === 'break') {
+          return 'break'
+        } else if (isToolbarDropdown(maybeIconConfig)) {
+          return {
+            id: maybeIconConfig.id,
+            display: maybeIconConfig.display,
+            visibleItemCount: maybeIconConfig.visibleItemCount,
+            defaultVisibleItemIds: maybeIconConfig.defaultVisibleItemIds,
+            array: maybeIconConfig.array.map((item) =>
+              resolveItemConfig(item, wasmInstance)
+            ),
           }
+        } else {
+          return resolveItemConfig(maybeIconConfig, wasmInstance)
         }
-      )
+      })
 
       function resolveItemConfig(
         maybeIconConfig: ToolbarItem,
@@ -331,6 +351,8 @@ const Toolbar_ = memo(
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     }, [
       toolbarConfigurationName,
+      toolbarItems,
+      activeMode?.keymapScope,
       disableAllButtons,
       disableSketchToolbar,
       configCallbackProps,
@@ -342,12 +364,7 @@ const Toolbar_ = memo(
 
     // To remember the last selected item in a standard ActionButtonDropdown
     const [lastSelectedMultiActionItem, setLastSelectedMultiActionItem] =
-      useState(
-        new Map<
-          number /* index in currentModeItems */,
-          number /* index in maybeIconConfig */
-        >()
-      )
+      useState(new Map<string, string>())
     const [, setRecentDropdownItemIds] = useState(new Map<string, string[]>())
     const [visibleRecentDropdownItemIds, setVisibleRecentDropdownItemIds] =
       useState(new Map<string, string[]>())
@@ -364,23 +381,24 @@ const Toolbar_ = memo(
         itemId: string,
         shouldPromoteIntoVisibleItems: boolean
       ) => {
+        const dropdownKey = `${toolbarConfigurationName}/${dropdown.id}`
         setRecentDropdownItemIds((previous) => {
           const next = new Map(previous)
           const nextRecentItemIds = recordRecentToolbarItemId(
             itemId,
-            next.get(dropdown.id) ?? [],
+            next.get(dropdownKey) ?? [],
             dropdown
           )
-          next.set(dropdown.id, nextRecentItemIds)
+          next.set(dropdownKey, nextRecentItemIds)
 
           if (shouldPromoteIntoVisibleItems) {
             setVisibleRecentDropdownItemIds((previousVisible) => {
               const nextVisible = new Map(previousVisible)
               nextVisible.set(
-                dropdown.id,
+                dropdownKey,
                 promoteRecentToolbarItemId(
                   itemId,
-                  nextVisible.get(dropdown.id) ??
+                  nextVisible.get(dropdownKey) ??
                     getDefaultRecentToolbarItemIds(dropdown),
                   nextRecentItemIds,
                   dropdown
@@ -393,7 +411,7 @@ const Toolbar_ = memo(
           return next
         })
       },
-      []
+      [toolbarConfigurationName]
     )
 
     return (
@@ -412,6 +430,7 @@ const Toolbar_ = memo(
             disableSketchToolbar ? 'pointer-events-none' : ''
           }`}
         >
+          <ModePicker disabled={props.isExecuting} />
           {/* A menu item will either be a vertical line break, a button with a dropdown, or a single button */}
           {currentModeItems.map((maybeIconConfig, i) => {
             // Vertical Line Break
@@ -423,9 +442,11 @@ const Toolbar_ = memo(
                 />
               )
             } else if (isToolbarItemResolvedDropdown(maybeIconConfig)) {
+              if (maybeIconConfig.array.length === 0) return null
+              const dropdownKey = `${toolbarConfigurationName}/${maybeIconConfig.id}`
               if (getToolbarDropdownDisplay(maybeIconConfig) === 'recent') {
                 const visibleItemIds =
-                  visibleRecentDropdownItemIds.get(maybeIconConfig.id) ??
+                  visibleRecentDropdownItemIds.get(dropdownKey) ??
                   getDefaultRecentToolbarItemIds(maybeIconConfig)
                 const { visibleItems } = resolveRecentToolbarItems(
                   maybeIconConfig,
@@ -560,7 +581,11 @@ const Toolbar_ = memo(
 
               const selectedIcon =
                 maybeIconConfig.array.find((c) => c.isActive) ||
-                maybeIconConfig.array[lastSelectedMultiActionItem.get(i) ?? 0]
+                maybeIconConfig.array.find(
+                  (item) =>
+                    item.id === lastSelectedMultiActionItem.get(dropdownKey)
+                ) ||
+                maybeIconConfig.array[0]
 
               return (
                 <ActionButtonDropdown
@@ -588,7 +613,7 @@ const Toolbar_ = memo(
                     onClick: (event) => {
                       setLastSelectedMultiActionItem((previous) => {
                         const next = new Map(previous)
-                        next.set(i, maybeIconConfig.array.indexOf(itemConfig))
+                        next.set(dropdownKey, itemConfig.id)
                         return next
                       })
                       itemConfig.onClick({

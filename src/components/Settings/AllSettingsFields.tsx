@@ -1,5 +1,5 @@
+import type { UserFeature } from '@src/lib/userFeatures'
 import { ActionButton } from '@src/components/ActionButton'
-import type { Feature } from '@kittycad/lib'
 import { SettingsFieldInput } from '@src/components/Settings/SettingsFieldInput'
 import { SettingsSection } from '@src/components/Settings/SettingsSection'
 import { useApp } from '@src/lib/boot'
@@ -54,7 +54,7 @@ export const AllSettingsFields = forwardRef(
     const context = settings.useSettings()
     const userFeaturesContext = userFeatures.useContext()
     const isOnboardingStartPending = useOnboardingStartPending()
-    const hasFeature = (feature: Feature) =>
+    const hasFeature = (feature: UserFeature) =>
       userFeaturesContextHas(userFeaturesContext, feature, false)
     const projectPath = useMemo(() => {
       const filteredPathname = location.pathname
