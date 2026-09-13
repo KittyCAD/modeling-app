@@ -11,6 +11,7 @@ import {
   type EngineDisconnectEvent,
   useOnPeerConnectionClose,
 } from '@src/hooks/network/useOnPeerConnectionClose'
+import { useOnPingPongTimeout } from '@src/hooks/network/useOnPingPongTimeout'
 import { useOnVitestEngineOnline } from '@src/hooks/network/useOnVitestEngineOnline'
 import { useOnWebsocketClose } from '@src/hooks/network/useOnWebsocketClose'
 import { useOnWindowOnlineOffline } from '@src/hooks/network/useOnWindowOnlineOffline'
@@ -27,6 +28,11 @@ import { getAllOperations } from '@src/lang/wasm'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { btnName } from '@src/lib/cameraControls'
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
+import {
+  LEGACY_SKETCH_MODE_FEATURE_FLAG,
+  LEGACY_SKETCH_MODE_REMOVED_MESSAGE,
+  NUMBER_OF_ENGINE_RETRIES,
+} from '@src/lib/constants'
 import { EngineDebugger } from '@src/lib/debugger'
 import { EngineConnectionManagerEvents } from '@src/lib/engineConnection/utils'
 import { prepareEditCommand } from '@src/lib/featureTree'
@@ -43,6 +49,7 @@ import type {
 } from '@src/registry/contracts/engineScene'
 import type { MouseEventHandler } from 'react'
 import { use, useCallback, useMemo, useRef, useState } from 'react'
+import toast from 'react-hot-toast'
 
 const TIME_TO_CONNECT = 30_000
 
@@ -63,7 +70,11 @@ interface ConnectionStreamProps {
 }
 
 export const ConnectionStream = (props: ConnectionStreamProps) => {
-  const { settings, project, wasmPromise, commands } = useApp()
+  const { settings, project, wasmPromise, commands, userFeatures } = useApp()
+  const hasLegacySketchMode = userFeatures.useHas(
+    LEGACY_SKETCH_MODE_FEATURE_FLAG,
+    false
+  )
   const wasmInstance = use(wasmPromise)
   const { kclManager } = useSingletons()
   const engineCommandManager = kclManager.engineCommandManager
@@ -87,7 +98,9 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
     overallState === NetworkHealthState.Ok ||
     overallState === NetworkHealthState.Weak
   const { tryConnecting, isConnecting, numberOfConnectionAttempts } =
-    useTryConnect()
+    useTryConnect(() => {
+      abnormalCloseRetries.current = 0
+    })
   const safariObjectFitClass = useMemo(() => {
     // on safari we want to apply object-fit: fill to fix video resize bug
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
@@ -254,6 +267,14 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
             if (err(path)) {
               return path
             }
+            // Anything left here belongs to a KCL 1.0 sketch, since sketch
+            // blocks and undeclared regions were handled above.
+            if (!hasLegacySketchMode) {
+              toast.error(LEGACY_SKETCH_MODE_REMOVED_MESSAGE, {
+                duration: 5_000,
+              })
+              return
+            }
             sceneInfra.modelingSend({ type: 'Enter sketch' })
           })
           .catch(reportRejection)
@@ -262,6 +283,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       [
         commands.actor,
         engineCommandManager,
+        hasLegacySketchMode,
         isNetworkOkay,
         kclManager.artifactGraph,
         kclManager.ast,
@@ -349,6 +371,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const onPageIdleStartCb = useCallback(() => {
     if (!videoWrapperRef.current) return
     if (!props.authToken) return
+    if (engineCommandManager.lastConnectionError?.terminal) return
     if (engineCommandManager.started) return
 
     // Do not try to restart the engine on any mouse move.
@@ -388,10 +411,15 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
 
   const onWebSocketCloseParams = useMemo(
     () => ({
-      callback: (code: string | undefined) => {
-        reportEngineDisconnect(EngineConnectionManagerEvents.WebsocketClosed, {
-          websocketCloseCode: code,
-        })
+      callback: (code: string | undefined, reconnectRequested: boolean) => {
+        if (!reconnectRequested) {
+          reportEngineDisconnect(
+            EngineConnectionManagerEvents.WebsocketClosed,
+            {
+              websocketCloseCode: code,
+            }
+          )
+        }
         setShowManualConnect(false)
         tryConnecting({
           authToken: props.authToken || '',
@@ -411,9 +439,14 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         })
       },
       infiniteDetectionLoopCallback: (code: string | undefined) => {
+        // Also exhaust any retry already running when the close budget is spent.
+        numberOfConnectionAttempts.current = NUMBER_OF_ENGINE_RETRIES
         reportEngineDisconnect(EngineConnectionManagerEvents.WebsocketClosed, {
           websocketCloseCode: code,
         })
+        setShowManualConnect(true)
+      },
+      terminalErrorCallback: () => {
         setShowManualConnect(true)
       },
       engineCommandManager,
@@ -427,7 +460,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       settings,
     ]
   )
-  useOnWebsocketClose(onWebSocketCloseParams)
+  const abnormalCloseRetries = useOnWebsocketClose(onWebSocketCloseParams)
 
   const onVitestEngineOnline = useMemo(
     () => ({
@@ -492,6 +525,41 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   )
   useOnPeerConnectionClose(onPeerConnectionCloseParams)
 
+  const onPingPongTimeout = useMemo(
+    () => ({
+      callback: (eventType: EngineDisconnectEvent) => {
+        reportEngineDisconnect(eventType)
+        setShowManualConnect(false)
+        tryConnecting({
+          authToken: props.authToken || '',
+          videoWrapperRef,
+          setAppState,
+          videoRef,
+          setIsSceneReady,
+          isConnecting,
+          numberOfConnectionAttempts,
+          timeToConnect: TIME_TO_CONNECT,
+          setShowManualConnect,
+          sceneInfra,
+          settingsActor: settings.actor,
+        }).catch((e) => {
+          console.warn(e)
+          setShowManualConnect(true)
+        })
+      },
+      engineCommandManager,
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      isConnecting,
+      numberOfConnectionAttempts,
+      props.authToken,
+      reportEngineDisconnect,
+      settings,
+    ]
+  )
+  useOnPingPongTimeout(onPingPongTimeout)
+
   const onWindowOnlineOfflineParams = useMemo(
     () => ({
       close: () => {
@@ -503,6 +571,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         engineCommandManager.tearDown()
       },
       connect: () => {
+        if (engineCommandManager.lastConnectionError?.terminal) return
         setShowManualConnect(false)
         tryConnecting({
           authToken: props.authToken || '',
@@ -622,6 +691,8 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           className="absolute inset-0 h-screen"
           showManualConnect={showManualConnect}
           callback={() => {
+            abnormalCloseRetries.current = 0
+            numberOfConnectionAttempts.current = 0
             setShowManualConnect(false)
             tryConnecting({
               authToken: props.authToken || '',

@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties sheet-metal-bracket.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -0.05397379451741813,
+      "y": 0.0,
+      "z": 32.84432320054621
+    },
+    "dimensions": {
+      "x": 256.031998531744,
+      "y": 139.7,
+      "z": 79.00653557566464
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 82531.3360818285
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 119.20488703335656
+  }
+}

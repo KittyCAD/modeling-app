@@ -44,6 +44,7 @@ import {
   getCloudProjectLibraryMaterializationDirectoryPath,
   normalizePathForSync,
 } from '@src/lib/cloudSync/paths'
+import { CLOUD_SYNC_PLUGIN_ID } from '@src/lib/cloudSync/registry/constants'
 import {
   type CloudProjectLocalManifestComparison,
   classifyCloudProjectDuplicateRisk,
@@ -108,7 +109,6 @@ import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { useEffect, useState } from 'react'
 
-const CLOUD_SYNC_PLUGIN_ID = 'cloud-sync'
 const CLOUD_SYNC_STALLED_AFTER_MS = 5 * 60_000
 
 function cloudSyncProjectIsStalled(
@@ -895,6 +895,8 @@ function remoteThumbnailCacheKey(project: RemoteProjectSummary) {
   ].join(':')
 }
 
+type RemoteThumbnailRequest = { cacheKey: string }
+
 function setRemoteThumbnailUrl(
   thumbnailUrls: Signal<Map<string, string>>,
   remoteProjectId: string,
@@ -907,18 +909,18 @@ function setRemoteThumbnailUrl(
 
 function pruneRemoteThumbnailState({
   remoteProjects,
-  requestedThumbnailKeys,
+  thumbnailRequests,
   thumbnailUrls,
 }: {
   remoteProjects: RemoteProjectSummary[]
-  requestedThumbnailKeys: Map<string, string>
+  thumbnailRequests: Map<string, RemoteThumbnailRequest>
   thumbnailUrls: Signal<Map<string, string>>
 }) {
   const remoteProjectIds = new Set(remoteProjects.map((project) => project.id))
 
-  for (const requestedProjectId of requestedThumbnailKeys.keys()) {
+  for (const requestedProjectId of thumbnailRequests.keys()) {
     if (!remoteProjectIds.has(requestedProjectId)) {
-      requestedThumbnailKeys.delete(requestedProjectId)
+      thumbnailRequests.delete(requestedProjectId)
     }
   }
 
@@ -1139,10 +1141,33 @@ const cloudSyncCloudProjectRelationships = defineRegistryItemFactory((ctx) => {
     Map<string, CloudProjectLocalManifestComparison>
   >(new Map())
   const remoteThumbnailUrls = signal<Map<string, string>>(new Map())
-  const requestedThumbnailKeys = new Map<string, string>()
+  const thumbnailRequests = new Map<string, RemoteThumbnailRequest>()
+  const thumbnailWatchers = signal(new Map<string, number>())
   let disposed = false
   let disposeEffect: (() => void) | undefined
   let loadId = 0
+
+  function watchRemoteThumbnail(remoteProjectId: string) {
+    const watchers = new Map(thumbnailWatchers.peek())
+    watchers.set(remoteProjectId, (watchers.get(remoteProjectId) ?? 0) + 1)
+    thumbnailWatchers.value = watchers
+
+    let watching = true
+    return () => {
+      if (!watching) {
+        return
+      }
+      watching = false
+      const watchers = new Map(thumbnailWatchers.peek())
+      const count = watchers.get(remoteProjectId) ?? 0
+      if (count <= 1) {
+        watchers.delete(remoteProjectId)
+      } else {
+        watchers.set(remoteProjectId, count - 1)
+      }
+      thumbnailWatchers.value = watchers
+    }
+  }
 
   const cloudProjectRelationships = computed(() => {
     if (!cloudSyncStatus.value.enabled) {
@@ -1166,42 +1191,41 @@ const cloudSyncCloudProjectRelationships = defineRegistryItemFactory((ctx) => {
       return
     }
 
-    // Keep Home cloud sync badges in sync with cloud sync metadata, even
-    // before System IO rereads local project folders.
-    disposeEffect = effect(() => {
+    const disposeThumbnails = effect(() => {
       const service = cloudSync.value
       const status = cloudSyncStatus.value
-      const nextLoadId = ++loadId
 
       if (!service || !status.enabled) {
-        cloudSyncMetadata.value = []
-        localManifestComparisons.value = new Map()
         remoteThumbnailUrls.value = new Map()
-        requestedThumbnailKeys.clear()
+        thumbnailRequests.clear()
         return
       }
 
       const remoteProjects = cloudSyncRemoteProjects.value
-      const realizations = projectLibraryRealizations.value
+      const watchers = thumbnailWatchers.value
       pruneRemoteThumbnailState({
         remoteProjects,
-        requestedThumbnailKeys,
+        thumbnailRequests,
         thumbnailUrls: remoteThumbnailUrls,
       })
 
       for (const remoteProject of remoteProjects) {
+        if (!watchers.has(remoteProject.id)) {
+          continue
+        }
         const cacheKey = remoteThumbnailCacheKey(remoteProject)
-        if (requestedThumbnailKeys.get(remoteProject.id) === cacheKey) {
+        if (thumbnailRequests.get(remoteProject.id)?.cacheKey === cacheKey) {
           continue
         }
 
-        requestedThumbnailKeys.set(remoteProject.id, cacheKey)
+        const request = { cacheKey }
+        thumbnailRequests.set(remoteProject.id, request)
         service
           .getRemoteProjectThumbnailUrl(remoteProject)
           .then((thumbnailUrl) => {
             if (
               disposed ||
-              requestedThumbnailKeys.get(remoteProject.id) !== cacheKey ||
+              thumbnailRequests.get(remoteProject.id) !== request ||
               !thumbnailUrl
             ) {
               return
@@ -1214,12 +1238,29 @@ const cloudSyncCloudProjectRelationships = defineRegistryItemFactory((ctx) => {
             )
           })
           .catch((error: unknown) => {
-            if (requestedThumbnailKeys.get(remoteProject.id) === cacheKey) {
-              requestedThumbnailKeys.delete(remoteProject.id)
+            if (thumbnailRequests.get(remoteProject.id) === request) {
+              thumbnailRequests.delete(remoteProject.id)
             }
             reportRejection(error)
           })
       }
+    })
+
+    // Visibility changes must not reread metadata or compare local manifests.
+    const disposeMetadata = effect(() => {
+      const service = cloudSync.value
+      const status = cloudSyncStatus.value
+      const nextLoadId = ++loadId
+
+      if (!service || !status.enabled) {
+        cloudSyncMetadata.value = []
+        localManifestComparisons.value = new Map()
+        return
+      }
+
+      const realizations = projectLibraryRealizations.value
+      // Remote refreshes can also reflect changes to the local sync metadata.
+      void cloudSyncRemoteProjects.value
 
       service
         .getProjectMetadataIndex()
@@ -1257,6 +1298,11 @@ const cloudSyncCloudProjectRelationships = defineRegistryItemFactory((ctx) => {
           reportRejection(error)
         })
     })
+
+    disposeEffect = () => {
+      disposeThumbnails()
+      disposeMetadata()
+    }
   })
 
   return {
@@ -1265,6 +1311,7 @@ const cloudSyncCloudProjectRelationships = defineRegistryItemFactory((ctx) => {
       providesServices: [
         provideService(cloudProjectRelationshipsService, {
           relationships: cloudProjectRelationships,
+          watchRemoteThumbnail,
         }),
       ],
       dispose: () => {

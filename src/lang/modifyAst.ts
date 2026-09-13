@@ -4,6 +4,7 @@ import type { NonCodeMeta } from '@rust/kcl-lib/bindings/NonCodeMeta'
 
 import {
   createArrayExpression,
+  createAnnotation,
   createCallExpressionStdLibKw,
   createExpressionStatement,
   createImportAsSelector,
@@ -23,6 +24,7 @@ import {
   getNodeFromPath,
   getSettingsAnnotation,
   getSketchSegmentName,
+  getVariableExprsFromSelection,
   getVariableNameFromNodePath,
   isCallExprWithName,
   isNodeSafeToReplace,
@@ -39,6 +41,7 @@ import type {
   CallExpressionKw,
   Expr,
   ExpressionStatement,
+  LabeledArg,
   NumericSuffix,
   PathToNode,
   PipeExpression,
@@ -84,6 +87,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   EngineRegionSelection,
   ExtrudeFacePlane,
+  Selections,
 } from '@src/machines/modelingSharedTypes'
 
 export function startSketchOnDefault(
@@ -402,10 +406,12 @@ export function addModuleImport({
   ast,
   path,
   localName,
+  representation,
 }: {
   ast: Node<Program>
   path: string
   localName: string
+  representation?: 'mesh' | 'brep'
 }): {
   modifiedAst: Node<Program>
   pathToNode: PathToNode
@@ -417,6 +423,13 @@ export function addModuleImport({
     createImportAsSelector(localName),
     { type: 'Kcl', filename: path }
   )
+  if (representation) {
+    importStatement.outerAttrs = [
+      createAnnotation({
+        targetRepresentation: createLocalName(representation),
+      }),
+    ]
+  }
   const lastImportIndex = modifiedAst.body.findLastIndex(
     (v) => v.type === 'ImportStatement'
   )
@@ -1261,6 +1274,35 @@ export function createVariableExpressionsArray(exprs: Expr[]): Expr | null {
   return expr
 }
 
+export function getSelectionVarsForCall({
+  selection,
+  artifactGraph,
+  modifiedAst,
+  wasmInstance,
+  nodeToEdit,
+}: {
+  selection: Selections
+  artifactGraph: ArtifactGraph
+  modifiedAst: Node<Program>
+  wasmInstance: ModuleType
+  nodeToEdit?: PathToNode
+}) {
+  // Edit codemods preserve the existing selection argument, so only rebuild
+  // selection expressions when creating a new call.
+  if (nodeToEdit) {
+    return { exprs: [] }
+  }
+
+  return getVariableExprsFromSelection(
+    selection,
+    artifactGraph,
+    modifiedAst,
+    wasmInstance,
+    undefined,
+    { lastChildLookup: true }
+  )
+}
+
 // Create a path to node to the last variable declaroator of an ast
 // Optionally, can point to the first kwarg of the CallExpressionKw
 export function createPathToNodeForLastVariable(
@@ -1300,13 +1342,28 @@ export function pathsReferToSamePipe(
 
 export function replaceCallInPlace(
   existingCall: CallExpressionKw,
-  replacementCall: CallExpressionKw
+  replacementCall: CallExpressionKw,
+  labeledSelectionArgNames: readonly string[] = []
 ) {
-  const unlabeled =
-    replacementCall.unlabeled === null
-      ? structuredClone(existingCall.unlabeled)
-      : replacementCall.unlabeled
-  Object.assign(existingCall, replacementCall, { unlabeled })
+  // Until selection edits can roll back, reconstructed selections are
+  // display-only. Drop them, then restore the originals at their old positions.
+  const isLabeledSelectionArgument = (argument: LabeledArg) =>
+    argument.label !== null &&
+    labeledSelectionArgNames.includes(argument.label.name)
+  const mergedArguments = replacementCall.arguments.filter(
+    (argument) => !isLabeledSelectionArgument(argument)
+  )
+
+  for (const [index, argument] of existingCall.arguments.entries()) {
+    if (isLabeledSelectionArgument(argument)) {
+      mergedArguments.splice(index, 0, structuredClone(argument))
+    }
+  }
+
+  Object.assign(existingCall, replacementCall, {
+    unlabeled: structuredClone(existingCall.unlabeled),
+    arguments: mergedArguments,
+  })
 }
 
 export function setCallInAst({
@@ -1315,6 +1372,7 @@ export function setCallInAst({
   pathToEdit,
   pathIfNewPipe,
   variableIfNewDecl,
+  labeledSelectionArgNames,
   wasmInstance,
 }: {
   ast: Node<Program>
@@ -1322,6 +1380,7 @@ export function setCallInAst({
   pathToEdit?: PathToNode
   pathIfNewPipe?: PathToNode
   variableIfNewDecl?: string
+  labeledSelectionArgNames?: readonly string[]
   wasmInstance: ModuleType
 }): Error | PathToNode {
   let pathToNode: PathToNode | undefined
@@ -1343,7 +1402,7 @@ export function setCallInAst({
       return result
     }
 
-    replaceCallInPlace(result.node, call)
+    replaceCallInPlace(result.node, call, labeledSelectionArgNames)
     pathToNode = pathToEdit
   } else if (pathIfNewPipe) {
     const pipe = getNodeFromPath<PipeExpression>(

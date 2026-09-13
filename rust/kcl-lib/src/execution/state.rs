@@ -5,6 +5,7 @@ use std::sync::Arc;
 use ahash::AHashMap;
 use anyhow::Result;
 use indexmap::IndexMap;
+pub use kcl_api::KclVersion;
 use kcl_api::UnitAngle;
 use kcl_api::UnitLength;
 use serde::Deserialize;
@@ -60,7 +61,9 @@ use crate::modules::ModulePath;
 use crate::modules::ModuleRepr;
 use crate::modules::ModuleSource;
 use crate::parsing::ast::types::Annotation;
+use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::NodeRef;
+use crate::parsing::ast::types::Program;
 use crate::parsing::ast::types::TagNode;
 
 /// State for executing a program.
@@ -96,6 +99,14 @@ pub(super) struct GlobalState {
     /// `deprecated_since` warnings. Runtime behavior still uses the version
     /// declared by the KCL program.
     pub deprecation_version_override: Option<String>,
+    /// The entry-point (root) module's declared kclVersion, when it is KCL 3.0
+    /// or later. `Some` makes this single version govern version-conditional
+    /// runtime behavior for the whole execution -- every module and every
+    /// function body. `None` (entry point on 1.0/2.0 or undeclared) preserves
+    /// the legacy per-module lookup and its caller-version quirk; see
+    /// [`ExecState::legacy_caller_kcl_version`]. Assigned unconditionally at
+    /// the start of every execution.
+    pub entry_point_kcl_version: Option<KclVersion>,
     /// Global artifacts that represent the entire program.
     pub artifacts: ArtifactState,
     /// Artifacts for only the root module.
@@ -628,6 +639,14 @@ impl ExecState {
         self.global.deprecation_version_override = version.map(str::to_owned);
     }
 
+    #[cfg(test)]
+    pub(crate) fn program_memory_for_tests(
+        &self,
+        main_ref: EnvironmentRef,
+    ) -> Result<IndexMap<String, KclValue>, KclError> {
+        self.mod_local.variables(main_ref)
+    }
+
     /// Convert to execution outcome when running in WebAssembly.  We want to
     /// reduce the amount of data that crosses the WASM boundary as much as
     /// possible.
@@ -638,9 +657,10 @@ impl ExecState {
     ) -> Result<ExecOutcome, KclError> {
         // Fields are opt-in so that we don't accidentally leak private internal
         // state when we add more to ExecState.
-        let variables = self
-            .mod_local
-            .variables(main_ref)?
+        let variables = self.mod_local.variables(main_ref)?;
+        #[cfg(test)]
+        let test_program_memory = variables.clone();
+        let variables = variables
             .into_iter()
             .map(|(key, value)| (key, KclValueView::from(value)))
             .collect();
@@ -656,6 +676,8 @@ impl ExecState {
             issues: self.global.issues,
             source_files: self.global.id_to_source,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
+            #[cfg(test)]
+            test_program_memory,
         })
     }
 
@@ -980,6 +1002,17 @@ impl ExecState {
 
     pub(crate) fn artifact_mut(&mut self, id: ArtifactId) -> Option<&mut Artifact> {
         self.mod_local.artifacts.artifacts.get_mut(&id)
+    }
+
+    pub(crate) fn is_sketch_block_path(&self, path_id: ArtifactId) -> bool {
+        self.mod_local
+            .artifacts
+            .artifacts
+            .values()
+            .chain(self.global.artifacts.artifacts.values())
+            .any(|artifact| {
+                matches!(artifact, Artifact::SketchBlock(sketch_block) if sketch_block.path_id == Some(path_id))
+            })
     }
 
     pub(crate) fn push_op(&mut self, op: Operation) {
@@ -1324,50 +1357,140 @@ impl ExecState {
         Ok(())
     }
 
+    /// The KCL version governing version-conditional runtime behavior.
+    ///
+    /// If the entry-point module declared kclVersion 3.0-preview (or later),
+    /// that single version governs the entire execution -- all modules and
+    /// all function bodies. Otherwise, falls back to the legacy per-module
+    /// lookup; see [`Self::legacy_caller_kcl_version`].
     pub(crate) fn kcl_version(&self) -> KclVersion {
+        self.global
+            .entry_point_kcl_version
+            .unwrap_or_else(|| self.legacy_caller_kcl_version())
+    }
+
+    /// The legacy kclVersion lookup: the current module-local settings.
+    ///
+    /// Quirk (fixed when the entry point declares 3.0-preview or later):
+    /// `mod_local` is swapped only around module top-level execution, never
+    /// around function calls, so module-level code sees its own module's
+    /// declared version, but a function body sees the CALLING module's
+    /// version -- a function defined in a 1.0 module but called from a 2.0
+    /// module observes 2.0 here.
+    pub(crate) fn legacy_caller_kcl_version(&self) -> KclVersion {
         self.mod_local.settings.kcl_version
     }
-}
 
-#[derive(Debug, Clone, Copy, Default, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, Ord, PartialOrd)]
-#[ts(export)]
-pub enum KclVersion {
-    #[default]
-    #[serde(rename = "1.0")]
-    V1,
-    #[serde(rename = "2.0")]
-    V2,
-    #[serde(rename = "3.0-preview")]
-    V3Preview,
-}
+    /// Gate for behaviors introduced in KCL 3.0. True only when the entry-point
+    /// module of this execution declares KCL 3.0 or later. This never looks at
+    /// [`Self::legacy_caller_kcl_version()`] so that behavior never varies
+    /// within a single execution.
+    pub(crate) fn entry_point_version_is_v3_or_higher(&self) -> bool {
+        self.global
+            .entry_point_kcl_version
+            .is_some_and(|v| v >= KclVersion::V3Preview)
+    }
 
-impl KclVersion {
-    pub fn as_str(self) -> &'static str {
-        match self {
-            Self::V1 => "1.0",
-            Self::V2 => "2.0",
-            Self::V3Preview => "3.0-preview",
+    /// Record the entry-point program's declared kclVersion for this
+    /// execution. Only 3.0-preview or later is recorded; older or undeclared
+    /// versions leave the field unset so that the legacy per-module lookup
+    /// applies. Must be assigned unconditionally at the start of every
+    /// execution since the state may be reused across executions whose
+    /// programs declare different versions.
+    pub(crate) fn set_entry_point_kcl_version(&mut self, program: &crate::Program) {
+        let declared = program.meta_settings().ok().flatten().map(|s| s.kcl_version);
+        self.global.entry_point_kcl_version = match declared {
+            Some(v) if v >= KclVersion::V3Preview => Some(v),
+            _ => None,
+        };
+    }
+
+    /// KCL 3.0: an imported file may not declare a kclVersion that differs
+    /// from the entry point's.
+    ///
+    /// Only applies when the entry point declares 3.0-preview or later; see
+    /// [`Self::set_entry_point_kcl_version`]. A file that declares no
+    /// kclVersion is fine: it runs under the entry point's version, as it
+    /// always has. Only user files (local imports) are checked. Standard
+    /// library modules are exempt: they ship with the interpreter, always run
+    /// under the entry point's pinned version, and the user cannot edit them
+    /// to resolve a mismatch. Foreign imports carry no KCL settings.
+    ///
+    /// `import_range` is the import statement when the check runs at the
+    /// import site, which is included in the error.
+    pub(crate) fn check_imported_module_kcl_version(
+        &self,
+        path: &ModulePath,
+        program: &Node<Program>,
+        import_range: Option<SourceRange>,
+    ) -> Result<(), KclError> {
+        let Some(entry_point_version) = self.global.entry_point_kcl_version else {
+            return Ok(());
+        };
+        if !matches!(path, ModulePath::Local { .. }) {
+            return Ok(());
         }
+        let Some((declared, declared_range)) = declared_kcl_version(program)? else {
+            return Ok(());
+        };
+        if declared == entry_point_version {
+            return Ok(());
+        }
+
+        // The root module's path is the executor's current file, which is
+        // empty when execution was started without one.
+        let entry_point = match self
+            .global
+            .module_infos
+            .get(&ModuleId::default())
+            .map(|info| &info.path)
+        {
+            Some(root @ ModulePath::Local { .. }) if !root.to_string().is_empty() => {
+                format!("The entry point `{root}`")
+            }
+            _ => "The entry point".to_owned(),
+        };
+        let mut source_ranges = vec![declared_range];
+        source_ranges.extend(import_range);
+        Err(KclError::new_semantic(KclErrorDetails::new(
+            format!(
+                "Mixing KCL versions in a single program is not allowed. {entry_point} declares kclVersion {}, but the imported file `{path}` declares kclVersion {}. Update the kclVersion setting in one of these files to match the other.",
+                entry_point_version.as_str(),
+                declared.as_str(),
+            ),
+            source_ranges,
+        )))
     }
 }
 
-impl FromStr for KclVersion {
-    type Err = KclError;
-
-    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
-        match s {
-            "1" | "1.0" | "1.0.0" => Ok(Self::V1),
-            "2" | "2.0" | "2.0.0" => Ok(Self::V2),
-            "3-preview" | "3.0-preview" | "3.0.0-preview" => Ok(Self::V3Preview),
-            other => Err(KclError::new_semantic(KclErrorDetails {
-                source_ranges: Default::default(),
-                backtrace: Default::default(),
-                message: format!(
-                    "Unrecognized version {other}. Valid versions are 1.0, 2.0 and (experimentally) 3.0-preview"
-                ),
-            })),
-        }
-    }
+/// The kclVersion that a program's `@settings` annotations declare, with the
+/// source range of the declaring property, or `None` when the program does not
+/// declare one. The last declaration wins, as in
+/// [`MetaSettings::update_from_annotation`], so this searches from the end and
+/// stops at the first match.
+pub(crate) fn declared_kcl_version(program: &Node<Program>) -> Result<Option<(KclVersion, SourceRange)>, KclError> {
+    let Some(property) = program
+        .inner_attrs
+        .iter()
+        .rev()
+        .filter(|annotation| annotation.name() == Some(annotations::SETTINGS))
+        .find_map(|annotation| {
+            annotation
+                .properties
+                .as_deref()
+                .unwrap_or_default()
+                .iter()
+                .rev()
+                .find(|property| &*property.inner.key.name == annotations::SETTINGS_VERSION)
+        })
+    else {
+        return Ok(None);
+    };
+    let value = annotations::expect_kcl_version(&property.inner.value)?;
+    let version = value.parse::<KclVersion>().map_err(|err| {
+        KclError::new_semantic(KclErrorDetails::new(err.to_string(), vec![property.as_source_range()]))
+    })?;
+    Ok(Some((version, property.as_source_range())))
 }
 
 impl GlobalState {
@@ -1381,6 +1504,7 @@ impl GlobalState {
             mod_loader: Default::default(),
             issues: Default::default(),
             deprecation_version_override: None,
+            entry_point_kcl_version: None,
             id_to_source: Default::default(),
             segment_ids_edited,
             drag_anchors: Vec::new(),
@@ -1710,7 +1834,6 @@ impl MetaSettings {
 
 #[cfg(test)]
 mod tests {
-    use std::str::FromStr;
 
     use uuid::Uuid;
 
@@ -1727,14 +1850,45 @@ mod tests {
     use crate::front::SourceRef;
 
     #[test]
-    fn kcl_version_parses_supported_spellings() {
-        assert_eq!(KclVersion::from_str("1"), Ok(KclVersion::V1));
-        assert_eq!(KclVersion::from_str("1.0.0"), Ok(KclVersion::V1));
-        assert_eq!(KclVersion::from_str("2"), Ok(KclVersion::V2));
-        assert_eq!(KclVersion::from_str("2.0.0"), Ok(KclVersion::V2));
-        assert_eq!(KclVersion::from_str("3.0-preview"), Ok(KclVersion::V3Preview));
-        // No such version.
-        KclVersion::from_str("99.123").unwrap_err();
+    fn declared_kcl_version_finds_the_setting_and_its_range() {
+        let parse = |code: &str| crate::parsing::top_level_parse(code).unwrap();
+
+        assert_eq!(super::declared_kcl_version(&parse("x = 1\n")).unwrap(), None);
+        assert_eq!(
+            super::declared_kcl_version(&parse("@settings(defaultLengthUnit = in)\nx = 1\n")).unwrap(),
+            None
+        );
+
+        let code = "@settings(defaultLengthUnit = in, kclVersion = 2.0)\nx = 1\n";
+        let (version, range) = super::declared_kcl_version(&parse(code)).unwrap().unwrap();
+        assert_eq!(version, KclVersion::V2);
+        let start = code.find("kclVersion").unwrap();
+        assert_eq!((range.start(), range.end()), (start, start + "kclVersion = 2.0".len()));
+
+        let (version, _) = super::declared_kcl_version(&parse("@settings(kclVersion = \"3.0-preview\")\n"))
+            .unwrap()
+            .unwrap();
+        assert_eq!(version, KclVersion::V3Preview);
+
+        // The last declaration wins, whether it is in a later annotation or
+        // later within the same annotation.
+        let code = "@settings(kclVersion = 1.0)\n@settings(defaultLengthUnit = in)\n@settings(kclVersion = 2.0, kclVersion = \"3.0-preview\")\n";
+        let (version, range) = super::declared_kcl_version(&parse(code)).unwrap().unwrap();
+        assert_eq!(version, KclVersion::V3Preview);
+        let start = code.rfind("kclVersion").unwrap();
+        assert_eq!(
+            (range.start(), range.end()),
+            (start, start + "kclVersion = \"3.0-preview\"".len())
+        );
+
+        // An unknown version is an error located at the setting.
+        let code = "@settings(kclVersion = 9.0)\n";
+        let error = super::declared_kcl_version(&parse(code)).unwrap_err();
+        let start = code.find("kclVersion").unwrap();
+        assert_eq!(
+            error.source_ranges().first().map(|range| (range.start(), range.end())),
+            Some((start, start + "kclVersion = 9.0".len()))
+        );
     }
 
     #[test]

@@ -1,5 +1,5 @@
 import { Popover } from '@headlessui/react'
-import type { MlCopilotAccessDeniedCode } from '@kittycad/lib'
+import type { AttachmentRef, MlCopilotAccessDeniedCode } from '@kittycad/lib'
 import { ActionButton } from '@src/components/ActionButton'
 import { ConnectionRecovery } from '@src/components/ConnectionRecovery'
 import { CustomIcon } from '@src/components/CustomIcon'
@@ -14,12 +14,14 @@ import { dataUrlToFile, takeViewportScreenshot } from '@src/lib/screenshot'
 import { err } from '@src/lib/trap'
 import { isNonNullable } from '@src/lib/utils'
 import { ZookeeperConnectionErrorBanner } from '@src/lib/zookeeper/components/ZookeeperConnectionErrorBanner'
+import type { QueuedMessage } from '@src/lib/zookeeper/registry/controller'
 import {
   type Conversation,
   type Exchange,
   isResponseComplete,
   type MlCopilotModeId,
   type MlCopilotModeOption,
+  type ZookeeperAttachmentFetchState,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import {
@@ -32,13 +34,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 const noop = () => {}
 
 export const SHOW_ZOOKEEPER_REASONING_MODE_DROPDOWN = true
-
-export interface QueuedMessage {
-  id: string
-  text: string
-  mode?: MlCopilotModeId
-  attachments: File[]
-}
+export type { QueuedMessage }
 
 export interface ZookeeperConversationProps {
   isLoading: boolean
@@ -82,6 +78,8 @@ export interface ZookeeperConversationProps {
   onSteer: (id: string) => void
   modeOptions?: MlCopilotModeOption[]
   modeScopeKey?: string
+  attachmentFetches?: Record<string, ZookeeperAttachmentFetchState>
+  onFetchAttachment?: (attachmentRef: AttachmentRef) => void
 }
 
 const getModeOption = (
@@ -676,6 +674,8 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
           userAvatar={props.userAvatarSrc}
           isLastResponse={isLastResponse}
           onClickClearChat={isLastResponse ? props.onClickClearChat : noop}
+          attachmentFetches={props.attachmentFetches}
+          onFetchAttachment={props.onFetchAttachment}
         />
       )
     }

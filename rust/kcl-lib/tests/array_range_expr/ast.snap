@@ -1338,6 +1338,7 @@ description: Result of parsing array_range_expr.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

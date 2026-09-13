@@ -33,6 +33,7 @@ import {
 } from '@e2e/playwright/storageStates'
 import {
   PLAYWRIGHT_LAYOUT_SETTINGS,
+  PLAYWRIGHT_TEST_SCOPE_KEY,
   getUtils,
   settingsToToml,
   setup,
@@ -46,6 +47,42 @@ const TEST_PROJECT_SETTINGS =
   !isArray(TEST_SETTINGS.project)
     ? TEST_SETTINGS.project
     : undefined
+
+function scopedInitScript(script: unknown, arg: unknown, testScope: string) {
+  const serializedArg = arg === undefined ? 'undefined' : JSON.stringify(arg)
+  if (serializedArg === undefined) {
+    throw new Error('Unable to serialize Playwright init-script argument')
+  }
+
+  let invocation: string
+  if (typeof script === 'function') {
+    invocation = `(${script.toString()})(${serializedArg})`
+  } else if (typeof script === 'string') {
+    invocation = script
+  } else if (
+    typeof script === 'object' &&
+    script !== null &&
+    'content' in script &&
+    typeof script.content === 'string'
+  ) {
+    invocation = script.content
+  } else if (
+    typeof script === 'object' &&
+    script !== null &&
+    'path' in script &&
+    typeof script.path === 'string'
+  ) {
+    invocation = fs.readFileSync(script.path, 'utf8')
+  } else {
+    throw new Error('Unsupported Playwright init script')
+  }
+
+  return {
+    content: `if (sessionStorage.getItem(${JSON.stringify(
+      PLAYWRIGHT_TEST_SCOPE_KEY
+    )}) === ${JSON.stringify(testScope)}) { ${invocation} }`,
+  }
+}
 
 export class AuthenticatedApp {
   public readonly page: Page
@@ -66,6 +103,10 @@ export class AuthenticatedApp {
     const u = await getUtils(this.page)
 
     await this.page.addInitScript(async (code) => {
+      // Persistent WebKit starts on about:blank, where localStorage is unavailable.
+      if (window.location.protocol === 'about:') {
+        return
+      }
       localStorage.setItem('persistCode', code)
       ;(window as any).playwrightSkipFilePicker = true
     }, code)
@@ -223,9 +264,10 @@ export class ElectronZoo {
       // eslint-disable-next-line @typescript-eslint/unbound-method
       const oldContextAddInitScript = this.context.addInitScript
       this.context.addInitScript = async function (a, b) {
-        // @ts-ignore pretty sure way out of tsc's type checking capabilities.
-        // This code works perfectly fine.
-        const disposable = await oldContextAddInitScript.apply(this, [a, b])
+        const disposable = await oldContextAddInitScript.call(
+          this,
+          scopedInitScript(a, b, that.projectDirName)
+        )
         await that.page.reload()
         return disposable
       }
@@ -234,15 +276,24 @@ export class ElectronZoo {
       // eslint-disable-next-line @typescript-eslint/unbound-method
       const oldPageAddInitScript = this.page.addInitScript
       this.page.addInitScript = async function (a: any, b: any) {
-        // @ts-ignore pretty sure way out of tsc's type checking capabilities.
-        // This code works perfectly fine.
-        const disposable = await oldPageAddInitScript.apply(this, [a, b])
+        const disposable = await oldPageAddInitScript.call(
+          this,
+          scopedInitScript(a, b, that.projectDirName)
+        )
         await that.page.reload()
         return disposable
       }
     }
 
     await this.context.tracing.startChunk()
+
+    await this.page.evaluate(
+      ({ key, testScope }) => sessionStorage.setItem(key, testScope),
+      {
+        key: PLAYWRIGHT_TEST_SCOPE_KEY,
+        testScope: this.projectDirName,
+      }
+    )
 
     // THIS IS ABSOLUTELY NECESSARY TO CHANGE THE PROJECT DIRECTORY BETWEEN
     // TESTS BECAUSE OF THE ELECTRON INSTANCE REUSE.
@@ -253,7 +304,11 @@ export class ElectronZoo {
 
     await setup(this.context, this.page, testInfo, userFeatures)
 
-    await this.cleanProjectDir()
+    await this.cleanProjectDir({
+      plugins: playwrightPluginSettings({
+        zookeeperEnabled: testInfo.tags.includes('@zookeeper'),
+      }),
+    })
 
     // Create a consistent way to resize the page across electron and web.
     // (lee) I had to do everything in the book to make electron change its
@@ -475,8 +530,8 @@ const fixturesBasedOnProcessEnvPlatform = {
     // This forces the page to reload after fs operations.
     let ret
     if (!tronApp) {
-      // OPFS is isolated per instance in Playwright!
-      // In the past, it wasn't: https://github.com/microsoft/playwright/issues/29901
+      // The persistent WebKit fixture clears its origin storage before each
+      // serial test; regular browser contexts isolate OPFS themselves.
       const projects = await fs.getPath('documents')
       const projectDirPath = await fs.resolve(projects, PROJECT_FOLDER)
       ret = async function (fn: (dir: string) => Promise<void>) {
@@ -503,9 +558,9 @@ const fixturesBasedOnProcessEnvPlatform = {
     async ({ page }: { page: Page }, use: FnUse, testInfo: TestInfo) => {
       await use() // <-- runs the actual test
 
-      const engineLogs: ILog[] = await page.evaluate(
-        () => window.engineDebugger.logs || []
-      )
+      const engineLogs: ILog[] = await page
+        .evaluate(() => window.engineDebugger?.logs || [])
+        .catch(() => [])
       const formattedLogs: IFormattedLog[] = engineLogs.map((log: ILog) => {
         const newLog: IFormattedLog = {
           ...log,

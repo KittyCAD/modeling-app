@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties sketch_on_face_after_fillets_referencing_face.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -4.0,
+      "y": 8.0,
+      "z": 3.0
+    },
+    "dimensions": {
+      "x": 8.0,
+      "y": 16.0,
+      "z": 6.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 252.75688288939335
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.06393164904069937
+  }
+}

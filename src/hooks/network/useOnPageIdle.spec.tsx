@@ -180,7 +180,7 @@ describe('useOnPageIdle', () => {
     unmount()
   })
 
-  test('does not disconnect when a Zookeeper prompt starts during idle teardown', async () => {
+  test.each([false, true])('resumes idle after prompt (%s)', async (input) => {
     let finishSavingCameraState: () => void = () => undefined
     hookMocks.state.kclManager.sceneInfra.camControls.saveRemoteCameraState =
       vi.fn(
@@ -204,6 +204,11 @@ describe('useOnPageIdle', () => {
     ).toHaveBeenCalledTimes(1)
 
     zookeeperPromptRunningSignal.value = true
+    if (input) {
+      act(() => {
+        document.dispatchEvent(new Event('mousemove'))
+      })
+    }
     await act(async () => {
       finishSavingCameraState()
       await Promise.resolve()
@@ -214,6 +219,97 @@ describe('useOnPageIdle', () => {
     ).not.toHaveBeenCalled()
     expect(idleCallback).not.toHaveBeenCalled()
 
+    zookeeperPromptRunningSignal.value = false
+    hookMocks.state.kclManager.sceneInfra.camControls.saveRemoteCameraState = vi
+      .fn()
+      .mockResolvedValue(undefined)
+    await advance(5_000)
+    expect(idleCallback).not.toHaveBeenCalled()
+    await advance(1_000)
+    expect(
+      hookMocks.state.kclManager.engineCommandManager.tearDown
+    ).toHaveBeenCalledOnce()
+    expect(idleCallback).toHaveBeenCalledOnce()
+
+    unmount()
+  })
+
+  test.each([
+    'mousemove',
+    'keydown',
+    'KCL execution',
+    'modeling interaction',
+    'idle disabled',
+    'idle duration changed',
+    'unmount',
+  ])('cancels a pending idle teardown after %s', async (change) => {
+    const save = Promise.withResolvers<undefined>()
+    const controls = hookMocks.state.kclManager.sceneInfra.camControls
+    controls.saveRemoteCameraState = vi.fn(() => save.promise)
+    const idleCallback = vi.fn()
+    const startCallback = vi.fn()
+    const { rerender, unmount } = renderHook(() =>
+      useOnPageIdle({ startCallback, idleCallback })
+    )
+
+    await advance(5_000)
+    expect(controls.saveRemoteCameraState).toHaveBeenCalledOnce()
+
+    act(() => {
+      if (change === 'mousemove' || change === 'keydown') {
+        document.dispatchEvent(new Event(change))
+      } else if (change === 'KCL execution') {
+        hookMocks.state.kclManager.isExecuting = true
+      } else if (change === 'modeling interaction') {
+        hookMocks.state.modelingValue = 'sketch'
+        rerender()
+      } else if (change === 'idle disabled') {
+        hookMocks.state.streamIdleMode = 0
+        rerender()
+      } else if (change === 'idle duration changed') {
+        hookMocks.state.streamIdleMode = 10_000
+        rerender()
+      } else {
+        unmount()
+      }
+    })
+    await act(async () => save.resolve(undefined))
+
+    expect(
+      hookMocks.state.kclManager.engineCommandManager.tearDown
+    ).not.toHaveBeenCalled()
+    expect(idleCallback).not.toHaveBeenCalled()
+
+    if (change === 'mousemove' || change === 'keydown') {
+      expect(startCallback).toHaveBeenCalledOnce()
+      controls.saveRemoteCameraState = vi.fn().mockResolvedValue(undefined)
+      await advance(4_000)
+      expect(idleCallback).not.toHaveBeenCalled()
+      await advance(1_000)
+      expect(idleCallback).toHaveBeenCalledOnce()
+    }
+    unmount()
+  })
+
+  test('cancels stale idle teardown when camera saving rejects after input', async () => {
+    const save = Promise.withResolvers<undefined>()
+    const controls = hookMocks.state.kclManager.sceneInfra.camControls
+    controls.saveRemoteCameraState = vi.fn(() => save.promise)
+    const idleCallback = vi.fn()
+    const { unmount } = renderHook(() =>
+      useOnPageIdle({ startCallback: vi.fn(), idleCallback })
+    )
+    await advance(5_000)
+    act(() => {
+      document.dispatchEvent(new Event('mousemove'))
+    })
+    await act(async () => save.reject(new Error('camera save timed out')))
+
+    expect(controls.clearOldCameraState).toHaveBeenCalledOnce()
+    expect(
+      hookMocks.state.kclManager.engineCommandManager.tearDown
+    ).not.toHaveBeenCalled()
+    expect(idleCallback).not.toHaveBeenCalled()
     unmount()
   })
 })

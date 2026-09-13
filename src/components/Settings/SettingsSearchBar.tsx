@@ -18,10 +18,12 @@ import {
 } from '@src/lib/settings/settingsUtils'
 import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
 import {
+  type CommandScope,
+  commandScopesValueSpec,
+} from '@src/registry/contracts/commands'
+import {
   KEYMAP_SCHEMA_VERSION,
-  type KeymapScope,
-  getKeymapItemScopes,
-  keymapScopesValueSpec,
+  getKeymapItemWhen,
   keymapService,
   keymapValueSpec,
 } from '@src/registry/contracts/keymap'
@@ -57,7 +59,7 @@ export function SettingsSearchBar({
     () => getKeybindingRows(contributedKeymap.items, persistedKeymap.bindings),
     [contributedKeymap.items, persistedKeymap.bindings]
   )
-  const keymapScopes = registry.signal(keymapScopesValueSpec).value
+  const commandScopes = registry.signal(commandScopesValueSpec).value
   const inputRef = useRef<HTMLInputElement>(null)
   const lastHandledFocusRequest = useRef(settingsSearchFocusRequest.value)
   useSignalEffect(() => {
@@ -107,12 +109,12 @@ export function SettingsSearchBar({
               keybinding.state === 'unbound'
                 ? `Unbound - ${keybinding.command}`
                 : keybinding.command,
-            category: formatKeymapSearchCategory(keybinding, keymapScopes),
+            category: formatKeymapSearchCategory(keybinding, commandScopes),
             level: 'keybindings',
           }) satisfies SettingsSearchItem
       ),
     ],
-    [settingsValues, keybindingRows, keymapScopes, hasOpenProject, hasFeature]
+    [settingsValues, keybindingRows, commandScopes, hasOpenProject, hasFeature]
   )
   const fuse = useMemo(
     () =>
@@ -177,14 +179,14 @@ export function SettingsSearchBar({
 }
 
 function formatKeymapSearchCategory(
-  keybinding: Parameters<typeof getKeymapItemScopes>[0],
-  keymapScopes: readonly KeymapScope[]
+  keybinding: Parameters<typeof getKeymapItemWhen>[0],
+  commandScopes: readonly CommandScope[]
 ) {
-  const keymapScopesById = new Map(
-    keymapScopes.map((scope) => [scope.id, scope.displayName])
+  const commandScopesById = new Map(
+    commandScopes.map((scope) => [scope.id, scope.displayName])
   )
 
-  return getKeymapItemScopes(keybinding)
-    .map((scope) => keymapScopesById.get(scope) ?? formatSettingsLabel(scope))
+  return getKeymapItemWhen(keybinding)
+    .map((scope) => commandScopesById.get(scope) ?? formatSettingsLabel(scope))
     .join(', ')
 }

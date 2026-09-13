@@ -1,0 +1,32 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing import_kcl_version_mismatch_v3.kcl
+---
+KCL Semantic error
+
+  × semantic: Mixing KCL versions in a single program is not allowed. The
+  │ entry point `tests/import_kcl_version_mismatch_v3/input.kcl` declares
+  │ kclVersion 3.0-preview, but the imported file `tests/
+  │ import_kcl_version_mismatch_v3/dep.kcl` declares kclVersion 2.0. Update
+  │ the kclVersion setting in one of these files to match the other.
+   ╭─[1:11]
+ 1 │ @settings(kclVersion = 2.0)
+   ·           ────────┬───────
+   ·                   ╰── tests/import_kcl_version_mismatch_v3/dep.kcl
+ 2 │ 
+   ╰────
+  ╰─▶ KCL Semantic error
+      
+        × semantic: Mixing KCL versions in a single program is not allowed.
+        │ The entry point `tests/import_kcl_version_mismatch_v3/input.kcl`
+        │ declares kclVersion 3.0-preview, but the imported file `tests/
+        │ import_kcl_version_mismatch_v3/dep.kcl` declares kclVersion 2.0.
+        │ Update the kclVersion setting in one of these files to match the
+        │ other.
+         ╭─[5:1]
+       4 │
+       5 │ import width from "dep.kcl"
+         · ─────────────┬─────────────
+         ·              ╰── tests/import_kcl_version_mismatch_v3/input.kcl
+       6 │
+         ╰────

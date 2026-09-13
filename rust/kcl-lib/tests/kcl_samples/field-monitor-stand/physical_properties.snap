@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties field-monitor-stand.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 33.0,
+      "y": -30.0,
+      "z": 56.85140355754746
+    },
+    "dimensions": {
+      "x": 66.0,
+      "y": 72.0,
+      "z": 136.4433685381139
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 25581.90349556355
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 35.39208707241639
+  }
+}

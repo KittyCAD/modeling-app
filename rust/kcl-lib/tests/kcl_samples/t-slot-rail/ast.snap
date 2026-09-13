@@ -6629,7 +6629,8 @@ description: Result of parsing t-slot-rail.kcl
                 },
                 "startNodes": []
               },
-              "start": 0
+              "start": 0,
+              "type": "Program"
             },
             "commentStart": 0,
             "end": 0,
@@ -6877,6 +6878,7 @@ description: Result of parsing t-slot-rail.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

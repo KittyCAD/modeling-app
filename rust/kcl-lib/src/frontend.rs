@@ -2062,6 +2062,8 @@ impl FrontendState {
 
         Ok(ExecOutcome {
             variables,
+            #[cfg(test)]
+            test_program_memory: Default::default(),
             filenames,
             operations,
             artifact_graph,
@@ -7050,8 +7052,6 @@ pub(crate) fn ast_sketch2_name(name: &str) -> ast::Name {
     }
 }
 
-// Shared AST creation helpers used by both frontend and transpiler to ensure consistency.
-
 /// Create an AST node for coincident([expr1, expr2, ...])
 pub(crate) fn create_coincident_ast(exprs: impl IntoIterator<Item = ast::Expr>) -> ast::Expr {
     let elements = exprs.into_iter().collect::<Vec<_>>();
@@ -7069,70 +7069,6 @@ pub(crate) fn create_coincident_ast(exprs: impl IntoIterator<Item = ast::Expr>) 
         callee: ast::Node::no_src(ast_sketch2_name(COINCIDENT_FN)),
         unlabeled: Some(array_expr),
         arguments: Default::default(),
-        digest: None,
-        non_code_meta: Default::default(),
-    })))
-}
-
-/// Create an AST node for line(start = [...], end = [...])
-pub(crate) fn create_line_ast(start_ast: ast::Expr, end_ast: ast::Expr) -> ast::Expr {
-    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
-        callee: ast::Node::no_src(ast_sketch2_name(LINE_FN)),
-        unlabeled: None,
-        arguments: vec![
-            ast::LabeledArg {
-                label: Some(ast::Identifier::new(LINE_START_PARAM)),
-                arg: start_ast,
-            },
-            ast::LabeledArg {
-                label: Some(ast::Identifier::new(LINE_END_PARAM)),
-                arg: end_ast,
-            },
-        ],
-        digest: None,
-        non_code_meta: Default::default(),
-    })))
-}
-
-/// Create an AST node for arc(start = [...], end = [...], center = [...])
-pub(crate) fn create_arc_ast(start_ast: ast::Expr, end_ast: ast::Expr, center_ast: ast::Expr) -> ast::Expr {
-    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
-        callee: ast::Node::no_src(ast_sketch2_name(ARC_FN)),
-        unlabeled: None,
-        arguments: vec![
-            ast::LabeledArg {
-                label: Some(ast::Identifier::new(ARC_START_PARAM)),
-                arg: start_ast,
-            },
-            ast::LabeledArg {
-                label: Some(ast::Identifier::new(ARC_END_PARAM)),
-                arg: end_ast,
-            },
-            ast::LabeledArg {
-                label: Some(ast::Identifier::new(ARC_CENTER_PARAM)),
-                arg: center_ast,
-            },
-        ],
-        digest: None,
-        non_code_meta: Default::default(),
-    })))
-}
-
-/// Create an AST node for circle(start = [...], center = [...])
-pub(crate) fn create_circle_ast(start_ast: ast::Expr, center_ast: ast::Expr) -> ast::Expr {
-    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
-        callee: ast::Node::no_src(ast_sketch2_name(CIRCLE_FN)),
-        unlabeled: None,
-        arguments: vec![
-            ast::LabeledArg {
-                label: Some(ast::Identifier::new(CIRCLE_START_PARAM)),
-                arg: start_ast,
-            },
-            ast::LabeledArg {
-                label: Some(ast::Identifier::new(CIRCLE_CENTER_PARAM)),
-                arg: center_ast,
-            },
-        ],
         digest: None,
         non_code_meta: Default::default(),
     })))
@@ -7625,7 +7561,10 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
     fn test_parse_frontend_mutation_source_error_messages_are_user_facing() {
         for (source, expected_message) in [
             ("**", "Error parsing KCL source after editing: Unexpected token: *"),
-            ("3'", "Error parsing KCL source after editing: found unknown token '''"),
+            (
+                "3'",
+                "Error parsing KCL source after editing: unterminated string literal",
+            ),
         ] {
             let err = parse_frontend_mutation_source(
                 source,
@@ -7664,7 +7603,7 @@ sketch(on = XY) {
 
         for (value, expected_message) in [
             ("**", "Invalid constraint value: Unexpected token: *"),
-            ("3'", "Invalid constraint value: found unknown token '''"),
+            ("3'", "Invalid constraint value: unterminated string literal"),
         ] {
             let err = frontend
                 .edit_constraint_value(&mock_ctx, version, sketch_id, constraint_id, value.to_owned())
@@ -9328,6 +9267,7 @@ cylinder = startSketchOn(XY)
         frontend.program = Program::parse(initial_source).unwrap().0.unwrap();
         let outcome = ExecOutcome {
             variables: Default::default(),
+            test_program_memory: Default::default(),
             operations: Default::default(),
             artifact_graph: Default::default(),
             scene_objects: Default::default(),
@@ -9483,6 +9423,7 @@ sketch(on = XY) {
     ) -> ExecOutcome {
         ExecOutcome {
             variables: Default::default(),
+            test_program_memory: Default::default(),
             operations: Default::default(),
             artifact_graph: Default::default(),
             scene_objects: Default::default(),
@@ -11759,7 +11700,8 @@ sketch(on = XY) {
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let outcome = frontend.hack_set_program(&ctx, program).await.unwrap();
+        assert!(matches!(outcome, SetProgramOutcome::Success { .. }), "{outcome:?}");
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -12056,7 +11998,8 @@ sketch(on = XY) {
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let outcome = frontend.hack_set_program(&ctx, program).await.unwrap();
+        assert!(matches!(outcome, SetProgramOutcome::Success { .. }), "{outcome:?}");
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -15372,7 +15315,8 @@ sketch001 = sketch(on = XY) {
         let project_id = ProjectId(0);
         let file_id = FileId(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let outcome = frontend.hack_set_program(&ctx, program).await.unwrap();
+        assert!(matches!(outcome, SetProgramOutcome::Success { .. }), "{outcome:?}");
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
