@@ -34,6 +34,7 @@ import {
   type RadiusConstraint,
   axisConstraintIncludesOrigin,
   getAxisConstraintPointIds,
+  getCircleOwner,
   getCoincidentCluster,
   isAngleConstraint,
   isArcLikeSegment,
@@ -1020,6 +1021,8 @@ type CreateOnDragStartCallbackArgs = {
   setDragStartOutcome: (outcome: DragSketchOutcome | null) => void
   // Stores the committed Rust checkpoint so invalid releases can restore to it.
   setPreDragCheckpointId: (checkpointId: number | null) => void
+  // Stores the owner circle that should translate with its dragged center.
+  setCircleCenterDragOwnerId: (ownerId: number | null) => void
   // Starts a fresh drag session so stale preview responses can be ignored.
   beginDragSession: () => void
   // Reads the current frontend sketch outcome at the moment drag begins.
@@ -1044,6 +1047,7 @@ export function createOnDragStartCallback({
   setLastGoodPreview,
   setDragStartOutcome,
   setPreDragCheckpointId,
+  setCircleCenterDragOwnerId,
   beginDragSession,
   getCurrentSketchOutcome,
   getCurrentCommittedCheckpointId,
@@ -1060,14 +1064,32 @@ export function createOnDragStartCallback({
     dismissConstraintHoverPopup()
     beginDragSession()
     const currentSketchOutcome = getCurrentSketchOutcome()
+    const draggedEntityId = getDraggedEntityId()
+    const objects =
+      currentSketchOutcome?.sceneGraphDelta.new_graph.objects ?? []
+    const draggedPoint =
+      draggedEntityId === null ? null : objects[draggedEntityId]
+    const circleOwner = isPointSegment(draggedPoint)
+      ? getCircleOwner(draggedPoint, objects)
+      : null
+    const isCircleCenterDrag =
+      circleOwner?.kind.segment.center === draggedEntityId
+    setCircleCenterDragOwnerId(isCircleCenterDrag ? circleOwner.id : null)
     const draggedConstraintLabelId = getConstraintLabelId(
-      getDraggedEntityId(),
+      draggedEntityId,
       currentSketchOutcome?.sceneGraphDelta
     )
     if (draggedConstraintLabelId !== null) {
       onUpdateHoveredId(draggedConstraintLabelId)
     }
-    setLastSuccessfulDragFromPoint(intersectionPoint.twoD.clone())
+    setLastSuccessfulDragFromPoint(
+      isCircleCenterDrag && isPointSegment(draggedPoint)
+        ? new Vector2(
+            draggedPoint.kind.segment.position.x.value,
+            draggedPoint.kind.segment.position.y.value
+          )
+        : intersectionPoint.twoD.clone()
+    )
     setLastGoodPreview(null)
     setDragStartOutcome(currentSketchOutcome)
     setPreDragCheckpointId(getCurrentCommittedCheckpointId())
@@ -1385,6 +1407,7 @@ export function createOnDragCallback({
   getLastGoodPreview,
   setLastGoodPreview,
   getDragStartOutcome,
+  getCircleCenterDragOwnerId,
   getContextData,
   editSegments,
   editDistanceConstraintLabelPosition = async () => null,
@@ -1407,6 +1430,7 @@ export function createOnDragCallback({
   getLastGoodPreview: () => DragCommitCandidate | null
   setLastGoodPreview: (preview: DragCommitCandidate | null) => void
   getDragStartOutcome: () => DragSketchOutcome | null
+  getCircleCenterDragOwnerId: () => number | null
   getContextData: () => {
     selectedIds: Array<number>
     sketchId: number
@@ -1574,6 +1598,10 @@ export function createOnDragCallback({
       selectedIds.forEach((id) => {
         idsToEdit.add(id)
       })
+      const circleCenterDragOwnerId = getCircleCenterDragOwnerId()
+      if (circleCenterDragOwnerId !== null) {
+        idsToEdit.add(circleCenterDragOwnerId)
+      }
 
       // Build ctors for each segment with drag applied
       const units = baseUnitToNumericSuffix(getDefaultLengthUnit())
@@ -1588,7 +1616,7 @@ export function createOnDragCallback({
       )
       const dragAnchorSegmentIds = Array.from(
         new Set(
-          [entityUnderCursorId, ...selectedIds].filter(
+          [entityUnderCursorId, ...selectedIds, circleCenterDragOwnerId].filter(
             (id): id is number =>
               id !== null &&
               objects[id]?.kind.type === 'Segment' &&
@@ -1756,6 +1784,9 @@ export function setUpOnDragAndSelectionClickCallbacks({
   const [getDragStartOutcome, setDragStartOutcome] =
     createGetSet<DragSketchOutcome | null>(null)
   const [getPreDragCheckpointId, setPreDragCheckpointId] = createGetSet<
+    number | null
+  >(null)
+  const [getCircleCenterDragOwnerId, setCircleCenterDragOwnerId] = createGetSet<
     number | null
   >(null)
   const constraintHoverPopupState: {
@@ -1971,6 +2002,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
       setLastGoodPreview,
       setDragStartOutcome,
       setPreDragCheckpointId,
+      setCircleCenterDragOwnerId,
       beginDragSession,
       getCurrentSketchOutcome: () => {
         const sketchExecOutcome = self.getSnapshot().context.sketchExecOutcome
@@ -2367,9 +2399,14 @@ export function setUpOnDragAndSelectionClickCallbacks({
               )
             } else {
               const objects = currentSceneGraphDelta.new_graph.objects
+              const circleCenterDragOwnerId = getCircleCenterDragOwnerId()
               const dragAnchorSegmentIds = Array.from(
                 new Set(
-                  [draggedEntityId, ...snapshot.context.selectedIds]
+                  [
+                    draggedEntityId,
+                    ...snapshot.context.selectedIds,
+                    circleCenterDragOwnerId,
+                  ]
                     .filter(isObjectSelectionId)
                     .filter((id) => objects[id]?.kind.type === 'Segment')
                 )
@@ -2387,6 +2424,9 @@ export function setUpOnDragAndSelectionClickCallbacks({
                   idsToEdit.add(id)
                 }
               })
+              if (circleCenterDragOwnerId !== null) {
+                idsToEdit.add(circleCenterDragOwnerId)
+              }
 
               const segmentsToEdit: ExistingSegmentCtor[] = []
               for (const id of idsToEdit) {
@@ -2442,6 +2482,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
         } catch (err) {
           console.error('error in onDragEnd sketchExecuteMock', err)
           toastSketchSolveError(err)
+        } finally {
+          setCircleCenterDragOwnerId(null)
         }
       },
     }),
@@ -2456,6 +2498,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
       getLastGoodPreview,
       setLastGoodPreview,
       getDragStartOutcome,
+      getCircleCenterDragOwnerId,
       getContextData: () => {
         const snapshot = self.getSnapshot()
         return {

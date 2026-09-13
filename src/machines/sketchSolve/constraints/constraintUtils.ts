@@ -72,6 +72,19 @@ export type CircleSegment = ApiObject & {
   kind: { type: 'Segment'; segment: { type: 'Circle' } }
 }
 
+export function getCircleOwner(
+  point: PointSegment,
+  objects: ApiObject[]
+): CircleSegment | null {
+  const ownerId = point.kind.segment.owner
+  if (ownerId === null) {
+    return null
+  }
+
+  const owner = objects[ownerId]
+  return isCircleSegment(owner) ? owner : null
+}
+
 export function isControlPointSplineSegment(
   obj: ApiObject | undefined | null
 ): obj is ControlPointSplineSegment {
