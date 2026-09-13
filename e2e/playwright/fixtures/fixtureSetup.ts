@@ -145,10 +145,26 @@ export class ElectronZoo {
   public viewPortSize = { width: 1200, height: 500 }
   public projectDirName = ''
 
+  private disposed = false
+  public rendererCrashed = false
   public page!: Page
   public context!: BrowserContext
 
   constructor() {}
+
+  async dispose() {
+    if (this.disposed) return
+    this.disposed = true
+
+    // A timed-out renderer may not run unload handlers. Close only this
+    // fixture's windows before asking the owned Electron process to quit.
+    await Promise.all(
+      this.electron
+        .windows()
+        .map((page) => page.close({ runBeforeUnload: false }))
+    )
+    await this.electron.close()
+  }
 
   // Help remote end by signaling we're done with the connection.
   // If it takes longer than 10s to stop, just resolve.
@@ -423,7 +439,16 @@ const fixturesForElectron = {
     use: FnUse,
     testInfo: TestInfo
   ) => {
-    await use(tronApp.page)
+    tronApp.rendererCrashed = false
+    const onCrash = () => {
+      tronApp.rendererCrashed = true
+    }
+    tronApp.page.on('crash', onCrash)
+    try {
+      await use(tronApp.page)
+    } finally {
+      tronApp.page.off('crash', onCrash)
+    }
   },
   context: async (
     { tronApp }: { tronApp: ElectronZoo },
@@ -555,8 +580,22 @@ const fixturesBasedOnProcessEnvPlatform = {
     await use(ret)
   },
   _globalAfterEach: [
-    async ({ page }: { page: Page }, use: FnUse, testInfo: TestInfo) => {
+    async (
+      { page, tronApp }: { page: Page; tronApp?: ElectronZoo },
+      use: FnUse,
+      testInfo: TestInfo
+    ) => {
       await use() // <-- runs the actual test
+
+      if (
+        tronApp &&
+        (testInfo.status === 'timedOut' || tronApp.rendererCrashed)
+      ) {
+        // Renderer diagnostics can hang for the same reason as the test.
+        // Preserve the original failure and release the app before worker cleanup.
+        await tronApp.dispose()
+        return
+      }
 
       const engineLogs: ILog[] = await page
         .evaluate(() => window.engineDebugger?.logs || [])
