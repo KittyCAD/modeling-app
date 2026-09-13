@@ -7561,7 +7561,10 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
     fn test_parse_frontend_mutation_source_error_messages_are_user_facing() {
         for (source, expected_message) in [
             ("**", "Error parsing KCL source after editing: Unexpected token: *"),
-            ("3'", "Error parsing KCL source after editing: found unknown token '''"),
+            (
+                "3'",
+                "Error parsing KCL source after editing: unterminated string literal",
+            ),
         ] {
             let err = parse_frontend_mutation_source(
                 source,
@@ -7600,7 +7603,7 @@ sketch(on = XY) {
 
         for (value, expected_message) in [
             ("**", "Invalid constraint value: Unexpected token: *"),
-            ("3'", "Invalid constraint value: found unknown token '''"),
+            ("3'", "Invalid constraint value: unterminated string literal"),
         ] {
             let err = frontend
                 .edit_constraint_value(&mock_ctx, version, sketch_id, constraint_id, value.to_owned())
@@ -11697,7 +11700,8 @@ sketch(on = XY) {
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let outcome = frontend.hack_set_program(&ctx, program).await.unwrap();
+        assert!(matches!(outcome, SetProgramOutcome::Success { .. }), "{outcome:?}");
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -11994,7 +11998,8 @@ sketch(on = XY) {
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let outcome = frontend.hack_set_program(&ctx, program).await.unwrap();
+        assert!(matches!(outcome, SetProgramOutcome::Success { .. }), "{outcome:?}");
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);
@@ -15310,7 +15315,8 @@ sketch001 = sketch(on = XY) {
         let project_id = ProjectId(0);
         let file_id = FileId(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let outcome = frontend.hack_set_program(&ctx, program).await.unwrap();
+        assert!(matches!(outcome, SetProgramOutcome::Success { .. }), "{outcome:?}");
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
         let sketch = expect_sketch(sketch_object);

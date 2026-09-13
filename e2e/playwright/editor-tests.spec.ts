@@ -188,6 +188,7 @@ sketch001 = startSketchOn(XY)
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
+    await homePage.waitForAuthentication()
     await homePage.goToModelingScene()
     await scene.settled()
 

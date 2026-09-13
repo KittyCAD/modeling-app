@@ -104,6 +104,18 @@ export class HomePageFixture {
     ).toBeVisible()
   }
 
+  waitForAuthentication = async () => {
+    // A document reload can finish while Auth still hides the Home route.
+    await this.page.waitForFunction(() => {
+      const snapshot = window.app?.auth.actor.getSnapshot()
+      return snapshot !== undefined && !snapshot.matches('checkIfLoggedIn')
+    })
+    expect(
+      await this.page.evaluate(() => window.app.auth.actor.getSnapshot().value),
+      'Home startup requires loggedIn authentication'
+    ).toBe('loggedIn')
+  }
+
   projectsLoaded = async () => {
     const projectLink = this.page.getByTestId('project-link').first()
     const noProjects = this.page.getByTestId('projects-none')
