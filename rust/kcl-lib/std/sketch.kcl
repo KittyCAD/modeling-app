@@ -13,6 +13,8 @@ import Axis2d, Axis3d, BoundedEdge, Edge, Face, Helix, Plane, Point2d, Point3d, 
 ///
 /// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
+/// Legacy sketch functions cannot be used with constraints; strongly prefer
+/// a [`sketch` block](/docs/kcl-lang/sketches) instead.
 ///
 /// ### Sketch on Face Behavior
 ///
@@ -292,6 +294,8 @@ export fn startSketchOn(
 ///
 /// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
+/// Legacy sketch functions cannot be used with constraints; strongly prefer
+/// a [`sketch` block](/docs/kcl-lang/sketches) instead.
 ///
 /// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
@@ -359,6 +363,9 @@ export fn startProfile(
 ///
 /// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
+/// Legacy sketch functions cannot be used with constraints; strongly prefer
+/// [`solver::line`](/docs/kcl-std/functions/std-solver-line) segments inside a
+/// `sketch` block instead.
 ///
 /// A rectangle can be defined by its width, height, and location. Either the center or corner must be provided, but not both, to specify its location.
 ///
@@ -395,7 +402,9 @@ export fn rectangle(
 /// Construct a 2-dimensional circle, of the specified radius, centered at
 /// the provided (x, y) origin point.
 ///
-/// This is part of sketch v1 and is deprecated. In KCL 2, create a
+/// This is part of sketch v1 and is deprecated. Legacy sketch functions cannot
+/// be used with constraints. Strongly prefer constraint-based sketch functions:
+/// in KCL 2, create a
 /// [`solver::circle`](/docs/kcl-std/functions/std-solver-circle) inside a
 /// [`sketch` block](/docs/kcl-lang/sketches), then select the
 /// closed profile with [`region`](/docs/kcl-std/functions/std-sketch-region).
@@ -442,8 +451,10 @@ export fn circle(
 /// Construct a 2-dimensional ellipse, of the specified major/minor radius, centered at the provided (x, y) point.
 ///
 /// This is part of sketch v1 and is soft deprecated in favor of
-/// [sketch-solve](/docs/kcl-std/modules/std-solver). The sketch-solve version
-/// of ellipse is still under development.
+/// [sketch-solve](/docs/kcl-std/modules/std-solver). Legacy sketch functions
+/// cannot be used with constraints; strongly prefer constraint-based sketch
+/// functions when possible. No constraint-based ellipse is available yet; first
+/// try approximating the shape with one or more constrained arcs.
 ///
 /// ```kcl,no3d,legacySketch
 /// @settings(experimentalFeatures = allow)
@@ -1463,6 +1474,9 @@ export fn getBoundedEdge(
 ///
 /// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
+/// Legacy sketch functions cannot be used with constraints; strongly prefer
+/// [`solver::circle`](/docs/kcl-std/functions/std-solver-circle) inside a
+/// `sketch` block instead.
 ///
 /// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XY)
@@ -1487,6 +1501,9 @@ export fn circleThreePoint(
 ///
 /// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
+/// Legacy sketch functions cannot be used with constraints; strongly prefer
+/// [`solver::line`](/docs/kcl-std/functions/std-solver-line) segments inside a
+/// `sketch` block instead.
 ///
 /// ```kcl,legacySketch
 /// // Create a regular hexagon inscribed in a circle of radius 10
@@ -2534,6 +2551,9 @@ export fn profileStartY(
 /// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver) and the
 /// [gear module](/docs/kcl-std/modules/std-gear).
+/// Legacy sketch functions cannot be used with constraints; strongly prefer
+/// the gear module when it applies. No constraint-based involute is available
+/// yet; first try approximating the shape with one or more constrained arcs.
 ///
 /// ```kcl,no3d,legacySketch
 /// a = 10
@@ -2615,6 +2635,9 @@ export fn involuteCircular(
 ///
 /// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
+/// Legacy sketch functions cannot be used with constraints; strongly prefer
+/// [`solver::line`](/docs/kcl-std/functions/std-solver-line) inside a `sketch`
+/// block instead.
 ///
 /// ```kcl,legacySketch
 /// triangle = startSketchOn(XZ)
@@ -2656,6 +2679,9 @@ export fn line(
 ///
 /// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
+/// Legacy sketch functions cannot be used with constraints; strongly prefer
+/// [`solver::line`](/docs/kcl-std/functions/std-solver-line) with horizontal
+/// or vertical constraints inside a `sketch` block instead.
 ///
 /// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
@@ -2694,6 +2720,9 @@ export fn xLine(
 ///
 /// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
+/// Legacy sketch functions cannot be used with constraints; strongly prefer
+/// [`solver::line`](/docs/kcl-std/functions/std-solver-line) with horizontal
+/// or vertical constraints inside a `sketch` block instead.
 ///
 /// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
@@ -2727,6 +2756,9 @@ export fn yLine(
 ///
 /// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
+/// Legacy sketch functions cannot be used with constraints; strongly prefer
+/// [`solver::line`](/docs/kcl-std/functions/std-solver-line) with an angle
+/// constraint inside a `sketch` block instead.
 ///
 /// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
@@ -2768,6 +2800,9 @@ export fn angledLine(
 ///
 /// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
+/// Legacy sketch functions cannot be used with constraints; strongly prefer
+/// [`solver::line`](/docs/kcl-std/functions/std-solver-line) with angle and
+/// coincident constraints inside a `sketch` block instead.
 ///
 /// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
@@ -2803,6 +2838,9 @@ export fn angledLineThatIntersects(
 ///
 /// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
+/// Legacy sketch functions cannot be used with constraints; strongly prefer
+/// [`solver::coincident`](/docs/kcl-std/functions/std-solver-coincident)
+/// constraints inside a `sketch` block instead.
 ///
 /// If you want to perform some 3-dimensional operation on a sketch, like
 /// extrude or sweep, you must `close` it first. `close` must be called even
@@ -2839,6 +2877,9 @@ export fn close(
 ///
 /// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
+/// Legacy sketch functions cannot be used with constraints; strongly prefer
+/// [`solver::arc`](/docs/kcl-std/functions/std-solver-arc) inside a `sketch`
+/// block instead.
 ///
 /// The arc is constructed such that the current position of the sketch is
 /// placed along an imaginary circle of the specified radius, at angleStart
@@ -2901,6 +2942,9 @@ export fn arc(
 ///
 /// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
+/// Legacy sketch functions cannot be used with constraints; strongly prefer
+/// [`solver::arc`](/docs/kcl-std/functions/std-solver-arc) with tangent
+/// constraints inside a `sketch` block instead.
 ///
 /// When using radius and angle, draw a curved line segment along part of an
 /// imaginary circle. The arc is constructed such that the last line segment is
@@ -2976,8 +3020,10 @@ export fn tangentialArc(
 /// shape.
 ///
 /// This is part of sketch v1 and is deprecated in favor of
-/// [sketch-solve](/docs/kcl-std/modules/std-solver). The sketch-solve version
-/// of bezier curve is still under development.
+/// [sketch-solve](/docs/kcl-std/modules/std-solver). Legacy sketch functions
+/// cannot be used with constraints; strongly prefer constraint-based sketch
+/// functions when possible. No constraint-based Bezier curve is available yet;
+/// first try approximating the shape with one or more constrained arcs.
 ///
 /// ```kcl,legacySketch
 /// // Example using relative control points.
@@ -3025,7 +3071,9 @@ export fn bezierCurve(
 
 /// Use a 2-dimensional sketch to cut a hole in another 2-dimensional sketch.
 ///
-/// This is part of sketch v1 and is deprecated. In KCL 2, construct the outer
+/// This is part of sketch v1 and is deprecated. Legacy sketch functions cannot
+/// be used with constraints. Strongly prefer constraint-based sketch functions:
+/// in KCL 2, construct the outer
 /// boundary and hole as segments inside a
 /// [`sketch` block](/docs/kcl-lang/sketches), then select the
 /// required bounded face with
@@ -3075,8 +3123,10 @@ export fn subtract2d(
 /// Add a conic section to an existing sketch.
 ///
 /// This is part of sketch v1 and is soft deprecated in favor of
-/// [sketch-solve](/docs/kcl-std/modules/std-solver). The sketch-solve version
-/// of conic is still under development.
+/// [sketch-solve](/docs/kcl-std/modules/std-solver). Legacy sketch functions
+/// cannot be used with constraints; strongly prefer constraint-based sketch
+/// functions when possible. No constraint-based conic is available yet; first
+/// try approximating the shape with one or more constrained arcs.
 ///
 /// ```kcl,legacySketch
 /// @settings(experimentalFeatures = allow)
@@ -3117,8 +3167,10 @@ export fn conic(
 /// Add a parabolic segment to an existing sketch.
 ///
 /// This is part of sketch v1 and is soft deprecated in favor of
-/// [sketch-solve](/docs/kcl-std/modules/std-solver). The sketch-solve version
-/// of parabolic is still under development.
+/// [sketch-solve](/docs/kcl-std/modules/std-solver). Legacy sketch functions
+/// cannot be used with constraints; strongly prefer constraint-based sketch
+/// functions when possible. No constraint-based parabola is available yet;
+/// first try approximating the shape with one or more constrained arcs.
 ///
 /// ```kcl,no3d,legacySketch
 /// @settings(experimentalFeatures = allow)
@@ -3170,8 +3222,10 @@ export fn parabolicPoint(
 /// Add a hyperbolic section to an existing sketch.
 ///
 /// This is part of sketch v1 and is soft deprecated in favor of
-/// [sketch-solve](/docs/kcl-std/modules/std-solver). The sketch-solve version
-/// of hyperbolic is still under development.
+/// [sketch-solve](/docs/kcl-std/modules/std-solver). Legacy sketch functions
+/// cannot be used with constraints; strongly prefer constraint-based sketch
+/// functions when possible. No constraint-based hyperbola is available yet;
+/// first try approximating the shape with one or more constrained arcs.
 ///
 /// ```kcl,no3d,legacySketch
 /// @settings(experimentalFeatures = allow)
@@ -3226,8 +3280,10 @@ export fn hyperbolicPoint(
 /// Add an elliptic section to an existing sketch.
 ///
 /// This is part of sketch v1 and is soft deprecated in favor of
-/// [sketch-solve](/docs/kcl-std/modules/std-solver). The sketch-solve version
-/// of elliptic is still under development.
+/// [sketch-solve](/docs/kcl-std/modules/std-solver). Legacy sketch functions
+/// cannot be used with constraints; strongly prefer constraint-based sketch
+/// functions when possible. No constraint-based elliptic curve is available
+/// yet; first try approximating the shape with one or more constrained arcs.
 ///
 /// ```kcl,legacySketch
 /// @settings(experimentalFeatures = allow)
