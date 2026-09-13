@@ -2671,9 +2671,8 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.226"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0ffff04fdb1e477bb9f81a0d2c1ae3e50f64a03ae95d9929a5b20e7833f2c9f3"
+version = "0.2.231"
+source = "git+https://github.com/KittyCAD/modeling-api.git?branch=caleb%2Ftangent-chains#69f3704baa4fc5a8aa619518adc767f24367d1fc"
 dependencies = [
  "anyhow",
  "bon",
@@ -2703,24 +2702,22 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros"
 version = "0.1.13"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "eb4ba190f74f6d32f4607ecac4bdebd4a935d4943b8ca8369305e6e7a59b5976"
+source = "git+https://github.com/KittyCAD/modeling-api.git?branch=caleb%2Ftangent-chains#69f3704baa4fc5a8aa619518adc767f24367d1fc"
 dependencies = [
  "kittycad-modeling-cmds-macros-impl",
  "proc-macro2",
  "quote",
- "syn 2.0.119",
+ "syn 3.0.4",
 ]
 
 [[package]]
 name = "kittycad-modeling-cmds-macros-impl"
 version = "0.1.14"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "743b6533d1848de67e3455a28614a2b7896807ab0d3358ccd3ea1863de3c4e6b"
+source = "git+https://github.com/KittyCAD/modeling-api.git?branch=caleb%2Ftangent-chains#69f3704baa4fc5a8aa619518adc767f24367d1fc"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.119",
+ "syn 3.0.4",
 ]
 
 [[package]]

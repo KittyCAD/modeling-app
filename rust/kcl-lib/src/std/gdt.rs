@@ -2128,7 +2128,7 @@ gdt::flatness(
                 .dimension
                 .as_ref()
                 .expect("expected new_annotation command to have a dimension");
-            assert_close(dimension.dimension.tolerance, expected_tolerance);
+            assert_close(dimension.dimension.tolerance.unwrap(), expected_tolerance);
             assert_close(dimension.offset.x, expected_x);
             assert_close(dimension.offset.y, expected_y);
             assert_close(
