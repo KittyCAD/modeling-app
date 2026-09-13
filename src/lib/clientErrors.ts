@@ -1,4 +1,5 @@
 import { type ClientErrorReport, users } from '@kittycad/lib'
+import { EngineDebugger } from '@src/lib/debugger'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 
 type ReportClientErrorParams = {
@@ -43,6 +44,8 @@ export enum ClientErrorCode {
 
 const reportedClientErrors = new Set<string>()
 const FALLBACK_APP_RELEASE = 'unknown'
+// Match the API's stack limit in Unicode characters.
+const MAX_STACK_LENGTH = 8192
 
 const getAppRelease = () => {
   if (typeof window !== 'undefined') {
@@ -126,13 +129,39 @@ const buildStack = (params: ReportClientErrorParams) => {
   const userAgent =
     typeof navigator === 'undefined' ? undefined : navigator.userAgent
 
-  return JSON.stringify({
+  const context: Record<string, unknown> = {
     ...(params.error instanceof Error && params.error.stack
       ? { runtimeStack: params.error.stack }
       : {}),
     ...params.extra,
     userAgent,
-  })
+  }
+  if (
+    params.code !== ClientErrorCode.EngineDisconnect &&
+    params.code !== ClientErrorCode.EngineBackendDisconnect
+  ) {
+    return JSON.stringify(context)
+  }
+
+  let stack: string
+  try {
+    stack = JSON.stringify({
+      ...context,
+      // Keep recent events first so they survive the raw crop below.
+      engineDebugger: EngineDebugger.logs
+        .map(({ time, message, label, metadata }) => ({
+          time,
+          message,
+          label,
+          metadata,
+        }))
+        .reverse(),
+    })
+  } catch {
+    // Still report the original error if the debugger buffer cannot serialize.
+    stack = JSON.stringify(context)
+  }
+  return Array.from(stack).slice(0, MAX_STACK_LENGTH).join('')
 }
 
 const buildClientErrorReport = (
