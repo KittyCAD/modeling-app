@@ -83,7 +83,14 @@ const playwrightTestFnWithFixtures_ = playwrightTestFn.extend<{
         isFirstRun = false
 
         await use(electronZooInstance)
-        await electronZooInstance.makeAvailableAgain()
+        if (
+          testInfo.status === 'timedOut' ||
+          electronZooInstance.rendererCrashed
+        ) {
+          await electronZooInstance.dispose()
+        } else {
+          await electronZooInstance.makeAvailableAgain()
+        }
       } catch (error) {
         if (timeoutId) clearTimeout(timeoutId)
         throw error
