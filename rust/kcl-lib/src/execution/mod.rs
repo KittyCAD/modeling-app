@@ -437,10 +437,13 @@ pub struct SketchConstraintStatus {
     /// - The same name for two sketches, when a function body declares the
     ///   sketch and is called more than once.
     ///
-    /// This name is accepted by [`ExecOutcome::render_sketch_png`]. Because
-    /// the report carries no other sketch identifier, rendering returns an
-    /// ambiguity error when multiple sketches share a name.
+    /// This name is accepted by [`ExecOutcome::render_sketch_png`]. Use
+    /// `instance_index` to select between sketches sharing this name.
     pub name: String,
+    /// Zero-based creation order among sketches with this name, before
+    /// grouping by constraint status. Valid for this entrypoint and source;
+    /// obtain a fresh report after editing the project.
+    pub instance_index: usize,
     /// Overall constraint status derived from per-segment freedom.
     pub status: ConstraintKind,
     /// Number of segments that are under-constrained (free to move).
@@ -538,6 +541,7 @@ pub(crate) fn sketch_constraint_status_for_sketch(
 
     Some(SketchConstraintStatus {
         name: sketch_obj.label.clone(),
+        instance_index: 0,
         status,
         free_count,
         conflict_count,
@@ -550,10 +554,14 @@ pub(crate) fn sketch_constraint_report_from_scene_objects(scene_objects: &[Objec
     let mut under_constrained = Vec::new();
     let mut over_constrained = Vec::new();
     let mut errors = Vec::new();
+    let mut instance_counts = std::collections::HashMap::new();
     for obj in scene_objects {
-        let Some(entry) = sketch_constraint_status_for_sketch(scene_objects, obj) else {
+        let Some(mut entry) = sketch_constraint_status_for_sketch(scene_objects, obj) else {
             continue;
         };
+        let count = instance_counts.entry(entry.name.clone()).or_insert(0);
+        entry.instance_index = *count;
+        *count += 1;
         match entry.status {
             ConstraintKind::FullyConstrained => fully_constrained.push(entry),
             ConstraintKind::UnderConstrained => under_constrained.push(entry),
@@ -602,6 +610,16 @@ impl ExecOutcome {
         &self,
         sketch_name: &str,
     ) -> std::result::Result<Vec<u8>, crate::tooling::sketch_visualizer::SketchVisualizationError> {
+        self.render_sketch_png_instance(sketch_name, None)
+    }
+
+    /// Render a named sketch, optionally selecting its zero-based instance
+    /// from the constraint report for the same entrypoint and source.
+    pub fn render_sketch_png_instance(
+        &self,
+        sketch_name: &str,
+        instance_index: Option<usize>,
+    ) -> std::result::Result<Vec<u8>, crate::tooling::sketch_visualizer::SketchVisualizationError> {
         use crate::front::ObjectKind;
         use crate::tooling::sketch_visualizer::SketchVisualizationError;
 
@@ -613,14 +631,21 @@ impl ExecOutcome {
                 _ => None,
             })
             .collect::<Vec<_>>();
-        let sketch = match sketches.as_slice() {
-            [] => {
+        let sketch = match (sketches.as_slice(), instance_index) {
+            ([], _) => {
                 return Err(SketchVisualizationError::SketchNotFound {
                     name: sketch_name.to_owned(),
                 });
             }
-            [sketch] => *sketch,
-            _ => {
+            (_, Some(index)) => *sketches
+                .get(index)
+                .ok_or_else(|| SketchVisualizationError::InstanceNotFound {
+                    name: sketch_name.to_owned(),
+                    index,
+                    count: sketches.len(),
+                })?,
+            ([sketch], None) => *sketch,
+            (_, None) => {
                 return Err(SketchVisualizationError::AmbiguousSketchName {
                     name: sketch_name.to_owned(),
                     count: sketches.len(),

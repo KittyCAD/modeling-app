@@ -58,13 +58,23 @@ fn tokio() -> &'static tokio::runtime::Runtime {
     RT.get_or_init(|| tokio::runtime::Runtime::new().unwrap())
 }
 
+struct AbortOnDrop<T>(tokio::task::JoinHandle<T>);
+
+impl<T> Drop for AbortOnDrop<T> {
+    fn drop(&mut self) {
+        self.0.abort();
+    }
+}
+
 async fn spawn_py<T, Fut>(future: Fut) -> PyResult<T>
 where
     T: Send + 'static,
     Fut: Future<Output = PyResult<T>> + Send + 'static,
 {
-    tokio()
-        .spawn(future)
+    // Dropping a bare JoinHandle detaches the task. Python cancellation must
+    // instead drop the execution future and its engine connection.
+    let mut task = AbortOnDrop(tokio().spawn(future));
+    (&mut task.0)
         .await
         .map_err(|err| PyException::new_err(err.to_string()))?
 }
@@ -305,9 +315,13 @@ impl ExecOutcome {
     }
 
     /// Render one sketch from this execution as a PNG, colored by solver
-    /// freedom.
-    fn render_sketch_png(&self, sketch_name: &str) -> PyResult<Vec<u8>> {
-        self.inner.render_sketch_png(sketch_name).map_err(to_py_exception)
+    /// freedom. For duplicate names, pass the zero-based instance_index
+    /// from the constraint report for this entrypoint and source.
+    #[pyo3(signature = (sketch_name, *, instance_index=None))]
+    fn render_sketch_png(&self, sketch_name: &str, instance_index: Option<usize>) -> PyResult<Vec<u8>> {
+        self.inner
+            .render_sketch_png_instance(sketch_name, instance_index)
+            .map_err(to_py_exception)
     }
 
     fn report_all(&self) -> Vec<String> {
@@ -331,12 +345,16 @@ struct ExecutedKcl {
 }
 
 async fn run_kcl(input: KclInput, mock: bool, highlight_edges: Option<bool>) -> PyResult<ExecutedKcl> {
+    run_parsed_kcl(load_and_parse(input).await?, mock, highlight_edges).await
+}
+
+async fn run_parsed_kcl(parsed: KclProgram, mock: bool, highlight_edges: Option<bool>) -> PyResult<ExecutedKcl> {
     let KclProgram {
         code,
         program,
         path,
         filename,
-    } = load_and_parse(input).await?;
+    } = parsed;
 
     let (ctx, mut state) = new_context_state(path, mock, highlight_edges)
         .await
@@ -359,6 +377,10 @@ async fn run_kcl(input: KclInput, mock: bool, highlight_edges: Option<bool>) -> 
 }
 
 async fn execute_impl(input: KclInput, mock: bool) -> PyResult<ExecOutcome> {
+    execution_outcome(run_kcl(input, mock, None).await?).await
+}
+
+async fn execution_outcome(executed: ExecutedKcl) -> PyResult<ExecOutcome> {
     let ExecutedKcl {
         ctx,
         state,
@@ -366,7 +388,7 @@ async fn execute_impl(input: KclInput, mock: bool) -> PyResult<ExecOutcome> {
         code,
         filename,
         ..
-    } = run_kcl(input, mock, None).await?;
+    } = executed;
     let outcome = match state.into_exec_outcome(env_ref, &ctx).await {
         Ok(outcome) => outcome,
         Err(err) => {
@@ -380,6 +402,58 @@ async fn execute_impl(input: KclInput, mock: bool) -> PyResult<ExecOutcome> {
         code,
         filename,
     })
+}
+
+async fn try_render_sketch_instance_impl(
+    input: KclInput,
+    sketch_name: String,
+    instance_index: usize,
+) -> PyResult<Option<Vec<u8>>> {
+    // Later indices may include cloned instances. Keep ordinary execution for
+    // those rather than renumbering instances after dropping earlier geometry.
+    if instance_index != 0 {
+        return Ok(None);
+    }
+    let mut parsed = load_and_parse(input).await?;
+    let Some(program) = kcl_lib::tooling::sketch_execution::first_instance(&parsed.program, &sketch_name) else {
+        return Ok(None);
+    };
+    parsed.program = program;
+    let outcome = execution_outcome(run_parsed_kcl(parsed, false, None).await?).await?;
+    outcome.render_sketch_png(&sketch_name, Some(0)).map(Some)
+}
+
+/// Render the first instance of an eligible solver-sketch solid helper without
+/// unrelated geometry. Returns None when ordinary execution is required.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
+#[pyfunction]
+async fn try_render_sketch_instance(
+    path: String,
+    sketch_name: String,
+    instance_index: usize,
+) -> PyResult<Option<Vec<u8>>> {
+    spawn_py(try_render_sketch_instance_impl(
+        KclInput::Path(path),
+        sketch_name,
+        instance_index,
+    ))
+    .await
+}
+
+/// Code-string counterpart of try_render_sketch_instance.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
+#[pyfunction]
+async fn try_render_sketch_instance_code(
+    code: String,
+    sketch_name: String,
+    instance_index: usize,
+) -> PyResult<Option<Vec<u8>>> {
+    spawn_py(try_render_sketch_instance_impl(
+        KclInput::Code(code),
+        sketch_name,
+        instance_index,
+    ))
+    .await
 }
 
 async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstraintReport> {
@@ -1293,6 +1367,8 @@ fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(parse_code, m)?)?;
     m.add_function(wrap_pyfunction!(execute, m)?)?;
     m.add_function(wrap_pyfunction!(execute_code, m)?)?;
+    m.add_function(wrap_pyfunction!(try_render_sketch_instance, m)?)?;
+    m.add_function(wrap_pyfunction!(try_render_sketch_instance_code, m)?)?;
     m.add_function(wrap_pyfunction!(mock_execute, m)?)?;
     m.add_function(wrap_pyfunction!(mock_execute_code, m)?)?;
     m.add_function(wrap_pyfunction!(get_sketch_constraint_status, m)?)?;
@@ -1327,6 +1403,29 @@ define_stub_info_gatherer!(stub_info);
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[tokio::test]
+    async fn cancelling_spawn_py_drops_execution_and_allows_another_call() {
+        let (started_tx, started_rx) = tokio::sync::oneshot::channel();
+        let (resource_tx, resource_rx) = tokio::sync::oneshot::channel::<()>();
+        let caller = tokio::spawn(spawn_py(async move {
+            let _resource = resource_tx;
+            started_tx.send(()).unwrap();
+            std::future::pending::<PyResult<()>>().await
+        }));
+        started_rx.await.unwrap();
+        caller.abort();
+        assert!(caller.await.unwrap_err().is_cancelled());
+        // The resource sender is dropped only when the native task is stopped,
+        // not merely when the Python-facing caller stops waiting for it.
+        assert!(
+            tokio::time::timeout(std::time::Duration::from_secs(1), resource_rx)
+                .await
+                .expect("cancelled execution must release its resources")
+                .is_err()
+        );
+        assert_eq!(spawn_py(async { Ok(42) }).await.unwrap(), 42);
+    }
 
     #[test]
     fn executor_settings_preserve_default_edge_visibility_without_override() {
