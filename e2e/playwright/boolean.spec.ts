@@ -100,10 +100,7 @@ test.describe(
 
           // Select second object
           await clickSecondObject({ pixelDiff: 50 })
-
-          if (operationName !== 'subtract') {
-            await page.keyboard.up('Shift')
-          }
+          await page.keyboard.up('Shift')
 
           await page.waitForTimeout(1000)
 
