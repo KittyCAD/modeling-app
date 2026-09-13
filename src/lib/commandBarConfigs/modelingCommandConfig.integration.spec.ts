@@ -27,6 +27,8 @@ import {
   KCL_DEFAULT_ROTATE_ANGLE,
   KCL_DEFAULT_SCALE_FACTOR,
   KCL_DEFAULT_TRANSLATE_X,
+  KCL_PRELUDE_EXTRUDE_METHOD_MERGE,
+  KCL_PRELUDE_EXTRUDE_METHOD_NEW,
 } from '@src/lib/constants'
 import {
   canSubmitSelectionArg,
@@ -75,6 +77,25 @@ function bodyTypeRequiredForCommand(
   return typeof bodyTypeArg.required === 'function'
     ? bodyTypeArg.required({ argumentsToSubmit })
     : bodyTypeArg.required
+}
+
+function extrudeMethodOptions(argumentsToSubmit: Record<string, unknown>) {
+  const commandConfig = modelingMachineCommandConfig.Extrude
+  if (!commandConfig || isArray(commandConfig)) {
+    throw new Error('Extrude should have a single command config')
+  }
+
+  const methodArg = commandConfig.args?.method
+  if (!methodArg || methodArg.inputType !== 'options') {
+    throw new Error('Extrude should expose method options')
+  }
+
+  const options =
+    typeof methodArg.options === 'function'
+      ? methodArg.options({ argumentsToSubmit })
+      : methodArg.options
+
+  return options.map(({ value }) => value)
 }
 
 describe('GDT Datum Default Name', () => {
@@ -257,6 +278,25 @@ describe('Extrude surface arguments', () => {
         },
       })
     ).toBe(true)
+  })
+
+  it('does not offer merge for body edge extrudes', () => {
+    const argumentsToSubmit = {
+      sketches: selectionsForArtifact({ type: 'sweepEdge' } as Artifact),
+    }
+
+    expect(extrudeMethodOptions(argumentsToSubmit)).toEqual([
+      KCL_PRELUDE_EXTRUDE_METHOD_NEW,
+    ])
+    expect(
+      extrudeMethodOptions({
+        ...argumentsToSubmit,
+        sketches: selectionsForArtifact({ type: 'solid2d' } as Artifact),
+      })
+    ).toEqual([
+      KCL_PRELUDE_EXTRUDE_METHOD_NEW,
+      KCL_PRELUDE_EXTRUDE_METHOD_MERGE,
+    ])
   })
 
   it('keeps method optional for sketch segments and before length is confirmed', () => {
