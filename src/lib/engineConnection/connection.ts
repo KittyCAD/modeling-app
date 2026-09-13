@@ -4,10 +4,6 @@ import type {
   WebSocketResponse,
 } from '@kittycad/lib/dist/types/src'
 import { EngineDebugger } from '@src/lib/debugger'
-import { markOnce } from '@src/lib/performance'
-import { notifySessionExpired } from '@src/lib/sessionExpired'
-import { promiseFactory, uuidv4 } from '@src/lib/utils'
-import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
 import {
   createOnConnectionStateChange,
   createOnDataChannel,
@@ -29,6 +25,9 @@ import {
   EngineConnectionEvents,
   EngineConnectionStateType,
   PING_INTERVAL_MS,
+  PONG_TIMEOUT_REASON,
+  PONG_TIMEOUT_MS,
+  WebSocketCloseCode,
   WebSocketStatusCodes,
 } from '@src/lib/engineConnection/utils'
 import {
@@ -37,6 +36,10 @@ import {
   createOnWebSocketMessage,
   createOnWebSocketOpen,
 } from '@src/lib/engineConnection/websocketConnection'
+import { markOnce } from '@src/lib/performance'
+import { notifySessionExpired } from '@src/lib/sessionExpired'
+import { promiseFactory, uuidv4 } from '@src/lib/utils'
+import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
 
 // An interface for a promise that needs to be awaited and pass the resolve reject to
 // other dependencies. We do not need to pass values between these. It is mainly
@@ -53,10 +56,8 @@ export class Connection extends EventTarget {
   readonly url: string
   // Authorization bearer token for headers on websocket
   private readonly _token: string | undefined
-  private _pingPongSpan: {
-    ping: number | undefined
-    pong: number | undefined
-  }
+  private _lastPingSentAt: number | undefined
+  private _lastPongReceivedAt: number | undefined
   private _pingIntervalId: ReturnType<typeof setInterval> | undefined
   timeoutToForceConnectId: ReturnType<typeof setTimeout> | undefined
 
@@ -102,6 +103,7 @@ export class Connection extends EventTarget {
   rejectPendingCommand: ({ cmdId }: { cmdId: string }) => void
   handleMessage: ((event: MessageEvent<any>) => void) | null
   private readonly getCloudProjectId: () => string | undefined
+  private reconnectRequested = false
 
   constructor({
     url,
@@ -139,7 +141,8 @@ export class Connection extends EventTarget {
     this.rejectPendingCommand = rejectPendingCommand
     this.handleMessage = handleMessage
     this.getCloudProjectId = getCloudProjectId
-    this._pingPongSpan = { ping: undefined, pong: undefined }
+    this._lastPingSentAt = undefined
+    this._lastPongReceivedAt = undefined
     this.deferredConnection = null
     this.deferredPeerConnection = null
     this.deferredMediaStreamAndWebrtcStatsCollector = null
@@ -256,15 +259,35 @@ export class Connection extends EventTarget {
     }
 
     this._pingIntervalId = setInterval(() => {
-      if (this._pingPongSpan.ping) {
+      const now = Date.now()
+      const lastPingSentAt = this._lastPingSentAt
+      const lastPongReceivedAt = this._lastPongReceivedAt
+      const isWaitingForPong =
+        lastPingSentAt !== undefined &&
+        (lastPongReceivedAt === undefined ||
+          lastPongReceivedAt < lastPingSentAt)
+
+      if (isWaitingForPong) {
+        const elapsedMs = now - lastPingSentAt
+        if (elapsedMs >= PONG_TIMEOUT_MS) {
+          EngineDebugger.addLog({
+            label: 'connection',
+            message: PONG_TIMEOUT_REASON,
+            metadata: {
+              id: this.id,
+              apiCallId: this.apiCallId,
+              lastPingSentAt,
+              lastPongReceivedAt,
+              elapsedMs,
+            },
+          })
+          this.tearDownManager({ pingPongTimeout: true })
+        }
         return
       }
 
       this.send({ type: 'ping' })
-      this._pingPongSpan = {
-        ping: Date.now(),
-        pong: undefined,
-      }
+      this._lastPingSentAt = now
     }, PING_INTERVAL_MS)
   }
 
@@ -631,9 +654,8 @@ export class Connection extends EventTarget {
       setPong: this.setPong.bind(this),
       dispatchEvent: this.dispatchEvent.bind(this),
       ping: () => {
-        return this._pingPongSpan.ping
+        return this._lastPingSentAt
       },
-      setPing: this.setPing.bind(this),
       createPeerConnection: this.createPeerConnection.bind(this),
       send: this.send.bind(this),
       setSdpAnswer: this.setSdpAnswer.bind(this),
@@ -646,6 +668,21 @@ export class Connection extends EventTarget {
         this.apiCallId = apiCallId
       },
       getCloudProjectId: this.getCloudProjectId,
+      tearDownManager: this.tearDownManager.bind(this),
+      requestReconnect: () => {
+        if (
+          this.reconnectRequested ||
+          this.websocket?.readyState !== WebSocket.OPEN
+        ) {
+          return
+        }
+
+        this.reconnectRequested = true
+        this.websocket.close(
+          WebSocketCloseCode.NormalClosure,
+          'reconnect requested'
+        )
+      },
     })
     const onWebSocketClose = createOnWebSocketClose({
       websocket: this.websocket,
@@ -654,6 +691,7 @@ export class Connection extends EventTarget {
       onWebSocketMessage: onWebSocketMessage,
       tearDownManager: this.tearDownManager.bind(this),
       dispatchEvent: this.dispatchEvent.bind(this),
+      getReconnectRequested: () => this.reconnectRequested,
     })
 
     // Meta close will remove all the internal events itself but then the this.websocket.close
@@ -725,11 +763,7 @@ export class Connection extends EventTarget {
   }
 
   setPong(pong: number) {
-    this._pingPongSpan.pong = pong
-  }
-
-  setPing(ping: number | undefined) {
-    this._pingPongSpan.ping = ping
+    this._lastPongReceivedAt = pong
   }
 
   setSdpAnswer(answer: RTCSessionDescriptionInit) {

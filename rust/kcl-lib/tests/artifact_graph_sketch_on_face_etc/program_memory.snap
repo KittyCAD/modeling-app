@@ -7,21 +7,21 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "topologyId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "artifactId": "41c630c9-9d44-581b-98af-caee575bea48",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "f858b0f4-ee1c-59f8-9496-132f50940789",
-          "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "ad0b192d-4915-585b-b28d-d6f09a4d6fb8",
-          "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 116,
@@ -34,8 +34,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "type": "extrudePlane"
         },
         {
-          "faceId": "a77db112-51c4-5a35-b8a5-dbaeb4ea6453",
-          "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
@@ -44,11 +44,11 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -65,7 +65,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           },
           {
             "__geoMeta": {
-              "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -89,7 +89,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           },
           {
             "__geoMeta": {
-              "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -107,8 +107,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         ],
         "on": {
           "type": "plane",
-          "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
-          "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "XZ",
           "origin": {
@@ -148,7 +148,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -158,13 +158,13 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "value": "seg01"
           }
         },
-        "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-        "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "3ec3901f-e043-5dab-b99a-4563417d71cf",
-      "endCapId": "14e5189b-50c0-50d0-ac67-fb5a7c7e6b4b",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -173,28 +173,28 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "originalId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
-      "topologyId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
-      "artifactId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "3c03572f-d09c-563b-972c-bca035963672",
-          "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "bb107f19-e997-51ba-a970-1a418d16f274",
-          "id": "f084ad07-5777-5607-a544-c69f455c2aab",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "f219ee52-72e9-5623-bc70-efbbe247ac99",
-          "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
@@ -203,11 +203,11 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -224,7 +224,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           },
           {
             "__geoMeta": {
-              "id": "f084ad07-5777-5607-a544-c69f455c2aab",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -241,7 +241,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           },
           {
             "__geoMeta": {
-              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -259,8 +259,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         ],
         "on": {
           "type": "face",
-          "id": "ad0b192d-4915-585b-b28d-d6f09a4d6fb8",
-          "artifactId": "ad0b192d-4915-585b-b28d-d6f09a4d6fb8",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
           "objectId": 1,
           "value": "seg01",
           "xAxis": {
@@ -276,8 +276,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "units": null
           },
           "parentSolid": {
-            "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-            "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+            "solidId": "[uuid]",
+            "creatorSketchId": "[uuid]",
             "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
@@ -294,17 +294,17 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
-        "artifactId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
-        "originalId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
       "startCapId": null,
-      "endCapId": "bb27c694-be03-54b4-af93-d106b1dd7335",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -313,14 +313,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "originalId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
-      "topologyId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
-      "artifactId": "deb86259-17a0-5782-a352-d25992246cc0",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "22245c95-540b-57c0-963f-6f988f6de3ce",
-          "id": "53a9149e-1246-5c44-9e3c-558201ff438c",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 616,
@@ -333,15 +333,15 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "type": "extrudePlane"
         },
         {
-          "faceId": "9b5189c2-8d49-53b6-8bf4-1b523ce6183c",
-          "id": "b680fe3e-a804-583c-99d9-1693b2432aeb",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "a39a3795-f2e2-558e-92cc-04d7e00ee90c",
-          "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
@@ -350,11 +350,11 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "53a9149e-1246-5c44-9e3c-558201ff438c",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -378,7 +378,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           },
           {
             "__geoMeta": {
-              "id": "b680fe3e-a804-583c-99d9-1693b2432aeb",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -395,7 +395,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           },
           {
             "__geoMeta": {
-              "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -413,8 +413,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         ],
         "on": {
           "type": "face",
-          "id": "bb27c694-be03-54b4-af93-d106b1dd7335",
-          "artifactId": "bb27c694-be03-54b4-af93-d106b1dd7335",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
           "objectId": 2,
           "value": "end",
           "xAxis": {
@@ -430,8 +430,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "units": null
           },
           "parentSolid": {
-            "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-            "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+            "solidId": "[uuid]",
+            "creatorSketchId": "[uuid]",
             "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
@@ -448,7 +448,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -458,13 +458,13 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "value": "seg02"
           }
         },
-        "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
-        "originalId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
       "startCapId": null,
-      "endCapId": "c8791dfd-0e56-599b-966a-ba1fac720f55",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -473,28 +473,28 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "originalId": "e383621f-755a-5f2e-ada3-608aff393dab",
-      "topologyId": "e383621f-755a-5f2e-ada3-608aff393dab",
-      "artifactId": "25999981-b7b8-57e2-8ac5-655907dfffdc",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "7ba1e809-1430-5635-8e54-96a37c6e1f2f",
-          "id": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "165b1110-9d7b-5e3a-9d56-d84564808b92",
-          "id": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "fae834cb-6b4b-58ca-b28a-e7eb6d23e5a4",
-          "id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
@@ -503,11 +503,11 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -524,7 +524,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           },
           {
             "__geoMeta": {
-              "id": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -541,7 +541,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           },
           {
             "__geoMeta": {
-              "id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -559,8 +559,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         ],
         "on": {
           "type": "face",
-          "id": "22245c95-540b-57c0-963f-6f988f6de3ce",
-          "artifactId": "22245c95-540b-57c0-963f-6f988f6de3ce",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
           "objectId": 3,
           "value": "seg02",
           "xAxis": {
@@ -576,8 +576,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "units": null
           },
           "parentSolid": {
-            "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-            "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+            "solidId": "[uuid]",
+            "creatorSketchId": "[uuid]",
             "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
@@ -594,17 +594,17 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "72dddee3-1330-5c4f-b767-659f762ad674",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
-        "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
-        "originalId": "e383621f-755a-5f2e-ada3-608aff393dab",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
       "startCapId": null,
-      "endCapId": "4cfe2405-2c52-556c-a7f8-072af94ba1f0",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -623,11 +623,11 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -644,7 +644,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         },
         {
           "__geoMeta": {
-            "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -668,7 +668,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         },
         {
           "__geoMeta": {
-            "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -686,8 +686,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
       ],
       "on": {
         "type": "plane",
-        "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
-        "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "XZ",
         "origin": {
@@ -727,7 +727,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -737,8 +737,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "value": "seg01"
         }
       },
-      "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -747,11 +747,11 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -768,7 +768,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         },
         {
           "__geoMeta": {
-            "id": "f084ad07-5777-5607-a544-c69f455c2aab",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -785,7 +785,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         },
         {
           "__geoMeta": {
-            "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -803,8 +803,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
       ],
       "on": {
         "type": "face",
-        "id": "ad0b192d-4915-585b-b28d-d6f09a4d6fb8",
-        "artifactId": "ad0b192d-4915-585b-b28d-d6f09a4d6fb8",
+        "id": "[uuid]",
+        "artifactId": "[uuid]",
         "objectId": 1,
         "value": "seg01",
         "xAxis": {
@@ -820,8 +820,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "units": null
         },
         "parentSolid": {
-          "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-          "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "solidId": "[uuid]",
+          "creatorSketchId": "[uuid]",
           "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
@@ -838,12 +838,12 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
-      "artifactId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
-      "originalId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -852,11 +852,11 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "53a9149e-1246-5c44-9e3c-558201ff438c",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -880,7 +880,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         },
         {
           "__geoMeta": {
-            "id": "b680fe3e-a804-583c-99d9-1693b2432aeb",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -897,7 +897,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         },
         {
           "__geoMeta": {
-            "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -915,8 +915,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
       ],
       "on": {
         "type": "face",
-        "id": "bb27c694-be03-54b4-af93-d106b1dd7335",
-        "artifactId": "bb27c694-be03-54b4-af93-d106b1dd7335",
+        "id": "[uuid]",
+        "artifactId": "[uuid]",
         "objectId": 2,
         "value": "end",
         "xAxis": {
@@ -932,8 +932,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "units": null
         },
         "parentSolid": {
-          "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-          "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "solidId": "[uuid]",
+          "creatorSketchId": "[uuid]",
           "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
@@ -950,7 +950,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -960,8 +960,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "value": "seg02"
         }
       },
-      "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
-      "originalId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -970,11 +970,11 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -991,7 +991,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         },
         {
           "__geoMeta": {
-            "id": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -1008,7 +1008,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         },
         {
           "__geoMeta": {
-            "id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -1026,8 +1026,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
       ],
       "on": {
         "type": "face",
-        "id": "22245c95-540b-57c0-963f-6f988f6de3ce",
-        "artifactId": "22245c95-540b-57c0-963f-6f988f6de3ce",
+        "id": "[uuid]",
+        "artifactId": "[uuid]",
         "objectId": 3,
         "value": "seg02",
         "xAxis": {
@@ -1043,8 +1043,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "units": null
         },
         "parentSolid": {
-          "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-          "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "solidId": "[uuid]",
+          "creatorSketchId": "[uuid]",
           "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
@@ -1061,12 +1061,12 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "72dddee3-1330-5c4f-b767-659f762ad674",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
-      "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
-      "originalId": "e383621f-755a-5f2e-ada3-608aff393dab",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }

@@ -6,8 +6,8 @@ description: Variables in memory after executing color-cube.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
-      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -39,14 +39,14 @@ description: Variables in memory after executing color-cube.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
-      "originalId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
-      "topologyId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
-      "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "094c2621-b6dc-5b8d-b217-525224318aa7",
-          "id": "462dd653-b1ce-54cf-9ba8-7ddc88b2560c",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 654,
@@ -59,8 +59,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
-          "id": "b9270abb-8013-5214-8010-1b3a0e977704",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 735,
@@ -73,8 +73,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "5178ccdd-325b-5c19-ac1f-2742126e4fdc",
-          "id": "e5a07f05-8922-5e54-9c4e-93483d125c16",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 813,
@@ -87,8 +87,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "ed22babf-097a-522b-8ea6-c0fd4a48d939",
-          "id": "af4bd2f6-9858-52f4-bc47-f02ef6bed44b",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 889,
@@ -104,11 +104,11 @@ description: Variables in memory after executing color-cube.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "462dd653-b1ce-54cf-9ba8-7ddc88b2560c",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -132,7 +132,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "b9270abb-8013-5214-8010-1b3a0e977704",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -156,7 +156,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "e5a07f05-8922-5e54-9c4e-93483d125c16",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -180,7 +180,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "af4bd2f6-9858-52f4-bc47-f02ef6bed44b",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -205,8 +205,8 @@ description: Variables in memory after executing color-cube.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -246,7 +246,7 @@ description: Variables in memory after executing color-cube.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -268,13 +268,13 @@ description: Variables in memory after executing color-cube.kcl
             "value": "topEdge"
           }
         },
-        "artifactId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
-        "originalId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "b620e86e-3390-5b73-897e-9d5291058003",
-      "endCapId": "17940c6a-8399-5d56-9384-d0d6f676d048",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -283,14 +283,14 @@ description: Variables in memory after executing color-cube.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
-      "originalId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
-      "topologyId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
-      "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "094c2621-b6dc-5b8d-b217-525224318aa7",
-          "id": "462dd653-b1ce-54cf-9ba8-7ddc88b2560c",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 654,
@@ -303,8 +303,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
-          "id": "b9270abb-8013-5214-8010-1b3a0e977704",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 735,
@@ -317,8 +317,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "5178ccdd-325b-5c19-ac1f-2742126e4fdc",
-          "id": "e5a07f05-8922-5e54-9c4e-93483d125c16",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 813,
@@ -331,8 +331,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "ed22babf-097a-522b-8ea6-c0fd4a48d939",
-          "id": "af4bd2f6-9858-52f4-bc47-f02ef6bed44b",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 889,
@@ -348,11 +348,11 @@ description: Variables in memory after executing color-cube.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "462dd653-b1ce-54cf-9ba8-7ddc88b2560c",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -376,7 +376,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "b9270abb-8013-5214-8010-1b3a0e977704",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -400,7 +400,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "e5a07f05-8922-5e54-9c4e-93483d125c16",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -424,7 +424,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "af4bd2f6-9858-52f4-bc47-f02ef6bed44b",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -449,8 +449,8 @@ description: Variables in memory after executing color-cube.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -490,7 +490,7 @@ description: Variables in memory after executing color-cube.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -512,13 +512,13 @@ description: Variables in memory after executing color-cube.kcl
             "value": "topEdge"
           }
         },
-        "artifactId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
-        "originalId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "b620e86e-3390-5b73-897e-9d5291058003",
-      "endCapId": "17940c6a-8399-5d56-9384-d0d6f676d048",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -541,14 +541,14 @@ description: Variables in memory after executing color-cube.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
-      "originalId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
-      "topologyId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
-      "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "092755e4-e002-58b9-a194-69b526ae6929",
-          "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 654,
@@ -561,8 +561,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "bb04bee5-f92e-54fd-b9d8-0e476678cb88",
-          "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 735,
@@ -575,8 +575,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "a49b9612-c4dc-5d46-9c14-74c0b7247edd",
-          "id": "eb116575-1f8f-50df-810e-a61970915fe0",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 813,
@@ -589,8 +589,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "00f8003d-3b65-5f10-b911-9092660fca40",
-          "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 889,
@@ -606,11 +606,11 @@ description: Variables in memory after executing color-cube.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -634,7 +634,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -658,7 +658,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "eb116575-1f8f-50df-810e-a61970915fe0",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -682,7 +682,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -707,8 +707,8 @@ description: Variables in memory after executing color-cube.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -748,7 +748,7 @@ description: Variables in memory after executing color-cube.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -770,13 +770,13 @@ description: Variables in memory after executing color-cube.kcl
             "value": "topEdge"
           }
         },
-        "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
-        "originalId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
-      "endCapId": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -785,11 +785,11 @@ description: Variables in memory after executing color-cube.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -813,7 +813,7 @@ description: Variables in memory after executing color-cube.kcl
         },
         {
           "__geoMeta": {
-            "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -837,7 +837,7 @@ description: Variables in memory after executing color-cube.kcl
         },
         {
           "__geoMeta": {
-            "id": "eb116575-1f8f-50df-810e-a61970915fe0",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -861,7 +861,7 @@ description: Variables in memory after executing color-cube.kcl
         },
         {
           "__geoMeta": {
-            "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -886,8 +886,8 @@ description: Variables in memory after executing color-cube.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -927,7 +927,7 @@ description: Variables in memory after executing color-cube.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -949,8 +949,8 @@ description: Variables in memory after executing color-cube.kcl
           "value": "topEdge"
         }
       },
-      "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
-      "originalId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -964,7 +964,7 @@ description: Variables in memory after executing color-cube.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+                "id": "[uuid]",
                 "objectId": 10,
                 "kind": {
                   "line": {
@@ -1038,8 +1038,8 @@ description: Variables in memory after executing color-cube.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1068,7 +1068,7 @@ description: Variables in memory after executing color-cube.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bottomEdge"
@@ -1084,7 +1084,7 @@ description: Variables in memory after executing color-cube.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                "id": "[uuid]",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -1159,8 +1159,8 @@ description: Variables in memory after executing color-cube.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1189,7 +1189,7 @@ description: Variables in memory after executing color-cube.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leftDown"
@@ -1205,7 +1205,7 @@ description: Variables in memory after executing color-cube.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+                "id": "[uuid]",
                 "objectId": 19,
                 "kind": {
                   "line": {
@@ -1279,8 +1279,8 @@ description: Variables in memory after executing color-cube.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1309,7 +1309,7 @@ description: Variables in memory after executing color-cube.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leftEdge"
@@ -1326,11 +1326,11 @@ description: Variables in memory after executing color-cube.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1354,7 +1354,7 @@ description: Variables in memory after executing color-cube.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1378,7 +1378,7 @@ description: Variables in memory after executing color-cube.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1402,7 +1402,7 @@ description: Variables in memory after executing color-cube.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1427,8 +1427,8 @@ description: Variables in memory after executing color-cube.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 0,
                 "kind": "Custom",
                 "origin": {
@@ -1468,7 +1468,7 @@ description: Variables in memory after executing color-cube.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -1490,8 +1490,8 @@ description: Variables in memory after executing color-cube.kcl
                   "value": "topEdge"
                 }
               },
-              "artifactId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
-              "originalId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -1505,7 +1505,7 @@ description: Variables in memory after executing color-cube.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "id": "[uuid]",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -1580,8 +1580,8 @@ description: Variables in memory after executing color-cube.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1610,7 +1610,7 @@ description: Variables in memory after executing color-cube.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "originToLeft"
@@ -1626,7 +1626,7 @@ description: Variables in memory after executing color-cube.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                "id": "[uuid]",
                 "objectId": 13,
                 "kind": {
                   "line": {
@@ -1700,8 +1700,8 @@ description: Variables in memory after executing color-cube.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1730,7 +1730,7 @@ description: Variables in memory after executing color-cube.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rightEdge"
@@ -1746,7 +1746,7 @@ description: Variables in memory after executing color-cube.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+                "id": "[uuid]",
                 "objectId": 16,
                 "kind": {
                   "line": {
@@ -1820,8 +1820,8 @@ description: Variables in memory after executing color-cube.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1850,7 +1850,7 @@ description: Variables in memory after executing color-cube.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "topEdge"
@@ -1867,14 +1867,14 @@ description: Variables in memory after executing color-cube.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
-      "originalId": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
-      "topologyId": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
-      "artifactId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "57dcebaf-f488-5f18-a3d0-8a7c5e588523",
-          "id": "e3586c8a-2eb3-59a1-94c2-15a549a9dcfa",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 654,
@@ -1887,8 +1887,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "63a00bb7-2cd9-55fe-99a4-505985ed010d",
-          "id": "2086a571-ad1c-5e17-a46d-8f034b03ea8d",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 735,
@@ -1901,8 +1901,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "2147b1bc-0e86-58cf-b979-a1abcf613618",
-          "id": "e0e90311-f817-5383-bbb9-73bf2ceba624",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 813,
@@ -1915,8 +1915,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "dc700ece-abf1-5d4d-b57d-8fa8eecf901d",
-          "id": "89536a88-4703-54c3-9662-8f7ee1dbff12",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 889,
@@ -1932,11 +1932,11 @@ description: Variables in memory after executing color-cube.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "e3586c8a-2eb3-59a1-94c2-15a549a9dcfa",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1960,7 +1960,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "2086a571-ad1c-5e17-a46d-8f034b03ea8d",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1984,7 +1984,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "e0e90311-f817-5383-bbb9-73bf2ceba624",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2008,7 +2008,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "89536a88-4703-54c3-9662-8f7ee1dbff12",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2033,8 +2033,8 @@ description: Variables in memory after executing color-cube.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -2074,7 +2074,7 @@ description: Variables in memory after executing color-cube.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -2096,13 +2096,13 @@ description: Variables in memory after executing color-cube.kcl
             "value": "topEdge"
           }
         },
-        "artifactId": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
-        "originalId": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "6cbdfc69-8158-576b-9986-f2cbbea98a73",
-      "endCapId": "25662764-9b8b-5d82-98e0-84ff503bf2cc",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -2111,14 +2111,14 @@ description: Variables in memory after executing color-cube.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
-      "originalId": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
-      "topologyId": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
-      "artifactId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "57dcebaf-f488-5f18-a3d0-8a7c5e588523",
-          "id": "e3586c8a-2eb3-59a1-94c2-15a549a9dcfa",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 654,
@@ -2131,8 +2131,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "63a00bb7-2cd9-55fe-99a4-505985ed010d",
-          "id": "2086a571-ad1c-5e17-a46d-8f034b03ea8d",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 735,
@@ -2145,8 +2145,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "2147b1bc-0e86-58cf-b979-a1abcf613618",
-          "id": "e0e90311-f817-5383-bbb9-73bf2ceba624",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 813,
@@ -2159,8 +2159,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "dc700ece-abf1-5d4d-b57d-8fa8eecf901d",
-          "id": "89536a88-4703-54c3-9662-8f7ee1dbff12",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 889,
@@ -2176,11 +2176,11 @@ description: Variables in memory after executing color-cube.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "e3586c8a-2eb3-59a1-94c2-15a549a9dcfa",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2204,7 +2204,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "2086a571-ad1c-5e17-a46d-8f034b03ea8d",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2228,7 +2228,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "e0e90311-f817-5383-bbb9-73bf2ceba624",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2252,7 +2252,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "89536a88-4703-54c3-9662-8f7ee1dbff12",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2277,8 +2277,8 @@ description: Variables in memory after executing color-cube.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -2318,7 +2318,7 @@ description: Variables in memory after executing color-cube.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -2340,13 +2340,13 @@ description: Variables in memory after executing color-cube.kcl
             "value": "topEdge"
           }
         },
-        "artifactId": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
-        "originalId": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "6cbdfc69-8158-576b-9986-f2cbbea98a73",
-      "endCapId": "25662764-9b8b-5d82-98e0-84ff503bf2cc",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -2378,14 +2378,14 @@ description: Variables in memory after executing color-cube.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
-      "originalId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
-      "topologyId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
-      "artifactId": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "3132128b-3a82-5446-aa11-78053c088f3c",
-          "id": "0f2a7b69-4d81-5fa6-8c5d-03173e9daeaa",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 654,
@@ -2398,8 +2398,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194",
-          "id": "b2d62f6b-f86f-5860-a2de-70f20431101c",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 735,
@@ -2412,8 +2412,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "71a72feb-bdc7-50b4-97fd-9fa2630226d6",
-          "id": "3050f097-3abd-5fd0-a60c-c8c1abe44f5f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 813,
@@ -2426,8 +2426,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "9efbcccc-288a-5a5c-b7f4-7d2f8bbae204",
-          "id": "a78597bb-12cf-565b-b383-2fadea836030",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 889,
@@ -2443,11 +2443,11 @@ description: Variables in memory after executing color-cube.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "0f2a7b69-4d81-5fa6-8c5d-03173e9daeaa",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2471,7 +2471,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "b2d62f6b-f86f-5860-a2de-70f20431101c",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2495,7 +2495,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "3050f097-3abd-5fd0-a60c-c8c1abe44f5f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2519,7 +2519,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "a78597bb-12cf-565b-b383-2fadea836030",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2544,8 +2544,8 @@ description: Variables in memory after executing color-cube.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -2585,7 +2585,7 @@ description: Variables in memory after executing color-cube.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -2607,13 +2607,13 @@ description: Variables in memory after executing color-cube.kcl
             "value": "topEdge"
           }
         },
-        "artifactId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
-        "originalId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "a27d4eec-2dc4-54e7-b284-d63c1bb0c515",
-      "endCapId": "9700197b-45f4-5326-aea5-9ad8044a1658",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -2622,14 +2622,14 @@ description: Variables in memory after executing color-cube.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
-      "originalId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
-      "topologyId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
-      "artifactId": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "3132128b-3a82-5446-aa11-78053c088f3c",
-          "id": "0f2a7b69-4d81-5fa6-8c5d-03173e9daeaa",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 654,
@@ -2642,8 +2642,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194",
-          "id": "b2d62f6b-f86f-5860-a2de-70f20431101c",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 735,
@@ -2656,8 +2656,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "71a72feb-bdc7-50b4-97fd-9fa2630226d6",
-          "id": "3050f097-3abd-5fd0-a60c-c8c1abe44f5f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 813,
@@ -2670,8 +2670,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "9efbcccc-288a-5a5c-b7f4-7d2f8bbae204",
-          "id": "a78597bb-12cf-565b-b383-2fadea836030",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 889,
@@ -2687,11 +2687,11 @@ description: Variables in memory after executing color-cube.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "0f2a7b69-4d81-5fa6-8c5d-03173e9daeaa",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2715,7 +2715,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "b2d62f6b-f86f-5860-a2de-70f20431101c",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2739,7 +2739,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "3050f097-3abd-5fd0-a60c-c8c1abe44f5f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2763,7 +2763,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "a78597bb-12cf-565b-b383-2fadea836030",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2788,8 +2788,8 @@ description: Variables in memory after executing color-cube.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -2829,7 +2829,7 @@ description: Variables in memory after executing color-cube.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -2851,13 +2851,13 @@ description: Variables in memory after executing color-cube.kcl
             "value": "topEdge"
           }
         },
-        "artifactId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
-        "originalId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "a27d4eec-2dc4-54e7-b284-d63c1bb0c515",
-      "endCapId": "9700197b-45f4-5326-aea5-9ad8044a1658",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -2866,14 +2866,14 @@ description: Variables in memory after executing color-cube.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
-      "originalId": "ec50dfc5-8660-5f82-906a-6429c34099eb",
-      "topologyId": "ec50dfc5-8660-5f82-906a-6429c34099eb",
-      "artifactId": "4593843c-7d41-5ede-b7fa-ab9201f55957",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "0f2880d4-d771-5ebc-9cf1-0815ded3b5bb",
-          "id": "9f4eb1aa-edde-5423-b838-744539667ee8",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 654,
@@ -2886,8 +2886,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "477be144-bb75-5271-8ba5-d3e844a16dfc",
-          "id": "240c8335-ac4a-56f5-8ed4-0644c26d8d53",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 735,
@@ -2900,8 +2900,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "caab2e75-951d-5d86-b9bb-bd94eb9cef11",
-          "id": "a662e804-cadb-5168-b786-8ba77ad3a7c5",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 813,
@@ -2914,8 +2914,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "44c976bf-fa25-54c3-994a-152b021a4da7",
-          "id": "9b3ed7b2-ab34-5e27-aa76-78d32accbb8f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 889,
@@ -2931,11 +2931,11 @@ description: Variables in memory after executing color-cube.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "9f4eb1aa-edde-5423-b838-744539667ee8",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2959,7 +2959,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "240c8335-ac4a-56f5-8ed4-0644c26d8d53",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2983,7 +2983,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "a662e804-cadb-5168-b786-8ba77ad3a7c5",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3007,7 +3007,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "9b3ed7b2-ab34-5e27-aa76-78d32accbb8f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3032,8 +3032,8 @@ description: Variables in memory after executing color-cube.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -3073,7 +3073,7 @@ description: Variables in memory after executing color-cube.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -3095,13 +3095,13 @@ description: Variables in memory after executing color-cube.kcl
             "value": "topEdge"
           }
         },
-        "artifactId": "ec50dfc5-8660-5f82-906a-6429c34099eb",
-        "originalId": "ec50dfc5-8660-5f82-906a-6429c34099eb",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "2d5ec83e-723e-5e13-9c3f-0cfdcaf57fae",
-      "endCapId": "175dedae-41eb-53a3-a4ac-e5c0c236e1b7",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -3110,14 +3110,14 @@ description: Variables in memory after executing color-cube.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
-      "originalId": "ec50dfc5-8660-5f82-906a-6429c34099eb",
-      "topologyId": "ec50dfc5-8660-5f82-906a-6429c34099eb",
-      "artifactId": "4593843c-7d41-5ede-b7fa-ab9201f55957",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "0f2880d4-d771-5ebc-9cf1-0815ded3b5bb",
-          "id": "9f4eb1aa-edde-5423-b838-744539667ee8",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 654,
@@ -3130,8 +3130,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "477be144-bb75-5271-8ba5-d3e844a16dfc",
-          "id": "240c8335-ac4a-56f5-8ed4-0644c26d8d53",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 735,
@@ -3144,8 +3144,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "caab2e75-951d-5d86-b9bb-bd94eb9cef11",
-          "id": "a662e804-cadb-5168-b786-8ba77ad3a7c5",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 813,
@@ -3158,8 +3158,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "44c976bf-fa25-54c3-994a-152b021a4da7",
-          "id": "9b3ed7b2-ab34-5e27-aa76-78d32accbb8f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 889,
@@ -3175,11 +3175,11 @@ description: Variables in memory after executing color-cube.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "9f4eb1aa-edde-5423-b838-744539667ee8",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3203,7 +3203,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "240c8335-ac4a-56f5-8ed4-0644c26d8d53",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3227,7 +3227,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "a662e804-cadb-5168-b786-8ba77ad3a7c5",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3251,7 +3251,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "9b3ed7b2-ab34-5e27-aa76-78d32accbb8f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3276,8 +3276,8 @@ description: Variables in memory after executing color-cube.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -3317,7 +3317,7 @@ description: Variables in memory after executing color-cube.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -3339,13 +3339,13 @@ description: Variables in memory after executing color-cube.kcl
             "value": "topEdge"
           }
         },
-        "artifactId": "ec50dfc5-8660-5f82-906a-6429c34099eb",
-        "originalId": "ec50dfc5-8660-5f82-906a-6429c34099eb",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "2d5ec83e-723e-5e13-9c3f-0cfdcaf57fae",
-      "endCapId": "175dedae-41eb-53a3-a4ac-e5c0c236e1b7",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -3377,14 +3377,14 @@ description: Variables in memory after executing color-cube.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
-      "originalId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
-      "topologyId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
-      "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "092755e4-e002-58b9-a194-69b526ae6929",
-          "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 654,
@@ -3397,8 +3397,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "bb04bee5-f92e-54fd-b9d8-0e476678cb88",
-          "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 735,
@@ -3411,8 +3411,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "a49b9612-c4dc-5d46-9c14-74c0b7247edd",
-          "id": "eb116575-1f8f-50df-810e-a61970915fe0",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 813,
@@ -3425,8 +3425,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "00f8003d-3b65-5f10-b911-9092660fca40",
-          "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 889,
@@ -3442,11 +3442,11 @@ description: Variables in memory after executing color-cube.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3470,7 +3470,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3494,7 +3494,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "eb116575-1f8f-50df-810e-a61970915fe0",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3518,7 +3518,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3543,8 +3543,8 @@ description: Variables in memory after executing color-cube.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -3584,7 +3584,7 @@ description: Variables in memory after executing color-cube.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -3606,13 +3606,13 @@ description: Variables in memory after executing color-cube.kcl
             "value": "topEdge"
           }
         },
-        "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
-        "originalId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
-      "endCapId": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -3621,14 +3621,14 @@ description: Variables in memory after executing color-cube.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
-      "originalId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
-      "topologyId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
-      "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "092755e4-e002-58b9-a194-69b526ae6929",
-          "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 654,
@@ -3641,8 +3641,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "bb04bee5-f92e-54fd-b9d8-0e476678cb88",
-          "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 735,
@@ -3655,8 +3655,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "a49b9612-c4dc-5d46-9c14-74c0b7247edd",
-          "id": "eb116575-1f8f-50df-810e-a61970915fe0",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 813,
@@ -3669,8 +3669,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "00f8003d-3b65-5f10-b911-9092660fca40",
-          "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 889,
@@ -3686,11 +3686,11 @@ description: Variables in memory after executing color-cube.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3714,7 +3714,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3738,7 +3738,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "eb116575-1f8f-50df-810e-a61970915fe0",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3762,7 +3762,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3787,8 +3787,8 @@ description: Variables in memory after executing color-cube.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -3828,7 +3828,7 @@ description: Variables in memory after executing color-cube.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -3850,13 +3850,13 @@ description: Variables in memory after executing color-cube.kcl
             "value": "topEdge"
           }
         },
-        "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
-        "originalId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
-      "endCapId": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -3870,14 +3870,14 @@ description: Variables in memory after executing color-cube.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
-      "originalId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
-      "topologyId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
-      "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "7f1b023e-084a-585a-8615-9a206829084c",
-          "id": "663e209d-df18-5e9b-b139-668cc41baf79",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 654,
@@ -3890,8 +3890,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "33a382ff-4e43-5c58-a0ae-cf68ce924f55",
-          "id": "83a52423-af69-5b6d-ad55-85cdf4223cf4",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 735,
@@ -3904,8 +3904,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "31faf920-8e8f-5ea7-8613-87b6f566220b",
-          "id": "59b35597-a3bb-5ed3-947f-8c3f366e9491",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 813,
@@ -3918,8 +3918,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "271d3690-1e35-58c2-a8f6-b759dc5e155b",
-          "id": "50854142-6db4-531e-ab69-489fa496a253",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 889,
@@ -3935,11 +3935,11 @@ description: Variables in memory after executing color-cube.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "663e209d-df18-5e9b-b139-668cc41baf79",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3963,7 +3963,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "83a52423-af69-5b6d-ad55-85cdf4223cf4",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3987,7 +3987,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "59b35597-a3bb-5ed3-947f-8c3f366e9491",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4011,7 +4011,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "50854142-6db4-531e-ab69-489fa496a253",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4036,8 +4036,8 @@ description: Variables in memory after executing color-cube.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -4077,7 +4077,7 @@ description: Variables in memory after executing color-cube.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -4099,13 +4099,13 @@ description: Variables in memory after executing color-cube.kcl
             "value": "topEdge"
           }
         },
-        "artifactId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
-        "originalId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "0c53169e-3975-5ff1-8b61-3be2bf3f11d8",
-      "endCapId": "d79f34e4-5ec4-5fbf-ad19-348a5e48a0fe",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -4114,14 +4114,14 @@ description: Variables in memory after executing color-cube.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
-      "originalId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
-      "topologyId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
-      "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "7f1b023e-084a-585a-8615-9a206829084c",
-          "id": "663e209d-df18-5e9b-b139-668cc41baf79",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 654,
@@ -4134,8 +4134,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "33a382ff-4e43-5c58-a0ae-cf68ce924f55",
-          "id": "83a52423-af69-5b6d-ad55-85cdf4223cf4",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 735,
@@ -4148,8 +4148,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "31faf920-8e8f-5ea7-8613-87b6f566220b",
-          "id": "59b35597-a3bb-5ed3-947f-8c3f366e9491",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 813,
@@ -4162,8 +4162,8 @@ description: Variables in memory after executing color-cube.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "271d3690-1e35-58c2-a8f6-b759dc5e155b",
-          "id": "50854142-6db4-531e-ab69-489fa496a253",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 889,
@@ -4179,11 +4179,11 @@ description: Variables in memory after executing color-cube.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "663e209d-df18-5e9b-b139-668cc41baf79",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4207,7 +4207,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "83a52423-af69-5b6d-ad55-85cdf4223cf4",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4231,7 +4231,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "59b35597-a3bb-5ed3-947f-8c3f366e9491",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4255,7 +4255,7 @@ description: Variables in memory after executing color-cube.kcl
           },
           {
             "__geoMeta": {
-              "id": "50854142-6db4-531e-ab69-489fa496a253",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4280,8 +4280,8 @@ description: Variables in memory after executing color-cube.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -4321,7 +4321,7 @@ description: Variables in memory after executing color-cube.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -4343,13 +4343,13 @@ description: Variables in memory after executing color-cube.kcl
             "value": "topEdge"
           }
         },
-        "artifactId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
-        "originalId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "0c53169e-3975-5ff1-8b61-3be2bf3f11d8",
-      "endCapId": "d79f34e4-5ec4-5fbf-ad19-348a5e48a0fe",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }

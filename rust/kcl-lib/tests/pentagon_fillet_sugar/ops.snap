@@ -126,7 +126,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -158,7 +158,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -209,7 +209,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
             "value": {
               "type": "TagIdentifier",
               "value": "c",
-              "artifact_id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b"
+              "artifact_id": "[uuid]"
             },
             "sourceRange": []
           },
@@ -250,7 +250,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "523b9fc1-d681-5ef3-b407-128525533bfe"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -260,7 +260,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
           "value": {
             "type": "TagIdentifier",
             "value": "c",
-            "artifact_id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b"
+            "artifact_id": "[uuid]"
           },
           "sourceRange": []
         }
@@ -305,7 +305,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "fe76cc2a-18a1-5937-82e8-b2572a7c2149"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -351,7 +351,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "f084ad07-5777-5607-a544-c69f455c2aab"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -376,11 +376,11 @@ description: Operations executed pentagon_fillet_sugar.kcl
               {
                 "type": "TagIdentifier",
                 "value": "arc_tag",
-                "artifact_id": "e00e9caf-6e9e-5221-8545-b199546c367f"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Uuid",
-                "value": "f8586284-8783-53cf-9764-2730ccc64bfe"
+                "value": "[uuid]"
               }
             ]
           },
@@ -419,7 +419,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
             "value": {
               "type": "TagIdentifier",
               "value": "a",
-              "artifact_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
+              "artifact_id": "[uuid]"
             },
             "sourceRange": []
           },
@@ -460,7 +460,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "523b9fc1-d681-5ef3-b407-128525533bfe"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -470,7 +470,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
           "value": {
             "type": "TagIdentifier",
             "value": "a",
-            "artifact_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
+            "artifact_id": "[uuid]"
           },
           "sourceRange": []
         }
@@ -515,7 +515,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "cc141785-f204-5d03-bdf3-aa7163368c30"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -561,7 +561,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "deb86259-17a0-5782-a352-d25992246cc0"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -586,11 +586,11 @@ description: Operations executed pentagon_fillet_sugar.kcl
               {
                 "type": "TagIdentifier",
                 "value": "arc_tag",
-                "artifact_id": "2c522d90-5fef-5750-b489-b008732bd2c3"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Uuid",
-                "value": "3192ee7e-3acd-5ca1-b486-c05ef9f249c8"
+                "value": "[uuid]"
               }
             ]
           },
@@ -716,7 +716,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -740,7 +740,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -764,7 +764,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -788,7 +788,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -812,7 +812,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -836,7 +836,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -860,7 +860,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -884,7 +884,7 @@ description: Operations executed pentagon_fillet_sugar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"
