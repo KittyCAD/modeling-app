@@ -30,13 +30,12 @@ import {
   createMemberExpression,
   nonCodeMetaEmpty,
 } from '@src/lang/create'
-import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
+import { resolveEdgeSelectionContext } from '@src/lang/modifyAst/tagManagement'
 import {
   findAllChildrenAndOrderByPlaceInCode,
   getEdgeCutMeta,
   getLastVariable,
   getNodeFromPath,
-  getRegionSketchTagExprFromSourceSurface,
   getSettingsAnnotation,
   getSketchSegmentNameFromSourceSurface,
   getVariableExprsFromSelection,
@@ -616,24 +615,13 @@ function getDirectTagExprFromSourceSurface({
 }): Expr | null {
   const { artifactGraph, kclManager, wasmInstance } = context
 
-  const regionTagExpr = getRegionSketchTagExprFromSourceSurface(
-    sourceSurfaceArtifact,
-    taggedArtifact,
-    artifactGraph,
-    kclManager.ast,
-    wasmInstance
-  )
-  if (regionTagExpr) {
-    return regionTagExpr
-  }
-
   const sketchSegmentName = getSketchSegmentNameFromSourceSurface(
     sourceSurfaceArtifact,
     taggedArtifact,
     artifactGraph,
     kclManager.ast,
     wasmInstance,
-    { fallbackToFirstSegment: false }
+    { fallbackToFirstSegment: false, resolveNamedSweepInput: true }
   )
   if (sourceSurfaceExpr && sketchSegmentName) {
     return createMemberExpression(
@@ -643,6 +631,13 @@ function getDirectTagExprFromSourceSurface({
       ),
       sketchSegmentName
     )
+  }
+
+  // A sweep edge must stay qualified to its body. If that cannot be
+  // resolved, let the primitive-index reference path handle it instead of
+  // degrading to an unqualified sketch tag.
+  if (taggedArtifact.type === 'sweepEdge') {
+    return null
   }
 
   const segmentArtifact = getSegmentArtifactForTagReference(
@@ -731,12 +726,11 @@ function createDirectTaggedEdgeReferenceExpr(
   return tagExpr
 }
 
-function createAdjacentOrOppositeEdgeReferenceExpr({
-  primitiveSelection,
-  artifactGraph,
-  kclManager,
-  wasmInstance,
-}: SelectionExpressionBuilderContext): Expr | null {
+function createAdjacentOrOppositeEdgeReferenceExpr(
+  context: SelectionExpressionBuilderContext
+): Expr | null {
+  const { primitiveSelection, artifactGraph, kclManager, wasmInstance } =
+    context
   if (primitiveSelection.primitiveType !== 'edge') {
     return null
   }
@@ -751,29 +745,27 @@ function createAdjacentOrOppositeEdgeReferenceExpr({
     return null
   }
 
-  const sourceSurfaceArtifact = getSweepArtifactFromSelection(
-    {
-      ...graphSelection,
-      artifact: edgeArtifact,
-    },
-    artifactGraph
-  )
-  if (err(sourceSurfaceArtifact)) {
-    return null
-  }
-
-  const tagResult = modifyAstWithTagsForSelection(
+  const edgeContext = resolveEdgeSelectionContext(
     kclManager.ast,
     {
       ...graphSelection,
       artifact: edgeArtifact,
-      codeRef: graphSelection.codeRef,
     },
     artifactGraph,
     wasmInstance,
-    ['oppositeAndAdjacentEdges']
+    undefined,
+    false
   )
-  const tagExpr = err(tagResult) ? null : tagResult.exprs[0]
+  if (err(edgeContext)) {
+    return null
+  }
+
+  const tagExpr = getDirectTagExprFromSourceSurface({
+    sourceSurfaceArtifact: edgeContext.sourceSweep,
+    sourceSurfaceExpr: edgeContext.selectedBodyExpr,
+    taggedArtifact: edgeArtifact,
+    context,
+  })
   if (!tagExpr) {
     return null
   }
