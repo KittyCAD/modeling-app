@@ -140,7 +140,10 @@ function DisplayObj({
           kclManager.artifactGraph,
           kclManager.artifactIndex
         )[0]
-        const artifact = kclManager.artifactGraph.get(idInfo?.id || '')
+        if (!idInfo) return
+        const artifact = kclManager.artifactGraph.get(
+          idInfo.artifactId ?? idInfo.id ?? ''
+        )
         if (!artifact) return
         send({
           type: 'Set selection',
@@ -149,6 +152,10 @@ function DisplayObj({
             selection: {
               artifact: artifact,
               codeRef: codeRefFromRange(range, kclManager.ast),
+              engineEntityId:
+                artifact.type !== 'pattern' && artifact.id !== idInfo.id
+                  ? idInfo.id
+                  : undefined,
             },
           },
         })
