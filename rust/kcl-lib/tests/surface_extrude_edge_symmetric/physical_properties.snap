@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties surface_extrude_edge_symmetric.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -0.5129318397204008,
+      "y": -0.0509982826661286,
+      "z": 2.5
+    },
+    "dimensions": {
+      "x": 5.164495600268674,
+      "y": 5.880952178243334,
+      "z": 5.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 102.5054473302589
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.03648829223953006
+  }
+}

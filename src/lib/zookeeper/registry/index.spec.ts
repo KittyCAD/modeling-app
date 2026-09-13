@@ -122,7 +122,7 @@ describe('zookeeper plugin', () => {
       throw new Error('Expected zookeeper plugin')
     }
 
-    registry.get(plugin.service).disable()
+    await registry.get(plugin.service).disable()
 
     expect(registry.get(layoutAreaLibraryValueSpec)[AreaType.Zookeeper]).toBe(
       undefined

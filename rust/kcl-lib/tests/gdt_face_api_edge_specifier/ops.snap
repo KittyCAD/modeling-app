@@ -858,6 +858,13 @@ description: Operations executed gdt_face_api_edge_specifier.kcl
       "name": "gdt::straightness",
       "unlabeledArg": null,
       "labeledArgs": {
+        "annotationName": {
+          "value": {
+            "type": "String",
+            "value": "sample GD&T annotation"
+          },
+          "sourceRange": []
+        },
         "edges": {
           "value": {
             "type": "Array",

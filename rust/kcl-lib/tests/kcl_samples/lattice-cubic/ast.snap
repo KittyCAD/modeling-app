@@ -5067,7 +5067,7 @@ description: Result of parsing lattice-cubic.kcl
         "preComments": [
           "// cubic lattice model",
           "// Parametric three dimensional grid of spheres and rods used for teaching crystal lattice geometry and spatial repetition",
-          "// Categories: Maker",
+          "// Categories: Science & Education; Parametric",
           "",
           "",
           "// units"
@@ -5104,6 +5104,34 @@ description: Result of parsing lattice-cubic.kcl
               "start": 0,
               "type": "Name",
               "type": "Name"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "key": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "kclVersion",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "moduleId": 0,
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "raw": "2.0",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 2.0,
+                "suffix": "None"
+              }
             }
           }
         ],

@@ -35,6 +35,14 @@ To make a fallback point move with a parametric sketch, consider creating a
 construction point in the sketch and constraining it into place. You can then
 refer to that point to create the region.
 
+Operations such as `extrude`, `revolve`, and `sweep` consume the region
+passed to them. Each region can be used by only one consuming operation. To
+reuse the same profile, call `region(...)` again with the original sketch
+segments instead of cloning the sketch. For example, create
+`firstRegion = region(segments = [profile.circle])` and
+`secondRegion = region(segments = [profile.circle])`, then pass each region
+to a different consuming operation.
+
 ### Arguments
 
 | Name | Type | Description | Required |

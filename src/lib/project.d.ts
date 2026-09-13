@@ -60,6 +60,10 @@ export type Project = {
    */
   title?: string
   /**
+   * Local project identity from project.toml settings metadata.
+   */
+  projectId?: string
+  /**
    * Cloud project id when this local project is bound to a remote project.
    */
   cloudProjectId?: string

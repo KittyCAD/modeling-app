@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties usb-c.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -34.30318547243999,
+      "y": 22.3899982055285,
+      "z": 24.849328856845993
+    },
+    "dimensions": {
+      "x": 82.20637094487998,
+      "y": 59.18000358894301,
+      "z": 56.44098398340723
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 1991.7228061419048
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 1.9619375227289868
+  }
+}

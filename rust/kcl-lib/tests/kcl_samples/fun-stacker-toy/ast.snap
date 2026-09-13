@@ -11190,7 +11190,7 @@ description: Result of parsing fun-stacker-toy.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "name": "line1",
+                                    "name": "line2",
                                     "start": 0,
                                     "type": "Identifier"
                                   },
@@ -11576,7 +11576,7 @@ description: Result of parsing fun-stacker-toy.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "name": "line2",
+                                    "name": "line1",
                                     "start": 0,
                                     "type": "Identifier"
                                   },
@@ -11810,6 +11810,34 @@ description: Result of parsing fun-stacker-toy.kcl
               "type": "Name",
               "type": "Name"
             }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "key": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "kclVersion",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "moduleId": 0,
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "raw": "2.0",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 2.0,
+                "suffix": "None"
+              }
+            }
           }
         ],
         "start": 0,
@@ -11865,7 +11893,7 @@ description: Result of parsing fun-stacker-toy.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Maker",
+            "value": "Categories: Toys, Games, & Recreation; 3D Printable",
             "style": "line"
           }
         },

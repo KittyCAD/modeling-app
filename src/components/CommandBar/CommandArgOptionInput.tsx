@@ -192,15 +192,20 @@ function CommandArgOptionInput({
                 disabled={option.disabled}
                 className="flex items-center gap-2 px-4 py-1 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90"
               >
-                <p
+                <div
                   className={`flex-grow ${
                     (option.disabled &&
                       'text-chalkboard-70 dark:text-chalkboard-50 cursor-not-allowed') ||
                     ''
                   }`}
                 >
-                  {option.name}
-                </p>
+                  <p>{option.name}</p>
+                  {option.description && (
+                    <p className="text-xs text-chalkboard-70 dark:text-chalkboard-50">
+                      {option.description}
+                    </p>
+                  )}
+                </div>
                 {option.value === currentOption?.value && (
                   <small className="text-chalkboard-70 dark:text-chalkboard-50">
                     current
@@ -212,6 +217,11 @@ function CommandArgOptionInput({
         ) : (
           <p className="px-4 pt-2 text-chalkboard-60 dark:text-chalkboard-50">
             No results found
+          </p>
+        )}
+        {arg.description && (
+          <p className="mx-4 mb-4 mt-2 select-text text-sm leading-relaxed text-chalkboard-70 dark:text-chalkboard-40">
+            {arg.description}
           </p>
         )}
       </Combobox>

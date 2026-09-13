@@ -5,6 +5,7 @@ import type { MouseEventHandler, useMemo } from 'react'
 export enum AreaType {
   Zookeeper = 'ttc',
   Bodies = 'bodies',
+  NamedViews = 'namedViews',
   Code = 'codeEditor',
   FeatureTree = 'featureTree',
   Files = 'files',

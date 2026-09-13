@@ -2101,9 +2101,9 @@ export function retrieveSelectionsFromOpArg(
     }
 
     if (artifact.type === 'segment') {
-      const correspondingWall = artifactGraph
-        .values()
-        .find((a) => a.type === 'wall' && a.segId === artifact?.id)
+      const correspondingWall = Array.from(artifactGraph.values()).find(
+        (a) => a.type === 'wall' && a.segId === artifact?.id
+      )
       if (correspondingWall) {
         artifact = correspondingWall
       }
@@ -2160,24 +2160,19 @@ export function findOperationArtifact(
 ) {
   const nodePath = JSON.stringify(operation.nodePath)
   const opRange = operation.sourceRange
-  const byNodePathAndRange = artifactGraph
-    .values()
-    .toArray()
-    .find((a) => {
-      const cr = getFaceCodeRef(a)
-      const crWithNodePath = cr as { nodePath?: unknown } | null
-      return (
-        cr != null &&
-        JSON.stringify(crWithNodePath?.nodePath) === nodePath &&
-        cr.range?.every((v, i) => v === opRange[i])
-      )
-    })
+  const byNodePathAndRange = Array.from(artifactGraph.values()).find((a) => {
+    const cr = getFaceCodeRef(a)
+    const crWithNodePath = cr as { nodePath?: unknown } | null
+    return (
+      cr != null &&
+      JSON.stringify(crWithNodePath?.nodePath) === nodePath &&
+      cr.range?.every((v, i) => v === opRange[i])
+    )
+  })
   if (byNodePathAndRange) return byNodePathAndRange
   if (operation.name === 'fillet' || operation.name === 'chamfer') {
-    const matchingEdgeCuts = artifactGraph
-      .values()
-      .toArray()
-      .filter((a): a is Artifact & { type: 'edgeCut' } => {
+    const matchingEdgeCuts = Array.from(artifactGraph.values()).filter(
+      (a): a is Artifact & { type: 'edgeCut' } => {
         if (a.type !== 'edgeCut') return false
         const cr = getFaceCodeRef(a)
         return (
@@ -2189,7 +2184,8 @@ export function findOperationArtifact(
           cr.range[0] === opRange[0] &&
           cr.range[1] === opRange[1]
         )
-      })
+      }
+    )
     if (matchingEdgeCuts.length === 0) {
       // no change from before
     } else {
@@ -2221,38 +2217,30 @@ export function findOperationArtifact(
     }
   }
   if (operation.name !== 'startSketchOn') return undefined
-  const byRangeExact = artifactGraph
-    .values()
-    .toArray()
-    .find((a) => {
-      const cr = getFaceCodeRef(a)
-      return (
-        cr != null &&
-        cr.range != null &&
-        opRange != null &&
-        cr.range.length >= 2 &&
-        opRange.length >= 2 &&
-        cr.range[0] === opRange[0] &&
-        cr.range[1] === opRange[1]
-      )
-    })
+  const byRangeExact = Array.from(artifactGraph.values()).find((a) => {
+    const cr = getFaceCodeRef(a)
+    return (
+      cr != null &&
+      cr.range != null &&
+      opRange != null &&
+      cr.range.length >= 2 &&
+      opRange.length >= 2 &&
+      cr.range[0] === opRange[0] &&
+      cr.range[1] === opRange[1]
+    )
+  })
   if (byRangeExact) return byRangeExact
   const opStart = opRange?.[0] ?? -1
   const opEnd = opRange?.[1] ?? -1
-  const byRangeContainment = artifactGraph
-    .values()
-    .toArray()
-    .find((a) => {
-      const cr = getFaceCodeRef(a)
-      if (!cr?.range || cr.range.length < 2 || opStart < 0 || opEnd < 0)
-        return false
-      const [r0, r1] = cr.range
-      return (r0 >= opStart && r1 <= opEnd) || (opStart >= r0 && opEnd <= r1)
-    })
+  const byRangeContainment = Array.from(artifactGraph.values()).find((a) => {
+    const cr = getFaceCodeRef(a)
+    if (!cr?.range || cr.range.length < 2 || opStart < 0 || opEnd < 0)
+      return false
+    const [r0, r1] = cr.range
+    return (r0 >= opStart && r1 <= opEnd) || (opStart >= r0 && opEnd <= r1)
+  })
   if (byRangeContainment) return byRangeContainment
-  const candidates = artifactGraph
-    .values()
-    .toArray()
+  const candidates = Array.from(artifactGraph.values())
     .filter(
       (a) =>
         (a.type === 'startSketchOnFace' || a.type === 'sketchBlock') &&

@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties t-slot-rail.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -8.25500000000001,
+      "y": 304.8,
+      "z": 19.05
+    },
+    "dimensions": {
+      "x": 67.31000000000003,
+      "y": 609.6,
+      "z": 45.720000000000034
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 206708.0137946391
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 374.6941635469625
+  }
+}

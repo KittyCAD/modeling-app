@@ -22,7 +22,6 @@ import {
   artifactToEntityRef,
   findOperationForArtifact,
 } from '@src/lang/queryAst'
-import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import {
   getArtifactOfTypes,
   getCodeRefsByArtifactId,
@@ -32,6 +31,11 @@ import { getAllOperations } from '@src/lang/wasm'
 import type { EntityReference } from '@src/machines/modelingSharedTypes'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { btnName } from '@src/lib/cameraControls'
+import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
+import {
+  LEGACY_SKETCH_MODE_FEATURE_FLAG,
+  LEGACY_SKETCH_MODE_REMOVED_MESSAGE,
+} from '@src/lib/constants'
 import { EngineDebugger } from '@src/lib/debugger'
 import { prepareEditCommand } from '@src/lib/featureTree'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
@@ -49,6 +53,7 @@ import type {
 } from '@src/registry/contracts/engineScene'
 import type { MouseEventHandler } from 'react'
 import { use, useCallback, useMemo, useRef, useState } from 'react'
+import toast from 'react-hot-toast'
 
 const TIME_TO_CONNECT = 30_000
 
@@ -69,7 +74,11 @@ interface ConnectionStreamProps {
 }
 
 export const ConnectionStream = (props: ConnectionStreamProps) => {
-  const { settings, project, wasmPromise, commands } = useApp()
+  const { settings, project, wasmPromise, commands, userFeatures } = useApp()
+  const hasLegacySketchMode = userFeatures.useHas(
+    LEGACY_SKETCH_MODE_FEATURE_FLAG,
+    false
+  )
   const wasmInstance = use(wasmPromise)
   const { kclManager } = useSingletons()
   const engineCommandManager = kclManager.engineCommandManager
@@ -126,7 +135,6 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           dataChannelReadyState: connection?.unreliableDataChannel?.readyState,
           ...extra,
           kclSourceLength: kclSource.length,
-          kclSource,
         },
       })
     },
@@ -275,6 +283,14 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
             if (err(artifactResult)) {
               return artifactResult
             }
+            // Anything left here belongs to a KCL 1.0 sketch, since sketch
+            // blocks and undeclared regions were handled above.
+            if (!hasLegacySketchMode) {
+              toast.error(LEGACY_SKETCH_MODE_REMOVED_MESSAGE, {
+                duration: 5_000,
+              })
+              return
+            }
             const artifact = artifactResult
             // Build entityRef so the machine can resolve the selection (Enter sketch uses selection)
             const pathIdForSegment =
@@ -311,6 +327,9 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       },
       // eslint-disable-next-line react-hooks/exhaustive-deps
       [
+        commands.actor,
+        engineCommandManager,
+        hasLegacySketchMode,
         isNetworkOkay,
         modelingMachineState.value,
         sceneInfra.camControls.wasDragging,

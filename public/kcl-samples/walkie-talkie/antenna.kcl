@@ -1,0 +1,51 @@
+// Walkie Talkie Antenna
+// Antenna for the walkie talkie assembly
+
+@settings(defaultLengthUnit = in, kclVersion = 2.0, experimentalFeatures = allow)
+
+import antennaLength from "parameters.kcl"
+
+antennaBaseSketch = sketch(on = XY) {
+  line1 = line(start = [var -0.25in, var 0.125in], end = [var 0.25in, var 0.125in])
+  line2 = line(start = [var 0.25in, var 0.125in], end = [var 0.25in, var -0.125in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0.25in, var -0.125in], end = [var -0.25in, var -0.125in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -0.25in, var -0.125in], end = [var -0.25in, var 0.125in])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+}
+
+loftPlane = offsetPlane(XY, offset = antennaLength)
+antennaTopSketch = sketch(on = loftPlane) {
+  line1 = line(start = [var -0.125in, var 0.0625in], end = [var 0.125in, var 0.0625in])
+  line2 = line(start = [var 0.125in, var 0.0625in], end = [var 0.125in, var -0.0625in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0.125in, var -0.0625in], end = [var -0.125in, var -0.0625in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -0.125in, var -0.0625in], end = [var -0.125in, var 0.0625in])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+}
+
+antennaBaseRegion = region(segments = [
+  antennaBaseSketch.line1,
+  antennaBaseSketch.line2
+])
+antennaTopRegion = region(segments = [
+  antennaTopSketch.line1,
+  antennaTopSketch.line2
+])
+antenna = loft([antennaBaseRegion, antennaTopRegion])
+  |> appearance(color = "#000000")
+hide([antennaBaseSketch, antennaTopSketch])
+
+antenna

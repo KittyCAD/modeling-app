@@ -115,17 +115,17 @@ description: Variables in memory after executing artifact_graph_example_code_no_
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "YZ",
         "objectId": 0,
+        "kind": "YZ",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -177,7 +177,8 @@ description: Variables in memory after executing artifact_graph_example_code_no_
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "sketch004": {
@@ -249,17 +250,17 @@ description: Variables in memory after executing artifact_graph_example_code_no_
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "XZ",
         "objectId": 1,
+        "kind": "XZ",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": -1.0,
           "y": 0.0,

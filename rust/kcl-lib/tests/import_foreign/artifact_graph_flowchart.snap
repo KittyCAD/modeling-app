@@ -1,6 +1,6 @@
 ---
-source: kcl/src/simulation_tests.rs
-description: Artifact graph flowchart import_glob.kcl
+source: kcl-lib/src/simulation_tests.rs
+description: Artifact graph flowchart import_foreign.kcl
 extension: md
 snapshot_kind: binary
 ---

@@ -8,8 +8,8 @@ description: Variables in memory after executing gingerbread-man.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 117,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -41,8 +41,8 @@ description: Variables in memory after executing gingerbread-man.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 117,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -74,8 +74,8 @@ description: Variables in memory after executing gingerbread-man.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 117,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -139,8 +139,8 @@ description: Variables in memory after executing gingerbread-man.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 117,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -172,8 +172,8 @@ description: Variables in memory after executing gingerbread-man.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 117,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -205,8 +205,8 @@ description: Variables in memory after executing gingerbread-man.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 117,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -238,8 +238,8 @@ description: Variables in memory after executing gingerbread-man.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 117,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -341,6 +341,8 @@ description: Variables in memory after executing gingerbread-man.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -348,10 +350,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 11690,
-            "end": 11694,
+            "commentStart": 12090,
+            "end": 12094,
             "moduleId": 0,
-            "start": 11690,
+            "start": 12090,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -362,10 +364,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 11898,
-            "end": 11902,
+            "commentStart": 12298,
+            "end": 12302,
             "moduleId": 0,
-            "start": 11898,
+            "start": 12298,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -376,10 +378,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 12054,
-            "end": 12058,
+            "commentStart": 12454,
+            "end": 12458,
             "moduleId": 0,
-            "start": 12054,
+            "start": 12454,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -390,10 +392,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 12212,
-            "end": 12216,
+            "commentStart": 12612,
+            "end": 12616,
             "moduleId": 0,
-            "start": 12212,
+            "start": 12612,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -404,10 +406,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 12366,
-            "end": 12370,
+            "commentStart": 12766,
+            "end": 12770,
             "moduleId": 0,
-            "start": 12366,
+            "start": 12766,
             "type": "TagDeclarator",
             "value": "arc5"
           },
@@ -418,10 +420,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 12522,
-            "end": 12526,
+            "commentStart": 12922,
+            "end": 12926,
             "moduleId": 0,
-            "start": 12522,
+            "start": 12922,
             "type": "TagDeclarator",
             "value": "arc6"
           },
@@ -432,10 +434,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 12678,
-            "end": 12682,
+            "commentStart": 13078,
+            "end": 13082,
             "moduleId": 0,
-            "start": 12678,
+            "start": 13078,
             "type": "TagDeclarator",
             "value": "arc7"
           },
@@ -446,10 +448,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 12835,
-            "end": 12839,
+            "commentStart": 13235,
+            "end": 13239,
             "moduleId": 0,
-            "start": 12835,
+            "start": 13235,
             "type": "TagDeclarator",
             "value": "arc8"
           },
@@ -460,10 +462,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 12993,
-            "end": 12997,
+            "commentStart": 13393,
+            "end": 13397,
             "moduleId": 0,
-            "start": 12993,
+            "start": 13393,
             "type": "TagDeclarator",
             "value": "arc9"
           },
@@ -474,10 +476,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 13154,
-            "end": 13159,
+            "commentStart": 13554,
+            "end": 13559,
             "moduleId": 0,
-            "start": 13154,
+            "start": 13554,
             "type": "TagDeclarator",
             "value": "arc10"
           },
@@ -505,10 +507,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             ],
             "radius": 23.194612009108457,
             "tag": {
-              "commentStart": 11690,
-              "end": 11694,
+              "commentStart": 12090,
+              "end": 12094,
               "moduleId": 0,
-              "start": 11690,
+              "start": 12090,
               "type": "TagDeclarator",
               "value": "arc1"
             },
@@ -535,10 +537,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             ],
             "radius": 27.54598617104228,
             "tag": {
-              "commentStart": 11898,
-              "end": 11902,
+              "commentStart": 12298,
+              "end": 12302,
               "moduleId": 0,
-              "start": 11898,
+              "start": 12298,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -565,10 +567,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             ],
             "radius": 22.661283484543855,
             "tag": {
-              "commentStart": 12054,
-              "end": 12058,
+              "commentStart": 12454,
+              "end": 12458,
               "moduleId": 0,
-              "start": 12054,
+              "start": 12454,
               "type": "TagDeclarator",
               "value": "arc3"
             },
@@ -595,10 +597,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             ],
             "radius": 5.728288444751593,
             "tag": {
-              "commentStart": 12212,
-              "end": 12216,
+              "commentStart": 12612,
+              "end": 12616,
               "moduleId": 0,
-              "start": 12212,
+              "start": 12612,
               "type": "TagDeclarator",
               "value": "arc4"
             },
@@ -625,10 +627,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             ],
             "radius": 27.19644843692538,
             "tag": {
-              "commentStart": 12366,
-              "end": 12370,
+              "commentStart": 12766,
+              "end": 12770,
               "moduleId": 0,
-              "start": 12366,
+              "start": 12766,
               "type": "TagDeclarator",
               "value": "arc5"
             },
@@ -655,10 +657,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             ],
             "radius": 40.21092195355593,
             "tag": {
-              "commentStart": 12522,
-              "end": 12526,
+              "commentStart": 12922,
+              "end": 12926,
               "moduleId": 0,
-              "start": 12522,
+              "start": 12922,
               "type": "TagDeclarator",
               "value": "arc6"
             },
@@ -685,10 +687,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             ],
             "radius": 14.639118185551407,
             "tag": {
-              "commentStart": 12678,
-              "end": 12682,
+              "commentStart": 13078,
+              "end": 13082,
               "moduleId": 0,
-              "start": 12678,
+              "start": 13078,
               "type": "TagDeclarator",
               "value": "arc7"
             },
@@ -715,10 +717,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             ],
             "radius": 21.135190164190348,
             "tag": {
-              "commentStart": 12835,
-              "end": 12839,
+              "commentStart": 13235,
+              "end": 13239,
               "moduleId": 0,
-              "start": 12835,
+              "start": 13235,
               "type": "TagDeclarator",
               "value": "arc8"
             },
@@ -745,10 +747,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             ],
             "radius": 59.017214016711705,
             "tag": {
-              "commentStart": 12993,
-              "end": 12997,
+              "commentStart": 13393,
+              "end": 13397,
               "moduleId": 0,
-              "start": 12993,
+              "start": 13393,
               "type": "TagDeclarator",
               "value": "arc9"
             },
@@ -775,10 +777,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             ],
             "radius": 4.856939213918314,
             "tag": {
-              "commentStart": 13154,
-              "end": 13159,
+              "commentStart": 13554,
+              "end": 13559,
               "moduleId": 0,
-              "start": 13154,
+              "start": 13554,
               "type": "TagDeclarator",
               "value": "arc10"
             },
@@ -791,17 +793,17 @@ description: Variables in memory after executing gingerbread-man.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 117,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 50.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -881,8 +883,8 @@ description: Variables in memory after executing gingerbread-man.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -912,10 +914,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "radius": 23.194612009108457,
           "tag": {
-            "commentStart": 11690,
-            "end": 11694,
+            "commentStart": 12090,
+            "end": 12094,
             "moduleId": 0,
-            "start": 11690,
+            "start": 12090,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -942,10 +944,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "radius": 27.54598617104228,
           "tag": {
-            "commentStart": 11898,
-            "end": 11902,
+            "commentStart": 12298,
+            "end": 12302,
             "moduleId": 0,
-            "start": 11898,
+            "start": 12298,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -972,10 +974,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "radius": 22.661283484543855,
           "tag": {
-            "commentStart": 12054,
-            "end": 12058,
+            "commentStart": 12454,
+            "end": 12458,
             "moduleId": 0,
-            "start": 12054,
+            "start": 12454,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -1002,10 +1004,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "radius": 5.728288444751593,
           "tag": {
-            "commentStart": 12212,
-            "end": 12216,
+            "commentStart": 12612,
+            "end": 12616,
             "moduleId": 0,
-            "start": 12212,
+            "start": 12612,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -1032,10 +1034,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "radius": 27.19644843692538,
           "tag": {
-            "commentStart": 12366,
-            "end": 12370,
+            "commentStart": 12766,
+            "end": 12770,
             "moduleId": 0,
-            "start": 12366,
+            "start": 12766,
             "type": "TagDeclarator",
             "value": "arc5"
           },
@@ -1062,10 +1064,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "radius": 40.21092195355593,
           "tag": {
-            "commentStart": 12522,
-            "end": 12526,
+            "commentStart": 12922,
+            "end": 12926,
             "moduleId": 0,
-            "start": 12522,
+            "start": 12922,
             "type": "TagDeclarator",
             "value": "arc6"
           },
@@ -1092,10 +1094,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "radius": 14.639118185551407,
           "tag": {
-            "commentStart": 12678,
-            "end": 12682,
+            "commentStart": 13078,
+            "end": 13082,
             "moduleId": 0,
-            "start": 12678,
+            "start": 13078,
             "type": "TagDeclarator",
             "value": "arc7"
           },
@@ -1122,10 +1124,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "radius": 21.135190164190348,
           "tag": {
-            "commentStart": 12835,
-            "end": 12839,
+            "commentStart": 13235,
+            "end": 13239,
             "moduleId": 0,
-            "start": 12835,
+            "start": 13235,
             "type": "TagDeclarator",
             "value": "arc8"
           },
@@ -1152,10 +1154,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "radius": 59.017214016711705,
           "tag": {
-            "commentStart": 12993,
-            "end": 12997,
+            "commentStart": 13393,
+            "end": 13397,
             "moduleId": 0,
-            "start": 12993,
+            "start": 13393,
             "type": "TagDeclarator",
             "value": "arc9"
           },
@@ -1182,10 +1184,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "radius": 4.856939213918314,
           "tag": {
-            "commentStart": 13154,
-            "end": 13159,
+            "commentStart": 13554,
+            "end": 13559,
             "moduleId": 0,
-            "start": 13154,
+            "start": 13554,
             "type": "TagDeclarator",
             "value": "arc10"
           },
@@ -1198,17 +1200,17 @@ description: Variables in memory after executing gingerbread-man.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 117,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 50.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1288,8 +1290,8 @@ description: Variables in memory after executing gingerbread-man.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "beltSketch": {
@@ -2961,10 +2963,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                   ],
                   "radius": 23.194612009108457,
                   "tag": {
-                    "commentStart": 11690,
-                    "end": 11694,
+                    "commentStart": 12090,
+                    "end": 12094,
                     "moduleId": 0,
-                    "start": 11690,
+                    "start": 12090,
                     "type": "TagDeclarator",
                     "value": "arc1"
                   },
@@ -2991,10 +2993,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                   ],
                   "radius": 27.54598617104228,
                   "tag": {
-                    "commentStart": 11898,
-                    "end": 11902,
+                    "commentStart": 12298,
+                    "end": 12302,
                     "moduleId": 0,
-                    "start": 11898,
+                    "start": 12298,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -3021,10 +3023,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                   ],
                   "radius": 22.661283484543855,
                   "tag": {
-                    "commentStart": 12054,
-                    "end": 12058,
+                    "commentStart": 12454,
+                    "end": 12458,
                     "moduleId": 0,
-                    "start": 12054,
+                    "start": 12454,
                     "type": "TagDeclarator",
                     "value": "arc3"
                   },
@@ -3051,10 +3053,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                   ],
                   "radius": 5.728288444751593,
                   "tag": {
-                    "commentStart": 12212,
-                    "end": 12216,
+                    "commentStart": 12612,
+                    "end": 12616,
                     "moduleId": 0,
-                    "start": 12212,
+                    "start": 12612,
                     "type": "TagDeclarator",
                     "value": "arc4"
                   },
@@ -3081,10 +3083,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                   ],
                   "radius": 27.19644843692538,
                   "tag": {
-                    "commentStart": 12366,
-                    "end": 12370,
+                    "commentStart": 12766,
+                    "end": 12770,
                     "moduleId": 0,
-                    "start": 12366,
+                    "start": 12766,
                     "type": "TagDeclarator",
                     "value": "arc5"
                   },
@@ -3111,10 +3113,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                   ],
                   "radius": 40.21092195355593,
                   "tag": {
-                    "commentStart": 12522,
-                    "end": 12526,
+                    "commentStart": 12922,
+                    "end": 12926,
                     "moduleId": 0,
-                    "start": 12522,
+                    "start": 12922,
                     "type": "TagDeclarator",
                     "value": "arc6"
                   },
@@ -3141,10 +3143,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                   ],
                   "radius": 14.639118185551407,
                   "tag": {
-                    "commentStart": 12678,
-                    "end": 12682,
+                    "commentStart": 13078,
+                    "end": 13082,
                     "moduleId": 0,
-                    "start": 12678,
+                    "start": 13078,
                     "type": "TagDeclarator",
                     "value": "arc7"
                   },
@@ -3171,10 +3173,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                   ],
                   "radius": 21.135190164190348,
                   "tag": {
-                    "commentStart": 12835,
-                    "end": 12839,
+                    "commentStart": 13235,
+                    "end": 13239,
                     "moduleId": 0,
-                    "start": 12835,
+                    "start": 13235,
                     "type": "TagDeclarator",
                     "value": "arc8"
                   },
@@ -3201,10 +3203,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                   ],
                   "radius": 59.017214016711705,
                   "tag": {
-                    "commentStart": 12993,
-                    "end": 12997,
+                    "commentStart": 13393,
+                    "end": 13397,
                     "moduleId": 0,
-                    "start": 12993,
+                    "start": 13393,
                     "type": "TagDeclarator",
                     "value": "arc9"
                   },
@@ -3231,10 +3233,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                   ],
                   "radius": 4.856939213918314,
                   "tag": {
-                    "commentStart": 13154,
-                    "end": 13159,
+                    "commentStart": 13554,
+                    "end": 13559,
                     "moduleId": 0,
-                    "start": 13154,
+                    "start": 13554,
                     "type": "TagDeclarator",
                     "value": "arc10"
                   },
@@ -3247,17 +3249,17 @@ description: Variables in memory after executing gingerbread-man.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 117,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 50.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -3352,6 +3354,8 @@ description: Variables in memory after executing gingerbread-man.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3359,10 +3363,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1205,
-            "end": 1210,
+            "commentStart": 1230,
+            "end": 1235,
             "moduleId": 0,
-            "start": 1205,
+            "start": 1230,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -3373,10 +3377,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1441,
-            "end": 1445,
+            "commentStart": 1466,
+            "end": 1470,
             "moduleId": 0,
-            "start": 1441,
+            "start": 1466,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -3387,10 +3391,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1595,
-            "end": 1600,
+            "commentStart": 1620,
+            "end": 1625,
             "moduleId": 0,
-            "start": 1595,
+            "start": 1620,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -3401,10 +3405,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1713,
-            "end": 1718,
+            "commentStart": 1738,
+            "end": 1743,
             "moduleId": 0,
-            "start": 1713,
+            "start": 1738,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -3415,10 +3419,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1829,
-            "end": 1834,
+            "commentStart": 1854,
+            "end": 1859,
             "moduleId": 0,
-            "start": 1829,
+            "start": 1854,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -3429,10 +3433,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1947,
-            "end": 1951,
+            "commentStart": 1972,
+            "end": 1976,
             "moduleId": 0,
-            "start": 1947,
+            "start": 1972,
             "type": "TagDeclarator",
             "value": "arc6"
           },
@@ -3443,10 +3447,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2101,
-            "end": 2106,
+            "commentStart": 2126,
+            "end": 2131,
             "moduleId": 0,
-            "start": 2101,
+            "start": 2126,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -3457,10 +3461,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2221,
-            "end": 2225,
+            "commentStart": 2246,
+            "end": 2250,
             "moduleId": 0,
-            "start": 2221,
+            "start": 2246,
             "type": "TagDeclarator",
             "value": "arc8"
           },
@@ -3471,10 +3475,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2373,
-            "end": 2378,
+            "commentStart": 2398,
+            "end": 2403,
             "moduleId": 0,
-            "start": 2373,
+            "start": 2398,
             "type": "TagDeclarator",
             "value": "line9"
           },
@@ -3485,10 +3489,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2491,
-            "end": 2496,
+            "commentStart": 2516,
+            "end": 2521,
             "moduleId": 0,
-            "start": 2491,
+            "start": 2516,
             "type": "TagDeclarator",
             "value": "arc10"
           },
@@ -3499,10 +3503,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2682,
-            "end": 2687,
+            "commentStart": 2707,
+            "end": 2712,
             "moduleId": 0,
-            "start": 2682,
+            "start": 2707,
             "type": "TagDeclarator",
             "value": "arc11"
           },
@@ -3513,10 +3517,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2831,
-            "end": 2837,
+            "commentStart": 2856,
+            "end": 2862,
             "moduleId": 0,
-            "start": 2831,
+            "start": 2856,
             "type": "TagDeclarator",
             "value": "line12"
           },
@@ -3527,10 +3531,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2950,
-            "end": 2955,
+            "commentStart": 2975,
+            "end": 2980,
             "moduleId": 0,
-            "start": 2950,
+            "start": 2975,
             "type": "TagDeclarator",
             "value": "arc13"
           },
@@ -3541,10 +3545,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3102,
-            "end": 3108,
+            "commentStart": 3127,
+            "end": 3133,
             "moduleId": 0,
-            "start": 3102,
+            "start": 3127,
             "type": "TagDeclarator",
             "value": "line14"
           },
@@ -3555,10 +3559,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3223,
-            "end": 3228,
+            "commentStart": 3248,
+            "end": 3253,
             "moduleId": 0,
-            "start": 3223,
+            "start": 3248,
             "type": "TagDeclarator",
             "value": "arc15"
           },
@@ -3569,10 +3573,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3377,
-            "end": 3383,
+            "commentStart": 3402,
+            "end": 3408,
             "moduleId": 0,
-            "start": 3377,
+            "start": 3402,
             "type": "TagDeclarator",
             "value": "line16"
           },
@@ -3583,10 +3587,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3497,
-            "end": 3503,
+            "commentStart": 3522,
+            "end": 3528,
             "moduleId": 0,
-            "start": 3497,
+            "start": 3522,
             "type": "TagDeclarator",
             "value": "line17"
           },
@@ -3597,10 +3601,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3662,
-            "end": 3668,
+            "commentStart": 3687,
+            "end": 3693,
             "moduleId": 0,
-            "start": 3662,
+            "start": 3687,
             "type": "TagDeclarator",
             "value": "line18"
           },
@@ -3611,10 +3615,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3780,
-            "end": 3785,
+            "commentStart": 3805,
+            "end": 3810,
             "moduleId": 0,
-            "start": 3780,
+            "start": 3805,
             "type": "TagDeclarator",
             "value": "arc19"
           },
@@ -3625,10 +3629,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3934,
-            "end": 3940,
+            "commentStart": 3959,
+            "end": 3965,
             "moduleId": 0,
-            "start": 3934,
+            "start": 3959,
             "type": "TagDeclarator",
             "value": "line20"
           },
@@ -3650,10 +3654,10 @@ description: Variables in memory after executing gingerbread-man.kcl
               -0.0000000000012697314468727578
             ],
             "tag": {
-              "commentStart": 1205,
-              "end": 1210,
+              "commentStart": 1230,
+              "end": 1235,
               "moduleId": 0,
-              "start": 1205,
+              "start": 1230,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -3680,10 +3684,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             ],
             "radius": 50.554973859576286,
             "tag": {
-              "commentStart": 1441,
-              "end": 1445,
+              "commentStart": 1466,
+              "end": 1470,
               "moduleId": 0,
-              "start": 1441,
+              "start": 1466,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -3704,10 +3708,10 @@ description: Variables in memory after executing gingerbread-man.kcl
               -53.00046784210731
             ],
             "tag": {
-              "commentStart": 1595,
-              "end": 1600,
+              "commentStart": 1620,
+              "end": 1625,
               "moduleId": 0,
-              "start": 1595,
+              "start": 1620,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -3728,10 +3732,10 @@ description: Variables in memory after executing gingerbread-man.kcl
               57.0
             ],
             "tag": {
-              "commentStart": 1713,
-              "end": 1718,
+              "commentStart": 1738,
+              "end": 1743,
               "moduleId": 0,
-              "start": 1713,
+              "start": 1738,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -3752,10 +3756,10 @@ description: Variables in memory after executing gingerbread-man.kcl
               213.0
             ],
             "tag": {
-              "commentStart": 1829,
-              "end": 1834,
+              "commentStart": 1854,
+              "end": 1859,
               "moduleId": 0,
-              "start": 1829,
+              "start": 1854,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -3782,10 +3786,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             ],
             "radius": 39.561538134909576,
             "tag": {
-              "commentStart": 1947,
-              "end": 1951,
+              "commentStart": 1972,
+              "end": 1976,
               "moduleId": 0,
-              "start": 1947,
+              "start": 1972,
               "type": "TagDeclarator",
               "value": "arc6"
             },
@@ -3806,10 +3810,10 @@ description: Variables in memory after executing gingerbread-man.kcl
               195.00010690988398
             ],
             "tag": {
-              "commentStart": 2101,
-              "end": 2106,
+              "commentStart": 2126,
+              "end": 2131,
               "moduleId": 0,
-              "start": 2101,
+              "start": 2126,
               "type": "TagDeclarator",
               "value": "line7"
             },
@@ -3836,10 +3840,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             ],
             "radius": 116.92877080807635,
             "tag": {
-              "commentStart": 2221,
-              "end": 2225,
+              "commentStart": 2246,
+              "end": 2250,
               "moduleId": 0,
-              "start": 2221,
+              "start": 2246,
               "type": "TagDeclarator",
               "value": "arc8"
             },
@@ -3860,10 +3864,10 @@ description: Variables in memory after executing gingerbread-man.kcl
               311.9994696964407
             ],
             "tag": {
-              "commentStart": 2373,
-              "end": 2378,
+              "commentStart": 2398,
+              "end": 2403,
               "moduleId": 0,
-              "start": 2373,
+              "start": 2398,
               "type": "TagDeclarator",
               "value": "line9"
             },
@@ -3890,10 +3894,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             ],
             "radius": 115.3003845010659,
             "tag": {
-              "commentStart": 2491,
-              "end": 2496,
+              "commentStart": 2516,
+              "end": 2521,
               "moduleId": 0,
-              "start": 2491,
+              "start": 2516,
               "type": "TagDeclarator",
               "value": "arc10"
             },
@@ -3920,10 +3924,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             ],
             "radius": 115.30038450068217,
             "tag": {
-              "commentStart": 2682,
-              "end": 2687,
+              "commentStart": 2707,
+              "end": 2712,
               "moduleId": 0,
-              "start": 2682,
+              "start": 2707,
               "type": "TagDeclarator",
               "value": "arc11"
             },
@@ -3944,10 +3948,10 @@ description: Variables in memory after executing gingerbread-man.kcl
               334.999728263303
             ],
             "tag": {
-              "commentStart": 2831,
-              "end": 2837,
+              "commentStart": 2856,
+              "end": 2862,
               "moduleId": 0,
-              "start": 2831,
+              "start": 2856,
               "type": "TagDeclarator",
               "value": "line12"
             },
@@ -3974,10 +3978,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             ],
             "radius": 116.9287708086934,
             "tag": {
-              "commentStart": 2950,
-              "end": 2955,
+              "commentStart": 2975,
+              "end": 2980,
               "moduleId": 0,
-              "start": 2950,
+              "start": 2975,
               "type": "TagDeclarator",
               "value": "arc13"
             },
@@ -3998,10 +4002,10 @@ description: Variables in memory after executing gingerbread-man.kcl
               290.00042869972
             ],
             "tag": {
-              "commentStart": 3102,
-              "end": 3108,
+              "commentStart": 3127,
+              "end": 3133,
               "moduleId": 0,
-              "start": 3102,
+              "start": 3127,
               "type": "TagDeclarator",
               "value": "line14"
             },
@@ -4028,10 +4032,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             ],
             "radius": 39.56153813490656,
             "tag": {
-              "commentStart": 3223,
-              "end": 3228,
+              "commentStart": 3248,
+              "end": 3253,
               "moduleId": 0,
-              "start": 3223,
+              "start": 3248,
               "type": "TagDeclarator",
               "value": "arc15"
             },
@@ -4052,10 +4056,10 @@ description: Variables in memory after executing gingerbread-man.kcl
               130.00010102054665
             ],
             "tag": {
-              "commentStart": 3377,
-              "end": 3383,
+              "commentStart": 3402,
+              "end": 3408,
               "moduleId": 0,
-              "start": 3377,
+              "start": 3402,
               "type": "TagDeclarator",
               "value": "line16"
             },
@@ -4076,10 +4080,10 @@ description: Variables in memory after executing gingerbread-man.kcl
               213.0
             ],
             "tag": {
-              "commentStart": 3497,
-              "end": 3503,
+              "commentStart": 3522,
+              "end": 3528,
               "moduleId": 0,
-              "start": 3497,
+              "start": 3522,
               "type": "TagDeclarator",
               "value": "line17"
             },
@@ -4100,10 +4104,10 @@ description: Variables in memory after executing gingerbread-man.kcl
               57.0
             ],
             "tag": {
-              "commentStart": 3662,
-              "end": 3668,
+              "commentStart": 3687,
+              "end": 3693,
               "moduleId": 0,
-              "start": 3662,
+              "start": 3687,
               "type": "TagDeclarator",
               "value": "line18"
             },
@@ -4130,10 +4134,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             ],
             "radius": 50.55497385947626,
             "tag": {
-              "commentStart": 3780,
-              "end": 3785,
+              "commentStart": 3805,
+              "end": 3810,
               "moduleId": 0,
-              "start": 3780,
+              "start": 3805,
               "type": "TagDeclarator",
               "value": "arc19"
             },
@@ -4154,10 +4158,10 @@ description: Variables in memory after executing gingerbread-man.kcl
               -112.00052622202344
             ],
             "tag": {
-              "commentStart": 3934,
-              "end": 3940,
+              "commentStart": 3959,
+              "end": 3965,
               "moduleId": 0,
-              "start": 3934,
+              "start": 3959,
               "type": "TagDeclarator",
               "value": "line20"
             },
@@ -4170,17 +4174,17 @@ description: Variables in memory after executing gingerbread-man.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4300,8 +4304,8 @@ description: Variables in memory after executing gingerbread-man.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -4325,10 +4329,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             -0.0000000000012697314468727578
           ],
           "tag": {
-            "commentStart": 1205,
-            "end": 1210,
+            "commentStart": 1230,
+            "end": 1235,
             "moduleId": 0,
-            "start": 1205,
+            "start": 1230,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -4355,10 +4359,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "radius": 50.554973859576286,
           "tag": {
-            "commentStart": 1441,
-            "end": 1445,
+            "commentStart": 1466,
+            "end": 1470,
             "moduleId": 0,
-            "start": 1441,
+            "start": 1466,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -4379,10 +4383,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             -53.00046784210731
           ],
           "tag": {
-            "commentStart": 1595,
-            "end": 1600,
+            "commentStart": 1620,
+            "end": 1625,
             "moduleId": 0,
-            "start": 1595,
+            "start": 1620,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -4403,10 +4407,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             57.0
           ],
           "tag": {
-            "commentStart": 1713,
-            "end": 1718,
+            "commentStart": 1738,
+            "end": 1743,
             "moduleId": 0,
-            "start": 1713,
+            "start": 1738,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -4427,10 +4431,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             213.0
           ],
           "tag": {
-            "commentStart": 1829,
-            "end": 1834,
+            "commentStart": 1854,
+            "end": 1859,
             "moduleId": 0,
-            "start": 1829,
+            "start": 1854,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -4457,10 +4461,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "radius": 39.561538134909576,
           "tag": {
-            "commentStart": 1947,
-            "end": 1951,
+            "commentStart": 1972,
+            "end": 1976,
             "moduleId": 0,
-            "start": 1947,
+            "start": 1972,
             "type": "TagDeclarator",
             "value": "arc6"
           },
@@ -4481,10 +4485,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             195.00010690988398
           ],
           "tag": {
-            "commentStart": 2101,
-            "end": 2106,
+            "commentStart": 2126,
+            "end": 2131,
             "moduleId": 0,
-            "start": 2101,
+            "start": 2126,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -4511,10 +4515,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "radius": 116.92877080807635,
           "tag": {
-            "commentStart": 2221,
-            "end": 2225,
+            "commentStart": 2246,
+            "end": 2250,
             "moduleId": 0,
-            "start": 2221,
+            "start": 2246,
             "type": "TagDeclarator",
             "value": "arc8"
           },
@@ -4535,10 +4539,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             311.9994696964407
           ],
           "tag": {
-            "commentStart": 2373,
-            "end": 2378,
+            "commentStart": 2398,
+            "end": 2403,
             "moduleId": 0,
-            "start": 2373,
+            "start": 2398,
             "type": "TagDeclarator",
             "value": "line9"
           },
@@ -4565,10 +4569,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "radius": 115.3003845010659,
           "tag": {
-            "commentStart": 2491,
-            "end": 2496,
+            "commentStart": 2516,
+            "end": 2521,
             "moduleId": 0,
-            "start": 2491,
+            "start": 2516,
             "type": "TagDeclarator",
             "value": "arc10"
           },
@@ -4595,10 +4599,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "radius": 115.30038450068217,
           "tag": {
-            "commentStart": 2682,
-            "end": 2687,
+            "commentStart": 2707,
+            "end": 2712,
             "moduleId": 0,
-            "start": 2682,
+            "start": 2707,
             "type": "TagDeclarator",
             "value": "arc11"
           },
@@ -4619,10 +4623,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             334.999728263303
           ],
           "tag": {
-            "commentStart": 2831,
-            "end": 2837,
+            "commentStart": 2856,
+            "end": 2862,
             "moduleId": 0,
-            "start": 2831,
+            "start": 2856,
             "type": "TagDeclarator",
             "value": "line12"
           },
@@ -4649,10 +4653,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "radius": 116.9287708086934,
           "tag": {
-            "commentStart": 2950,
-            "end": 2955,
+            "commentStart": 2975,
+            "end": 2980,
             "moduleId": 0,
-            "start": 2950,
+            "start": 2975,
             "type": "TagDeclarator",
             "value": "arc13"
           },
@@ -4673,10 +4677,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             290.00042869972
           ],
           "tag": {
-            "commentStart": 3102,
-            "end": 3108,
+            "commentStart": 3127,
+            "end": 3133,
             "moduleId": 0,
-            "start": 3102,
+            "start": 3127,
             "type": "TagDeclarator",
             "value": "line14"
           },
@@ -4703,10 +4707,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "radius": 39.56153813490656,
           "tag": {
-            "commentStart": 3223,
-            "end": 3228,
+            "commentStart": 3248,
+            "end": 3253,
             "moduleId": 0,
-            "start": 3223,
+            "start": 3248,
             "type": "TagDeclarator",
             "value": "arc15"
           },
@@ -4727,10 +4731,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             130.00010102054665
           ],
           "tag": {
-            "commentStart": 3377,
-            "end": 3383,
+            "commentStart": 3402,
+            "end": 3408,
             "moduleId": 0,
-            "start": 3377,
+            "start": 3402,
             "type": "TagDeclarator",
             "value": "line16"
           },
@@ -4751,10 +4755,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             213.0
           ],
           "tag": {
-            "commentStart": 3497,
-            "end": 3503,
+            "commentStart": 3522,
+            "end": 3528,
             "moduleId": 0,
-            "start": 3497,
+            "start": 3522,
             "type": "TagDeclarator",
             "value": "line17"
           },
@@ -4775,10 +4779,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             57.0
           ],
           "tag": {
-            "commentStart": 3662,
-            "end": 3668,
+            "commentStart": 3687,
+            "end": 3693,
             "moduleId": 0,
-            "start": 3662,
+            "start": 3687,
             "type": "TagDeclarator",
             "value": "line18"
           },
@@ -4805,10 +4809,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "radius": 50.55497385947626,
           "tag": {
-            "commentStart": 3780,
-            "end": 3785,
+            "commentStart": 3805,
+            "end": 3810,
             "moduleId": 0,
-            "start": 3780,
+            "start": 3805,
             "type": "TagDeclarator",
             "value": "arc19"
           },
@@ -4829,10 +4833,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             -112.00052622202344
           ],
           "tag": {
-            "commentStart": 3934,
-            "end": 3940,
+            "commentStart": 3959,
+            "end": 3965,
             "moduleId": 0,
-            "start": 3934,
+            "start": 3959,
             "type": "TagDeclarator",
             "value": "line20"
           },
@@ -4845,17 +4849,17 @@ description: Variables in memory after executing gingerbread-man.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -4975,8 +4979,8 @@ description: Variables in memory after executing gingerbread-man.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "bodySketch": {
@@ -7778,10 +7782,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                     -0.0000000000012697314468727578
                   ],
                   "tag": {
-                    "commentStart": 1205,
-                    "end": 1210,
+                    "commentStart": 1230,
+                    "end": 1235,
                     "moduleId": 0,
-                    "start": 1205,
+                    "start": 1230,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -7808,10 +7812,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                   ],
                   "radius": 50.554973859576286,
                   "tag": {
-                    "commentStart": 1441,
-                    "end": 1445,
+                    "commentStart": 1466,
+                    "end": 1470,
                     "moduleId": 0,
-                    "start": 1441,
+                    "start": 1466,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -7832,10 +7836,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                     -53.00046784210731
                   ],
                   "tag": {
-                    "commentStart": 1595,
-                    "end": 1600,
+                    "commentStart": 1620,
+                    "end": 1625,
                     "moduleId": 0,
-                    "start": 1595,
+                    "start": 1620,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -7856,10 +7860,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                     57.0
                   ],
                   "tag": {
-                    "commentStart": 1713,
-                    "end": 1718,
+                    "commentStart": 1738,
+                    "end": 1743,
                     "moduleId": 0,
-                    "start": 1713,
+                    "start": 1738,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -7880,10 +7884,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                     213.0
                   ],
                   "tag": {
-                    "commentStart": 1829,
-                    "end": 1834,
+                    "commentStart": 1854,
+                    "end": 1859,
                     "moduleId": 0,
-                    "start": 1829,
+                    "start": 1854,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -7910,10 +7914,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                   ],
                   "radius": 39.561538134909576,
                   "tag": {
-                    "commentStart": 1947,
-                    "end": 1951,
+                    "commentStart": 1972,
+                    "end": 1976,
                     "moduleId": 0,
-                    "start": 1947,
+                    "start": 1972,
                     "type": "TagDeclarator",
                     "value": "arc6"
                   },
@@ -7934,10 +7938,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                     195.00010690988398
                   ],
                   "tag": {
-                    "commentStart": 2101,
-                    "end": 2106,
+                    "commentStart": 2126,
+                    "end": 2131,
                     "moduleId": 0,
-                    "start": 2101,
+                    "start": 2126,
                     "type": "TagDeclarator",
                     "value": "line7"
                   },
@@ -7964,10 +7968,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                   ],
                   "radius": 116.92877080807635,
                   "tag": {
-                    "commentStart": 2221,
-                    "end": 2225,
+                    "commentStart": 2246,
+                    "end": 2250,
                     "moduleId": 0,
-                    "start": 2221,
+                    "start": 2246,
                     "type": "TagDeclarator",
                     "value": "arc8"
                   },
@@ -7988,10 +7992,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                     311.9994696964407
                   ],
                   "tag": {
-                    "commentStart": 2373,
-                    "end": 2378,
+                    "commentStart": 2398,
+                    "end": 2403,
                     "moduleId": 0,
-                    "start": 2373,
+                    "start": 2398,
                     "type": "TagDeclarator",
                     "value": "line9"
                   },
@@ -8018,10 +8022,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                   ],
                   "radius": 115.3003845010659,
                   "tag": {
-                    "commentStart": 2491,
-                    "end": 2496,
+                    "commentStart": 2516,
+                    "end": 2521,
                     "moduleId": 0,
-                    "start": 2491,
+                    "start": 2516,
                     "type": "TagDeclarator",
                     "value": "arc10"
                   },
@@ -8048,10 +8052,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                   ],
                   "radius": 115.30038450068217,
                   "tag": {
-                    "commentStart": 2682,
-                    "end": 2687,
+                    "commentStart": 2707,
+                    "end": 2712,
                     "moduleId": 0,
-                    "start": 2682,
+                    "start": 2707,
                     "type": "TagDeclarator",
                     "value": "arc11"
                   },
@@ -8072,10 +8076,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                     334.999728263303
                   ],
                   "tag": {
-                    "commentStart": 2831,
-                    "end": 2837,
+                    "commentStart": 2856,
+                    "end": 2862,
                     "moduleId": 0,
-                    "start": 2831,
+                    "start": 2856,
                     "type": "TagDeclarator",
                     "value": "line12"
                   },
@@ -8102,10 +8106,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                   ],
                   "radius": 116.9287708086934,
                   "tag": {
-                    "commentStart": 2950,
-                    "end": 2955,
+                    "commentStart": 2975,
+                    "end": 2980,
                     "moduleId": 0,
-                    "start": 2950,
+                    "start": 2975,
                     "type": "TagDeclarator",
                     "value": "arc13"
                   },
@@ -8126,10 +8130,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                     290.00042869972
                   ],
                   "tag": {
-                    "commentStart": 3102,
-                    "end": 3108,
+                    "commentStart": 3127,
+                    "end": 3133,
                     "moduleId": 0,
-                    "start": 3102,
+                    "start": 3127,
                     "type": "TagDeclarator",
                     "value": "line14"
                   },
@@ -8156,10 +8160,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                   ],
                   "radius": 39.56153813490656,
                   "tag": {
-                    "commentStart": 3223,
-                    "end": 3228,
+                    "commentStart": 3248,
+                    "end": 3253,
                     "moduleId": 0,
-                    "start": 3223,
+                    "start": 3248,
                     "type": "TagDeclarator",
                     "value": "arc15"
                   },
@@ -8180,10 +8184,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                     130.00010102054665
                   ],
                   "tag": {
-                    "commentStart": 3377,
-                    "end": 3383,
+                    "commentStart": 3402,
+                    "end": 3408,
                     "moduleId": 0,
-                    "start": 3377,
+                    "start": 3402,
                     "type": "TagDeclarator",
                     "value": "line16"
                   },
@@ -8204,10 +8208,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                     213.0
                   ],
                   "tag": {
-                    "commentStart": 3497,
-                    "end": 3503,
+                    "commentStart": 3522,
+                    "end": 3528,
                     "moduleId": 0,
-                    "start": 3497,
+                    "start": 3522,
                     "type": "TagDeclarator",
                     "value": "line17"
                   },
@@ -8228,10 +8232,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                     57.0
                   ],
                   "tag": {
-                    "commentStart": 3662,
-                    "end": 3668,
+                    "commentStart": 3687,
+                    "end": 3693,
                     "moduleId": 0,
-                    "start": 3662,
+                    "start": 3687,
                     "type": "TagDeclarator",
                     "value": "line18"
                   },
@@ -8258,10 +8262,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                   ],
                   "radius": 50.55497385947626,
                   "tag": {
-                    "commentStart": 3780,
-                    "end": 3785,
+                    "commentStart": 3805,
+                    "end": 3810,
                     "moduleId": 0,
-                    "start": 3780,
+                    "start": 3805,
                     "type": "TagDeclarator",
                     "value": "arc19"
                   },
@@ -8282,10 +8286,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                     -112.00052622202344
                   ],
                   "tag": {
-                    "commentStart": 3934,
-                    "end": 3940,
+                    "commentStart": 3959,
+                    "end": 3965,
                     "moduleId": 0,
-                    "start": 3934,
+                    "start": 3959,
                     "type": "TagDeclarator",
                     "value": "line20"
                   },
@@ -8298,17 +8302,17 @@ description: Variables in memory after executing gingerbread-man.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -8688,6 +8692,8 @@ description: Variables in memory after executing gingerbread-man.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -8695,10 +8701,10 @@ description: Variables in memory after executing gingerbread-man.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 9163,
-                "end": 9170,
+                "commentStart": 9563,
+                "end": 9570,
                 "moduleId": 0,
-                "start": 9163,
+                "start": 9563,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -8726,10 +8732,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                 ],
                 "radius": 30.0,
                 "tag": {
-                  "commentStart": 9163,
-                  "end": 9170,
+                  "commentStart": 9563,
+                  "end": 9570,
                   "moduleId": 0,
-                  "start": 9163,
+                  "start": 9563,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -8742,17 +8748,17 @@ description: Variables in memory after executing gingerbread-man.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 117,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 50.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8796,8 +8802,8 @@ description: Variables in memory after executing gingerbread-man.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -8810,6 +8816,8 @@ description: Variables in memory after executing gingerbread-man.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -8817,10 +8825,10 @@ description: Variables in memory after executing gingerbread-man.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 9163,
-                "end": 9170,
+                "commentStart": 9563,
+                "end": 9570,
                 "moduleId": 0,
-                "start": 9163,
+                "start": 9563,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -8848,10 +8856,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                 ],
                 "radius": 30.0,
                 "tag": {
-                  "commentStart": 9163,
-                  "end": 9170,
+                  "commentStart": 9563,
+                  "end": 9570,
                   "moduleId": 0,
-                  "start": 9163,
+                  "start": 9563,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -8864,17 +8872,17 @@ description: Variables in memory after executing gingerbread-man.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 117,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 50.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8918,8 +8926,8 @@ description: Variables in memory after executing gingerbread-man.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -8951,10 +8959,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "radius": 30.0,
           "tag": {
-            "commentStart": 9163,
-            "end": 9170,
+            "commentStart": 9563,
+            "end": 9570,
             "moduleId": 0,
-            "start": 9163,
+            "start": 9563,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -8967,17 +8975,17 @@ description: Variables in memory after executing gingerbread-man.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 117,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 50.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -9021,8 +9029,8 @@ description: Variables in memory after executing gingerbread-man.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "buttonsSketch": {
@@ -9294,10 +9302,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                   ],
                   "radius": 30.0,
                   "tag": {
-                    "commentStart": 9163,
-                    "end": 9170,
+                    "commentStart": 9563,
+                    "end": 9570,
                     "moduleId": 0,
-                    "start": 9163,
+                    "start": 9563,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -9310,17 +9318,17 @@ description: Variables in memory after executing gingerbread-man.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 117,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 50.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -9401,10 +9409,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "radius": 15.96821657339181,
           "tag": {
-            "commentStart": 14348,
-            "end": 14352,
+            "commentStart": 14748,
+            "end": 14752,
             "moduleId": 0,
-            "start": 14348,
+            "start": 14748,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -9431,10 +9439,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "radius": 17.450290821821252,
           "tag": {
-            "commentStart": 14623,
-            "end": 14627,
+            "commentStart": 15023,
+            "end": 15027,
             "moduleId": 0,
-            "start": 14623,
+            "start": 15023,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -9461,10 +9469,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "radius": 3.7511164192862196,
           "tag": {
-            "commentStart": 14785,
-            "end": 14789,
+            "commentStart": 15185,
+            "end": 15189,
             "moduleId": 0,
-            "start": 14785,
+            "start": 15185,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -9491,10 +9499,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "radius": 12.227404542207562,
           "tag": {
-            "commentStart": 14951,
-            "end": 14955,
+            "commentStart": 15351,
+            "end": 15355,
             "moduleId": 0,
-            "start": 14951,
+            "start": 15351,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -9521,10 +9529,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "radius": 25.228278265386443,
           "tag": {
-            "commentStart": 15118,
-            "end": 15122,
+            "commentStart": 15518,
+            "end": 15522,
             "moduleId": 0,
-            "start": 15118,
+            "start": 15518,
             "type": "TagDeclarator",
             "value": "arc5"
           },
@@ -9551,10 +9559,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "radius": 3.983303504149712,
           "tag": {
-            "commentStart": 15282,
-            "end": 15286,
+            "commentStart": 15682,
+            "end": 15686,
             "moduleId": 0,
-            "start": 15282,
+            "start": 15682,
             "type": "TagDeclarator",
             "value": "arc6"
           },
@@ -9567,17 +9575,17 @@ description: Variables in memory after executing gingerbread-man.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 117,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 50.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -9641,8 +9649,8 @@ description: Variables in memory after executing gingerbread-man.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "cuffSketch": {
@@ -10827,10 +10835,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                   ],
                   "radius": 15.96821657339181,
                   "tag": {
-                    "commentStart": 14348,
-                    "end": 14352,
+                    "commentStart": 14748,
+                    "end": 14752,
                     "moduleId": 0,
-                    "start": 14348,
+                    "start": 14748,
                     "type": "TagDeclarator",
                     "value": "arc1"
                   },
@@ -10857,10 +10865,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                   ],
                   "radius": 17.450290821821252,
                   "tag": {
-                    "commentStart": 14623,
-                    "end": 14627,
+                    "commentStart": 15023,
+                    "end": 15027,
                     "moduleId": 0,
-                    "start": 14623,
+                    "start": 15023,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -10887,10 +10895,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                   ],
                   "radius": 3.7511164192862196,
                   "tag": {
-                    "commentStart": 14785,
-                    "end": 14789,
+                    "commentStart": 15185,
+                    "end": 15189,
                     "moduleId": 0,
-                    "start": 14785,
+                    "start": 15185,
                     "type": "TagDeclarator",
                     "value": "arc3"
                   },
@@ -10917,10 +10925,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                   ],
                   "radius": 12.227404542207562,
                   "tag": {
-                    "commentStart": 14951,
-                    "end": 14955,
+                    "commentStart": 15351,
+                    "end": 15355,
                     "moduleId": 0,
-                    "start": 14951,
+                    "start": 15351,
                     "type": "TagDeclarator",
                     "value": "arc4"
                   },
@@ -10947,10 +10955,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                   ],
                   "radius": 25.228278265386443,
                   "tag": {
-                    "commentStart": 15118,
-                    "end": 15122,
+                    "commentStart": 15518,
+                    "end": 15522,
                     "moduleId": 0,
-                    "start": 15118,
+                    "start": 15518,
                     "type": "TagDeclarator",
                     "value": "arc5"
                   },
@@ -10977,10 +10985,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                   ],
                   "radius": 3.983303504149712,
                   "tag": {
-                    "commentStart": 15282,
-                    "end": 15286,
+                    "commentStart": 15682,
+                    "end": 15686,
                     "moduleId": 0,
-                    "start": 15282,
+                    "start": 15682,
                     "type": "TagDeclarator",
                     "value": "arc6"
                   },
@@ -10993,17 +11001,17 @@ description: Variables in memory after executing gingerbread-man.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 117,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 50.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -11085,6 +11093,8 @@ description: Variables in memory after executing gingerbread-man.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -11092,10 +11102,10 @@ description: Variables in memory after executing gingerbread-man.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 14348,
-                "end": 14352,
+                "commentStart": 14748,
+                "end": 14752,
                 "moduleId": 0,
-                "start": 14348,
+                "start": 14748,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -11106,10 +11116,10 @@ description: Variables in memory after executing gingerbread-man.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 14623,
-                "end": 14627,
+                "commentStart": 15023,
+                "end": 15027,
                 "moduleId": 0,
-                "start": 14623,
+                "start": 15023,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -11120,10 +11130,10 @@ description: Variables in memory after executing gingerbread-man.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 14785,
-                "end": 14789,
+                "commentStart": 15185,
+                "end": 15189,
                 "moduleId": 0,
-                "start": 14785,
+                "start": 15185,
                 "type": "TagDeclarator",
                 "value": "arc3"
               },
@@ -11134,10 +11144,10 @@ description: Variables in memory after executing gingerbread-man.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 14951,
-                "end": 14955,
+                "commentStart": 15351,
+                "end": 15355,
                 "moduleId": 0,
-                "start": 14951,
+                "start": 15351,
                 "type": "TagDeclarator",
                 "value": "arc4"
               },
@@ -11148,10 +11158,10 @@ description: Variables in memory after executing gingerbread-man.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 15118,
-                "end": 15122,
+                "commentStart": 15518,
+                "end": 15522,
                 "moduleId": 0,
-                "start": 15118,
+                "start": 15518,
                 "type": "TagDeclarator",
                 "value": "arc5"
               },
@@ -11162,10 +11172,10 @@ description: Variables in memory after executing gingerbread-man.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 15282,
-                "end": 15286,
+                "commentStart": 15682,
+                "end": 15686,
                 "moduleId": 0,
-                "start": 15282,
+                "start": 15682,
                 "type": "TagDeclarator",
                 "value": "arc6"
               },
@@ -11193,10 +11203,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                 ],
                 "radius": 15.96821657339181,
                 "tag": {
-                  "commentStart": 14348,
-                  "end": 14352,
+                  "commentStart": 14748,
+                  "end": 14752,
                   "moduleId": 0,
-                  "start": 14348,
+                  "start": 14748,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
@@ -11223,10 +11233,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                 ],
                 "radius": 17.450290821821252,
                 "tag": {
-                  "commentStart": 14623,
-                  "end": 14627,
+                  "commentStart": 15023,
+                  "end": 15027,
                   "moduleId": 0,
-                  "start": 14623,
+                  "start": 15023,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -11253,10 +11263,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                 ],
                 "radius": 3.7511164192862196,
                 "tag": {
-                  "commentStart": 14785,
-                  "end": 14789,
+                  "commentStart": 15185,
+                  "end": 15189,
                   "moduleId": 0,
-                  "start": 14785,
+                  "start": 15185,
                   "type": "TagDeclarator",
                   "value": "arc3"
                 },
@@ -11283,10 +11293,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                 ],
                 "radius": 12.227404542207562,
                 "tag": {
-                  "commentStart": 14951,
-                  "end": 14955,
+                  "commentStart": 15351,
+                  "end": 15355,
                   "moduleId": 0,
-                  "start": 14951,
+                  "start": 15351,
                   "type": "TagDeclarator",
                   "value": "arc4"
                 },
@@ -11313,10 +11323,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                 ],
                 "radius": 25.228278265386443,
                 "tag": {
-                  "commentStart": 15118,
-                  "end": 15122,
+                  "commentStart": 15518,
+                  "end": 15522,
                   "moduleId": 0,
-                  "start": 15118,
+                  "start": 15518,
                   "type": "TagDeclarator",
                   "value": "arc5"
                 },
@@ -11343,10 +11353,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                 ],
                 "radius": 3.983303504149712,
                 "tag": {
-                  "commentStart": 15282,
-                  "end": 15286,
+                  "commentStart": 15682,
+                  "end": 15686,
                   "moduleId": 0,
-                  "start": 15282,
+                  "start": 15682,
                   "type": "TagDeclarator",
                   "value": "arc6"
                 },
@@ -11359,17 +11369,17 @@ description: Variables in memory after executing gingerbread-man.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 117,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 50.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -11433,8 +11443,8 @@ description: Variables in memory after executing gingerbread-man.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -11447,6 +11457,8 @@ description: Variables in memory after executing gingerbread-man.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -11454,10 +11466,10 @@ description: Variables in memory after executing gingerbread-man.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 14348,
-                "end": 14352,
+                "commentStart": 14748,
+                "end": 14752,
                 "moduleId": 0,
-                "start": 14348,
+                "start": 14748,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -11468,10 +11480,10 @@ description: Variables in memory after executing gingerbread-man.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 14623,
-                "end": 14627,
+                "commentStart": 15023,
+                "end": 15027,
                 "moduleId": 0,
-                "start": 14623,
+                "start": 15023,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -11482,10 +11494,10 @@ description: Variables in memory after executing gingerbread-man.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 14785,
-                "end": 14789,
+                "commentStart": 15185,
+                "end": 15189,
                 "moduleId": 0,
-                "start": 14785,
+                "start": 15185,
                 "type": "TagDeclarator",
                 "value": "arc3"
               },
@@ -11496,10 +11508,10 @@ description: Variables in memory after executing gingerbread-man.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 14951,
-                "end": 14955,
+                "commentStart": 15351,
+                "end": 15355,
                 "moduleId": 0,
-                "start": 14951,
+                "start": 15351,
                 "type": "TagDeclarator",
                 "value": "arc4"
               },
@@ -11510,10 +11522,10 @@ description: Variables in memory after executing gingerbread-man.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 15118,
-                "end": 15122,
+                "commentStart": 15518,
+                "end": 15522,
                 "moduleId": 0,
-                "start": 15118,
+                "start": 15518,
                 "type": "TagDeclarator",
                 "value": "arc5"
               },
@@ -11524,10 +11536,10 @@ description: Variables in memory after executing gingerbread-man.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 15282,
-                "end": 15286,
+                "commentStart": 15682,
+                "end": 15686,
                 "moduleId": 0,
-                "start": 15282,
+                "start": 15682,
                 "type": "TagDeclarator",
                 "value": "arc6"
               },
@@ -11555,10 +11567,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                 ],
                 "radius": 15.96821657339181,
                 "tag": {
-                  "commentStart": 14348,
-                  "end": 14352,
+                  "commentStart": 14748,
+                  "end": 14752,
                   "moduleId": 0,
-                  "start": 14348,
+                  "start": 14748,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
@@ -11585,10 +11597,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                 ],
                 "radius": 17.450290821821252,
                 "tag": {
-                  "commentStart": 14623,
-                  "end": 14627,
+                  "commentStart": 15023,
+                  "end": 15027,
                   "moduleId": 0,
-                  "start": 14623,
+                  "start": 15023,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -11615,10 +11627,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                 ],
                 "radius": 3.7511164192862196,
                 "tag": {
-                  "commentStart": 14785,
-                  "end": 14789,
+                  "commentStart": 15185,
+                  "end": 15189,
                   "moduleId": 0,
-                  "start": 14785,
+                  "start": 15185,
                   "type": "TagDeclarator",
                   "value": "arc3"
                 },
@@ -11645,10 +11657,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                 ],
                 "radius": 12.227404542207562,
                 "tag": {
-                  "commentStart": 14951,
-                  "end": 14955,
+                  "commentStart": 15351,
+                  "end": 15355,
                   "moduleId": 0,
-                  "start": 14951,
+                  "start": 15351,
                   "type": "TagDeclarator",
                   "value": "arc4"
                 },
@@ -11675,10 +11687,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                 ],
                 "radius": 25.228278265386443,
                 "tag": {
-                  "commentStart": 15118,
-                  "end": 15122,
+                  "commentStart": 15518,
+                  "end": 15522,
                   "moduleId": 0,
-                  "start": 15118,
+                  "start": 15518,
                   "type": "TagDeclarator",
                   "value": "arc5"
                 },
@@ -11705,10 +11717,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                 ],
                 "radius": 3.983303504149712,
                 "tag": {
-                  "commentStart": 15282,
-                  "end": 15286,
+                  "commentStart": 15682,
+                  "end": 15686,
                   "moduleId": 0,
-                  "start": 15282,
+                  "start": 15682,
                   "type": "TagDeclarator",
                   "value": "arc6"
                 },
@@ -11721,17 +11733,17 @@ description: Variables in memory after executing gingerbread-man.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 117,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 50.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -11795,8 +11807,8 @@ description: Variables in memory after executing gingerbread-man.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -11811,8 +11823,8 @@ description: Variables in memory after executing gingerbread-man.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 117,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -11865,6 +11877,8 @@ description: Variables in memory after executing gingerbread-man.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -11872,10 +11886,10 @@ description: Variables in memory after executing gingerbread-man.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10002,
-                "end": 10006,
+                "commentStart": 10402,
+                "end": 10406,
                 "moduleId": 0,
-                "start": 10002,
+                "start": 10402,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -11886,10 +11900,10 @@ description: Variables in memory after executing gingerbread-man.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10297,
-                "end": 10301,
+                "commentStart": 10697,
+                "end": 10701,
                 "moduleId": 0,
-                "start": 10297,
+                "start": 10697,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -11900,10 +11914,10 @@ description: Variables in memory after executing gingerbread-man.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10461,
-                "end": 10465,
+                "commentStart": 10861,
+                "end": 10865,
                 "moduleId": 0,
-                "start": 10461,
+                "start": 10861,
                 "type": "TagDeclarator",
                 "value": "arc3"
               },
@@ -11914,10 +11928,10 @@ description: Variables in memory after executing gingerbread-man.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10902,
-                "end": 10906,
+                "commentStart": 11302,
+                "end": 11306,
                 "moduleId": 0,
-                "start": 10902,
+                "start": 11302,
                 "type": "TagDeclarator",
                 "value": "arc5"
               },
@@ -11945,10 +11959,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                 ],
                 "radius": 28.079444903591686,
                 "tag": {
-                  "commentStart": 10002,
-                  "end": 10006,
+                  "commentStart": 10402,
+                  "end": 10406,
                   "moduleId": 0,
-                  "start": 10002,
+                  "start": 10402,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
@@ -11975,10 +11989,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                 ],
                 "radius": 5.773603944087336,
                 "tag": {
-                  "commentStart": 10297,
-                  "end": 10301,
+                  "commentStart": 10697,
+                  "end": 10701,
                   "moduleId": 0,
-                  "start": 10297,
+                  "start": 10697,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -12005,10 +12019,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                 ],
                 "radius": 42.869832895604645,
                 "tag": {
-                  "commentStart": 10461,
-                  "end": 10465,
+                  "commentStart": 10861,
+                  "end": 10865,
                   "moduleId": 0,
-                  "start": 10461,
+                  "start": 10861,
                   "type": "TagDeclarator",
                   "value": "arc3"
                 },
@@ -12035,10 +12049,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                 ],
                 "radius": 6.716881090867528,
                 "tag": {
-                  "commentStart": 10902,
-                  "end": 10906,
+                  "commentStart": 11302,
+                  "end": 11306,
                   "moduleId": 0,
-                  "start": 10902,
+                  "start": 11302,
                   "type": "TagDeclarator",
                   "value": "arc5"
                 },
@@ -12051,17 +12065,17 @@ description: Variables in memory after executing gingerbread-man.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 117,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 50.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -12117,8 +12131,8 @@ description: Variables in memory after executing gingerbread-man.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -12131,6 +12145,8 @@ description: Variables in memory after executing gingerbread-man.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -12138,10 +12154,10 @@ description: Variables in memory after executing gingerbread-man.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10002,
-                "end": 10006,
+                "commentStart": 10402,
+                "end": 10406,
                 "moduleId": 0,
-                "start": 10002,
+                "start": 10402,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -12152,10 +12168,10 @@ description: Variables in memory after executing gingerbread-man.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10297,
-                "end": 10301,
+                "commentStart": 10697,
+                "end": 10701,
                 "moduleId": 0,
-                "start": 10297,
+                "start": 10697,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -12166,10 +12182,10 @@ description: Variables in memory after executing gingerbread-man.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10461,
-                "end": 10465,
+                "commentStart": 10861,
+                "end": 10865,
                 "moduleId": 0,
-                "start": 10461,
+                "start": 10861,
                 "type": "TagDeclarator",
                 "value": "arc3"
               },
@@ -12180,10 +12196,10 @@ description: Variables in memory after executing gingerbread-man.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10902,
-                "end": 10906,
+                "commentStart": 11302,
+                "end": 11306,
                 "moduleId": 0,
-                "start": 10902,
+                "start": 11302,
                 "type": "TagDeclarator",
                 "value": "arc5"
               },
@@ -12211,10 +12227,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                 ],
                 "radius": 28.079444903591686,
                 "tag": {
-                  "commentStart": 10002,
-                  "end": 10006,
+                  "commentStart": 10402,
+                  "end": 10406,
                   "moduleId": 0,
-                  "start": 10002,
+                  "start": 10402,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
@@ -12241,10 +12257,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                 ],
                 "radius": 5.773603944087336,
                 "tag": {
-                  "commentStart": 10297,
-                  "end": 10301,
+                  "commentStart": 10697,
+                  "end": 10701,
                   "moduleId": 0,
-                  "start": 10297,
+                  "start": 10697,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -12271,10 +12287,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                 ],
                 "radius": 42.869832895604645,
                 "tag": {
-                  "commentStart": 10461,
-                  "end": 10465,
+                  "commentStart": 10861,
+                  "end": 10865,
                   "moduleId": 0,
-                  "start": 10461,
+                  "start": 10861,
                   "type": "TagDeclarator",
                   "value": "arc3"
                 },
@@ -12301,10 +12317,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                 ],
                 "radius": 6.716881090867528,
                 "tag": {
-                  "commentStart": 10902,
-                  "end": 10906,
+                  "commentStart": 11302,
+                  "end": 11306,
                   "moduleId": 0,
-                  "start": 10902,
+                  "start": 11302,
                   "type": "TagDeclarator",
                   "value": "arc5"
                 },
@@ -12317,17 +12333,17 @@ description: Variables in memory after executing gingerbread-man.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 117,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 50.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -12383,8 +12399,8 @@ description: Variables in memory after executing gingerbread-man.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -12416,10 +12432,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "radius": 28.079444903591686,
           "tag": {
-            "commentStart": 10002,
-            "end": 10006,
+            "commentStart": 10402,
+            "end": 10406,
             "moduleId": 0,
-            "start": 10002,
+            "start": 10402,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -12446,10 +12462,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "radius": 5.773603944087336,
           "tag": {
-            "commentStart": 10297,
-            "end": 10301,
+            "commentStart": 10697,
+            "end": 10701,
             "moduleId": 0,
-            "start": 10297,
+            "start": 10697,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -12476,10 +12492,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "radius": 42.869832895604645,
           "tag": {
-            "commentStart": 10461,
-            "end": 10465,
+            "commentStart": 10861,
+            "end": 10865,
             "moduleId": 0,
-            "start": 10461,
+            "start": 10861,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -12506,10 +12522,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "radius": 6.716881090867528,
           "tag": {
-            "commentStart": 10902,
-            "end": 10906,
+            "commentStart": 11302,
+            "end": 11306,
             "moduleId": 0,
-            "start": 10902,
+            "start": 11302,
             "type": "TagDeclarator",
             "value": "arc5"
           },
@@ -12522,17 +12538,17 @@ description: Variables in memory after executing gingerbread-man.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 117,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 50.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -12588,8 +12604,8 @@ description: Variables in memory after executing gingerbread-man.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "eyebrowSketch": {
@@ -13470,10 +13486,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                   ],
                   "radius": 28.079444903591686,
                   "tag": {
-                    "commentStart": 10002,
-                    "end": 10006,
+                    "commentStart": 10402,
+                    "end": 10406,
                     "moduleId": 0,
-                    "start": 10002,
+                    "start": 10402,
                     "type": "TagDeclarator",
                     "value": "arc1"
                   },
@@ -13517,10 +13533,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                   ],
                   "radius": 5.773603944087336,
                   "tag": {
-                    "commentStart": 10297,
-                    "end": 10301,
+                    "commentStart": 10697,
+                    "end": 10701,
                     "moduleId": 0,
-                    "start": 10297,
+                    "start": 10697,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -13547,10 +13563,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                   ],
                   "radius": 42.869832895604645,
                   "tag": {
-                    "commentStart": 10461,
-                    "end": 10465,
+                    "commentStart": 10861,
+                    "end": 10865,
                     "moduleId": 0,
-                    "start": 10461,
+                    "start": 10861,
                     "type": "TagDeclarator",
                     "value": "arc3"
                   },
@@ -13577,10 +13593,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                   ],
                   "radius": 6.716881090867528,
                   "tag": {
-                    "commentStart": 10902,
-                    "end": 10906,
+                    "commentStart": 11302,
+                    "end": 11306,
                     "moduleId": 0,
-                    "start": 10902,
+                    "start": 11302,
                     "type": "TagDeclarator",
                     "value": "arc5"
                   },
@@ -13593,17 +13609,17 @@ description: Variables in memory after executing gingerbread-man.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 117,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 50.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -13677,6 +13693,8 @@ description: Variables in memory after executing gingerbread-man.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -13684,10 +13702,10 @@ description: Variables in memory after executing gingerbread-man.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 8297,
-                "end": 8304,
+                "commentStart": 8697,
+                "end": 8704,
                 "moduleId": 0,
-                "start": 8297,
+                "start": 8697,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -13715,10 +13733,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                 ],
                 "radius": 15.0,
                 "tag": {
-                  "commentStart": 8297,
-                  "end": 8304,
+                  "commentStart": 8697,
+                  "end": 8704,
                   "moduleId": 0,
-                  "start": 8297,
+                  "start": 8697,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -13731,17 +13749,17 @@ description: Variables in memory after executing gingerbread-man.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 117,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 50.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -13785,8 +13803,8 @@ description: Variables in memory after executing gingerbread-man.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -13799,6 +13817,8 @@ description: Variables in memory after executing gingerbread-man.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -13806,10 +13826,10 @@ description: Variables in memory after executing gingerbread-man.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 8297,
-                "end": 8304,
+                "commentStart": 8697,
+                "end": 8704,
                 "moduleId": 0,
-                "start": 8297,
+                "start": 8697,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -13837,10 +13857,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                 ],
                 "radius": 15.0,
                 "tag": {
-                  "commentStart": 8297,
-                  "end": 8304,
+                  "commentStart": 8697,
+                  "end": 8704,
                   "moduleId": 0,
-                  "start": 8297,
+                  "start": 8697,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -13853,17 +13873,17 @@ description: Variables in memory after executing gingerbread-man.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 117,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 50.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -13907,8 +13927,8 @@ description: Variables in memory after executing gingerbread-man.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -13940,10 +13960,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "radius": 15.0,
           "tag": {
-            "commentStart": 8297,
-            "end": 8304,
+            "commentStart": 8697,
+            "end": 8704,
             "moduleId": 0,
-            "start": 8297,
+            "start": 8697,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -13956,17 +13976,17 @@ description: Variables in memory after executing gingerbread-man.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 117,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 50.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -14010,8 +14030,8 @@ description: Variables in memory after executing gingerbread-man.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "eyesSketch": {
@@ -14404,10 +14424,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                   ],
                   "radius": 15.0,
                   "tag": {
-                    "commentStart": 8297,
-                    "end": 8304,
+                    "commentStart": 8697,
+                    "end": 8704,
                     "moduleId": 0,
-                    "start": 8297,
+                    "start": 8697,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -14420,17 +14440,17 @@ description: Variables in memory after executing gingerbread-man.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 117,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 50.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -14515,10 +14535,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "radius": 51.846481002737036,
           "tag": {
-            "commentStart": 5039,
-            "end": 5043,
+            "commentStart": 5439,
+            "end": 5443,
             "moduleId": 0,
-            "start": 5039,
+            "start": 5439,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -14545,10 +14565,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "radius": 10.491710790342736,
           "tag": {
-            "commentStart": 5317,
-            "end": 5321,
+            "commentStart": 5717,
+            "end": 5721,
             "moduleId": 0,
-            "start": 5317,
+            "start": 5717,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -14575,10 +14595,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "radius": 60.97364685069695,
           "tag": {
-            "commentStart": 5475,
-            "end": 5479,
+            "commentStart": 5875,
+            "end": 5879,
             "moduleId": 0,
-            "start": 5475,
+            "start": 5875,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -14605,10 +14625,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "radius": 8.975747638093962,
           "tag": {
-            "commentStart": 5636,
-            "end": 5640,
+            "commentStart": 6036,
+            "end": 6040,
             "moduleId": 0,
-            "start": 5636,
+            "start": 6036,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -14621,17 +14641,17 @@ description: Variables in memory after executing gingerbread-man.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 117,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 50.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -14687,8 +14707,8 @@ description: Variables in memory after executing gingerbread-man.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "innerMouthSketch": {
@@ -15327,10 +15347,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                   ],
                   "radius": 51.846481002737036,
                   "tag": {
-                    "commentStart": 5039,
-                    "end": 5043,
+                    "commentStart": 5439,
+                    "end": 5443,
                     "moduleId": 0,
-                    "start": 5039,
+                    "start": 5439,
                     "type": "TagDeclarator",
                     "value": "arc1"
                   },
@@ -15357,10 +15377,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                   ],
                   "radius": 10.491710790342736,
                   "tag": {
-                    "commentStart": 5317,
-                    "end": 5321,
+                    "commentStart": 5717,
+                    "end": 5721,
                     "moduleId": 0,
-                    "start": 5317,
+                    "start": 5717,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -15387,10 +15407,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                   ],
                   "radius": 60.97364685069695,
                   "tag": {
-                    "commentStart": 5475,
-                    "end": 5479,
+                    "commentStart": 5875,
+                    "end": 5879,
                     "moduleId": 0,
-                    "start": 5475,
+                    "start": 5875,
                     "type": "TagDeclarator",
                     "value": "arc3"
                   },
@@ -15417,10 +15437,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                   ],
                   "radius": 8.975747638093962,
                   "tag": {
-                    "commentStart": 5636,
-                    "end": 5640,
+                    "commentStart": 6036,
+                    "end": 6040,
                     "moduleId": 0,
-                    "start": 5636,
+                    "start": 6036,
                     "type": "TagDeclarator",
                     "value": "arc4"
                   },
@@ -15433,17 +15453,17 @@ description: Variables in memory after executing gingerbread-man.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 117,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 50.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -15816,6 +15836,8 @@ description: Variables in memory after executing gingerbread-man.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -15823,10 +15845,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6732,
-            "end": 6736,
+            "commentStart": 7132,
+            "end": 7136,
             "moduleId": 0,
-            "start": 6732,
+            "start": 7132,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -15837,10 +15859,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7019,
-            "end": 7023,
+            "commentStart": 7419,
+            "end": 7423,
             "moduleId": 0,
-            "start": 7019,
+            "start": 7419,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -15851,10 +15873,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7177,
-            "end": 7181,
+            "commentStart": 7577,
+            "end": 7581,
             "moduleId": 0,
-            "start": 7177,
+            "start": 7577,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -15865,10 +15887,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7338,
-            "end": 7342,
+            "commentStart": 7738,
+            "end": 7742,
             "moduleId": 0,
-            "start": 7338,
+            "start": 7738,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -15896,10 +15918,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             ],
             "radius": 52.09794795766636,
             "tag": {
-              "commentStart": 6732,
-              "end": 6736,
+              "commentStart": 7132,
+              "end": 7136,
               "moduleId": 0,
-              "start": 6732,
+              "start": 7132,
               "type": "TagDeclarator",
               "value": "arc1"
             },
@@ -15926,10 +15948,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             ],
             "radius": 14.501773443065883,
             "tag": {
-              "commentStart": 7019,
-              "end": 7023,
+              "commentStart": 7419,
+              "end": 7423,
               "moduleId": 0,
-              "start": 7019,
+              "start": 7419,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -15956,10 +15978,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             ],
             "radius": 63.87411778171957,
             "tag": {
-              "commentStart": 7177,
-              "end": 7181,
+              "commentStart": 7577,
+              "end": 7581,
               "moduleId": 0,
-              "start": 7177,
+              "start": 7577,
               "type": "TagDeclarator",
               "value": "arc3"
             },
@@ -15986,10 +16008,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             ],
             "radius": 14.835589408860729,
             "tag": {
-              "commentStart": 7338,
-              "end": 7342,
+              "commentStart": 7738,
+              "end": 7742,
               "moduleId": 0,
-              "start": 7338,
+              "start": 7738,
               "type": "TagDeclarator",
               "value": "arc4"
             },
@@ -16002,17 +16024,17 @@ description: Variables in memory after executing gingerbread-man.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 117,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 50.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -16068,8 +16090,8 @@ description: Variables in memory after executing gingerbread-man.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -16082,6 +16104,8 @@ description: Variables in memory after executing gingerbread-man.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -16089,10 +16113,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5039,
-            "end": 5043,
+            "commentStart": 5439,
+            "end": 5443,
             "moduleId": 0,
-            "start": 5039,
+            "start": 5439,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -16103,10 +16127,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5317,
-            "end": 5321,
+            "commentStart": 5717,
+            "end": 5721,
             "moduleId": 0,
-            "start": 5317,
+            "start": 5717,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -16117,10 +16141,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5475,
-            "end": 5479,
+            "commentStart": 5875,
+            "end": 5879,
             "moduleId": 0,
-            "start": 5475,
+            "start": 5875,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -16131,10 +16155,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5636,
-            "end": 5640,
+            "commentStart": 6036,
+            "end": 6040,
             "moduleId": 0,
-            "start": 5636,
+            "start": 6036,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -16162,10 +16186,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             ],
             "radius": 51.846481002737036,
             "tag": {
-              "commentStart": 5039,
-              "end": 5043,
+              "commentStart": 5439,
+              "end": 5443,
               "moduleId": 0,
-              "start": 5039,
+              "start": 5439,
               "type": "TagDeclarator",
               "value": "arc1"
             },
@@ -16192,10 +16216,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             ],
             "radius": 10.491710790342736,
             "tag": {
-              "commentStart": 5317,
-              "end": 5321,
+              "commentStart": 5717,
+              "end": 5721,
               "moduleId": 0,
-              "start": 5317,
+              "start": 5717,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -16222,10 +16246,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             ],
             "radius": 60.97364685069695,
             "tag": {
-              "commentStart": 5475,
-              "end": 5479,
+              "commentStart": 5875,
+              "end": 5879,
               "moduleId": 0,
-              "start": 5475,
+              "start": 5875,
               "type": "TagDeclarator",
               "value": "arc3"
             },
@@ -16252,10 +16276,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             ],
             "radius": 8.975747638093962,
             "tag": {
-              "commentStart": 5636,
-              "end": 5640,
+              "commentStart": 6036,
+              "end": 6040,
               "moduleId": 0,
-              "start": 5636,
+              "start": 6036,
               "type": "TagDeclarator",
               "value": "arc4"
             },
@@ -16268,17 +16292,17 @@ description: Variables in memory after executing gingerbread-man.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 117,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 50.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -16334,8 +16358,8 @@ description: Variables in memory after executing gingerbread-man.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -16375,6 +16399,8 @@ description: Variables in memory after executing gingerbread-man.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -16382,10 +16408,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6732,
-            "end": 6736,
+            "commentStart": 7132,
+            "end": 7136,
             "moduleId": 0,
-            "start": 6732,
+            "start": 7132,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -16396,10 +16422,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7019,
-            "end": 7023,
+            "commentStart": 7419,
+            "end": 7423,
             "moduleId": 0,
-            "start": 7019,
+            "start": 7419,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -16410,10 +16436,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7177,
-            "end": 7181,
+            "commentStart": 7577,
+            "end": 7581,
             "moduleId": 0,
-            "start": 7177,
+            "start": 7577,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -16424,10 +16450,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7338,
-            "end": 7342,
+            "commentStart": 7738,
+            "end": 7742,
             "moduleId": 0,
-            "start": 7338,
+            "start": 7738,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -16455,10 +16481,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             ],
             "radius": 52.09794795766636,
             "tag": {
-              "commentStart": 6732,
-              "end": 6736,
+              "commentStart": 7132,
+              "end": 7136,
               "moduleId": 0,
-              "start": 6732,
+              "start": 7132,
               "type": "TagDeclarator",
               "value": "arc1"
             },
@@ -16485,10 +16511,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             ],
             "radius": 14.501773443065883,
             "tag": {
-              "commentStart": 7019,
-              "end": 7023,
+              "commentStart": 7419,
+              "end": 7423,
               "moduleId": 0,
-              "start": 7019,
+              "start": 7419,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -16515,10 +16541,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             ],
             "radius": 63.87411778171957,
             "tag": {
-              "commentStart": 7177,
-              "end": 7181,
+              "commentStart": 7577,
+              "end": 7581,
               "moduleId": 0,
-              "start": 7177,
+              "start": 7577,
               "type": "TagDeclarator",
               "value": "arc3"
             },
@@ -16545,10 +16571,10 @@ description: Variables in memory after executing gingerbread-man.kcl
             ],
             "radius": 14.835589408860729,
             "tag": {
-              "commentStart": 7338,
-              "end": 7342,
+              "commentStart": 7738,
+              "end": 7742,
               "moduleId": 0,
-              "start": 7338,
+              "start": 7738,
               "type": "TagDeclarator",
               "value": "arc4"
             },
@@ -16561,17 +16587,17 @@ description: Variables in memory after executing gingerbread-man.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 117,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 50.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -16627,8 +16653,8 @@ description: Variables in memory after executing gingerbread-man.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -16658,10 +16684,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "radius": 52.09794795766636,
           "tag": {
-            "commentStart": 6732,
-            "end": 6736,
+            "commentStart": 7132,
+            "end": 7136,
             "moduleId": 0,
-            "start": 6732,
+            "start": 7132,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -16688,10 +16714,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "radius": 14.501773443065883,
           "tag": {
-            "commentStart": 7019,
-            "end": 7023,
+            "commentStart": 7419,
+            "end": 7423,
             "moduleId": 0,
-            "start": 7019,
+            "start": 7419,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -16718,10 +16744,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "radius": 63.87411778171957,
           "tag": {
-            "commentStart": 7177,
-            "end": 7181,
+            "commentStart": 7577,
+            "end": 7581,
             "moduleId": 0,
-            "start": 7177,
+            "start": 7577,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -16748,10 +16774,10 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "radius": 14.835589408860729,
           "tag": {
-            "commentStart": 7338,
-            "end": 7342,
+            "commentStart": 7738,
+            "end": 7742,
             "moduleId": 0,
-            "start": 7338,
+            "start": 7738,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -16764,17 +16790,17 @@ description: Variables in memory after executing gingerbread-man.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 117,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 50.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -16830,8 +16856,8 @@ description: Variables in memory after executing gingerbread-man.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "mouthSketch": {
@@ -17470,10 +17496,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                   ],
                   "radius": 52.09794795766636,
                   "tag": {
-                    "commentStart": 6732,
-                    "end": 6736,
+                    "commentStart": 7132,
+                    "end": 7136,
                     "moduleId": 0,
-                    "start": 6732,
+                    "start": 7132,
                     "type": "TagDeclarator",
                     "value": "arc1"
                   },
@@ -17500,10 +17526,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                   ],
                   "radius": 14.501773443065883,
                   "tag": {
-                    "commentStart": 7019,
-                    "end": 7023,
+                    "commentStart": 7419,
+                    "end": 7423,
                     "moduleId": 0,
-                    "start": 7019,
+                    "start": 7419,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -17530,10 +17556,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                   ],
                   "radius": 63.87411778171957,
                   "tag": {
-                    "commentStart": 7177,
-                    "end": 7181,
+                    "commentStart": 7577,
+                    "end": 7581,
                     "moduleId": 0,
-                    "start": 7177,
+                    "start": 7577,
                     "type": "TagDeclarator",
                     "value": "arc3"
                   },
@@ -17560,10 +17586,10 @@ description: Variables in memory after executing gingerbread-man.kcl
                   ],
                   "radius": 14.835589408860729,
                   "tag": {
-                    "commentStart": 7338,
-                    "end": 7342,
+                    "commentStart": 7738,
+                    "end": 7742,
                     "moduleId": 0,
-                    "start": 7338,
+                    "start": 7738,
                     "type": "TagDeclarator",
                     "value": "arc4"
                   },
@@ -17576,17 +17602,17 @@ description: Variables in memory after executing gingerbread-man.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 117,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 50.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,

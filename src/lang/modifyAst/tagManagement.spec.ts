@@ -28,7 +28,7 @@ beforeEach(async () => {
   }
 
   const { instance, kclManager, engineCommandManager } =
-    await buildTheWorldAndConnectToEngine()
+    await buildTheWorldAndConnectToEngine({ geometryOnly: true })
   instanceInThisFile = instance
   kclManagerInThisFile = kclManager
   engineCommandManagerInThisFile = engineCommandManager

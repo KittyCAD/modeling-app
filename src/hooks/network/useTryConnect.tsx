@@ -4,6 +4,7 @@ import type { KclManager } from '@src/lang/KclManager'
 import { useSingletons } from '@src/lib/boot'
 import { NUMBER_OF_ENGINE_RETRIES } from '@src/lib/constants'
 import { EngineDebugger } from '@src/lib/debugger'
+import { reapplyActiveViewAfterReconnect } from '@src/lib/kclNamedViewActivation'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import type RustContext from '@src/lib/rustContext'
 import {
@@ -149,15 +150,23 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
   // Once zoom to fit and view isometric work on empty scenes (only grid planes) we can improve the functions
   // business logic
 
-  // This means you idled, otherwise you use the reset camera position
-  if (sceneInfra.camControls.oldCameraState) {
-    await sceneInfra.camControls.restoreRemoteCameraStateAndTriggerSync()
-  } else {
-    await resetCameraPosition({
-      sceneInfra,
-      engineCommandManager,
-      settingsActor,
-    })
+  // A named view outlives the connection that showed it, and the new connection
+  // has neither its visibility nor its camera.
+  const restoredNamedViewCamera =
+    await reapplyActiveViewAfterReconnect(kclManager)
+
+  // Skipped when the view placed the camera, which both branches would undo.
+  if (!restoredNamedViewCamera) {
+    // This means you idled, otherwise you use the reset camera position
+    if (sceneInfra.camControls.oldCameraState) {
+      await sceneInfra.camControls.restoreRemoteCameraStateAndTriggerSync()
+    } else {
+      await resetCameraPosition({
+        sceneInfra,
+        engineCommandManager,
+        settingsActor,
+      })
+    }
   }
 
   // Since you reconnected you are not idle, clear the old camera state

@@ -12,13 +12,14 @@ import executionIndicator from '.'
 import { EXECUTION_INDICATOR_STATUS_BAR_ITEM_ID } from './constants'
 
 function createExecutingEditorService(
-  isExecuting = signal(false)
+  isExecuting = signal(false),
+  executionElapsedMs = signal<number | null>(null)
 ): ExecutingEditorService {
   return {
     code: signal(''),
     hasEditsSinceLastExecution: signal(false),
     isExecuting,
-    executionElapsedMs: signal(0),
+    executionElapsedMs,
     selectionStatusLabel: signal('No selection'),
     showExperimentalFeaturesStatusBarItem: signal(true),
     getPendingCommandCount: vi.fn(() => 0),
@@ -53,8 +54,9 @@ describe('executionIndicator', () => {
     ).toEqual([EXECUTION_INDICATOR_STATUS_BAR_ITEM_ID])
   })
 
-  it('removes the execution status item when execution finishes', () => {
+  it('keeps a checkmark after execution finishes and restores the spinner on the next run', () => {
     const isExecuting = signal(true)
+    const executionElapsedMs = signal<number | null>(0)
     const registry = new Registry()
     registry.configure([
       defineRegistryItem({
@@ -62,7 +64,7 @@ describe('executionIndicator', () => {
         providesServices: [
           provideService(
             executingEditorService,
-            createExecutingEditorService(isExecuting)
+            createExecutingEditorService(isExecuting, executionElapsedMs)
           ),
         ],
       }),
@@ -73,8 +75,42 @@ describe('executionIndicator', () => {
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
     ).toEqual([EXECUTION_INDICATOR_STATUS_BAR_ITEM_ID])
 
+    executionElapsedMs.value = 1234
     isExecuting.value = false
 
-    expect(registry.get(statusBarLocalItemsValueSpec)).toEqual([])
+    expect(registry.get(statusBarLocalItemsValueSpec)).toMatchObject([
+      {
+        id: EXECUTION_INDICATOR_STATUS_BAR_ITEM_ID,
+        icon: 'checkmark',
+        label: 'Engine execution finished',
+      },
+    ])
+
+    isExecuting.value = true
+    executionElapsedMs.value = 0
+
+    expect(registry.get(statusBarLocalItemsValueSpec)).toMatchObject([
+      { icon: 'loading', label: 'Engine executing' },
+    ])
+  })
+
+  it('shows a completed execution even when it took zero milliseconds', () => {
+    const registry = new Registry()
+    registry.configure([
+      defineRegistryItem({
+        id: 'test-executing-editor-service',
+        providesServices: [
+          provideService(
+            executingEditorService,
+            createExecutingEditorService(signal(false), signal(0))
+          ),
+        ],
+      }),
+      executionIndicator,
+    ])
+
+    expect(registry.get(statusBarLocalItemsValueSpec)).toMatchObject([
+      { icon: 'checkmark' },
+    ])
   })
 })

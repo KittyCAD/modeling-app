@@ -30,7 +30,8 @@ use crate::runtime_flags::resolve_from_sources;
 
 mod tokeniser;
 
-pub(crate) mod adapter;
+#[doc(hidden)]
+pub mod adapter;
 
 #[cfg(test)]
 mod compat_tests;
@@ -39,7 +40,7 @@ mod compat_tests;
 mod error_matrix_tests;
 
 pub(crate) use tokeniser::RESERVED_SKETCH_BLOCK_WORDS;
-pub(crate) use tokeniser::RESERVED_WORDS;
+pub use tokeniser::RESERVED_WORDS;
 
 // Note the ordering, it's important that `m` comes after `mm` and `cm`.
 pub const NUM_SUFFIXES: [&str; 10] = ["mm", "cm", "m", "inch", "in", "ft", "yd", "deg", "rad", "?"];
@@ -134,7 +135,7 @@ impl fmt::Display for NumericSuffix {
 }
 
 #[derive(Clone, Debug, PartialEq)]
-pub(crate) struct TokenStream {
+pub struct TokenStream {
     tokens: Vec<Token>,
 }
 
@@ -186,7 +187,7 @@ impl IntoIterator for TokenStream {
 }
 
 #[derive(Debug, Clone)]
-pub(crate) struct TokenSlice<'a> {
+pub struct TokenSlice<'a> {
     stream: &'a TokenStream,
     /// Current position of the leading Token in the stream
     start: usize,
@@ -608,7 +609,7 @@ pub(crate) const KCL_LEXER_ENV_VAR: &str = "KCL_LEXER";
 /// Precedence: runtime flags > test override > `KCL_LEXER` >
 /// [`LexerMode::DEFAULT`].
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum LexerMode {
+pub enum LexerMode {
     Old,
     New,
 }
@@ -636,7 +637,7 @@ impl LexerMode {
     const DEFAULT: Self = Self::Old;
 
     /// Resolve the active lexer mode (see precedence on [`LexerMode`]).
-    pub(crate) fn resolve() -> Self {
+    pub fn resolve() -> Self {
         let env_value = match env::var(KCL_LEXER_ENV_VAR) {
             Ok(value) => Some(value),
             Err(env::VarError::NotPresent) => None,
@@ -663,12 +664,12 @@ impl LexerMode {
         resolve_from_sources(runtime_flag, test_override, env_value)
     }
 
-    #[cfg(test)]
+    #[cfg(any(test, feature = "lsp-test-util"))]
     fn test_override_for_resolve() -> Option<Self> {
         Self::test_override()
     }
 
-    #[cfg(not(test))]
+    #[cfg(not(any(test, feature = "lsp-test-util")))]
     fn test_override_for_resolve() -> Option<Self> {
         None
     }
@@ -700,7 +701,7 @@ impl LexerMode {
         WARNED.call_once(|| crate::log::log(make_message()));
     }
 
-    #[cfg(test)]
+    #[cfg(any(test, feature = "lsp-test-util"))]
     fn test_override_value(self) -> u8 {
         match self {
             Self::Old => 1,
@@ -708,7 +709,7 @@ impl LexerMode {
         }
     }
 
-    #[cfg(test)]
+    #[cfg(any(test, feature = "lsp-test-util"))]
     fn test_override() -> Option<Self> {
         match TEST_LEXER_MODE_OVERRIDE.load(std::sync::atomic::Ordering::SeqCst) {
             1 => Some(Self::Old),
@@ -723,22 +724,22 @@ impl LexerMode {
     /// runners that isolate tests in separate processes (e.g. `cargo nextest`).
     /// Under in-process parallel `cargo test`, prefer driving the lexer with an
     /// explicit mode; reserve this guard for dispatch/integration tests.
-    #[cfg(test)]
-    pub(crate) fn override_for_test(mode: Self) -> LexerModeOverrideGuard {
+    #[cfg(any(test, feature = "lsp-test-util"))]
+    pub fn override_for_test(mode: Self) -> LexerModeOverrideGuard {
         let previous = TEST_LEXER_MODE_OVERRIDE.swap(mode.test_override_value(), std::sync::atomic::Ordering::SeqCst);
         LexerModeOverrideGuard { previous }
     }
 }
 
-#[cfg(test)]
+#[cfg(any(test, feature = "lsp-test-util"))]
 static TEST_LEXER_MODE_OVERRIDE: std::sync::atomic::AtomicU8 = std::sync::atomic::AtomicU8::new(0);
 
-#[cfg(test)]
-pub(crate) struct LexerModeOverrideGuard {
+#[cfg(any(test, feature = "lsp-test-util"))]
+pub struct LexerModeOverrideGuard {
     previous: u8,
 }
 
-#[cfg(test)]
+#[cfg(any(test, feature = "lsp-test-util"))]
 impl Drop for LexerModeOverrideGuard {
     fn drop(&mut self) {
         TEST_LEXER_MODE_OVERRIDE.store(self.previous, std::sync::atomic::Ordering::SeqCst);

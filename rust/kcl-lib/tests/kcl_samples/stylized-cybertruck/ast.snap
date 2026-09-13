@@ -27781,7 +27781,7 @@ description: Result of parsing stylized-cybertruck.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Maker",
+            "value": "Categories: Toys, Games, & Recreation; Art & Design; Parametric",
             "style": "line"
           }
         },

@@ -18329,7 +18329,7 @@ description: Result of parsing tube-manifold.kcl
         "preComments": [
           "// Tube manifold",
           "// A manifold is a type of fitting that can be used to split or merge fluid flow in a system. Clamped tubes are typically referred to by their inner diameters, so the fittings are parameterized by their outer diameters",
-          "// Categories: Automotive, Aerospace",
+          "// Categories: Mechanical Components; Industrial & Manufacturing; Parametric",
           "",
           "",
           "// Set units"
@@ -18366,6 +18366,34 @@ description: Result of parsing tube-manifold.kcl
               "start": 0,
               "type": "Name",
               "type": "Name"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "key": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "kclVersion",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "moduleId": 0,
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "raw": "2.0",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 2.0,
+                "suffix": "None"
+              }
             }
           }
         ],

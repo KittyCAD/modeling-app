@@ -33,7 +33,7 @@ beforeEach(async () => {
   }
 
   const { instance, engineCommandManager, rustContext } =
-    await buildTheWorldAndConnectToEngine()
+    await buildTheWorldAndConnectToEngine({ geometryOnly: true })
   instanceInThisFile = instance
   engineCommandManagerInThisFile = engineCommandManager
   rustContextInThisFile = rustContext

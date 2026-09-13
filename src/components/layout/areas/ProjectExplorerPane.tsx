@@ -21,7 +21,6 @@ import {
   togglePaneLayoutNode,
 } from '@src/lib/layout'
 import {
-  getEXTNoPeriod,
   isExtensionARelevantExtension,
   parentPathRelativeToProject,
 } from '@src/lib/paths'
@@ -127,14 +126,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
 
       const RELEVANT_FILE_EXTENSIONS = relevantFileExtensions(wasmInstance)
       const isRelevantFile = (filename: string): boolean => {
-        const extension = getEXTNoPeriod(filename)
-        if (!extension) {
-          return false
-        }
-        return isExtensionARelevantExtension(
-          extension,
-          RELEVANT_FILE_EXTENSIONS
-        )
+        return isExtensionARelevantExtension(filename, RELEVANT_FILE_EXTENSIONS)
       }
 
       // Only open the file if it is a kcl file.
@@ -156,6 +148,14 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
             },
           })
         }
+        const navigateAfterFlush = () => {
+          void kclManager
+            .flushWriteToFile()
+            .then((saved) => {
+              if (saved) navigateHelper()
+            })
+            .catch(reportRejection)
+        }
 
         if (modelingMachineState.matches('Sketch')) {
           modelingSend({ type: 'Cancel' })
@@ -168,11 +168,11 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
             })
           })
           waitForIdlePromise.catch(reportRejection).finally(() => {
-            navigateHelper()
+            navigateAfterFlush()
           })
         } else {
           // immediately navigate
-          navigateHelper()
+          navigateAfterFlush()
         }
       } else if (
         projectRef.current?.value.name &&
@@ -210,6 +210,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
     },
     [
       commands,
+      kclManager,
       modelingActor,
       modelingMachineState,
       modelingSend,

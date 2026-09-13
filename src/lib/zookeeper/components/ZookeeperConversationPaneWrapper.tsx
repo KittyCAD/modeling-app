@@ -21,11 +21,6 @@ import {
   type ZookeeperSnapshotFileReplay,
   zookeeperEditPatchHistoryEvent,
 } from '@src/lib/zookeeper/editorPlugin'
-import {
-  ZookeeperConversationToMarkdown,
-  type ZookeeperManagerActor,
-  ZookeeperManagerReactContext,
-} from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { zookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import {
   mergeZookeeperEditPatches,
@@ -33,6 +28,12 @@ import {
   type ZookeeperEditPatch,
   type ZookeeperEditPatchFile,
 } from '@src/lib/zookeeper/zookeeperEditPatch'
+import {
+  ZookeeperConversationToMarkdown,
+  type ZookeeperManagerActor,
+  ZookeeperManagerReactContext,
+  ZookeeperManagerTransitions,
+} from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { zookeeperPromptRunningSignal } from '@src/lib/zookeeper/zookeeperPromptState'
 import {
   normalizeKCLFileDeletePath,
@@ -122,6 +123,13 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
   } = useModelingContext()
   const loaderFile = project?.executingFileEntry.value
   const zookeeperManagerActor = ZookeeperManagerReactContext.useActorRef()
+
+  useEffect(() => {
+    zookeeperManagerActor.send({
+      type: ZookeeperManagerTransitions.AuthTokenChanged,
+      apiToken: token,
+    })
+  }, [token, zookeeperManagerActor])
 
   useEffect(() => {
     const updatePromptRunning = (

@@ -21,7 +21,7 @@ describe('submitConstraintEdit', () => {
   })
 
   it('keeps editing and toasts when editing a constraint fails', async () => {
-    const editConstraint = vi
+    const editConstraintValue = vi
       .fn()
       .mockRejectedValue(new Error('Undefined variable: newDistance'))
     const sketchSolveActor = {
@@ -36,14 +36,14 @@ describe('submitConstraintEdit', () => {
 
     await submitConstraintEdit({
       sketchSolveActor,
-      rustContext: { editConstraint },
+      rustContext: { editConstraintValue },
       editingConstraintId: 12,
       value: 'newDistance',
       settings: {},
     })
 
     expect(sketchSolveActor.send).not.toHaveBeenCalled()
-    expect(editConstraint).toHaveBeenCalledWith(
+    expect(editConstraintValue).toHaveBeenCalledWith(
       SKETCH_FILE_VERSION,
       34,
       12,
@@ -58,7 +58,7 @@ describe('submitConstraintEdit', () => {
   })
 
   it('toasts the clean KCL message when editing a constraint fails', async () => {
-    const editConstraint = vi.fn().mockRejectedValue(
+    const editConstraintValue = vi.fn().mockRejectedValue(
       Object.assign(
         new Error('refactor: Invalid constraint value: Unexpected token: *'),
         {
@@ -78,7 +78,7 @@ describe('submitConstraintEdit', () => {
 
     await submitConstraintEdit({
       sketchSolveActor,
-      rustContext: { editConstraint },
+      rustContext: { editConstraintValue },
       editingConstraintId: 12,
       value: '**',
       settings: {},
@@ -97,7 +97,7 @@ describe('submitConstraintEdit', () => {
       sceneGraphDelta: { graph: 'scene-graph-delta' },
       checkpointId: 56,
     }
-    const editConstraint = vi.fn().mockResolvedValue(editResult)
+    const editConstraintValue = vi.fn().mockResolvedValue(editResult)
     const sketchSolveActor = {
       getSnapshot: vi.fn(() => ({
         context: {
@@ -110,7 +110,7 @@ describe('submitConstraintEdit', () => {
 
     await submitConstraintEdit({
       sketchSolveActor,
-      rustContext: { editConstraint },
+      rustContext: { editConstraintValue },
       editingConstraintId: 12,
       value: '15',
       settings: {},

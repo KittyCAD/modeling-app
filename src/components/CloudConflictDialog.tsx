@@ -10,14 +10,15 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import {
   type CloudSyncConflictResolution,
   type CloudSyncProjectMetadata,
+  type CloudSyncProjectMetadataIndexEntry,
   cloudSyncStatus,
-  getCloudSyncProjectMetadata,
   getCloudSyncProjectMetadataIndex,
   isCloudSyncConflictRevisionChangedError,
   loadCloudSyncProjectConflictInspection,
   retryCloudSync,
   resolveCloudSyncProjectConflict,
 } from '@src/lib/cloudSync'
+import { normalizePathForSync } from '@src/lib/cloudSync/paths'
 import {
   type ConflictFileComparison,
   type ConflictFileStatus,
@@ -241,14 +242,14 @@ function ChangedFilesList({
   )
 }
 
-export function useCloudSyncProjectConflict(projectPath?: string) {
+export function useCloudSyncProjectMetadata(projectPath?: string) {
   useSignals()
   const status = cloudSyncStatus.value
   const [metadata, setMetadata] = useState<
-    CloudSyncProjectMetadata | undefined
+    CloudSyncProjectMetadataIndexEntry | undefined
   >()
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: cloud sync status changes intentionally refresh conflict metadata.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: cloud sync status changes intentionally refresh durable project metadata.
   useEffect(() => {
     let cancelled = false
 
@@ -257,10 +258,10 @@ export function useCloudSyncProjectConflict(projectPath?: string) {
       return
     }
 
-    getCloudSyncProjectMetadata(projectPath)
-      .then((nextMetadata) => {
+    getCloudSyncProjectMetadataIndex()
+      .then((metadataIndex) => {
         if (!cancelled) {
-          setMetadata(nextMetadata?.conflict ? nextMetadata : undefined)
+          setMetadata(metadataIndex.get(normalizePathForSync(projectPath)))
         }
       })
       .catch((error: unknown) => {
@@ -283,6 +284,11 @@ export function useCloudSyncProjectConflict(projectPath?: string) {
   ])
 
   return metadata
+}
+
+export function useCloudSyncProjectConflict(projectPath?: string) {
+  const metadata = useCloudSyncProjectMetadata(projectPath)
+  return metadata?.conflict ? metadata : undefined
 }
 
 export function useCloudSyncProjectConflicts() {

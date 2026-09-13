@@ -34,8 +34,10 @@ struct StdLibCommandArgShape {
     required: bool,
     special: bool,
     experimental: bool,
+    added_in: Option<String>,
     deprecated: bool,
     deprecated_since: Option<String>,
+    removed_since: Option<String>,
 }
 
 #[test]
@@ -68,8 +70,10 @@ fn export_bindings_stdlib_commands() {
                             required: arg.kind.required(),
                             special: matches!(arg.kind, ArgKind::Special),
                             experimental: arg.experimental,
+                            added_in: arg.added_in.as_ref().map(ToString::to_string),
                             deprecated: arg.deprecated,
                             deprecated_since: arg.deprecated_since.as_ref().map(ToString::to_string),
+                            removed_since: arg.removed_since.as_ref().map(ToString::to_string),
                         })
                         .collect(),
                 },

@@ -1,13 +1,19 @@
 import { join } from 'node:path'
-import { bracket } from '@e2e/playwright/fixtures/bracket'
+import fsSync from 'node:fs'
 import { FILE_EXT } from '@src/lib/constants'
 
 import {
   closeOnboardingModalIfPresent,
   getUtils,
+  waitForWebKitBillingToSettle,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+
+const bracket = fsSync.readFileSync(
+  join('public', 'kcl-samples', 'bracket', 'main.kcl'),
+  'utf8'
+)
 
 test.describe('Testing loading external models', { tag: '@desktop' }, () => {
   /**
@@ -166,6 +172,10 @@ test.describe('Query parameter command', { tag: '@web' }, () => {
     editor,
   }) => {
     await closeOnboardingModalIfPresent(page)
+
+    // Avoid interrupting WebKit's in-flight billing request when the query
+    // command replaces the current document.
+    await waitForWebKitBillingToSettle(page)
 
     const sampleTitle = 'Socket Head Cap Screw'
     const sampleSlug = 'socket-head-cap-screw'

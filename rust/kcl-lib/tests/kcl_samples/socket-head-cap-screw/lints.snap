@@ -13,8 +13,8 @@ description: Lints socket-head-cap-screw.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      928,
-      1021,
+      940,
+      1033,
       0
     ],
     "overridden": false,

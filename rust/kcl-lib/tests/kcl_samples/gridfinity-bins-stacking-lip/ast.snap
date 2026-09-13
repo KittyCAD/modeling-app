@@ -42776,7 +42776,7 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
         "preComments": [
           "// Gridfinity Bins With A Stacking Lip",
           "// Gridfinity is a system to help you work more efficiently. This is a system invented by Zack Freedman. There are two main components the baseplate and the bins. The components are comprised of a matrix of squares. Allowing easy stacking and expansion. This Gridfinity bins version includes a lip to allowable stacking Gridfinity bins",
-          "// Categories: Maker",
+          "// Categories: Home & Lifestyle; 3D Printable; Parametric",
           "",
           "",
           "// Set units in millimeters (mm)"
@@ -42813,6 +42813,34 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
               "start": 0,
               "type": "Name",
               "type": "Name"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "key": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "kclVersion",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "moduleId": 0,
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "raw": "2.0",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 2.0,
+                "suffix": "None"
+              }
             }
           }
         ],

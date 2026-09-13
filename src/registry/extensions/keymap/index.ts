@@ -8,38 +8,40 @@ import {
 import { computed, signal } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
+import type { Command, CommandScopes } from '@src/lib/commandTypes'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { PATHS, webSafeJoin } from '@src/lib/paths'
 import { reportRejection } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import {
+  COMMAND_PALETTE_OPEN_COMMAND_SCOPE,
+  DEFAULT_COMMAND_SCOPES,
+  EDITABLE_FOCUSED_COMMAND_SCOPE,
+  GLOBAL_COMMAND_SCOPES,
+  SETTINGS_COMMAND_SCOPE,
   commandKey,
+  commandScopeService,
+  commandScopesValueSpec,
   commandSystemService,
+  getEffectiveCommandScopeSet,
+  isCommandAvailable,
+  type CommandScopeService,
 } from '@src/registry/contracts/commands'
 import {
-  BASE_KEYMAP_SCOPE,
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
-  HOME_KEYMAP_SCOPE,
   type KeymapArguments,
   type KeymapItem,
-  type KeymapScope,
   type KeymapService,
   type KeymapSource,
-  MODE_MODELING_KEYMAP_SCOPE,
-  MODE_SKETCHING_KEYMAP_SCOPE,
-  MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
-  MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
-  PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE,
-  PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE,
   createEmptyPersistedKeymap,
   createKeymapTree,
   createUnbindBinding,
-  keymapScopesValueSpec,
   keymapService,
   keymapValueSpec,
   matchKeymapKeystrokes,
   normalizeEventKey,
+  normalizePersistedKeymap,
   resolveKeymapItems,
 } from '@src/registry/contracts/keymap'
 import { statusBarLocalItemsValueSpec } from '@src/registry/contracts/statusBar'
@@ -51,96 +53,16 @@ import {
 import { createElement } from 'react'
 
 const PARTIAL_MATCH_TIMEOUT_MS = 1500
-const KEYMAP_CONTEXT_SCOPE_GROUP = 'context'
-const KEYMAP_PROJECT_EXPLORER_SCOPE_GROUP = 'project-explorer'
 type SettingsKeymapTab = 'project' | 'user' | 'keybindings' | 'plugins'
 
-const defaultKeymapScopes: readonly KeymapScope[] = [
-  {
-    id: BASE_KEYMAP_SCOPE,
-    displayName: 'Base',
-    priority: 0,
-    userEditable: false,
-  },
-  {
-    id: 'cmd-palette-open',
-    displayName: 'Command palette open',
-    priority: 2000,
-    userEditable: false,
-  },
-  {
-    id: 'settings-open',
-    displayName: 'Settings open',
-    priority: 1900,
-    userEditable: false,
-  },
-  {
-    id: HOME_KEYMAP_SCOPE,
-    displayName: 'Home',
-    priority: 50,
-    userEditable: false,
-  },
-  {
-    id: CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
-    displayName: 'Code editor not focused',
-    group: KEYMAP_CONTEXT_SCOPE_GROUP,
-    priority: 10,
-    userEditable: false,
-  },
-  {
-    id: MODE_MODELING_KEYMAP_SCOPE,
-    displayName: 'Modeling mode',
-    group: KEYMAP_CONTEXT_SCOPE_GROUP,
-    priority: 100,
-    userEditable: false,
-  },
-  {
-    id: MODE_SKETCHING_KEYMAP_SCOPE,
-    displayName: 'Legacy sketch mode',
-    group: KEYMAP_CONTEXT_SCOPE_GROUP,
-    priority: 200,
-    userEditable: false,
-  },
-  {
-    id: MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
-    displayName: 'Sketch no face mode',
-    group: KEYMAP_CONTEXT_SCOPE_GROUP,
-    priority: 210,
-    userEditable: false,
-  },
-  {
-    id: MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
-    displayName: 'Sketch mode',
-    group: KEYMAP_CONTEXT_SCOPE_GROUP,
-    priority: 220,
-    userEditable: false,
-  },
-  {
-    id: CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
-    displayName: 'Code editor focused',
-    group: KEYMAP_CONTEXT_SCOPE_GROUP,
-    priority: 1000,
-    userEditable: false,
-  },
-  {
-    id: PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE,
-    displayName: 'Project explorer focused',
-    group: KEYMAP_PROJECT_EXPLORER_SCOPE_GROUP,
-    priority: 100,
-    userEditable: false,
-  },
-  {
-    id: PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE,
-    displayName: 'Project explorer renaming',
-    group: KEYMAP_PROJECT_EXPLORER_SCOPE_GROUP,
-    priority: 200,
-    userEditable: false,
-  },
-]
+type BuiltInKeymapCommand = {
+  scopes: CommandScopes
+  run: (item: KeymapItem) => unknown
+}
 
 const keymapExtension = defineRegistryItemFactory((ctx) => {
   const contributedKeymapSignal = ctx.valueSpecs.signal(keymapValueSpec)
-  const keymapScopesSignal = ctx.valueSpecs.signal(keymapScopesValueSpec)
+  const commandScopesSignal = ctx.valueSpecs.signal(commandScopesValueSpec)
   const persistedKeymap = signal(createEmptyPersistedKeymap())
   const keymapSignal = computed(() =>
     createKeymapTree(
@@ -155,6 +77,91 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
   ])
   const partialMatch = signal(false)
   const partialMatchProgress = signal(0)
+  const builtInKeymapCommands = new Map<string, BuiltInKeymapCommand>([
+    [
+      'zds.commandPalette.open',
+      {
+        scopes: GLOBAL_COMMAND_SCOPES,
+        run: () =>
+          ctx.services.optional(commandSystemService)?.send({ type: 'Open' }),
+      },
+    ],
+    [
+      'zds.commandPalette.close',
+      {
+        scopes: [COMMAND_PALETTE_OPEN_COMMAND_SCOPE],
+        run: () =>
+          ctx.services.optional(commandSystemService)?.send({ type: 'Close' }),
+      },
+    ],
+    [
+      'zds.settings.open',
+      {
+        scopes: GLOBAL_COMMAND_SCOPES,
+        run: openSettings,
+      },
+    ],
+    [
+      'zds.settings.tab',
+      {
+        scopes: [SETTINGS_COMMAND_SCOPE],
+        run: (item) =>
+          updateSettingsTab(getSettingsTabArgument(item.arguments)),
+      },
+    ],
+  ])
+
+  const scopeServiceImpl: CommandScopeService = {
+    activeScopes,
+    applyScope: (scopeName) => {
+      if (activeScopes.value.includes(scopeName)) {
+        return
+      }
+      activeScopes.value = [...activeScopes.value, scopeName]
+    },
+    removeScope: (scopeName) => {
+      activeScopes.value = activeScopes.value.filter(
+        (scope) => scope !== scopeName
+      )
+    },
+    getCurrentScopes: () => activeScopes.value,
+    focusScope: (scopeName) => ({
+      onFocus: () => scopeServiceImpl.applyScope(scopeName),
+      onBlur: () => scopeServiceImpl.removeScope(scopeName),
+    }),
+  }
+
+  const focusScopes = new Set([
+    CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
+    CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
+    EDITABLE_FOCUSED_COMMAND_SCOPE,
+  ])
+
+  const syncFocusScopeFromEventTarget = (target: EventTarget | null) => {
+    let nextFocusScope = CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE
+    if (isEventFromFormControl(target)) {
+      nextFocusScope = EDITABLE_FOCUSED_COMMAND_SCOPE
+    } else if (isEventFromCodeEditor(target)) {
+      nextFocusScope = CODE_EDITOR_FOCUSED_KEYMAP_SCOPE
+    } else if (isEventFromContentEditableTarget(target)) {
+      nextFocusScope = EDITABLE_FOCUSED_COMMAND_SCOPE
+    }
+
+    const currentFocusScopes = activeScopes.value.filter((scope) =>
+      focusScopes.has(scope)
+    )
+    if (
+      currentFocusScopes.length === 1 &&
+      currentFocusScopes[0] === nextFocusScope
+    ) {
+      return
+    }
+
+    activeScopes.value = [
+      ...activeScopes.value.filter((scope) => !focusScopes.has(scope)),
+      nextFocusScope,
+    ]
+  }
 
   const pendingKeystrokesBySource: Record<KeymapSource, string[]> = {
     global: [],
@@ -233,25 +240,52 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
       return false
     }
 
+    if (source === 'global') {
+      // A focused editable can be removed without another focusin event. Use
+      // the event target to reconcile focus before checking availability.
+      syncFocusScopeFromEventTarget(event.target)
+    }
+
     const chord = keyboardEventToKeymapChord(event)
     const pendingKeystrokes = pendingKeystrokesBySource[source]
     if (
       !chord ||
       (source === 'global' &&
-        shouldIgnoreKeyboardEvent(
-          event,
-          pendingKeystrokes.length > 0,
-          activeScopes.value
-        ))
+        shouldIgnoreKeyboardEvent(event, pendingKeystrokes.length > 0))
     ) {
       return false
+    }
+
+    const commandSystem = ctx.services.optional(commandSystemService)
+    const registeredCommands =
+      commandSystem?.actor.getSnapshot().context.commands ?? []
+    const commandsByKey = new Map<string, Command>()
+    for (const command of registeredCommands) {
+      const key = commandKey(command)
+      if (!commandsByKey.has(key)) {
+        commandsByKey.set(key, command)
+      }
+    }
+    const effectiveCommandScopes = getEffectiveCommandScopeSet(
+      activeScopes.value,
+      commandScopesSignal.value
+    )
+    const isItemAvailable = (item: KeymapItem) => {
+      const command =
+        builtInKeymapCommands.get(item.command) ??
+        commandsByKey.get(item.command)
+      return (
+        command !== undefined &&
+        isCommandAvailable(command, effectiveCommandScopes)
+      )
     }
 
     const match = matchKeymapKeystrokes(
       keymapSignal.value,
       activeScopes.value,
       [...pendingKeystrokes, chord],
-      keymapScopesSignal.value
+      commandScopesSignal.value,
+      isItemAvailable
     )
 
     if (match.type === 'prefix') {
@@ -269,7 +303,7 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
       event.stopPropagation()
       event.stopImmediatePropagation()
       clearPendingKeystrokes()
-      runKeymapItem(match.item)
+      runKeymapItem(match.item, commandsByKey, isItemAvailable(match.item))
       return true
     }
 
@@ -283,7 +317,8 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
       keymapSignal.value,
       activeScopes.value,
       [chord],
-      keymapScopesSignal.value
+      commandScopesSignal.value,
+      isItemAvailable
     )
 
     if (retryMatch.type === 'prefix') {
@@ -300,7 +335,11 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
       event.preventDefault()
       event.stopPropagation()
       event.stopImmediatePropagation()
-      runKeymapItem(retryMatch.item)
+      runKeymapItem(
+        retryMatch.item,
+        commandsByKey,
+        isItemAvailable(retryMatch.item)
+      )
       return true
     }
 
@@ -311,23 +350,15 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
     keymap: keymapSignal,
     persistedKeymap,
     partialMatch,
-    applyScope: (scopeName) => {
-      if (activeScopes.value.includes(scopeName)) {
-        return
-      }
-      activeScopes.value = [...activeScopes.value, scopeName]
-    },
-    removeScope: (scopeName) => {
-      activeScopes.value = activeScopes.value.filter(
-        (scope) => scope !== scopeName
-      )
-    },
-    getCurrentScopes: () => activeScopes.value,
+    applyScope: scopeServiceImpl.applyScope,
+    removeScope: scopeServiceImpl.removeScope,
+    getCurrentScopes: scopeServiceImpl.getCurrentScopes,
     savePersistedKeymap: async (keymap) => {
       await initialPersistedKeymapLoad
+      const normalizedKeymap = normalizePersistedKeymap(keymap)
       persistedKeymapRevision += 1
-      persistedKeymap.value = keymap
-      await writeUserKeymapFile(keymap)
+      persistedKeymap.value = normalizedKeymap
+      await writeUserKeymapFile(normalizedKeymap)
     },
     addUserBinding: async (binding) => {
       await serviceImpl.savePersistedKeymap({
@@ -361,43 +392,33 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
       }
     },
     handleKeyDown,
-    focusScope: (scopeName) => ({
-      onFocus: () => serviceImpl.applyScope(scopeName),
-      onBlur: () => serviceImpl.removeScope(scopeName),
-    }),
+    focusScope: scopeServiceImpl.focusScope,
   }
 
-  function runKeymapItem(item: KeymapItem) {
-    const result = runBuiltInKeymapCommand(item)
+  function runKeymapItem(
+    item: KeymapItem,
+    commandsByKey: ReadonlyMap<string, Command>,
+    isAvailable: boolean
+  ) {
+    if (!isAvailable) {
+      return
+    }
+
+    const builtInCommand = builtInKeymapCommands.get(item.command)
+    const result = builtInCommand
+      ? builtInCommand.run(item)
+      : runCommandById(item, commandsByKey)
     if (result instanceof Promise) {
       result.catch(reportRejection)
     }
   }
 
-  function runBuiltInKeymapCommand(item: KeymapItem): unknown {
-    switch (item.command) {
-      case 'zds.commandPalette.open':
-        return ctx.services
-          .optional(commandSystemService)
-          ?.send({ type: 'Open' })
-      case 'zds.commandPalette.close':
-        return ctx.services
-          .optional(commandSystemService)
-          ?.send({ type: 'Close' })
-      case 'zds.settings.open':
-        return openSettings()
-      case 'zds.settings.tab':
-        return updateSettingsTab(getSettingsTabArgument(item.arguments))
-      default:
-        return runCommandById(item)
-    }
-  }
-
-  function runCommandById(item: KeymapItem) {
+  function runCommandById(
+    item: KeymapItem,
+    commandsByKey: ReadonlyMap<string, Command>
+  ) {
     const commandSystem = ctx.services.optional(commandSystemService)
-    const command = commandSystem?.actor
-      .getSnapshot()
-      .context.commands.find((cmd) => commandKey(cmd) === item.command)
+    const command = commandsByKey.get(item.command)
     if (!command || !commandSystem) {
       return
     }
@@ -444,23 +465,15 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
     handleKeyDown(event, { source: 'global' })
   }
 
-  const syncEditorFocusScopeFromEventTarget = (target: EventTarget | null) => {
-    if (isEventFromEditableTarget(target)) {
-      serviceImpl.removeScope(CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE)
-      serviceImpl.applyScope(CODE_EDITOR_FOCUSED_KEYMAP_SCOPE)
-      return
-    }
-
-    serviceImpl.removeScope(CODE_EDITOR_FOCUSED_KEYMAP_SCOPE)
-    serviceImpl.applyScope(CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE)
-  }
-
   const handleGlobalFocusIn = (event: FocusEvent) => {
-    syncEditorFocusScopeFromEventTarget(event.target)
+    syncFocusScopeFromEventTarget(event.target)
   }
 
   const handleGlobalPointerDown = (event: PointerEvent) => {
-    syncEditorFocusScopeFromEventTarget(event.target)
+    if (shouldPreserveFocusScope(event.target)) {
+      return
+    }
+    syncFocusScopeFromEventTarget(event.target)
   }
 
   if (typeof window !== 'undefined') {
@@ -474,10 +487,13 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
   return {
     item: defineRuntimeRegistryItem({
       id: 'keymap-extension',
-      providesServices: [provideService(keymapService, serviceImpl)],
+      providesServices: [
+        provideService(commandScopeService, scopeServiceImpl),
+        provideService(keymapService, serviceImpl),
+      ],
       provides: [
-        ...defaultKeymapScopes.map((scope) =>
-          provide(keymapScopesValueSpec, scope, { key: scope.id })
+        ...DEFAULT_COMMAND_SCOPES.map((scope) =>
+          provide(commandScopesValueSpec, scope, { key: scope.id })
         ),
         provide(
           statusBarLocalItemsValueSpec,
@@ -565,8 +581,7 @@ function isMacPlatform() {
 
 function shouldIgnoreKeyboardEvent(
   event: KeyboardEvent,
-  hasPendingKeystrokes: boolean,
-  scopes: readonly string[]
+  hasPendingKeystrokes: boolean
 ) {
   if (event.metaKey || event.ctrlKey || event.altKey || hasPendingKeystrokes) {
     return false
@@ -574,15 +589,12 @@ function shouldIgnoreKeyboardEvent(
 
   return (
     isEventFromFormControl(event.target) ||
-    (scopes.includes(CODE_EDITOR_FOCUSED_KEYMAP_SCOPE) &&
-      isEventFromContentEditableTarget(event.target))
+    isEventFromContentEditableTarget(event.target)
   )
 }
 
-function isEventFromEditableTarget(target: EventTarget | null) {
-  return (
-    isEventFromContentEditableTarget(target) || isEventFromFormControl(target)
-  )
+function isEventFromCodeEditor(target: EventTarget | null) {
+  return target instanceof Element && target.closest('.cm-editor') !== null
 }
 
 function isEventFromContentEditableTarget(target: EventTarget | null) {
@@ -598,6 +610,13 @@ function isEventFromFormControl(target: EventTarget | null) {
     target instanceof HTMLInputElement ||
     target instanceof HTMLTextAreaElement ||
     target instanceof HTMLSelectElement
+  )
+}
+
+function shouldPreserveFocusScope(target: EventTarget | null) {
+  return (
+    target instanceof Element &&
+    target.closest('[data-command-scope-preserve-focus="true"]') !== null
   )
 }
 

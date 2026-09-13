@@ -6449,7 +6449,7 @@ description: Result of parsing hex-nut-with-chamfer.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Fasteners",
+            "value": "Categories: Mechanical Components",
             "style": "line"
           }
         },

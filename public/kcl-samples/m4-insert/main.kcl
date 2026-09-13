@@ -1,6 +1,6 @@
 // M4 Heat-Set Insert
 // Simplified M4 heat-set threaded insert with stepped outer retention features, a tapered lead-in section, and a plain inner bore for envelope and fit modeling.
-// Categories: Fasteners
+// Categories: Mechanical Components; 3D Printable
 
 @settings(defaultLengthUnit = mm, kclVersion = 2.0)
 

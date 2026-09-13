@@ -30,6 +30,10 @@ describe('reportClientError', () => {
       configurable: true,
       value: 'test-version',
     })
+    Object.defineProperty(window, 'electron', {
+      configurable: true,
+      value: undefined,
+    })
     window.history.replaceState({}, '', '/modeling?foo=1#editor')
     ;(window as Window & { app?: any }).app = {
       auth: {
@@ -75,6 +79,48 @@ describe('reportClientError', () => {
     }
     expect(JSON.parse(firstArg.body.stack)).toMatchObject({
       hasCreateWritable: false,
+    })
+  })
+
+  it('uses the desktop package version for release when available', async () => {
+    Object.defineProperty(window, 'electron', {
+      configurable: true,
+      value: {
+        packageJson: {
+          version: '1.4.4',
+        },
+      },
+    })
+
+    await reportClientError({
+      code: 'desktop_error',
+      message: 'boom',
+    })
+
+    expect(mockState.reportUserClientError).toHaveBeenCalledWith({
+      client: { mocked: true },
+      body: expect.objectContaining({
+        release: '1.4.4',
+      }),
+    })
+  })
+
+  it('falls back to the build-time app version when no runtime version exists', async () => {
+    Object.defineProperty(window, 'electron', {
+      configurable: true,
+      value: undefined,
+    })
+
+    await reportClientError({
+      code: 'web_error',
+      message: 'boom',
+    })
+
+    expect(mockState.reportUserClientError).toHaveBeenCalledWith({
+      client: { mocked: true },
+      body: expect.objectContaining({
+        release: 'test-version',
+      }),
     })
   })
 

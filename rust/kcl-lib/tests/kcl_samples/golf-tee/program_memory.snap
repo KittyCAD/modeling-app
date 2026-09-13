@@ -91,6 +91,8 @@ description: Variables in memory after executing golf-tee.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -98,10 +100,10 @@ description: Variables in memory after executing golf-tee.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 577,
-            "end": 584,
+            "commentStart": 623,
+            "end": 630,
             "moduleId": 0,
-            "start": 577,
+            "start": 623,
             "type": "TagDeclarator",
             "value": "tipEdge"
           },
@@ -112,10 +114,24 @@ description: Variables in memory after executing golf-tee.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 820,
-            "end": 829,
+            "commentStart": 737,
+            "end": 746,
             "moduleId": 0,
-            "start": 820,
+            "start": 737,
+            "type": "TagDeclarator",
+            "value": "shaftEdge"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 866,
+            "end": 875,
+            "moduleId": 0,
+            "start": 866,
             "type": "TagDeclarator",
             "value": "flareEdge"
           },
@@ -126,28 +142,14 @@ description: Variables in memory after executing golf-tee.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 950,
-            "end": 959,
+            "commentStart": 996,
+            "end": 1005,
             "moduleId": 0,
-            "start": 950,
+            "start": 996,
             "type": "TagDeclarator",
             "value": "cupLipArc"
           },
           "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1105,
-            "end": 1113,
-            "moduleId": 0,
-            "start": 1105,
-            "type": "TagDeclarator",
-            "value": "axisEdge"
-          },
-          "type": "extrudePlane"
         }
       ],
       "sketch": {
@@ -165,10 +167,10 @@ description: Variables in memory after executing golf-tee.kcl
               -0.00000000000000008146231795298792
             ],
             "tag": {
-              "commentStart": 577,
-              "end": 584,
+              "commentStart": 623,
+              "end": 630,
               "moduleId": 0,
-              "start": 577,
+              "start": 623,
               "type": "TagDeclarator",
               "value": "tipEdge"
             },
@@ -189,10 +191,10 @@ description: Variables in memory after executing golf-tee.kcl
               10.0
             ],
             "tag": {
-              "commentStart": 691,
-              "end": 700,
+              "commentStart": 737,
+              "end": 746,
               "moduleId": 0,
-              "start": 691,
+              "start": 737,
               "type": "TagDeclarator",
               "value": "shaftEdge"
             },
@@ -213,10 +215,10 @@ description: Variables in memory after executing golf-tee.kcl
               55.39999999999999
             ],
             "tag": {
-              "commentStart": 820,
-              "end": 829,
+              "commentStart": 866,
+              "end": 875,
               "moduleId": 0,
-              "start": 820,
+              "start": 866,
               "type": "TagDeclarator",
               "value": "flareEdge"
             },
@@ -243,10 +245,10 @@ description: Variables in memory after executing golf-tee.kcl
             ],
             "radius": 14.322499999999955,
             "tag": {
-              "commentStart": 950,
-              "end": 959,
+              "commentStart": 996,
+              "end": 1005,
               "moduleId": 0,
-              "start": 950,
+              "start": 996,
               "type": "TagDeclarator",
               "value": "cupLipArc"
             },
@@ -267,10 +269,10 @@ description: Variables in memory after executing golf-tee.kcl
               68.0
             ],
             "tag": {
-              "commentStart": 1105,
-              "end": 1113,
+              "commentStart": 1151,
+              "end": 1159,
               "moduleId": 0,
-              "start": 1105,
+              "start": 1151,
               "type": "TagDeclarator",
               "value": "axisEdge"
             },
@@ -283,17 +285,17 @@ description: Variables in memory after executing golf-tee.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -353,8 +355,8 @@ description: Variables in memory after executing golf-tee.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": null,
       "endCapId": null,
@@ -929,10 +931,10 @@ description: Variables in memory after executing golf-tee.kcl
                     -0.00000000000000008146231795298792
                   ],
                   "tag": {
-                    "commentStart": 577,
-                    "end": 584,
+                    "commentStart": 623,
+                    "end": 630,
                     "moduleId": 0,
-                    "start": 577,
+                    "start": 623,
                     "type": "TagDeclarator",
                     "value": "tipEdge"
                   },
@@ -953,10 +955,10 @@ description: Variables in memory after executing golf-tee.kcl
                     10.0
                   ],
                   "tag": {
-                    "commentStart": 691,
-                    "end": 700,
+                    "commentStart": 737,
+                    "end": 746,
                     "moduleId": 0,
-                    "start": 691,
+                    "start": 737,
                     "type": "TagDeclarator",
                     "value": "shaftEdge"
                   },
@@ -977,10 +979,10 @@ description: Variables in memory after executing golf-tee.kcl
                     55.39999999999999
                   ],
                   "tag": {
-                    "commentStart": 820,
-                    "end": 829,
+                    "commentStart": 866,
+                    "end": 875,
                     "moduleId": 0,
-                    "start": 820,
+                    "start": 866,
                     "type": "TagDeclarator",
                     "value": "flareEdge"
                   },
@@ -1007,10 +1009,10 @@ description: Variables in memory after executing golf-tee.kcl
                   ],
                   "radius": 14.322499999999955,
                   "tag": {
-                    "commentStart": 950,
-                    "end": 959,
+                    "commentStart": 996,
+                    "end": 1005,
                     "moduleId": 0,
-                    "start": 950,
+                    "start": 996,
                     "type": "TagDeclarator",
                     "value": "cupLipArc"
                   },
@@ -1031,10 +1033,10 @@ description: Variables in memory after executing golf-tee.kcl
                     68.0
                   ],
                   "tag": {
-                    "commentStart": 1105,
-                    "end": 1113,
+                    "commentStart": 1151,
+                    "end": 1159,
                     "moduleId": 0,
-                    "start": 1105,
+                    "start": 1151,
                     "type": "TagDeclarator",
                     "value": "axisEdge"
                   },
@@ -1047,17 +1049,17 @@ description: Variables in memory after executing golf-tee.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -1383,10 +1385,10 @@ description: Variables in memory after executing golf-tee.kcl
             -0.00000000000000008146231795298792
           ],
           "tag": {
-            "commentStart": 577,
-            "end": 584,
+            "commentStart": 623,
+            "end": 630,
             "moduleId": 0,
-            "start": 577,
+            "start": 623,
             "type": "TagDeclarator",
             "value": "tipEdge"
           },
@@ -1407,10 +1409,10 @@ description: Variables in memory after executing golf-tee.kcl
             10.0
           ],
           "tag": {
-            "commentStart": 691,
-            "end": 700,
+            "commentStart": 737,
+            "end": 746,
             "moduleId": 0,
-            "start": 691,
+            "start": 737,
             "type": "TagDeclarator",
             "value": "shaftEdge"
           },
@@ -1431,10 +1433,10 @@ description: Variables in memory after executing golf-tee.kcl
             55.39999999999999
           ],
           "tag": {
-            "commentStart": 820,
-            "end": 829,
+            "commentStart": 866,
+            "end": 875,
             "moduleId": 0,
-            "start": 820,
+            "start": 866,
             "type": "TagDeclarator",
             "value": "flareEdge"
           },
@@ -1461,10 +1463,10 @@ description: Variables in memory after executing golf-tee.kcl
           ],
           "radius": 14.322499999999955,
           "tag": {
-            "commentStart": 950,
-            "end": 959,
+            "commentStart": 996,
+            "end": 1005,
             "moduleId": 0,
-            "start": 950,
+            "start": 996,
             "type": "TagDeclarator",
             "value": "cupLipArc"
           },
@@ -1485,10 +1487,10 @@ description: Variables in memory after executing golf-tee.kcl
             68.0
           ],
           "tag": {
-            "commentStart": 1105,
-            "end": 1113,
+            "commentStart": 1151,
+            "end": 1159,
             "moduleId": 0,
-            "start": 1105,
+            "start": 1151,
             "type": "TagDeclarator",
             "value": "axisEdge"
           },
@@ -1501,17 +1503,17 @@ description: Variables in memory after executing golf-tee.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -1571,8 +1573,8 @@ description: Variables in memory after executing golf-tee.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "tipEdge": {

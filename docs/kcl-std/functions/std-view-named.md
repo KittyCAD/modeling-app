@@ -33,7 +33,7 @@ and `front` two different views. Four names are rejected:
 - a name of nothing but whitespace, which displays as nothing;
 - a name that starts or ends with whitespace, which a reader cannot see but
   the exact comparison above counts;
-- `KCL Default`, which is reserved for the view of the scene generated on
+- `Default View`, which is reserved for the view of the scene generated on
   successful execution of the program.
 
 `baseline` and `except` together decide what the view shows. You start from a
@@ -100,15 +100,15 @@ hide(boss)
 
 // 1. Everything visible.
 //
-// This is NOT the same as `KCL Default`, the view of the scene generated on
+// This is NOT the same as `Default View`, the view of the scene generated on
 // successful execution of the program. A `Show` baseline shows every object
 // the program built, including the boss that `hide(boss)` took out of that
 // scene.
-everything = view::named("Everything", camera = view::oriented(view::Orientation::Isometric), baseline = view::Visibility::Show)
+overview = view::named("Everything", camera = view::oriented(view::Orientation::Isometric), baseline = view::Visibility::Show)
 
 // 2. Visible by default, with one object hidden. Add to `except` to hide
 // more.
-plateOnly = view::named(
+plateInspection = view::named(
   "Plate only",
   camera = view::oriented(view::Orientation::Front, distance = 200mm),
   baseline = view::Visibility::Show,
@@ -118,7 +118,10 @@ plateOnly = view::named(
 // 3. Hidden by default, with one object shown. This is the form to reach for
 // when a view should isolate a few objects out of many, because `except`
 // then lists what you want rather than everything you do not.
-bossOnly = view::named(
+//
+// This one is not assigned to a variable, which a view never requires: the
+// display name is what identifies it.
+view::named(
   "Boss only",
   camera = view::oriented(view::Orientation::Top, distance = 150mm),
   baseline = view::Visibility::Hide,

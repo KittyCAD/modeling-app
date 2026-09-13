@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties stylized-pickup-truck.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.0000018000009731622413,
+      "y": 14.749998059999823,
+      "z": 1144.9999998879998
+    },
+    "dimensions": {
+      "x": 5039.999994719999,
+      "y": 2110.4999961199997,
+      "z": 2430.0000002240004
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 63634261.42968171
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 7209474.975917449
+  }
+}

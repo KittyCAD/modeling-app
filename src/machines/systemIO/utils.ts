@@ -155,6 +155,11 @@ export type SystemIOContext = SystemIOInput & {
 
   /** Temporary storage to return to project after renaming */
   pendingRenamedProjectName?: string
+  /** Navigation to publish only after the post-mutation folder snapshot lands. */
+  pendingNavigationAfterFolderRefresh?: {
+    project: string
+    file?: string
+  }
   /** Event captured while checking project-directory access. */
   deferredSystemIOEvent?: EventObject
   lastRecursiveMoveTarget?: string

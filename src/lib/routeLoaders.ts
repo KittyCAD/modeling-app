@@ -17,15 +17,18 @@ import {
 import {
   DEFAULT_PROJECT_LIBRARY_TITLE,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
-  getDefaultDirectoryProjectLibraryPath,
   getDefaultDirectoryProjectLibrarySetting,
-  isPathInDirectoryProjectLibrary,
   type ProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
+import { getProjectLibraryOwnership } from '@src/lib/projectLibraryOwnership'
 import {
   loadHomeProjects,
   webHomeRouteEnabled,
 } from '@src/lib/routeLoaderUtils'
+import {
+  getOnboardingChildRoute,
+  isRequestedFileLoaded,
+} from '@src/lib/routeLoaderNavigation'
 import {
   type AppSettings,
   loadAndValidateSettings,
@@ -35,7 +38,10 @@ import type {
   HomeLoaderData,
   IndexLoaderData,
 } from '@src/lib/types'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import {
+  SystemIOMachineEvents,
+  SystemIOMachineStates,
+} from '@src/machines/systemIO/utils'
 import {
   projectLibrarySettingDefaultPoliciesValueSpec,
   projectLibrarySettingDefaultsValueSpec,
@@ -181,6 +187,7 @@ export const baseLoader =
 export const fileLoader =
   ({ app }: { app: App }): LoaderFunction =>
   async (routerData): Promise<FileLoaderData | Response> => {
+    const assertCurrent = app.beginFileRouteLoad(routerData.request.signal)
     const {
       settings: { actor: settingsActor },
     } = app
@@ -196,13 +203,29 @@ export const fileLoader =
     }
 
     const wasmInstance = await kclManager.wasmInstancePromise
+    assertCurrent()
 
     // Resolve the project root before loading project settings. Loading project
     // settings from a selected file's parent folder creates project.toml in
     // nested folders and makes them look like project roots.
     const appSettings = await loadRouteSettings(app, wasmInstance)
+    assertCurrent()
+    const currentProjectPath = app.project?.projectIORefSignal.value.path
+    const targetLibraryPath = params.id
+      ? (
+          await getProjectLibraryOwnership(
+            appSettings.settings.app.libraries?.current ?? [],
+            params.id
+          )
+        )?.libraryPath
+      : undefined
     const projectPathData = params.id
-      ? parseProjectRoute(appSettings.configuration, params.id)
+      ? parseProjectRoute(appSettings.configuration, params.id, {
+          activeProjectPath: currentProjectPath,
+          candidateProjectDirectories: targetLibraryPath
+            ? [targetLibraryPath]
+            : [],
+        })
       : undefined
 
     if (!projectPathData) {
@@ -211,11 +234,8 @@ export const fileLoader =
       )
     }
 
-    const settings = await loadRouteSettings(
-      app,
-      wasmInstance,
-      projectPathData.projectPath
-    )
+    await loadRouteSettings(app, wasmInstance, projectPathData.projectPath)
+    assertCurrent()
 
     const { projectName, projectPath, currentFileName, currentFilePath } =
       projectPathData
@@ -252,8 +272,13 @@ export const fileLoader =
           routerData.request.url,
           Boolean(window.electron)
         )
+        const onboardingChildRoute = params.id
+          ? getOnboardingChildRoute(routerData.request.url, params.id)
+          : ''
         return redirect(
-          `${PATHS.FILE}/${encodeURIComponent(fallbackFile)}${routerSearch}`
+          `${PATHS.FILE}/${encodeURIComponent(
+            fallbackFile
+          )}${onboardingChildRoute}${routerSearch}`
         )
       }
     }
@@ -274,19 +299,22 @@ export const fileLoader =
     }
 
     const maybeProjectInfo = await getProjectInfo(projectPath, wasmInstance)
+    assertCurrent()
 
     const project = maybeProjectInfo ?? defaultProjectData
 
     // Fire off the event to load the project settings
     // once we know it's idle.
     await waitFor(settingsActor, (state) => state.matches('idle'))
+    assertCurrent()
     settingsActor.send({
       type: 'load.project',
       project,
     })
     await waitFor(settingsActor, (state) => state.matches('idle'))
+    assertCurrent()
 
-    const projectRef = await app.openProject(project)
+    const projectRef = await app.openProject(project, assertCurrent)
     const editor = await projectRef.openEditor(
       currentFilePath || PROJECT_ENTRYPOINT,
       app.singletons.kclManager,
@@ -294,31 +322,44 @@ export const fileLoader =
       // through *anything*. INTENDED FOR TESTS.
       window.electron?.process.env.NODE_ENV === 'test'
         ? kclManager.localStoragePersistCode()
-        : undefined
+        : undefined,
+      true,
+      assertCurrent
     )
+    assertCurrent()
 
     const requestedFileName =
       app.systemIOActor.getSnapshot().context.requestedFileName
-    if (requestedFileName.project === projectName) {
+    if (
+      isRequestedFileLoaded({
+        requestedFileName,
+        projectName,
+        projectPath,
+        currentFilePath,
+      })
+    ) {
       requestedFileName.onProjectLoaderComplete?.()
     }
 
-    const appProjectDir =
-      getDefaultDirectoryProjectLibraryPath(
-        settings.settings.app.libraries?.current
-      ) ?? ''
-    const requestedProjectDirectoryPath = isPathInDirectoryProjectLibrary(
-      project.path,
-      appProjectDir
-    )
-      ? appProjectDir
-      : getParentAbsolutePath(project.path) // Fallback to parent directory if foreign to app project dir.
-    app.systemIOActor.send({
-      type: SystemIOMachineEvents.setProjectDirectoryPath,
-      data: {
-        requestedProjectDirectoryPath,
-      },
-    })
+    const requestedProjectDirectoryPath =
+      projectRef.projectIORefSignal.value.libraryPath ??
+      getParentAbsolutePath(project.path)
+    const systemIOSnapshot = app.systemIOActor.getSnapshot()
+    // Same-directory file navigation should not restart SystemIO's own
+    // post-mutation folder refresh.
+    const shouldSyncProjectDirectory =
+      requestedProjectDirectoryPath !==
+        systemIOSnapshot.context.projectDirectoryPath ||
+      (systemIOSnapshot.matches(SystemIOMachineStates.idle) &&
+        systemIOSnapshot.context.folders === undefined)
+    if (shouldSyncProjectDirectory) {
+      app.systemIOActor.send({
+        type: SystemIOMachineEvents.setProjectDirectoryPath,
+        data: {
+          requestedProjectDirectoryPath,
+        },
+      })
+    }
 
     const projectData: IndexLoaderData = {
       code: editor.code,

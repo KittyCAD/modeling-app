@@ -28,6 +28,7 @@ import {
   EXECUTION_TYPE_REAL,
 } from '@src/lib/constants'
 import { getPathFilenameInVariableCase } from '@src/lib/desktop'
+import { isStepFile } from '@src/lib/fileExtensions'
 import fsZds from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
 import { baseUnitsUnion, warningLevels } from '@src/lib/settings/settingsTypes'
@@ -37,6 +38,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import { listAllImportFilesWithinProject } from '@src/machines/systemIO/snapshotContext'
 import type { SystemIOActor } from '@src/machines/systemIO/utils'
+import { FILE_AND_CODE_EDITOR_COMMAND_SCOPES } from '@src/registry/contracts/commands'
 
 interface KclCommandConfig {
   // TODO: find a different approach that doesn't require
@@ -57,10 +59,12 @@ interface KclCommandConfig {
 const NO_INPUT_PROVIDED_MESSAGE = 'No input provided'
 const EXECUTING_MESSAGE =
   'Cannot run command while code is executing. Please try again later.'
+const DEFAULT_IMPORT_REPRESENTATION = 'mesh' as const
 
 export function kclCommands(commandProps: KclCommandConfig): Command[] {
   return [
     {
+      scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
       name: 'set-file-units',
       displayName: 'Set file units',
       description:
@@ -112,6 +116,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       },
     },
     {
+      scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
       name: 'set-file-experimental-features',
       displayName: 'Set experimental features flag',
       description: 'Set the experimental features flag in the current file.',
@@ -185,6 +190,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       },
     },
     {
+      scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
       name: 'Insert',
       description: 'Insert from a file in the current project directory',
       icon: 'import',
@@ -258,18 +264,46 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             return true
           },
         },
+        representation: {
+          displayName: 'Representation',
+          description:
+            'Choose how this STEP file should be represented in your model.',
+          inputType: 'options',
+          required: (context) => isStepFile(context.argumentsToSubmit.path),
+          hidden: (context) => !isStepFile(context.argumentsToSubmit.path),
+          defaultValue: DEFAULT_IMPORT_REPRESENTATION,
+          options: [
+            {
+              name: 'Mesh',
+              description:
+                'Faster to import. Best when you only need visual reference geometry.',
+              value: DEFAULT_IMPORT_REPRESENTATION,
+              isCurrent: true,
+            },
+            {
+              name: 'B-rep (experimental)',
+              description:
+                'Under development and currently supports only simple shapes. Imported geometry is not editable; use Mesh for now.',
+              value: 'brep',
+            },
+          ],
+        },
       },
       onSubmit: (data) => {
         if (!data) {
           return new Error(NO_INPUT_PROVIDED_MESSAGE)
         }
 
-        const ast = commandProps.kclManager.ast
         const { path, localName } = data
+        const representation = isStepFile(path)
+          ? (data.representation ?? DEFAULT_IMPORT_REPRESENTATION)
+          : undefined
+
         const { modifiedAst, pathToNode } = addModuleImport({
-          ast,
+          ast: commandProps.kclManager.ast,
           path,
           localName,
+          representation,
         })
         updateModelingState(
           modifiedAst,
@@ -283,6 +317,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       },
     },
     {
+      scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
       name: 'format-code',
       displayName: 'Format Code',
       description: 'Nicely formats the KCL code in the editor.',
@@ -294,6 +329,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       },
     },
     {
+      scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
       name: 'parameter.create',
       displayName: 'Create parameter',
       description: 'Add a named constant to use in geometry',
@@ -358,6 +394,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       },
     },
     {
+      scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
       name: 'parameter.edit',
       displayName: 'Edit parameter',
       description: 'Edit the value of a named constant',

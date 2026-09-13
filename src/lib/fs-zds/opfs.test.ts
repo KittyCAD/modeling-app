@@ -35,8 +35,8 @@ class MockFileSystemFileHandle {
 
   async createWritable() {
     return {
-      write: async (blob: Blob) => {
-        this.data = new Uint8Array(await blob.arrayBuffer())
+      write: async (data: Uint8Array<ArrayBuffer>) => {
+        this.data = data.slice()
         this.lastModified = Date.now()
       },
       close: async () => {},
@@ -78,7 +78,7 @@ class MockFileSystemDirectoryHandle {
       return existing
     }
     if (!options?.create) {
-      throw new Error('NotFoundError')
+      throw new DOMException('File not found', 'NotFoundError')
     }
 
     const next = new MockFileSystemFileHandle(name)
@@ -135,6 +135,79 @@ describe('opfs', () => {
     project.addFile('._meta', contents)
     return project
   }
+
+  function enableWriteLocks() {
+    const pending = new Map<string, Promise<unknown>>()
+    const request = vi.fn((name: string, callback: () => Promise<unknown>) => {
+      const next = (pending.get(name) ?? Promise.resolve()).then(callback)
+      pending.set(
+        name,
+        next.catch(() => undefined)
+      )
+      return next
+    })
+    vi.spyOn(navigator, 'locks', 'get').mockReturnValue({
+      request,
+    } as unknown as LockManager)
+  }
+
+  test('exclusive creation preserves an existing file', async () => {
+    const project = addProjectWithMeta('{"mtimeMs":1}')
+    project.addFile('main.kcl', 'imported code')
+    enableWriteLocks()
+    const opfs = await getOpfs()
+    const target = path.join(projectPath, 'main.kcl')
+
+    await expect(
+      opfs.impl.writeFile(target, new TextEncoder().encode('default code'), {
+        flag: 'wx',
+      })
+    ).rejects.toBe('EEXIST')
+    await expect(opfs.impl.readFile(target, 'utf8')).resolves.toBe(
+      'imported code'
+    )
+  })
+
+  test('only one concurrent exclusive creator writes a missing file', async () => {
+    addProjectWithMeta('{"mtimeMs":1}')
+    enableWriteLocks()
+    const opfs = await getOpfs()
+    const target = path.join(projectPath, 'main.kcl')
+
+    const results = await Promise.allSettled(
+      ['first code', 'second code'].map((code) =>
+        opfs.impl.writeFile(target, new TextEncoder().encode(code), {
+          flag: 'wx',
+        })
+      )
+    )
+    expect(results.map((result) => result.status)).toEqual([
+      'fulfilled',
+      'rejected',
+    ])
+    await expect(opfs.impl.readFile(target, 'utf8')).resolves.toBe('first code')
+  })
+
+  test('exclusive creation waits for a normal write and preserves its contents', async () => {
+    addProjectWithMeta('{"mtimeMs":1}')
+    enableWriteLocks()
+    const opfs = await getOpfs()
+    const target = path.join(projectPath, 'main.kcl')
+
+    const results = await Promise.allSettled([
+      opfs.impl.writeFile(target, new TextEncoder().encode('imported code')),
+      opfs.impl.writeFile(target, new TextEncoder().encode('default code'), {
+        flag: 'wx',
+      }),
+    ])
+    expect(results.map((result) => result.status)).toEqual([
+      'fulfilled',
+      'rejected',
+    ])
+    await expect(opfs.impl.readFile(target, 'utf8')).resolves.toBe(
+      'imported code'
+    )
+  })
 
   test('repairs empty directory metadata during stat', async () => {
     addProjectWithMeta('')

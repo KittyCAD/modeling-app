@@ -6,25 +6,25 @@ KCL Semantic error
 
   × semantic: "CW" is not a valid arc direction. Use one of the builtin
   │ constants `CCW` or `CW`, not a string. For example: `direction = CW`
-   ╭─[6:10]
+   ╭─[6:110]
  5 │ profile = sketch(on = XY) {
  6 │   arc1 = arc(start = [var -5mm, var 0mm], end = [var 5mm, var 0mm], center = [var 0mm, var 0mm], direction = "CW")
-   ·          ────────────────────────────────────────────────────┬────────────────────────────────────────────────────┬
-   ·                                                              │                                                    ╰── tests/sketch_block_arc_direction_invalid/input.kcl
-   ·                                                              ╰── tests/sketch_block_arc_direction_invalid/input.kcl
+   ·                                                                                                              ──┬─
+   ·                                                                                                                ╰── tests/sketch_block_arc_direction_invalid/input.kcl
  7 │ }
    ╰────
   ╰─▶ KCL Semantic error
       
         × semantic: "CW" is not a valid arc direction. Use one of the builtin
         │ constants `CCW` or `CW`, not a string. For example: `direction = CW`
-         ╭─[6:110]
+         ╭─[6:10]
        5 │ profile = sketch(on = XY) {
        6 │   arc1 = arc(start = [var -5mm, var 0mm], end = [var 5mm, var 0mm],
       center = [var 0mm, var 0mm], direction = "CW")
          ·
-      ──┬─
-         ·
-      ╰── tests/sketch_block_arc_direction_invalid/input.kcl
+      ────────────────────────────────────────────────────┬───────────────────
+      ─────────────────────────────────
+         ·                                                              ╰──
+      tests/sketch_block_arc_direction_invalid/input.kcl
        7 │ }
          ╰────

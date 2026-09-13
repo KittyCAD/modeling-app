@@ -1,0 +1,6 @@
+@settings(kclVersion = 2.0)
+
+export fn addOne(@x) {
+  return x + 1
+  assert(1, isEqualTo = 2, error = "code after return ran in the imported module")
+}

@@ -16,6 +16,7 @@ export const TOOLBAR_COMMAND_IDS = {
   sketchSolve: {
     exit: 'zds.toolbar.sketch.exit',
     cancel: 'zds.toolbar.sketch.cancel',
+    toolPicker: 'zds.toolbar.sketch.toolPicker',
     line: 'zds.toolbar.sketch.line',
     point: 'zds.toolbar.sketch.point',
     spline: 'zds.toolbar.sketch.spline',
@@ -38,8 +39,6 @@ export const TOOLBAR_COMMAND_IDS = {
     horizontal: 'zds.toolbar.sketch.horizontal',
     fixed: 'zds.toolbar.sketch.fixed',
     dimension: 'zds.toolbar.sketch.dimension',
-    horizontalDistance: 'zds.toolbar.sketch.horizontalDistance',
-    verticalDistance: 'zds.toolbar.sketch.verticalDistance',
     construction: 'zds.toolbar.sketch.construction',
   },
 } as const

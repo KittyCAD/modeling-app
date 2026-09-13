@@ -114,6 +114,8 @@ description: Variables in memory after executing thermal-block-insert.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -121,10 +123,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1195,
-                "end": 1203,
+                "commentStart": 1223,
+                "end": 1231,
                 "moduleId": 0,
-                "start": 1195,
+                "start": 1223,
                 "type": "TagDeclarator",
                 "value": "leftWall"
               },
@@ -135,10 +137,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1274,
-                "end": 1279,
+                "commentStart": 1302,
+                "end": 1307,
                 "moduleId": 0,
-                "start": 1274,
+                "start": 1302,
                 "type": "TagDeclarator",
                 "value": "flat1"
               },
@@ -149,10 +151,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1351,
-                "end": 1356,
+                "commentStart": 1379,
+                "end": 1384,
                 "moduleId": 0,
-                "start": 1351,
+                "start": 1379,
                 "type": "TagDeclarator",
                 "value": "rise1"
               },
@@ -163,10 +165,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1428,
-                "end": 1433,
+                "commentStart": 1456,
+                "end": 1461,
                 "moduleId": 0,
-                "start": 1428,
+                "start": 1456,
                 "type": "TagDeclarator",
                 "value": "peak1"
               },
@@ -177,10 +179,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1505,
-                "end": 1510,
+                "commentStart": 1533,
+                "end": 1538,
                 "moduleId": 0,
-                "start": 1505,
+                "start": 1533,
                 "type": "TagDeclarator",
                 "value": "fall1"
               },
@@ -191,10 +193,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1582,
-                "end": 1587,
+                "commentStart": 1610,
+                "end": 1615,
                 "moduleId": 0,
-                "start": 1582,
+                "start": 1610,
                 "type": "TagDeclarator",
                 "value": "flat2"
               },
@@ -205,10 +207,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1658,
-                "end": 1663,
+                "commentStart": 1686,
+                "end": 1691,
                 "moduleId": 0,
-                "start": 1658,
+                "start": 1686,
                 "type": "TagDeclarator",
                 "value": "rise2"
               },
@@ -219,10 +221,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1733,
-                "end": 1738,
+                "commentStart": 1761,
+                "end": 1766,
                 "moduleId": 0,
-                "start": 1733,
+                "start": 1761,
                 "type": "TagDeclarator",
                 "value": "peak2"
               },
@@ -233,10 +235,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1808,
-                "end": 1813,
+                "commentStart": 1836,
+                "end": 1841,
                 "moduleId": 0,
-                "start": 1808,
+                "start": 1836,
                 "type": "TagDeclarator",
                 "value": "fall2"
               },
@@ -247,10 +249,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1883,
-                "end": 1888,
+                "commentStart": 1911,
+                "end": 1916,
                 "moduleId": 0,
-                "start": 1883,
+                "start": 1911,
                 "type": "TagDeclarator",
                 "value": "flat3"
               },
@@ -261,10 +263,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1957,
-                "end": 1962,
+                "commentStart": 1985,
+                "end": 1990,
                 "moduleId": 0,
-                "start": 1957,
+                "start": 1985,
                 "type": "TagDeclarator",
                 "value": "rise3"
               },
@@ -275,10 +277,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2031,
-                "end": 2036,
+                "commentStart": 2059,
+                "end": 2064,
                 "moduleId": 0,
-                "start": 2031,
+                "start": 2059,
                 "type": "TagDeclarator",
                 "value": "peak3"
               },
@@ -289,10 +291,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2105,
-                "end": 2110,
+                "commentStart": 2133,
+                "end": 2138,
                 "moduleId": 0,
-                "start": 2105,
+                "start": 2133,
                 "type": "TagDeclarator",
                 "value": "fall3"
               },
@@ -303,10 +305,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2178,
-                "end": 2183,
+                "commentStart": 2206,
+                "end": 2211,
                 "moduleId": 0,
-                "start": 2178,
+                "start": 2206,
                 "type": "TagDeclarator",
                 "value": "flat4"
               },
@@ -317,10 +319,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2251,
-                "end": 2256,
+                "commentStart": 2279,
+                "end": 2284,
                 "moduleId": 0,
-                "start": 2251,
+                "start": 2279,
                 "type": "TagDeclarator",
                 "value": "rise4"
               },
@@ -331,10 +333,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2324,
-                "end": 2329,
+                "commentStart": 2352,
+                "end": 2357,
                 "moduleId": 0,
-                "start": 2324,
+                "start": 2352,
                 "type": "TagDeclarator",
                 "value": "peak4"
               },
@@ -345,10 +347,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2398,
-                "end": 2403,
+                "commentStart": 2426,
+                "end": 2431,
                 "moduleId": 0,
-                "start": 2398,
+                "start": 2426,
                 "type": "TagDeclarator",
                 "value": "fall4"
               },
@@ -359,10 +361,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2472,
-                "end": 2477,
+                "commentStart": 2500,
+                "end": 2505,
                 "moduleId": 0,
-                "start": 2472,
+                "start": 2500,
                 "type": "TagDeclarator",
                 "value": "flat5"
               },
@@ -373,10 +375,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2546,
-                "end": 2551,
+                "commentStart": 2574,
+                "end": 2579,
                 "moduleId": 0,
-                "start": 2546,
+                "start": 2574,
                 "type": "TagDeclarator",
                 "value": "rise5"
               },
@@ -387,10 +389,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2621,
-                "end": 2626,
+                "commentStart": 2649,
+                "end": 2654,
                 "moduleId": 0,
-                "start": 2621,
+                "start": 2649,
                 "type": "TagDeclarator",
                 "value": "peak5"
               },
@@ -401,10 +403,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2696,
-                "end": 2701,
+                "commentStart": 2724,
+                "end": 2729,
                 "moduleId": 0,
-                "start": 2696,
+                "start": 2724,
                 "type": "TagDeclarator",
                 "value": "fall5"
               },
@@ -415,10 +417,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2771,
-                "end": 2775,
+                "commentStart": 2799,
+                "end": 2803,
                 "moduleId": 0,
-                "start": 2771,
+                "start": 2799,
                 "type": "TagDeclarator",
                 "value": "tail"
               },
@@ -429,10 +431,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2845,
-                "end": 2854,
+                "commentStart": 2873,
+                "end": 2882,
                 "moduleId": 0,
-                "start": 2845,
+                "start": 2873,
                 "type": "TagDeclarator",
                 "value": "rightWall"
               },
@@ -443,10 +445,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2923,
-                "end": 2931,
+                "commentStart": 2951,
+                "end": 2959,
                 "moduleId": 0,
-                "start": 2923,
+                "start": 2951,
                 "type": "TagDeclarator",
                 "value": "baseLine"
               },
@@ -468,10 +470,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -0.00000000000003643700893909418
                 ],
                 "tag": {
-                  "commentStart": 1195,
-                  "end": 1203,
+                  "commentStart": 1223,
+                  "end": 1231,
                   "moduleId": 0,
-                  "start": 1195,
+                  "start": 1223,
                   "type": "TagDeclarator",
                   "value": "leftWall"
                 },
@@ -492,10 +494,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   24.999999999999947
                 ],
                 "tag": {
-                  "commentStart": 1274,
-                  "end": 1279,
+                  "commentStart": 1302,
+                  "end": 1307,
                   "moduleId": 0,
-                  "start": 1274,
+                  "start": 1302,
                   "type": "TagDeclarator",
                   "value": "flat1"
                 },
@@ -516,10 +518,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   24.99999999999991
                 ],
                 "tag": {
-                  "commentStart": 1351,
-                  "end": 1356,
+                  "commentStart": 1379,
+                  "end": 1384,
                   "moduleId": 0,
-                  "start": 1351,
+                  "start": 1379,
                   "type": "TagDeclarator",
                   "value": "rise1"
                 },
@@ -540,10 +542,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   48.52941176470571
                 ],
                 "tag": {
-                  "commentStart": 1428,
-                  "end": 1433,
+                  "commentStart": 1456,
+                  "end": 1461,
                   "moduleId": 0,
-                  "start": 1428,
+                  "start": 1456,
                   "type": "TagDeclarator",
                   "value": "peak1"
                 },
@@ -564,10 +566,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   48.52941176470568
                 ],
                 "tag": {
-                  "commentStart": 1505,
-                  "end": 1510,
+                  "commentStart": 1533,
+                  "end": 1538,
                   "moduleId": 0,
-                  "start": 1505,
+                  "start": 1533,
                   "type": "TagDeclarator",
                   "value": "fall1"
                 },
@@ -588,10 +590,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   24.99999999999972
                 ],
                 "tag": {
-                  "commentStart": 1582,
-                  "end": 1587,
+                  "commentStart": 1610,
+                  "end": 1615,
                   "moduleId": 0,
-                  "start": 1582,
+                  "start": 1610,
                   "type": "TagDeclarator",
                   "value": "flat2"
                 },
@@ -612,10 +614,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   24.999999999999687
                 ],
                 "tag": {
-                  "commentStart": 1658,
-                  "end": 1663,
+                  "commentStart": 1686,
+                  "end": 1691,
                   "moduleId": 0,
-                  "start": 1658,
+                  "start": 1686,
                   "type": "TagDeclarator",
                   "value": "rise2"
                 },
@@ -636,10 +638,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   48.529411764705465
                 ],
                 "tag": {
-                  "commentStart": 1733,
-                  "end": 1738,
+                  "commentStart": 1761,
+                  "end": 1766,
                   "moduleId": 0,
-                  "start": 1733,
+                  "start": 1761,
                   "type": "TagDeclarator",
                   "value": "peak2"
                 },
@@ -660,10 +662,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   48.529411764705436
                 ],
                 "tag": {
-                  "commentStart": 1808,
-                  "end": 1813,
+                  "commentStart": 1836,
+                  "end": 1841,
                   "moduleId": 0,
-                  "start": 1808,
+                  "start": 1836,
                   "type": "TagDeclarator",
                   "value": "fall2"
                 },
@@ -684,10 +686,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   24.999999999999464
                 ],
                 "tag": {
-                  "commentStart": 1883,
-                  "end": 1888,
+                  "commentStart": 1911,
+                  "end": 1916,
                   "moduleId": 0,
-                  "start": 1883,
+                  "start": 1911,
                   "type": "TagDeclarator",
                   "value": "flat3"
                 },
@@ -708,10 +710,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   24.999999999999435
                 ],
                 "tag": {
-                  "commentStart": 1957,
-                  "end": 1962,
+                  "commentStart": 1985,
+                  "end": 1990,
                   "moduleId": 0,
-                  "start": 1957,
+                  "start": 1985,
                   "type": "TagDeclarator",
                   "value": "rise3"
                 },
@@ -732,10 +734,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   48.52941176470521
                 ],
                 "tag": {
-                  "commentStart": 2031,
-                  "end": 2036,
+                  "commentStart": 2059,
+                  "end": 2064,
                   "moduleId": 0,
-                  "start": 2031,
+                  "start": 2059,
                   "type": "TagDeclarator",
                   "value": "peak3"
                 },
@@ -756,10 +758,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   48.52941176470519
                 ],
                 "tag": {
-                  "commentStart": 2105,
-                  "end": 2110,
+                  "commentStart": 2133,
+                  "end": 2138,
                   "moduleId": 0,
-                  "start": 2105,
+                  "start": 2133,
                   "type": "TagDeclarator",
                   "value": "fall3"
                 },
@@ -780,10 +782,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   24.999999999999215
                 ],
                 "tag": {
-                  "commentStart": 2178,
-                  "end": 2183,
+                  "commentStart": 2206,
+                  "end": 2211,
                   "moduleId": 0,
-                  "start": 2178,
+                  "start": 2206,
                   "type": "TagDeclarator",
                   "value": "flat4"
                 },
@@ -804,10 +806,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   24.999999999999194
                 ],
                 "tag": {
-                  "commentStart": 2251,
-                  "end": 2256,
+                  "commentStart": 2279,
+                  "end": 2284,
                   "moduleId": 0,
-                  "start": 2251,
+                  "start": 2279,
                   "type": "TagDeclarator",
                   "value": "rise4"
                 },
@@ -828,10 +830,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   48.529411764704975
                 ],
                 "tag": {
-                  "commentStart": 2324,
-                  "end": 2329,
+                  "commentStart": 2352,
+                  "end": 2357,
                   "moduleId": 0,
-                  "start": 2324,
+                  "start": 2352,
                   "type": "TagDeclarator",
                   "value": "peak4"
                 },
@@ -852,10 +854,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   48.52941176470496
                 ],
                 "tag": {
-                  "commentStart": 2398,
-                  "end": 2403,
+                  "commentStart": 2426,
+                  "end": 2431,
                   "moduleId": 0,
-                  "start": 2398,
+                  "start": 2426,
                   "type": "TagDeclarator",
                   "value": "fall4"
                 },
@@ -876,10 +878,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   24.99999999999899
                 ],
                 "tag": {
-                  "commentStart": 2472,
-                  "end": 2477,
+                  "commentStart": 2500,
+                  "end": 2505,
                   "moduleId": 0,
-                  "start": 2472,
+                  "start": 2500,
                   "type": "TagDeclarator",
                   "value": "flat5"
                 },
@@ -900,10 +902,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   24.999999999998977
                 ],
                 "tag": {
-                  "commentStart": 2546,
-                  "end": 2551,
+                  "commentStart": 2574,
+                  "end": 2579,
                   "moduleId": 0,
-                  "start": 2546,
+                  "start": 2574,
                   "type": "TagDeclarator",
                   "value": "rise5"
                 },
@@ -924,10 +926,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   48.529411764704776
                 ],
                 "tag": {
-                  "commentStart": 2621,
-                  "end": 2626,
+                  "commentStart": 2649,
+                  "end": 2654,
                   "moduleId": 0,
-                  "start": 2621,
+                  "start": 2649,
                   "type": "TagDeclarator",
                   "value": "peak5"
                 },
@@ -948,10 +950,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   48.52941176470476
                 ],
                 "tag": {
-                  "commentStart": 2696,
-                  "end": 2701,
+                  "commentStart": 2724,
+                  "end": 2729,
                   "moduleId": 0,
-                  "start": 2696,
+                  "start": 2724,
                   "type": "TagDeclarator",
                   "value": "fall5"
                 },
@@ -972,10 +974,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   24.999999999998806
                 ],
                 "tag": {
-                  "commentStart": 2771,
-                  "end": 2775,
+                  "commentStart": 2799,
+                  "end": 2803,
                   "moduleId": 0,
-                  "start": 2771,
+                  "start": 2799,
                   "type": "TagDeclarator",
                   "value": "tail"
                 },
@@ -996,10 +998,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   24.999999999998803
                 ],
                 "tag": {
-                  "commentStart": 2845,
-                  "end": 2854,
+                  "commentStart": 2873,
+                  "end": 2882,
                   "moduleId": 0,
-                  "start": 2845,
+                  "start": 2873,
                   "type": "TagDeclarator",
                   "value": "rightWall"
                 },
@@ -1020,10 +1022,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -0.000000000000018282669121125734
                 ],
                 "tag": {
-                  "commentStart": 2923,
-                  "end": 2931,
+                  "commentStart": 2951,
+                  "end": 2959,
                   "moduleId": 0,
-                  "start": 2923,
+                  "start": 2951,
                   "type": "TagDeclarator",
                   "value": "baseLine"
                 },
@@ -1036,17 +1038,17 @@ description: Variables in memory after executing thermal-block-insert.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1182,8 +1184,8 @@ description: Variables in memory after executing thermal-block-insert.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1196,6 +1198,8 @@ description: Variables in memory after executing thermal-block-insert.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1203,10 +1207,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5780,
-                "end": 5788,
+                "commentStart": 5808,
+                "end": 5816,
                 "moduleId": 0,
-                "start": 5780,
+                "start": 5808,
                 "type": "TagDeclarator",
                 "value": "leftWall"
               },
@@ -1217,10 +1221,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5860,
-                "end": 5865,
+                "commentStart": 5888,
+                "end": 5893,
                 "moduleId": 0,
-                "start": 5860,
+                "start": 5888,
                 "type": "TagDeclarator",
                 "value": "flat1"
               },
@@ -1231,10 +1235,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5939,
-                "end": 5944,
+                "commentStart": 5967,
+                "end": 5972,
                 "moduleId": 0,
-                "start": 5939,
+                "start": 5967,
                 "type": "TagDeclarator",
                 "value": "rise1"
               },
@@ -1245,10 +1249,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6018,
-                "end": 6023,
+                "commentStart": 6046,
+                "end": 6051,
                 "moduleId": 0,
-                "start": 6018,
+                "start": 6046,
                 "type": "TagDeclarator",
                 "value": "peak1"
               },
@@ -1259,10 +1263,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6097,
-                "end": 6102,
+                "commentStart": 6125,
+                "end": 6130,
                 "moduleId": 0,
-                "start": 6097,
+                "start": 6125,
                 "type": "TagDeclarator",
                 "value": "fall1"
               },
@@ -1273,10 +1277,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6176,
-                "end": 6181,
+                "commentStart": 6204,
+                "end": 6209,
                 "moduleId": 0,
-                "start": 6176,
+                "start": 6204,
                 "type": "TagDeclarator",
                 "value": "flat2"
               },
@@ -1287,10 +1291,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6254,
-                "end": 6259,
+                "commentStart": 6282,
+                "end": 6287,
                 "moduleId": 0,
-                "start": 6254,
+                "start": 6282,
                 "type": "TagDeclarator",
                 "value": "rise2"
               },
@@ -1301,10 +1305,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6331,
-                "end": 6336,
+                "commentStart": 6359,
+                "end": 6364,
                 "moduleId": 0,
-                "start": 6331,
+                "start": 6359,
                 "type": "TagDeclarator",
                 "value": "peak2"
               },
@@ -1315,10 +1319,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6408,
-                "end": 6413,
+                "commentStart": 6436,
+                "end": 6441,
                 "moduleId": 0,
-                "start": 6408,
+                "start": 6436,
                 "type": "TagDeclarator",
                 "value": "fall2"
               },
@@ -1329,10 +1333,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6485,
-                "end": 6490,
+                "commentStart": 6513,
+                "end": 6518,
                 "moduleId": 0,
-                "start": 6485,
+                "start": 6513,
                 "type": "TagDeclarator",
                 "value": "flat3"
               },
@@ -1343,10 +1347,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6561,
-                "end": 6566,
+                "commentStart": 6589,
+                "end": 6594,
                 "moduleId": 0,
-                "start": 6561,
+                "start": 6589,
                 "type": "TagDeclarator",
                 "value": "rise3"
               },
@@ -1357,10 +1361,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6637,
-                "end": 6642,
+                "commentStart": 6665,
+                "end": 6670,
                 "moduleId": 0,
-                "start": 6637,
+                "start": 6665,
                 "type": "TagDeclarator",
                 "value": "peak3"
               },
@@ -1371,10 +1375,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6713,
-                "end": 6718,
+                "commentStart": 6741,
+                "end": 6746,
                 "moduleId": 0,
-                "start": 6713,
+                "start": 6741,
                 "type": "TagDeclarator",
                 "value": "fall3"
               },
@@ -1385,10 +1389,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6788,
-                "end": 6793,
+                "commentStart": 6816,
+                "end": 6821,
                 "moduleId": 0,
-                "start": 6788,
+                "start": 6816,
                 "type": "TagDeclarator",
                 "value": "flat4"
               },
@@ -1399,10 +1403,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6863,
-                "end": 6868,
+                "commentStart": 6891,
+                "end": 6896,
                 "moduleId": 0,
-                "start": 6863,
+                "start": 6891,
                 "type": "TagDeclarator",
                 "value": "rise4"
               },
@@ -1413,10 +1417,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6938,
-                "end": 6943,
+                "commentStart": 6966,
+                "end": 6971,
                 "moduleId": 0,
-                "start": 6938,
+                "start": 6966,
                 "type": "TagDeclarator",
                 "value": "peak4"
               },
@@ -1427,10 +1431,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7014,
-                "end": 7019,
+                "commentStart": 7042,
+                "end": 7047,
                 "moduleId": 0,
-                "start": 7014,
+                "start": 7042,
                 "type": "TagDeclarator",
                 "value": "fall4"
               },
@@ -1441,10 +1445,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7090,
-                "end": 7095,
+                "commentStart": 7118,
+                "end": 7123,
                 "moduleId": 0,
-                "start": 7090,
+                "start": 7118,
                 "type": "TagDeclarator",
                 "value": "flat5"
               },
@@ -1455,10 +1459,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7166,
-                "end": 7171,
+                "commentStart": 7194,
+                "end": 7199,
                 "moduleId": 0,
-                "start": 7166,
+                "start": 7194,
                 "type": "TagDeclarator",
                 "value": "rise5"
               },
@@ -1469,10 +1473,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7243,
-                "end": 7248,
+                "commentStart": 7271,
+                "end": 7276,
                 "moduleId": 0,
-                "start": 7243,
+                "start": 7271,
                 "type": "TagDeclarator",
                 "value": "peak5"
               },
@@ -1483,10 +1487,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7320,
-                "end": 7325,
+                "commentStart": 7348,
+                "end": 7353,
                 "moduleId": 0,
-                "start": 7320,
+                "start": 7348,
                 "type": "TagDeclarator",
                 "value": "fall5"
               },
@@ -1497,10 +1501,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7397,
-                "end": 7401,
+                "commentStart": 7425,
+                "end": 7429,
                 "moduleId": 0,
-                "start": 7397,
+                "start": 7425,
                 "type": "TagDeclarator",
                 "value": "tail"
               },
@@ -1511,10 +1515,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7473,
-                "end": 7482,
+                "commentStart": 7501,
+                "end": 7510,
                 "moduleId": 0,
-                "start": 7473,
+                "start": 7501,
                 "type": "TagDeclarator",
                 "value": "rightWall"
               },
@@ -1525,10 +1529,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7552,
-                "end": 7559,
+                "commentStart": 7580,
+                "end": 7587,
                 "moduleId": 0,
-                "start": 7552,
+                "start": 7580,
                 "type": "TagDeclarator",
                 "value": "topLine"
               },
@@ -1550,10 +1554,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   0.00000000000003784013013352836
                 ],
                 "tag": {
-                  "commentStart": 5780,
-                  "end": 5788,
+                  "commentStart": 5808,
+                  "end": 5816,
                   "moduleId": 0,
-                  "start": 5780,
+                  "start": 5808,
                   "type": "TagDeclarator",
                   "value": "leftWall"
                 },
@@ -1574,10 +1578,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -48.52941176470583
                 ],
                 "tag": {
-                  "commentStart": 5860,
-                  "end": 5865,
+                  "commentStart": 5888,
+                  "end": 5893,
                   "moduleId": 0,
-                  "start": 5860,
+                  "start": 5888,
                   "type": "TagDeclarator",
                   "value": "flat1"
                 },
@@ -1598,10 +1602,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -48.52941176470579
                 ],
                 "tag": {
-                  "commentStart": 5939,
-                  "end": 5944,
+                  "commentStart": 5967,
+                  "end": 5972,
                   "moduleId": 0,
-                  "start": 5939,
+                  "start": 5967,
                   "type": "TagDeclarator",
                   "value": "rise1"
                 },
@@ -1622,10 +1626,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -24.999999999999822
                 ],
                 "tag": {
-                  "commentStart": 6018,
-                  "end": 6023,
+                  "commentStart": 6046,
+                  "end": 6051,
                   "moduleId": 0,
-                  "start": 6018,
+                  "start": 6046,
                   "type": "TagDeclarator",
                   "value": "peak1"
                 },
@@ -1646,10 +1650,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -24.999999999999787
                 ],
                 "tag": {
-                  "commentStart": 6097,
-                  "end": 6102,
+                  "commentStart": 6125,
+                  "end": 6130,
                   "moduleId": 0,
-                  "start": 6097,
+                  "start": 6125,
                   "type": "TagDeclarator",
                   "value": "fall1"
                 },
@@ -1670,10 +1674,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -48.52941176470559
                 ],
                 "tag": {
-                  "commentStart": 6176,
-                  "end": 6181,
+                  "commentStart": 6204,
+                  "end": 6209,
                   "moduleId": 0,
-                  "start": 6176,
+                  "start": 6204,
                   "type": "TagDeclarator",
                   "value": "flat2"
                 },
@@ -1694,10 +1698,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -48.52941176470556
                 ],
                 "tag": {
-                  "commentStart": 6254,
-                  "end": 6259,
+                  "commentStart": 6282,
+                  "end": 6287,
                   "moduleId": 0,
-                  "start": 6254,
+                  "start": 6282,
                   "type": "TagDeclarator",
                   "value": "rise2"
                 },
@@ -1718,10 +1722,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -24.999999999999563
                 ],
                 "tag": {
-                  "commentStart": 6331,
-                  "end": 6336,
+                  "commentStart": 6359,
+                  "end": 6364,
                   "moduleId": 0,
-                  "start": 6331,
+                  "start": 6359,
                   "type": "TagDeclarator",
                   "value": "peak2"
                 },
@@ -1742,10 +1746,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -24.99999999999953
                 ],
                 "tag": {
-                  "commentStart": 6408,
-                  "end": 6413,
+                  "commentStart": 6436,
+                  "end": 6441,
                   "moduleId": 0,
-                  "start": 6408,
+                  "start": 6436,
                   "type": "TagDeclarator",
                   "value": "fall2"
                 },
@@ -1766,10 +1770,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -48.529411764705316
                 ],
                 "tag": {
-                  "commentStart": 6485,
-                  "end": 6490,
+                  "commentStart": 6513,
+                  "end": 6518,
                   "moduleId": 0,
-                  "start": 6485,
+                  "start": 6513,
                   "type": "TagDeclarator",
                   "value": "flat3"
                 },
@@ -1790,10 +1794,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -48.52941176470529
                 ],
                 "tag": {
-                  "commentStart": 6561,
-                  "end": 6566,
+                  "commentStart": 6589,
+                  "end": 6594,
                   "moduleId": 0,
-                  "start": 6561,
+                  "start": 6589,
                   "type": "TagDeclarator",
                   "value": "rise3"
                 },
@@ -1814,10 +1818,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -24.999999999999293
                 ],
                 "tag": {
-                  "commentStart": 6637,
-                  "end": 6642,
+                  "commentStart": 6665,
+                  "end": 6670,
                   "moduleId": 0,
-                  "start": 6637,
+                  "start": 6665,
                   "type": "TagDeclarator",
                   "value": "peak3"
                 },
@@ -1838,10 +1842,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -24.999999999999265
                 ],
                 "tag": {
-                  "commentStart": 6713,
-                  "end": 6718,
+                  "commentStart": 6741,
+                  "end": 6746,
                   "moduleId": 0,
-                  "start": 6713,
+                  "start": 6741,
                   "type": "TagDeclarator",
                   "value": "fall3"
                 },
@@ -1862,10 +1866,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -48.52941176470506
                 ],
                 "tag": {
-                  "commentStart": 6788,
-                  "end": 6793,
+                  "commentStart": 6816,
+                  "end": 6821,
                   "moduleId": 0,
-                  "start": 6788,
+                  "start": 6816,
                   "type": "TagDeclarator",
                   "value": "flat4"
                 },
@@ -1886,10 +1890,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -48.52941176470503
                 ],
                 "tag": {
-                  "commentStart": 6863,
-                  "end": 6868,
+                  "commentStart": 6891,
+                  "end": 6896,
                   "moduleId": 0,
-                  "start": 6863,
+                  "start": 6891,
                   "type": "TagDeclarator",
                   "value": "rise4"
                 },
@@ -1910,10 +1914,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -24.999999999999044
                 ],
                 "tag": {
-                  "commentStart": 6938,
-                  "end": 6943,
+                  "commentStart": 6966,
+                  "end": 6971,
                   "moduleId": 0,
-                  "start": 6938,
+                  "start": 6966,
                   "type": "TagDeclarator",
                   "value": "peak4"
                 },
@@ -1934,10 +1938,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -24.999999999999023
                 ],
                 "tag": {
-                  "commentStart": 7014,
-                  "end": 7019,
+                  "commentStart": 7042,
+                  "end": 7047,
                   "moduleId": 0,
-                  "start": 7014,
+                  "start": 7042,
                   "type": "TagDeclarator",
                   "value": "fall4"
                 },
@@ -1958,10 +1962,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -48.529411764704825
                 ],
                 "tag": {
-                  "commentStart": 7090,
-                  "end": 7095,
+                  "commentStart": 7118,
+                  "end": 7123,
                   "moduleId": 0,
-                  "start": 7090,
+                  "start": 7118,
                   "type": "TagDeclarator",
                   "value": "flat5"
                 },
@@ -1982,10 +1986,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -48.52941176470481
                 ],
                 "tag": {
-                  "commentStart": 7166,
-                  "end": 7171,
+                  "commentStart": 7194,
+                  "end": 7199,
                   "moduleId": 0,
-                  "start": 7166,
+                  "start": 7194,
                   "type": "TagDeclarator",
                   "value": "rise5"
                 },
@@ -2006,10 +2010,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -24.999999999998828
                 ],
                 "tag": {
-                  "commentStart": 7243,
-                  "end": 7248,
+                  "commentStart": 7271,
+                  "end": 7276,
                   "moduleId": 0,
-                  "start": 7243,
+                  "start": 7271,
                   "type": "TagDeclarator",
                   "value": "peak5"
                 },
@@ -2030,10 +2034,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -24.999999999998817
                 ],
                 "tag": {
-                  "commentStart": 7320,
-                  "end": 7325,
+                  "commentStart": 7348,
+                  "end": 7353,
                   "moduleId": 0,
-                  "start": 7320,
+                  "start": 7348,
                   "type": "TagDeclarator",
                   "value": "fall5"
                 },
@@ -2054,10 +2058,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -48.52941176470463
                 ],
                 "tag": {
-                  "commentStart": 7397,
-                  "end": 7401,
+                  "commentStart": 7425,
+                  "end": 7429,
                   "moduleId": 0,
-                  "start": 7397,
+                  "start": 7425,
                   "type": "TagDeclarator",
                   "value": "tail"
                 },
@@ -2078,10 +2082,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -48.529411764704626
                 ],
                 "tag": {
-                  "commentStart": 7473,
-                  "end": 7482,
+                  "commentStart": 7501,
+                  "end": 7510,
                   "moduleId": 0,
-                  "start": 7473,
+                  "start": 7501,
                   "type": "TagDeclarator",
                   "value": "rightWall"
                 },
@@ -2102,10 +2106,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   0.000000000000018985182656878265
                 ],
                 "tag": {
-                  "commentStart": 7552,
-                  "end": 7559,
+                  "commentStart": 7580,
+                  "end": 7587,
                   "moduleId": 0,
-                  "start": 7552,
+                  "start": 7580,
                   "type": "TagDeclarator",
                   "value": "topLine"
                 },
@@ -2118,17 +2122,17 @@ description: Variables in memory after executing thermal-block-insert.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 143,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2264,8 +2268,8 @@ description: Variables in memory after executing thermal-block-insert.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2325,10 +2329,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             0.00000000000003784013013352836
           ],
           "tag": {
-            "commentStart": 5780,
-            "end": 5788,
+            "commentStart": 5808,
+            "end": 5816,
             "moduleId": 0,
-            "start": 5780,
+            "start": 5808,
             "type": "TagDeclarator",
             "value": "leftWall"
           },
@@ -2349,10 +2353,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -48.52941176470583
           ],
           "tag": {
-            "commentStart": 5860,
-            "end": 5865,
+            "commentStart": 5888,
+            "end": 5893,
             "moduleId": 0,
-            "start": 5860,
+            "start": 5888,
             "type": "TagDeclarator",
             "value": "flat1"
           },
@@ -2373,10 +2377,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -48.52941176470579
           ],
           "tag": {
-            "commentStart": 5939,
-            "end": 5944,
+            "commentStart": 5967,
+            "end": 5972,
             "moduleId": 0,
-            "start": 5939,
+            "start": 5967,
             "type": "TagDeclarator",
             "value": "rise1"
           },
@@ -2397,10 +2401,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -24.999999999999822
           ],
           "tag": {
-            "commentStart": 6018,
-            "end": 6023,
+            "commentStart": 6046,
+            "end": 6051,
             "moduleId": 0,
-            "start": 6018,
+            "start": 6046,
             "type": "TagDeclarator",
             "value": "peak1"
           },
@@ -2421,10 +2425,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -24.999999999999787
           ],
           "tag": {
-            "commentStart": 6097,
-            "end": 6102,
+            "commentStart": 6125,
+            "end": 6130,
             "moduleId": 0,
-            "start": 6097,
+            "start": 6125,
             "type": "TagDeclarator",
             "value": "fall1"
           },
@@ -2445,10 +2449,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -48.52941176470559
           ],
           "tag": {
-            "commentStart": 6176,
-            "end": 6181,
+            "commentStart": 6204,
+            "end": 6209,
             "moduleId": 0,
-            "start": 6176,
+            "start": 6204,
             "type": "TagDeclarator",
             "value": "flat2"
           },
@@ -2469,10 +2473,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -48.52941176470556
           ],
           "tag": {
-            "commentStart": 6254,
-            "end": 6259,
+            "commentStart": 6282,
+            "end": 6287,
             "moduleId": 0,
-            "start": 6254,
+            "start": 6282,
             "type": "TagDeclarator",
             "value": "rise2"
           },
@@ -2493,10 +2497,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -24.999999999999563
           ],
           "tag": {
-            "commentStart": 6331,
-            "end": 6336,
+            "commentStart": 6359,
+            "end": 6364,
             "moduleId": 0,
-            "start": 6331,
+            "start": 6359,
             "type": "TagDeclarator",
             "value": "peak2"
           },
@@ -2517,10 +2521,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -24.99999999999953
           ],
           "tag": {
-            "commentStart": 6408,
-            "end": 6413,
+            "commentStart": 6436,
+            "end": 6441,
             "moduleId": 0,
-            "start": 6408,
+            "start": 6436,
             "type": "TagDeclarator",
             "value": "fall2"
           },
@@ -2541,10 +2545,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -48.529411764705316
           ],
           "tag": {
-            "commentStart": 6485,
-            "end": 6490,
+            "commentStart": 6513,
+            "end": 6518,
             "moduleId": 0,
-            "start": 6485,
+            "start": 6513,
             "type": "TagDeclarator",
             "value": "flat3"
           },
@@ -2565,10 +2569,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -48.52941176470529
           ],
           "tag": {
-            "commentStart": 6561,
-            "end": 6566,
+            "commentStart": 6589,
+            "end": 6594,
             "moduleId": 0,
-            "start": 6561,
+            "start": 6589,
             "type": "TagDeclarator",
             "value": "rise3"
           },
@@ -2589,10 +2593,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -24.999999999999293
           ],
           "tag": {
-            "commentStart": 6637,
-            "end": 6642,
+            "commentStart": 6665,
+            "end": 6670,
             "moduleId": 0,
-            "start": 6637,
+            "start": 6665,
             "type": "TagDeclarator",
             "value": "peak3"
           },
@@ -2613,10 +2617,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -24.999999999999265
           ],
           "tag": {
-            "commentStart": 6713,
-            "end": 6718,
+            "commentStart": 6741,
+            "end": 6746,
             "moduleId": 0,
-            "start": 6713,
+            "start": 6741,
             "type": "TagDeclarator",
             "value": "fall3"
           },
@@ -2637,10 +2641,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -48.52941176470506
           ],
           "tag": {
-            "commentStart": 6788,
-            "end": 6793,
+            "commentStart": 6816,
+            "end": 6821,
             "moduleId": 0,
-            "start": 6788,
+            "start": 6816,
             "type": "TagDeclarator",
             "value": "flat4"
           },
@@ -2661,10 +2665,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -48.52941176470503
           ],
           "tag": {
-            "commentStart": 6863,
-            "end": 6868,
+            "commentStart": 6891,
+            "end": 6896,
             "moduleId": 0,
-            "start": 6863,
+            "start": 6891,
             "type": "TagDeclarator",
             "value": "rise4"
           },
@@ -2685,10 +2689,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -24.999999999999044
           ],
           "tag": {
-            "commentStart": 6938,
-            "end": 6943,
+            "commentStart": 6966,
+            "end": 6971,
             "moduleId": 0,
-            "start": 6938,
+            "start": 6966,
             "type": "TagDeclarator",
             "value": "peak4"
           },
@@ -2709,10 +2713,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -24.999999999999023
           ],
           "tag": {
-            "commentStart": 7014,
-            "end": 7019,
+            "commentStart": 7042,
+            "end": 7047,
             "moduleId": 0,
-            "start": 7014,
+            "start": 7042,
             "type": "TagDeclarator",
             "value": "fall4"
           },
@@ -2733,10 +2737,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -48.529411764704825
           ],
           "tag": {
-            "commentStart": 7090,
-            "end": 7095,
+            "commentStart": 7118,
+            "end": 7123,
             "moduleId": 0,
-            "start": 7090,
+            "start": 7118,
             "type": "TagDeclarator",
             "value": "flat5"
           },
@@ -2757,10 +2761,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -48.52941176470481
           ],
           "tag": {
-            "commentStart": 7166,
-            "end": 7171,
+            "commentStart": 7194,
+            "end": 7199,
             "moduleId": 0,
-            "start": 7166,
+            "start": 7194,
             "type": "TagDeclarator",
             "value": "rise5"
           },
@@ -2781,10 +2785,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -24.999999999998828
           ],
           "tag": {
-            "commentStart": 7243,
-            "end": 7248,
+            "commentStart": 7271,
+            "end": 7276,
             "moduleId": 0,
-            "start": 7243,
+            "start": 7271,
             "type": "TagDeclarator",
             "value": "peak5"
           },
@@ -2805,10 +2809,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -24.999999999998817
           ],
           "tag": {
-            "commentStart": 7320,
-            "end": 7325,
+            "commentStart": 7348,
+            "end": 7353,
             "moduleId": 0,
-            "start": 7320,
+            "start": 7348,
             "type": "TagDeclarator",
             "value": "fall5"
           },
@@ -2829,10 +2833,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -48.52941176470463
           ],
           "tag": {
-            "commentStart": 7397,
-            "end": 7401,
+            "commentStart": 7425,
+            "end": 7429,
             "moduleId": 0,
-            "start": 7397,
+            "start": 7425,
             "type": "TagDeclarator",
             "value": "tail"
           },
@@ -2853,10 +2857,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -48.529411764704626
           ],
           "tag": {
-            "commentStart": 7473,
-            "end": 7482,
+            "commentStart": 7501,
+            "end": 7510,
             "moduleId": 0,
-            "start": 7473,
+            "start": 7501,
             "type": "TagDeclarator",
             "value": "rightWall"
           },
@@ -2877,10 +2881,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             0.000000000000018985182656878265
           ],
           "tag": {
-            "commentStart": 7552,
-            "end": 7559,
+            "commentStart": 7580,
+            "end": 7587,
             "moduleId": 0,
-            "start": 7552,
+            "start": 7580,
             "type": "TagDeclarator",
             "value": "topLine"
           },
@@ -2893,17 +2897,17 @@ description: Variables in memory after executing thermal-block-insert.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 143,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -3039,8 +3043,8 @@ description: Variables in memory after executing thermal-block-insert.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "grooveShape": {
@@ -4506,10 +4510,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     0.00000000000003784013013352836
                   ],
                   "tag": {
-                    "commentStart": 5780,
-                    "end": 5788,
+                    "commentStart": 5808,
+                    "end": 5816,
                     "moduleId": 0,
-                    "start": 5780,
+                    "start": 5808,
                     "type": "TagDeclarator",
                     "value": "leftWall"
                   },
@@ -4530,10 +4534,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     -48.52941176470583
                   ],
                   "tag": {
-                    "commentStart": 5860,
-                    "end": 5865,
+                    "commentStart": 5888,
+                    "end": 5893,
                     "moduleId": 0,
-                    "start": 5860,
+                    "start": 5888,
                     "type": "TagDeclarator",
                     "value": "flat1"
                   },
@@ -4554,10 +4558,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     -48.52941176470579
                   ],
                   "tag": {
-                    "commentStart": 5939,
-                    "end": 5944,
+                    "commentStart": 5967,
+                    "end": 5972,
                     "moduleId": 0,
-                    "start": 5939,
+                    "start": 5967,
                     "type": "TagDeclarator",
                     "value": "rise1"
                   },
@@ -4578,10 +4582,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     -24.999999999999822
                   ],
                   "tag": {
-                    "commentStart": 6018,
-                    "end": 6023,
+                    "commentStart": 6046,
+                    "end": 6051,
                     "moduleId": 0,
-                    "start": 6018,
+                    "start": 6046,
                     "type": "TagDeclarator",
                     "value": "peak1"
                   },
@@ -4602,10 +4606,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     -24.999999999999787
                   ],
                   "tag": {
-                    "commentStart": 6097,
-                    "end": 6102,
+                    "commentStart": 6125,
+                    "end": 6130,
                     "moduleId": 0,
-                    "start": 6097,
+                    "start": 6125,
                     "type": "TagDeclarator",
                     "value": "fall1"
                   },
@@ -4626,10 +4630,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     -48.52941176470559
                   ],
                   "tag": {
-                    "commentStart": 6176,
-                    "end": 6181,
+                    "commentStart": 6204,
+                    "end": 6209,
                     "moduleId": 0,
-                    "start": 6176,
+                    "start": 6204,
                     "type": "TagDeclarator",
                     "value": "flat2"
                   },
@@ -4650,10 +4654,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     -48.52941176470556
                   ],
                   "tag": {
-                    "commentStart": 6254,
-                    "end": 6259,
+                    "commentStart": 6282,
+                    "end": 6287,
                     "moduleId": 0,
-                    "start": 6254,
+                    "start": 6282,
                     "type": "TagDeclarator",
                     "value": "rise2"
                   },
@@ -4674,10 +4678,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     -24.999999999999563
                   ],
                   "tag": {
-                    "commentStart": 6331,
-                    "end": 6336,
+                    "commentStart": 6359,
+                    "end": 6364,
                     "moduleId": 0,
-                    "start": 6331,
+                    "start": 6359,
                     "type": "TagDeclarator",
                     "value": "peak2"
                   },
@@ -4698,10 +4702,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     -24.99999999999953
                   ],
                   "tag": {
-                    "commentStart": 6408,
-                    "end": 6413,
+                    "commentStart": 6436,
+                    "end": 6441,
                     "moduleId": 0,
-                    "start": 6408,
+                    "start": 6436,
                     "type": "TagDeclarator",
                     "value": "fall2"
                   },
@@ -4722,10 +4726,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     -48.529411764705316
                   ],
                   "tag": {
-                    "commentStart": 6485,
-                    "end": 6490,
+                    "commentStart": 6513,
+                    "end": 6518,
                     "moduleId": 0,
-                    "start": 6485,
+                    "start": 6513,
                     "type": "TagDeclarator",
                     "value": "flat3"
                   },
@@ -4746,10 +4750,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     -48.52941176470529
                   ],
                   "tag": {
-                    "commentStart": 6561,
-                    "end": 6566,
+                    "commentStart": 6589,
+                    "end": 6594,
                     "moduleId": 0,
-                    "start": 6561,
+                    "start": 6589,
                     "type": "TagDeclarator",
                     "value": "rise3"
                   },
@@ -4770,10 +4774,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     -24.999999999999293
                   ],
                   "tag": {
-                    "commentStart": 6637,
-                    "end": 6642,
+                    "commentStart": 6665,
+                    "end": 6670,
                     "moduleId": 0,
-                    "start": 6637,
+                    "start": 6665,
                     "type": "TagDeclarator",
                     "value": "peak3"
                   },
@@ -4794,10 +4798,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     -24.999999999999265
                   ],
                   "tag": {
-                    "commentStart": 6713,
-                    "end": 6718,
+                    "commentStart": 6741,
+                    "end": 6746,
                     "moduleId": 0,
-                    "start": 6713,
+                    "start": 6741,
                     "type": "TagDeclarator",
                     "value": "fall3"
                   },
@@ -4818,10 +4822,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     -48.52941176470506
                   ],
                   "tag": {
-                    "commentStart": 6788,
-                    "end": 6793,
+                    "commentStart": 6816,
+                    "end": 6821,
                     "moduleId": 0,
-                    "start": 6788,
+                    "start": 6816,
                     "type": "TagDeclarator",
                     "value": "flat4"
                   },
@@ -4842,10 +4846,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     -48.52941176470503
                   ],
                   "tag": {
-                    "commentStart": 6863,
-                    "end": 6868,
+                    "commentStart": 6891,
+                    "end": 6896,
                     "moduleId": 0,
-                    "start": 6863,
+                    "start": 6891,
                     "type": "TagDeclarator",
                     "value": "rise4"
                   },
@@ -4866,10 +4870,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     -24.999999999999044
                   ],
                   "tag": {
-                    "commentStart": 6938,
-                    "end": 6943,
+                    "commentStart": 6966,
+                    "end": 6971,
                     "moduleId": 0,
-                    "start": 6938,
+                    "start": 6966,
                     "type": "TagDeclarator",
                     "value": "peak4"
                   },
@@ -4890,10 +4894,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     -24.999999999999023
                   ],
                   "tag": {
-                    "commentStart": 7014,
-                    "end": 7019,
+                    "commentStart": 7042,
+                    "end": 7047,
                     "moduleId": 0,
-                    "start": 7014,
+                    "start": 7042,
                     "type": "TagDeclarator",
                     "value": "fall4"
                   },
@@ -4914,10 +4918,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     -48.529411764704825
                   ],
                   "tag": {
-                    "commentStart": 7090,
-                    "end": 7095,
+                    "commentStart": 7118,
+                    "end": 7123,
                     "moduleId": 0,
-                    "start": 7090,
+                    "start": 7118,
                     "type": "TagDeclarator",
                     "value": "flat5"
                   },
@@ -4938,10 +4942,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     -48.52941176470481
                   ],
                   "tag": {
-                    "commentStart": 7166,
-                    "end": 7171,
+                    "commentStart": 7194,
+                    "end": 7199,
                     "moduleId": 0,
-                    "start": 7166,
+                    "start": 7194,
                     "type": "TagDeclarator",
                     "value": "rise5"
                   },
@@ -4962,10 +4966,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     -24.999999999998828
                   ],
                   "tag": {
-                    "commentStart": 7243,
-                    "end": 7248,
+                    "commentStart": 7271,
+                    "end": 7276,
                     "moduleId": 0,
-                    "start": 7243,
+                    "start": 7271,
                     "type": "TagDeclarator",
                     "value": "peak5"
                   },
@@ -4986,10 +4990,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     -24.999999999998817
                   ],
                   "tag": {
-                    "commentStart": 7320,
-                    "end": 7325,
+                    "commentStart": 7348,
+                    "end": 7353,
                     "moduleId": 0,
-                    "start": 7320,
+                    "start": 7348,
                     "type": "TagDeclarator",
                     "value": "fall5"
                   },
@@ -5010,10 +5014,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     -48.52941176470463
                   ],
                   "tag": {
-                    "commentStart": 7397,
-                    "end": 7401,
+                    "commentStart": 7425,
+                    "end": 7429,
                     "moduleId": 0,
-                    "start": 7397,
+                    "start": 7425,
                     "type": "TagDeclarator",
                     "value": "tail"
                   },
@@ -5034,10 +5038,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     -48.529411764704626
                   ],
                   "tag": {
-                    "commentStart": 7473,
-                    "end": 7482,
+                    "commentStart": 7501,
+                    "end": 7510,
                     "moduleId": 0,
-                    "start": 7473,
+                    "start": 7501,
                     "type": "TagDeclarator",
                     "value": "rightWall"
                   },
@@ -5058,10 +5062,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     0.000000000000018985182656878265
                   ],
                   "tag": {
-                    "commentStart": 7552,
-                    "end": 7559,
+                    "commentStart": 7580,
+                    "end": 7587,
                     "moduleId": 0,
-                    "start": 7552,
+                    "start": 7580,
                     "type": "TagDeclarator",
                     "value": "topLine"
                   },
@@ -5074,17 +5078,17 @@ description: Variables in memory after executing thermal-block-insert.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 143,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -6927,10 +6931,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             0.00000000000003784013013352836
           ],
           "tag": {
-            "commentStart": 5780,
-            "end": 5788,
+            "commentStart": 5808,
+            "end": 5816,
             "moduleId": 0,
-            "start": 5780,
+            "start": 5808,
             "type": "TagDeclarator",
             "value": "leftWall"
           },
@@ -6951,10 +6955,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -48.52941176470583
           ],
           "tag": {
-            "commentStart": 5860,
-            "end": 5865,
+            "commentStart": 5888,
+            "end": 5893,
             "moduleId": 0,
-            "start": 5860,
+            "start": 5888,
             "type": "TagDeclarator",
             "value": "flat1"
           },
@@ -6975,10 +6979,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -48.52941176470579
           ],
           "tag": {
-            "commentStart": 5939,
-            "end": 5944,
+            "commentStart": 5967,
+            "end": 5972,
             "moduleId": 0,
-            "start": 5939,
+            "start": 5967,
             "type": "TagDeclarator",
             "value": "rise1"
           },
@@ -6999,10 +7003,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -24.999999999999822
           ],
           "tag": {
-            "commentStart": 6018,
-            "end": 6023,
+            "commentStart": 6046,
+            "end": 6051,
             "moduleId": 0,
-            "start": 6018,
+            "start": 6046,
             "type": "TagDeclarator",
             "value": "peak1"
           },
@@ -7023,10 +7027,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -24.999999999999787
           ],
           "tag": {
-            "commentStart": 6097,
-            "end": 6102,
+            "commentStart": 6125,
+            "end": 6130,
             "moduleId": 0,
-            "start": 6097,
+            "start": 6125,
             "type": "TagDeclarator",
             "value": "fall1"
           },
@@ -7047,10 +7051,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -48.52941176470559
           ],
           "tag": {
-            "commentStart": 6176,
-            "end": 6181,
+            "commentStart": 6204,
+            "end": 6209,
             "moduleId": 0,
-            "start": 6176,
+            "start": 6204,
             "type": "TagDeclarator",
             "value": "flat2"
           },
@@ -7071,10 +7075,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -48.52941176470556
           ],
           "tag": {
-            "commentStart": 6254,
-            "end": 6259,
+            "commentStart": 6282,
+            "end": 6287,
             "moduleId": 0,
-            "start": 6254,
+            "start": 6282,
             "type": "TagDeclarator",
             "value": "rise2"
           },
@@ -7095,10 +7099,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -24.999999999999563
           ],
           "tag": {
-            "commentStart": 6331,
-            "end": 6336,
+            "commentStart": 6359,
+            "end": 6364,
             "moduleId": 0,
-            "start": 6331,
+            "start": 6359,
             "type": "TagDeclarator",
             "value": "peak2"
           },
@@ -7119,10 +7123,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -24.99999999999953
           ],
           "tag": {
-            "commentStart": 6408,
-            "end": 6413,
+            "commentStart": 6436,
+            "end": 6441,
             "moduleId": 0,
-            "start": 6408,
+            "start": 6436,
             "type": "TagDeclarator",
             "value": "fall2"
           },
@@ -7143,10 +7147,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -48.529411764705316
           ],
           "tag": {
-            "commentStart": 6485,
-            "end": 6490,
+            "commentStart": 6513,
+            "end": 6518,
             "moduleId": 0,
-            "start": 6485,
+            "start": 6513,
             "type": "TagDeclarator",
             "value": "flat3"
           },
@@ -7167,10 +7171,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -48.52941176470529
           ],
           "tag": {
-            "commentStart": 6561,
-            "end": 6566,
+            "commentStart": 6589,
+            "end": 6594,
             "moduleId": 0,
-            "start": 6561,
+            "start": 6589,
             "type": "TagDeclarator",
             "value": "rise3"
           },
@@ -7191,10 +7195,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -24.999999999999293
           ],
           "tag": {
-            "commentStart": 6637,
-            "end": 6642,
+            "commentStart": 6665,
+            "end": 6670,
             "moduleId": 0,
-            "start": 6637,
+            "start": 6665,
             "type": "TagDeclarator",
             "value": "peak3"
           },
@@ -7215,10 +7219,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -24.999999999999265
           ],
           "tag": {
-            "commentStart": 6713,
-            "end": 6718,
+            "commentStart": 6741,
+            "end": 6746,
             "moduleId": 0,
-            "start": 6713,
+            "start": 6741,
             "type": "TagDeclarator",
             "value": "fall3"
           },
@@ -7239,10 +7243,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -48.52941176470506
           ],
           "tag": {
-            "commentStart": 6788,
-            "end": 6793,
+            "commentStart": 6816,
+            "end": 6821,
             "moduleId": 0,
-            "start": 6788,
+            "start": 6816,
             "type": "TagDeclarator",
             "value": "flat4"
           },
@@ -7263,10 +7267,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -48.52941176470503
           ],
           "tag": {
-            "commentStart": 6863,
-            "end": 6868,
+            "commentStart": 6891,
+            "end": 6896,
             "moduleId": 0,
-            "start": 6863,
+            "start": 6891,
             "type": "TagDeclarator",
             "value": "rise4"
           },
@@ -7287,10 +7291,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -24.999999999999044
           ],
           "tag": {
-            "commentStart": 6938,
-            "end": 6943,
+            "commentStart": 6966,
+            "end": 6971,
             "moduleId": 0,
-            "start": 6938,
+            "start": 6966,
             "type": "TagDeclarator",
             "value": "peak4"
           },
@@ -7311,10 +7315,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -24.999999999999023
           ],
           "tag": {
-            "commentStart": 7014,
-            "end": 7019,
+            "commentStart": 7042,
+            "end": 7047,
             "moduleId": 0,
-            "start": 7014,
+            "start": 7042,
             "type": "TagDeclarator",
             "value": "fall4"
           },
@@ -7335,10 +7339,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -48.529411764704825
           ],
           "tag": {
-            "commentStart": 7090,
-            "end": 7095,
+            "commentStart": 7118,
+            "end": 7123,
             "moduleId": 0,
-            "start": 7090,
+            "start": 7118,
             "type": "TagDeclarator",
             "value": "flat5"
           },
@@ -7359,10 +7363,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -48.52941176470481
           ],
           "tag": {
-            "commentStart": 7166,
-            "end": 7171,
+            "commentStart": 7194,
+            "end": 7199,
             "moduleId": 0,
-            "start": 7166,
+            "start": 7194,
             "type": "TagDeclarator",
             "value": "rise5"
           },
@@ -7383,10 +7387,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -24.999999999998828
           ],
           "tag": {
-            "commentStart": 7243,
-            "end": 7248,
+            "commentStart": 7271,
+            "end": 7276,
             "moduleId": 0,
-            "start": 7243,
+            "start": 7271,
             "type": "TagDeclarator",
             "value": "peak5"
           },
@@ -7407,10 +7411,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -24.999999999998817
           ],
           "tag": {
-            "commentStart": 7320,
-            "end": 7325,
+            "commentStart": 7348,
+            "end": 7353,
             "moduleId": 0,
-            "start": 7320,
+            "start": 7348,
             "type": "TagDeclarator",
             "value": "fall5"
           },
@@ -7431,10 +7435,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -48.52941176470463
           ],
           "tag": {
-            "commentStart": 7397,
-            "end": 7401,
+            "commentStart": 7425,
+            "end": 7429,
             "moduleId": 0,
-            "start": 7397,
+            "start": 7425,
             "type": "TagDeclarator",
             "value": "tail"
           },
@@ -7455,10 +7459,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -48.529411764704626
           ],
           "tag": {
-            "commentStart": 7473,
-            "end": 7482,
+            "commentStart": 7501,
+            "end": 7510,
             "moduleId": 0,
-            "start": 7473,
+            "start": 7501,
             "type": "TagDeclarator",
             "value": "rightWall"
           },
@@ -7479,10 +7483,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             0.000000000000018985182656878265
           ],
           "tag": {
-            "commentStart": 7552,
-            "end": 7559,
+            "commentStart": 7580,
+            "end": 7587,
             "moduleId": 0,
-            "start": 7552,
+            "start": 7580,
             "type": "TagDeclarator",
             "value": "topLine"
           },
@@ -7495,17 +7499,17 @@ description: Variables in memory after executing thermal-block-insert.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 143,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -7661,10 +7665,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -0.00000000000003643700893909418
           ],
           "tag": {
-            "commentStart": 1195,
-            "end": 1203,
+            "commentStart": 1223,
+            "end": 1231,
             "moduleId": 0,
-            "start": 1195,
+            "start": 1223,
             "type": "TagDeclarator",
             "value": "leftWall"
           },
@@ -7685,10 +7689,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             24.999999999999947
           ],
           "tag": {
-            "commentStart": 1274,
-            "end": 1279,
+            "commentStart": 1302,
+            "end": 1307,
             "moduleId": 0,
-            "start": 1274,
+            "start": 1302,
             "type": "TagDeclarator",
             "value": "flat1"
           },
@@ -7709,10 +7713,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             24.99999999999991
           ],
           "tag": {
-            "commentStart": 1351,
-            "end": 1356,
+            "commentStart": 1379,
+            "end": 1384,
             "moduleId": 0,
-            "start": 1351,
+            "start": 1379,
             "type": "TagDeclarator",
             "value": "rise1"
           },
@@ -7733,10 +7737,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             48.52941176470571
           ],
           "tag": {
-            "commentStart": 1428,
-            "end": 1433,
+            "commentStart": 1456,
+            "end": 1461,
             "moduleId": 0,
-            "start": 1428,
+            "start": 1456,
             "type": "TagDeclarator",
             "value": "peak1"
           },
@@ -7757,10 +7761,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             48.52941176470568
           ],
           "tag": {
-            "commentStart": 1505,
-            "end": 1510,
+            "commentStart": 1533,
+            "end": 1538,
             "moduleId": 0,
-            "start": 1505,
+            "start": 1533,
             "type": "TagDeclarator",
             "value": "fall1"
           },
@@ -7781,10 +7785,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             24.99999999999972
           ],
           "tag": {
-            "commentStart": 1582,
-            "end": 1587,
+            "commentStart": 1610,
+            "end": 1615,
             "moduleId": 0,
-            "start": 1582,
+            "start": 1610,
             "type": "TagDeclarator",
             "value": "flat2"
           },
@@ -7805,10 +7809,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             24.999999999999687
           ],
           "tag": {
-            "commentStart": 1658,
-            "end": 1663,
+            "commentStart": 1686,
+            "end": 1691,
             "moduleId": 0,
-            "start": 1658,
+            "start": 1686,
             "type": "TagDeclarator",
             "value": "rise2"
           },
@@ -7829,10 +7833,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             48.529411764705465
           ],
           "tag": {
-            "commentStart": 1733,
-            "end": 1738,
+            "commentStart": 1761,
+            "end": 1766,
             "moduleId": 0,
-            "start": 1733,
+            "start": 1761,
             "type": "TagDeclarator",
             "value": "peak2"
           },
@@ -7853,10 +7857,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             48.529411764705436
           ],
           "tag": {
-            "commentStart": 1808,
-            "end": 1813,
+            "commentStart": 1836,
+            "end": 1841,
             "moduleId": 0,
-            "start": 1808,
+            "start": 1836,
             "type": "TagDeclarator",
             "value": "fall2"
           },
@@ -7877,10 +7881,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             24.999999999999464
           ],
           "tag": {
-            "commentStart": 1883,
-            "end": 1888,
+            "commentStart": 1911,
+            "end": 1916,
             "moduleId": 0,
-            "start": 1883,
+            "start": 1911,
             "type": "TagDeclarator",
             "value": "flat3"
           },
@@ -7901,10 +7905,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             24.999999999999435
           ],
           "tag": {
-            "commentStart": 1957,
-            "end": 1962,
+            "commentStart": 1985,
+            "end": 1990,
             "moduleId": 0,
-            "start": 1957,
+            "start": 1985,
             "type": "TagDeclarator",
             "value": "rise3"
           },
@@ -7925,10 +7929,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             48.52941176470521
           ],
           "tag": {
-            "commentStart": 2031,
-            "end": 2036,
+            "commentStart": 2059,
+            "end": 2064,
             "moduleId": 0,
-            "start": 2031,
+            "start": 2059,
             "type": "TagDeclarator",
             "value": "peak3"
           },
@@ -7949,10 +7953,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             48.52941176470519
           ],
           "tag": {
-            "commentStart": 2105,
-            "end": 2110,
+            "commentStart": 2133,
+            "end": 2138,
             "moduleId": 0,
-            "start": 2105,
+            "start": 2133,
             "type": "TagDeclarator",
             "value": "fall3"
           },
@@ -7973,10 +7977,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             24.999999999999215
           ],
           "tag": {
-            "commentStart": 2178,
-            "end": 2183,
+            "commentStart": 2206,
+            "end": 2211,
             "moduleId": 0,
-            "start": 2178,
+            "start": 2206,
             "type": "TagDeclarator",
             "value": "flat4"
           },
@@ -7997,10 +8001,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             24.999999999999194
           ],
           "tag": {
-            "commentStart": 2251,
-            "end": 2256,
+            "commentStart": 2279,
+            "end": 2284,
             "moduleId": 0,
-            "start": 2251,
+            "start": 2279,
             "type": "TagDeclarator",
             "value": "rise4"
           },
@@ -8021,10 +8025,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             48.529411764704975
           ],
           "tag": {
-            "commentStart": 2324,
-            "end": 2329,
+            "commentStart": 2352,
+            "end": 2357,
             "moduleId": 0,
-            "start": 2324,
+            "start": 2352,
             "type": "TagDeclarator",
             "value": "peak4"
           },
@@ -8045,10 +8049,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             48.52941176470496
           ],
           "tag": {
-            "commentStart": 2398,
-            "end": 2403,
+            "commentStart": 2426,
+            "end": 2431,
             "moduleId": 0,
-            "start": 2398,
+            "start": 2426,
             "type": "TagDeclarator",
             "value": "fall4"
           },
@@ -8069,10 +8073,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             24.99999999999899
           ],
           "tag": {
-            "commentStart": 2472,
-            "end": 2477,
+            "commentStart": 2500,
+            "end": 2505,
             "moduleId": 0,
-            "start": 2472,
+            "start": 2500,
             "type": "TagDeclarator",
             "value": "flat5"
           },
@@ -8093,10 +8097,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             24.999999999998977
           ],
           "tag": {
-            "commentStart": 2546,
-            "end": 2551,
+            "commentStart": 2574,
+            "end": 2579,
             "moduleId": 0,
-            "start": 2546,
+            "start": 2574,
             "type": "TagDeclarator",
             "value": "rise5"
           },
@@ -8117,10 +8121,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             48.529411764704776
           ],
           "tag": {
-            "commentStart": 2621,
-            "end": 2626,
+            "commentStart": 2649,
+            "end": 2654,
             "moduleId": 0,
-            "start": 2621,
+            "start": 2649,
             "type": "TagDeclarator",
             "value": "peak5"
           },
@@ -8141,10 +8145,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             48.52941176470476
           ],
           "tag": {
-            "commentStart": 2696,
-            "end": 2701,
+            "commentStart": 2724,
+            "end": 2729,
             "moduleId": 0,
-            "start": 2696,
+            "start": 2724,
             "type": "TagDeclarator",
             "value": "fall5"
           },
@@ -8165,10 +8169,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             24.999999999998806
           ],
           "tag": {
-            "commentStart": 2771,
-            "end": 2775,
+            "commentStart": 2799,
+            "end": 2803,
             "moduleId": 0,
-            "start": 2771,
+            "start": 2799,
             "type": "TagDeclarator",
             "value": "tail"
           },
@@ -8189,10 +8193,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             24.999999999998803
           ],
           "tag": {
-            "commentStart": 2845,
-            "end": 2854,
+            "commentStart": 2873,
+            "end": 2882,
             "moduleId": 0,
-            "start": 2845,
+            "start": 2873,
             "type": "TagDeclarator",
             "value": "rightWall"
           },
@@ -8213,10 +8217,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -0.000000000000018282669121125734
           ],
           "tag": {
-            "commentStart": 2923,
-            "end": 2931,
+            "commentStart": 2951,
+            "end": 2959,
             "moduleId": 0,
-            "start": 2923,
+            "start": 2951,
             "type": "TagDeclarator",
             "value": "baseLine"
           },
@@ -8229,17 +8233,17 @@ description: Variables in memory after executing thermal-block-insert.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -8405,6 +8409,8 @@ description: Variables in memory after executing thermal-block-insert.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -8412,10 +8418,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1195,
-                "end": 1203,
+                "commentStart": 1223,
+                "end": 1231,
                 "moduleId": 0,
-                "start": 1195,
+                "start": 1223,
                 "type": "TagDeclarator",
                 "value": "leftWall"
               },
@@ -8426,10 +8432,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1274,
-                "end": 1279,
+                "commentStart": 1302,
+                "end": 1307,
                 "moduleId": 0,
-                "start": 1274,
+                "start": 1302,
                 "type": "TagDeclarator",
                 "value": "flat1"
               },
@@ -8440,10 +8446,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1351,
-                "end": 1356,
+                "commentStart": 1379,
+                "end": 1384,
                 "moduleId": 0,
-                "start": 1351,
+                "start": 1379,
                 "type": "TagDeclarator",
                 "value": "rise1"
               },
@@ -8454,10 +8460,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1428,
-                "end": 1433,
+                "commentStart": 1456,
+                "end": 1461,
                 "moduleId": 0,
-                "start": 1428,
+                "start": 1456,
                 "type": "TagDeclarator",
                 "value": "peak1"
               },
@@ -8468,10 +8474,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1505,
-                "end": 1510,
+                "commentStart": 1533,
+                "end": 1538,
                 "moduleId": 0,
-                "start": 1505,
+                "start": 1533,
                 "type": "TagDeclarator",
                 "value": "fall1"
               },
@@ -8482,10 +8488,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1582,
-                "end": 1587,
+                "commentStart": 1610,
+                "end": 1615,
                 "moduleId": 0,
-                "start": 1582,
+                "start": 1610,
                 "type": "TagDeclarator",
                 "value": "flat2"
               },
@@ -8496,10 +8502,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1658,
-                "end": 1663,
+                "commentStart": 1686,
+                "end": 1691,
                 "moduleId": 0,
-                "start": 1658,
+                "start": 1686,
                 "type": "TagDeclarator",
                 "value": "rise2"
               },
@@ -8510,10 +8516,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1733,
-                "end": 1738,
+                "commentStart": 1761,
+                "end": 1766,
                 "moduleId": 0,
-                "start": 1733,
+                "start": 1761,
                 "type": "TagDeclarator",
                 "value": "peak2"
               },
@@ -8524,10 +8530,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1808,
-                "end": 1813,
+                "commentStart": 1836,
+                "end": 1841,
                 "moduleId": 0,
-                "start": 1808,
+                "start": 1836,
                 "type": "TagDeclarator",
                 "value": "fall2"
               },
@@ -8538,10 +8544,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1883,
-                "end": 1888,
+                "commentStart": 1911,
+                "end": 1916,
                 "moduleId": 0,
-                "start": 1883,
+                "start": 1911,
                 "type": "TagDeclarator",
                 "value": "flat3"
               },
@@ -8552,10 +8558,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1957,
-                "end": 1962,
+                "commentStart": 1985,
+                "end": 1990,
                 "moduleId": 0,
-                "start": 1957,
+                "start": 1985,
                 "type": "TagDeclarator",
                 "value": "rise3"
               },
@@ -8566,10 +8572,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2031,
-                "end": 2036,
+                "commentStart": 2059,
+                "end": 2064,
                 "moduleId": 0,
-                "start": 2031,
+                "start": 2059,
                 "type": "TagDeclarator",
                 "value": "peak3"
               },
@@ -8580,10 +8586,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2105,
-                "end": 2110,
+                "commentStart": 2133,
+                "end": 2138,
                 "moduleId": 0,
-                "start": 2105,
+                "start": 2133,
                 "type": "TagDeclarator",
                 "value": "fall3"
               },
@@ -8594,10 +8600,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2178,
-                "end": 2183,
+                "commentStart": 2206,
+                "end": 2211,
                 "moduleId": 0,
-                "start": 2178,
+                "start": 2206,
                 "type": "TagDeclarator",
                 "value": "flat4"
               },
@@ -8608,10 +8614,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2251,
-                "end": 2256,
+                "commentStart": 2279,
+                "end": 2284,
                 "moduleId": 0,
-                "start": 2251,
+                "start": 2279,
                 "type": "TagDeclarator",
                 "value": "rise4"
               },
@@ -8622,10 +8628,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2324,
-                "end": 2329,
+                "commentStart": 2352,
+                "end": 2357,
                 "moduleId": 0,
-                "start": 2324,
+                "start": 2352,
                 "type": "TagDeclarator",
                 "value": "peak4"
               },
@@ -8636,10 +8642,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2398,
-                "end": 2403,
+                "commentStart": 2426,
+                "end": 2431,
                 "moduleId": 0,
-                "start": 2398,
+                "start": 2426,
                 "type": "TagDeclarator",
                 "value": "fall4"
               },
@@ -8650,10 +8656,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2472,
-                "end": 2477,
+                "commentStart": 2500,
+                "end": 2505,
                 "moduleId": 0,
-                "start": 2472,
+                "start": 2500,
                 "type": "TagDeclarator",
                 "value": "flat5"
               },
@@ -8664,10 +8670,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2546,
-                "end": 2551,
+                "commentStart": 2574,
+                "end": 2579,
                 "moduleId": 0,
-                "start": 2546,
+                "start": 2574,
                 "type": "TagDeclarator",
                 "value": "rise5"
               },
@@ -8678,10 +8684,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2621,
-                "end": 2626,
+                "commentStart": 2649,
+                "end": 2654,
                 "moduleId": 0,
-                "start": 2621,
+                "start": 2649,
                 "type": "TagDeclarator",
                 "value": "peak5"
               },
@@ -8692,10 +8698,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2696,
-                "end": 2701,
+                "commentStart": 2724,
+                "end": 2729,
                 "moduleId": 0,
-                "start": 2696,
+                "start": 2724,
                 "type": "TagDeclarator",
                 "value": "fall5"
               },
@@ -8706,10 +8712,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2771,
-                "end": 2775,
+                "commentStart": 2799,
+                "end": 2803,
                 "moduleId": 0,
-                "start": 2771,
+                "start": 2799,
                 "type": "TagDeclarator",
                 "value": "tail"
               },
@@ -8720,10 +8726,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2845,
-                "end": 2854,
+                "commentStart": 2873,
+                "end": 2882,
                 "moduleId": 0,
-                "start": 2845,
+                "start": 2873,
                 "type": "TagDeclarator",
                 "value": "rightWall"
               },
@@ -8734,10 +8740,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2923,
-                "end": 2931,
+                "commentStart": 2951,
+                "end": 2959,
                 "moduleId": 0,
-                "start": 2923,
+                "start": 2951,
                 "type": "TagDeclarator",
                 "value": "baseLine"
               },
@@ -8759,10 +8765,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -0.00000000000003643700893909418
                 ],
                 "tag": {
-                  "commentStart": 1195,
-                  "end": 1203,
+                  "commentStart": 1223,
+                  "end": 1231,
                   "moduleId": 0,
-                  "start": 1195,
+                  "start": 1223,
                   "type": "TagDeclarator",
                   "value": "leftWall"
                 },
@@ -8783,10 +8789,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   24.999999999999947
                 ],
                 "tag": {
-                  "commentStart": 1274,
-                  "end": 1279,
+                  "commentStart": 1302,
+                  "end": 1307,
                   "moduleId": 0,
-                  "start": 1274,
+                  "start": 1302,
                   "type": "TagDeclarator",
                   "value": "flat1"
                 },
@@ -8807,10 +8813,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   24.99999999999991
                 ],
                 "tag": {
-                  "commentStart": 1351,
-                  "end": 1356,
+                  "commentStart": 1379,
+                  "end": 1384,
                   "moduleId": 0,
-                  "start": 1351,
+                  "start": 1379,
                   "type": "TagDeclarator",
                   "value": "rise1"
                 },
@@ -8831,10 +8837,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   48.52941176470571
                 ],
                 "tag": {
-                  "commentStart": 1428,
-                  "end": 1433,
+                  "commentStart": 1456,
+                  "end": 1461,
                   "moduleId": 0,
-                  "start": 1428,
+                  "start": 1456,
                   "type": "TagDeclarator",
                   "value": "peak1"
                 },
@@ -8855,10 +8861,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   48.52941176470568
                 ],
                 "tag": {
-                  "commentStart": 1505,
-                  "end": 1510,
+                  "commentStart": 1533,
+                  "end": 1538,
                   "moduleId": 0,
-                  "start": 1505,
+                  "start": 1533,
                   "type": "TagDeclarator",
                   "value": "fall1"
                 },
@@ -8879,10 +8885,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   24.99999999999972
                 ],
                 "tag": {
-                  "commentStart": 1582,
-                  "end": 1587,
+                  "commentStart": 1610,
+                  "end": 1615,
                   "moduleId": 0,
-                  "start": 1582,
+                  "start": 1610,
                   "type": "TagDeclarator",
                   "value": "flat2"
                 },
@@ -8903,10 +8909,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   24.999999999999687
                 ],
                 "tag": {
-                  "commentStart": 1658,
-                  "end": 1663,
+                  "commentStart": 1686,
+                  "end": 1691,
                   "moduleId": 0,
-                  "start": 1658,
+                  "start": 1686,
                   "type": "TagDeclarator",
                   "value": "rise2"
                 },
@@ -8927,10 +8933,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   48.529411764705465
                 ],
                 "tag": {
-                  "commentStart": 1733,
-                  "end": 1738,
+                  "commentStart": 1761,
+                  "end": 1766,
                   "moduleId": 0,
-                  "start": 1733,
+                  "start": 1761,
                   "type": "TagDeclarator",
                   "value": "peak2"
                 },
@@ -8951,10 +8957,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   48.529411764705436
                 ],
                 "tag": {
-                  "commentStart": 1808,
-                  "end": 1813,
+                  "commentStart": 1836,
+                  "end": 1841,
                   "moduleId": 0,
-                  "start": 1808,
+                  "start": 1836,
                   "type": "TagDeclarator",
                   "value": "fall2"
                 },
@@ -8975,10 +8981,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   24.999999999999464
                 ],
                 "tag": {
-                  "commentStart": 1883,
-                  "end": 1888,
+                  "commentStart": 1911,
+                  "end": 1916,
                   "moduleId": 0,
-                  "start": 1883,
+                  "start": 1911,
                   "type": "TagDeclarator",
                   "value": "flat3"
                 },
@@ -8999,10 +9005,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   24.999999999999435
                 ],
                 "tag": {
-                  "commentStart": 1957,
-                  "end": 1962,
+                  "commentStart": 1985,
+                  "end": 1990,
                   "moduleId": 0,
-                  "start": 1957,
+                  "start": 1985,
                   "type": "TagDeclarator",
                   "value": "rise3"
                 },
@@ -9023,10 +9029,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   48.52941176470521
                 ],
                 "tag": {
-                  "commentStart": 2031,
-                  "end": 2036,
+                  "commentStart": 2059,
+                  "end": 2064,
                   "moduleId": 0,
-                  "start": 2031,
+                  "start": 2059,
                   "type": "TagDeclarator",
                   "value": "peak3"
                 },
@@ -9047,10 +9053,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   48.52941176470519
                 ],
                 "tag": {
-                  "commentStart": 2105,
-                  "end": 2110,
+                  "commentStart": 2133,
+                  "end": 2138,
                   "moduleId": 0,
-                  "start": 2105,
+                  "start": 2133,
                   "type": "TagDeclarator",
                   "value": "fall3"
                 },
@@ -9071,10 +9077,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   24.999999999999215
                 ],
                 "tag": {
-                  "commentStart": 2178,
-                  "end": 2183,
+                  "commentStart": 2206,
+                  "end": 2211,
                   "moduleId": 0,
-                  "start": 2178,
+                  "start": 2206,
                   "type": "TagDeclarator",
                   "value": "flat4"
                 },
@@ -9095,10 +9101,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   24.999999999999194
                 ],
                 "tag": {
-                  "commentStart": 2251,
-                  "end": 2256,
+                  "commentStart": 2279,
+                  "end": 2284,
                   "moduleId": 0,
-                  "start": 2251,
+                  "start": 2279,
                   "type": "TagDeclarator",
                   "value": "rise4"
                 },
@@ -9119,10 +9125,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   48.529411764704975
                 ],
                 "tag": {
-                  "commentStart": 2324,
-                  "end": 2329,
+                  "commentStart": 2352,
+                  "end": 2357,
                   "moduleId": 0,
-                  "start": 2324,
+                  "start": 2352,
                   "type": "TagDeclarator",
                   "value": "peak4"
                 },
@@ -9143,10 +9149,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   48.52941176470496
                 ],
                 "tag": {
-                  "commentStart": 2398,
-                  "end": 2403,
+                  "commentStart": 2426,
+                  "end": 2431,
                   "moduleId": 0,
-                  "start": 2398,
+                  "start": 2426,
                   "type": "TagDeclarator",
                   "value": "fall4"
                 },
@@ -9167,10 +9173,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   24.99999999999899
                 ],
                 "tag": {
-                  "commentStart": 2472,
-                  "end": 2477,
+                  "commentStart": 2500,
+                  "end": 2505,
                   "moduleId": 0,
-                  "start": 2472,
+                  "start": 2500,
                   "type": "TagDeclarator",
                   "value": "flat5"
                 },
@@ -9191,10 +9197,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   24.999999999998977
                 ],
                 "tag": {
-                  "commentStart": 2546,
-                  "end": 2551,
+                  "commentStart": 2574,
+                  "end": 2579,
                   "moduleId": 0,
-                  "start": 2546,
+                  "start": 2574,
                   "type": "TagDeclarator",
                   "value": "rise5"
                 },
@@ -9215,10 +9221,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   48.529411764704776
                 ],
                 "tag": {
-                  "commentStart": 2621,
-                  "end": 2626,
+                  "commentStart": 2649,
+                  "end": 2654,
                   "moduleId": 0,
-                  "start": 2621,
+                  "start": 2649,
                   "type": "TagDeclarator",
                   "value": "peak5"
                 },
@@ -9239,10 +9245,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   48.52941176470476
                 ],
                 "tag": {
-                  "commentStart": 2696,
-                  "end": 2701,
+                  "commentStart": 2724,
+                  "end": 2729,
                   "moduleId": 0,
-                  "start": 2696,
+                  "start": 2724,
                   "type": "TagDeclarator",
                   "value": "fall5"
                 },
@@ -9263,10 +9269,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   24.999999999998806
                 ],
                 "tag": {
-                  "commentStart": 2771,
-                  "end": 2775,
+                  "commentStart": 2799,
+                  "end": 2803,
                   "moduleId": 0,
-                  "start": 2771,
+                  "start": 2799,
                   "type": "TagDeclarator",
                   "value": "tail"
                 },
@@ -9287,10 +9293,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   24.999999999998803
                 ],
                 "tag": {
-                  "commentStart": 2845,
-                  "end": 2854,
+                  "commentStart": 2873,
+                  "end": 2882,
                   "moduleId": 0,
-                  "start": 2845,
+                  "start": 2873,
                   "type": "TagDeclarator",
                   "value": "rightWall"
                 },
@@ -9311,10 +9317,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -0.000000000000018282669121125734
                 ],
                 "tag": {
-                  "commentStart": 2923,
-                  "end": 2931,
+                  "commentStart": 2951,
+                  "end": 2959,
                   "moduleId": 0,
-                  "start": 2923,
+                  "start": 2951,
                   "type": "TagDeclarator",
                   "value": "baseLine"
                 },
@@ -9327,17 +9333,17 @@ description: Variables in memory after executing thermal-block-insert.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -9473,8 +9479,8 @@ description: Variables in memory after executing thermal-block-insert.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -9487,6 +9493,8 @@ description: Variables in memory after executing thermal-block-insert.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -9494,10 +9502,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5780,
-                "end": 5788,
+                "commentStart": 5808,
+                "end": 5816,
                 "moduleId": 0,
-                "start": 5780,
+                "start": 5808,
                 "type": "TagDeclarator",
                 "value": "leftWall"
               },
@@ -9508,10 +9516,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5860,
-                "end": 5865,
+                "commentStart": 5888,
+                "end": 5893,
                 "moduleId": 0,
-                "start": 5860,
+                "start": 5888,
                 "type": "TagDeclarator",
                 "value": "flat1"
               },
@@ -9522,10 +9530,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5939,
-                "end": 5944,
+                "commentStart": 5967,
+                "end": 5972,
                 "moduleId": 0,
-                "start": 5939,
+                "start": 5967,
                 "type": "TagDeclarator",
                 "value": "rise1"
               },
@@ -9536,10 +9544,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6018,
-                "end": 6023,
+                "commentStart": 6046,
+                "end": 6051,
                 "moduleId": 0,
-                "start": 6018,
+                "start": 6046,
                 "type": "TagDeclarator",
                 "value": "peak1"
               },
@@ -9550,10 +9558,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6097,
-                "end": 6102,
+                "commentStart": 6125,
+                "end": 6130,
                 "moduleId": 0,
-                "start": 6097,
+                "start": 6125,
                 "type": "TagDeclarator",
                 "value": "fall1"
               },
@@ -9564,10 +9572,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6176,
-                "end": 6181,
+                "commentStart": 6204,
+                "end": 6209,
                 "moduleId": 0,
-                "start": 6176,
+                "start": 6204,
                 "type": "TagDeclarator",
                 "value": "flat2"
               },
@@ -9578,10 +9586,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6254,
-                "end": 6259,
+                "commentStart": 6282,
+                "end": 6287,
                 "moduleId": 0,
-                "start": 6254,
+                "start": 6282,
                 "type": "TagDeclarator",
                 "value": "rise2"
               },
@@ -9592,10 +9600,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6331,
-                "end": 6336,
+                "commentStart": 6359,
+                "end": 6364,
                 "moduleId": 0,
-                "start": 6331,
+                "start": 6359,
                 "type": "TagDeclarator",
                 "value": "peak2"
               },
@@ -9606,10 +9614,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6408,
-                "end": 6413,
+                "commentStart": 6436,
+                "end": 6441,
                 "moduleId": 0,
-                "start": 6408,
+                "start": 6436,
                 "type": "TagDeclarator",
                 "value": "fall2"
               },
@@ -9620,10 +9628,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6485,
-                "end": 6490,
+                "commentStart": 6513,
+                "end": 6518,
                 "moduleId": 0,
-                "start": 6485,
+                "start": 6513,
                 "type": "TagDeclarator",
                 "value": "flat3"
               },
@@ -9634,10 +9642,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6561,
-                "end": 6566,
+                "commentStart": 6589,
+                "end": 6594,
                 "moduleId": 0,
-                "start": 6561,
+                "start": 6589,
                 "type": "TagDeclarator",
                 "value": "rise3"
               },
@@ -9648,10 +9656,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6637,
-                "end": 6642,
+                "commentStart": 6665,
+                "end": 6670,
                 "moduleId": 0,
-                "start": 6637,
+                "start": 6665,
                 "type": "TagDeclarator",
                 "value": "peak3"
               },
@@ -9662,10 +9670,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6713,
-                "end": 6718,
+                "commentStart": 6741,
+                "end": 6746,
                 "moduleId": 0,
-                "start": 6713,
+                "start": 6741,
                 "type": "TagDeclarator",
                 "value": "fall3"
               },
@@ -9676,10 +9684,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6788,
-                "end": 6793,
+                "commentStart": 6816,
+                "end": 6821,
                 "moduleId": 0,
-                "start": 6788,
+                "start": 6816,
                 "type": "TagDeclarator",
                 "value": "flat4"
               },
@@ -9690,10 +9698,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6863,
-                "end": 6868,
+                "commentStart": 6891,
+                "end": 6896,
                 "moduleId": 0,
-                "start": 6863,
+                "start": 6891,
                 "type": "TagDeclarator",
                 "value": "rise4"
               },
@@ -9704,10 +9712,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6938,
-                "end": 6943,
+                "commentStart": 6966,
+                "end": 6971,
                 "moduleId": 0,
-                "start": 6938,
+                "start": 6966,
                 "type": "TagDeclarator",
                 "value": "peak4"
               },
@@ -9718,10 +9726,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7014,
-                "end": 7019,
+                "commentStart": 7042,
+                "end": 7047,
                 "moduleId": 0,
-                "start": 7014,
+                "start": 7042,
                 "type": "TagDeclarator",
                 "value": "fall4"
               },
@@ -9732,10 +9740,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7090,
-                "end": 7095,
+                "commentStart": 7118,
+                "end": 7123,
                 "moduleId": 0,
-                "start": 7090,
+                "start": 7118,
                 "type": "TagDeclarator",
                 "value": "flat5"
               },
@@ -9746,10 +9754,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7166,
-                "end": 7171,
+                "commentStart": 7194,
+                "end": 7199,
                 "moduleId": 0,
-                "start": 7166,
+                "start": 7194,
                 "type": "TagDeclarator",
                 "value": "rise5"
               },
@@ -9760,10 +9768,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7243,
-                "end": 7248,
+                "commentStart": 7271,
+                "end": 7276,
                 "moduleId": 0,
-                "start": 7243,
+                "start": 7271,
                 "type": "TagDeclarator",
                 "value": "peak5"
               },
@@ -9774,10 +9782,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7320,
-                "end": 7325,
+                "commentStart": 7348,
+                "end": 7353,
                 "moduleId": 0,
-                "start": 7320,
+                "start": 7348,
                 "type": "TagDeclarator",
                 "value": "fall5"
               },
@@ -9788,10 +9796,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7397,
-                "end": 7401,
+                "commentStart": 7425,
+                "end": 7429,
                 "moduleId": 0,
-                "start": 7397,
+                "start": 7425,
                 "type": "TagDeclarator",
                 "value": "tail"
               },
@@ -9802,10 +9810,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7473,
-                "end": 7482,
+                "commentStart": 7501,
+                "end": 7510,
                 "moduleId": 0,
-                "start": 7473,
+                "start": 7501,
                 "type": "TagDeclarator",
                 "value": "rightWall"
               },
@@ -9816,10 +9824,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7552,
-                "end": 7559,
+                "commentStart": 7580,
+                "end": 7587,
                 "moduleId": 0,
-                "start": 7552,
+                "start": 7580,
                 "type": "TagDeclarator",
                 "value": "topLine"
               },
@@ -9841,10 +9849,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   0.00000000000003784013013352836
                 ],
                 "tag": {
-                  "commentStart": 5780,
-                  "end": 5788,
+                  "commentStart": 5808,
+                  "end": 5816,
                   "moduleId": 0,
-                  "start": 5780,
+                  "start": 5808,
                   "type": "TagDeclarator",
                   "value": "leftWall"
                 },
@@ -9865,10 +9873,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -48.52941176470583
                 ],
                 "tag": {
-                  "commentStart": 5860,
-                  "end": 5865,
+                  "commentStart": 5888,
+                  "end": 5893,
                   "moduleId": 0,
-                  "start": 5860,
+                  "start": 5888,
                   "type": "TagDeclarator",
                   "value": "flat1"
                 },
@@ -9889,10 +9897,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -48.52941176470579
                 ],
                 "tag": {
-                  "commentStart": 5939,
-                  "end": 5944,
+                  "commentStart": 5967,
+                  "end": 5972,
                   "moduleId": 0,
-                  "start": 5939,
+                  "start": 5967,
                   "type": "TagDeclarator",
                   "value": "rise1"
                 },
@@ -9913,10 +9921,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -24.999999999999822
                 ],
                 "tag": {
-                  "commentStart": 6018,
-                  "end": 6023,
+                  "commentStart": 6046,
+                  "end": 6051,
                   "moduleId": 0,
-                  "start": 6018,
+                  "start": 6046,
                   "type": "TagDeclarator",
                   "value": "peak1"
                 },
@@ -9937,10 +9945,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -24.999999999999787
                 ],
                 "tag": {
-                  "commentStart": 6097,
-                  "end": 6102,
+                  "commentStart": 6125,
+                  "end": 6130,
                   "moduleId": 0,
-                  "start": 6097,
+                  "start": 6125,
                   "type": "TagDeclarator",
                   "value": "fall1"
                 },
@@ -9961,10 +9969,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -48.52941176470559
                 ],
                 "tag": {
-                  "commentStart": 6176,
-                  "end": 6181,
+                  "commentStart": 6204,
+                  "end": 6209,
                   "moduleId": 0,
-                  "start": 6176,
+                  "start": 6204,
                   "type": "TagDeclarator",
                   "value": "flat2"
                 },
@@ -9985,10 +9993,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -48.52941176470556
                 ],
                 "tag": {
-                  "commentStart": 6254,
-                  "end": 6259,
+                  "commentStart": 6282,
+                  "end": 6287,
                   "moduleId": 0,
-                  "start": 6254,
+                  "start": 6282,
                   "type": "TagDeclarator",
                   "value": "rise2"
                 },
@@ -10009,10 +10017,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -24.999999999999563
                 ],
                 "tag": {
-                  "commentStart": 6331,
-                  "end": 6336,
+                  "commentStart": 6359,
+                  "end": 6364,
                   "moduleId": 0,
-                  "start": 6331,
+                  "start": 6359,
                   "type": "TagDeclarator",
                   "value": "peak2"
                 },
@@ -10033,10 +10041,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -24.99999999999953
                 ],
                 "tag": {
-                  "commentStart": 6408,
-                  "end": 6413,
+                  "commentStart": 6436,
+                  "end": 6441,
                   "moduleId": 0,
-                  "start": 6408,
+                  "start": 6436,
                   "type": "TagDeclarator",
                   "value": "fall2"
                 },
@@ -10057,10 +10065,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -48.529411764705316
                 ],
                 "tag": {
-                  "commentStart": 6485,
-                  "end": 6490,
+                  "commentStart": 6513,
+                  "end": 6518,
                   "moduleId": 0,
-                  "start": 6485,
+                  "start": 6513,
                   "type": "TagDeclarator",
                   "value": "flat3"
                 },
@@ -10081,10 +10089,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -48.52941176470529
                 ],
                 "tag": {
-                  "commentStart": 6561,
-                  "end": 6566,
+                  "commentStart": 6589,
+                  "end": 6594,
                   "moduleId": 0,
-                  "start": 6561,
+                  "start": 6589,
                   "type": "TagDeclarator",
                   "value": "rise3"
                 },
@@ -10105,10 +10113,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -24.999999999999293
                 ],
                 "tag": {
-                  "commentStart": 6637,
-                  "end": 6642,
+                  "commentStart": 6665,
+                  "end": 6670,
                   "moduleId": 0,
-                  "start": 6637,
+                  "start": 6665,
                   "type": "TagDeclarator",
                   "value": "peak3"
                 },
@@ -10129,10 +10137,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -24.999999999999265
                 ],
                 "tag": {
-                  "commentStart": 6713,
-                  "end": 6718,
+                  "commentStart": 6741,
+                  "end": 6746,
                   "moduleId": 0,
-                  "start": 6713,
+                  "start": 6741,
                   "type": "TagDeclarator",
                   "value": "fall3"
                 },
@@ -10153,10 +10161,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -48.52941176470506
                 ],
                 "tag": {
-                  "commentStart": 6788,
-                  "end": 6793,
+                  "commentStart": 6816,
+                  "end": 6821,
                   "moduleId": 0,
-                  "start": 6788,
+                  "start": 6816,
                   "type": "TagDeclarator",
                   "value": "flat4"
                 },
@@ -10177,10 +10185,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -48.52941176470503
                 ],
                 "tag": {
-                  "commentStart": 6863,
-                  "end": 6868,
+                  "commentStart": 6891,
+                  "end": 6896,
                   "moduleId": 0,
-                  "start": 6863,
+                  "start": 6891,
                   "type": "TagDeclarator",
                   "value": "rise4"
                 },
@@ -10201,10 +10209,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -24.999999999999044
                 ],
                 "tag": {
-                  "commentStart": 6938,
-                  "end": 6943,
+                  "commentStart": 6966,
+                  "end": 6971,
                   "moduleId": 0,
-                  "start": 6938,
+                  "start": 6966,
                   "type": "TagDeclarator",
                   "value": "peak4"
                 },
@@ -10225,10 +10233,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -24.999999999999023
                 ],
                 "tag": {
-                  "commentStart": 7014,
-                  "end": 7019,
+                  "commentStart": 7042,
+                  "end": 7047,
                   "moduleId": 0,
-                  "start": 7014,
+                  "start": 7042,
                   "type": "TagDeclarator",
                   "value": "fall4"
                 },
@@ -10249,10 +10257,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -48.529411764704825
                 ],
                 "tag": {
-                  "commentStart": 7090,
-                  "end": 7095,
+                  "commentStart": 7118,
+                  "end": 7123,
                   "moduleId": 0,
-                  "start": 7090,
+                  "start": 7118,
                   "type": "TagDeclarator",
                   "value": "flat5"
                 },
@@ -10273,10 +10281,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -48.52941176470481
                 ],
                 "tag": {
-                  "commentStart": 7166,
-                  "end": 7171,
+                  "commentStart": 7194,
+                  "end": 7199,
                   "moduleId": 0,
-                  "start": 7166,
+                  "start": 7194,
                   "type": "TagDeclarator",
                   "value": "rise5"
                 },
@@ -10297,10 +10305,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -24.999999999998828
                 ],
                 "tag": {
-                  "commentStart": 7243,
-                  "end": 7248,
+                  "commentStart": 7271,
+                  "end": 7276,
                   "moduleId": 0,
-                  "start": 7243,
+                  "start": 7271,
                   "type": "TagDeclarator",
                   "value": "peak5"
                 },
@@ -10321,10 +10329,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -24.999999999998817
                 ],
                 "tag": {
-                  "commentStart": 7320,
-                  "end": 7325,
+                  "commentStart": 7348,
+                  "end": 7353,
                   "moduleId": 0,
-                  "start": 7320,
+                  "start": 7348,
                   "type": "TagDeclarator",
                   "value": "fall5"
                 },
@@ -10345,10 +10353,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -48.52941176470463
                 ],
                 "tag": {
-                  "commentStart": 7397,
-                  "end": 7401,
+                  "commentStart": 7425,
+                  "end": 7429,
                   "moduleId": 0,
-                  "start": 7397,
+                  "start": 7425,
                   "type": "TagDeclarator",
                   "value": "tail"
                 },
@@ -10369,10 +10377,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   -48.529411764704626
                 ],
                 "tag": {
-                  "commentStart": 7473,
-                  "end": 7482,
+                  "commentStart": 7501,
+                  "end": 7510,
                   "moduleId": 0,
-                  "start": 7473,
+                  "start": 7501,
                   "type": "TagDeclarator",
                   "value": "rightWall"
                 },
@@ -10393,10 +10401,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                   0.000000000000018985182656878265
                 ],
                 "tag": {
-                  "commentStart": 7552,
-                  "end": 7559,
+                  "commentStart": 7580,
+                  "end": 7587,
                   "moduleId": 0,
-                  "start": 7552,
+                  "start": 7580,
                   "type": "TagDeclarator",
                   "value": "topLine"
                 },
@@ -10409,17 +10417,17 @@ description: Variables in memory after executing thermal-block-insert.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 143,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -10555,8 +10563,8 @@ description: Variables in memory after executing thermal-block-insert.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -10701,10 +10709,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -0.00000000000003643700893909418
           ],
           "tag": {
-            "commentStart": 1195,
-            "end": 1203,
+            "commentStart": 1223,
+            "end": 1231,
             "moduleId": 0,
-            "start": 1195,
+            "start": 1223,
             "type": "TagDeclarator",
             "value": "leftWall"
           },
@@ -10725,10 +10733,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             24.999999999999947
           ],
           "tag": {
-            "commentStart": 1274,
-            "end": 1279,
+            "commentStart": 1302,
+            "end": 1307,
             "moduleId": 0,
-            "start": 1274,
+            "start": 1302,
             "type": "TagDeclarator",
             "value": "flat1"
           },
@@ -10749,10 +10757,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             24.99999999999991
           ],
           "tag": {
-            "commentStart": 1351,
-            "end": 1356,
+            "commentStart": 1379,
+            "end": 1384,
             "moduleId": 0,
-            "start": 1351,
+            "start": 1379,
             "type": "TagDeclarator",
             "value": "rise1"
           },
@@ -10773,10 +10781,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             48.52941176470571
           ],
           "tag": {
-            "commentStart": 1428,
-            "end": 1433,
+            "commentStart": 1456,
+            "end": 1461,
             "moduleId": 0,
-            "start": 1428,
+            "start": 1456,
             "type": "TagDeclarator",
             "value": "peak1"
           },
@@ -10797,10 +10805,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             48.52941176470568
           ],
           "tag": {
-            "commentStart": 1505,
-            "end": 1510,
+            "commentStart": 1533,
+            "end": 1538,
             "moduleId": 0,
-            "start": 1505,
+            "start": 1533,
             "type": "TagDeclarator",
             "value": "fall1"
           },
@@ -10821,10 +10829,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             24.99999999999972
           ],
           "tag": {
-            "commentStart": 1582,
-            "end": 1587,
+            "commentStart": 1610,
+            "end": 1615,
             "moduleId": 0,
-            "start": 1582,
+            "start": 1610,
             "type": "TagDeclarator",
             "value": "flat2"
           },
@@ -10845,10 +10853,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             24.999999999999687
           ],
           "tag": {
-            "commentStart": 1658,
-            "end": 1663,
+            "commentStart": 1686,
+            "end": 1691,
             "moduleId": 0,
-            "start": 1658,
+            "start": 1686,
             "type": "TagDeclarator",
             "value": "rise2"
           },
@@ -10869,10 +10877,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             48.529411764705465
           ],
           "tag": {
-            "commentStart": 1733,
-            "end": 1738,
+            "commentStart": 1761,
+            "end": 1766,
             "moduleId": 0,
-            "start": 1733,
+            "start": 1761,
             "type": "TagDeclarator",
             "value": "peak2"
           },
@@ -10893,10 +10901,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             48.529411764705436
           ],
           "tag": {
-            "commentStart": 1808,
-            "end": 1813,
+            "commentStart": 1836,
+            "end": 1841,
             "moduleId": 0,
-            "start": 1808,
+            "start": 1836,
             "type": "TagDeclarator",
             "value": "fall2"
           },
@@ -10917,10 +10925,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             24.999999999999464
           ],
           "tag": {
-            "commentStart": 1883,
-            "end": 1888,
+            "commentStart": 1911,
+            "end": 1916,
             "moduleId": 0,
-            "start": 1883,
+            "start": 1911,
             "type": "TagDeclarator",
             "value": "flat3"
           },
@@ -10941,10 +10949,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             24.999999999999435
           ],
           "tag": {
-            "commentStart": 1957,
-            "end": 1962,
+            "commentStart": 1985,
+            "end": 1990,
             "moduleId": 0,
-            "start": 1957,
+            "start": 1985,
             "type": "TagDeclarator",
             "value": "rise3"
           },
@@ -10965,10 +10973,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             48.52941176470521
           ],
           "tag": {
-            "commentStart": 2031,
-            "end": 2036,
+            "commentStart": 2059,
+            "end": 2064,
             "moduleId": 0,
-            "start": 2031,
+            "start": 2059,
             "type": "TagDeclarator",
             "value": "peak3"
           },
@@ -10989,10 +10997,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             48.52941176470519
           ],
           "tag": {
-            "commentStart": 2105,
-            "end": 2110,
+            "commentStart": 2133,
+            "end": 2138,
             "moduleId": 0,
-            "start": 2105,
+            "start": 2133,
             "type": "TagDeclarator",
             "value": "fall3"
           },
@@ -11013,10 +11021,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             24.999999999999215
           ],
           "tag": {
-            "commentStart": 2178,
-            "end": 2183,
+            "commentStart": 2206,
+            "end": 2211,
             "moduleId": 0,
-            "start": 2178,
+            "start": 2206,
             "type": "TagDeclarator",
             "value": "flat4"
           },
@@ -11037,10 +11045,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             24.999999999999194
           ],
           "tag": {
-            "commentStart": 2251,
-            "end": 2256,
+            "commentStart": 2279,
+            "end": 2284,
             "moduleId": 0,
-            "start": 2251,
+            "start": 2279,
             "type": "TagDeclarator",
             "value": "rise4"
           },
@@ -11061,10 +11069,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             48.529411764704975
           ],
           "tag": {
-            "commentStart": 2324,
-            "end": 2329,
+            "commentStart": 2352,
+            "end": 2357,
             "moduleId": 0,
-            "start": 2324,
+            "start": 2352,
             "type": "TagDeclarator",
             "value": "peak4"
           },
@@ -11085,10 +11093,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             48.52941176470496
           ],
           "tag": {
-            "commentStart": 2398,
-            "end": 2403,
+            "commentStart": 2426,
+            "end": 2431,
             "moduleId": 0,
-            "start": 2398,
+            "start": 2426,
             "type": "TagDeclarator",
             "value": "fall4"
           },
@@ -11109,10 +11117,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             24.99999999999899
           ],
           "tag": {
-            "commentStart": 2472,
-            "end": 2477,
+            "commentStart": 2500,
+            "end": 2505,
             "moduleId": 0,
-            "start": 2472,
+            "start": 2500,
             "type": "TagDeclarator",
             "value": "flat5"
           },
@@ -11133,10 +11141,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             24.999999999998977
           ],
           "tag": {
-            "commentStart": 2546,
-            "end": 2551,
+            "commentStart": 2574,
+            "end": 2579,
             "moduleId": 0,
-            "start": 2546,
+            "start": 2574,
             "type": "TagDeclarator",
             "value": "rise5"
           },
@@ -11157,10 +11165,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             48.529411764704776
           ],
           "tag": {
-            "commentStart": 2621,
-            "end": 2626,
+            "commentStart": 2649,
+            "end": 2654,
             "moduleId": 0,
-            "start": 2621,
+            "start": 2649,
             "type": "TagDeclarator",
             "value": "peak5"
           },
@@ -11181,10 +11189,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             48.52941176470476
           ],
           "tag": {
-            "commentStart": 2696,
-            "end": 2701,
+            "commentStart": 2724,
+            "end": 2729,
             "moduleId": 0,
-            "start": 2696,
+            "start": 2724,
             "type": "TagDeclarator",
             "value": "fall5"
           },
@@ -11205,10 +11213,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             24.999999999998806
           ],
           "tag": {
-            "commentStart": 2771,
-            "end": 2775,
+            "commentStart": 2799,
+            "end": 2803,
             "moduleId": 0,
-            "start": 2771,
+            "start": 2799,
             "type": "TagDeclarator",
             "value": "tail"
           },
@@ -11229,10 +11237,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             24.999999999998803
           ],
           "tag": {
-            "commentStart": 2845,
-            "end": 2854,
+            "commentStart": 2873,
+            "end": 2882,
             "moduleId": 0,
-            "start": 2845,
+            "start": 2873,
             "type": "TagDeclarator",
             "value": "rightWall"
           },
@@ -11253,10 +11261,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
             -0.000000000000018282669121125734
           ],
           "tag": {
-            "commentStart": 2923,
-            "end": 2931,
+            "commentStart": 2951,
+            "end": 2959,
             "moduleId": 0,
-            "start": 2923,
+            "start": 2951,
             "type": "TagDeclarator",
             "value": "baseLine"
           },
@@ -11269,17 +11277,17 @@ description: Variables in memory after executing thermal-block-insert.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -11415,8 +11423,8 @@ description: Variables in memory after executing thermal-block-insert.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "tongueSetback": {
@@ -13011,10 +13019,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     -0.00000000000003643700893909418
                   ],
                   "tag": {
-                    "commentStart": 1195,
-                    "end": 1203,
+                    "commentStart": 1223,
+                    "end": 1231,
                     "moduleId": 0,
-                    "start": 1195,
+                    "start": 1223,
                     "type": "TagDeclarator",
                     "value": "leftWall"
                   },
@@ -13035,10 +13043,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     24.999999999999947
                   ],
                   "tag": {
-                    "commentStart": 1274,
-                    "end": 1279,
+                    "commentStart": 1302,
+                    "end": 1307,
                     "moduleId": 0,
-                    "start": 1274,
+                    "start": 1302,
                     "type": "TagDeclarator",
                     "value": "flat1"
                   },
@@ -13059,10 +13067,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     24.99999999999991
                   ],
                   "tag": {
-                    "commentStart": 1351,
-                    "end": 1356,
+                    "commentStart": 1379,
+                    "end": 1384,
                     "moduleId": 0,
-                    "start": 1351,
+                    "start": 1379,
                     "type": "TagDeclarator",
                     "value": "rise1"
                   },
@@ -13083,10 +13091,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     48.52941176470571
                   ],
                   "tag": {
-                    "commentStart": 1428,
-                    "end": 1433,
+                    "commentStart": 1456,
+                    "end": 1461,
                     "moduleId": 0,
-                    "start": 1428,
+                    "start": 1456,
                     "type": "TagDeclarator",
                     "value": "peak1"
                   },
@@ -13107,10 +13115,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     48.52941176470568
                   ],
                   "tag": {
-                    "commentStart": 1505,
-                    "end": 1510,
+                    "commentStart": 1533,
+                    "end": 1538,
                     "moduleId": 0,
-                    "start": 1505,
+                    "start": 1533,
                     "type": "TagDeclarator",
                     "value": "fall1"
                   },
@@ -13131,10 +13139,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     24.99999999999972
                   ],
                   "tag": {
-                    "commentStart": 1582,
-                    "end": 1587,
+                    "commentStart": 1610,
+                    "end": 1615,
                     "moduleId": 0,
-                    "start": 1582,
+                    "start": 1610,
                     "type": "TagDeclarator",
                     "value": "flat2"
                   },
@@ -13155,10 +13163,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     24.999999999999687
                   ],
                   "tag": {
-                    "commentStart": 1658,
-                    "end": 1663,
+                    "commentStart": 1686,
+                    "end": 1691,
                     "moduleId": 0,
-                    "start": 1658,
+                    "start": 1686,
                     "type": "TagDeclarator",
                     "value": "rise2"
                   },
@@ -13179,10 +13187,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     48.529411764705465
                   ],
                   "tag": {
-                    "commentStart": 1733,
-                    "end": 1738,
+                    "commentStart": 1761,
+                    "end": 1766,
                     "moduleId": 0,
-                    "start": 1733,
+                    "start": 1761,
                     "type": "TagDeclarator",
                     "value": "peak2"
                   },
@@ -13203,10 +13211,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     48.529411764705436
                   ],
                   "tag": {
-                    "commentStart": 1808,
-                    "end": 1813,
+                    "commentStart": 1836,
+                    "end": 1841,
                     "moduleId": 0,
-                    "start": 1808,
+                    "start": 1836,
                     "type": "TagDeclarator",
                     "value": "fall2"
                   },
@@ -13227,10 +13235,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     24.999999999999464
                   ],
                   "tag": {
-                    "commentStart": 1883,
-                    "end": 1888,
+                    "commentStart": 1911,
+                    "end": 1916,
                     "moduleId": 0,
-                    "start": 1883,
+                    "start": 1911,
                     "type": "TagDeclarator",
                     "value": "flat3"
                   },
@@ -13251,10 +13259,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     24.999999999999435
                   ],
                   "tag": {
-                    "commentStart": 1957,
-                    "end": 1962,
+                    "commentStart": 1985,
+                    "end": 1990,
                     "moduleId": 0,
-                    "start": 1957,
+                    "start": 1985,
                     "type": "TagDeclarator",
                     "value": "rise3"
                   },
@@ -13275,10 +13283,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     48.52941176470521
                   ],
                   "tag": {
-                    "commentStart": 2031,
-                    "end": 2036,
+                    "commentStart": 2059,
+                    "end": 2064,
                     "moduleId": 0,
-                    "start": 2031,
+                    "start": 2059,
                     "type": "TagDeclarator",
                     "value": "peak3"
                   },
@@ -13299,10 +13307,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     48.52941176470519
                   ],
                   "tag": {
-                    "commentStart": 2105,
-                    "end": 2110,
+                    "commentStart": 2133,
+                    "end": 2138,
                     "moduleId": 0,
-                    "start": 2105,
+                    "start": 2133,
                     "type": "TagDeclarator",
                     "value": "fall3"
                   },
@@ -13323,10 +13331,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     24.999999999999215
                   ],
                   "tag": {
-                    "commentStart": 2178,
-                    "end": 2183,
+                    "commentStart": 2206,
+                    "end": 2211,
                     "moduleId": 0,
-                    "start": 2178,
+                    "start": 2206,
                     "type": "TagDeclarator",
                     "value": "flat4"
                   },
@@ -13347,10 +13355,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     24.999999999999194
                   ],
                   "tag": {
-                    "commentStart": 2251,
-                    "end": 2256,
+                    "commentStart": 2279,
+                    "end": 2284,
                     "moduleId": 0,
-                    "start": 2251,
+                    "start": 2279,
                     "type": "TagDeclarator",
                     "value": "rise4"
                   },
@@ -13371,10 +13379,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     48.529411764704975
                   ],
                   "tag": {
-                    "commentStart": 2324,
-                    "end": 2329,
+                    "commentStart": 2352,
+                    "end": 2357,
                     "moduleId": 0,
-                    "start": 2324,
+                    "start": 2352,
                     "type": "TagDeclarator",
                     "value": "peak4"
                   },
@@ -13395,10 +13403,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     48.52941176470496
                   ],
                   "tag": {
-                    "commentStart": 2398,
-                    "end": 2403,
+                    "commentStart": 2426,
+                    "end": 2431,
                     "moduleId": 0,
-                    "start": 2398,
+                    "start": 2426,
                     "type": "TagDeclarator",
                     "value": "fall4"
                   },
@@ -13419,10 +13427,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     24.99999999999899
                   ],
                   "tag": {
-                    "commentStart": 2472,
-                    "end": 2477,
+                    "commentStart": 2500,
+                    "end": 2505,
                     "moduleId": 0,
-                    "start": 2472,
+                    "start": 2500,
                     "type": "TagDeclarator",
                     "value": "flat5"
                   },
@@ -13443,10 +13451,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     24.999999999998977
                   ],
                   "tag": {
-                    "commentStart": 2546,
-                    "end": 2551,
+                    "commentStart": 2574,
+                    "end": 2579,
                     "moduleId": 0,
-                    "start": 2546,
+                    "start": 2574,
                     "type": "TagDeclarator",
                     "value": "rise5"
                   },
@@ -13467,10 +13475,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     48.529411764704776
                   ],
                   "tag": {
-                    "commentStart": 2621,
-                    "end": 2626,
+                    "commentStart": 2649,
+                    "end": 2654,
                     "moduleId": 0,
-                    "start": 2621,
+                    "start": 2649,
                     "type": "TagDeclarator",
                     "value": "peak5"
                   },
@@ -13491,10 +13499,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     48.52941176470476
                   ],
                   "tag": {
-                    "commentStart": 2696,
-                    "end": 2701,
+                    "commentStart": 2724,
+                    "end": 2729,
                     "moduleId": 0,
-                    "start": 2696,
+                    "start": 2724,
                     "type": "TagDeclarator",
                     "value": "fall5"
                   },
@@ -13515,10 +13523,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     24.999999999998806
                   ],
                   "tag": {
-                    "commentStart": 2771,
-                    "end": 2775,
+                    "commentStart": 2799,
+                    "end": 2803,
                     "moduleId": 0,
-                    "start": 2771,
+                    "start": 2799,
                     "type": "TagDeclarator",
                     "value": "tail"
                   },
@@ -13539,10 +13547,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     24.999999999998803
                   ],
                   "tag": {
-                    "commentStart": 2845,
-                    "end": 2854,
+                    "commentStart": 2873,
+                    "end": 2882,
                     "moduleId": 0,
-                    "start": 2845,
+                    "start": 2873,
                     "type": "TagDeclarator",
                     "value": "rightWall"
                   },
@@ -13563,10 +13571,10 @@ description: Variables in memory after executing thermal-block-insert.kcl
                     -0.000000000000018282669121125734
                   ],
                   "tag": {
-                    "commentStart": 2923,
-                    "end": 2931,
+                    "commentStart": 2951,
+                    "end": 2959,
                     "moduleId": 0,
-                    "start": 2923,
+                    "start": 2951,
                     "type": "TagDeclarator",
                     "value": "baseLine"
                   },
@@ -13579,17 +13587,17 @@ description: Variables in memory after executing thermal-block-insert.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,

@@ -86,6 +86,8 @@ export type FileFilter = {
 }
 export type FiltersConfig = FileFilter[]
 
+export type CommandScopes = readonly [string, ...string[]]
+
 export type StateMachineCommandSetSchema<T extends AnyStateMachine> = Partial<{
   [EventType in EventFrom<T>['type']]: Record<string, any>
 }>
@@ -143,6 +145,8 @@ export type Command<
   icon?: Icon
   hide?: TARGET[number]
   hideFromSearch?: boolean
+  /** App contexts where the command palette and keymap may expose this command. */
+  scopes: CommandScopes
   disabled?: boolean
   status?: CommandStatus
 }
@@ -154,10 +158,17 @@ export type CommandConfig<
     StateMachineCommandSetSchema<T>[CommandName] = StateMachineCommandSetSchema<T>[CommandName],
 > = Omit<
   Command<T, CommandName, CommandSchema>,
-  'name' | 'groupId' | 'onSubmit' | 'onCancel' | 'args' | 'needsReview'
+  | 'name'
+  | 'groupId'
+  | 'onSubmit'
+  | 'onCancel'
+  | 'args'
+  | 'needsReview'
+  | 'scopes'
 > & {
   needsReview?: boolean
   status?: CommandStatus
+  scopes?: CommandScopes
   args?: {
     [ArgName in keyof CommandSchema]: CommandArgumentConfig<
       CommandSchema[ArgName],
@@ -561,6 +572,7 @@ export type CommandArgumentWithName<
 
 export type CommandArgumentOption<A> = {
   readonly name: string
+  readonly description?: string
   readonly isCurrent?: boolean
   readonly disabled?: boolean
   readonly value: A

@@ -6,7 +6,7 @@ import type { NodePath } from "./NodePath";
 import type { PlaneName } from "./PlaneName";
 import type { SourceRange } from "./SourceRange";
 
-export type Artifact = { "type": "compositeSolid" } & CompositeSolid | { "type": "plane" } & Plane | { "type": "path" } & Path | { "type": "segment" } & Segment | { "type": "solid2d" } & Solid2d | { "type": "primitiveFace" } & PrimitiveFace | { "type": "primitiveEdge" } & PrimitiveEdge | { "type": "planeOfFace" } & PlaneOfFace | { "type": "startSketchOnFace" } & StartSketchOnFace | { "type": "startSketchOnPlane" } & StartSketchOnPlane | { "type": "sketchBlock" } & SketchBlock | { "type": "sketchBlockConstraint" } & SketchBlockConstraint | { "type": "sweep" } & Sweep | { "type": "wall" } & Wall | { "type": "cap" } & Cap | { "type": "sweepEdge" } & SweepEdge | { "type": "edgeCut" } & EdgeCut | { "type": "edgeCutEdge" } & EdgeCutEdge | { "type": "helix" } & Helix | { "type": "gdtAnnotation" } & GdtAnnotationArtifact | { "type": "namedView" } & NamedViewArtifact | { "type": "pattern" } & Pattern;
+export type Artifact = { "type": "compositeSolid" } & CompositeSolid | { "type": "plane" } & Plane | { "type": "path" } & Path | { "type": "segment" } & Segment | { "type": "solid2d" } & Solid2d | { "type": "primitiveFace" } & PrimitiveFace | { "type": "primitiveEdge" } & PrimitiveEdge | { "type": "planeOfFace" } & PlaneOfFace | { "type": "startSketchOnFace" } & StartSketchOnFace | { "type": "startSketchOnPlane" } & StartSketchOnPlane | { "type": "sketchBlock" } & SketchBlock | { "type": "sketchBlockConstraint" } & SketchBlockConstraint | { "type": "sweep" } & Sweep | { "type": "wall" } & Wall | { "type": "cap" } & Cap | { "type": "sweepEdge" } & SweepEdge | { "type": "edgeCut" } & EdgeCut | { "type": "edgeCutEdge" } & EdgeCutEdge | { "type": "helix" } & Helix | { "type": "importedGeometry" } & ImportedGeometryArtifact | { "type": "gdtAnnotation" } & GdtAnnotationArtifact | { "type": "namedView" } & NamedViewArtifact | { "type": "pattern" } & Pattern;
 
 /**
  * Where a named view's camera looks from: one variant per KCL constructor
@@ -55,7 +55,8 @@ range: SourceRange,
  * The engine command.  Each artifact command is backed by an engine
  * command.  In the future, we may need to send information to the TS side
  * without an engine command, in which case, we would make this field
- * optional.
+ * optional. Imported file commands retain paths and format but omit raw
+ * file bytes after the command has been sent to the engine.
  */
 command: ModelingCmd, 
 /**
@@ -172,6 +173,8 @@ trajectorySweepId: ArtifactId | null,
  * Whether this artifact has been used in a subsequent operation
  */
 consumed: boolean, };
+
+export type ImportedGeometryArtifact = { id: ArtifactId, codeRef: CodeRef, };
 
 /**
  * A named view declared in KCL by `view::named`: a display name, camera intent

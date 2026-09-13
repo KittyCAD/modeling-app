@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties pipe-elbow-90deg.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 28.507583637608583,
+      "y": 44.06295386375135,
+      "z": 79.00000000009257
+    },
+    "dimensions": {
+      "x": 229.2669827255051,
+      "y": 244.1259077253291,
+      "z": 158.00000000018514
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 150482.07265317615
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 674.9061638672653
+  }
+}

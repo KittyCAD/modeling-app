@@ -3,6 +3,7 @@ import {
   cloudSyncRemoteProjects,
   configureCloudSyncEngine,
   deleteRemoteCloudProject,
+  disableCloudSyncEngineForTest,
   getCloudSyncProjectMetadata,
   renameRemoteCloudProject,
 } from '@src/lib/cloudSync'
@@ -38,7 +39,7 @@ describe('renameRemoteCloudProject', () => {
   })
 
   afterEach(async () => {
-    configureCloudSyncEngine({ enabled: false })
+    await disableCloudSyncEngineForTest()
     vi.unstubAllGlobals()
     await deleteCloudSyncTestDatabase()
   })
@@ -54,6 +55,8 @@ describe('renameRemoteCloudProject', () => {
         return jsonResponse({
           id: remoteProjectId,
           title: 'Bracket',
+          description: 'Existing description',
+          category_ids: ['existing-category'],
           revision: 'rev-1',
           entrypoint_path: 'nested/part.kcl',
         })
@@ -130,7 +133,7 @@ describe('deleteRemoteCloudProject', () => {
   })
 
   afterEach(async () => {
-    configureCloudSyncEngine({ enabled: false })
+    await disableCloudSyncEngineForTest()
     vi.unstubAllGlobals()
     await deleteCloudSyncTestDatabase()
   })

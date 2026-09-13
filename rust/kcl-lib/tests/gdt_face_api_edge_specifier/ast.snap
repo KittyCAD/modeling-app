@@ -1967,6 +1967,27 @@ description: Result of parsing gdt_face_api_edge_specifier.kcl
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
+                "name": "annotationName",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "raw": "\"sample GD&T annotation\"",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "sample GD&T annotation"
+              }
+            },
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
                 "name": "tolerance",
                 "start": 0,
                 "type": "Identifier"

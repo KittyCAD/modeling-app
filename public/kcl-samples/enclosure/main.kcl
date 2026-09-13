@@ -1,6 +1,6 @@
 // Enclosure
 // An enclosure body and sealing lid for storing items
-// Categories: Computer Hardware, Maker
+// Categories: Electronics & Computing; 3D Printable
 
 // Set units
 @settings(defaultLengthUnit = mm, kclVersion = 2.0)

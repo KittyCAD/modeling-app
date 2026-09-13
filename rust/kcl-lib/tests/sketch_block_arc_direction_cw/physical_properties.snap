@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties sketch_block_arc_direction_cw.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -0.0000000000032223113066720543,
+      "y": 6.03553390578853,
+      "z": 1.0
+    },
+    "dimensions": {
+      "x": 20.0181436545993,
+      "y": 14.485281373836813,
+      "z": 2.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 371.8577801734568
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.28524129669360576
+  }
+}

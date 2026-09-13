@@ -4,6 +4,9 @@
 uses-engine = { max-threads = 32 }
 # If a test must run after the engine tests, we want to make sure the engine tests are done first.
 after-engine = { max-threads = 32 }
+# ts-rs export tests merge declarations into shared output files. Running more
+# than one at a time can corrupt an in-progress file and fail nondeterministically.
+export-bindings = { max-threads = 1 }
 
 [profile.default]
 slow-timeout = { period = "280s", terminate-after = 1 }
@@ -12,16 +15,28 @@ slow-timeout = { period = "280s", terminate-after = 1 }
 slow-timeout = { period = "280s", terminate-after = 5 }
 
 [[profile.default.overrides]]
-# If a test starts with kcl_test_, then it uses the engine. So, limit its parallelism.
-filter = "test(kcl_test_)"
+# Engine-backed tests are not consistently named kcl_test_. Match the same
+# executor-sensitive KCL surface as CI while excluding known local-only groups.
+filter = "package(kcl-lib) and not (test(/^parsing::/) or test(/^unparser::/) or test(/^walk::/) or test(/^settings::/) or test(/^fs::/) or test(/^fmt::/) or test(/^tooling::/) or test(/^errors::/) or test(/export_bindings/) or test(docs::gen_std_tests) or test(test_after_engine_))"
 test-group = "uses-engine"
 threads-required = 2
 
 [[profile.ci.overrides]]
-# If a test starts with kcl_test_, then it uses the engine. So, limit its parallelism.
-filter = "test(kcl_test_)"
+# See the default-profile override above.
+filter = "package(kcl-lib) and not (test(/^parsing::/) or test(/^unparser::/) or test(/^walk::/) or test(/^settings::/) or test(/^fs::/) or test(/^fmt::/) or test(/^tooling::/) or test(/^errors::/) or test(/export_bindings/) or test(docs::gen_std_tests) or test(test_after_engine_))"
 test-group = "uses-engine"
 threads-required = 2
+# Engine allocations can occasionally disconnect before a test starts. Keep
+# that recovery local to engine-capable KCL tests instead of the workspace.
+retries = { backoff = "exponential", count = 2, delay = "1s", max-delay = "2s", jitter = true }
+
+[[profile.default.overrides]]
+filter = "test(/export_bindings/)"
+test-group = "export-bindings"
+
+[[profile.ci.overrides]]
+filter = "test(/export_bindings/)"
+test-group = "export-bindings"
 
 [[profile.default.overrides]]
 filter = "test(parser::parser_impl::snapshot_tests)"
@@ -49,6 +64,21 @@ test-group = "after-engine"
 # Generate the docs tests after the engine tests.
 filter = "test(docs::gen_std_tests)"
 test-group = "after-engine"
+# These generators execute embedded KCL examples and can therefore see the
+# same transient engine disconnects as the main engine-backed test group.
+retries = { backoff = "exponential", count = 2, delay = "1s", max-delay = "2s", jitter = true }
+
+[[profile.default.overrides]]
+# This report test executes a real non-overlapping subtract through the engine.
+filter = "package(kcl-python-bindings) and test(exec_outcome_report_renders_csg_no_overlap_warning)"
+test-group = "uses-engine"
+threads-required = 2
+
+[[profile.ci.overrides]]
+filter = "package(kcl-python-bindings) and test(exec_outcome_report_renders_csg_no_overlap_warning)"
+test-group = "uses-engine"
+threads-required = 2
+retries = { backoff = "exponential", count = 2, delay = "1s", max-delay = "2s", jitter = true }
 
 [[profile.default.overrides]]
 filter = 'test(kcl_samples)'

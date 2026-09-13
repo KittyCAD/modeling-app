@@ -1,10 +1,11 @@
+use schemars::JsonSchema;
 use serde::Deserialize;
 use serde::Serialize;
 
 use crate::UnitAngle;
 use crate::UnitLength;
 
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum UnitType {
@@ -46,7 +47,7 @@ impl std::fmt::Display for UnitType {
     }
 }
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum NumericType {

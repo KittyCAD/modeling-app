@@ -16832,7 +16832,7 @@ description: Result of parsing bracket-with-slot.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Manufacturing, Automotive, Aerospace, Construction",
+            "value": "Categories: Mechanical Components; Parametric",
             "style": "line"
           }
         },

@@ -1,8 +1,8 @@
 // Impeller (Radial-flow)
 // Radial-flow impeller for centrifugal pumps—designed as a parametric base for blade and housing experiments.
-// Categories: Automotive, Aerospace
+// Categories: Industrial & Manufacturing; Mechanical Components; Parametric
 
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 // parameters
 bladeCount = 12 // number of blades
