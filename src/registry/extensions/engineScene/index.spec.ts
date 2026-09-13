@@ -1,15 +1,20 @@
 import {
-  Registry,
   defineRegistryItem,
   pluginsValueSpec,
   provideService,
+  Registry,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import {
+  type CommandScopeService,
+  commandScopeService,
+  commandsValueSpec,
   FILE_COMMAND_SCOPES,
   MODE_MODELING_COMMAND_SCOPE,
-  commandsValueSpec,
+  MODE_SKETCH_NO_FACE_COMMAND_SCOPE,
+  MODE_SKETCH_SOLVE_COMMAND_SCOPE,
+  MODE_SKETCHING_COMMAND_SCOPE,
 } from '@src/registry/contracts/commands'
 import {
   type EngineSceneExtensionContext,
@@ -61,6 +66,21 @@ function createExecutingEditorService(
     getPendingCommandCount: vi.fn(() => 0),
     executeCode: vi.fn(),
     updateCode: vi.fn(),
+  }
+}
+
+function createCommandScopeService(
+  activeScopes: CommandScopeService['activeScopes']
+): CommandScopeService {
+  return {
+    activeScopes,
+    applyScope: vi.fn(),
+    removeScope: vi.fn(),
+    getCurrentScopes: () => activeScopes.value,
+    focusScope: vi.fn(() => ({
+      onFocus: vi.fn(),
+      onBlur: vi.fn(),
+    })),
   }
 }
 
@@ -136,6 +156,48 @@ describe('engineScene extension', () => {
         scopes: ['file'],
       },
     ])
+  })
+
+  it('hides analysis status bar items in sketch modes', () => {
+    const activeScopes = signal<readonly string[]>([
+      MODE_MODELING_COMMAND_SCOPE,
+    ])
+    const registry = new Registry()
+    registry.configure([
+      defineRegistryItem({
+        id: 'test-services',
+        providesServices: [
+          provideService(
+            executingEditorService,
+            createExecutingEditorService()
+          ),
+          provideService(
+            commandScopeService,
+            createCommandScopeService(activeScopes)
+          ),
+        ],
+      }),
+      engineSceneExtension,
+    ])
+    const statusBarItemIds = () =>
+      registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
+
+    expect(statusBarItemIds()).toContain('measure')
+    expect(statusBarItemIds()).toContain('physical-analysis')
+
+    for (const sketchScope of [
+      MODE_SKETCHING_COMMAND_SCOPE,
+      MODE_SKETCH_NO_FACE_COMMAND_SCOPE,
+      MODE_SKETCH_SOLVE_COMMAND_SCOPE,
+    ]) {
+      activeScopes.value = [sketchScope]
+      expect(statusBarItemIds()).not.toContain('measure')
+      expect(statusBarItemIds()).not.toContain('physical-analysis')
+    }
+
+    activeScopes.value = [MODE_MODELING_COMMAND_SCOPE]
+    expect(statusBarItemIds()).toContain('measure')
+    expect(statusBarItemIds()).toContain('physical-analysis')
   })
 
   it('contributes a command and modeling keybinding to open the measure tool', () => {
