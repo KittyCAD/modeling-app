@@ -5,6 +5,9 @@ import {
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLiteral,
+  createLocalName,
+  createVariableDeclaration,
+  findUniqueName,
 } from '@src/lang/create'
 import {
   createVariableExpressionsArray,
@@ -12,6 +15,7 @@ import {
   setCallInAst,
 } from '@src/lang/modifyAst'
 import {
+  getBodyIndex,
   getVariableExprsFromSelection,
   stringifyPathToNode,
   valueOrVariable,
@@ -31,6 +35,96 @@ type BooleanSelectionGroup = {
   selections: Selections
   exprs: Expr[]
   pathIfPipe?: PathToNode
+}
+
+function getMultiBodyBooleanVars({
+  selections,
+  artifactGraph,
+  ast,
+  wasmInstance,
+}: {
+  selections: Selections
+  artifactGraph: ArtifactGraph
+  ast: Node<Program>
+  wasmInstance: ModuleType
+}): Error | Pick<BooleanSelectionGroup, 'exprs' | 'pathIfPipe'> {
+  const records: Array<{
+    exprs: Expr[]
+    pathIfPipe?: PathToNode
+    bodyIndex?: number
+  }> = []
+
+  for (const selection of selections.graphSelections) {
+    const vars = getVariableExprsFromSelection(
+      { graphSelections: [selection], otherSelections: [] },
+      artifactGraph,
+      ast,
+      wasmInstance,
+      undefined,
+      {
+        lastChildLookup: true,
+        artifactTypeFilter: ['compositeSolid', 'sweep'],
+      }
+    )
+    if (err(vars)) {
+      return vars
+    }
+
+    let bodyIndex: number | undefined
+    if (vars.pathIfPipe) {
+      const index = getBodyIndex(vars.pathIfPipe)
+      if (err(index)) {
+        return index
+      }
+      bodyIndex = index
+    }
+    records.push({ ...vars, bodyIndex })
+  }
+
+  const pipeRecords = records.filter(({ bodyIndex }) => bodyIndex !== undefined)
+  if (pipeRecords.length <= 1) {
+    return {
+      exprs: records.flatMap(({ exprs }) => exprs),
+      pathIfPipe: pipeRecords[0]?.pathIfPipe,
+    }
+  }
+
+  const variableByBodyIndex = new Map<number, string>()
+  for (const { bodyIndex } of pipeRecords) {
+    if (bodyIndex === undefined || variableByBodyIndex.has(bodyIndex)) {
+      continue
+    }
+    const statement = ast.body[bodyIndex]
+    if (statement.type !== 'ExpressionStatement') {
+      return new Error('Expected a variable-less Boolean source pipe')
+    }
+    const variableName = findUniqueName(
+      ast,
+      KCL_DEFAULT_CONSTANT_PREFIXES.SOLID
+    )
+    const declaration = createVariableDeclaration(
+      variableName,
+      statement.expression
+    )
+    declaration.preComments = statement.preComments
+    ast.body[bodyIndex] = declaration
+    variableByBodyIndex.set(bodyIndex, variableName)
+  }
+
+  const exprs: Expr[] = []
+  for (const record of records) {
+    if (record.bodyIndex === undefined) {
+      exprs.push(...record.exprs)
+      continue
+    }
+    const variableName = variableByBodyIndex.get(record.bodyIndex)
+    if (!variableName) {
+      return new Error('Expected a materialized Boolean source pipe')
+    }
+    exprs.push(createLocalName(variableName))
+  }
+
+  return { exprs }
 }
 
 function booleanInputKey(expr: Expr, pathIfPipe?: PathToNode): string {
@@ -97,17 +191,12 @@ export function addUnion({
   // 2. Prepare unlabeled arguments (no exposed labeled arguments for boolean yet)
   let vars: { exprs: Expr[]; pathIfPipe?: PathToNode } = { exprs: [] }
   if (!mNodeToEdit) {
-    const selectionVars = getVariableExprsFromSelection(
-      solids,
+    const selectionVars = getMultiBodyBooleanVars({
+      selections: solids,
       artifactGraph,
-      modifiedAst,
+      ast: modifiedAst,
       wasmInstance,
-      undefined,
-      {
-        lastChildLookup: true,
-        artifactTypeFilter: ['compositeSolid', 'sweep'],
-      }
-    )
+    })
     if (err(selectionVars)) {
       return selectionVars
     }
@@ -173,17 +262,12 @@ export function addIntersect({
   // 2. Prepare unlabeled arguments (no exposed labeled arguments for boolean yet)
   let vars: { exprs: Expr[]; pathIfPipe?: PathToNode } = { exprs: [] }
   if (!mNodeToEdit) {
-    const selectionVars = getVariableExprsFromSelection(
-      solids,
+    const selectionVars = getMultiBodyBooleanVars({
+      selections: solids,
       artifactGraph,
-      modifiedAst,
+      ast: modifiedAst,
       wasmInstance,
-      undefined,
-      {
-        lastChildLookup: true,
-        artifactTypeFilter: ['compositeSolid', 'sweep'],
-      }
-    )
+    })
     if (err(selectionVars)) {
       return selectionVars
     }
