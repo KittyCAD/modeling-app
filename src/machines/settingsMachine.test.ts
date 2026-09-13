@@ -4,7 +4,7 @@ import type { BaseUnit } from '@src/lib/settings/settingsTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { settingsMachine } from '@src/machines/settingsMachine'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { createActor, fromCallback, fromPromise, waitFor } from 'xstate'
 
 describe('settingsMachine', () => {
@@ -99,4 +99,83 @@ describe('settingsMachine', () => {
     actor.stop()
     commandBarActor.stop()
   })
+})
+
+describe('settings edits during a disk reload', () => {
+  it.each([false, true])(
+    'preserves queued edits when reload rejects: %s',
+    async (rejectReload) => {
+      const diskSettings = createSettings()
+      diskSettings.modeling.defaultUnit.project = 'mm'
+      const persistedUnits: Array<BaseUnit | undefined> = []
+      let finishReload!: () => void
+      const reload = new Promise<typeof diskSettings>((resolve, reject) => {
+        finishReload = () =>
+          rejectReload
+            ? reject(new Error('disk read failed'))
+            : resolve(diskSettings)
+      })
+      const consoleError = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {})
+      const wasmInstancePromise = Promise.resolve({} as ModuleType)
+      const commandBarActor = createActor(commandBarMachine, {
+        input: {
+          commands: [],
+          wasmInstancePromise,
+          machineManager: {} as MachineManager,
+        },
+      }).start()
+      const actor = createActor(
+        settingsMachine.provide({
+          actors: {
+            loadUserSettings: fromPromise(async () => createSettings()),
+            reloadSettings: fromPromise(() => reload),
+            persistSettings: fromPromise(async ({ input }) => {
+              persistedUnits.push(input.context.modeling.defaultUnit.project)
+              return undefined
+            }),
+            registerCommands: fromCallback(() => () => {}),
+            watchSystemTheme: fromCallback(() => () => {}),
+          },
+        }),
+        {
+          input: {
+            ...createSettings(),
+            commandBarActor,
+            wasmInstancePromise,
+            defaultProjectLibraries: [],
+            projectLibrarySettingDefaultPolicies: [],
+            extensionSettings: {},
+          },
+        }
+      ).start()
+      try {
+        await waitFor(actor, (snapshot) => snapshot.matches('idle'))
+        actor.send({ type: 'reload.settings' })
+        expect(actor.getSnapshot().matches('reloadingSettings')).toBe(true)
+        actor.send({
+          type: 'set.modeling.defaultUnit',
+          data: { level: 'project', value: 'in' },
+        })
+        actor.send({
+          type: 'set.modeling.defaultUnit',
+          data: { level: 'project', value: 'ft' },
+        })
+        expect(persistedUnits).toEqual([])
+        finishReload()
+        await waitFor(actor, (snapshot) => snapshot.matches('idle'))
+        expect(persistedUnits).toEqual(['in', 'ft'])
+        expect(actor.getSnapshot().context.modeling.defaultUnit.project).toBe(
+          'ft'
+        )
+        expect(actor.getSnapshot().context.deferredEvents).toEqual([])
+        expect(consoleError).toHaveBeenCalledTimes(rejectReload ? 1 : 0)
+      } finally {
+        actor.stop()
+        commandBarActor.stop()
+        consoleError.mockRestore()
+      }
+    }
+  )
 })
