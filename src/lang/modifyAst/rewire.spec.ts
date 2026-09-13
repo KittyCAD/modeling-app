@@ -75,7 +75,7 @@ fn useMoved() {
   return copy
 }`)
 
-    const rewiredAst = rewireAfterDelete(beforeDeleteAst, afterDeleteAst)
+    const rewiredAst = rewireOrThrow(beforeDeleteAst, afterDeleteAst)
     const code = recast(rewiredAst, getInstance())
 
     expect(code).toContain('copy = extrude001')

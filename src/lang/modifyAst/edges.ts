@@ -1,4 +1,3 @@
-import type { EntityReference } from '@kittycad/lib'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import {
@@ -79,6 +78,7 @@ import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   EnginePrimitiveSelection,
+  EntityReference,
   Selection,
   Selections,
 } from '@src/machines/modelingSharedTypes'

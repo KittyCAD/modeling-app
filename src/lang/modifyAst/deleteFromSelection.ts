@@ -211,6 +211,12 @@ export async function deleteFromSelection(
   )
   if (err(varDec)) return varDec
   const selectedNode = varDec.node
+  const selectedCallExpression =
+    selectedNode.type === 'CallExpressionKw'
+      ? selectedNode
+      : selectedNode.init.type === 'CallExpressionKw'
+        ? selectedNode.init
+        : null
   const isSelectedCallExpression = selectedNode.type === 'CallExpressionKw'
 
   if (selection.artifact?.type === 'edgeCut') {
