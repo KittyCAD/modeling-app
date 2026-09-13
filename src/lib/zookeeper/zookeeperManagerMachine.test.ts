@@ -255,6 +255,7 @@ describe('zookeeperManagerMachine', () => {
   })
 
   afterEach(() => {
+    vi.useRealTimers()
     vi.restoreAllMocks()
     vi.unstubAllGlobals()
   })
@@ -661,7 +662,8 @@ describe('zookeeperManagerMachine', () => {
       actor.stop()
     })
 
-    it('closes the live websocket when the actor is stopped', async () => {
+    it('closes the socket and stops its heartbeat when stopped', async () => {
+      vi.useFakeTimers()
       vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
       const actor = createActor(zookeeperManagerMachine, {
         input: {
@@ -700,10 +702,19 @@ describe('zookeeperManagerMachine', () => {
       expect(socket.readyState).toBe(ControllableSetupWebSocket.OPEN)
       expect(socket.close).not.toHaveBeenCalled()
 
+      await vi.advanceTimersByTimeAsync(ZOOKEEPER_HEARTBEAT_INTERVAL_MS)
+      expect(socket.sentPayloads).toContain(JSON.stringify({ type: 'ping' }))
+      const sentBeforeStop = [...socket.sentPayloads]
+
       stopZookeeperManagerActor(actor)
 
       expect(socket.close).toHaveBeenCalledOnce()
       expect(socket.readyState).toBe(ControllableSetupWebSocket.CLOSED)
+      expect(vi.getTimerCount()).toBe(0)
+
+      await vi.advanceTimersByTimeAsync(2 * ZOOKEEPER_HEARTBEAT_INTERVAL_MS)
+      expect(socket.sentPayloads).toEqual(sentBeforeStop)
+      expect(ControllableSetupWebSocket.instances).toHaveLength(1)
     })
 
     it('times out setup attempts instead of waiting forever', async () => {
