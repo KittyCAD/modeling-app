@@ -139,13 +139,13 @@ chamfer001 = chamfer(extrude001, tags = getCommonEdge(faces = [region001.tags.li
         await page.keyboard.down('Shift')
         await page.mouse.down()
         await page.mouse.up()
+        await page.keyboard.up('Shift')
         await expect(
           page.getByText(
             `${index + 1} ${index === 0 ? 'edge' : 'edges'} selected`,
             { exact: false }
           )
         ).toBeVisible()
-        await page.keyboard.up('Shift')
       }
 
       if (!boundary.curves) {
