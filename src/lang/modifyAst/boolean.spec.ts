@@ -409,6 +409,52 @@ startSketchOn(XZ)
       expect(newCode).toContain(code + '\n' + expectedNewLine)
     })
 
+    it('should materialize a variable-less pipe selected as tools', async () => {
+      const code = `@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [0.3, 0.2], center = [0.2, 0.2])
+}
+profile001 = region(segments = [sketch001.circle1])
+extrude001 = extrude(profile001, length = 1)
+
+sketch002 = sketch(on = XZ) {
+  circle1 = circle(start = [0.25, 0.2], center = [0.2, 0.2])
+}
+region(segments = [sketch002.circle1])
+  |> extrude(length = -1)`
+      const { ast, artifactGraph } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const sweeps = [...artifactGraph.values()].filter(
+        (artifact) => artifact.type === 'sweep'
+      )
+      expect(sweeps).toHaveLength(2)
+      const [target, tool] = sweeps
+      if (!target || !tool) {
+        throw new Error('Expected target and tool sweeps')
+      }
+      const result = addSubtract({
+        ast,
+        artifactGraph,
+        solids: createSelectionFromArtifacts([target], artifactGraph),
+        tools: createSelectionFromArtifacts([tool], artifactGraph),
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+
+      expect(
+        newCode
+      ).toContain(`solid001 = region(segments = [sketch002.circle1])
+  |> extrude(length = -1)`)
+      expect(newCode).toContain(
+        `solid002 = subtract(extrude001, tools = solid001)`
+      )
+    })
+
     it('should support multi-profile extrude as tool', async () => {
       const code = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0.2, 0.2], radius = 0.05)
@@ -714,6 +760,52 @@ extrude002 = extrude(profile002, length = .1)`
         keepTools: true,
       })
       expect(newCode).toContain(code + '\n' + expectedNewLine)
+    })
+
+    it('should materialize a variable-less pipe selected as tools', async () => {
+      const code = `@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [0.3, 0.2], center = [0.2, 0.2])
+}
+profile001 = region(segments = [sketch001.circle1])
+extrude001 = extrude(profile001, length = 1)
+
+sketch002 = sketch(on = XZ) {
+  circle1 = circle(start = [0.25, 0.2], center = [0.2, 0.2])
+}
+region(segments = [sketch002.circle1])
+  |> extrude(length = -1)`
+      const { ast, artifactGraph } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const sweeps = [...artifactGraph.values()].filter(
+        (artifact) => artifact.type === 'sweep'
+      )
+      expect(sweeps).toHaveLength(2)
+      const [target, tool] = sweeps
+      if (!target || !tool) {
+        throw new Error('Expected target and tool sweeps')
+      }
+      const result = addSplit({
+        ast,
+        artifactGraph,
+        targets: createSelectionFromArtifacts([target], artifactGraph),
+        tools: createSelectionFromArtifacts([tool], artifactGraph),
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+
+      expect(
+        newCode
+      ).toContain(`solid001 = region(segments = [sketch002.circle1])
+  |> extrude(length = -1)`)
+      expect(newCode).toContain(
+        `split001 = split(extrude001, tools = solid001)`
+      )
     })
 
     it('should work with a compositeSolid for tools in a more complex part', async () => {
