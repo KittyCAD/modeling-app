@@ -8,6 +8,8 @@ import {
   createLocalName,
   createName,
   createTagDeclarator,
+  createVariableDeclaration,
+  findUniqueName,
 } from '@src/lang/create'
 import { toUtf16 } from '@src/lang/errors'
 import {
@@ -35,6 +37,7 @@ import {
 import { addHide } from '@src/lang/modifyAst/transforms'
 import {
   createSketchTagMemberExpression,
+  getBodyIndex,
   getNodeFromPath,
   getRegionSketchTagExprFromSourceSurface,
   getSketchSegmentName,
@@ -53,6 +56,7 @@ import type {
   ArtifactGraph,
   CallExpressionKw,
   Expr,
+  ExpressionStatement,
   LabeledArg,
   PathToNode,
   Program,
@@ -473,7 +477,6 @@ export function addSweep({
       vars.pathIfPipe = res.pathIfPipe
       vars.exprs.push(...res.exprs)
     }
-
     const engineRegions = sketches.otherSelections.filter(
       isEngineRegionSelection
     )
@@ -509,6 +512,33 @@ export function addSweep({
     }
 
     pathExpr = createVariableExpressionsArray(pathVars.exprs)
+    if (!pathExpr && pathVars.pathIfPipe) {
+      const expression = getNodeFromPath<ExpressionStatement>(
+        modifiedAst,
+        pathVars.pathIfPipe,
+        wasmInstance,
+        'ExpressionStatement'
+      )
+      if (err(expression) || expression.node.type !== 'ExpressionStatement') {
+        return new Error('Could not retrieve the source pipe for sweep path')
+      }
+      const bodyIndex = getBodyIndex(expression.shallowPath)
+      if (err(bodyIndex)) {
+        return bodyIndex
+      }
+      const sourceStatement = modifiedAst.body[bodyIndex]
+      if (!sourceStatement) {
+        return new Error('Could not retrieve the source pipe statement')
+      }
+      const variableName = findUniqueName(modifiedAst, 'path')
+      const declaration = createVariableDeclaration(
+        variableName,
+        expression.node.expression
+      )
+      declaration.preComments = sourceStatement.preComments
+      modifiedAst.body[bodyIndex] = declaration
+      pathExpr = createLocalName(variableName)
+    }
     if (!pathExpr) {
       return new Error("Couldn't retrieve path selection")
     }
