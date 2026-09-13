@@ -942,3 +942,107 @@ async def test_sketch_constraint_status_execution_error_returns_partial_report()
     assert report.kcl_error is not None
     assert report.kcl_error.phase == "execution"
     assert "missing_sketch" in report.kcl_error.text
+
+
+@pytest.mark.parametrize("observer_raises", [False, True])
+@pytest.mark.asyncio
+async def test_execution_auth_and_session_observers_are_isolated(
+    monkeypatch, observer_raises
+):
+    import base64
+    import hashlib
+    import json
+
+    session_ids = {
+        "customer-a": "55555555-5555-4555-8555-555555555555",
+        "customer-b": "66666666-6666-4666-8666-666666666666",
+    }
+    observed = {}
+    all_observed = asyncio.Event()
+    release = asyncio.Event()
+    loop = asyncio.get_running_loop()
+
+    async def serve(reader, writer):
+        request = (await reader.readuntil(b"\r\n\r\n")).decode()
+        headers = dict(
+            line.split(": ", 1) for line in request.split("\r\n")[1:] if ": " in line
+        )
+        headers = {key.lower(): value for key, value in headers.items()}
+        token = headers["authorization"].removeprefix("Bearer ")
+        accept = base64.b64encode(
+            hashlib.sha1(
+                (
+                    headers["sec-websocket-key"]
+                    + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
+                ).encode()
+            ).digest()
+        ).decode()
+        writer.write(
+            (
+                "HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\n"
+                "Connection: Upgrade\r\nSec-WebSocket-Accept: " + accept + "\r\n\r\n"
+            ).encode()
+        )
+        payload = json.dumps(
+            {
+                "success": True,
+                "request_id": None,
+                "resp": {
+                    "type": "modeling_session_data",
+                    "data": {"session": {"api_call_id": session_ids[token]}},
+                },
+            }
+        ).encode()
+        writer.write(b"\x81\x7e" + len(payload).to_bytes(2, "big") + payload)
+        await writer.drain()
+        await release.wait()
+        writer.close()
+        await writer.wait_closed()
+
+    def record(token, api_call_id):
+        observed[token] = api_call_id
+        if len(observed) == 2:
+            all_observed.set()
+
+    def observer(token):
+        def acquired(api_call_id):
+            loop.call_soon_threadsafe(record, token, api_call_id)
+            if observer_raises:
+                raise ValueError("PRIVATE_CALLBACK_ERROR")
+
+        return acquired
+
+    server = await asyncio.start_server(serve, "127.0.0.1", 0)
+    port = server.sockets[0].getsockname()[1]
+    monkeypatch.setenv("ZOO_HOST", f"http://127.0.0.1:{port}")
+    monkeypatch.delenv("KITTYCAD_HOST", raising=False)
+    monkeypatch.setenv("ZOO_API_TOKEN", "wrong-shared-account")
+    tasks = [
+        asyncio.create_task(
+            kcl.execute_code(
+                "@settings(kclVersion = 2.0)\nx = 1",
+                options=kcl.ExecutionOptions(
+                    token=token, on_engine_session=observer(token)
+                ),
+            )
+        )
+        for token in session_ids
+    ]
+    async with server:
+        try:
+            await asyncio.wait_for(all_observed.wait(), 5)
+            assert observed == session_ids
+            assert not any(task.done() for task in tasks)
+        finally:
+            release.set()
+            outcomes = await asyncio.wait_for(
+                asyncio.gather(*tasks, return_exceptions=True), 5
+            )
+    assert all(isinstance(outcome, kcl.KclError) for outcome in outcomes)
+    assert "PRIVATE_CALLBACK_ERROR" not in repr(outcomes)
+
+
+def test_execution_options_reject_empty_auth():
+    with pytest.raises(ValueError, match="token must not be empty"):
+        kcl.ExecutionOptions(token=" ")
+    assert "private-token" not in repr(kcl.ExecutionOptions(token="private-token"))

@@ -1122,6 +1122,16 @@ impl ExecutorContext {
     /// Create a new default executor context.
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
+        Self::new_with_session_observer(client, settings, None).await
+    }
+
+    /// Create an executor with a connection-local session observer.
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn new_with_session_observer(
+        client: &kittycad::Client,
+        settings: ExecutorSettings,
+        session_observer: Option<crate::engine::engine_manager::SessionObserver>,
+    ) -> Result<Self> {
         let pr = std::env::var("ZOO_ENGINE_PR").ok().and_then(|s| s.parse().ok());
         let (ws, _headers) = client
             .modeling()
@@ -1145,7 +1155,8 @@ impl ExecutorContext {
             })
             .await?;
 
-        let engine_conn = EngineManager::new_websocket_transport(ws, settings.heartbeats).await;
+        let engine_conn =
+            EngineManager::new_websocket_transport_with_observer(ws, settings.heartbeats, session_observer).await;
         let engine = Arc::new(engine_conn);
 
         Ok(Self::new_with_engine(engine, settings))
@@ -1230,11 +1241,18 @@ impl ExecutorContext {
         token: Option<String>,
         engine_addr: Option<String>,
     ) -> Result<Self> {
-        // Create the client.
-        let client = crate::engine::new_zoo_client(token, engine_addr)?;
+        Self::new_with_client_and_observer(settings, token, engine_addr, None).await
+    }
 
-        let ctx = Self::new(&client, settings).await?;
-        Ok(ctx)
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn new_with_client_and_observer(
+        settings: ExecutorSettings,
+        token: Option<String>,
+        engine_addr: Option<String>,
+        session_observer: Option<crate::SessionObserver>,
+    ) -> Result<Self> {
+        let client = crate::engine::new_zoo_client(token, engine_addr)?;
+        Self::new_with_session_observer(&client, settings, session_observer).await
     }
 
     /// Create a new default executor context.

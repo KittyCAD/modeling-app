@@ -121,6 +121,7 @@ impl WebSocketTransport {
         session_data: Arc<RwLock<Option<ModelingSessionData>>>,
         pending_errors: Arc<RwLock<Vec<String>>>,
         socket_health: Arc<RwLock<SocketHealth>>,
+        session_observer: Option<super::SessionObserver>,
     ) -> Self {
         let wsconfig = tokio_tungstenite::tungstenite::protocol::WebSocketConfig::default()
             // 4294967296 bytes, which is around 4.2 GB.
@@ -206,6 +207,10 @@ impl WebSocketTransport {
                             }) => {
                                 let mut sd = session_data_for_read.write().await;
                                 sd.replace(session.clone());
+                                drop(sd);
+                                if let Some(observer) = &session_observer {
+                                    observer(session.api_call_id.clone());
+                                }
                                 logln!("API Call ID: {}", session.api_call_id);
                             }
                             WebSocketResponse::Failure(FailureWebSocketResponse {
