@@ -5,7 +5,7 @@ description: Artifact commands gas-impeller.kcl
 {
   "public/kcl-samples/gas-impeller/main.kcl": [
     {
-      "cmdId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,20 +30,20 @@ description: Artifact commands gas-impeller.kcl
       }
     },
     {
-      "cmdId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "f611456b-82df-55af-a95e-b0c5e1ba1457",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -55,18 +55,18 @@ description: Artifact commands gas-impeller.kcl
       }
     },
     {
-      "cmdId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "3312f826-b323-5332-871a-6a8a59a3ae93",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+        "path": "[uuid]",
         "to": {
           "x": 4.4,
           "y": -0.00000000000000016741813814460606,
@@ -75,18 +75,18 @@ description: Artifact commands gas-impeller.kcl
       }
     },
     {
-      "cmdId": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -99,11 +99,11 @@ description: Artifact commands gas-impeller.kcl
       }
     },
     {
-      "cmdId": "91226189-7e64-5690-9203-67ee33a6eb03",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -116,11 +116,11 @@ description: Artifact commands gas-impeller.kcl
       }
     },
     {
-      "cmdId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -141,11 +141,11 @@ description: Artifact commands gas-impeller.kcl
       }
     },
     {
-      "cmdId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+        "path": "[uuid]",
         "to": {
           "x": 80.0,
           "y": 1.9999999999999998,
@@ -154,11 +154,11 @@ description: Artifact commands gas-impeller.kcl
       }
     },
     {
-      "cmdId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -171,11 +171,11 @@ description: Artifact commands gas-impeller.kcl
       }
     },
     {
-      "cmdId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -188,11 +188,11 @@ description: Artifact commands gas-impeller.kcl
       }
     },
     {
-      "cmdId": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+        "path": "[uuid]",
         "to": {
           "x": 8.308484376942472,
           "y": 59.22161398656007,
@@ -201,11 +201,11 @@ description: Artifact commands gas-impeller.kcl
       }
     },
     {
-      "cmdId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -226,11 +226,11 @@ description: Artifact commands gas-impeller.kcl
       }
     },
     {
-      "cmdId": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+        "path": "[uuid]",
         "to": {
           "x": 7.333333333333334,
           "y": 60.0,
@@ -239,11 +239,11 @@ description: Artifact commands gas-impeller.kcl
       }
     },
     {
-      "cmdId": "6023bee8-3980-5182-88ac-ac06420ce00f",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -256,11 +256,11 @@ description: Artifact commands gas-impeller.kcl
       }
     },
     {
-      "cmdId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+        "path": "[uuid]",
         "to": {
           "x": 80.0,
           "y": 1.9999999999999998,
@@ -269,11 +269,11 @@ description: Artifact commands gas-impeller.kcl
       }
     },
     {
-      "cmdId": "e342814e-d7c1-537b-959c-f7fd92c90294",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -286,11 +286,11 @@ description: Artifact commands gas-impeller.kcl
       }
     },
     {
-      "cmdId": "2f481fd4-203e-57d7-b5d6-b16289577621",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -311,11 +311,11 @@ description: Artifact commands gas-impeller.kcl
       }
     },
     {
-      "cmdId": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+        "path": "[uuid]",
         "to": {
           "x": 7.333349899984599,
           "y": 58.99999999999905,
@@ -324,11 +324,11 @@ description: Artifact commands gas-impeller.kcl
       }
     },
     {
-      "cmdId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -341,24 +341,24 @@ description: Artifact commands gas-impeller.kcl
       }
     },
     {
-      "cmdId": "2ed3043b-96d9-5307-babe-4ee1188fa544",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
-        "segment": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-        "intersection_segment": "91226189-7e64-5690-9203-67ee33a6eb03",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
         "intersection_index": -1,
         "curve_clockwise": true,
         "version": "V1"
       }
     },
     {
-      "cmdId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "revolve",
-        "target": "2ed3043b-96d9-5307-babe-4ee1188fa544",
+        "target": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -380,50 +380,50 @@ description: Artifact commands gas-impeller.kcl
       }
     },
     {
-      "cmdId": "5f95e913-96e4-58df-abe6-125bedd61cad",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "2ed3043b-96d9-5307-babe-4ee1188fa544"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "3bcd28fd-2b1b-5bfe-a9ba-ee907292b41f",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "2ed3043b-96d9-5307-babe-4ee1188fa544",
-        "edge_id": "e407b73b-eeea-5b6a-824e-025f86f73bbc"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "2ed3043b-96d9-5307-babe-4ee1188fa544",
-        "edge_id": "e407b73b-eeea-5b6a-824e-025f86f73bbc"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
-        "segment": "6023bee8-3980-5182-88ac-ac06420ce00f",
-        "intersection_segment": "2f481fd4-203e-57d7-b5d6-b16289577621",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
         "intersection_index": -1,
         "curve_clockwise": true,
         "version": "V1"
       }
     },
     {
-      "cmdId": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "revolve",
-        "target": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+        "target": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -445,33 +445,33 @@ description: Artifact commands gas-impeller.kcl
       }
     },
     {
-      "cmdId": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "40d8c462-7810-5666-bb09-1db7308cf666",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
-        "edge_id": "1544c92c-dbad-5422-a81a-e909ccdff6ed"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
-        "edge_id": "1544c92c-dbad-5422-a81a-e909ccdff6ed"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -496,20 +496,20 @@ description: Artifact commands gas-impeller.kcl
       }
     },
     {
-      "cmdId": "20f09319-bab0-5dd8-8c40-ce90cd688483",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "bee9909d-abbf-534c-b266-2c2c04133834",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -521,18 +521,18 @@ description: Artifact commands gas-impeller.kcl
       }
     },
     {
-      "cmdId": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
+        "path": "[uuid]",
         "to": {
           "x": 4.4,
           "y": 0.0,
@@ -541,18 +541,18 @@ description: Artifact commands gas-impeller.kcl
       }
     },
     {
-      "cmdId": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -565,11 +565,11 @@ description: Artifact commands gas-impeller.kcl
       }
     },
     {
-      "cmdId": "0030d44a-e936-52d0-b5b6-efd80f2f6770",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -582,11 +582,11 @@ description: Artifact commands gas-impeller.kcl
       }
     },
     {
-      "cmdId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -599,11 +599,11 @@ description: Artifact commands gas-impeller.kcl
       }
     },
     {
-      "cmdId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -616,24 +616,24 @@ description: Artifact commands gas-impeller.kcl
       }
     },
     {
-      "cmdId": "89273a0b-b55b-5457-9b1c-de1d777240e8",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
-        "segment": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
-        "intersection_segment": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -645,11 +645,11 @@ description: Artifact commands gas-impeller.kcl
       }
     },
     {
-      "cmdId": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "twist_extrude",
-        "target": "89273a0b-b55b-5457-9b1c-de1d777240e8",
+        "target": "[uuid]",
         "distance": 65.0,
         "faces": null,
         "center_2d": {
@@ -669,57 +669,57 @@ description: Artifact commands gas-impeller.kcl
       }
     },
     {
-      "cmdId": "0a3927a3-4dca-5e67-855f-5c8045a33997",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "89273a0b-b55b-5457-9b1c-de1d777240e8"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "d7d0ea25-9730-5767-b40a-0f2fd595f8fb",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "89273a0b-b55b-5457-9b1c-de1d777240e8",
-        "edge_id": "eb06eb30-8326-55b7-8267-a7b6d99b4000"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "fa75438f-b2d0-5142-b452-608454e1806a",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "89273a0b-b55b-5457-9b1c-de1d777240e8",
-        "edge_id": "eb06eb30-8326-55b7-8267-a7b6d99b4000"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "2e4398f0-3503-52f1-9fb1-caadee14f488",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "boolean_intersection",
         "solid_ids": [
-          "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
-          "89273a0b-b55b-5457-9b1c-de1d777240e8"
+          "[uuid]",
+          "[uuid]"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "eb4a5516-04df-5d3c-a783-6699c67f971f",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "2e4398f0-3503-52f1-9fb1-caadee14f488",
+        "entity_id": "[uuid]",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -736,20 +736,20 @@ description: Artifact commands gas-impeller.kcl
       }
     },
     {
-      "cmdId": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "d7522563-c424-5aea-962e-3d6a85a0b99d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
+        "object_id": "[uuid]",
         "hidden": true
       }
     }

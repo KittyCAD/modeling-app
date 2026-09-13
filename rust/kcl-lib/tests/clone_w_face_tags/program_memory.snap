@@ -6,8 +6,8 @@ description: Variables in memory after executing clone_w_face_tags.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
-      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -39,14 +39,14 @@ description: Variables in memory after executing clone_w_face_tags.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
-      "originalId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
-      "topologyId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
-      "artifactId": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "a49b9612-c4dc-5d46-9c14-74c0b7247edd",
-          "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 67,
@@ -59,8 +59,8 @@ description: Variables in memory after executing clone_w_face_tags.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "67c68347-0747-5a3d-b270-da035abddd8c",
-          "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 147,
@@ -73,8 +73,8 @@ description: Variables in memory after executing clone_w_face_tags.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "660d6e44-47cd-5ee1-8bee-90267b8cbbc9",
-          "id": "eb116575-1f8f-50df-810e-a61970915fe0",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 226,
@@ -87,8 +87,8 @@ description: Variables in memory after executing clone_w_face_tags.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "bb04bee5-f92e-54fd-b9d8-0e476678cb88",
-          "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 306,
@@ -101,8 +101,8 @@ description: Variables in memory after executing clone_w_face_tags.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "092755e4-e002-58b9-a194-69b526ae6929",
-          "id": "092755e4-e002-58b9-a194-69b526ae6929",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 850,
@@ -124,11 +124,11 @@ description: Variables in memory after executing clone_w_face_tags.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -152,7 +152,7 @@ description: Variables in memory after executing clone_w_face_tags.kcl
           },
           {
             "__geoMeta": {
-              "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -176,7 +176,7 @@ description: Variables in memory after executing clone_w_face_tags.kcl
           },
           {
             "__geoMeta": {
-              "id": "eb116575-1f8f-50df-810e-a61970915fe0",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -200,7 +200,7 @@ description: Variables in memory after executing clone_w_face_tags.kcl
           },
           {
             "__geoMeta": {
-              "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -225,8 +225,8 @@ description: Variables in memory after executing clone_w_face_tags.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -266,7 +266,7 @@ description: Variables in memory after executing clone_w_face_tags.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -292,13 +292,13 @@ description: Variables in memory after executing clone_w_face_tags.kcl
             "value": "line4"
           }
         },
-        "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
-        "originalId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "00f8003d-3b65-5f10-b911-9092660fca40",
-      "endCapId": "092755e4-e002-58b9-a194-69b526ae6929",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -307,14 +307,14 @@ description: Variables in memory after executing clone_w_face_tags.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
-      "originalId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
-      "topologyId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
-      "artifactId": "deb86259-17a0-5782-a352-d25992246cc0",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "5178ccdd-325b-5c19-ac1f-2742126e4fdc",
-          "id": "e2ca6ecd-9d7a-5faf-b88f-3babf10b2238",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 67,
@@ -327,8 +327,8 @@ description: Variables in memory after executing clone_w_face_tags.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
-          "id": "d4c50ddc-4381-5f0a-a72c-ef141ab6066c",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 147,
@@ -341,8 +341,8 @@ description: Variables in memory after executing clone_w_face_tags.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
-          "id": "e1e7e372-f8f6-5b56-a623-e188c73253ab",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 226,
@@ -355,8 +355,8 @@ description: Variables in memory after executing clone_w_face_tags.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
-          "id": "58521071-ebef-572d-8b0c-72ca92ea5777",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 306,
@@ -369,8 +369,8 @@ description: Variables in memory after executing clone_w_face_tags.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "094c2621-b6dc-5b8d-b217-525224318aa7",
-          "id": "094c2621-b6dc-5b8d-b217-525224318aa7",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 850,
@@ -392,11 +392,11 @@ description: Variables in memory after executing clone_w_face_tags.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "e2ca6ecd-9d7a-5faf-b88f-3babf10b2238",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -420,7 +420,7 @@ description: Variables in memory after executing clone_w_face_tags.kcl
           },
           {
             "__geoMeta": {
-              "id": "d4c50ddc-4381-5f0a-a72c-ef141ab6066c",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -444,7 +444,7 @@ description: Variables in memory after executing clone_w_face_tags.kcl
           },
           {
             "__geoMeta": {
-              "id": "e1e7e372-f8f6-5b56-a623-e188c73253ab",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -468,7 +468,7 @@ description: Variables in memory after executing clone_w_face_tags.kcl
           },
           {
             "__geoMeta": {
-              "id": "58521071-ebef-572d-8b0c-72ca92ea5777",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -493,8 +493,8 @@ description: Variables in memory after executing clone_w_face_tags.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -534,7 +534,7 @@ description: Variables in memory after executing clone_w_face_tags.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -560,13 +560,13 @@ description: Variables in memory after executing clone_w_face_tags.kcl
             "value": "line4"
           }
         },
-        "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
-        "originalId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "ed22babf-097a-522b-8ea6-c0fd4a48d939",
-      "endCapId": "094c2621-b6dc-5b8d-b217-525224318aa7",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -580,14 +580,14 @@ description: Variables in memory after executing clone_w_face_tags.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
-      "originalId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
-      "topologyId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
-      "artifactId": "deb86259-17a0-5782-a352-d25992246cc0",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "5178ccdd-325b-5c19-ac1f-2742126e4fdc",
-          "id": "e2ca6ecd-9d7a-5faf-b88f-3babf10b2238",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 67,
@@ -600,8 +600,8 @@ description: Variables in memory after executing clone_w_face_tags.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
-          "id": "d4c50ddc-4381-5f0a-a72c-ef141ab6066c",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 147,
@@ -614,8 +614,8 @@ description: Variables in memory after executing clone_w_face_tags.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
-          "id": "e1e7e372-f8f6-5b56-a623-e188c73253ab",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 226,
@@ -628,8 +628,8 @@ description: Variables in memory after executing clone_w_face_tags.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
-          "id": "58521071-ebef-572d-8b0c-72ca92ea5777",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 306,
@@ -642,8 +642,8 @@ description: Variables in memory after executing clone_w_face_tags.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "094c2621-b6dc-5b8d-b217-525224318aa7",
-          "id": "094c2621-b6dc-5b8d-b217-525224318aa7",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 850,
@@ -665,11 +665,11 @@ description: Variables in memory after executing clone_w_face_tags.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "e2ca6ecd-9d7a-5faf-b88f-3babf10b2238",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -693,7 +693,7 @@ description: Variables in memory after executing clone_w_face_tags.kcl
           },
           {
             "__geoMeta": {
-              "id": "d4c50ddc-4381-5f0a-a72c-ef141ab6066c",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -717,7 +717,7 @@ description: Variables in memory after executing clone_w_face_tags.kcl
           },
           {
             "__geoMeta": {
-              "id": "e1e7e372-f8f6-5b56-a623-e188c73253ab",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -741,7 +741,7 @@ description: Variables in memory after executing clone_w_face_tags.kcl
           },
           {
             "__geoMeta": {
-              "id": "58521071-ebef-572d-8b0c-72ca92ea5777",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -766,8 +766,8 @@ description: Variables in memory after executing clone_w_face_tags.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -807,7 +807,7 @@ description: Variables in memory after executing clone_w_face_tags.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -833,17 +833,17 @@ description: Variables in memory after executing clone_w_face_tags.kcl
             "value": "line4"
           }
         },
-        "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
-        "originalId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "ed22babf-097a-522b-8ea6-c0fd4a48d939",
-      "endCapId": "094c2621-b6dc-5b8d-b217-525224318aa7",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "72dddee3-1330-5c4f-b767-659f762ad674",
+          "id": "[uuid]",
           "radius": {
             "n": 1.0,
             "ty": {
@@ -852,7 +852,7 @@ description: Variables in memory after executing clone_w_face_tags.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "8137b0af-17a3-570f-907a-7da80b56d36d",
+          "edgeId": "[uuid]",
           "tag": null
         }
       ],
@@ -864,11 +864,11 @@ description: Variables in memory after executing clone_w_face_tags.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -892,7 +892,7 @@ description: Variables in memory after executing clone_w_face_tags.kcl
         },
         {
           "__geoMeta": {
-            "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -916,7 +916,7 @@ description: Variables in memory after executing clone_w_face_tags.kcl
         },
         {
           "__geoMeta": {
-            "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -940,7 +940,7 @@ description: Variables in memory after executing clone_w_face_tags.kcl
         },
         {
           "__geoMeta": {
-            "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -965,8 +965,8 @@ description: Variables in memory after executing clone_w_face_tags.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -1006,7 +1006,7 @@ description: Variables in memory after executing clone_w_face_tags.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -1028,8 +1028,8 @@ description: Variables in memory after executing clone_w_face_tags.kcl
           "value": "line4"
         }
       },
-      "artifactId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
-      "originalId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "implicitly"
     }
@@ -1063,7 +1063,7 @@ description: Variables in memory after executing clone_w_face_tags.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "id": "[uuid]",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -1137,8 +1137,8 @@ description: Variables in memory after executing clone_w_face_tags.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1167,7 +1167,7 @@ description: Variables in memory after executing clone_w_face_tags.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1183,7 +1183,7 @@ description: Variables in memory after executing clone_w_face_tags.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                "id": "[uuid]",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -1257,8 +1257,8 @@ description: Variables in memory after executing clone_w_face_tags.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1287,7 +1287,7 @@ description: Variables in memory after executing clone_w_face_tags.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -1303,7 +1303,7 @@ description: Variables in memory after executing clone_w_face_tags.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+                "id": "[uuid]",
                 "objectId": 10,
                 "kind": {
                   "line": {
@@ -1377,8 +1377,8 @@ description: Variables in memory after executing clone_w_face_tags.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1407,7 +1407,7 @@ description: Variables in memory after executing clone_w_face_tags.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -1423,7 +1423,7 @@ description: Variables in memory after executing clone_w_face_tags.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                "id": "[uuid]",
                 "objectId": 13,
                 "kind": {
                   "line": {
@@ -1497,8 +1497,8 @@ description: Variables in memory after executing clone_w_face_tags.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1527,7 +1527,7 @@ description: Variables in memory after executing clone_w_face_tags.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -1544,11 +1544,11 @@ description: Variables in memory after executing clone_w_face_tags.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1572,7 +1572,7 @@ description: Variables in memory after executing clone_w_face_tags.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1596,7 +1596,7 @@ description: Variables in memory after executing clone_w_face_tags.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1620,7 +1620,7 @@ description: Variables in memory after executing clone_w_face_tags.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1645,8 +1645,8 @@ description: Variables in memory after executing clone_w_face_tags.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 0,
                 "kind": "Custom",
                 "origin": {
@@ -1686,7 +1686,7 @@ description: Variables in memory after executing clone_w_face_tags.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -1708,8 +1708,8 @@ description: Variables in memory after executing clone_w_face_tags.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
-              "originalId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -1724,11 +1724,11 @@ description: Variables in memory after executing clone_w_face_tags.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -1752,7 +1752,7 @@ description: Variables in memory after executing clone_w_face_tags.kcl
         },
         {
           "__geoMeta": {
-            "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -1776,7 +1776,7 @@ description: Variables in memory after executing clone_w_face_tags.kcl
         },
         {
           "__geoMeta": {
-            "id": "eb116575-1f8f-50df-810e-a61970915fe0",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -1800,7 +1800,7 @@ description: Variables in memory after executing clone_w_face_tags.kcl
         },
         {
           "__geoMeta": {
-            "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -1825,8 +1825,8 @@ description: Variables in memory after executing clone_w_face_tags.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -1866,7 +1866,7 @@ description: Variables in memory after executing clone_w_face_tags.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -1892,8 +1892,8 @@ description: Variables in memory after executing clone_w_face_tags.kcl
           "value": "line4"
         }
       },
-      "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
-      "originalId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }

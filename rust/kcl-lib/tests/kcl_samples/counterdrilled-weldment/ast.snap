@@ -25945,6 +25945,7 @@ description: Result of parsing counterdrilled-weldment.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

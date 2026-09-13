@@ -2931,6 +2931,7 @@ description: Result of parsing sketch_on_chamfer_two_times_different_order_v3.kc
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

@@ -105,6 +105,7 @@ description: Result of parsing fail_user_defined_error.kcl
       }
     ],
     "moduleId": 0,
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

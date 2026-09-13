@@ -6,8 +6,8 @@ description: Variables in memory after executing ceiling-fan.kcl
   "__sketch_121_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
-      "id": "7c4571e0-7b14-576f-a82e-22280b05874d",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,8 +38,8 @@ description: Variables in memory after executing ceiling-fan.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-      "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "objectId": 0,
       "kind": "Custom",
       "origin": {
@@ -125,8 +125,8 @@ description: Variables in memory after executing ceiling-fan.kcl
   "bladePlane": {
     "type": "Plane",
     "value": {
-      "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-      "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "objectId": 0,
       "kind": "Custom",
       "origin": {
@@ -164,7 +164,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+                "id": "[uuid]",
                 "objectId": 36,
                 "kind": {
                   "line": {
@@ -239,8 +239,8 @@ description: Variables in memory after executing ceiling-fan.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -269,7 +269,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                     "units": null
                   }
                 },
-                "sketchId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bladeAxisBase"
@@ -285,7 +285,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+                "id": "[uuid]",
                 "objectId": 39,
                 "kind": {
                   "line": {
@@ -360,8 +360,8 @@ description: Variables in memory after executing ceiling-fan.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -390,7 +390,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                     "units": null
                   }
                 },
-                "sketchId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bladeAxisNeck"
@@ -406,7 +406,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+                "id": "[uuid]",
                 "objectId": 42,
                 "kind": {
                   "line": {
@@ -481,8 +481,8 @@ description: Variables in memory after executing ceiling-fan.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -511,7 +511,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                     "units": null
                   }
                 },
-                "sketchId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bladeAxisSpan"
@@ -527,7 +527,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
+                "id": "[uuid]",
                 "objectId": 45,
                 "kind": {
                   "line": {
@@ -602,8 +602,8 @@ description: Variables in memory after executing ceiling-fan.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -632,7 +632,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                     "units": null
                   }
                 },
-                "sketchId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bladeAxisTip"
@@ -649,11 +649,11 @@ description: Variables in memory after executing ceiling-fan.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -677,7 +677,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -701,7 +701,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -725,7 +725,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -755,7 +755,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -779,7 +779,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -803,7 +803,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -833,7 +833,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "41c630c9-9d44-581b-98af-caee575bea48",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -857,7 +857,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -881,7 +881,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -906,8 +906,8 @@ description: Variables in memory after executing ceiling-fan.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 0,
                 "kind": "Custom",
                 "origin": {
@@ -947,7 +947,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -993,8 +993,8 @@ description: Variables in memory after executing ceiling-fan.kcl
                   "value": "tipFlatRight"
                 }
               },
-              "artifactId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
-              "originalId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -1008,7 +1008,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
+                "id": "[uuid]",
                 "objectId": 57,
                 "kind": {
                   "line": {
@@ -1083,8 +1083,8 @@ description: Variables in memory after executing ceiling-fan.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1113,7 +1113,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                     "units": null
                   }
                 },
-                "sketchId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "neckGuideLeft"
@@ -1129,7 +1129,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+                "id": "[uuid]",
                 "objectId": 54,
                 "kind": {
                   "line": {
@@ -1204,8 +1204,8 @@ description: Variables in memory after executing ceiling-fan.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1234,7 +1234,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                     "units": null
                   }
                 },
-                "sketchId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "neckGuideRight"
@@ -1250,7 +1250,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "7b681387-29ea-57f1-8713-d63280827139",
+                "id": "[uuid]",
                 "objectId": 51,
                 "kind": {
                   "line": {
@@ -1325,8 +1325,8 @@ description: Variables in memory after executing ceiling-fan.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1355,7 +1355,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                     "units": null
                   }
                 },
-                "sketchId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rootGuideLeft"
@@ -1371,7 +1371,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+                "id": "[uuid]",
                 "objectId": 48,
                 "kind": {
                   "line": {
@@ -1446,8 +1446,8 @@ description: Variables in memory after executing ceiling-fan.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1476,7 +1476,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                     "units": null
                   }
                 },
-                "sketchId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rootGuideRight"
@@ -1492,7 +1492,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+                "id": "[uuid]",
                 "objectId": 30,
                 "kind": {
                   "line": {
@@ -1566,8 +1566,8 @@ description: Variables in memory after executing ceiling-fan.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1596,7 +1596,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                     "units": null
                   }
                 },
-                "sketchId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rootNeckLeft"
@@ -1612,7 +1612,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+                "id": "[uuid]",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -1686,8 +1686,8 @@ description: Variables in memory after executing ceiling-fan.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1716,7 +1716,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                     "units": null
                   }
                 },
-                "sketchId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rootNeckRight"
@@ -1732,7 +1732,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+                "id": "[uuid]",
                 "objectId": 33,
                 "kind": {
                   "line": {
@@ -1806,8 +1806,8 @@ description: Variables in memory after executing ceiling-fan.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1836,7 +1836,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                     "units": null
                   }
                 },
-                "sketchId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rootSeamLeft"
@@ -1852,7 +1852,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                "id": "[uuid]",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -1926,8 +1926,8 @@ description: Variables in memory after executing ceiling-fan.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1956,7 +1956,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                     "units": null
                   }
                 },
-                "sketchId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rootSeamRight"
@@ -1972,7 +1972,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "41c630c9-9d44-581b-98af-caee575bea48",
+                "id": "[uuid]",
                 "objectId": 27,
                 "kind": {
                   "line": {
@@ -2046,8 +2046,8 @@ description: Variables in memory after executing ceiling-fan.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2076,7 +2076,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                     "units": null
                   }
                 },
-                "sketchId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "spanLeft"
@@ -2092,7 +2092,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                "id": "[uuid]",
                 "objectId": 10,
                 "kind": {
                   "line": {
@@ -2166,8 +2166,8 @@ description: Variables in memory after executing ceiling-fan.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2196,7 +2196,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                     "units": null
                   }
                 },
-                "sketchId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "spanRight"
@@ -2212,7 +2212,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
+                "id": "[uuid]",
                 "objectId": 24,
                 "kind": {
                   "arc": {
@@ -2318,8 +2318,8 @@ description: Variables in memory after executing ceiling-fan.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2348,7 +2348,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                     "units": null
                   }
                 },
-                "sketchId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "tipArcLeft"
@@ -2364,7 +2364,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+                "id": "[uuid]",
                 "objectId": 14,
                 "kind": {
                   "arc": {
@@ -2470,8 +2470,8 @@ description: Variables in memory after executing ceiling-fan.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2500,7 +2500,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                     "units": null
                   }
                 },
-                "sketchId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "tipArcRight"
@@ -2516,7 +2516,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "f084ad07-5777-5607-a544-c69f455c2aab",
+                "id": "[uuid]",
                 "objectId": 63,
                 "kind": {
                   "line": {
@@ -2591,8 +2591,8 @@ description: Variables in memory after executing ceiling-fan.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2621,7 +2621,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                     "units": null
                   }
                 },
-                "sketchId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "tipCenterGuideLeft"
@@ -2637,7 +2637,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+                "id": "[uuid]",
                 "objectId": 60,
                 "kind": {
                   "line": {
@@ -2712,8 +2712,8 @@ description: Variables in memory after executing ceiling-fan.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2742,7 +2742,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                     "units": null
                   }
                 },
-                "sketchId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "tipCenterGuideRight"
@@ -2758,7 +2758,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+                "id": "[uuid]",
                 "objectId": 20,
                 "kind": {
                   "line": {
@@ -2832,8 +2832,8 @@ description: Variables in memory after executing ceiling-fan.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2862,7 +2862,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                     "units": null
                   }
                 },
-                "sketchId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "tipFlatLeft"
@@ -2878,7 +2878,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+                "id": "[uuid]",
                 "objectId": 17,
                 "kind": {
                   "line": {
@@ -2952,8 +2952,8 @@ description: Variables in memory after executing ceiling-fan.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2982,7 +2982,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                     "units": null
                   }
                 },
-                "sketchId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "tipFlatRight"
@@ -2999,11 +2999,11 @@ description: Variables in memory after executing ceiling-fan.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "093c46c0-5777-5140-8207-3c2c5f10fa26",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3027,7 +3027,7 @@ description: Variables in memory after executing ceiling-fan.kcl
         },
         {
           "__geoMeta": {
-            "id": "bc78a3d5-9604-54c4-90a9-e45104c0ab55",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3051,7 +3051,7 @@ description: Variables in memory after executing ceiling-fan.kcl
         },
         {
           "__geoMeta": {
-            "id": "5a797692-30a8-56aa-8413-672d89ee04a7",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3075,7 +3075,7 @@ description: Variables in memory after executing ceiling-fan.kcl
         },
         {
           "__geoMeta": {
-            "id": "2d9c655e-d9db-5513-bf7b-df510009bff3",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -3105,7 +3105,7 @@ description: Variables in memory after executing ceiling-fan.kcl
         },
         {
           "__geoMeta": {
-            "id": "e618ea32-4393-5bc0-8247-e0ccc6b2883e",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3129,7 +3129,7 @@ description: Variables in memory after executing ceiling-fan.kcl
         },
         {
           "__geoMeta": {
-            "id": "25bbb991-dd9c-5a89-b597-455e479c2a03",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3153,7 +3153,7 @@ description: Variables in memory after executing ceiling-fan.kcl
         },
         {
           "__geoMeta": {
-            "id": "340c82c9-f48c-5c79-8871-11a62a63614f",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -3183,7 +3183,7 @@ description: Variables in memory after executing ceiling-fan.kcl
         },
         {
           "__geoMeta": {
-            "id": "9a1eae76-d164-5646-a055-609e2049fcc2",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3207,7 +3207,7 @@ description: Variables in memory after executing ceiling-fan.kcl
         },
         {
           "__geoMeta": {
-            "id": "996c2a63-7078-5e34-b2cb-29cc12356ce8",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3231,7 +3231,7 @@ description: Variables in memory after executing ceiling-fan.kcl
         },
         {
           "__geoMeta": {
-            "id": "b3654e6d-edf8-57b4-8759-ca05600944f1",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3256,8 +3256,8 @@ description: Variables in memory after executing ceiling-fan.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -3297,7 +3297,7 @@ description: Variables in memory after executing ceiling-fan.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -3343,8 +3343,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "value": "tipFlatRight"
         }
       },
-      "artifactId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
-      "originalId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -3398,14 +3398,14 @@ description: Variables in memory after executing ceiling-fan.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
-      "originalId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
-      "topologyId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
-      "artifactId": "ca502980-7bdd-5694-85c5-3eb8ffa8242b",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "dc3fbc2a-1a02-5607-b443-d125fd5c86ab",
-          "id": "093c46c0-5777-5140-8207-3c2c5f10fa26",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1425,
@@ -3418,8 +3418,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "04eec2ad-d75e-58f7-8b3d-62d59ad26083",
-          "id": "bc78a3d5-9604-54c4-90a9-e45104c0ab55",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1508,
@@ -3432,8 +3432,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "f49f0caf-015d-5932-b5a5-e7c1d425c5fa",
-          "id": "5a797692-30a8-56aa-8413-672d89ee04a7",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1597,
@@ -3446,8 +3446,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "c85fb522-7249-5ecf-9ad4-c9aca976f87d",
-          "id": "2d9c655e-d9db-5513-bf7b-df510009bff3",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1683,
@@ -3460,8 +3460,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "3237419e-9267-511d-84b3-3cbd311ec113",
-          "id": "e618ea32-4393-5bc0-8247-e0ccc6b2883e",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1807,
@@ -3474,8 +3474,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "4e558dd0-92e4-5562-a246-ff2bca05ad93",
-          "id": "25bbb991-dd9c-5a89-b597-455e479c2a03",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1894,
@@ -3488,8 +3488,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "8d62bf5b-a739-57ae-9875-2e5c8c76ceac",
-          "id": "340c82c9-f48c-5c79-8871-11a62a63614f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1981,
@@ -3502,8 +3502,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "1aee2fdf-73f1-5a8c-b291-3509d534c40b",
-          "id": "9a1eae76-d164-5646-a055-609e2049fcc2",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2107,
@@ -3516,8 +3516,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "8a5f77e3-d162-5cde-9f93-3afd0fb8db22",
-          "id": "996c2a63-7078-5e34-b2cb-29cc12356ce8",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2194,
@@ -3530,8 +3530,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "2039eaad-3cc0-5ec7-85cc-f2b53c3681bd",
-          "id": "b3654e6d-edf8-57b4-8759-ca05600944f1",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2284,
@@ -3547,11 +3547,11 @@ description: Variables in memory after executing ceiling-fan.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "093c46c0-5777-5140-8207-3c2c5f10fa26",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3575,7 +3575,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "bc78a3d5-9604-54c4-90a9-e45104c0ab55",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3599,7 +3599,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "5a797692-30a8-56aa-8413-672d89ee04a7",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3623,7 +3623,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "2d9c655e-d9db-5513-bf7b-df510009bff3",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -3653,7 +3653,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "e618ea32-4393-5bc0-8247-e0ccc6b2883e",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3677,7 +3677,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "25bbb991-dd9c-5a89-b597-455e479c2a03",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3701,7 +3701,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "340c82c9-f48c-5c79-8871-11a62a63614f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -3731,7 +3731,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "9a1eae76-d164-5646-a055-609e2049fcc2",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3755,7 +3755,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "996c2a63-7078-5e34-b2cb-29cc12356ce8",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3779,7 +3779,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "b3654e6d-edf8-57b4-8759-ca05600944f1",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3804,8 +3804,8 @@ description: Variables in memory after executing ceiling-fan.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -3845,7 +3845,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -3891,13 +3891,13 @@ description: Variables in memory after executing ceiling-fan.kcl
             "value": "tipFlatRight"
           }
         },
-        "artifactId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
-        "originalId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "6391a437-55d5-5c5e-ad3d-60799cb39c35",
-      "endCapId": "21c09184-b0bc-51f6-9ef5-26d75c4dddbd",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -3978,14 +3978,14 @@ description: Variables in memory after executing ceiling-fan.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "44b2dfb0-0721-57cd-a796-4401a664e194",
-      "originalId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
-      "topologyId": "44b2dfb0-0721-57cd-a796-4401a664e194",
-      "artifactId": "44b2dfb0-0721-57cd-a796-4401a664e194",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "dc3fbc2a-1a02-5607-b443-d125fd5c86ab",
-          "id": "093c46c0-5777-5140-8207-3c2c5f10fa26",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1425,
@@ -3998,8 +3998,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "04eec2ad-d75e-58f7-8b3d-62d59ad26083",
-          "id": "bc78a3d5-9604-54c4-90a9-e45104c0ab55",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1508,
@@ -4012,8 +4012,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "f49f0caf-015d-5932-b5a5-e7c1d425c5fa",
-          "id": "5a797692-30a8-56aa-8413-672d89ee04a7",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1597,
@@ -4026,8 +4026,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "c85fb522-7249-5ecf-9ad4-c9aca976f87d",
-          "id": "2d9c655e-d9db-5513-bf7b-df510009bff3",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1683,
@@ -4040,8 +4040,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "3237419e-9267-511d-84b3-3cbd311ec113",
-          "id": "e618ea32-4393-5bc0-8247-e0ccc6b2883e",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1807,
@@ -4054,8 +4054,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "4e558dd0-92e4-5562-a246-ff2bca05ad93",
-          "id": "25bbb991-dd9c-5a89-b597-455e479c2a03",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1894,
@@ -4068,8 +4068,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "8d62bf5b-a739-57ae-9875-2e5c8c76ceac",
-          "id": "340c82c9-f48c-5c79-8871-11a62a63614f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1981,
@@ -4082,8 +4082,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "1aee2fdf-73f1-5a8c-b291-3509d534c40b",
-          "id": "9a1eae76-d164-5646-a055-609e2049fcc2",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2107,
@@ -4096,8 +4096,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "8a5f77e3-d162-5cde-9f93-3afd0fb8db22",
-          "id": "996c2a63-7078-5e34-b2cb-29cc12356ce8",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2194,
@@ -4110,8 +4110,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "2039eaad-3cc0-5ec7-85cc-f2b53c3681bd",
-          "id": "b3654e6d-edf8-57b4-8759-ca05600944f1",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2284,
@@ -4127,11 +4127,11 @@ description: Variables in memory after executing ceiling-fan.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "44b2dfb0-0721-57cd-a796-4401a664e194",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "093c46c0-5777-5140-8207-3c2c5f10fa26",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4155,7 +4155,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "bc78a3d5-9604-54c4-90a9-e45104c0ab55",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4179,7 +4179,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "5a797692-30a8-56aa-8413-672d89ee04a7",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4203,7 +4203,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "2d9c655e-d9db-5513-bf7b-df510009bff3",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -4233,7 +4233,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "e618ea32-4393-5bc0-8247-e0ccc6b2883e",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4257,7 +4257,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "25bbb991-dd9c-5a89-b597-455e479c2a03",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4281,7 +4281,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "340c82c9-f48c-5c79-8871-11a62a63614f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -4311,7 +4311,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "9a1eae76-d164-5646-a055-609e2049fcc2",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4335,7 +4335,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "996c2a63-7078-5e34-b2cb-29cc12356ce8",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4359,7 +4359,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "b3654e6d-edf8-57b4-8759-ca05600944f1",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4384,8 +4384,8 @@ description: Variables in memory after executing ceiling-fan.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -4425,7 +4425,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -4471,13 +4471,13 @@ description: Variables in memory after executing ceiling-fan.kcl
             "value": "tipFlatRight"
           }
         },
-        "artifactId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
-        "originalId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "6391a437-55d5-5c5e-ad3d-60799cb39c35",
-      "endCapId": "21c09184-b0bc-51f6-9ef5-26d75c4dddbd",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -4486,14 +4486,14 @@ description: Variables in memory after executing ceiling-fan.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "ba769d4c-3a67-5309-824d-fd59f263bb46",
-      "originalId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
-      "topologyId": "ba769d4c-3a67-5309-824d-fd59f263bb46",
-      "artifactId": "ba769d4c-3a67-5309-824d-fd59f263bb46",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "dc3fbc2a-1a02-5607-b443-d125fd5c86ab",
-          "id": "093c46c0-5777-5140-8207-3c2c5f10fa26",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1425,
@@ -4506,8 +4506,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "04eec2ad-d75e-58f7-8b3d-62d59ad26083",
-          "id": "bc78a3d5-9604-54c4-90a9-e45104c0ab55",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1508,
@@ -4520,8 +4520,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "f49f0caf-015d-5932-b5a5-e7c1d425c5fa",
-          "id": "5a797692-30a8-56aa-8413-672d89ee04a7",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1597,
@@ -4534,8 +4534,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "c85fb522-7249-5ecf-9ad4-c9aca976f87d",
-          "id": "2d9c655e-d9db-5513-bf7b-df510009bff3",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1683,
@@ -4548,8 +4548,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "3237419e-9267-511d-84b3-3cbd311ec113",
-          "id": "e618ea32-4393-5bc0-8247-e0ccc6b2883e",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1807,
@@ -4562,8 +4562,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "4e558dd0-92e4-5562-a246-ff2bca05ad93",
-          "id": "25bbb991-dd9c-5a89-b597-455e479c2a03",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1894,
@@ -4576,8 +4576,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "8d62bf5b-a739-57ae-9875-2e5c8c76ceac",
-          "id": "340c82c9-f48c-5c79-8871-11a62a63614f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1981,
@@ -4590,8 +4590,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "1aee2fdf-73f1-5a8c-b291-3509d534c40b",
-          "id": "9a1eae76-d164-5646-a055-609e2049fcc2",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2107,
@@ -4604,8 +4604,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "8a5f77e3-d162-5cde-9f93-3afd0fb8db22",
-          "id": "996c2a63-7078-5e34-b2cb-29cc12356ce8",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2194,
@@ -4618,8 +4618,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "2039eaad-3cc0-5ec7-85cc-f2b53c3681bd",
-          "id": "b3654e6d-edf8-57b4-8759-ca05600944f1",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2284,
@@ -4635,11 +4635,11 @@ description: Variables in memory after executing ceiling-fan.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "ba769d4c-3a67-5309-824d-fd59f263bb46",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "093c46c0-5777-5140-8207-3c2c5f10fa26",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4663,7 +4663,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "bc78a3d5-9604-54c4-90a9-e45104c0ab55",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4687,7 +4687,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "5a797692-30a8-56aa-8413-672d89ee04a7",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4711,7 +4711,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "2d9c655e-d9db-5513-bf7b-df510009bff3",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -4741,7 +4741,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "e618ea32-4393-5bc0-8247-e0ccc6b2883e",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4765,7 +4765,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "25bbb991-dd9c-5a89-b597-455e479c2a03",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4789,7 +4789,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "340c82c9-f48c-5c79-8871-11a62a63614f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -4819,7 +4819,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "9a1eae76-d164-5646-a055-609e2049fcc2",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4843,7 +4843,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "996c2a63-7078-5e34-b2cb-29cc12356ce8",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4867,7 +4867,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "b3654e6d-edf8-57b4-8759-ca05600944f1",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4892,8 +4892,8 @@ description: Variables in memory after executing ceiling-fan.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -4933,7 +4933,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -4979,13 +4979,13 @@ description: Variables in memory after executing ceiling-fan.kcl
             "value": "tipFlatRight"
           }
         },
-        "artifactId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
-        "originalId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "6391a437-55d5-5c5e-ad3d-60799cb39c35",
-      "endCapId": "21c09184-b0bc-51f6-9ef5-26d75c4dddbd",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -5002,14 +5002,14 @@ description: Variables in memory after executing ceiling-fan.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "ba769d4c-3a67-5309-824d-fd59f263bb46",
-          "originalId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
-          "topologyId": "ba769d4c-3a67-5309-824d-fd59f263bb46",
-          "artifactId": "ba769d4c-3a67-5309-824d-fd59f263bb46",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "dc3fbc2a-1a02-5607-b443-d125fd5c86ab",
-              "id": "093c46c0-5777-5140-8207-3c2c5f10fa26",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1425,
@@ -5022,8 +5022,8 @@ description: Variables in memory after executing ceiling-fan.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "04eec2ad-d75e-58f7-8b3d-62d59ad26083",
-              "id": "bc78a3d5-9604-54c4-90a9-e45104c0ab55",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1508,
@@ -5036,8 +5036,8 @@ description: Variables in memory after executing ceiling-fan.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "f49f0caf-015d-5932-b5a5-e7c1d425c5fa",
-              "id": "5a797692-30a8-56aa-8413-672d89ee04a7",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1597,
@@ -5050,8 +5050,8 @@ description: Variables in memory after executing ceiling-fan.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "c85fb522-7249-5ecf-9ad4-c9aca976f87d",
-              "id": "2d9c655e-d9db-5513-bf7b-df510009bff3",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1683,
@@ -5064,8 +5064,8 @@ description: Variables in memory after executing ceiling-fan.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "3237419e-9267-511d-84b3-3cbd311ec113",
-              "id": "e618ea32-4393-5bc0-8247-e0ccc6b2883e",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1807,
@@ -5078,8 +5078,8 @@ description: Variables in memory after executing ceiling-fan.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "4e558dd0-92e4-5562-a246-ff2bca05ad93",
-              "id": "25bbb991-dd9c-5a89-b597-455e479c2a03",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1894,
@@ -5092,8 +5092,8 @@ description: Variables in memory after executing ceiling-fan.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "8d62bf5b-a739-57ae-9875-2e5c8c76ceac",
-              "id": "340c82c9-f48c-5c79-8871-11a62a63614f",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1981,
@@ -5106,8 +5106,8 @@ description: Variables in memory after executing ceiling-fan.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "1aee2fdf-73f1-5a8c-b291-3509d534c40b",
-              "id": "9a1eae76-d164-5646-a055-609e2049fcc2",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2107,
@@ -5120,8 +5120,8 @@ description: Variables in memory after executing ceiling-fan.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "8a5f77e3-d162-5cde-9f93-3afd0fb8db22",
-              "id": "996c2a63-7078-5e34-b2cb-29cc12356ce8",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2194,
@@ -5134,8 +5134,8 @@ description: Variables in memory after executing ceiling-fan.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "2039eaad-3cc0-5ec7-85cc-f2b53c3681bd",
-              "id": "b3654e6d-edf8-57b4-8759-ca05600944f1",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2284,
@@ -5151,11 +5151,11 @@ description: Variables in memory after executing ceiling-fan.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "ba769d4c-3a67-5309-824d-fd59f263bb46",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "093c46c0-5777-5140-8207-3c2c5f10fa26",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -5179,7 +5179,7 @@ description: Variables in memory after executing ceiling-fan.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "bc78a3d5-9604-54c4-90a9-e45104c0ab55",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -5203,7 +5203,7 @@ description: Variables in memory after executing ceiling-fan.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "5a797692-30a8-56aa-8413-672d89ee04a7",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -5227,7 +5227,7 @@ description: Variables in memory after executing ceiling-fan.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "2d9c655e-d9db-5513-bf7b-df510009bff3",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -5257,7 +5257,7 @@ description: Variables in memory after executing ceiling-fan.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "e618ea32-4393-5bc0-8247-e0ccc6b2883e",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -5281,7 +5281,7 @@ description: Variables in memory after executing ceiling-fan.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "25bbb991-dd9c-5a89-b597-455e479c2a03",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -5305,7 +5305,7 @@ description: Variables in memory after executing ceiling-fan.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "340c82c9-f48c-5c79-8871-11a62a63614f",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -5335,7 +5335,7 @@ description: Variables in memory after executing ceiling-fan.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "9a1eae76-d164-5646-a055-609e2049fcc2",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -5359,7 +5359,7 @@ description: Variables in memory after executing ceiling-fan.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "996c2a63-7078-5e34-b2cb-29cc12356ce8",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -5383,7 +5383,7 @@ description: Variables in memory after executing ceiling-fan.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "b3654e6d-edf8-57b4-8759-ca05600944f1",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -5408,8 +5408,8 @@ description: Variables in memory after executing ceiling-fan.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-              "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 0,
               "kind": "Custom",
               "origin": {
@@ -5449,7 +5449,7 @@ description: Variables in memory after executing ceiling-fan.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -5495,13 +5495,13 @@ description: Variables in memory after executing ceiling-fan.kcl
                 "value": "tipFlatRight"
               }
             },
-            "artifactId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
-            "originalId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "mm",
             "isClosed": "explicitly"
           },
-          "startCapId": "6391a437-55d5-5c5e-ad3d-60799cb39c35",
-          "endCapId": "21c09184-b0bc-51f6-9ef5-26d75c4dddbd",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "mm",
           "sectional": false
         }
@@ -5510,14 +5510,14 @@ description: Variables in memory after executing ceiling-fan.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "51c5724e-fcef-59e5-80cb-14fd7735b004",
-          "originalId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
-          "topologyId": "ba769d4c-3a67-5309-824d-fd59f263bb46",
-          "artifactId": "51c5724e-fcef-59e5-80cb-14fd7735b004",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "dc3fbc2a-1a02-5607-b443-d125fd5c86ab",
-              "id": "093c46c0-5777-5140-8207-3c2c5f10fa26",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1425,
@@ -5530,8 +5530,8 @@ description: Variables in memory after executing ceiling-fan.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "04eec2ad-d75e-58f7-8b3d-62d59ad26083",
-              "id": "bc78a3d5-9604-54c4-90a9-e45104c0ab55",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1508,
@@ -5544,8 +5544,8 @@ description: Variables in memory after executing ceiling-fan.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "f49f0caf-015d-5932-b5a5-e7c1d425c5fa",
-              "id": "5a797692-30a8-56aa-8413-672d89ee04a7",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1597,
@@ -5558,8 +5558,8 @@ description: Variables in memory after executing ceiling-fan.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "c85fb522-7249-5ecf-9ad4-c9aca976f87d",
-              "id": "2d9c655e-d9db-5513-bf7b-df510009bff3",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1683,
@@ -5572,8 +5572,8 @@ description: Variables in memory after executing ceiling-fan.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "3237419e-9267-511d-84b3-3cbd311ec113",
-              "id": "e618ea32-4393-5bc0-8247-e0ccc6b2883e",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1807,
@@ -5586,8 +5586,8 @@ description: Variables in memory after executing ceiling-fan.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "4e558dd0-92e4-5562-a246-ff2bca05ad93",
-              "id": "25bbb991-dd9c-5a89-b597-455e479c2a03",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1894,
@@ -5600,8 +5600,8 @@ description: Variables in memory after executing ceiling-fan.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "8d62bf5b-a739-57ae-9875-2e5c8c76ceac",
-              "id": "340c82c9-f48c-5c79-8871-11a62a63614f",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1981,
@@ -5614,8 +5614,8 @@ description: Variables in memory after executing ceiling-fan.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "1aee2fdf-73f1-5a8c-b291-3509d534c40b",
-              "id": "9a1eae76-d164-5646-a055-609e2049fcc2",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2107,
@@ -5628,8 +5628,8 @@ description: Variables in memory after executing ceiling-fan.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "8a5f77e3-d162-5cde-9f93-3afd0fb8db22",
-              "id": "996c2a63-7078-5e34-b2cb-29cc12356ce8",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2194,
@@ -5642,8 +5642,8 @@ description: Variables in memory after executing ceiling-fan.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "2039eaad-3cc0-5ec7-85cc-f2b53c3681bd",
-              "id": "b3654e6d-edf8-57b4-8759-ca05600944f1",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2284,
@@ -5659,11 +5659,11 @@ description: Variables in memory after executing ceiling-fan.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "51c5724e-fcef-59e5-80cb-14fd7735b004",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "093c46c0-5777-5140-8207-3c2c5f10fa26",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -5687,7 +5687,7 @@ description: Variables in memory after executing ceiling-fan.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "bc78a3d5-9604-54c4-90a9-e45104c0ab55",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -5711,7 +5711,7 @@ description: Variables in memory after executing ceiling-fan.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "5a797692-30a8-56aa-8413-672d89ee04a7",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -5735,7 +5735,7 @@ description: Variables in memory after executing ceiling-fan.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "2d9c655e-d9db-5513-bf7b-df510009bff3",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -5765,7 +5765,7 @@ description: Variables in memory after executing ceiling-fan.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "e618ea32-4393-5bc0-8247-e0ccc6b2883e",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -5789,7 +5789,7 @@ description: Variables in memory after executing ceiling-fan.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "25bbb991-dd9c-5a89-b597-455e479c2a03",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -5813,7 +5813,7 @@ description: Variables in memory after executing ceiling-fan.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "340c82c9-f48c-5c79-8871-11a62a63614f",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -5843,7 +5843,7 @@ description: Variables in memory after executing ceiling-fan.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "9a1eae76-d164-5646-a055-609e2049fcc2",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -5867,7 +5867,7 @@ description: Variables in memory after executing ceiling-fan.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "996c2a63-7078-5e34-b2cb-29cc12356ce8",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -5891,7 +5891,7 @@ description: Variables in memory after executing ceiling-fan.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "b3654e6d-edf8-57b4-8759-ca05600944f1",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -5916,8 +5916,8 @@ description: Variables in memory after executing ceiling-fan.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-              "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 0,
               "kind": "Custom",
               "origin": {
@@ -5957,7 +5957,7 @@ description: Variables in memory after executing ceiling-fan.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -6003,13 +6003,13 @@ description: Variables in memory after executing ceiling-fan.kcl
                 "value": "tipFlatRight"
               }
             },
-            "artifactId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
-            "originalId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "mm",
             "isClosed": "explicitly"
           },
-          "startCapId": "6391a437-55d5-5c5e-ad3d-60799cb39c35",
-          "endCapId": "21c09184-b0bc-51f6-9ef5-26d75c4dddbd",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "mm",
           "sectional": false
         }
@@ -6018,14 +6018,14 @@ description: Variables in memory after executing ceiling-fan.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "68d9d9db-332a-50a3-b278-71208f13945b",
-          "originalId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
-          "topologyId": "ba769d4c-3a67-5309-824d-fd59f263bb46",
-          "artifactId": "68d9d9db-332a-50a3-b278-71208f13945b",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "dc3fbc2a-1a02-5607-b443-d125fd5c86ab",
-              "id": "093c46c0-5777-5140-8207-3c2c5f10fa26",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1425,
@@ -6038,8 +6038,8 @@ description: Variables in memory after executing ceiling-fan.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "04eec2ad-d75e-58f7-8b3d-62d59ad26083",
-              "id": "bc78a3d5-9604-54c4-90a9-e45104c0ab55",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1508,
@@ -6052,8 +6052,8 @@ description: Variables in memory after executing ceiling-fan.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "f49f0caf-015d-5932-b5a5-e7c1d425c5fa",
-              "id": "5a797692-30a8-56aa-8413-672d89ee04a7",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1597,
@@ -6066,8 +6066,8 @@ description: Variables in memory after executing ceiling-fan.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "c85fb522-7249-5ecf-9ad4-c9aca976f87d",
-              "id": "2d9c655e-d9db-5513-bf7b-df510009bff3",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1683,
@@ -6080,8 +6080,8 @@ description: Variables in memory after executing ceiling-fan.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "3237419e-9267-511d-84b3-3cbd311ec113",
-              "id": "e618ea32-4393-5bc0-8247-e0ccc6b2883e",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1807,
@@ -6094,8 +6094,8 @@ description: Variables in memory after executing ceiling-fan.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "4e558dd0-92e4-5562-a246-ff2bca05ad93",
-              "id": "25bbb991-dd9c-5a89-b597-455e479c2a03",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1894,
@@ -6108,8 +6108,8 @@ description: Variables in memory after executing ceiling-fan.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "8d62bf5b-a739-57ae-9875-2e5c8c76ceac",
-              "id": "340c82c9-f48c-5c79-8871-11a62a63614f",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1981,
@@ -6122,8 +6122,8 @@ description: Variables in memory after executing ceiling-fan.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "1aee2fdf-73f1-5a8c-b291-3509d534c40b",
-              "id": "9a1eae76-d164-5646-a055-609e2049fcc2",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2107,
@@ -6136,8 +6136,8 @@ description: Variables in memory after executing ceiling-fan.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "8a5f77e3-d162-5cde-9f93-3afd0fb8db22",
-              "id": "996c2a63-7078-5e34-b2cb-29cc12356ce8",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2194,
@@ -6150,8 +6150,8 @@ description: Variables in memory after executing ceiling-fan.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "2039eaad-3cc0-5ec7-85cc-f2b53c3681bd",
-              "id": "b3654e6d-edf8-57b4-8759-ca05600944f1",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2284,
@@ -6167,11 +6167,11 @@ description: Variables in memory after executing ceiling-fan.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "68d9d9db-332a-50a3-b278-71208f13945b",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "093c46c0-5777-5140-8207-3c2c5f10fa26",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -6195,7 +6195,7 @@ description: Variables in memory after executing ceiling-fan.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "bc78a3d5-9604-54c4-90a9-e45104c0ab55",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -6219,7 +6219,7 @@ description: Variables in memory after executing ceiling-fan.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "5a797692-30a8-56aa-8413-672d89ee04a7",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -6243,7 +6243,7 @@ description: Variables in memory after executing ceiling-fan.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "2d9c655e-d9db-5513-bf7b-df510009bff3",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -6273,7 +6273,7 @@ description: Variables in memory after executing ceiling-fan.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "e618ea32-4393-5bc0-8247-e0ccc6b2883e",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -6297,7 +6297,7 @@ description: Variables in memory after executing ceiling-fan.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "25bbb991-dd9c-5a89-b597-455e479c2a03",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -6321,7 +6321,7 @@ description: Variables in memory after executing ceiling-fan.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "340c82c9-f48c-5c79-8871-11a62a63614f",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -6351,7 +6351,7 @@ description: Variables in memory after executing ceiling-fan.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "9a1eae76-d164-5646-a055-609e2049fcc2",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -6375,7 +6375,7 @@ description: Variables in memory after executing ceiling-fan.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "996c2a63-7078-5e34-b2cb-29cc12356ce8",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -6399,7 +6399,7 @@ description: Variables in memory after executing ceiling-fan.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "b3654e6d-edf8-57b4-8759-ca05600944f1",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -6424,8 +6424,8 @@ description: Variables in memory after executing ceiling-fan.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-              "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 0,
               "kind": "Custom",
               "origin": {
@@ -6465,7 +6465,7 @@ description: Variables in memory after executing ceiling-fan.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -6511,13 +6511,13 @@ description: Variables in memory after executing ceiling-fan.kcl
                 "value": "tipFlatRight"
               }
             },
-            "artifactId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
-            "originalId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "mm",
             "isClosed": "explicitly"
           },
-          "startCapId": "6391a437-55d5-5c5e-ad3d-60799cb39c35",
-          "endCapId": "21c09184-b0bc-51f6-9ef5-26d75c4dddbd",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "mm",
           "sectional": false
         }
@@ -6528,14 +6528,14 @@ description: Variables in memory after executing ceiling-fan.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
-      "originalId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
-      "topologyId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
-      "artifactId": "ca502980-7bdd-5694-85c5-3eb8ffa8242b",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "dc3fbc2a-1a02-5607-b443-d125fd5c86ab",
-          "id": "093c46c0-5777-5140-8207-3c2c5f10fa26",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1425,
@@ -6548,8 +6548,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "04eec2ad-d75e-58f7-8b3d-62d59ad26083",
-          "id": "bc78a3d5-9604-54c4-90a9-e45104c0ab55",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1508,
@@ -6562,8 +6562,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "f49f0caf-015d-5932-b5a5-e7c1d425c5fa",
-          "id": "5a797692-30a8-56aa-8413-672d89ee04a7",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1597,
@@ -6576,8 +6576,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "c85fb522-7249-5ecf-9ad4-c9aca976f87d",
-          "id": "2d9c655e-d9db-5513-bf7b-df510009bff3",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1683,
@@ -6590,8 +6590,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "3237419e-9267-511d-84b3-3cbd311ec113",
-          "id": "e618ea32-4393-5bc0-8247-e0ccc6b2883e",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1807,
@@ -6604,8 +6604,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "4e558dd0-92e4-5562-a246-ff2bca05ad93",
-          "id": "25bbb991-dd9c-5a89-b597-455e479c2a03",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1894,
@@ -6618,8 +6618,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "8d62bf5b-a739-57ae-9875-2e5c8c76ceac",
-          "id": "340c82c9-f48c-5c79-8871-11a62a63614f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1981,
@@ -6632,8 +6632,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "1aee2fdf-73f1-5a8c-b291-3509d534c40b",
-          "id": "9a1eae76-d164-5646-a055-609e2049fcc2",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2107,
@@ -6646,8 +6646,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "8a5f77e3-d162-5cde-9f93-3afd0fb8db22",
-          "id": "996c2a63-7078-5e34-b2cb-29cc12356ce8",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2194,
@@ -6660,8 +6660,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "2039eaad-3cc0-5ec7-85cc-f2b53c3681bd",
-          "id": "b3654e6d-edf8-57b4-8759-ca05600944f1",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2284,
@@ -6677,11 +6677,11 @@ description: Variables in memory after executing ceiling-fan.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "093c46c0-5777-5140-8207-3c2c5f10fa26",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6705,7 +6705,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "bc78a3d5-9604-54c4-90a9-e45104c0ab55",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6729,7 +6729,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "5a797692-30a8-56aa-8413-672d89ee04a7",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6753,7 +6753,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "2d9c655e-d9db-5513-bf7b-df510009bff3",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -6783,7 +6783,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "e618ea32-4393-5bc0-8247-e0ccc6b2883e",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6807,7 +6807,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "25bbb991-dd9c-5a89-b597-455e479c2a03",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6831,7 +6831,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "340c82c9-f48c-5c79-8871-11a62a63614f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -6861,7 +6861,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "9a1eae76-d164-5646-a055-609e2049fcc2",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6885,7 +6885,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "996c2a63-7078-5e34-b2cb-29cc12356ce8",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6909,7 +6909,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "b3654e6d-edf8-57b4-8759-ca05600944f1",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6934,8 +6934,8 @@ description: Variables in memory after executing ceiling-fan.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -6975,7 +6975,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -7021,13 +7021,13 @@ description: Variables in memory after executing ceiling-fan.kcl
             "value": "tipFlatRight"
           }
         },
-        "artifactId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
-        "originalId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "6391a437-55d5-5c5e-ad3d-60799cb39c35",
-      "endCapId": "21c09184-b0bc-51f6-9ef5-26d75c4dddbd",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -7036,14 +7036,14 @@ description: Variables in memory after executing ceiling-fan.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "44b2dfb0-0721-57cd-a796-4401a664e194",
-      "originalId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
-      "topologyId": "44b2dfb0-0721-57cd-a796-4401a664e194",
-      "artifactId": "44b2dfb0-0721-57cd-a796-4401a664e194",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "dc3fbc2a-1a02-5607-b443-d125fd5c86ab",
-          "id": "093c46c0-5777-5140-8207-3c2c5f10fa26",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1425,
@@ -7056,8 +7056,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "04eec2ad-d75e-58f7-8b3d-62d59ad26083",
-          "id": "bc78a3d5-9604-54c4-90a9-e45104c0ab55",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1508,
@@ -7070,8 +7070,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "f49f0caf-015d-5932-b5a5-e7c1d425c5fa",
-          "id": "5a797692-30a8-56aa-8413-672d89ee04a7",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1597,
@@ -7084,8 +7084,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "c85fb522-7249-5ecf-9ad4-c9aca976f87d",
-          "id": "2d9c655e-d9db-5513-bf7b-df510009bff3",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1683,
@@ -7098,8 +7098,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "3237419e-9267-511d-84b3-3cbd311ec113",
-          "id": "e618ea32-4393-5bc0-8247-e0ccc6b2883e",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1807,
@@ -7112,8 +7112,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "4e558dd0-92e4-5562-a246-ff2bca05ad93",
-          "id": "25bbb991-dd9c-5a89-b597-455e479c2a03",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1894,
@@ -7126,8 +7126,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "8d62bf5b-a739-57ae-9875-2e5c8c76ceac",
-          "id": "340c82c9-f48c-5c79-8871-11a62a63614f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1981,
@@ -7140,8 +7140,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "1aee2fdf-73f1-5a8c-b291-3509d534c40b",
-          "id": "9a1eae76-d164-5646-a055-609e2049fcc2",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2107,
@@ -7154,8 +7154,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "8a5f77e3-d162-5cde-9f93-3afd0fb8db22",
-          "id": "996c2a63-7078-5e34-b2cb-29cc12356ce8",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2194,
@@ -7168,8 +7168,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "2039eaad-3cc0-5ec7-85cc-f2b53c3681bd",
-          "id": "b3654e6d-edf8-57b4-8759-ca05600944f1",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2284,
@@ -7185,11 +7185,11 @@ description: Variables in memory after executing ceiling-fan.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "44b2dfb0-0721-57cd-a796-4401a664e194",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "093c46c0-5777-5140-8207-3c2c5f10fa26",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -7213,7 +7213,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "bc78a3d5-9604-54c4-90a9-e45104c0ab55",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -7237,7 +7237,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "5a797692-30a8-56aa-8413-672d89ee04a7",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -7261,7 +7261,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "2d9c655e-d9db-5513-bf7b-df510009bff3",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -7291,7 +7291,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "e618ea32-4393-5bc0-8247-e0ccc6b2883e",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -7315,7 +7315,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "25bbb991-dd9c-5a89-b597-455e479c2a03",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -7339,7 +7339,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "340c82c9-f48c-5c79-8871-11a62a63614f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -7369,7 +7369,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "9a1eae76-d164-5646-a055-609e2049fcc2",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -7393,7 +7393,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "996c2a63-7078-5e34-b2cb-29cc12356ce8",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -7417,7 +7417,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "b3654e6d-edf8-57b4-8759-ca05600944f1",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -7442,8 +7442,8 @@ description: Variables in memory after executing ceiling-fan.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -7483,7 +7483,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -7529,13 +7529,13 @@ description: Variables in memory after executing ceiling-fan.kcl
             "value": "tipFlatRight"
           }
         },
-        "artifactId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
-        "originalId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "6391a437-55d5-5c5e-ad3d-60799cb39c35",
-      "endCapId": "21c09184-b0bc-51f6-9ef5-26d75c4dddbd",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -7544,14 +7544,14 @@ description: Variables in memory after executing ceiling-fan.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
-      "originalId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
-      "topologyId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
-      "artifactId": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "d47054a4-f872-511d-8b1f-4da30f60f214",
-          "id": "ea776e7b-35a3-59e4-a84c-e5d610fca17c",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 6773,
@@ -7564,8 +7564,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "ea0d3f37-fda2-54ab-b104-7c549501b245",
-          "id": "9a90708c-e9a6-5828-9cc5-28a04affe8ad",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 6850,
@@ -7578,8 +7578,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "06aaf322-1c39-5318-8be6-2c1ff45aa15f",
-          "id": "fbc21371-db5d-5836-87c3-b61cba956a04",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 6954,
@@ -7592,8 +7592,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "0396540f-7265-5d9e-9474-5503e9aea9cb",
-          "id": "9849260e-20c4-53bd-97c4-0dbfa6d9233e",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 7029,
@@ -7609,11 +7609,11 @@ description: Variables in memory after executing ceiling-fan.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "ea776e7b-35a3-59e4-a84c-e5d610fca17c",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -7637,7 +7637,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "9a90708c-e9a6-5828-9cc5-28a04affe8ad",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -7667,7 +7667,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "fbc21371-db5d-5836-87c3-b61cba956a04",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -7691,7 +7691,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "9849260e-20c4-53bd-97c4-0dbfa6d9233e",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -7716,8 +7716,8 @@ description: Variables in memory after executing ceiling-fan.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
-          "id": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 120,
           "kind": "Custom",
           "origin": {
@@ -7757,7 +7757,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -7779,13 +7779,13 @@ description: Variables in memory after executing ceiling-fan.kcl
             "value": "topEdge"
           }
         },
-        "artifactId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
-        "originalId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "9232347d-ced1-5ea3-8cb3-13dc74abfcea",
-      "endCapId": "6dd74af0-7637-5615-a2fd-79962bdb98eb",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -7794,14 +7794,14 @@ description: Variables in memory after executing ceiling-fan.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "30efa5e2-105e-56b9-85d8-16e0935167b0",
-      "originalId": "30efa5e2-105e-56b9-85d8-16e0935167b0",
-      "topologyId": "30efa5e2-105e-56b9-85d8-16e0935167b0",
-      "artifactId": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "e4608864-50fc-5241-a7f7-32d952d52436",
-          "id": "0677f6cb-9d7e-5ea1-9bf5-5de926eeed72",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 6773,
@@ -7814,8 +7814,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "842d8685-7e80-5435-8d80-859356eb3407",
-          "id": "1efca929-fe34-54d8-9ed8-e1134788307a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 6850,
@@ -7828,8 +7828,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "7c657a88-ffc2-50fa-8a82-99b24f1c1316",
-          "id": "c8b20eb9-535b-52de-9217-d83be9f9f05f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 6954,
@@ -7842,8 +7842,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "145ecd09-4035-53a2-a676-127d19abeb90",
-          "id": "b5c8d50e-5d0a-59dc-bd24-da6e73b0f874",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 7029,
@@ -7859,11 +7859,11 @@ description: Variables in memory after executing ceiling-fan.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "30efa5e2-105e-56b9-85d8-16e0935167b0",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "0677f6cb-9d7e-5ea1-9bf5-5de926eeed72",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -7887,7 +7887,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "1efca929-fe34-54d8-9ed8-e1134788307a",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -7917,7 +7917,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "c8b20eb9-535b-52de-9217-d83be9f9f05f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -7941,7 +7941,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "b5c8d50e-5d0a-59dc-bd24-da6e73b0f874",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -7966,8 +7966,8 @@ description: Variables in memory after executing ceiling-fan.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
-          "id": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 120,
           "kind": "Custom",
           "origin": {
@@ -8007,7 +8007,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -8029,13 +8029,13 @@ description: Variables in memory after executing ceiling-fan.kcl
             "value": "topEdge"
           }
         },
-        "artifactId": "30efa5e2-105e-56b9-85d8-16e0935167b0",
-        "originalId": "30efa5e2-105e-56b9-85d8-16e0935167b0",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "94ce288e-f371-524b-b200-710fc9ae7adb",
-      "endCapId": "11fbfc6b-943a-5d89-ab68-2fc37f1d8add",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -8145,14 +8145,14 @@ description: Variables in memory after executing ceiling-fan.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
-      "originalId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
-      "topologyId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
-      "artifactId": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "d47054a4-f872-511d-8b1f-4da30f60f214",
-          "id": "ea776e7b-35a3-59e4-a84c-e5d610fca17c",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 6773,
@@ -8165,8 +8165,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "ea0d3f37-fda2-54ab-b104-7c549501b245",
-          "id": "9a90708c-e9a6-5828-9cc5-28a04affe8ad",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 6850,
@@ -8179,8 +8179,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "06aaf322-1c39-5318-8be6-2c1ff45aa15f",
-          "id": "fbc21371-db5d-5836-87c3-b61cba956a04",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 6954,
@@ -8193,8 +8193,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "0396540f-7265-5d9e-9474-5503e9aea9cb",
-          "id": "9849260e-20c4-53bd-97c4-0dbfa6d9233e",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 7029,
@@ -8210,11 +8210,11 @@ description: Variables in memory after executing ceiling-fan.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "ea776e7b-35a3-59e4-a84c-e5d610fca17c",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -8238,7 +8238,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "9a90708c-e9a6-5828-9cc5-28a04affe8ad",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -8268,7 +8268,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "fbc21371-db5d-5836-87c3-b61cba956a04",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -8292,7 +8292,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "9849260e-20c4-53bd-97c4-0dbfa6d9233e",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -8317,8 +8317,8 @@ description: Variables in memory after executing ceiling-fan.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
-          "id": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 120,
           "kind": "Custom",
           "origin": {
@@ -8358,7 +8358,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -8380,13 +8380,13 @@ description: Variables in memory after executing ceiling-fan.kcl
             "value": "topEdge"
           }
         },
-        "artifactId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
-        "originalId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "9232347d-ced1-5ea3-8cb3-13dc74abfcea",
-      "endCapId": "6dd74af0-7637-5615-a2fd-79962bdb98eb",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -8395,14 +8395,14 @@ description: Variables in memory after executing ceiling-fan.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "30efa5e2-105e-56b9-85d8-16e0935167b0",
-      "originalId": "30efa5e2-105e-56b9-85d8-16e0935167b0",
-      "topologyId": "30efa5e2-105e-56b9-85d8-16e0935167b0",
-      "artifactId": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "e4608864-50fc-5241-a7f7-32d952d52436",
-          "id": "0677f6cb-9d7e-5ea1-9bf5-5de926eeed72",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 6773,
@@ -8415,8 +8415,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "842d8685-7e80-5435-8d80-859356eb3407",
-          "id": "1efca929-fe34-54d8-9ed8-e1134788307a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 6850,
@@ -8429,8 +8429,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "7c657a88-ffc2-50fa-8a82-99b24f1c1316",
-          "id": "c8b20eb9-535b-52de-9217-d83be9f9f05f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 6954,
@@ -8443,8 +8443,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "145ecd09-4035-53a2-a676-127d19abeb90",
-          "id": "b5c8d50e-5d0a-59dc-bd24-da6e73b0f874",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 7029,
@@ -8460,11 +8460,11 @@ description: Variables in memory after executing ceiling-fan.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "30efa5e2-105e-56b9-85d8-16e0935167b0",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "0677f6cb-9d7e-5ea1-9bf5-5de926eeed72",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -8488,7 +8488,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "1efca929-fe34-54d8-9ed8-e1134788307a",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -8518,7 +8518,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "c8b20eb9-535b-52de-9217-d83be9f9f05f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -8542,7 +8542,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           },
           {
             "__geoMeta": {
-              "id": "b5c8d50e-5d0a-59dc-bd24-da6e73b0f874",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -8567,8 +8567,8 @@ description: Variables in memory after executing ceiling-fan.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
-          "id": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 120,
           "kind": "Custom",
           "origin": {
@@ -8608,7 +8608,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -8630,13 +8630,13 @@ description: Variables in memory after executing ceiling-fan.kcl
             "value": "topEdge"
           }
         },
-        "artifactId": "30efa5e2-105e-56b9-85d8-16e0935167b0",
-        "originalId": "30efa5e2-105e-56b9-85d8-16e0935167b0",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "94ce288e-f371-524b-b200-710fc9ae7adb",
-      "endCapId": "11fbfc6b-943a-5d89-ab68-2fc37f1d8add",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -8659,7 +8659,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "03cd9cd9-3406-55e1-ae54-f1d9525eb3ba",
+                "id": "[uuid]",
                 "objectId": 140,
                 "kind": {
                   "line": {
@@ -8734,8 +8734,8 @@ description: Variables in memory after executing ceiling-fan.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
-                  "id": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 120,
                   "origin": {
@@ -8764,7 +8764,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                     "units": null
                   }
                 },
-                "sketchId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arcRiseGuide"
@@ -8780,7 +8780,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
+                "id": "[uuid]",
                 "objectId": 137,
                 "kind": {
                   "line": {
@@ -8855,8 +8855,8 @@ description: Variables in memory after executing ceiling-fan.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
-                  "id": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 120,
                   "origin": {
@@ -8885,7 +8885,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                     "units": null
                   }
                 },
-                "sketchId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "baseOffsetGuide"
@@ -8901,7 +8901,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce",
+                "id": "[uuid]",
                 "objectId": 124,
                 "kind": {
                   "line": {
@@ -8975,8 +8975,8 @@ description: Variables in memory after executing ceiling-fan.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
-                  "id": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 120,
                   "origin": {
@@ -9005,7 +9005,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                     "units": null
                   }
                 },
-                "sketchId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bottomEdge"
@@ -9021,7 +9021,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
+                "id": "[uuid]",
                 "objectId": 128,
                 "kind": {
                   "arc": {
@@ -9127,8 +9127,8 @@ description: Variables in memory after executing ceiling-fan.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
-                  "id": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 120,
                   "origin": {
@@ -9157,7 +9157,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                     "units": null
                   }
                 },
-                "sketchId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "innerArc"
@@ -9174,11 +9174,11 @@ description: Variables in memory after executing ceiling-fan.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -9202,7 +9202,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -9232,7 +9232,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -9256,7 +9256,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "1e31790b-7616-51eb-9bbe-0d46f611d053",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -9281,8 +9281,8 @@ description: Variables in memory after executing ceiling-fan.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
-                "id": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 120,
                 "kind": "Custom",
                 "origin": {
@@ -9322,7 +9322,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -9344,8 +9344,8 @@ description: Variables in memory after executing ceiling-fan.kcl
                   "value": "topEdge"
                 }
               },
-              "artifactId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
-              "originalId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -9359,7 +9359,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "1e31790b-7616-51eb-9bbe-0d46f611d053",
+                "id": "[uuid]",
                 "objectId": 134,
                 "kind": {
                   "line": {
@@ -9433,8 +9433,8 @@ description: Variables in memory after executing ceiling-fan.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
-                  "id": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 120,
                   "origin": {
@@ -9463,7 +9463,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                     "units": null
                   }
                 },
-                "sketchId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "outerEdge"
@@ -9479,7 +9479,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
+                "id": "[uuid]",
                 "objectId": 143,
                 "kind": {
                   "line": {
@@ -9554,8 +9554,8 @@ description: Variables in memory after executing ceiling-fan.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
-                  "id": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 120,
                   "origin": {
@@ -9584,7 +9584,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                     "units": null
                   }
                 },
-                "sketchId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "radiusGuide"
@@ -9600,7 +9600,7 @@ description: Variables in memory after executing ceiling-fan.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
+                "id": "[uuid]",
                 "objectId": 131,
                 "kind": {
                   "line": {
@@ -9674,8 +9674,8 @@ description: Variables in memory after executing ceiling-fan.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
-                  "id": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 120,
                   "origin": {
@@ -9704,7 +9704,7 @@ description: Variables in memory after executing ceiling-fan.kcl
                     "units": null
                   }
                 },
-                "sketchId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "topEdge"
@@ -9721,11 +9721,11 @@ description: Variables in memory after executing ceiling-fan.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "ea776e7b-35a3-59e4-a84c-e5d610fca17c",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -9749,7 +9749,7 @@ description: Variables in memory after executing ceiling-fan.kcl
         },
         {
           "__geoMeta": {
-            "id": "9a90708c-e9a6-5828-9cc5-28a04affe8ad",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": false,
@@ -9779,7 +9779,7 @@ description: Variables in memory after executing ceiling-fan.kcl
         },
         {
           "__geoMeta": {
-            "id": "fbc21371-db5d-5836-87c3-b61cba956a04",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -9803,7 +9803,7 @@ description: Variables in memory after executing ceiling-fan.kcl
         },
         {
           "__geoMeta": {
-            "id": "9849260e-20c4-53bd-97c4-0dbfa6d9233e",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -9828,8 +9828,8 @@ description: Variables in memory after executing ceiling-fan.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
-        "id": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 120,
         "kind": "Custom",
         "origin": {
@@ -9869,7 +9869,7 @@ description: Variables in memory after executing ceiling-fan.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -9891,8 +9891,8 @@ description: Variables in memory after executing ceiling-fan.kcl
           "value": "topEdge"
         }
       },
-      "artifactId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
-      "originalId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }

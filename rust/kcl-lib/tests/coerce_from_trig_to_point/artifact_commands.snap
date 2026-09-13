@@ -5,7 +5,7 @@ description: Artifact commands coerce_from_trig_to_point.kcl
 {
   "rust/kcl-lib/tests/coerce_from_trig_to_point/input.kcl": [
     {
-      "cmdId": "3c085bb9-a401-55d5-8042-5a9095193d55",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,11 +30,11 @@ description: Artifact commands coerce_from_trig_to_point.kcl
       }
     },
     {
-      "cmdId": "91226189-7e64-5690-9203-67ee33a6eb03",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -46,18 +46,18 @@ description: Artifact commands coerce_from_trig_to_point.kcl
       }
     },
     {
-      "cmdId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "path": "[uuid]",
         "to": {
           "x": 1.917754625683981,
           "y": 0.39714789063478056,
@@ -66,18 +66,18 @@ description: Artifact commands coerce_from_trig_to_point.kcl
       }
     },
     {
-      "cmdId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
@@ -98,11 +98,11 @@ description: Artifact commands coerce_from_trig_to_point.kcl
       }
     },
     {
-      "cmdId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "close_path",
-        "path_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+        "path_id": "[uuid]"
       }
     }
   ]

@@ -1229,7 +1229,7 @@ description: Operations executed beam_sweeps.kcl
           "path": {
             "value": {
               "type": "Segment",
-              "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+              "artifact_id": "[uuid]"
             },
             "sourceRange": []
           }
@@ -1935,11 +1935,11 @@ description: Operations executed beam_sweeps.kcl
             "value": {
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44"
+                "artifact_id": "[uuid]"
               },
               "circle2": {
                 "type": "Segment",
-                "artifact_id": "72dddee3-1330-5c4f-b767-659f762ad674"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -1947,7 +1947,7 @@ description: Operations executed beam_sweeps.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -1993,7 +1993,7 @@ description: Operations executed beam_sweeps.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2032,7 +2032,7 @@ description: Operations executed beam_sweeps.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2048,7 +2048,7 @@ description: Operations executed beam_sweeps.kcl
         "path": {
           "value": {
             "type": "Segment",
-            "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+            "artifact_id": "[uuid]"
           },
           "sourceRange": []
         },
@@ -2111,7 +2111,7 @@ description: Operations executed beam_sweeps.kcl
           "path": {
             "value": {
               "type": "Segment",
-              "artifact_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
+              "artifact_id": "[uuid]"
             },
             "sourceRange": []
           }
@@ -2817,11 +2817,11 @@ description: Operations executed beam_sweeps.kcl
             "value": {
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8"
+                "artifact_id": "[uuid]"
               },
               "circle2": {
                 "type": "Segment",
-                "artifact_id": "2269b169-b2b2-5ec2-a665-24cb3822e91f"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -2829,7 +2829,7 @@ description: Operations executed beam_sweeps.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "6c096663-896a-5f49-b4a0-b5621e2f3b74"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -2875,7 +2875,7 @@ description: Operations executed beam_sweeps.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "6c096663-896a-5f49-b4a0-b5621e2f3b74"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2914,7 +2914,7 @@ description: Operations executed beam_sweeps.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "7d8da150-b7c1-5e35-95ff-877c868e6b01"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2930,7 +2930,7 @@ description: Operations executed beam_sweeps.kcl
         "path": {
           "value": {
             "type": "Segment",
-            "artifact_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
+            "artifact_id": "[uuid]"
           },
           "sourceRange": []
         },
@@ -2993,7 +2993,7 @@ description: Operations executed beam_sweeps.kcl
           "path": {
             "value": {
               "type": "Segment",
-              "artifact_id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79"
+              "artifact_id": "[uuid]"
             },
             "sourceRange": []
           }
@@ -3699,11 +3699,11 @@ description: Operations executed beam_sweeps.kcl
             "value": {
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "724b87fd-c709-5232-b7a1-547c15affb9b"
+                "artifact_id": "[uuid]"
               },
               "circle2": {
                 "type": "Segment",
-                "artifact_id": "9f697a29-88bc-5a95-8fab-2b0aea89d002"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -3711,7 +3711,7 @@ description: Operations executed beam_sweeps.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "6be94036-fce8-50e0-a9cd-4631846bb4fc"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -3757,7 +3757,7 @@ description: Operations executed beam_sweeps.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "6be94036-fce8-50e0-a9cd-4631846bb4fc"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3796,7 +3796,7 @@ description: Operations executed beam_sweeps.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3812,7 +3812,7 @@ description: Operations executed beam_sweeps.kcl
         "path": {
           "value": {
             "type": "Segment",
-            "artifact_id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79"
+            "artifact_id": "[uuid]"
           },
           "sourceRange": []
         },
@@ -3875,7 +3875,7 @@ description: Operations executed beam_sweeps.kcl
           "path": {
             "value": {
               "type": "Segment",
-              "artifact_id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7"
+              "artifact_id": "[uuid]"
             },
             "sourceRange": []
           }
@@ -4581,11 +4581,11 @@ description: Operations executed beam_sweeps.kcl
             "value": {
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce"
+                "artifact_id": "[uuid]"
               },
               "circle2": {
                 "type": "Segment",
-                "artifact_id": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -4593,7 +4593,7 @@ description: Operations executed beam_sweeps.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "19107e89-bf40-5541-88a5-5106b6de636d"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -4639,7 +4639,7 @@ description: Operations executed beam_sweeps.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "19107e89-bf40-5541-88a5-5106b6de636d"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -4678,7 +4678,7 @@ description: Operations executed beam_sweeps.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "20f09319-bab0-5dd8-8c40-ce90cd688483"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -4694,7 +4694,7 @@ description: Operations executed beam_sweeps.kcl
         "path": {
           "value": {
             "type": "Segment",
-            "artifact_id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7"
+            "artifact_id": "[uuid]"
           },
           "sourceRange": []
         },
@@ -4757,7 +4757,7 @@ description: Operations executed beam_sweeps.kcl
           "path": {
             "value": {
               "type": "Segment",
-              "artifact_id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9"
+              "artifact_id": "[uuid]"
             },
             "sourceRange": []
           }
@@ -5463,11 +5463,11 @@ description: Operations executed beam_sweeps.kcl
             "value": {
               "circle1": {
                 "type": "Segment",
-                "artifact_id": "2be53470-95a0-52f3-9baa-988a35cbe7a5"
+                "artifact_id": "[uuid]"
               },
               "circle2": {
                 "type": "Segment",
-                "artifact_id": "2b8704a7-15b4-5ef7-8498-4a0c612057d6"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -5475,7 +5475,7 @@ description: Operations executed beam_sweeps.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "594993e6-1056-5d16-9f2e-5770c7b5e4e7"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
@@ -5521,7 +5521,7 @@ description: Operations executed beam_sweeps.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "594993e6-1056-5d16-9f2e-5770c7b5e4e7"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -5560,7 +5560,7 @@ description: Operations executed beam_sweeps.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "ee265ae4-d91c-58e8-93b9-3612710e3ae7"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -5576,7 +5576,7 @@ description: Operations executed beam_sweeps.kcl
         "path": {
           "value": {
             "type": "Segment",
-            "artifact_id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9"
+            "artifact_id": "[uuid]"
           },
           "sourceRange": []
         },
@@ -5727,7 +5727,7 @@ description: Operations executed beam_sweeps.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5751,7 +5751,7 @@ description: Operations executed beam_sweeps.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5775,7 +5775,7 @@ description: Operations executed beam_sweeps.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5799,7 +5799,7 @@ description: Operations executed beam_sweeps.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5823,7 +5823,7 @@ description: Operations executed beam_sweeps.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5847,7 +5847,7 @@ description: Operations executed beam_sweeps.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5871,7 +5871,7 @@ description: Operations executed beam_sweeps.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5895,7 +5895,7 @@ description: Operations executed beam_sweeps.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

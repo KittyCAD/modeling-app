@@ -2609,6 +2609,7 @@ extrude001 = extrude(region001, length = 1)`
       localStorage.setItem('persistCode', initialCode)
     }, initialCode)
     await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.waitForAuthentication()
     await homePage.goToModelingScene()
     await scene.settled()
 

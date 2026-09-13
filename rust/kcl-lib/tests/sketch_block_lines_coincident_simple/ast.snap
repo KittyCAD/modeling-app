@@ -4918,6 +4918,7 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

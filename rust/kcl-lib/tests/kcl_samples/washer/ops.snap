@@ -523,7 +523,7 @@ description: Operations executed washer.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -553,7 +553,7 @@ description: Operations executed washer.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -579,7 +579,7 @@ description: Operations executed washer.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "e00e9caf-6e9e-5221-8545-b199546c367f"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -713,7 +713,7 @@ description: Operations executed washer.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -737,7 +737,7 @@ description: Operations executed washer.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -761,7 +761,7 @@ description: Operations executed washer.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -785,7 +785,7 @@ description: Operations executed washer.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -809,7 +809,7 @@ description: Operations executed washer.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -833,7 +833,7 @@ description: Operations executed washer.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -857,7 +857,7 @@ description: Operations executed washer.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -881,7 +881,7 @@ description: Operations executed washer.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

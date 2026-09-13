@@ -19,11 +19,11 @@ description: Variables in memory after executing loop_tag.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -47,7 +47,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -71,7 +71,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -95,7 +95,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -119,7 +119,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "41c630c9-9d44-581b-98af-caee575bea48",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -143,7 +143,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -167,7 +167,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -191,7 +191,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -215,7 +215,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -239,7 +239,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -263,7 +263,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -287,7 +287,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -311,7 +311,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "7b681387-29ea-57f1-8713-d63280827139",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -335,7 +335,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -359,7 +359,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -383,7 +383,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -407,7 +407,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "f084ad07-5777-5607-a544-c69f455c2aab",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -431,7 +431,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -455,7 +455,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -479,7 +479,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -503,7 +503,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -527,7 +527,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -551,7 +551,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -575,7 +575,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -599,7 +599,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -623,7 +623,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -647,7 +647,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -671,7 +671,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -695,7 +695,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -719,7 +719,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -743,7 +743,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "53a9149e-1246-5c44-9e3c-558201ff438c",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -767,7 +767,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "b680fe3e-a804-583c-99d9-1693b2432aeb",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -791,7 +791,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -815,7 +815,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -839,7 +839,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "deb86259-17a0-5782-a352-d25992246cc0",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -863,7 +863,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -887,7 +887,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "6023bee8-3980-5182-88ac-ac06420ce00f",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -911,7 +911,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "907cac50-3701-5367-b35c-4ec2132c824f",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -935,7 +935,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "e342814e-d7c1-537b-959c-f7fd92c90294",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -959,7 +959,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -983,7 +983,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -1007,7 +1007,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -1031,7 +1031,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -1055,7 +1055,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "72dddee3-1330-5c4f-b767-659f762ad674",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -1079,7 +1079,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "eedabccb-e42b-5224-a499-7c2981b239e5",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -1103,7 +1103,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -1127,7 +1127,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -1151,7 +1151,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -1175,7 +1175,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -1199,7 +1199,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "25999981-b7b8-57e2-8ac5-655907dfffdc",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -1217,8 +1217,8 @@ description: Variables in memory after executing loop_tag.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
-        "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "XY",
         "origin": {
@@ -1258,7 +1258,7 @@ description: Variables in memory after executing loop_tag.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -1268,8 +1268,8 @@ description: Variables in memory after executing loop_tag.kcl
           "value": "problematicTag"
         }
       },
-      "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -1278,14 +1278,14 @@ description: Variables in memory after executing loop_tag.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "topologyId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "582c807d-1afe-58e5-bcf0-bada46b1fbe7",
-          "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1298,8 +1298,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "3349864f-357e-55a8-a0e6-4c9e0dd070ec",
-          "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1312,8 +1312,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "33f8efb5-abca-564e-b315-a79e71c84430",
-          "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1326,8 +1326,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "3277174e-ecf7-53f5-be31-00c75dd2248d",
-          "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1340,8 +1340,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "a65c445b-2368-55a6-ae36-1cf49a43cd69",
-          "id": "41c630c9-9d44-581b-98af-caee575bea48",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1354,8 +1354,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "660ada13-ee5f-5aea-980c-a11678a72eea",
-          "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1368,8 +1368,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "cfb87b2e-676e-5e4c-913a-c577b02ceb4f",
-          "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1382,8 +1382,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "4d24941a-f7d5-5b33-a677-5d34e68d04c0",
-          "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1396,8 +1396,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "f48cca07-156d-592c-a34f-03d8db2233be",
-          "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1410,8 +1410,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "3f54baa7-eb55-506b-891a-2da2eae977c4",
-          "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1424,8 +1424,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "5742acdc-3874-5650-a750-5e1dddb7c7e8",
-          "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1438,8 +1438,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "7bb25671-63cb-58c7-8d42-71584f178d44",
-          "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1452,8 +1452,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "380b8572-853c-5809-86a3-2b80cb566201",
-          "id": "7b681387-29ea-57f1-8713-d63280827139",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1466,8 +1466,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "229565fd-115f-5237-b4c0-0b34d4a64ea6",
-          "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1480,8 +1480,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "72d6f5e1-13d2-5daf-9dda-28a5e4b10255",
-          "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1494,8 +1494,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "29b5d763-5127-5d53-a2b5-dc6d360a602a",
-          "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1508,8 +1508,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "6bf08409-c829-545d-a70d-39777c5a30eb",
-          "id": "f084ad07-5777-5607-a544-c69f455c2aab",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1522,8 +1522,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "dc1be3ea-1698-5f48-ac24-50d43d7c759c",
-          "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1536,8 +1536,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "8e2a0ce3-c82d-5a8e-a85b-9937b1b67f6e",
-          "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1550,8 +1550,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "3c486253-d13b-5294-9e65-980e5330bdff",
-          "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1564,8 +1564,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "8cf46334-d84f-50b3-a35d-385e8f7051d2",
-          "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1578,8 +1578,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "e99a12ae-6f2d-5f12-a37d-2edfd11249c7",
-          "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1592,8 +1592,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "296c0f79-aecd-55da-8ca7-64aea722c97b",
-          "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1606,8 +1606,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "535d2d88-b898-54d7-86ec-1aafa83c4927",
-          "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1620,8 +1620,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "773cf8d1-65c4-5c53-ad1c-c1ce7278be77",
-          "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1634,8 +1634,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "87befd2f-3903-5958-a90c-f366fc3158ef",
-          "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1648,8 +1648,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "1cb8a4eb-fddf-51a5-9582-da1cc285687e",
-          "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1662,8 +1662,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "3c4ff6e3-b2b2-59ce-b03a-6f8a595d422e",
-          "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1676,8 +1676,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "1bbcecc8-ccb7-5182-b844-ba200e3edd2b",
-          "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1690,8 +1690,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "cba72311-0a6e-556f-a04d-4312dbfbabd9",
-          "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1704,8 +1704,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "05d20693-6b6e-52d1-91ca-f20ef10e848c",
-          "id": "53a9149e-1246-5c44-9e3c-558201ff438c",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1718,8 +1718,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "f4e01804-c838-53c2-96af-a1e0c2d0219a",
-          "id": "b680fe3e-a804-583c-99d9-1693b2432aeb",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1732,8 +1732,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "88559c05-ee63-52e4-ad4c-80b8f0987643",
-          "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1746,8 +1746,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "3cae2983-8dfc-5b6d-b821-1fd1df57ce53",
-          "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1760,8 +1760,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "25573b4b-c475-5287-9771-ffde5666d21c",
-          "id": "deb86259-17a0-5782-a352-d25992246cc0",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1774,8 +1774,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "8575b433-02ff-5308-8ec2-b27135ab2490",
-          "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1788,8 +1788,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "769c2ff1-93d4-5abc-b26d-9f1be57a5ad3",
-          "id": "6023bee8-3980-5182-88ac-ac06420ce00f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1802,8 +1802,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "bbef81a2-9cb5-538c-90db-d930133a30b3",
-          "id": "907cac50-3701-5367-b35c-4ec2132c824f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1816,8 +1816,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "8196486b-2350-5b84-9036-f6ca002df6cb",
-          "id": "e342814e-d7c1-537b-959c-f7fd92c90294",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1830,8 +1830,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "c5ad78e6-64da-5b42-a806-c7ec1d66c783",
-          "id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1844,8 +1844,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "1b02b3f5-8b76-5780-9593-09783259d51f",
-          "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1858,8 +1858,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "60e91cfe-50a3-5964-81fd-d583a248be0f",
-          "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1872,8 +1872,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "6dd8da24-a30c-5986-9b72-205c510c8f56",
-          "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1886,8 +1886,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "03f551b7-87ca-57a1-8bca-e9ed3c1f5165",
-          "id": "72dddee3-1330-5c4f-b767-659f762ad674",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1900,8 +1900,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "7e1b93fc-aaaf-5ec7-8c59-16486ce385c9",
-          "id": "eedabccb-e42b-5224-a499-7c2981b239e5",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1914,8 +1914,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "a0bd7b8e-f165-5c40-a978-6d96a0381369",
-          "id": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1928,8 +1928,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "a8c96a2e-5289-5e3e-a4e6-ef2477135d92",
-          "id": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1942,8 +1942,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "59ac5bc5-ab1a-5685-af28-868fd9c7053e",
-          "id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1956,8 +1956,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "21c26a15-6069-5970-85a9-39fbf7c64584",
-          "id": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 973,
@@ -1970,8 +1970,8 @@ description: Variables in memory after executing loop_tag.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "d92bb323-a6e9-5350-9c95-be4f4cc8c7ab",
-          "id": "25999981-b7b8-57e2-8ac5-655907dfffdc",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
@@ -1980,11 +1980,11 @@ description: Variables in memory after executing loop_tag.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2008,7 +2008,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2032,7 +2032,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2056,7 +2056,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2080,7 +2080,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "41c630c9-9d44-581b-98af-caee575bea48",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2104,7 +2104,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2128,7 +2128,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2152,7 +2152,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2176,7 +2176,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2200,7 +2200,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2224,7 +2224,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2248,7 +2248,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2272,7 +2272,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "7b681387-29ea-57f1-8713-d63280827139",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2296,7 +2296,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2320,7 +2320,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2344,7 +2344,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2368,7 +2368,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "f084ad07-5777-5607-a544-c69f455c2aab",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2392,7 +2392,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2416,7 +2416,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2440,7 +2440,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2464,7 +2464,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2488,7 +2488,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2512,7 +2512,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2536,7 +2536,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2560,7 +2560,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2584,7 +2584,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2608,7 +2608,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2632,7 +2632,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2656,7 +2656,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2680,7 +2680,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2704,7 +2704,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "53a9149e-1246-5c44-9e3c-558201ff438c",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2728,7 +2728,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "b680fe3e-a804-583c-99d9-1693b2432aeb",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2752,7 +2752,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2776,7 +2776,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2800,7 +2800,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "deb86259-17a0-5782-a352-d25992246cc0",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2824,7 +2824,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2848,7 +2848,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "6023bee8-3980-5182-88ac-ac06420ce00f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2872,7 +2872,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "907cac50-3701-5367-b35c-4ec2132c824f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2896,7 +2896,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "e342814e-d7c1-537b-959c-f7fd92c90294",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2920,7 +2920,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2944,7 +2944,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2968,7 +2968,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2992,7 +2992,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3016,7 +3016,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "72dddee3-1330-5c4f-b767-659f762ad674",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3040,7 +3040,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "eedabccb-e42b-5224-a499-7c2981b239e5",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3064,7 +3064,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3088,7 +3088,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3112,7 +3112,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3136,7 +3136,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3160,7 +3160,7 @@ description: Variables in memory after executing loop_tag.kcl
           },
           {
             "__geoMeta": {
-              "id": "25999981-b7b8-57e2-8ac5-655907dfffdc",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3178,8 +3178,8 @@ description: Variables in memory after executing loop_tag.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
-          "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "XY",
           "origin": {
@@ -3219,7 +3219,7 @@ description: Variables in memory after executing loop_tag.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -3229,13 +3229,13 @@ description: Variables in memory after executing loop_tag.kcl
             "value": "problematicTag"
           }
         },
-        "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-        "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "83a8f225-817a-54a7-a66e-2fb0e8d57fa0",
-      "endCapId": "5c698a24-281d-51f1-93f5-15d1ecf33102",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -3244,11 +3244,11 @@ description: Variables in memory after executing loop_tag.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3272,7 +3272,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3296,7 +3296,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3320,7 +3320,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3344,7 +3344,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "41c630c9-9d44-581b-98af-caee575bea48",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3368,7 +3368,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3392,7 +3392,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3416,7 +3416,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3440,7 +3440,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3464,7 +3464,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3488,7 +3488,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3512,7 +3512,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3536,7 +3536,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "7b681387-29ea-57f1-8713-d63280827139",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3560,7 +3560,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3584,7 +3584,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3608,7 +3608,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3632,7 +3632,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "f084ad07-5777-5607-a544-c69f455c2aab",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3656,7 +3656,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3680,7 +3680,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3704,7 +3704,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3728,7 +3728,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3752,7 +3752,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3776,7 +3776,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3800,7 +3800,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3824,7 +3824,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3848,7 +3848,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3872,7 +3872,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3896,7 +3896,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3920,7 +3920,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3944,7 +3944,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3968,7 +3968,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "53a9149e-1246-5c44-9e3c-558201ff438c",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3992,7 +3992,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "b680fe3e-a804-583c-99d9-1693b2432aeb",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4016,7 +4016,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4040,7 +4040,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4064,7 +4064,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "deb86259-17a0-5782-a352-d25992246cc0",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4088,7 +4088,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4112,7 +4112,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "6023bee8-3980-5182-88ac-ac06420ce00f",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4136,7 +4136,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "907cac50-3701-5367-b35c-4ec2132c824f",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4160,7 +4160,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "e342814e-d7c1-537b-959c-f7fd92c90294",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4184,7 +4184,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4208,7 +4208,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4232,7 +4232,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4256,7 +4256,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4280,7 +4280,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "72dddee3-1330-5c4f-b767-659f762ad674",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4304,7 +4304,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "eedabccb-e42b-5224-a499-7c2981b239e5",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4328,7 +4328,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4352,7 +4352,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4376,7 +4376,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4400,7 +4400,7 @@ description: Variables in memory after executing loop_tag.kcl
         },
         {
           "__geoMeta": {
-            "id": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -4425,8 +4425,8 @@ description: Variables in memory after executing loop_tag.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
-        "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "XY",
         "origin": {
@@ -4466,7 +4466,7 @@ description: Variables in memory after executing loop_tag.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -4476,8 +4476,8 @@ description: Variables in memory after executing loop_tag.kcl
           "value": "problematicTag"
         }
       },
-      "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "no"
     }
@@ -4495,12 +4495,12 @@ description: Variables in memory after executing loop_tag.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "id": "[uuid]",
       "paths": [],
       "on": {
         "type": "plane",
-        "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
-        "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "XY",
         "origin": {
@@ -4540,7 +4540,7 @@ description: Variables in memory after executing loop_tag.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -4550,8 +4550,8 @@ description: Variables in memory after executing loop_tag.kcl
           "value": "problematicTag"
         }
       },
-      "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "no"
     }

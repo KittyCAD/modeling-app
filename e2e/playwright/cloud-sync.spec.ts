@@ -308,7 +308,8 @@ test(
     await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG], {
       cloudSyncEnabled: true,
     })
-    await expectCloudFeatureEnabled(page)
+    // Open the shared link directly. Visiting Home first interrupts its pending
+    // cloud requests and lazy imports when WebKit navigates to the shared link.
     await page.goto(`/?project-id=${publicProjectId}&ask-open-desktop=true`)
     await page.getByTestId('continue-to-web-app-button').click()
 

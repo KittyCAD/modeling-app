@@ -9373,6 +9373,7 @@ description: Result of parsing crash-box.kcl
         }
       ]
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

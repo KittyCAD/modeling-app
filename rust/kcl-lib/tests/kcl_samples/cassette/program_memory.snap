@@ -6,8 +6,8 @@ description: Variables in memory after executing cassette.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-      "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "objectId": 0,
       "kind": "Custom",
       "origin": {
@@ -120,14 +120,14 @@ description: Variables in memory after executing cassette.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
-          "originalId": "cc312d38-2fa6-5583-a605-44880f646499",
-          "topologyId": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
-          "artifactId": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "2db44fe2-0197-57d0-9f84-7ccd7475fddd",
-              "id": "e09d13cb-f445-535b-b4bb-0b7c1169d60a",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3240,
@@ -140,8 +140,8 @@ description: Variables in memory after executing cassette.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "c57fbb48-f959-5297-8c6a-3295f343fc92",
-              "id": "31bfad20-b2ab-58ae-b2d6-d9c51fe79ce1",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3314,
@@ -154,8 +154,8 @@ description: Variables in memory after executing cassette.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "ea350d5e-536b-5d67-8447-90f75336c954",
-              "id": "5d8b4056-cc28-5299-b624-cfddaa83546b",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3393,
@@ -168,8 +168,8 @@ description: Variables in memory after executing cassette.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "a045e767-2d46-5a1b-b563-78e11835c4fa",
-              "id": "f9c7e102-5304-5d01-b2e1-a6b5a096b099",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3496,
@@ -185,11 +185,11 @@ description: Variables in memory after executing cassette.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "e09d13cb-f445-535b-b4bb-0b7c1169d60a",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -219,7 +219,7 @@ description: Variables in memory after executing cassette.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "31bfad20-b2ab-58ae-b2d6-d9c51fe79ce1",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -249,7 +249,7 @@ description: Variables in memory after executing cassette.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "5d8b4056-cc28-5299-b624-cfddaa83546b",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -279,7 +279,7 @@ description: Variables in memory after executing cassette.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "f9c7e102-5304-5d01-b2e1-a6b5a096b099",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": false,
@@ -310,8 +310,8 @@ description: Variables in memory after executing cassette.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "cc141785-f204-5d03-bdf3-aa7163368c30",
-              "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 16,
               "kind": "Custom",
               "origin": {
@@ -351,7 +351,7 @@ description: Variables in memory after executing cassette.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -373,13 +373,13 @@ description: Variables in memory after executing cassette.kcl
                 "value": "tip"
               }
             },
-            "artifactId": "cc312d38-2fa6-5583-a605-44880f646499",
-            "originalId": "cc312d38-2fa6-5583-a605-44880f646499",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "72721ed9-99fa-5f5c-bac1-fc57ab80352c",
-          "endCapId": "44f92c1b-17ed-5ae4-b080-df1e4fea8533",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -388,14 +388,14 @@ description: Variables in memory after executing cassette.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "1a0ade6f-d355-5121-9adb-351976a78284",
-          "originalId": "1a0ade6f-d355-5121-9adb-351976a78284",
-          "topologyId": "1a0ade6f-d355-5121-9adb-351976a78284",
-          "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "4f6a4382-4231-522f-a3d9-3ce4d18424e0",
-              "id": "0acf96cb-d559-5a17-97a9-070953261e30",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4163,
@@ -408,8 +408,8 @@ description: Variables in memory after executing cassette.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "408ce299-8dff-5df5-a361-f26dd18fdb10",
-              "id": "e73f7ab7-69bb-5dab-b5a3-28274e368aea",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4237,
@@ -425,11 +425,11 @@ description: Variables in memory after executing cassette.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "1a0ade6f-d355-5121-9adb-351976a78284",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "0acf96cb-d559-5a17-97a9-070953261e30",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -459,7 +459,7 @@ description: Variables in memory after executing cassette.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "e73f7ab7-69bb-5dab-b5a3-28274e368aea",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -490,8 +490,8 @@ description: Variables in memory after executing cassette.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
-              "id": "0917d07d-5996-5994-8a06-602d43e2b6f3",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 34,
               "kind": "Custom",
               "origin": {
@@ -531,7 +531,7 @@ description: Variables in memory after executing cassette.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "4593843c-7d41-5ede-b7fa-ab9201f55957",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -545,13 +545,13 @@ description: Variables in memory after executing cassette.kcl
                 "value": "outer"
               }
             },
-            "artifactId": "1a0ade6f-d355-5121-9adb-351976a78284",
-            "originalId": "1a0ade6f-d355-5121-9adb-351976a78284",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "bfccf7d3-d0ed-532e-8150-3be626f8ec95",
-          "endCapId": "8066d4b1-1405-5b30-9563-232f2bf548ff",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -565,14 +565,14 @@ description: Variables in memory after executing cassette.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
-          "originalId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
-          "topologyId": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
-          "artifactId": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "cf3d6c2d-3473-5c9a-bf8d-80e3f48c9ef7",
-              "id": "fb77fb3f-d6d2-537a-a942-ec353f71ec5d",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3240,
@@ -585,8 +585,8 @@ description: Variables in memory after executing cassette.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "57ee7c17-a92d-56a9-90ff-af5ab6d9ce4c",
-              "id": "3ccd35c8-a424-5a1b-b5de-1d4784589e6e",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3314,
@@ -599,8 +599,8 @@ description: Variables in memory after executing cassette.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "e91c1761-062d-56dd-9af3-24a87a127445",
-              "id": "c4c23103-c4c3-55bd-a4f9-7168221ce6d6",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3393,
@@ -613,8 +613,8 @@ description: Variables in memory after executing cassette.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "356f0e84-a0c7-57e7-a501-b1debf6d97b5",
-              "id": "6586b400-99ae-5c41-80c4-51687ca694cc",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3496,
@@ -630,11 +630,11 @@ description: Variables in memory after executing cassette.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "fb77fb3f-d6d2-537a-a942-ec353f71ec5d",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -664,7 +664,7 @@ description: Variables in memory after executing cassette.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "3ccd35c8-a424-5a1b-b5de-1d4784589e6e",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -694,7 +694,7 @@ description: Variables in memory after executing cassette.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "c4c23103-c4c3-55bd-a4f9-7168221ce6d6",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -724,7 +724,7 @@ description: Variables in memory after executing cassette.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "6586b400-99ae-5c41-80c4-51687ca694cc",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": false,
@@ -755,8 +755,8 @@ description: Variables in memory after executing cassette.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
-              "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 42,
               "kind": "Custom",
               "origin": {
@@ -796,7 +796,7 @@ description: Variables in memory after executing cassette.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "5f95e913-96e4-58df-abe6-125bedd61cad",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -818,13 +818,13 @@ description: Variables in memory after executing cassette.kcl
                 "value": "tip"
               }
             },
-            "artifactId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
-            "originalId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "3ff6734d-ad28-5419-8a29-69251ecf4f76",
-          "endCapId": "0c523820-a7ff-53e9-8054-eef1b3da75fd",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -833,14 +833,14 @@ description: Variables in memory after executing cassette.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
-          "originalId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
-          "topologyId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
-          "artifactId": "020035cf-ab88-50f3-91b0-886b7f399647",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "5b06aff2-f6f5-5383-ae00-d38d5a7e5779",
-              "id": "39489672-36ed-54b9-ba88-379a68fe6f78",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4163,
@@ -853,8 +853,8 @@ description: Variables in memory after executing cassette.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "fb83eacb-a1e2-51e7-a957-bfa399cbbcea",
-              "id": "273faeba-ca71-54dd-9bad-1656d8b16bb4",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4237,
@@ -870,11 +870,11 @@ description: Variables in memory after executing cassette.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "39489672-36ed-54b9-ba88-379a68fe6f78",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -904,7 +904,7 @@ description: Variables in memory after executing cassette.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "273faeba-ca71-54dd-9bad-1656d8b16bb4",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -935,8 +935,8 @@ description: Variables in memory after executing cassette.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
-              "id": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 60,
               "kind": "Custom",
               "origin": {
@@ -976,7 +976,7 @@ description: Variables in memory after executing cassette.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -990,13 +990,13 @@ description: Variables in memory after executing cassette.kcl
                 "value": "outer"
               }
             },
-            "artifactId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
-            "originalId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "958c1e7d-326a-55d7-a916-50b97da15cb2",
-          "endCapId": "54a78397-55ff-5ea8-80bc-f011e4ce2c37",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -1010,14 +1010,14 @@ description: Variables in memory after executing cassette.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
-          "originalId": "acb6b8b6-e024-57d9-a856-353e5c4d001f",
-          "topologyId": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
-          "artifactId": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "c628e654-24a7-5dd2-b574-452918582350",
-              "id": "3dc82803-4dda-5ad9-9137-4e8c1837c151",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3240,
@@ -1030,8 +1030,8 @@ description: Variables in memory after executing cassette.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "cdb3139f-7c4c-5d09-a0d7-6933f87a2730",
-              "id": "543100a5-8cda-53d4-83e1-5d8e7acbdd5e",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3314,
@@ -1044,8 +1044,8 @@ description: Variables in memory after executing cassette.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "3bc70519-b754-58d9-9aa1-b87e775ad089",
-              "id": "cb244e36-5563-5336-b55d-ccb19601342f",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3393,
@@ -1058,8 +1058,8 @@ description: Variables in memory after executing cassette.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "ea984862-d17d-5601-86ea-2082e6a84f59",
-              "id": "102111f2-ea69-58b7-b040-daadd96cc717",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3496,
@@ -1075,11 +1075,11 @@ description: Variables in memory after executing cassette.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "3dc82803-4dda-5ad9-9137-4e8c1837c151",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1109,7 +1109,7 @@ description: Variables in memory after executing cassette.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "543100a5-8cda-53d4-83e1-5d8e7acbdd5e",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1139,7 +1139,7 @@ description: Variables in memory after executing cassette.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "cb244e36-5563-5336-b55d-ccb19601342f",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1169,7 +1169,7 @@ description: Variables in memory after executing cassette.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "102111f2-ea69-58b7-b040-daadd96cc717",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": false,
@@ -1200,8 +1200,8 @@ description: Variables in memory after executing cassette.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "20f09319-bab0-5dd8-8c40-ce90cd688483",
-              "id": "20f09319-bab0-5dd8-8c40-ce90cd688483",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 68,
               "kind": "Custom",
               "origin": {
@@ -1241,7 +1241,7 @@ description: Variables in memory after executing cassette.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -1263,13 +1263,13 @@ description: Variables in memory after executing cassette.kcl
                 "value": "tip"
               }
             },
-            "artifactId": "acb6b8b6-e024-57d9-a856-353e5c4d001f",
-            "originalId": "acb6b8b6-e024-57d9-a856-353e5c4d001f",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "d8d35d0d-aa35-5b76-bc47-93d9cb07e3db",
-          "endCapId": "edec175f-5cc3-5654-a687-e7270ba85017",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -1278,14 +1278,14 @@ description: Variables in memory after executing cassette.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
-          "originalId": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
-          "topologyId": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
-          "artifactId": "0807f469-38fd-5e01-a326-82a66aa0f1d0",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "5fc9bef9-b032-5b62-9f4a-2e8483dcb911",
-              "id": "8ceedb75-96b5-5c35-b62c-a424d164bc7f",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4163,
@@ -1298,8 +1298,8 @@ description: Variables in memory after executing cassette.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "78fc31e4-a5b2-5028-9def-475212a84d75",
-              "id": "ea271348-c774-529d-aa94-17beb790f49e",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4237,
@@ -1315,11 +1315,11 @@ description: Variables in memory after executing cassette.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "8ceedb75-96b5-5c35-b62c-a424d164bc7f",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1349,7 +1349,7 @@ description: Variables in memory after executing cassette.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "ea271348-c774-529d-aa94-17beb790f49e",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1380,8 +1380,8 @@ description: Variables in memory after executing cassette.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "30efa5e2-105e-56b9-85d8-16e0935167b0",
-              "id": "30efa5e2-105e-56b9-85d8-16e0935167b0",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 86,
               "kind": "Custom",
               "origin": {
@@ -1421,7 +1421,7 @@ description: Variables in memory after executing cassette.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -1435,13 +1435,13 @@ description: Variables in memory after executing cassette.kcl
                 "value": "outer"
               }
             },
-            "artifactId": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
-            "originalId": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "7c5af05d-17f0-5c98-93c2-7926d6c5e22e",
-          "endCapId": "4dc55db2-be77-5b79-9313-0e95c2c14712",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -1455,14 +1455,14 @@ description: Variables in memory after executing cassette.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "985c5da4-4467-570a-8e44-4d58a9c442ba",
-          "originalId": "9209892e-e35e-575e-b305-9935eac5ab33",
-          "topologyId": "985c5da4-4467-570a-8e44-4d58a9c442ba",
-          "artifactId": "985c5da4-4467-570a-8e44-4d58a9c442ba",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "3d51c5c1-1c8b-5e71-a213-fbf8b602681d",
-              "id": "00d0ee32-4d64-5fef-8a75-176fc74ab40d",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3240,
@@ -1475,8 +1475,8 @@ description: Variables in memory after executing cassette.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "a17fb451-3ac4-5657-a312-39d5208b7c7b",
-              "id": "738dd36b-7753-50e2-84b8-bf934c5545b1",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3314,
@@ -1489,8 +1489,8 @@ description: Variables in memory after executing cassette.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "5e641996-6514-564e-b273-0cb09f5b6ada",
-              "id": "e2e39166-43d5-52be-9c68-fee0dccc577e",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3393,
@@ -1503,8 +1503,8 @@ description: Variables in memory after executing cassette.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "27d93657-0757-5c12-8220-1844bae6867e",
-              "id": "e17d49d7-4748-5e82-8cc8-701e7722358f",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3496,
@@ -1520,11 +1520,11 @@ description: Variables in memory after executing cassette.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "985c5da4-4467-570a-8e44-4d58a9c442ba",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "00d0ee32-4d64-5fef-8a75-176fc74ab40d",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1554,7 +1554,7 @@ description: Variables in memory after executing cassette.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "738dd36b-7753-50e2-84b8-bf934c5545b1",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1584,7 +1584,7 @@ description: Variables in memory after executing cassette.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "e2e39166-43d5-52be-9c68-fee0dccc577e",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1614,7 +1614,7 @@ description: Variables in memory after executing cassette.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "e17d49d7-4748-5e82-8cc8-701e7722358f",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": false,
@@ -1645,8 +1645,8 @@ description: Variables in memory after executing cassette.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "e3e760fc-c341-586d-9f2f-a9afbbddf645",
-              "id": "e3e760fc-c341-586d-9f2f-a9afbbddf645",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 94,
               "kind": "Custom",
               "origin": {
@@ -1686,7 +1686,7 @@ description: Variables in memory after executing cassette.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -1708,13 +1708,13 @@ description: Variables in memory after executing cassette.kcl
                 "value": "tip"
               }
             },
-            "artifactId": "9209892e-e35e-575e-b305-9935eac5ab33",
-            "originalId": "9209892e-e35e-575e-b305-9935eac5ab33",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "1c1d1433-644a-54c0-aa73-7fb4ec6c45c5",
-          "endCapId": "f8963a5c-240c-5091-a292-5fa5519f7d8d",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -1723,14 +1723,14 @@ description: Variables in memory after executing cassette.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "f6528d6a-e531-5b37-a104-5e45fe757c9f",
-          "originalId": "f6528d6a-e531-5b37-a104-5e45fe757c9f",
-          "topologyId": "f6528d6a-e531-5b37-a104-5e45fe757c9f",
-          "artifactId": "c349d1a9-19a0-5db8-b19d-4e0dc473c583",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "18258574-9d89-5fce-ae79-cf77d3f292f4",
-              "id": "8f5dbbbf-6d13-57b1-bead-70ae6bd8336c",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4163,
@@ -1743,8 +1743,8 @@ description: Variables in memory after executing cassette.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "a506d990-393d-53c1-981b-7eac13282783",
-              "id": "af0e3289-6e3c-5963-982a-02064dbe7c52",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4237,
@@ -1760,11 +1760,11 @@ description: Variables in memory after executing cassette.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "f6528d6a-e531-5b37-a104-5e45fe757c9f",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "8f5dbbbf-6d13-57b1-bead-70ae6bd8336c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1794,7 +1794,7 @@ description: Variables in memory after executing cassette.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "af0e3289-6e3c-5963-982a-02064dbe7c52",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1825,8 +1825,8 @@ description: Variables in memory after executing cassette.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "96b5306d-8365-5f19-adf7-7b3e844826ca",
-              "id": "96b5306d-8365-5f19-adf7-7b3e844826ca",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 112,
               "kind": "Custom",
               "origin": {
@@ -1866,7 +1866,7 @@ description: Variables in memory after executing cassette.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "1c0dcb9c-b83b-520e-ab8f-34fc30f33e66",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -1880,13 +1880,13 @@ description: Variables in memory after executing cassette.kcl
                 "value": "outer"
               }
             },
-            "artifactId": "f6528d6a-e531-5b37-a104-5e45fe757c9f",
-            "originalId": "f6528d6a-e531-5b37-a104-5e45fe757c9f",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "675184d6-33ab-5729-ac0f-828d81a08cb8",
-          "endCapId": "370c7fc9-d490-5324-a538-1105d0c38127",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -1900,14 +1900,14 @@ description: Variables in memory after executing cassette.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "f24ed84c-9623-59b6-bf31-be6202c5a133",
-          "originalId": "ca586750-6453-56e0-b4cf-8e561096e7ca",
-          "topologyId": "f24ed84c-9623-59b6-bf31-be6202c5a133",
-          "artifactId": "f24ed84c-9623-59b6-bf31-be6202c5a133",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "29676e47-1e2a-5405-b637-c9fc4f423491",
-              "id": "93130691-d4dd-5bb7-908f-600e77ba2a90",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3240,
@@ -1920,8 +1920,8 @@ description: Variables in memory after executing cassette.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "bebd12a4-7ff9-5969-97b8-9fa0d35c5b5d",
-              "id": "c64cc9b8-9b30-5e46-9ac3-74519f251c23",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3314,
@@ -1934,8 +1934,8 @@ description: Variables in memory after executing cassette.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "394c897a-fab3-5931-9500-7e8011e9b166",
-              "id": "86172982-4d35-58a2-a35e-bdd8da7495b6",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3393,
@@ -1948,8 +1948,8 @@ description: Variables in memory after executing cassette.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "0e2120f1-839b-5d5b-a346-b0c49f9fa94e",
-              "id": "9f7dbeb0-018d-5a0b-9cbe-97b2b9493804",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3496,
@@ -1965,11 +1965,11 @@ description: Variables in memory after executing cassette.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "f24ed84c-9623-59b6-bf31-be6202c5a133",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "93130691-d4dd-5bb7-908f-600e77ba2a90",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1999,7 +1999,7 @@ description: Variables in memory after executing cassette.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "c64cc9b8-9b30-5e46-9ac3-74519f251c23",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2029,7 +2029,7 @@ description: Variables in memory after executing cassette.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "86172982-4d35-58a2-a35e-bdd8da7495b6",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2059,7 +2059,7 @@ description: Variables in memory after executing cassette.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "9f7dbeb0-018d-5a0b-9cbe-97b2b9493804",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": false,
@@ -2090,8 +2090,8 @@ description: Variables in memory after executing cassette.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "94906884-1803-5336-93e6-0aca938f73f1",
-              "id": "94906884-1803-5336-93e6-0aca938f73f1",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 120,
               "kind": "Custom",
               "origin": {
@@ -2131,7 +2131,7 @@ description: Variables in memory after executing cassette.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "6ae8c147-090c-5277-8840-6daa34bb4685",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -2153,13 +2153,13 @@ description: Variables in memory after executing cassette.kcl
                 "value": "tip"
               }
             },
-            "artifactId": "ca586750-6453-56e0-b4cf-8e561096e7ca",
-            "originalId": "ca586750-6453-56e0-b4cf-8e561096e7ca",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "38152308-7c08-5c5c-8329-0d79c1347a7a",
-          "endCapId": "dffe7eb3-04ca-57f4-9fa7-ca3352aebe23",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -2168,14 +2168,14 @@ description: Variables in memory after executing cassette.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "5584477d-a466-5baa-9972-325d4b097d17",
-          "originalId": "5584477d-a466-5baa-9972-325d4b097d17",
-          "topologyId": "5584477d-a466-5baa-9972-325d4b097d17",
-          "artifactId": "5eed984f-8da1-571e-9576-dd247a4c55b3",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "9a29229f-4ea5-5541-abf8-89e64e2b1ce4",
-              "id": "fdfbf3e0-9f73-54b8-bf95-979f908e34ea",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4163,
@@ -2188,8 +2188,8 @@ description: Variables in memory after executing cassette.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "230e7f68-c4ee-5cb3-a8f6-572270612e21",
-              "id": "2b3d92b1-b267-5fec-8323-4095a3fde2b0",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4237,
@@ -2205,11 +2205,11 @@ description: Variables in memory after executing cassette.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "5584477d-a466-5baa-9972-325d4b097d17",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "fdfbf3e0-9f73-54b8-bf95-979f908e34ea",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2239,7 +2239,7 @@ description: Variables in memory after executing cassette.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "2b3d92b1-b267-5fec-8323-4095a3fde2b0",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2270,8 +2270,8 @@ description: Variables in memory after executing cassette.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "60f59271-6b58-59b1-94ae-dad793e5c6cd",
-              "id": "60f59271-6b58-59b1-94ae-dad793e5c6cd",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 138,
               "kind": "Custom",
               "origin": {
@@ -2311,7 +2311,7 @@ description: Variables in memory after executing cassette.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "fc243886-5941-5a64-8a15-a0b50bb063cb",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -2325,13 +2325,13 @@ description: Variables in memory after executing cassette.kcl
                 "value": "outer"
               }
             },
-            "artifactId": "5584477d-a466-5baa-9972-325d4b097d17",
-            "originalId": "5584477d-a466-5baa-9972-325d4b097d17",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "28f7b01c-24d8-5880-90eb-031878b26c70",
-          "endCapId": "ac16790b-45e0-56ae-b34c-deabda6384af",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -2345,14 +2345,14 @@ description: Variables in memory after executing cassette.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "a1bdb8e2-0355-55d0-817d-37899c725e43",
-          "originalId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
-          "topologyId": "a1bdb8e2-0355-55d0-817d-37899c725e43",
-          "artifactId": "a1bdb8e2-0355-55d0-817d-37899c725e43",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "c9ec41b9-4365-51ee-a485-0a95b599dda7",
-              "id": "78d73062-ad0c-5911-a003-f5a4669d7099",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3240,
@@ -2365,8 +2365,8 @@ description: Variables in memory after executing cassette.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "ce43373f-0cbc-5ab3-978d-a3bc58274342",
-              "id": "ed25cdb1-6da8-5abb-97b2-716f83f9e46b",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3314,
@@ -2379,8 +2379,8 @@ description: Variables in memory after executing cassette.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "676c3d36-e799-5138-8b22-c11ef93cae7e",
-              "id": "dcd65116-8fae-521d-9327-b47a02b9c32b",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3393,
@@ -2393,8 +2393,8 @@ description: Variables in memory after executing cassette.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "c17b9682-137f-59b5-b375-0e2e211313b4",
-              "id": "32238ae5-f2e0-56be-bd9a-e6fe3dd94a7a",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3496,
@@ -2410,11 +2410,11 @@ description: Variables in memory after executing cassette.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "a1bdb8e2-0355-55d0-817d-37899c725e43",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "78d73062-ad0c-5911-a003-f5a4669d7099",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2444,7 +2444,7 @@ description: Variables in memory after executing cassette.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "ed25cdb1-6da8-5abb-97b2-716f83f9e46b",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2474,7 +2474,7 @@ description: Variables in memory after executing cassette.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "dcd65116-8fae-521d-9327-b47a02b9c32b",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2504,7 +2504,7 @@ description: Variables in memory after executing cassette.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "32238ae5-f2e0-56be-bd9a-e6fe3dd94a7a",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": false,
@@ -2535,8 +2535,8 @@ description: Variables in memory after executing cassette.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "0d85720f-31f4-5aac-90ae-672aa1715f9d",
-              "id": "0d85720f-31f4-5aac-90ae-672aa1715f9d",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 146,
               "kind": "Custom",
               "origin": {
@@ -2576,7 +2576,7 @@ description: Variables in memory after executing cassette.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "3160ffad-2e46-5554-be76-1b632140926c",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -2598,13 +2598,13 @@ description: Variables in memory after executing cassette.kcl
                 "value": "tip"
               }
             },
-            "artifactId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
-            "originalId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "fb7aed58-be99-5ba3-8d27-fd49c6eb1e9c",
-          "endCapId": "a1b13947-c548-540a-9a75-bb830cac01a4",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -2613,14 +2613,14 @@ description: Variables in memory after executing cassette.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "4e4f8a42-f69c-5a93-b651-c5c711dcbd25",
-          "originalId": "4e4f8a42-f69c-5a93-b651-c5c711dcbd25",
-          "topologyId": "4e4f8a42-f69c-5a93-b651-c5c711dcbd25",
-          "artifactId": "b4079ec8-53e1-53e1-a48a-2e161d481653",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "64a1c0e8-e938-5ad5-aa3d-cd778fc19a13",
-              "id": "5a1ce72a-4269-5532-8399-2e45dbffb113",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4163,
@@ -2633,8 +2633,8 @@ description: Variables in memory after executing cassette.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "36f6d007-b0c4-5b57-a659-57e6ed0fff21",
-              "id": "f89d5f7f-f98a-5ffb-81ba-a94912182836",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4237,
@@ -2650,11 +2650,11 @@ description: Variables in memory after executing cassette.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "4e4f8a42-f69c-5a93-b651-c5c711dcbd25",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "5a1ce72a-4269-5532-8399-2e45dbffb113",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2684,7 +2684,7 @@ description: Variables in memory after executing cassette.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "f89d5f7f-f98a-5ffb-81ba-a94912182836",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2715,8 +2715,8 @@ description: Variables in memory after executing cassette.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "421bedf6-b89d-58d8-8a5a-960a4a400a74",
-              "id": "421bedf6-b89d-58d8-8a5a-960a4a400a74",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 164,
               "kind": "Custom",
               "origin": {
@@ -2756,7 +2756,7 @@ description: Variables in memory after executing cassette.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "95ab2f69-02d1-5308-9a43-67a2ec05bd0f",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -2770,13 +2770,13 @@ description: Variables in memory after executing cassette.kcl
                 "value": "outer"
               }
             },
-            "artifactId": "4e4f8a42-f69c-5a93-b651-c5c711dcbd25",
-            "originalId": "4e4f8a42-f69c-5a93-b651-c5c711dcbd25",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "32b1ac45-6b17-5476-bf42-e89dfe1df5e9",
-          "endCapId": "5f492540-cc5e-5700-ad95-008abcf9747a",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -2790,14 +2790,14 @@ description: Variables in memory after executing cassette.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "79e86604-4aa6-566d-9617-1f1721955eb2",
-          "originalId": "f4e17c17-71fb-5d7e-bb5c-8d09acfb49ed",
-          "topologyId": "79e86604-4aa6-566d-9617-1f1721955eb2",
-          "artifactId": "79e86604-4aa6-566d-9617-1f1721955eb2",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "ae0df609-04d9-5134-a785-f1316daa619e",
-              "id": "8346b91c-f0e4-5d30-916a-443cb79e2919",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3240,
@@ -2810,8 +2810,8 @@ description: Variables in memory after executing cassette.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "50ea9fb3-d8f2-5fbb-b2cb-8bd625014e19",
-              "id": "94ecc2d2-d97b-5ec6-8587-bae48ebfdb72",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3314,
@@ -2824,8 +2824,8 @@ description: Variables in memory after executing cassette.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "beefaa71-f2f6-5f9f-9835-f27034ba4080",
-              "id": "a4316524-66d3-55c3-9ab6-da137e613d74",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3393,
@@ -2838,8 +2838,8 @@ description: Variables in memory after executing cassette.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "17d78e6e-8904-54cb-8d01-322a1477710d",
-              "id": "5a363b55-e1b6-5fc1-9c37-715008307a50",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3496,
@@ -2855,11 +2855,11 @@ description: Variables in memory after executing cassette.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "79e86604-4aa6-566d-9617-1f1721955eb2",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "8346b91c-f0e4-5d30-916a-443cb79e2919",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2889,7 +2889,7 @@ description: Variables in memory after executing cassette.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "94ecc2d2-d97b-5ec6-8587-bae48ebfdb72",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2919,7 +2919,7 @@ description: Variables in memory after executing cassette.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "a4316524-66d3-55c3-9ab6-da137e613d74",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2949,7 +2949,7 @@ description: Variables in memory after executing cassette.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "5a363b55-e1b6-5fc1-9c37-715008307a50",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": false,
@@ -2980,8 +2980,8 @@ description: Variables in memory after executing cassette.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "9deb8b6d-7844-5e18-8757-8a0874e53b4d",
-              "id": "9deb8b6d-7844-5e18-8757-8a0874e53b4d",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 172,
               "kind": "Custom",
               "origin": {
@@ -3021,7 +3021,7 @@ description: Variables in memory after executing cassette.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "b1cdf7ed-6958-5e8e-89b9-a5267c842343",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -3043,13 +3043,13 @@ description: Variables in memory after executing cassette.kcl
                 "value": "tip"
               }
             },
-            "artifactId": "f4e17c17-71fb-5d7e-bb5c-8d09acfb49ed",
-            "originalId": "f4e17c17-71fb-5d7e-bb5c-8d09acfb49ed",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "bce169c4-1a37-55db-9cca-15b6da3160d2",
-          "endCapId": "61858d4b-b732-57df-b3e6-bab2c6625a54",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -3058,14 +3058,14 @@ description: Variables in memory after executing cassette.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "a3fed421-ce33-5a4f-b048-d3a68dfce32d",
-          "originalId": "a3fed421-ce33-5a4f-b048-d3a68dfce32d",
-          "topologyId": "a3fed421-ce33-5a4f-b048-d3a68dfce32d",
-          "artifactId": "296133c8-94a5-5fd9-851a-d484fa3dc66a",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "631f389e-414d-517f-8c44-d18edbbf1025",
-              "id": "30a0806d-5606-56e7-b798-b2988d9ea40d",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4163,
@@ -3078,8 +3078,8 @@ description: Variables in memory after executing cassette.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "24131883-8fd9-56a1-ac47-c7df0733f19d",
-              "id": "70dcd043-37af-58c8-99df-aa0c6ed249f1",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4237,
@@ -3095,11 +3095,11 @@ description: Variables in memory after executing cassette.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "a3fed421-ce33-5a4f-b048-d3a68dfce32d",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "30a0806d-5606-56e7-b798-b2988d9ea40d",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -3129,7 +3129,7 @@ description: Variables in memory after executing cassette.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "70dcd043-37af-58c8-99df-aa0c6ed249f1",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -3160,8 +3160,8 @@ description: Variables in memory after executing cassette.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "6aa5aed0-b871-5456-a13d-c13c223ba521",
-              "id": "6aa5aed0-b871-5456-a13d-c13c223ba521",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 190,
               "kind": "Custom",
               "origin": {
@@ -3201,7 +3201,7 @@ description: Variables in memory after executing cassette.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "6fec3912-fa52-5513-b3f5-b608fd2bcfc1",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -3215,13 +3215,13 @@ description: Variables in memory after executing cassette.kcl
                 "value": "outer"
               }
             },
-            "artifactId": "a3fed421-ce33-5a4f-b048-d3a68dfce32d",
-            "originalId": "a3fed421-ce33-5a4f-b048-d3a68dfce32d",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "ee62ca37-e297-5ec5-8431-019a83efebe4",
-          "endCapId": "9fe9cc7d-8123-54a9-b2e4-ea177692292b",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -3241,14 +3241,14 @@ description: Variables in memory after executing cassette.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
-      "originalId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
-      "topologyId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
-      "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "805a2fe2-9638-5f85-8617-6ae5d7b63bdc",
-          "id": "06c0921e-4a14-5536-9be5-24bd9920df85",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 672,
@@ -3261,8 +3261,8 @@ description: Variables in memory after executing cassette.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "4dab856d-7d1f-5009-a2c2-d1f6b1f11d23",
-          "id": "d9bec671-6eea-51f8-8328-b299930b4a88",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 833,
@@ -3275,8 +3275,8 @@ description: Variables in memory after executing cassette.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "49875572-4a9d-5067-8e4e-f11542fc7ebf",
-          "id": "83d01457-76a2-56a0-9689-048c23184b8d",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1034,
@@ -3289,8 +3289,8 @@ description: Variables in memory after executing cassette.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "a96d490c-80a9-5880-8b26-7a87c410fbc2",
-          "id": "333f8f9f-f610-58dc-ab49-09ff0cae24d9",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1271,
@@ -3306,11 +3306,11 @@ description: Variables in memory after executing cassette.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "06c0921e-4a14-5536-9be5-24bd9920df85",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -3340,7 +3340,7 @@ description: Variables in memory after executing cassette.kcl
           },
           {
             "__geoMeta": {
-              "id": "d9bec671-6eea-51f8-8328-b299930b4a88",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3364,7 +3364,7 @@ description: Variables in memory after executing cassette.kcl
           },
           {
             "__geoMeta": {
-              "id": "83d01457-76a2-56a0-9689-048c23184b8d",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -3394,7 +3394,7 @@ description: Variables in memory after executing cassette.kcl
           },
           {
             "__geoMeta": {
-              "id": "333f8f9f-f610-58dc-ab49-09ff0cae24d9",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3419,8 +3419,8 @@ description: Variables in memory after executing cassette.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -3460,7 +3460,7 @@ description: Variables in memory after executing cassette.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -3482,13 +3482,13 @@ description: Variables in memory after executing cassette.kcl
             "value": "radialOut"
           }
         },
-        "artifactId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
-        "originalId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
-      "startCapId": "62c00020-2c73-55ea-89c6-7fd049e3527c",
-      "endCapId": "80507b2a-300f-53a9-a2e9-357a028b1969",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "in",
       "sectional": false
     }
@@ -3506,11 +3506,11 @@ description: Variables in memory after executing cassette.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -3540,7 +3540,7 @@ description: Variables in memory after executing cassette.kcl
         },
         {
           "__geoMeta": {
-            "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3564,7 +3564,7 @@ description: Variables in memory after executing cassette.kcl
         },
         {
           "__geoMeta": {
-            "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -3594,7 +3594,7 @@ description: Variables in memory after executing cassette.kcl
         },
         {
           "__geoMeta": {
-            "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3619,8 +3619,8 @@ description: Variables in memory after executing cassette.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -3660,7 +3660,7 @@ description: Variables in memory after executing cassette.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -3682,8 +3682,8 @@ description: Variables in memory after executing cassette.kcl
           "value": "radialOut"
         }
       },
-      "artifactId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
-      "originalId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "in",
       "isClosed": "no"
     }
@@ -3692,11 +3692,11 @@ description: Variables in memory after executing cassette.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "06c0921e-4a14-5536-9be5-24bd9920df85",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -3726,7 +3726,7 @@ description: Variables in memory after executing cassette.kcl
         },
         {
           "__geoMeta": {
-            "id": "d9bec671-6eea-51f8-8328-b299930b4a88",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3750,7 +3750,7 @@ description: Variables in memory after executing cassette.kcl
         },
         {
           "__geoMeta": {
-            "id": "83d01457-76a2-56a0-9689-048c23184b8d",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -3780,7 +3780,7 @@ description: Variables in memory after executing cassette.kcl
         },
         {
           "__geoMeta": {
-            "id": "333f8f9f-f610-58dc-ab49-09ff0cae24d9",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3805,8 +3805,8 @@ description: Variables in memory after executing cassette.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -3846,7 +3846,7 @@ description: Variables in memory after executing cassette.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -3868,8 +3868,8 @@ description: Variables in memory after executing cassette.kcl
           "value": "radialOut"
         }
       },
-      "artifactId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
-      "originalId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "in",
       "isClosed": "explicitly"
     }
@@ -3883,7 +3883,7 @@ description: Variables in memory after executing cassette.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                "id": "[uuid]",
                 "objectId": 12,
                 "kind": {
                   "arc": {
@@ -3989,8 +3989,8 @@ description: Variables in memory after executing cassette.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4019,7 +4019,7 @@ description: Variables in memory after executing cassette.kcl
                     "units": null
                   }
                 },
-                "sketchId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "innerArc"
@@ -4036,11 +4036,11 @@ description: Variables in memory after executing cassette.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -4070,7 +4070,7 @@ description: Variables in memory after executing cassette.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -4094,7 +4094,7 @@ description: Variables in memory after executing cassette.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -4124,7 +4124,7 @@ description: Variables in memory after executing cassette.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -4149,8 +4149,8 @@ description: Variables in memory after executing cassette.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 0,
                 "kind": "Custom",
                 "origin": {
@@ -4190,7 +4190,7 @@ description: Variables in memory after executing cassette.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -4212,8 +4212,8 @@ description: Variables in memory after executing cassette.kcl
                   "value": "radialOut"
                 }
               },
-              "artifactId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
-              "originalId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "in",
               "isClosed": "no"
             }
@@ -4227,7 +4227,7 @@ description: Variables in memory after executing cassette.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                "id": "[uuid]",
                 "objectId": 5,
                 "kind": {
                   "arc": {
@@ -4333,8 +4333,8 @@ description: Variables in memory after executing cassette.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4363,7 +4363,7 @@ description: Variables in memory after executing cassette.kcl
                     "units": null
                   }
                 },
-                "sketchId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "outerArc"
@@ -4379,7 +4379,7 @@ description: Variables in memory after executing cassette.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+                "id": "[uuid]",
                 "objectId": 8,
                 "kind": {
                   "line": {
@@ -4453,8 +4453,8 @@ description: Variables in memory after executing cassette.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4483,7 +4483,7 @@ description: Variables in memory after executing cassette.kcl
                     "units": null
                   }
                 },
-                "sketchId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "radialIn"
@@ -4499,7 +4499,7 @@ description: Variables in memory after executing cassette.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+                "id": "[uuid]",
                 "objectId": 15,
                 "kind": {
                   "line": {
@@ -4573,8 +4573,8 @@ description: Variables in memory after executing cassette.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4603,7 +4603,7 @@ description: Variables in memory after executing cassette.kcl
                     "units": null
                   }
                 },
-                "sketchId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "radialOut"
