@@ -7,8 +7,10 @@ import { beforeEach, describe, expect, test, vi } from 'vitest'
 const mocks = vi.hoisted(() => ({
   browserSaveFile: vi.fn(async () => undefined),
   contextModeling: { selectionRanges: [] },
-  conversation: { exchanges: [] },
-  markdown: vi.fn(() => '# Conversation'),
+  getConversationExport: vi.fn(() => ({
+    fileName: 'conversation-123.md',
+    markdown: '# Conversation',
+  })),
   paneProps: undefined as Record<string, unknown> | undefined,
   settings: {
     app: { zookeeperMode: { project: undefined, user: undefined } },
@@ -100,19 +102,9 @@ vi.mock('@src/lib/browserSaveFile', () => ({
   browserSaveFile: mocks.browserSaveFile,
 }))
 
-vi.mock('@src/lib/zookeeper/zookeeperManagerMachine', () => ({
-  ZookeeperConversationToMarkdown: mocks.markdown,
-}))
-
-const actor = {
-  getSnapshot: () => ({
-    context: {
-      conversation: mocks.conversation,
-      conversationId: 'conversation-123',
-    },
-  }),
-}
-const controller = { actor } as unknown as ZookeeperSessionController
+const controller = {
+  getConversationExport: mocks.getConversationExport,
+} as unknown as ZookeeperSessionController
 
 function renderWrapper(onClose = vi.fn()) {
   return {
@@ -135,7 +127,7 @@ function renderWrapper(onClose = vi.fn()) {
 describe('ZookeeperConversationPaneWrapper', () => {
   beforeEach(() => {
     mocks.browserSaveFile.mockClear()
-    mocks.markdown.mockClear()
+    mocks.getConversationExport.mockClear()
     mocks.paneProps = undefined
     mocks.settingsSend.mockClear()
   })
@@ -179,7 +171,7 @@ describe('ZookeeperConversationPaneWrapper', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Export conversation' }))
 
-    expect(mocks.markdown).toHaveBeenCalledWith(mocks.conversation)
+    expect(mocks.getConversationExport).toHaveBeenCalledOnce()
     expect(mocks.browserSaveFile).toHaveBeenCalledWith(
       expect.objectContaining({ type: 'text/markdown' }),
       'conversation-123.md',
