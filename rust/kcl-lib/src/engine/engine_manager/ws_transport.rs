@@ -1,7 +1,12 @@
 use std::collections::HashMap;
+use std::io::Write;
 use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 use std::time::Duration;
 use std::time::Instant;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use anyhow::anyhow;
 use futures::SinkExt;
@@ -30,6 +35,52 @@ use crate::SourceRange;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::log::logln;
+
+/// Native transport diagnostics, including builds that disable ordinary KCL logging.
+/// Capture the upgrade ID before starting either actor: session data can arrive too late.
+struct ConnectionDiagnostics {
+    enabled: bool,
+    request_id: Option<String>,
+    local_close_requested: AtomicBool,
+}
+
+impl ConnectionDiagnostics {
+    fn new(request_id: Option<String>) -> Self {
+        Self {
+            enabled: std::env::var("ZOO_ENGINE_CONNECTION_DIAGNOSTICS").as_deref() == Ok("1"),
+            request_id,
+            local_close_requested: AtomicBool::new(false),
+        }
+    }
+
+    fn request_close(&self) {
+        self.local_close_requested.store(true, Ordering::Relaxed);
+    }
+
+    fn error(&self, operation: &str, error: impl std::fmt::Debug) {
+        if !self.enabled {
+            return;
+        }
+
+        let record = serde_json::json!({
+            "event": "engine_connection_error",
+            "timestamp_ms": SystemTime::now().duration_since(UNIX_EPOCH).unwrap_or_default().as_millis(),
+            "request_id": self.request_id,
+            "operation": operation,
+            // This records local intent, not proof that local teardown caused the error.
+            "local_close_requested": self.local_close_requested.load(Ordering::Relaxed),
+            "error": format!("{error:?}"),
+        });
+        // Deliberately bypass disable-println, but only with the explicit diagnostic opt-in.
+        // A logging failure must not change transport behavior.
+        let _ = writeln!(std::io::stderr().lock(), "{record}");
+    }
+}
+
+pub(super) fn upgrade_request_id(headers: &reqwest::header::HeaderMap) -> Option<String> {
+    // Never dump the response headers or select names by substring.
+    headers.get("x-request-id")?.to_str().ok().map(str::to_owned)
+}
 
 pub struct TcpRead {
     stream: futures::stream::SplitStream<tokio_tungstenite::WebSocketStream<reqwest::Upgraded>>,
@@ -72,6 +123,7 @@ pub struct WebSocketTransport {
     pending_errors: Arc<RwLock<Vec<String>>>,
     session_data: Arc<RwLock<Option<ModelingSessionData>>>,
     socket_health: Arc<RwLock<SocketHealth>>,
+    diagnostics: Arc<ConnectionDiagnostics>,
 }
 
 pub struct TcpReadHandle {
@@ -110,7 +162,7 @@ struct ToEngineReq {
 }
 
 impl WebSocketTransport {
-    /// Start a long-lived actor that reads from
+    /// Start the native WebSocket reader and writer actors.
     pub async fn spawn(
         // Passed via EngineManager from elsewhere
         ws: reqwest::Upgraded,
@@ -121,7 +173,9 @@ impl WebSocketTransport {
         session_data: Arc<RwLock<Option<ModelingSessionData>>>,
         pending_errors: Arc<RwLock<Vec<String>>>,
         socket_health: Arc<RwLock<SocketHealth>>,
+        request_id: Option<String>,
     ) -> Self {
+        let diagnostics = Arc::new(ConnectionDiagnostics::new(request_id));
         let wsconfig = tokio_tungstenite::tungstenite::protocol::WebSocketConfig::default()
             // 4294967296 bytes, which is around 4.2 GB.
             .max_message_size(Some(usize::MAX))
@@ -142,6 +196,7 @@ impl WebSocketTransport {
             engine_req_rx,
             shutdown_rx,
             heartbeats,
+            diagnostics.clone(),
         ));
 
         let mut tcp_read = TcpRead { stream: tcp_read };
@@ -150,6 +205,7 @@ impl WebSocketTransport {
         let session_data_for_read = session_data.clone();
         let pending_errors_for_read = pending_errors.clone();
         let socket_health_tcp_read = socket_health.clone();
+        let diagnostics_for_read = diagnostics.clone();
         let tcp_read_handle = tokio::spawn(async move {
             // Get Websocket messages from API server
             loop {
@@ -250,8 +306,12 @@ impl WebSocketTransport {
                     }
                     Err(e) => {
                         match &e {
-                            WebSocketReadError::Read(e) => crate::logln!("could not read from WS: {:?}", e),
+                            WebSocketReadError::Read(e) => {
+                                diagnostics_for_read.error("read", e);
+                                crate::logln!("could not read from WS: {:?}", e)
+                            }
                             WebSocketReadError::Deser(e) => {
+                                diagnostics_for_read.error("read_or_decode", e);
                                 crate::logln!("could not deserialize msg from WS: {:?}", e)
                             }
                         }
@@ -262,6 +322,7 @@ impl WebSocketTransport {
             }
         });
         Self {
+            diagnostics,
             shutdown_tx,
             responses: response_information,
             pending_errors,
@@ -303,6 +364,7 @@ impl WebSocketTransport {
         mut engine_req_rx: mpsc::Receiver<ToEngineReq>,
         mut shutdown_rx: mpsc::Receiver<()>,
         heartbeats: Option<u64>,
+        diagnostics: Arc<ConnectionDiagnostics>,
     ) {
         let heartbeats = heartbeats.unwrap_or_default();
         let send_heartbeats = heartbeats != 0;
@@ -329,6 +391,10 @@ impl WebSocketTransport {
                                 Self::inner_send_to_engine(req, &mut tcp_write).await
                             };
 
+                            if let Err(e) = &res {
+                                diagnostics.error("send", e);
+                            }
+
                             // Let the caller know we’ve sent the request (ok or error).
                             let _ = request_sent.send(res);
                         }
@@ -340,25 +406,24 @@ impl WebSocketTransport {
                     }
                 },
 
-                // If we get a shutdown signal, close the engine immediately and return.
-                _ = shutdown_rx.recv() => {
-                    let _ = Self::inner_close_engine(&mut tcp_write).await;
-                    return;
-                }
+                _ = shutdown_rx.recv() => break,
 
                 // Send heartbeats periodically.
                 _ = heartbeats_stream.tick(), if send_heartbeats => {
                     // Send a heartbeat.
                     let res = Self::inner_send_to_engine(WebSocketRequest::Ping {}, &mut tcp_write).await;
                     // We don't really care if a heartbeat fails, we'll just try again soon.
-                    let _ = res;
+                    if let Err(e) = &res {
+                        diagnostics.error("heartbeat", e);
+                    }
                 }
             }
         }
 
-        // If we exit the loop (e.g. engine_req_rx was closed),
-        // still gracefully close the engine before returning.
-        let _ = Self::inner_close_engine(&mut tcp_write).await;
+        diagnostics.request_close();
+        if let Err(e) = Self::inner_close_engine(&mut tcp_write).await {
+            diagnostics.error("close", e);
+        }
     }
 
     /// Send the given `request` to the engine via the WebSocket connection `tcp_write`.
@@ -494,6 +559,7 @@ impl EngineTransport for WebSocketTransport {
     }
 
     async fn close(&self) -> Result<(), TransportCloseError> {
+        self.diagnostics.request_close();
         let _ = self.shutdown_tx.send(()).await;
         loop {
             let guard = self.socket_health.read().await;
@@ -501,5 +567,25 @@ impl EngineTransport for WebSocketTransport {
                 return Ok(());
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn upgrade_request_id_uses_only_the_exact_header() {
+        let mut headers = reqwest::header::HeaderMap::new();
+        headers.insert("x-other-request-id", "unrelated".parse().unwrap());
+        headers.insert("set-cookie", "private-cookie".parse().unwrap());
+        assert_eq!(upgrade_request_id(&headers), None);
+        headers.insert("x-request-id", "early-request-id".parse().unwrap());
+        assert_eq!(upgrade_request_id(&headers).as_deref(), Some("early-request-id"));
+        headers.insert(
+            "x-request-id",
+            reqwest::header::HeaderValue::from_bytes(&[0xff]).unwrap(),
+        );
+        assert_eq!(upgrade_request_id(&headers), None);
     }
 }

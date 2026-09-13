@@ -296,6 +296,12 @@ For more information on fuzzing you can check out
 
 To display logging (to the terminal or console) set `ZOO_LOG=1`. This will log some warnings and simple performance metrics. To view these in test runs, use `-- --nocapture`.
 
+For native Engine WebSocket investigations, set `ZOO_ENGINE_CONNECTION_DIAGNOSTICS=1`.
+This emits JSON error records to stderr even in LSP builds with `disable-println`.
+Records include only the upgrade's `x-request-id`, operation, timestamp, error,
+and local-close intent, which does not establish the disconnect's cause.
+The sharded Rust CI tests enable these diagnostics; they are otherwise off by default.
+
 To enable memory metrics, build with `--features dhat-heap`.
 
 ## Running scripts
