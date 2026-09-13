@@ -4108,7 +4108,13 @@ export class KclManager extends File {
     // to be in, and it's not going to be pretty, but at the least, let's not
     // permanently delete the user's code accidentally.
     // if you want to clear the scene, pass in the `isDeleting` option.
-    if (ast.body.length === 0 && !resolvedOptions.isDeleting) return
+    // Settings-only programs have no body but still contain valid code.
+    if (
+      ast.body.length === 0 &&
+      !ast.innerAttrs?.length &&
+      !resolvedOptions.isDeleting
+    )
+      return
     const newCode = recast(ast, wasmInstance)
     if (err(newCode)) return
     if (hasStaleVersion()) return
