@@ -1280,12 +1280,14 @@ export function getSelectionVarsForCall({
   modifiedAst,
   wasmInstance,
   nodeToEdit,
+  options = { lastChildLookup: true },
 }: {
   selection: Selections
   artifactGraph: ArtifactGraph
   modifiedAst: Node<Program>
   wasmInstance: ModuleType
   nodeToEdit?: PathToNode
+  options?: NonNullable<Parameters<typeof getVariableExprsFromSelection>[5]>
 }) {
   // Edit codemods preserve the existing selection argument, so only rebuild
   // selection expressions when creating a new call.
@@ -1293,14 +1295,97 @@ export function getSelectionVarsForCall({
     return { exprs: [] }
   }
 
-  return getVariableExprsFromSelection(
+  const vars = getVariableExprsFromSelection(
     selection,
     artifactGraph,
     modifiedAst,
     wasmInstance,
     undefined,
-    { lastChildLookup: true }
+    options
   )
+  if (err(vars) || selection.graphSelections.length < 2) {
+    return vars
+  }
+
+  const selections: Array<{
+    exprs: Expr[]
+    pathIfPipe?: PathToNode
+    pipeBodyIndex?: number
+  }> = []
+  const pipeBodyIndexes = new Set<number>()
+
+  for (const graphSelection of selection.graphSelections) {
+    const selectionVars = getVariableExprsFromSelection(
+      { graphSelections: [graphSelection], otherSelections: [] },
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      undefined,
+      options
+    )
+    if (err(selectionVars)) {
+      return selectionVars
+    }
+
+    let pipeBodyIndex: number | undefined
+    if (selectionVars.pathIfPipe) {
+      const expression = getNodeFromPath<ExpressionStatement>(
+        modifiedAst,
+        selectionVars.pathIfPipe,
+        wasmInstance,
+        'ExpressionStatement'
+      )
+      if (!err(expression)) {
+        const bodyIndex = getBodyIndex(expression.shallowPath)
+        if (err(bodyIndex)) {
+          return bodyIndex
+        }
+        pipeBodyIndex = bodyIndex
+        pipeBodyIndexes.add(bodyIndex)
+      }
+    }
+
+    selections.push({ ...selectionVars, pipeBodyIndex })
+  }
+
+  // A call cannot use `%` for two different source pipes. Give each pipe a
+  // name, then pass those names to the new call.
+  if (pipeBodyIndexes.size <= 1) {
+    return vars
+  }
+
+  const variableByBodyIndex = new Map<number, string>()
+  for (const bodyIndex of pipeBodyIndexes) {
+    const statement = modifiedAst.body[bodyIndex]
+    if (!statement || statement.type !== 'ExpressionStatement') {
+      return new Error('Expected a variable-less source pipe')
+    }
+
+    const variableName = findUniqueName(
+      modifiedAst,
+      KCL_DEFAULT_CONSTANT_PREFIXES.SOLID
+    )
+    const declaration = createVariableDeclaration(
+      variableName,
+      statement.expression
+    )
+    declaration.preComments = statement.preComments
+    modifiedAst.body[bodyIndex] = declaration
+    variableByBodyIndex.set(bodyIndex, variableName)
+  }
+
+  return {
+    exprs: selections.flatMap(({ exprs, pathIfPipe, pipeBodyIndex }) => {
+      if (!pathIfPipe) {
+        return exprs
+      }
+      const variableName =
+        pipeBodyIndex === undefined
+          ? undefined
+          : variableByBodyIndex.get(pipeBodyIndex)
+      return variableName ? [createLocalName(variableName)] : []
+    }),
+  }
 }
 
 // Create a path to node to the last variable declaroator of an ast
