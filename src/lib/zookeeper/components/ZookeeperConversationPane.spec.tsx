@@ -1,6 +1,7 @@
 import { signal } from '@preact/signals-core'
-import { act, render, screen, waitFor } from '@testing-library/react'
-import { MemoryRouter, useLocation } from 'react-router-dom'
+import { CMD_GROUP_QUERY_PARAM, CMD_NAME_QUERY_PARAM } from '@src/lib/constants'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { MemoryRouter, useLocation, useSearchParams } from 'react-router-dom'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 
 const conversationRender = vi.hoisted(() => vi.fn())
@@ -211,6 +212,24 @@ const latestConversationProps = () => {
 const LocationProbe = () => {
   const location = useLocation()
   return <output data-testid="location-search">{location.search}</output>
+}
+
+const GenericCommandQueryConsumer = () => {
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        const nextSearchParams = new URLSearchParams(searchParams)
+        nextSearchParams.delete(CMD_NAME_QUERY_PARAM)
+        nextSearchParams.delete(CMD_GROUP_QUERY_PARAM)
+        setSearchParams(nextSearchParams)
+      }}
+    >
+      Consume generic command
+    </button>
+  )
 }
 
 beforeEach(() => {
@@ -475,5 +494,36 @@ describe('ZookeeperConversationPane', () => {
       )
     })
     expect(latestConversationProps().initialMlCopilotMode).toBe('user-mode')
+  })
+
+  test('waits for generic command params before consuming the URL prompt', async () => {
+    const fake = createFakeController({
+      actorContext: { conversation: completedConversation },
+    })
+    render(
+      <MemoryRouter
+        initialEntries={[
+          '/projects/cube?cmd=set-layout&groupId=application&zookeeper-prompt=make+a+gear',
+        ]}
+      >
+        <GenericCommandQueryConsumer />
+        <ZookeeperConversationPane {...createPaneProps(fake.controller)} />
+        <LocationProbe />
+      </MemoryRouter>
+    )
+
+    await waitFor(() => {
+      expect(latestConversationProps().defaultPrompt).toBe('make a gear')
+      expect(screen.getByTestId('location-search')).toHaveTextContent(
+        'cmd=set-layout&groupId=application&zookeeper-prompt=make+a+gear'
+      )
+    })
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Consume generic command' })
+    )
+    await waitFor(() => {
+      expect(screen.getByTestId('location-search')).toHaveTextContent(/^$/)
+    })
   })
 })
