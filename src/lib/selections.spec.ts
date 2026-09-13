@@ -11,6 +11,7 @@ import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import {
   codeToIdSelections,
   findLastRangeStartingBefore,
+  getEventForSelectWithPoint,
   getSelectionReferences,
   getSelectionTypeDisplayText,
   getStableOffsetPlaneData,
@@ -1251,6 +1252,51 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
       }),
     }
   }
+
+  test('selects a copied pattern face as an engine primitive', async () => {
+    const patternArtifact = {
+      type: 'pattern',
+      id: 'pattern-command-id',
+      subType: 'transform',
+      sourceId: 'source-body-id',
+      copyIds: ['copy-body-id'],
+      copyFaceIds: ['copy-face-id'],
+      copyEdgeIds: ['copy-edge-id'],
+    } as unknown as Artifact
+    const engineCommandManager = createPrimitiveEngineConnectionManager({
+      parentEntityId: 'copy-body-id',
+      primitiveIndex: 1,
+      primitiveType: 'face',
+    })
+
+    const result = await getEventForSelectWithPoint(
+      { data: { entity_id: 'copy-face-id' } } as any,
+      {
+        engineCommandManager: engineCommandManager as any,
+        kclManager: {
+          ast: {},
+          artifactGraph: new Map([[patternArtifact.id, patternArtifact]]),
+        } as any,
+        rustContext: { defaultPlanes: null } as any,
+        wasmInstance: {} as any,
+        useSegmentsBasedRegions: false,
+      }
+    )
+
+    expect(result).toEqual({
+      type: 'Set selection',
+      data: {
+        selectionType: 'enginePrimitiveSelection',
+        selection: {
+          type: 'enginePrimitive',
+          entityId: 'copy-face-id',
+          parentEntityId: 'copy-body-id',
+          primitiveIndex: 1,
+          primitiveType: 'face',
+        },
+      },
+    })
+  })
 
   const cases = [
     [
