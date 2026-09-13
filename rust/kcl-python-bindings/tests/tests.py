@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 import asyncio
+import json
 import os
+import ssl
 import sys
 
-import pytest
-
 import kcl
+import pytest
 from kcl import Point3d
 
 # Get the path to this script's parent directory.
@@ -256,6 +257,172 @@ async def test_kcl_mock_execute():
     # Read from a file.
     outcome = await kcl.mock_execute(lego_file)
     assert outcome.issues() == []
+
+
+@pytest.mark.asyncio
+async def test_duplicate_sketch_instances() -> None:
+    fixture = os.path.join(
+        tests_dir, "sketch_visualizer", "duplicate_names", "input.kcl"
+    )
+    outcome = await kcl.mock_execute(fixture)
+    report = outcome.sketch_constraint_report()
+    assert [s.instance_index for s in report.fully_constrained] == [0, 1]
+    with pytest.raises(Exception, match="found 2 sketches named `profile`"):
+        outcome.render_sketch_png("profile")
+    images = [
+        bytes(outcome.render_sketch_png("profile", instance_index=i)) for i in (0, 1)
+    ]
+    assert all(png.startswith(b"\x89PNG\r\n\x1a\n") for png in images)
+    assert images[0] != images[1]
+    with pytest.raises(Exception, match="out of range"):
+        outcome.render_sketch_png("profile", instance_index=2)
+    with pytest.raises(OverflowError):
+        outcome.render_sketch_png("profile", instance_index=-1)
+
+
+@requires_engine
+@pytest.mark.asyncio
+@pytest.mark.parametrize("cancel_by_timeout", [False, True])
+async def test_inflight_cancellation_closes_engine_socket(
+    monkeypatch: pytest.MonkeyPatch, cancel_by_timeout: bool
+) -> None:
+    if os.environ.get("ZOO_HOST", "").rstrip("/") != "https://api.dev.zoo.dev":
+        pytest.skip("in-flight cancellation integration test requires the DEV API")
+
+    fixture = os.path.join(
+        tests_dir, "sketch_visualizer", "curved_instance", "input.kcl"
+    )
+    baseline_png = await asyncio.wait_for(
+        execute_with_retries(
+            kcl.try_render_sketch_instance, fixture, "curvedProfile", 0
+        ),
+        30,
+    )
+    assert baseline_png is not None
+    assert bytes(baseline_png).startswith(b"\x89PNG")
+
+    loop = asyncio.get_running_loop()
+    modeling_started: asyncio.Future[None] = loop.create_future()
+    client_closed = asyncio.Event()
+    close_frame_seen = asyncio.Event()
+    handlers: list[asyncio.Task[None]] = []
+
+    async def relay(reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
+        handler = asyncio.current_task()
+        assert handler is not None
+        handlers.append(handler)
+        upstream_writer = None
+        try:
+            headers = await reader.readuntil(b"\r\n\r\n")
+            upstream_reader, upstream_writer = await asyncio.open_connection(
+                "api.dev.zoo.dev", 443, ssl=ssl.create_default_context()
+            )
+            headers = b"\r\n".join(
+                b"Host: api.dev.zoo.dev" if line.lower().startswith(b"host:") else line
+                for line in headers.split(b"\r\n")
+            )
+            upstream_writer.write(headers)
+            await upstream_writer.drain()
+            response = await upstream_reader.readuntil(b"\r\n\r\n")
+            assert response.split(b"\r\n", 1)[0].split()[1] == b"101"
+            writer.write(response)
+            await writer.drain()
+            # Delay real engine responses after the upgrade. Cancel only once
+            # an actual modeling command has been forwarded, not a heartbeat.
+            while True:
+                try:
+                    header = await reader.readexactly(2)
+                except asyncio.IncompleteReadError as error:
+                    assert error.partial == b""
+                    client_closed.set()
+                    return
+                opcode = header[0] & 0x0F
+                length = header[1] & 0x7F
+                extra = b""
+                if length in (126, 127):
+                    extra = await reader.readexactly(2 if length == 126 else 8)
+                    length = int.from_bytes(extra, "big")
+                mask = await reader.readexactly(4) if header[1] & 0x80 else b""
+                payload = await reader.readexactly(length)
+                upstream_writer.write(header + extra + mask + payload)
+                await upstream_writer.drain()
+                if opcode == 8:
+                    close_frame_seen.set()
+                    client_closed.set()
+                    return
+                elif opcode == 1:
+                    if mask:
+                        payload = bytes(
+                            byte ^ mask[index % 4] for index, byte in enumerate(payload)
+                        )
+                    kind = json.loads(payload).get("type")
+                    if (
+                        kind
+                        in (
+                            "modeling_cmd_req",
+                            "modeling_cmd_batch_req",
+                        )
+                        and not modeling_started.done()
+                    ):
+                        modeling_started.set_result(None)
+        except Exception as error:
+            if not modeling_started.done():
+                modeling_started.set_exception(error)
+            raise
+        finally:
+            connections = [writer]
+            if upstream_writer is not None:
+                connections.append(upstream_writer)
+            for connection in connections:
+                connection.close()
+            try:
+                await asyncio.wait_for(
+                    asyncio.gather(
+                        *(connection.wait_closed() for connection in connections),
+                        return_exceptions=True,
+                    ),
+                    5,
+                )
+            finally:
+                for connection in connections:
+                    connection.transport.abort()
+
+    server = await asyncio.start_server(relay, "127.0.0.1", 0)
+    port = server.sockets[0].getsockname()[1]
+    monkeypatch.setenv("ZOO_HOST", f"http://127.0.0.1:{port}")
+    monkeypatch.delenv("KITTYCAD_HOST", raising=False)
+    execution = asyncio.ensure_future(
+        kcl.try_render_sketch_instance(fixture, "curvedProfile", 0)
+    )
+    try:
+        await asyncio.wait_for(modeling_started, 30)
+        assert not execution.done()
+        if cancel_by_timeout:
+            with pytest.raises(TimeoutError):
+                await asyncio.wait_for(execution, 0.1)
+        else:
+            execution.cancel()
+            with pytest.raises(asyncio.CancelledError):
+                await execution
+        await asyncio.wait_for(client_closed.wait(), 5)
+        assert close_frame_seen.is_set()
+        monkeypatch.setenv("ZOO_HOST", "https://api.dev.zoo.dev")
+        png = await asyncio.wait_for(
+            execute_with_retries(
+                kcl.try_render_sketch_instance, fixture, "curvedProfile", 0
+            ),
+            30,
+        )
+        assert png is not None
+        assert bytes(png) == bytes(baseline_png)
+    finally:
+        execution.cancel()
+        await asyncio.gather(execution, return_exceptions=True)
+        server.close()
+        await server.wait_closed()
+        for handler in handlers:
+            handler.cancel()
+        await asyncio.gather(*handlers, return_exceptions=True)
 
 
 @pytest.mark.asyncio
