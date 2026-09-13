@@ -7309,6 +7309,7 @@ description: Result of parsing v-block.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

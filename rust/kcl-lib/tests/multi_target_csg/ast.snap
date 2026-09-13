@@ -3894,6 +3894,7 @@ description: Result of parsing multi_target_csg.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

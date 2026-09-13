@@ -5124,6 +5124,7 @@ description: Result of parsing inner-thread.kcl
         }
       ]
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

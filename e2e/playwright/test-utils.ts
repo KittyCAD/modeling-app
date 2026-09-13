@@ -1090,6 +1090,7 @@ export async function setup(
           ...TEST_SETTINGS,
           plugins: playwrightPluginSettings({
             cloudSyncEnabled,
+            zookeeperEnabled: testInfo?.tags.includes('@zookeeper'),
           }),
           ...PLAYWRIGHT_LAYOUT_SETTINGS,
           app: {

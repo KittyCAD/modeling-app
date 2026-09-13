@@ -8029,6 +8029,7 @@ description: Result of parsing crab_mirror_region.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

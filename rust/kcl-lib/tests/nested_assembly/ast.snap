@@ -75,6 +75,7 @@ description: Result of parsing nested_assembly.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

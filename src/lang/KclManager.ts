@@ -2376,6 +2376,7 @@ export class KclManager extends File {
 
   clearAst() {
     this.ast = {
+      type: 'Program',
       body: [],
       shebang: null,
       start: 0,

@@ -1306,6 +1306,7 @@ description: Result of parsing parametric.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }
