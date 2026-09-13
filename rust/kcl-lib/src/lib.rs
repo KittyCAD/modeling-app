@@ -164,6 +164,8 @@ pub mod lsp_support {
 pub use engine::AsyncTasks;
 pub use engine::EngineBatchContext;
 pub use engine::EngineStats;
+#[cfg(all(feature = "engine", not(target_arch = "wasm32")))]
+pub use engine::engine_manager::SessionObserver;
 pub use errors::BacktraceItem;
 pub use errors::BacktraceItemKind;
 pub use errors::CompilationIssue;

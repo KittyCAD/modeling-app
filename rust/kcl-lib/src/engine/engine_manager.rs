@@ -106,6 +106,10 @@ impl std::fmt::Debug for EngineManager {
     }
 }
 
+/// Observes the server-issued session ID as soon as it arrives.
+#[cfg(not(target_arch = "wasm32"))]
+pub type SessionObserver = Arc<dyn Fn(String) + Send + Sync>;
+
 impl EngineManager {
     #[cfg(target_arch = "wasm32")]
     pub fn new_wasm_transport(
@@ -133,6 +137,15 @@ impl EngineManager {
 
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new_websocket_transport(ws: reqwest::Upgraded, heartbeats: Option<u64>) -> Self {
+        Self::new_websocket_transport_with_observer(ws, heartbeats, None).await
+    }
+
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn new_websocket_transport_with_observer(
+        ws: reqwest::Upgraded,
+        heartbeats: Option<u64>,
+        session_observer: Option<SessionObserver>,
+    ) -> Self {
         use crate::engine::engine_manager::ws_transport::WebSocketTransport;
 
         let session_data: Arc<RwLock<Option<ModelingSessionData>>> = Arc::new(RwLock::new(None));
@@ -150,6 +163,7 @@ impl EngineManager {
             Arc::clone(&session_data),
             Arc::clone(&pending_errors),
             Arc::clone(&socket_health),
+            session_observer,
         )
         .await;
 
