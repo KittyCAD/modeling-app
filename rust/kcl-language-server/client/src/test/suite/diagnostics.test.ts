@@ -89,12 +89,20 @@ suite('KCL language server diagnostics', function () {
 
     const diagnostics = await waitForDiagnostics(uri)
 
+    // Two tsconfigs cover this file and they disagree on
+    // `noUncheckedIndexedAccess`: `rust/kcl-language-server/tsconfig.json`
+    // sets it on through `@tsconfig/strictest`, and the repository root config
+    // leaves it off. Asserting that the element is present narrows the type
+    // under the first config and compiles under the second, whereas
+    // `diagnostics[0]!` is rejected by the root config as an unnecessary
+    // assertion.
+    const [diagnostic] = diagnostics
+    assert.ok(diagnostic, 'expected one diagnostic, got none')
     assert.strictEqual(
       diagnostics.length,
       1,
       `expected one diagnostic, got ${JSON.stringify(diagnostics)}`
     )
-    const diagnostic = diagnostics[0]!
     assert.strictEqual(diagnostic.severity, vscode.DiagnosticSeverity.Error)
     assert.ok(
       diagnostic.message.includes(ENUM_DECLARATION_MESSAGE),
