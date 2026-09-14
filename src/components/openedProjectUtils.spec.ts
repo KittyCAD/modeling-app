@@ -4,9 +4,10 @@ import {
   checkOpenedProjectPresence,
   getZookeeperProjectReloadBehavior,
 } from '@src/components/openedProjectUtils'
+import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 
-const fileOperations = { stat: (path: string) => fsZds.stat(path) }
+const fileOperations = testFileOperations
 
 beforeAll(async () => {
   await moduleFsViaModuleImport({
@@ -68,7 +69,13 @@ describe('opened project presence', () => {
         projectPath: '/Users/max/Repos',
         projects: [],
       })
-    ).resolves.toEqual({ type: 'error', error })
+    ).resolves.toEqual({
+      type: 'error',
+      error: expect.objectContaining({
+        _tag: 'FilePermissionDenied',
+        cause: error,
+      }),
+    })
   })
 })
 

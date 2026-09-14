@@ -27,6 +27,7 @@ import { zookeeperPromptRunningSignal } from '@src/lib/zookeeper/zookeeperPrompt
 import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
 import type { SystemIORegistryService } from '@src/registry/contracts/systemIO'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import { NIL as uuidNIL } from 'uuid'
 import type { SnapshotFrom, Subscription } from 'xstate'
 
@@ -34,6 +35,7 @@ export interface ZookeeperSessionControllerDependencies {
   apiToken: string
   billing: BillingRegistryService
   conversationStore: ZookeeperConversationStore
+  fileOperations: FileOperationsRegistryService
   kclManager: KclManager
   project: ReadonlySignal<ZDSProject | undefined>
   projectId: string | undefined
@@ -123,7 +125,10 @@ class SessionController implements ZookeeperSessionController {
     this.projectId = deps.projectId
     this.projectPath = deps.projectPath
     this.actor = createZookeeperManagerActor(deps.apiToken)
-    this.history = new ZookeeperEditPatchHistory(deps.kclManager)
+    this.history = new ZookeeperEditPatchHistory(
+      deps.kclManager,
+      deps.fileOperations
+    )
     this.fileRequestProcessor = new ZookeeperFileRequestProcessor({
       getProject: () => this.getProject(),
       history: this.history,
@@ -469,6 +474,7 @@ class SessionController implements ZookeeperSessionController {
     try {
       const promptInputs = await Promise.all([
         collectProjectFiles({
+          fileOperations: this.deps.fileOperations,
           selectedFileContents: editorCode,
           selectedFilePath: editorPath,
           fileNames: kclManager.execState.filenames,
@@ -730,6 +736,7 @@ class SessionController implements ZookeeperSessionController {
     const editorPath = kclManager.path
     this.isResumingInterruptedTurnSignal.value = resumeInterruptedTurn
     void collectProjectFiles({
+      fileOperations: this.deps.fileOperations,
       selectedFileContents: editorCode,
       selectedFilePath: editorPath,
       fileNames: kclManager.execState.filenames,
