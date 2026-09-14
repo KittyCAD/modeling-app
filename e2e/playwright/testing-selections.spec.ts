@@ -42,6 +42,7 @@ test.describe('Testing selections', { tag: '@desktop' }, () => {
     })
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
+    await homePage.waitForAuthentication()
     await homePage.goToModelingScene()
     await u.waitForPageLoad()
 

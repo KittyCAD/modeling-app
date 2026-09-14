@@ -18,6 +18,7 @@ test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
       const u = await getUtils(page)
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
+      await homePage.waitForAuthentication()
       await homePage.goToModelingScene()
       await scene.settled()
 

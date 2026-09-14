@@ -134,8 +134,18 @@ jobs:
           CI_SUITE: e2e:snapshots
           TARGET: web
 
-      - name: Update snapshots
+      - name: Check for snapshot mismatches
         if: failure()
+        id: snapshot_mismatch
+        shell: bash
+        run: |
+          if find test-results -name '*-actual.png' -print -quit 2>/dev/null | grep --quiet .
+          then echo "found=true" >> $GITHUB_OUTPUT
+          else echo "found=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update snapshots
+        if: failure() && steps.snapshot_mismatch.outputs.found == 'true'
         run: npm run test:snapshots -- --last-failed --update-snapshots
         env:
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
