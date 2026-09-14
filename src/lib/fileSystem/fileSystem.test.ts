@@ -9,6 +9,7 @@ import {
   rename,
   stat,
   writeFile,
+  writeFileWithParents,
 } from '@src/lib/fileSystem/fileSystem'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
@@ -35,7 +36,7 @@ describe('Effect filesystem capability', () => {
     const destination = nodeFileSystem.impl.join(root, 'nested', 'renamed.kcl')
 
     const program = Effect.gen(function* () {
-      yield* writeFile(
+      yield* writeFileWithParents(
         source,
         new TextEncoder().encode('cube = startSketchOn(XY)')
       )
@@ -61,7 +62,7 @@ describe('Effect filesystem capability', () => {
   it('provides semantic stat and directory names', async () => {
     const source = nodeFileSystem.impl.join(root, 'main.kcl')
     const program = Effect.gen(function* () {
-      yield* writeFile(source, new TextEncoder().encode('1234'))
+      yield* writeFileWithParents(source, new TextEncoder().encode('1234'))
       return {
         root: yield* stat(root),
         source: yield* stat(source),
@@ -140,7 +141,7 @@ describe('Effect filesystem capability', () => {
     )
   })
 
-  it('snapshots mutable bytes before passing them to the backing', async () => {
+  it('snapshots mutable bytes when the write program is created', async () => {
     const source = nodeFileSystem.impl.join(root, 'main.kcl')
     let writtenContents: Uint8Array | undefined
     const backing: IZooDesignStudioFS = {
@@ -149,15 +150,41 @@ describe('Effect filesystem capability', () => {
         writtenContents = contents
       },
     }
-    const fileSystem = makeFileSystem(backing)
     const contents = new Uint8Array([1, 2, 3])
-    const write = fileSystem.writeFile(source, contents)
+    const write = writeFile(source, contents).pipe(
+      Effect.provide(fileSystemLayer(backing))
+    )
 
     contents[0] = 9
     await Effect.runPromise(write)
 
     expect(writtenContents).toEqual(new Uint8Array([1, 2, 3]))
     expect(writtenContents).not.toBe(contents)
+  })
+
+  it('only creates missing parent directories when explicitly requested', async () => {
+    const source = nodeFileSystem.impl.join(root, 'nested', 'main.kcl')
+    const layer = fileSystemLayer(nodeFileSystem.impl)
+
+    await expect(
+      Effect.runPromise(
+        writeFile(source, new TextEncoder().encode('cube')).pipe(
+          Effect.provide(layer),
+          Effect.flip
+        )
+      )
+    ).resolves.toBeInstanceOf(FileNotFound)
+
+    await expect(
+      Effect.runPromise(
+        writeFileWithParents(source, new TextEncoder().encode('cube')).pipe(
+          Effect.provide(layer)
+        )
+      )
+    ).resolves.toBeUndefined()
+    await expect(nodeFileSystem.impl.readFile(source, 'utf8')).resolves.toBe(
+      'cube'
+    )
   })
 
   it('forwards explicit copy collision policy to the backing', async () => {

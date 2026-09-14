@@ -1,5 +1,11 @@
 import type { PromisifyProps } from '@src/lib/types'
 
+/** Collision and traversal policy shared by every filesystem backing. */
+export interface CopyOptions {
+  readonly recursive?: boolean
+  readonly force?: boolean
+}
+
 export interface IStat {
   dev: number
   ino: number
@@ -42,7 +48,7 @@ export interface IZooDesignStudioFS {
   cp: (
     src: string,
     dest: string,
-    options?: any
+    options?: CopyOptions
     // NodeJS website and TS type defs do not match. We need to use this.
     // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   ) => Promise<undefined | void> | void
