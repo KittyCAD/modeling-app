@@ -438,7 +438,7 @@ fn render_function_page(function: &FnData, example_name: &str, kcl_std: &ModData
                 "added_in": arg.added_in.as_ref().map(ToString::to_string),
                 "deprecated": arg.deprecated,
                 "deprecated_since": arg.deprecated_since.as_ref().map(ToString::to_string),
-                "removed_since": arg.removed_since.as_ref().map(ToString::to_string),
+                "removed_in": arg.removed_in.as_ref().map(ToString::to_string),
             })
         })
         .collect::<Vec<_>>();
@@ -732,7 +732,7 @@ fn test_render_function_page_marks_arg_lifecycle() {
             added_in: None,
             deprecated: false,
             deprecated_since: None,
-            removed_since: None,
+            removed_in: None,
         }
     }
     let version = crate::execution::annotations::VersionConstraint::parse;
@@ -742,7 +742,7 @@ fn test_render_function_page_marks_arg_lifecycle() {
     let mut old_arg = arg("oldArg", "An old argument.");
     old_arg.added_in = version("2.0");
     old_arg.deprecated_since = version("2.0");
-    old_arg.removed_since = version("3.0");
+    old_arg.removed_in = version("3.0");
 
     let function = FnData {
         name: "foo".to_owned(),
@@ -774,7 +774,7 @@ fn test_render_function_page_marks_arg_lifecycle() {
     // Markers follow the parameter's lifecycle: added, deprecated, removed.
     assert!(
         page.contains(
-            "| `oldArg` | `number` | **Added in KCL 2.0.** **Deprecated as of KCL 2.0.** **Removed as of KCL 3.0.** An old argument. | No |"
+            "| `oldArg` | `number` | **Added in KCL 2.0.** **Deprecated as of KCL 2.0.** **Removed in KCL 3.0.** An old argument. | No |"
         ),
         "expected the lifecycle markers in order, got:\n{page}"
     );

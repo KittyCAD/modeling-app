@@ -8,4 +8,4 @@ import type { Shebang } from "./Shebang";
 /**
  * A KCL program top level, or function body.
  */
-export type Program = { body: Array<BodyItem>, nonCodeMeta?: NonCodeMeta, shebang?: Node<Shebang> | null, innerAttrs?: Array<Node<Annotation>>, digest?: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number], };
+export type Program = { "type": "Program", body: Array<BodyItem>, nonCodeMeta?: NonCodeMeta, shebang?: Node<Shebang> | null, innerAttrs?: Array<Node<Annotation>>, digest?: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number], };

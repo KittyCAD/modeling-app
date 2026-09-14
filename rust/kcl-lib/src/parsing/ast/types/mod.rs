@@ -439,7 +439,7 @@ pub trait CodeBlock {
 /// A KCL program top level, or function body.
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
-#[serde(rename_all = "camelCase")]
+#[serde(tag = "type", rename_all = "camelCase")]
 pub struct Program {
     pub body: Vec<BodyItem>,
     #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
@@ -4374,7 +4374,7 @@ pub struct Parameter {
     /// optional. A pre-release version such as "3.0-preview" counts as the
     /// release it precedes. May be combined with `deprecated`,
     /// `deprecated_since` (which must not be earlier than `added_in`), or
-    /// `removed_since` (which must be later than `added_in`).
+    /// `removed_in` (which must be later than `added_in`).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub added_in: Option<VersionConstraint>,
     /// If true, this parameter is deprecated regardless of the KCL version. Use
@@ -4387,7 +4387,7 @@ pub struct Parameter {
     /// downstream code reparses it into a `VersionConstraint`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub deprecated_since: Option<VersionConstraint>,
-    /// If set, this parameter is removed as of the given KCL version (e.g.,
+    /// If set, this parameter is removed in the given KCL version (e.g.,
     /// "3.0"). On that version or later, passing the parameter is an error,
     /// exactly as if the function did not declare it, and the function body
     /// sees the parameter's default value. The parser requires a removed
@@ -4395,7 +4395,7 @@ pub struct Parameter {
     /// counts as the release it precedes. May be combined with `deprecated` or
     /// `deprecated_since`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub removed_since: Option<VersionConstraint>,
+    pub removed_in: Option<VersionConstraint>,
     /// The parameter's label or name.
     pub identifier: Node<Identifier>,
     /// The type of the parameter.
@@ -5211,7 +5211,7 @@ cylinder = startSketchOn(-XZ)
                         added_in: None,
                         deprecated: false,
                         deprecated_since: None,
-                        removed_since: None,
+                        removed_in: None,
                         identifier: Node::no_src(Identifier {
                             name: "foo".to_owned(),
                             digest: None,
@@ -5236,7 +5236,7 @@ cylinder = startSketchOn(-XZ)
                         added_in: None,
                         deprecated: false,
                         deprecated_since: None,
-                        removed_since: None,
+                        removed_in: None,
                         identifier: Node::no_src(Identifier {
                             name: "foo".to_owned(),
                             digest: None,
@@ -5262,7 +5262,7 @@ cylinder = startSketchOn(-XZ)
                             added_in: None,
                             deprecated: false,
                             deprecated_since: None,
-                            removed_since: None,
+                            removed_in: None,
                             identifier: Node::no_src(Identifier {
                                 name: "foo".to_owned(),
                                 digest: None,
@@ -5277,7 +5277,7 @@ cylinder = startSketchOn(-XZ)
                             added_in: None,
                             deprecated: false,
                             deprecated_since: None,
-                            removed_since: None,
+                            removed_in: None,
                             identifier: Node::no_src(Identifier {
                                 name: "bar".to_owned(),
                                 digest: None,

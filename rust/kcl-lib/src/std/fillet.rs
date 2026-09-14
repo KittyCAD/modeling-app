@@ -431,7 +431,7 @@ mod tests {
                 .iter()
                 .any(|issue| {
                     issue.message
-                        == "`version` is not an argument of `fillet`; it was removed as of KCL 3.0, but this program uses KCL 3.0-preview"
+                        == "`version` is not an argument of `fillet`; it was removed in KCL 3.0, but this program uses KCL 3.0-preview"
                 }),
             "issues: {:#?}",
             result.issues()

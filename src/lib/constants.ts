@@ -409,9 +409,9 @@ export const LEGACY_SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY = 'ttc-prompt'
 export const NUMBER_OF_ENGINE_RETRIES = 5
 
 /**
- *Global timeout on pending commands, it will be bad if we hit this case.
+ * Bound stalled commands while heartbeats monitor connection health.
  */
-export const PENDING_COMMAND_TIMEOUT = 60_000
+export const PENDING_COMMAND_TIMEOUT = 5 * 60_000
 
 /** Timeout in MS to save layout */
 export const LAYOUT_SAVE_THROTTLE = 500

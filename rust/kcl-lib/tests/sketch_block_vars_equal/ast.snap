@@ -591,6 +591,7 @@ description: Result of parsing sketch_block_vars_equal.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

@@ -82,7 +82,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let tag_start = args.get_kw_arg_opt("tagStart", &RuntimeType::tag_decl(), exec_state)?;
     let tag_end = args.get_kw_arg_opt("tagEnd", &RuntimeType::tag_decl(), exec_state)?;
     let body_type: Option<BodyType> = args.get_kw_arg_opt("bodyType", &RuntimeType::string(), exec_state)?;
-    // KCL 3.0 removes the version parameter (`removed_since` in sketch.kcl),
+    // KCL 3.0 removes the version parameter (`removed_in` in sketch.kcl),
     // so from 3.0 on this is always None, and the newest algorithm is used.
     let version: Option<u32> = args.get_kw_arg_opt("version", &RuntimeType::count(), exec_state)?;
     // Replaced by 2 args below.
@@ -168,7 +168,7 @@ impl ProfileTransform {
 }
 
 /// The sweep algorithm version to send when the user does not set `version`.
-/// KCL 3.0 removes the version parameter (`removed_since` in sketch.kcl), so
+/// KCL 3.0 removes the version parameter (`removed_in` in sketch.kcl), so
 /// from 3.0 on this is always what is sent.
 fn default_sweep_version(kcl_version: KclVersion) -> Option<u8> {
     if kcl_version <= KclVersion::V2 {
@@ -255,7 +255,7 @@ async fn inner_sweep(
         }),
 
         // If the "new" profile transformation args are set. KCL 3.0 removed
-        // `relativeTo` (see `removed_since` in sketch.kcl), so from 3.0 on,
+        // `relativeTo` (see `removed_in` in sketch.kcl), so from 3.0 on,
         // this is also the case when no flags are set at all.
         (None, translate, orient) => {
             let translate_profile_to_path = translate.unwrap_or_default();
@@ -465,7 +465,7 @@ mod tests {
                 .iter()
                 .any(|issue| {
                     issue.message
-                        == "`version` is not an argument of `sweep`; it was removed as of KCL 3.0, but this program uses KCL 3.0-preview"
+                        == "`version` is not an argument of `sweep`; it was removed in KCL 3.0, but this program uses KCL 3.0-preview"
                 }),
             "issues: {:#?}",
             result.issues()

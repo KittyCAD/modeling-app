@@ -919,7 +919,7 @@ pub struct ArgData {
     /// Constraint on the KCL version at or after which this argument is deprecated.
     pub deprecated_since: Option<VersionConstraint>,
     /// Constraint on the KCL version at or after which this argument is removed.
-    pub removed_since: Option<VersionConstraint>,
+    pub removed_in: Option<VersionConstraint>,
 }
 
 impl fmt::Display for ArgData {
@@ -961,7 +961,7 @@ impl ArgData {
             added_in: arg.added_in.clone(),
             deprecated: arg.deprecated,
             deprecated_since: arg.deprecated_since.clone(),
-            removed_since: arg.removed_since.clone(),
+            removed_in: arg.removed_in.clone(),
         };
 
         for attr in &arg.identifier.outer_attrs {
@@ -1749,7 +1749,7 @@ mod test {
                 .iter()
                 .find(|a| a.name == param)
                 .unwrap_or_else(|| panic!("{func} should declare {param}"));
-            assert_eq!(arg.removed_since, VersionConstraint::parse("3.0"), "{func}({param})");
+            assert_eq!(arg.removed_in, VersionConstraint::parse("3.0"), "{func}({param})");
         }
     }
 

@@ -39,7 +39,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let angle = args.get_kw_arg_opt("angle", &RuntimeType::angle(), exec_state)?;
     let legacy_csg: Option<bool> = args.get_kw_arg_opt("legacyMethod", &RuntimeType::bool(), exec_state)?;
     let csg_algorithm = CsgAlgorithm::legacy(legacy_csg.unwrap_or_default());
-    // KCL 3.0 removes the version parameter (`removed_since` in solid.kcl),
+    // KCL 3.0 removes the version parameter (`removed_in` in solid.kcl),
     // so from 3.0 on this is always the default: the newest edge cut
     // algorithm, which cuts all edges at once in a single engine command.
     let edge_cut_number: Option<u32> = args.get_kw_arg_opt("version", &RuntimeType::count(), exec_state)?;
@@ -566,7 +566,7 @@ mod tests {
                 .iter()
                 .any(|issue| {
                     issue.message
-                        == "`version` is not an argument of `chamfer`; it was removed as of KCL 3.0, but this program uses KCL 3.0-preview"
+                        == "`version` is not an argument of `chamfer`; it was removed in KCL 3.0, but this program uses KCL 3.0-preview"
                 }),
             "issues: {:#?}",
             result.issues()

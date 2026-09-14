@@ -55168,6 +55168,7 @@ description: Result of parsing utility-sink.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

@@ -6,9 +6,14 @@ import type {
 } from '@playwright/test/reporter'
 
 class APIReporter implements Reporter {
+  private hasGlobalError = false
   private pendingRequests: Promise<void>[] = []
   private allResults: Record<string, any>[] = []
   private blockingResults: Record<string, any>[] = []
+
+  onError(): void {
+    this.hasGlobalError = true
+  }
 
   async onEnd(result: FullResult): Promise<void> {
     await Promise.all(this.pendingRequests)
@@ -17,7 +22,7 @@ class APIReporter implements Reporter {
       return
     }
 
-    if (this.blockingResults.length === 0) {
+    if (!this.hasGlobalError && this.blockingResults.length === 0) {
       result.status = 'passed'
       if (!process.env.CI) {
         console.log('TAB API - Marked failures as non-blocking')

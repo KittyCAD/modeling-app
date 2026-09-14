@@ -9668,6 +9668,7 @@ description: Result of parsing router-template-slate.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

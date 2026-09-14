@@ -1830,7 +1830,7 @@ export fn sweep(
   tolerance?: number(Length),
   /// Use 'translateProfileToPath' and 'orientProfilePerpendicular' instead.
   /// What is the sweep relative to? Can be either 'sketchPlane' or 'trajectoryCurve'.
-  @(deprecated = true, removed_since = "3.0")
+  @(deprecated = true, removed_in = "3.0")
   relativeTo?: string = 'trajectoryCurve',
   /// If true, the profile being swept will be moved to the path being swept along,
   /// before the sweep starts.
@@ -1858,7 +1858,7 @@ export fn sweep(
   /// 2 is the newer algorithm.
   /// On KCL 2.0 and earlier, the default is 0.
   /// KCL 3.0 and later always use the newest algorithm.
-  @(removed_since = "3.0")
+  @(removed_in = "3.0")
   version?: number(Count),
 ): [Solid; 1+] {}
 

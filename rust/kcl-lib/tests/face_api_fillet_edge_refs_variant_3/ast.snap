@@ -1838,6 +1838,7 @@ description: Result of parsing face_api_fillet_edge_refs_variant_3.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

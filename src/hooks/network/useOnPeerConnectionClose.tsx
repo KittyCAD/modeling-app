@@ -8,6 +8,7 @@ export type EngineDisconnectEvent =
   | EngineConnectionManagerEvents.peerConnectionDisconnected
   | EngineConnectionManagerEvents.peerConnectionFailed
   | EngineConnectionManagerEvents.dataChannelClose
+  | EngineConnectionManagerEvents.pingPongTimeout
 
 export interface IUseOnPeerConnectionClose {
   callback: (eventType: EngineDisconnectEvent) => void
