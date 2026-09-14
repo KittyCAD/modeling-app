@@ -47,7 +47,6 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   getArtifactFromRange,
   getArtifactOfTypes,
-  getCodeRefsByArtifactId,
   getFaceCodeRef,
   getSweepEdgeCodeRef,
 } from '@src/lang/std/artifactGraph'
@@ -856,52 +855,8 @@ export function addRevolve({
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
   const vars: { exprs: Expr[]; pathIfPipe?: PathToNode } = { exprs: [] }
   if (!mNodeToEdit) {
-    // Entity refs need to be normalized into graphSelections,
-    // otherwise revolve() can be generated without its required first positional arg.
-    // TODO this is probably the wrong approach because we're going to get rid of `graphSelections` entirely
-    // and replace it with a different selection shape, so normalising to `graphSelections` is going to mean more refactoring
-    // later, but at least it's working and tsc will tell us most/all of the places that need to be updated.
-    const normalizedV2GraphSelections = (sketches.graphSelections || [])
-      .map((v2Selection) => {
-        if (v2Selection.codeRef) {
-          return { codeRef: v2Selection.codeRef }
-        }
-
-        const entityRef = v2Selection.entityRef
-        if (!entityRef) return null
-
-        let entityId: string | undefined
-        if (entityRef.type === 'solid2d') {
-          entityId = entityRef.solid2d_id
-        } else if (entityRef.type === 'face') {
-          entityId = entityRef.face_id
-        } else if (entityRef.type === 'plane') {
-          entityId = entityRef.plane_id
-        }
-
-        if (!entityId) return null
-        const codeRef = getCodeRefsByArtifactId(entityId, artifactGraph)?.[0]
-        if (!codeRef) return null
-        return { codeRef }
-      })
-      .filter(
-        (
-          selection
-        ): selection is { codeRef: NonNullable<typeof selection>['codeRef'] } =>
-          Boolean(selection)
-      )
-
-    // Use normalized list only to avoid duplicating selections (same fix as addExtrude).
-    const normalizedSketches: Selections = {
-      graphSelections:
-        normalizedV2GraphSelections.length > 0
-          ? normalizedV2GraphSelections
-          : sketches.graphSelections,
-      otherSelections: sketches.otherSelections,
-    }
-
     const selectionVars = getVariableExprsFromSelection(
-      normalizedSketches,
+      sketches,
       artifactGraph,
       modifiedAst,
       wasmInstance
