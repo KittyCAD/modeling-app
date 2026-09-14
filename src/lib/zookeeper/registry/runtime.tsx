@@ -304,6 +304,7 @@ export function createZookeeperRuntime(
           apiToken: next.apiToken,
           billing,
           conversationStore: makeZookeeperConversationStore(fileOperations),
+          fileOperations,
           kclManager: next.kclManager,
           project: next.project,
           projectId: next.projectId,
