@@ -1,10 +1,9 @@
 name: kcl-wasm-lib-build-and-publish
 
 on:
-  workflow_dispatch:
   push:
-    branches:
-      - main
+    tags:
+      - "kcl-*"
 
 permissions:
   id-token: write
