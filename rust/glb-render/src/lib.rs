@@ -11,8 +11,10 @@ use image::DynamicImage;
 use image::ImageFormat;
 use image::Rgba;
 use image::RgbaImage;
-use zoo_brep::BrepRenderData;
-use zoo_brep::extract_zoo_extension;
+
+mod sampling;
+
+use sampling::BrepRenderData;
 
 pub const HELP: &str = r#"Usage:
   kcl-render <MODEL.glb>
@@ -59,10 +61,9 @@ pub fn render(glb: &[u8]) -> Result<DynamicImage, String> {
 }
 
 fn load_edges(glb: &[u8]) -> Result<BrepRenderData, String> {
-    let extension =
-        extract_zoo_extension(glb).map_err(|error| format!("could not read B-rep data from GLB: {error}"))?;
-    BrepRenderData::from_extension(&extension.value)
-        .map_err(|error| format!("could not parse B-rep data from GLB: {error}"))
+    let gltf = gltf::Gltf::from_slice(glb).map_err(|error| format!("could not read B-rep data from GLB: {error}"))?;
+    BrepRenderData::from_document(&gltf.document)
+        .map_err(|error| format!("could not sample B-rep data from GLB: {error}"))
 }
 
 fn render_image(glb: &[u8], edges: &BrepRenderData, view: ViewProjection) -> Result<DynamicImage, String> {
@@ -776,7 +777,6 @@ mod tests {
         let glb = triangle_glb(&triangles, 1.0, nodes);
         let edges = BrepRenderData {
             edge_polylines: vec![vec![Vec3::ZERO, Vec3::new(0.0, 30.0, 0.0)]],
-            ..Default::default()
         };
         let mut points = edges.edge_polylines[0].clone();
         points.extend(
@@ -819,7 +819,6 @@ mod tests {
         assert_eq!(pass.silhouettes.len(), 4, "the shared diagonal is not a silhouette");
         let edges = BrepRenderData {
             edge_polylines: vec![vec![Vec3::new(-10.0, -10.0, 0.0), Vec3::new(10.0, -10.0, 0.0)]],
-            ..Default::default()
         };
         let image = render_image(&glb, &edges, view).unwrap().into_rgba8();
         assert_eq!(*image.get_pixel(16, 6), SILHOUETTE_COLOR);
@@ -893,6 +892,32 @@ mod tests {
     }
 
     #[test]
+    fn renders_glb_with_typed_brep_extension() {
+        let bytes = triangle_glb(&square_triangles(), 1.0, r#"{"mesh":0}"#);
+        assert!(
+            load_edges(&bytes)
+                .err()
+                .unwrap()
+                .contains("KITTYCAD_boundary_representation")
+        );
+        let mut glb = gltf::binary::Glb::from_slice(&bytes).unwrap();
+        let mut json: serde_json::Value = serde_json::from_slice(&glb.json).unwrap();
+        json["extensionsRequired"] = serde_json::json!(["KITTYCAD_boundary_representation"]);
+        json["extensionsUsed"] = serde_json::json!(["KITTYCAD_boundary_representation"]);
+        json["extensions"] = serde_json::json!({"KITTYCAD_boundary_representation": {
+            "vertices": [[-0.01, -0.01, 0], [0.01, -0.01, 0]],
+            "edges": [{"curve": [0, 1], "start": 0, "end": 1, "t": [0, 0.02]}],
+            "curves3D": [{"type": "line", "line": {"origin": [-0.01, -0.01, 0], "direction": [1, 0, 0]}}]
+        }});
+        glb.json = serde_json::to_vec(&json).unwrap().into();
+        let bytes = glb.to_vec().unwrap();
+        let image = render(&bytes).unwrap().into_rgba8();
+        assert!(image.pixels().any(|pixel| *pixel == EDGE_COLOR));
+        assert!(image.pixels().any(|pixel| *pixel == SILHOUETTE_COLOR));
+        assert!(load_edges(&bytes[..bytes.len() - 8]).is_err());
+    }
+
+    #[test]
     fn parses_glb_argument() {
         let options = parse_args(vec!["model.glb".into()]).unwrap().unwrap();
         assert_eq!(options.glb, PathBuf::from("model.glb"));
@@ -908,7 +933,6 @@ mod tests {
     fn rasterizes_a_line() {
         let data = BrepRenderData {
             edge_polylines: vec![vec![Vec3::new(-1.0, 0.0, 0.0), Vec3::new(1.0, 0.0, 0.0)]],
-            ..Default::default()
         };
         let view = ViewProjection::from_points(data.edge_polylines.iter().flatten().copied(), 32, 32).unwrap();
         let image = render_edges(&data, view);
@@ -940,7 +964,6 @@ mod tests {
     fn backfaces_use_opaque_cyan() {
         let data = BrepRenderData {
             edge_polylines: vec![vec![-Vec3::ONE, Vec3::ONE]],
-            ..Default::default()
         };
         let view = ViewProjection::from_points(data.edge_polylines.iter().flatten().copied(), 32, 32).unwrap();
         // This counterclockwise triangle has a normal pointing toward the camera.
