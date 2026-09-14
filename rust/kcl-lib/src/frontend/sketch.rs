@@ -104,6 +104,14 @@ pub trait SketchApi {
         constraint: Constraint,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
 
+    async fn add_constraints(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+        constraints: Vec<Constraint>,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
+
     async fn chain_segment(
         &mut self,
         ctx: &ExecutorContext,
