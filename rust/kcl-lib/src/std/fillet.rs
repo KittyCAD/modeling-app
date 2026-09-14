@@ -134,7 +134,7 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     let csg_algorithm = CsgAlgorithm::legacy(legacy_csg.unwrap_or_default());
     let edge_cut_number: Option<u32> = args.get_kw_arg_opt("version", &RuntimeType::count(), exec_state)?;
     let tangent_chain: Option<bool> = args.get_kw_arg_opt("tangentChain", &RuntimeType::bool(), exec_state)?;
-    let tangent_chain = tangent_chain.unwrap_or(exec_state.kcl_version() > KclVersion::V2);
+    let tangent_chain = tangent_chain.unwrap_or(exec_state.kcl_version() >= KclVersion::V3Preview);
     let edge_cut_version: EdgeCutVersion = edge_cut_number
         .map(|num| {
             num.try_into().map_err(|()| {
