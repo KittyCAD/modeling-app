@@ -97,7 +97,13 @@ export interface FileSystemService {
     destination: string,
     overwrite?: boolean
   ) => Effect.Effect<void, FileSystemError>
+  /** Write a file only when its parent directory already exists. */
   readonly writeFile: (
+    path: string,
+    contents: Uint8Array
+  ) => Effect.Effect<void, FileSystemError>
+  /** Write a file after recursively creating any missing parent directories. */
+  readonly writeFileWithParents: (
     path: string,
     contents: Uint8Array
   ) => Effect.Effect<void, FileSystemError>
@@ -249,6 +255,14 @@ export function makeFileSystem(backing: IZooDesignStudioFS): FileSystemService {
   const snapshotBytes = (contents: Uint8Array) => new Uint8Array(contents)
 
   const writeFile = (path: string, contents: Uint8Array) => {
+    const bytes = snapshotBytes(contents)
+
+    return tryBacking('write-file', path, () =>
+      backing.writeFile(path, bytes)
+    ).pipe(Effect.asVoid)
+  }
+
+  const writeFileWithParents = (path: string, contents: Uint8Array) => {
     const parent = backing.dirname(path)
     const bytes = snapshotBytes(contents)
 
@@ -280,6 +294,7 @@ export function makeFileSystem(backing: IZooDesignStudioFS): FileSystemService {
         destination
       ).pipe(Effect.asVoid),
     writeFile,
+    writeFileWithParents,
     remove: (path) =>
       tryBacking('remove', path, () =>
         backing.rm(path, { recursive: true })
@@ -327,10 +342,20 @@ export const copy = (
     )
   )
 
-export const writeFile = (path: string, contents: Uint8Array) =>
-  FileSystem.pipe(
-    Effect.flatMap((fileSystem) => fileSystem.writeFile(path, contents))
+export const writeFile = (path: string, contents: Uint8Array) => {
+  const bytes = new Uint8Array(contents)
+  return FileSystem.pipe(
+    Effect.flatMap((fileSystem) => fileSystem.writeFile(path, bytes))
   )
+}
+
+/** Explicitly opt into recursively creating missing parent directories. */
+export const writeFileWithParents = (path: string, contents: Uint8Array) => {
+  const bytes = new Uint8Array(contents)
+  return FileSystem.pipe(
+    Effect.flatMap((fileSystem) => fileSystem.writeFileWithParents(path, bytes))
+  )
+}
 
 export const makeDirectory = (path: string) =>
   FileSystem.pipe(
