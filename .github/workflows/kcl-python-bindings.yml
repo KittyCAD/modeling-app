@@ -197,34 +197,6 @@ jobs:
       fail-fast: false
     steps:
       - uses: actions/checkout@v7.0.1
-      - name: Set up CPython 3.11
-        id: python311
-        uses: actions/setup-python@v7.0.0
-        with:
-          python-version: '3.11'
-          architecture: arm64
-          update-environment: false
-      - name: Set up CPython 3.12
-        id: python312
-        uses: actions/setup-python@v7.0.0
-        with:
-          python-version: '3.12'
-          architecture: arm64
-          update-environment: false
-      - name: Set up CPython 3.13
-        id: python313
-        uses: actions/setup-python@v7.0.0
-        with:
-          python-version: '3.13'
-          architecture: arm64
-          update-environment: false
-      - name: Set up CPython 3.14
-        id: python314
-        uses: actions/setup-python@v7.0.0
-        with:
-          python-version: '3.14'
-          architecture: arm64
-          update-environment: false
       - name: Install sccache
         uses: taiki-e/install-action@sccache
       - name: sccache cache on the Namespace volume
@@ -235,10 +207,11 @@ jobs:
         with:
           path: .sccache
       - name: Build wheels
-        uses: PyO3/maturin-action@v1
+        uses: pypa/cibuildwheel@v4.2.0
         env:
-          # maturin-action sets these itself when its own `sccache` input is
-          # on. They are set here because that input is off.
+          CIBW_ARCHS_MACOS: arm64
+          CIBW_BUILD: cp{311,312,313,314}-macosx_arm64
+          CIBW_TEST_COMMAND: python -c 'import kcl'
           RUSTC_WRAPPER: sccache
           SCCACHE_DIR: ${{ github.workspace }}/.sccache
           # sccache evicts its own contents at this size. The volume is shared
@@ -246,80 +219,12 @@ jobs:
           SCCACHE_CACHE_SIZE: 20G
           # See the linux job.
           CARGO_PROFILE_RELEASE_DEBUG: '0'
+          MATURIN_STRIP: 'true'
         with:
-          working-directory: rust/kcl-python-bindings
-          target: ${{ matrix.target }}
-          # setup-python returns an unversioned `bin/python` path. Maturin
-          # determines the CPython version from the executable name, so use
-          # the versioned executable from each installation.
-          args: >-
-            --release
-            --out dist
-            --strip
-            --interpreter
-            ${{ steps.python311.outputs.python-path }}3.11
-            ${{ steps.python312.outputs.python-path }}3.12
-            ${{ steps.python313.outputs.python-path }}3.13
-            ${{ steps.python314.outputs.python-path }}3.14
-          # Off because maturin-action installs sccache with
-          # `python3 -m pip install`, which this image's Homebrew Python
-          # refuses under PEP 668. The step above installs it instead.
-          sccache: 'false'
-      - name: Smoke test CPython 3.11 wheel
-        working-directory: rust/kcl-python-bindings
-        env:
-          PYTHON: ${{ steps.python311.outputs.python-path }}3.11
-        run: |
-          "$PYTHON" -m pip install \
-            --force-reinstall \
-            --no-deps \
-            --no-index \
-            --only-binary=:all: \
-            --find-links dist \
-            zoo-kcl
-          "$PYTHON" -c 'import kcl'
-      - name: Smoke test CPython 3.12 wheel
-        working-directory: rust/kcl-python-bindings
-        env:
-          PYTHON: ${{ steps.python312.outputs.python-path }}3.12
-        run: |
-          "$PYTHON" -m pip install \
-            --force-reinstall \
-            --no-deps \
-            --no-index \
-            --only-binary=:all: \
-            --find-links dist \
-            zoo-kcl
-          "$PYTHON" -c 'import kcl'
-      - name: Smoke test CPython 3.13 wheel
-        working-directory: rust/kcl-python-bindings
-        env:
-          PYTHON: ${{ steps.python313.outputs.python-path }}3.13
-        run: |
-          "$PYTHON" -m pip install \
-            --force-reinstall \
-            --no-deps \
-            --no-index \
-            --only-binary=:all: \
-            --find-links dist \
-            zoo-kcl
-          "$PYTHON" -c 'import kcl'
-      - name: Smoke test CPython 3.14 wheel
-        working-directory: rust/kcl-python-bindings
-        env:
-          PYTHON: ${{ steps.python314.outputs.python-path }}3.14
-        run: |
-          "$PYTHON" -m pip install \
-            --force-reinstall \
-            --no-deps \
-            --no-index \
-            --only-binary=:all: \
-            --find-links dist \
-            zoo-kcl
-          "$PYTHON" -c 'import kcl'
+          package-dir: rust/kcl-python-bindings
+          output-dir: rust/kcl-python-bindings/dist
       - name: sccache stats
-        # maturin-action prints these itself only when its own `sccache` input
-        # is on.
+        # cibuildwheel does not report compiler-cache statistics.
         if: always()
         run: sccache --show-stats
       - name: Upload wheels
