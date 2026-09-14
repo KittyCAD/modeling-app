@@ -2,17 +2,18 @@ import type {
   SceneGraphDelta,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import type { KclManager } from '@src/lang/KclManager'
 import { executeAstMock } from '@src/lang/executeAstMock'
 import { programUsesKclV3 } from '@src/lang/kclLanguageVersion'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
 import { rewireAfterDelete } from '@src/lang/modifyAst/rewire'
-import { resolveToCodeRef } from '@src/lang/queryAst'
+import { getNodeFromPath, resolveToCodeRef } from '@src/lang/queryAst'
 import { EXECUTION_TYPE_REAL, SKETCH_FILE_VERSION } from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import { err } from '@src/lib/trap'
+import { err, isErr } from '@src/lib/trap'
 import type { Selection } from '@src/machines/modelingSharedTypes'
 
 export const deletionErrorMessage =
@@ -46,7 +47,19 @@ export async function deleteSelectionPromise({
   if (!resolvedSelection) {
     return new Error(deletionErrorMessage)
   }
-  const artifact = resolvedSelection.artifact
+  const wasmInstance = await systemDeps.kclManager.wasmInstancePromise
+  const selectedImport = getNodeFromPath<ImportStatement>(
+    ast,
+    resolvedSelection.codeRef.pathToNode,
+    wasmInstance,
+    'ImportStatement'
+  )
+  // Imported artifacts share the import's code reference. Delete the import,
+  // rather than dispatching deletion to one of its internal sketches or faces.
+  const artifact =
+    !isErr(selectedImport) && selectedImport.node.type === 'ImportStatement'
+      ? undefined
+      : resolvedSelection.artifact
 
   // Filtering on type here for Rust API based deletion, as this is the point of convergence
   // of deletion calls, from the feature tree but also Delete hotkey globally.
@@ -98,10 +111,9 @@ export async function deleteSelectionPromise({
   }
 
   // AST based deletion, we should stop adding cases in there
-  const wasmInstance = await systemDeps.kclManager.wasmInstancePromise
   const modifiedAst = await deleteFromSelection(
     ast,
-    resolvedSelection,
+    { codeRef: resolvedSelection.codeRef, artifact },
     systemDeps.kclManager.variables,
     systemDeps.kclManager.artifactGraph,
     wasmInstance,
