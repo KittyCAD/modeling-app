@@ -105,12 +105,12 @@ describe('useOnWebsocketClose', () => {
       unmount()
     })
 
-    test('should call infinite detection loop callback on close event', async () => {
+    test('requires manual recovery after three abnormal closes', async () => {
       const callback = vi.fn(() => 1)
       const infiniteLoopCallback = vi.fn(() => 1)
       const { engineCommandManager } =
         await buildTheWorldAndNoEngineConnection(true)
-      const { unmount } = renderHook(() =>
+      const { result, rerender, unmount } = renderHook(() =>
         useOnWebsocketClose({
           callback,
           infiniteDetectionLoopCallback: infiniteLoopCallback,
@@ -125,11 +125,21 @@ describe('useOnWebsocketClose', () => {
           },
         }
       )
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        engineCommandManager.dispatchEvent(infiniteEvent)
+        expect(callback).toHaveBeenCalledTimes(attempt)
+        expect(infiniteLoopCallback).not.toHaveBeenCalled()
+        rerender()
+      }
       engineCommandManager.dispatchEvent(infiniteEvent)
-      unmount()
-      expect(callback).toHaveBeenCalledTimes(0)
+      expect(callback).toHaveBeenCalledTimes(3)
       expect(infiniteLoopCallback).toHaveBeenCalledTimes(1)
       expect(infiniteLoopCallback).toHaveBeenCalledWith('1006')
+      result.current.current = 0
+      engineCommandManager.dispatchEvent(infiniteEvent)
+      expect(callback).toHaveBeenCalledTimes(4)
+      expect(infiniteLoopCallback).toHaveBeenCalledTimes(1)
+      unmount()
     })
     test.each([false, true])(
       'routes terminal errors without reconnecting (reconnectRequested=%s)',

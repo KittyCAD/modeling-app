@@ -8,7 +8,7 @@ import {
   EngineConnectionManagerEvents,
   WebSocketCloseCode,
 } from '@src/lib/engineConnection/utils'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 
 export interface IUseOnWebsocketClose {
   callback: (code: string | undefined, reconnectRequested: boolean) => void
@@ -31,6 +31,8 @@ export function useOnWebsocketClose({
   terminalErrorCallback,
   engineCommandManager,
 }: IUseOnWebsocketClose) {
+  const abnormalCloseRetries = useRef(0)
+
   useEffect(() => {
     const onWebsocketClose = (
       event: CustomEvent<EngineDisconnectEventDetail>
@@ -52,11 +54,12 @@ export function useOnWebsocketClose({
       const reconnectRequested = event.detail?.reconnectRequested ?? false
       if (
         code === WebSocketCloseCode.AbnormalClosure.toString() &&
-        !reconnectRequested
+        !reconnectRequested &&
+        ++abnormalCloseRetries.current > 3
       ) {
         EngineDebugger.addLog({
           label: 'useOnWebsocketClose',
-          message: 'detected infinite loop',
+          message: 'abnormal close recovery budget exhausted',
           metadata: { code },
         })
 
@@ -84,4 +87,5 @@ export function useOnWebsocketClose({
     terminalErrorCallback,
     engineCommandManager,
   ])
+  return abnormalCloseRetries
 }
