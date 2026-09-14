@@ -11,7 +11,7 @@ import type { SourceRange } from "./SourceRange";
 
 export type Angle = { lines: Array<ApiObjectId>, angle: Number, sector?: number, inverse?: boolean, labelPosition?: ApiPoint2d<Number>, source: ConstraintSource, };
 
-export type ApiArc = { start: ApiObjectId, end: ApiObjectId, center: ApiObjectId, ctor: SegmentCtor, ctor_applicable: boolean, construction: boolean,
+export type ApiArc = { start: ApiObjectId, end: ApiObjectId, center: ApiObjectId, ctor: SegmentCtor, ctor_applicable: boolean, construction: boolean, 
 /**
  * The direction that the arc sweeps from start to end. Omitted when it's
  * the default, counterclockwise.
@@ -68,7 +68,7 @@ export type ApiWall = { id: ApiObjectId, source: ApiWallSource, solidOutputIndex
 
 export type ApiWallSource = { solid: ApiSourceRefRange, sweep: ApiSourceRefRange, path?: ApiSourceRefRange, segment: ApiSourceRefRange, };
 
-export type ArcCtor = { start: ApiPoint2d<Expr>, end: ApiPoint2d<Expr>, center: ApiPoint2d<Expr>,
+export type ArcCtor = { start: ApiPoint2d<Expr>, end: ApiPoint2d<Expr>, center: ApiPoint2d<Expr>, 
 /**
  * The direction that the arc sweeps from start to end. `None` means it
  * wasn't written in the source, which defaults to counterclockwise.
@@ -145,7 +145,7 @@ export type PointCtor = { position: ApiPoint2d<Expr>, };
  * An indexed face on a solid which has not yet been materialized as a KCL
  * `Face` value.
  */
-export type PrimitiveFacePlane = {
+export type PrimitiveFacePlane = { 
 /**
  * Engine ID of the solid which owns the face.
  */
@@ -157,7 +157,7 @@ export type RestoreSketchCheckpointOutcome = { sourceDelta: SourceDelta, sceneGr
 
 export type SceneGraph = { project: ApiProjectId, file: ApiFileId, version: ApiVersion, objects: Array<ApiObject>, settings: ExecutorSettings, sketch_mode: ApiObjectId | null, };
 
-export type SceneGraphDelta = { new_graph: SceneGraph, new_objects: Array<ApiObjectId>, invalidates_ids: boolean, exec_outcome: ExecOutcome, geometry_only: boolean, };
+export type SceneGraphDelta = { new_graph: SceneGraph, new_objects: Array<ApiObjectId>, invalidates_ids: boolean, exec_outcome: ExecOutcome, };
 
 export type SegmentCtor = { "type": "Point" } & PointCtor | { "type": "Line" } & LineCtor | { "type": "Arc" } & ArcCtor | { "type": "Circle" } & CircleCtor | { "type": "ControlPointSpline" } & ControlPointSplineCtor;
 
@@ -170,7 +170,7 @@ export type SetProgramOutcome = { "type": "Success", sceneGraph: SceneGraph, exe
  * other kinds of objects in that it is the inputs to the sketch, not the
  * outputs.
  */
-export type SketchCtor = {
+export type SketchCtor = { 
 /**
  * The sketch surface.
  */
