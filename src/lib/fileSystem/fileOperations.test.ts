@@ -141,6 +141,7 @@ describe('Effect filesystem operations', () => {
     const bytesPath = testPath(root, 'bytes.kcl')
     const malformedPath = testPath(root, 'malformed.kcl')
     const text = 'café 🐈 — 図面'
+    await nodeFileSystem.impl.mkdir(root, { recursive: true })
     const runtime = createRuntime(nodeFileSystem.impl)
 
     await runtime.operations.writeFile(textPath, text)
@@ -647,6 +648,7 @@ describe('Effect filesystem operations', () => {
       )
     )
     const path = testPath(root, 'main.kcl')
+    await nodeFileSystem.impl.mkdir(root, { recursive: true })
     const runtime = createRuntime(nodeFileSystem.impl)
 
     await runtime.operations.createFile(path, new TextEncoder().encode('first'))
@@ -690,6 +692,7 @@ describe('Effect filesystem operations', () => {
               `zds-file-operations-unique-file-${crypto.randomUUID()}`
             )
           )
+          await nodeFileSystem.impl.mkdir(root, { recursive: true })
           const contents = Array.from({ length: count }, (_, index) =>
             new TextEncoder().encode(String(index))
           )
