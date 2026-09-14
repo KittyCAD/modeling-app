@@ -1212,9 +1212,8 @@ export function getAxisExpression(
         : undefined
     // Fallback: resolveToCodeRef returns no artifact for entityRef.type === 'edge' (BRep), or segment/solid2d_edge when ID not in graph;
     // try to find an artifact by codeRef.range or by codeRef.pathToNode (segment/path/edgeCut for tag-based axis).
-    const axisSelectionAny = axisSelection as any
     if (
-      (!axisSelectionAny || !axisSelectionAny.codeRef) &&
+      (!axisSelection || !getFaceCodeRef(axisSelection)) &&
       edge?.graphSelections[0] != null &&
       artifactGraph
     ) {
@@ -1260,8 +1259,7 @@ export function getAxisExpression(
     }
 
     let pathToAxisSelection: PathToNode
-    const axisCodeRef =
-      axisSelectionAny.codeRef ?? (edgeResolved as any)?.codeRef
+    const axisCodeRef = getFaceCodeRef(axisSelection) ?? edgeResolved?.codeRef
     if (axisCodeRef?.pathToNode && axisCodeRef.pathToNode.length > 0) {
       pathToAxisSelection = axisCodeRef.pathToNode
     } else {
@@ -1279,7 +1277,7 @@ export function getAxisExpression(
     if (!err(tagResult)) {
       modifiedAst = tagResult.modifiedAst
       const { tag } = tagResult
-      const generatedAxis = getEdgeTagCall(tag, axisSelectionAny)
+      const generatedAxis = getEdgeTagCall(tag, axisSelection)
       return { generatedAxis, modifiedAst }
     }
 
