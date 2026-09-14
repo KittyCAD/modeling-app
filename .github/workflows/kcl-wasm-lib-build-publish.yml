@@ -1,7 +1,10 @@
 name: kcl-wasm-lib-build-and-publish
 
 on:
+  workflow_dispatch:
   push:
+    branches:
+      - main
     tags:
       - "v*.*.*"
 
@@ -76,7 +79,7 @@ jobs:
           npm publish --access public --provenance
 
       - name: Create viewer repository token
-        if: ${{ steps.version_check.outputs.should_publish == 'true' }}
+        if: ${{ steps.version_check.outputs.should_publish == 'true' && startsWith(github.ref, 'refs/tags/v') }}
         id: viewer_token
         uses: actions/create-github-app-token@v2
         with:
@@ -86,7 +89,7 @@ jobs:
           repositories: viewer
 
       - name: Check out viewer
-        if: ${{ steps.version_check.outputs.should_publish == 'true' }}
+        if: ${{ steps.version_check.outputs.should_publish == 'true' && startsWith(github.ref, 'refs/tags/v') }}
         uses: actions/checkout@v7.0.1
         with:
           repository: KittyCAD/viewer
@@ -95,7 +98,7 @@ jobs:
           token: ${{ steps.viewer_token.outputs.token }}
 
       - name: Update viewer KCL Wasm dependency
-        if: ${{ steps.version_check.outputs.should_publish == 'true' }}
+        if: ${{ steps.version_check.outputs.should_publish == 'true' && startsWith(github.ref, 'refs/tags/v') }}
         working-directory: viewer
         env:
           VERSION: ${{ steps.version_check.outputs.local_version }}
