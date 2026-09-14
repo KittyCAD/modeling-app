@@ -206,8 +206,16 @@ jobs:
         uses: namespacelabs/nscloud-cache-action@v1
         with:
           path: .sccache
+      - name: Install uv
+        uses: astral-sh/setup-uv@v10.0.1
       - name: Build wheels
-        uses: pypa/cibuildwheel@v4.2.0
+        # Namespace persists /Users/runner/hostedtoolcache across macOS VMs, but
+        # not its Python symlink targets under /Library/Frameworks. setup-python
+        # then selects a cached Python whose executable is missing.
+        run: |
+          uv tool run --from cibuildwheel==4.2.1 cibuildwheel \
+            rust/kcl-python-bindings \
+            --output-dir rust/kcl-python-bindings/dist
         env:
           CIBW_ARCHS_MACOS: arm64
           CIBW_BUILD: cp{311,312,313,314}-macosx_arm64
@@ -220,9 +228,6 @@ jobs:
           # See the linux job.
           CARGO_PROFILE_RELEASE_DEBUG: '0'
           MATURIN_STRIP: 'true'
-        with:
-          package-dir: rust/kcl-python-bindings
-          output-dir: rust/kcl-python-bindings/dist
       - name: sccache stats
         # cibuildwheel does not report compiler-cache statistics.
         if: always()
