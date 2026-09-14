@@ -1,4 +1,4 @@
-import type { Feature } from '@kittycad/lib'
+import type { UserFeature } from '@src/lib/userFeatures'
 import { defineContract, defineService } from '@kittycad/registry'
 import type { ReadonlySignal } from '@preact/signals-core'
 import type {
@@ -17,7 +17,7 @@ export type UserFeaturesRegistryService = UserFeaturesService & {
   contextSignal: ReadonlySignal<UserFeaturesContext>
   ready: ReadonlySignal<boolean>
   useContext: () => UserFeaturesContext
-  useHas: (featureFlagId: Feature, defaultValue: boolean) => boolean
+  useHas: (featureFlagId: UserFeature, defaultValue: boolean) => boolean
 }
 
 export const userFeaturesContract = defineContract({

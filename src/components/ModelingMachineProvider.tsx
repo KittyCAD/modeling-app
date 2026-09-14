@@ -32,6 +32,10 @@ import {
 } from '@src/lib/engineConnection/utils'
 import { MODE_MODELING_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 import { keymapService } from '@src/registry/contracts/keymap'
+import {
+  modesService,
+  resolveModeKeymapScopes,
+} from '@src/registry/contracts/modes'
 
 const MODELING_COMMAND_SCOPES = [MODE_MODELING_COMMAND_SCOPE] as const
 
@@ -175,16 +179,43 @@ export const ModelingMachineProvider = ({
 
   const toolbarConfigurationName =
     modelingMachineStateToToolbarModeName(modelingState)
-  const toolbarModeKeymapScope =
-    toolbarModeNameToKeymapScope[toolbarConfigurationName]
+  const modes = registry.get(modesService)
+
+  useEffect(() => {
+    // Service wrappers change identity when plugins reconfigure the registry.
+    // The machine subscription and its cleanup belong to this workspace.
+    const modes = registry.get(modesService)
+    const syncMode = (snapshot: StateFrom<typeof modelingMachine>) => {
+      modes.syncModelingMode(
+        modelingMachineStateToToolbarModeName(snapshot),
+        snapshot.matches('idle')
+      )
+    }
+    syncMode(modelingActor.getSnapshot())
+    const subscription = modelingActor.subscribe(syncMode)
+    return () => {
+      subscription.unsubscribe()
+      modes.reset()
+    }
+  }, [modelingActor, registry])
+
+  const activeMode = modes.activeMode.value
+  const modeKeymapScopes = useMemo(
+    () =>
+      resolveModeKeymapScopes(
+        activeMode,
+        toolbarModeNameToKeymapScope[toolbarConfigurationName]
+      ),
+    [activeMode, toolbarConfigurationName]
+  )
   const keymap = registry.get(keymapService)
 
   useEffect(() => {
-    keymap.applyScope(toolbarModeKeymapScope)
+    for (const scope of modeKeymapScopes) keymap.applyScope(scope)
     return () => {
-      keymap.removeScope(toolbarModeKeymapScope)
+      for (const scope of modeKeymapScopes) keymap.removeScope(scope)
     }
-  }, [keymap, toolbarModeKeymapScope])
+  }, [keymap, modeKeymapScopes])
 
   // Assumes all commands are network commands
   useSketchModeMenuEnableDisable(

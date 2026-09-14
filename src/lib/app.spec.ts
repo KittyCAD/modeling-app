@@ -1,9 +1,10 @@
-import type { Feature } from '@kittycad/lib'
+import type { UserFeature } from '@src/lib/userFeatures'
 import { pluginsValueSpec } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import { File, type KclManager } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
 import {
+  DFM_REVIEW_FEATURE_FLAG,
   KCL_CEK_EXECUTOR_FEATURE_FLAG,
   KCL_NEW_LEXER_PARSER_FEATURE_FLAG,
   OPFS_CLOUD_FEATURE_FLAG,
@@ -29,6 +30,7 @@ import { commandsValueSpec } from '@src/registry/contracts/commands'
 import { engineConnectionService } from '@src/registry/contracts/engineConnection'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
+import { modesService } from '@src/registry/contracts/modes'
 import { projectSession } from '@src/registry/contracts/projectSession'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
@@ -135,10 +137,10 @@ function createUserFeaturesForTest(
     context: contextSignal,
     contextSignal,
     ready: readySignal,
-    has: (featureFlagId: Feature, defaultValue: boolean) =>
+    has: (featureFlagId: UserFeature, defaultValue: boolean) =>
       contextSignal.value.featureIds.has(featureFlagId) ? true : defaultValue,
     useContext: () => contextSignal.value,
-    useHas: (featureFlagId: Feature, defaultValue: boolean) =>
+    useHas: (featureFlagId: UserFeature, defaultValue: boolean) =>
       userFeatures.has(featureFlagId, defaultValue),
     setFeatureIds: (nextFeatureIds: UserFeaturesContext['featureIds']) => {
       contextSignal.value = {
@@ -536,6 +538,86 @@ describe('project system', () => {
           }),
         ])
       )
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it('keeps DFM Review hidden and inactive without its feature, even when enabled in settings', async () => {
+    const userFeatures = createUserFeaturesForTest(new Set())
+    const app = createAppForTest({ userFeatures })
+
+    try {
+      await waitForSettingsIdle(app)
+      const setting = app.settings.get().plugins['dfm-review']
+
+      expect(setting.current).toBe(false)
+      expect(setting.hideWithoutFeature).toBe(DFM_REVIEW_FEATURE_FLAG)
+      expect(getPluginToggle(app, 'dfm-review').active.value).toBe(false)
+
+      app.settings.actor.send({
+        type: 'set.plugins.dfm-review',
+        data: { level: 'user', value: true },
+        doNotPersist: true,
+      })
+      await waitForSettingsIdle(app)
+
+      expect(app.settings.get().plugins['dfm-review'].current).toBe(true)
+      expect(getPluginToggle(app, 'dfm-review').active.value).toBe(false)
+      expect(app.registry.get(modesService).setMode('dfm-review')).toBe(false)
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it('enables DFM Review when its feature arrives and disables it when the feature is removed', async () => {
+    const userFeatures = createUserFeaturesForTest(new Set())
+    const app = createAppForTest({ userFeatures })
+
+    try {
+      await waitForSettingsIdle(app)
+      userFeatures.setFeatureIds(new Set([DFM_REVIEW_FEATURE_FLAG]))
+
+      await expect
+        .poll(() => getPluginToggle(app, 'dfm-review').active.value)
+        .toBe(true)
+      expect(app.settings.get().plugins['dfm-review'].current).toBe(true)
+      const modes = app.registry.get(modesService)
+      expect(modes.setMode('dfm-review')).toBe(true)
+      expect(modes.activeMode.value?.id).toBe('dfm-review')
+
+      userFeatures.setFeatureIds(new Set())
+
+      await expect
+        .poll(() => getPluginToggle(app, 'dfm-review').active.value)
+        .toBe(false)
+      expect(modes.activeMode.value?.id).toBe('modeling')
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it('preserves an explicit DFM Review opt-out for feature-flagged users', async () => {
+    const userFeatures = createUserFeaturesForTest(
+      new Set([DFM_REVIEW_FEATURE_FLAG])
+    )
+    const app = createAppForTest({ userFeatures })
+
+    try {
+      await expect
+        .poll(() => getPluginToggle(app, 'dfm-review').active.value)
+        .toBe(true)
+
+      app.settings.actor.send({
+        type: 'set.plugins.dfm-review',
+        data: { level: 'user', value: false },
+        doNotPersist: true,
+      })
+      await waitForSettingsIdle(app)
+      userFeatures.setFeatureIds(new Set([DFM_REVIEW_FEATURE_FLAG]))
+
+      expect(app.settings.get().plugins['dfm-review'].current).toBe(false)
+      expect(getPluginToggle(app, 'dfm-review').active.value).toBe(false)
     } finally {
       app.dispose()
     }
