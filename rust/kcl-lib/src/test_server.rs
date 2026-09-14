@@ -202,6 +202,7 @@ pub async fn kcl_doc_execute_and_snapshot(
             TestGraphicsArtifact::None
         }
     };
+    ctx.close().await;
     Ok(result)
 }
 
