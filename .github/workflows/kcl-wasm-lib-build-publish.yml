@@ -3,7 +3,7 @@ name: kcl-wasm-lib-build-and-publish
 on:
   push:
     tags:
-      - "kcl-*"
+      - "v*.*.*"
 
 permissions:
   id-token: write
