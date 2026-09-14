@@ -75,3 +75,35 @@ jobs:
         run: |
           npm pkg fix
           npm publish --access public --provenance
+
+      - name: Create viewer repository token
+        if: ${{ steps.version_check.outputs.should_publish == 'true' }}
+        id: viewer_token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
+          private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
+          owner: KittyCAD
+          repositories: viewer
+
+      - name: Check out viewer
+        if: ${{ steps.version_check.outputs.should_publish == 'true' }}
+        uses: actions/checkout@v7.0.1
+        with:
+          repository: KittyCAD/viewer
+          ref: main
+          path: viewer
+          token: ${{ steps.viewer_token.outputs.token }}
+
+      - name: Update viewer KCL Wasm dependency
+        if: ${{ steps.version_check.outputs.should_publish == 'true' }}
+        working-directory: viewer
+        env:
+          VERSION: ${{ steps.version_check.outputs.local_version }}
+        run: |
+          npm install "@kittycad/kcl-wasm-lib@$VERSION" --package-lock-only --ignore-scripts
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add package.json package-lock.json
+          git commit -m "Update kcl-wasm-lib to $VERSION"
+          git push origin main
