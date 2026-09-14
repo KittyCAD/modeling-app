@@ -268,7 +268,7 @@ jobs:
       - name: Smoke test CPython 3.11 wheel
         working-directory: rust/kcl-python-bindings
         env:
-          PYTHON: ${{ steps.python311.outputs.python-path }}
+          PYTHON: ${{ steps.python311.outputs.python-path }}3.11
         run: |
           "$PYTHON" -m pip install \
             --force-reinstall \
@@ -281,7 +281,7 @@ jobs:
       - name: Smoke test CPython 3.12 wheel
         working-directory: rust/kcl-python-bindings
         env:
-          PYTHON: ${{ steps.python312.outputs.python-path }}
+          PYTHON: ${{ steps.python312.outputs.python-path }}3.12
         run: |
           "$PYTHON" -m pip install \
             --force-reinstall \
@@ -294,7 +294,7 @@ jobs:
       - name: Smoke test CPython 3.13 wheel
         working-directory: rust/kcl-python-bindings
         env:
-          PYTHON: ${{ steps.python313.outputs.python-path }}
+          PYTHON: ${{ steps.python313.outputs.python-path }}3.13
         run: |
           "$PYTHON" -m pip install \
             --force-reinstall \
@@ -307,7 +307,7 @@ jobs:
       - name: Smoke test CPython 3.14 wheel
         working-directory: rust/kcl-python-bindings
         env:
-          PYTHON: ${{ steps.python314.outputs.python-path }}
+          PYTHON: ${{ steps.python314.outputs.python-path }}3.14
         run: |
           "$PYTHON" -m pip install \
             --force-reinstall \
