@@ -35,12 +35,7 @@ pub enum ZooGltfError {
 pub fn extract_zoo_extension(bytes: &[u8]) -> Result<RawZooExtension, ZooGltfError> {
     let document = if bytes.starts_with(GLB_MAGIC) {
         parse_glb_json(bytes)?
-    } else if bytes
-        .iter()
-        .copied()
-        .find(|byte| !byte.is_ascii_whitespace())
-        == Some(b'{')
-    {
+    } else if bytes.iter().copied().find(|byte| !byte.is_ascii_whitespace()) == Some(b'{') {
         serde_json::from_slice(bytes)?
     } else {
         return Err(ZooGltfError::UnsupportedContainer);
@@ -93,18 +88,15 @@ fn parse_glb_json(bytes: &[u8]) -> Result<Value, ZooGltfError> {
 }
 
 fn read_u32(bytes: &[u8], offset: usize) -> Result<u32, ZooGltfError> {
-    let value = bytes
-        .get(offset..offset + 4)
-        .ok_or(ZooGltfError::TruncatedGlb)?;
-    Ok(u32::from_le_bytes(
-        value.try_into().expect("four-byte slice"),
-    ))
+    let value = bytes.get(offset..offset + 4).ok_or(ZooGltfError::TruncatedGlb)?;
+    Ok(u32::from_le_bytes(value.try_into().expect("four-byte slice")))
 }
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use serde_json::json;
+
+    use super::*;
 
     #[test]
     fn extracts_extension_from_gltf_json() {
@@ -115,10 +107,7 @@ mod tests {
             }
         }"#;
 
-        assert_eq!(
-            extract_zoo_extension(input).unwrap().value,
-            json!({"solids": [1, 2]})
-        );
+        assert_eq!(extract_zoo_extension(input).unwrap().value, json!({"solids": [1, 2]}));
     }
 
     #[test]
@@ -126,10 +115,7 @@ mod tests {
         let json = br#"{"asset":{"version":"2.0"},"extensions":{"KITTYCAD_boundary_representation":{"faces":6}}}"#;
         let glb = make_glb(json);
 
-        assert_eq!(
-            extract_zoo_extension(&glb).unwrap().value,
-            json!({"faces": 6})
-        );
+        assert_eq!(extract_zoo_extension(&glb).unwrap().value, json!({"faces": 6}));
     }
 
     #[test]

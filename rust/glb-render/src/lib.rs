@@ -888,8 +888,8 @@ mod tests {
 
     #[test]
     fn rejects_invalid_glb_bytes() {
-        assert!(render(&[] as &[u8; 0]).is_err());
-        assert!(render(b"not a GLB".as_slice()).is_err());
+        render(&[] as &[u8; 0]).unwrap_err();
+        render(b"not a GLB".as_slice()).unwrap_err();
     }
 
     #[test]
@@ -900,8 +900,8 @@ mod tests {
 
     #[test]
     fn rejects_extra_arguments() {
-        assert!(parse_args(vec!["one.glb".into(), "two.glb".into()]).is_err());
-        assert!(parse_args(vec!["model.kcl".into()]).is_err());
+        parse_args(vec!["one.glb".into(), "two.glb".into()]).unwrap_err();
+        parse_args(vec!["model.kcl".into()]).unwrap_err();
     }
 
     #[test]

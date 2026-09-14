@@ -70,7 +70,6 @@ pub async fn execute_locally_and_render_on_engine(
 
 /// Execute the kcl then export the resulting glb and CPU render an image locally
 /// cheaper than engine render since we can use the engine in geometry-only mode.
-
 pub async fn execute_export_and_render_locally(
     ctx: &ExecutorContext,
     program: Program,
