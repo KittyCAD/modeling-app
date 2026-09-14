@@ -437,12 +437,10 @@ pub struct SketchConstraintStatus {
     /// - The same name for two sketches, when a function body declares the
     ///   sketch and is called more than once.
     ///
-    /// This name is accepted by [`ExecOutcome::render_sketch_png`]. Use
-    /// `instance_index` to select between sketches sharing this name.
+    /// This name is accepted by [`ExecOutcome::render_sketch_png_instance`].
     pub name: String,
-    /// Zero-based creation order among sketches with this name, before
-    /// grouping by constraint status. Valid for this entrypoint and source;
-    /// obtain a fresh report after editing the project.
+    /// Zero-based creation order among sketches with this name, independent of
+    /// constraint-status grouping. Not stable across edits.
     pub instance_index: usize,
     /// Overall constraint status derived from per-segment freedom.
     pub status: ConstraintKind,
@@ -613,8 +611,8 @@ impl ExecOutcome {
         self.render_sketch_png_instance(sketch_name, None)
     }
 
-    /// Render a named sketch, optionally selecting its zero-based instance
-    /// from the constraint report for the same entrypoint and source.
+    /// Render a named sketch using an optional instance index from its report.
+    /// Without an index, the name must be unique.
     pub fn render_sketch_png_instance(
         &self,
         sketch_name: &str,
