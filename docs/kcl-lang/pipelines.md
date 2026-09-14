@@ -42,7 +42,7 @@ This helps keep your code neat and avoid unnecessary declarations.
 
 Say you have a long pipeline of functions that modify a solid, like this:
 
-```kcl
+```kcl,norun
 solid
   |> appearance(%, color = "#ff0000")
   |> appearance(%, metalness = 50)
@@ -56,7 +56,7 @@ If a function call uses an unlabeled first parameter, it will default to `%` if 
 means that `|> appearance(%, color = "#ff0000")` and `|> appearance(color = "#ff0000")` are equivalent! So the above
 could be rewritten as 
 
-```kcl
+```kcl,norun
 solid
   |> appearance(color = "#ff0000")
   |> appearance(metalness = 50)
