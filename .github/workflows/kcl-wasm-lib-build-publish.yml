@@ -78,32 +78,33 @@ jobs:
           npm pkg fix
           npm publish --access public --provenance
 
-      - name: Create viewer repository token
+      - name: Create kittycad.ts repository token
         if: ${{ steps.version_check.outputs.should_publish == 'true' && startsWith(github.ref, 'refs/tags/v') }}
-        id: viewer_token
+        id: kittycad_ts_token
         uses: actions/create-github-app-token@v2
         with:
           app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
           private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
           owner: KittyCAD
-          repositories: viewer
+          repositories: kittycad.ts
 
-      - name: Check out viewer
+      - name: Check out kittycad.ts
         if: ${{ steps.version_check.outputs.should_publish == 'true' && startsWith(github.ref, 'refs/tags/v') }}
         uses: actions/checkout@v7.0.1
         with:
-          repository: KittyCAD/viewer
+          repository: KittyCAD/kittycad.ts
           ref: main
-          path: viewer
-          token: ${{ steps.viewer_token.outputs.token }}
+          path: kittycad.ts
+          token: ${{ steps.kittycad_ts_token.outputs.token }}
 
-      - name: Update viewer KCL Wasm dependency
+      - name: Update kittycad.ts KCL Wasm dependency
         if: ${{ steps.version_check.outputs.should_publish == 'true' && startsWith(github.ref, 'refs/tags/v') }}
-        working-directory: viewer
+        working-directory: kittycad.ts
         env:
           VERSION: ${{ steps.version_check.outputs.local_version }}
         run: |
           npm install "@kittycad/kcl-wasm-lib@$VERSION" --package-lock-only --ignore-scripts
+          npm version patch --no-git-tag-version
           git config user.name zoo-github-actions-auth[bot]
           git config user.email 155849648+zoo-github-actions-auth[bot]@users.noreply.github.com
           git add package.json package-lock.json
