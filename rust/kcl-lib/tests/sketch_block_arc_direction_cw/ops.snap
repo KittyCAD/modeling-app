@@ -700,7 +700,8 @@ description: Operations executed sketch_block_arc_direction_cw.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",

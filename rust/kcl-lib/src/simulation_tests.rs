@@ -1023,6 +1023,7 @@ fn assert_artifact_snapshots(
                 ".**.sourceRange" => Vec::new(),
                 ".**.functionSourceRange" => Vec::new(),
                 ".**.moduleId" => 0,
+                ".**.resultArtifactId" => "[uuid]",
             });
         })
     }));

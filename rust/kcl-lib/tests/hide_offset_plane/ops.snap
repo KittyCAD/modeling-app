@@ -1555,7 +1555,8 @@ description: Operations executed hide_offset_plane.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",
