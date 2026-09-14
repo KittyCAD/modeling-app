@@ -33,6 +33,8 @@ import {
   type GitignoreStackEntry,
   isPathIgnoredByGitignore,
 } from '@src/lib/gitignore'
+import { isDesktop } from '@src/lib/isDesktop'
+import { isPlaywright } from '@src/lib/isPlaywright'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 import type { FileEntry, FileMetadata, Project } from '@src/lib/project'
 import {
@@ -968,9 +970,54 @@ export const readProjectSettingsFile = async (
 }
 
 /**
+ * Playwright seeds app settings into localStorage, but only the Electron path
+ * reads that seed as a settings file. Web e2e still needs plugin activation to
+ * honor it, so the seeded `plugins` section is merged in until the settings file
+ * carries a section of its own.
+ */
+const withPlaywrightSeededPlugins = (
+  configuration: DeepPartial<Configuration>,
+  wasmInstance: ModuleType
+): DeepPartial<Configuration> => {
+  if (isDesktop() || !isPlaywright() || configuration.settings?.plugins) {
+    return configuration
+  }
+
+  const seededToml = localStorage.getItem(`/${SETTINGS_FILE_NAME}`)
+  if (!seededToml) {
+    return configuration
+  }
+
+  const seededConfiguration = parseAppSettings(seededToml, wasmInstance)
+  if (err(seededConfiguration)) {
+    return configuration
+  }
+
+  const plugins = seededConfiguration.settings?.plugins
+  if (!plugins || typeof plugins !== 'object' || isArray(plugins)) {
+    return configuration
+  }
+
+  return {
+    ...configuration,
+    settings: {
+      ...configuration.settings,
+      plugins,
+    },
+  }
+}
+
+/**
  * Read the app settings file, or creates an initial one if it doesn't exist.
  */
 export const readAppSettingsFile = async (
+  wasmInstance: ModuleType
+): Promise<DeepPartial<Configuration>> => {
+  const configuration = await readPersistedAppSettingsFile(wasmInstance)
+  return withPlaywrightSeededPlugins(configuration, wasmInstance)
+}
+
+const readPersistedAppSettingsFile = async (
   wasmInstance: ModuleType
 ): Promise<DeepPartial<Configuration>> => {
   const settingsPath = await getAppSettingsFilePath()

@@ -15,6 +15,7 @@ import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import type { Debugger } from '@src/lib/debugger'
+import { isPlaywright } from '@src/lib/isPlaywright'
 import { EngineDebugger } from '@src/lib/debugger'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { setKclRuntimeFlagsOnWasm } from '@src/lib/kclRuntimeFlags'
@@ -678,7 +679,8 @@ export class App implements AppSubsystems {
 
       const forceEnabled =
         platform !== undefined &&
-        featurePolicy.forceEnabledOnPlatform === platform
+        featurePolicy.forceEnabledOnPlatform === platform &&
+        !isPlaywright()
       if (!forceEnabled && settingValue.user !== undefined) {
         continue
       }
