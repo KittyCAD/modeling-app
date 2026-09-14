@@ -77,6 +77,7 @@ describe('coordinated filesystem operation streams', () => {
       `zds-file-operation-text-${crypto.randomUUID()}`
     )
     roots.push(root)
+    await nodeFileSystem.impl.mkdir(root, { recursive: true })
     const runtime = createFileOperationsRuntime(nodeFileSystem.impl)
     runtimes.push(runtime)
     let index = 0

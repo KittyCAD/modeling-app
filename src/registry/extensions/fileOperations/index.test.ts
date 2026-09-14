@@ -28,6 +28,7 @@ describe('file operations extension', () => {
     )
     const file = nodeFileSystem.impl.join(root, 'main.kcl')
     roots.push(root)
+    await nodeFileSystem.impl.mkdir(root, { recursive: true })
     registry = new Registry()
     registry.configure([createFileOperationsExtension(nodeFileSystem.impl)])
 
