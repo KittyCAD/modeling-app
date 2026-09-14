@@ -197,17 +197,34 @@ jobs:
       fail-fast: false
     steps:
       - uses: actions/checkout@v7.0.1
-      - uses: actions/setup-python@v7.0.0
+      - name: Set up CPython 3.11
+        id: python311
+        uses: actions/setup-python@v7.0.0
         with:
-          # `--find-interpreter` builds a wheel for every interpreter it finds,
-          # so the runner image would otherwise decide what gets published.
-          # This image carries 3.13 and 3.14; GitHub's carried 3.11 to 3.14.
-          # Installing the set makes it the same on any image.
-          python-version: |
-            3.11
-            3.12
-            3.13
-            3.14
+          python-version: '3.11'
+          architecture: arm64
+          update-environment: false
+      - name: Set up CPython 3.12
+        id: python312
+        uses: actions/setup-python@v7.0.0
+        with:
+          python-version: '3.12'
+          architecture: arm64
+          update-environment: false
+      - name: Set up CPython 3.13
+        id: python313
+        uses: actions/setup-python@v7.0.0
+        with:
+          python-version: '3.13'
+          architecture: arm64
+          update-environment: false
+      - name: Set up CPython 3.14
+        id: python314
+        uses: actions/setup-python@v7.0.0
+        with:
+          python-version: '3.14'
+          architecture: arm64
+          update-environment: false
       - name: Install sccache
         uses: taiki-e/install-action@sccache
       - name: sccache cache on the Namespace volume
@@ -232,11 +249,73 @@ jobs:
         with:
           working-directory: rust/kcl-python-bindings
           target: ${{ matrix.target }}
-          args: --release --out dist --find-interpreter --strip
+          # Use the exact setup-python outputs so the runner's PATH cannot
+          # change the set of wheels produced by this job.
+          args: >-
+            --release
+            --out dist
+            --strip
+            --interpreter
+            ${{ steps.python311.outputs.python-path }}
+            ${{ steps.python312.outputs.python-path }}
+            ${{ steps.python313.outputs.python-path }}
+            ${{ steps.python314.outputs.python-path }}
           # Off because maturin-action installs sccache with
           # `python3 -m pip install`, which this image's Homebrew Python
           # refuses under PEP 668. The step above installs it instead.
           sccache: 'false'
+      - name: Smoke test CPython 3.11 wheel
+        working-directory: rust/kcl-python-bindings
+        env:
+          PYTHON: ${{ steps.python311.outputs.python-path }}
+        run: |
+          "$PYTHON" -m pip install \
+            --force-reinstall \
+            --no-deps \
+            --no-index \
+            --only-binary=:all: \
+            --find-links dist \
+            zoo-kcl
+          "$PYTHON" -c 'import kcl'
+      - name: Smoke test CPython 3.12 wheel
+        working-directory: rust/kcl-python-bindings
+        env:
+          PYTHON: ${{ steps.python312.outputs.python-path }}
+        run: |
+          "$PYTHON" -m pip install \
+            --force-reinstall \
+            --no-deps \
+            --no-index \
+            --only-binary=:all: \
+            --find-links dist \
+            zoo-kcl
+          "$PYTHON" -c 'import kcl'
+      - name: Smoke test CPython 3.13 wheel
+        working-directory: rust/kcl-python-bindings
+        env:
+          PYTHON: ${{ steps.python313.outputs.python-path }}
+        run: |
+          "$PYTHON" -m pip install \
+            --force-reinstall \
+            --no-deps \
+            --no-index \
+            --only-binary=:all: \
+            --find-links dist \
+            zoo-kcl
+          "$PYTHON" -c 'import kcl'
+      - name: Smoke test CPython 3.14 wheel
+        working-directory: rust/kcl-python-bindings
+        env:
+          PYTHON: ${{ steps.python314.outputs.python-path }}
+        run: |
+          "$PYTHON" -m pip install \
+            --force-reinstall \
+            --no-deps \
+            --no-index \
+            --only-binary=:all: \
+            --find-links dist \
+            zoo-kcl
+          "$PYTHON" -c 'import kcl'
       - name: sccache stats
         # maturin-action prints these itself only when its own `sccache` input
         # is on.
@@ -336,6 +415,47 @@ jobs:
           echo "VIRTUAL_ENV=.venv" >> $GITHUB_ENV
           echo "$PWD/.venv/bin" >> $GITHUB_PATH
           uv pip install pip --upgrade
+      - name: Verify release artifacts
+        working-directory: rust/kcl-python-bindings
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import tomllib
+
+          with Path("Cargo.toml").open("rb") as manifest:
+              version = tomllib.load(manifest)["package"]["version"]
+
+          distribution = f"zoo_kcl-{version}"
+          expected = (
+              ("CPython 3.11 Linux x86_64", f"wheels-linux-x86_64/{distribution}-cp311-cp311-manylinux*_x86_64.whl"),
+              ("CPython 3.12 Linux x86_64", f"wheels-linux-x86_64/{distribution}-cp312-cp312-manylinux*_x86_64.whl"),
+              ("CPython 3.13 Linux x86_64", f"wheels-linux-x86_64/{distribution}-cp313-cp313-manylinux*_x86_64.whl"),
+              ("CPython 3.14 Linux x86_64", f"wheels-linux-x86_64/{distribution}-cp314-cp314-manylinux*_x86_64.whl"),
+              ("CPython 3.11 Windows x86_64", f"wheels-windows-x64/{distribution}-cp311-cp311-win_amd64.whl"),
+              ("CPython 3.12 Windows x86_64", f"wheels-windows-x64/{distribution}-cp312-cp312-win_amd64.whl"),
+              ("CPython 3.13 Windows x86_64", f"wheels-windows-x64/{distribution}-cp313-cp313-win_amd64.whl"),
+              ("CPython 3.14 Windows x86_64", f"wheels-windows-x64/{distribution}-cp314-cp314-win_amd64.whl"),
+              ("CPython 3.11 macOS arm64", f"wheels-macos-aarch64/{distribution}-cp311-cp311-macosx_*_arm64.whl"),
+              ("CPython 3.12 macOS arm64", f"wheels-macos-aarch64/{distribution}-cp312-cp312-macosx_*_arm64.whl"),
+              ("CPython 3.13 macOS arm64", f"wheels-macos-aarch64/{distribution}-cp313-cp313-macosx_*_arm64.whl"),
+              ("CPython 3.14 macOS arm64", f"wheels-macos-aarch64/{distribution}-cp314-cp314-macosx_*_arm64.whl"),
+              ("source distribution", f"wheels-sdist/{distribution}.tar.gz"),
+          )
+
+          failures = []
+          for label, pattern in expected:
+              matches = sorted(Path(".").glob(pattern))
+              if len(matches) != 1:
+                  failures.append(f"{label}: expected one match for {pattern}, found {matches}")
+                  continue
+              print(f"{label}: {matches[0]}")
+
+          if failures:
+              raise SystemExit(
+                  "Required release artifact verification failed:\n"
+                  + "\n".join(f"- {failure}" for failure in failures)
+              )
+          PY
       - name: Publish to PyPI
         uses: PyO3/maturin-action@v1
         env:
