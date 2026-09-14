@@ -7,6 +7,9 @@ edition = "2024"
 name = "kcl-render"
 path = "src/main.rs"
 
+[lints]
+workspace = true
+
 [dependencies]
 bevy_math = "0.19.1"
 gltf = { version = "1.4", default-features = false, features = ["utils"] }

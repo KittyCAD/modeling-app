@@ -1,4 +1,5 @@
-use bevy_math::{FloatExt, Vec3};
+use bevy_math::FloatExt;
+use bevy_math::Vec3;
 use serde::Deserialize;
 use serde_json::Value;
 use thiserror::Error;
@@ -73,11 +74,7 @@ struct WireEdge {
 impl BrepRenderData {
     pub fn from_extension(extension: &Value) -> Result<Self, BrepRenderError> {
         let wire: WireBrep = serde_json::from_value(extension.clone())?;
-        let vertices = wire
-            .vertices
-            .into_iter()
-            .map(Vec3::from_array)
-            .collect::<Vec<_>>();
+        let vertices = wire.vertices.into_iter().map(Vec3::from_array).collect::<Vec<_>>();
         let mut edges = Vec::with_capacity(wire.edges.len());
         let mut edge_vertices = Vec::with_capacity(wire.edges.len());
         let mut edge_polylines = Vec::with_capacity(wire.edges.len());
@@ -94,53 +91,28 @@ impl BrepRenderData {
                         vertices
                             .get(vertex)
                             .copied()
-                            .ok_or(BrepRenderError::MissingVertex {
-                                edge: index,
-                                vertex,
-                            })
+                            .ok_or(BrepRenderError::MissingVertex { edge: index, vertex })
                     })
                     .transpose()
             };
             let start = resolve_vertex(edge.start)?;
             let end = resolve_vertex(edge.end)?;
             let polyline = sample_edge_curve(start, end, curve, edge.t.as_ref());
-            let rendered_start = polyline
-                .first()
-                .copied()
-                .or(start)
-                .or(end)
-                .unwrap_or(Vec3::ZERO);
-            let rendered_end = polyline
-                .last()
-                .copied()
-                .or(end)
-                .or(start)
-                .unwrap_or(Vec3::ZERO);
+            let rendered_start = polyline.first().copied().or(start).or(end).unwrap_or(Vec3::ZERO);
+            let rendered_end = polyline.last().copied().or(end).or(start).unwrap_or(Vec3::ZERO);
             edges.push([rendered_start, rendered_end]);
-            edge_vertices.push([
-                edge.start.unwrap_or(usize::MAX),
-                edge.end.unwrap_or(usize::MAX),
-            ]);
-            curved_edges.push(curve.is_some_and(|curve| {
-                !matches!(
-                    curve.get("type").and_then(Value::as_str),
-                    None | Some("line")
-                )
-            }));
+            edge_vertices.push([edge.start.unwrap_or(usize::MAX), edge.end.unwrap_or(usize::MAX)]);
+            curved_edges.push(
+                curve.is_some_and(|curve| !matches!(curve.get("type").and_then(Value::as_str), None | Some("line"))),
+            );
             edge_polylines.push(polyline);
         }
 
         let vertex_radius = if vertices.is_empty() {
             0.0
         } else {
-            let minimum = vertices
-                .iter()
-                .copied()
-                .fold(Vec3::splat(f32::INFINITY), Vec3::min);
-            let maximum = vertices
-                .iter()
-                .copied()
-                .fold(Vec3::splat(f32::NEG_INFINITY), Vec3::max);
+            let minimum = vertices.iter().copied().fold(Vec3::splat(f32::INFINITY), Vec3::min);
+            let maximum = vertices.iter().copied().fold(Vec3::splat(f32::NEG_INFINITY), Vec3::max);
             ((maximum - minimum).length() * 0.0125).max(1.0e-7)
         };
         let face_edges = wire
@@ -219,12 +191,8 @@ fn sample_edge_curve(
             _ => (0.0, 1.0),
         });
     match curve_type {
-        "circle" => {
-            sample_circle(curve.get("circle").unwrap_or(curve), domain).unwrap_or_else(endpoints)
-        }
-        "nurbs" => {
-            sample_nurbs(curve.get("nurbs").unwrap_or(curve), domain).unwrap_or_else(endpoints)
-        }
+        "circle" => sample_circle(curve.get("circle").unwrap_or(curve), domain).unwrap_or_else(endpoints),
+        "nurbs" => sample_nurbs(curve.get("nurbs").unwrap_or(curve), domain).unwrap_or_else(endpoints),
         _ => endpoints(),
     }
 }
@@ -236,10 +204,7 @@ fn parameter_domain(value: Option<&Value>) -> Option<(f32, f32)> {
     {
         return Some((values[0].as_f64()? as f32, values[1].as_f64()? as f32));
     }
-    Some((
-        value.get("min")?.as_f64()? as f32,
-        value.get("max")?.as_f64()? as f32,
-    ))
+    Some((value.get("min")?.as_f64()? as f32, value.get("max")?.as_f64()? as f32))
 }
 
 fn vec3_field(value: &Value, name: &str) -> Option<Vec3> {
@@ -261,12 +226,7 @@ fn sample_circle(circle: &Value, mut domain: (f32, f32)) -> Option<Vec<Vec3>> {
         .or_else(|| vec3_field(circle, "yBasis"))
         .map(Vec3::normalize_or_zero)
         .or_else(|| {
-            vec3_field(circle, "normal").map(|normal| {
-                normal
-                    .normalize_or_zero()
-                    .cross(x_basis)
-                    .normalize_or_zero()
-            })
+            vec3_field(circle, "normal").map(|normal| normal.normalize_or_zero().cross(x_basis).normalize_or_zero())
         })?;
     let radius = circle.get("radius")?.as_f64()? as f32;
     if domain.0.abs().max(domain.1.abs()) > std::f32::consts::TAU * 1.5 {
@@ -336,11 +296,7 @@ fn sample_nurbs(nurbs: &Value, domain: (f32, f32)) -> Option<Vec<Vec3>> {
         return None;
     }
     let knot_domain = (knots[order - 1], knots[points.len()]);
-    let domain = if domain == (0.0, 1.0) {
-        knot_domain
-    } else {
-        domain
-    };
+    let domain = if domain == (0.0, 1.0) { knot_domain } else { domain };
     let start = evaluate_nurbs(&points, &knots, order - 1, domain.0)?;
     let end = evaluate_nurbs(&points, &knots, order - 1, domain.1)?;
     let mut samples = vec![start];
@@ -389,24 +345,8 @@ fn subdivide_nurbs(
         samples.push(end_point);
         return Some(());
     }
-    subdivide_nurbs(
-        points,
-        knots,
-        degree,
-        start,
-        (midpoint_t, midpoint),
-        depth + 1,
-        samples,
-    )?;
-    subdivide_nurbs(
-        points,
-        knots,
-        degree,
-        (midpoint_t, midpoint),
-        end,
-        depth + 1,
-        samples,
-    )
+    subdivide_nurbs(points, knots, degree, start, (midpoint_t, midpoint), depth + 1, samples)?;
+    subdivide_nurbs(points, knots, degree, (midpoint_t, midpoint), end, depth + 1, samples)
 }
 
 fn distance_to_segment(point: Vec3, start: Vec3, end: Vec3) -> f32 {
@@ -419,12 +359,7 @@ fn distance_to_segment(point: Vec3, start: Vec3, end: Vec3) -> f32 {
     point.distance(start + segment * t)
 }
 
-fn evaluate_nurbs(
-    points: &[(Vec3, f32)],
-    knots: &[f32],
-    degree: usize,
-    parameter: f32,
-) -> Option<Vec3> {
+fn evaluate_nurbs(points: &[(Vec3, f32)], knots: &[f32], degree: usize, parameter: f32) -> Option<Vec3> {
     let end = knots[points.len()];
     let mut weighted = Vec3::ZERO;
     let mut weight_sum = 0.0;
@@ -439,8 +374,7 @@ fn evaluate_nurbs(
 fn bspline_basis(index: usize, degree: usize, t: f32, knots: &[f32], end: f32) -> f32 {
     if degree == 0 {
         return ((knots[index] <= t && t < knots[index + 1])
-            || (t == end && knots[index + 1] == end && knots[index] < end)) as u8
-            as f32;
+            || (t == end && knots[index + 1] == end && knots[index] < end)) as u8 as f32;
     }
     let left_denominator = knots[index + degree] - knots[index];
     let right_denominator = knots[index + degree + 1] - knots[index + 1];
@@ -450,8 +384,7 @@ fn bspline_basis(index: usize, degree: usize, t: f32, knots: &[f32], end: f32) -
         0.0
     };
     let right = if right_denominator.abs() > f32::EPSILON {
-        (knots[index + degree + 1] - t) / right_denominator
-            * bspline_basis(index + 1, degree - 1, t, knots, end)
+        (knots[index + degree + 1] - t) / right_denominator * bspline_basis(index + 1, degree - 1, t, knots, end)
     } else {
         0.0
     };

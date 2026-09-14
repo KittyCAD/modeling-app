@@ -1673,9 +1673,8 @@ mod test {
     use kcl_derive_docs::for_all_example_test;
     use kcl_derive_docs::for_each_example_test;
 
-    use crate::test_server::TestGraphicsArtifact;
-
     use super::*;
+    use crate::test_server::TestGraphicsArtifact;
 
     fn stdlib_module_path(module_name: &str) -> PathBuf {
         let file_stem = match module_name {
