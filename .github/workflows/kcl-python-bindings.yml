@@ -249,17 +249,18 @@ jobs:
         with:
           working-directory: rust/kcl-python-bindings
           target: ${{ matrix.target }}
-          # Use the exact setup-python outputs so the runner's PATH cannot
-          # change the set of wheels produced by this job.
+          # setup-python returns an unversioned `bin/python` path. Maturin
+          # determines the CPython version from the executable name, so use
+          # the versioned executable from each installation.
           args: >-
             --release
             --out dist
             --strip
             --interpreter
-            ${{ steps.python311.outputs.python-path }}
-            ${{ steps.python312.outputs.python-path }}
-            ${{ steps.python313.outputs.python-path }}
-            ${{ steps.python314.outputs.python-path }}
+            ${{ steps.python311.outputs.python-path }}3.11
+            ${{ steps.python312.outputs.python-path }}3.12
+            ${{ steps.python313.outputs.python-path }}3.13
+            ${{ steps.python314.outputs.python-path }}3.14
           # Off because maturin-action installs sccache with
           # `python3 -m pip install`, which this image's Homebrew Python
           # refuses under PEP 668. The step above installs it instead.
