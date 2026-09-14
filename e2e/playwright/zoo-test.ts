@@ -1,3 +1,4 @@
+import { attachRendererCrashDiagnostics } from '@e2e/playwright/fixtures/electronCrashDiagnostics'
 import { expect, test as playwrightTestFn } from '@e2e/playwright/base-test'
 import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'
 import {
@@ -85,6 +86,10 @@ const playwrightTestFnWithFixtures_ = playwrightTestFn.extend<{
         await use(electronZooInstance)
         await electronZooInstance.makeAvailableAgain()
       } catch (error) {
+        await attachRendererCrashDiagnostics(
+          electronZooInstance.electron,
+          testInfo
+        )
         if (timeoutId) clearTimeout(timeoutId)
         throw error
       }
