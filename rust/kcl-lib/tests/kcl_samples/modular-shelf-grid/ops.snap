@@ -1426,7 +1426,7 @@ description: Operations executed modular-shelf-grid.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -1456,7 +1456,7 @@ description: Operations executed modular-shelf-grid.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "8accf664-7097-5b74-b4cf-22cfff115a4f"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -1498,7 +1498,7 @@ description: Operations executed modular-shelf-grid.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "6023bee8-3980-5182-88ac-ac06420ce00f"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2682,7 +2682,7 @@ description: Operations executed modular-shelf-grid.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "c4fac378-d3df-5505-98c1-308b81b0fd96"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -2712,7 +2712,7 @@ description: Operations executed modular-shelf-grid.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "6c096663-896a-5f49-b4a0-b5621e2f3b74"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2754,7 +2754,7 @@ description: Operations executed modular-shelf-grid.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "ec50dfc5-8660-5f82-906a-6429c34099eb"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2842,7 +2842,7 @@ description: Operations executed modular-shelf-grid.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2871,7 +2871,7 @@ description: Operations executed modular-shelf-grid.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -2903,25 +2903,25 @@ description: Operations executed modular-shelf-grid.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "6023bee8-3980-5182-88ac-ac06420ce00f"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "24655609-c68c-5b76-9ccf-684a19064a93"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "ec50dfc5-8660-5f82-906a-6429c34099eb"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "5700ef7a-6cee-5df4-b6ce-6274d59cfded"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -3018,121 +3018,121 @@ description: Operations executed modular-shelf-grid.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "6023bee8-3980-5182-88ac-ac06420ce00f"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "a154debd-ab30-5f7f-b33f-a1e92a5e6409"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "e9ce532e-4118-590e-9c4c-faf3bfe8f669"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "cfa8de4e-e7f4-5768-abc8-9fed336c272f"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "2e50f57c-c068-5175-a0b0-37e0fa55e8db"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "24655609-c68c-5b76-9ccf-684a19064a93"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "eb3ae195-3112-581e-9eed-779b12aebc9a"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "9f6b88a2-b9f0-592f-9433-a86866687938"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "1c1e33ac-1956-59d0-8695-a98e42fe6941"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "85a9e2e6-6138-53a1-9d09-19eb560dc690"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "ec50dfc5-8660-5f82-906a-6429c34099eb"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "5335ea08-ac1a-5bb0-90dd-7916ee5a204f"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "a9d7ad1e-c7b2-5769-8d3a-494dd872365e"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "7dee4578-aaf5-57f3-a610-7c15cb1af93e"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "53129812-1f40-502c-b64b-84a6d84e5397"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "5700ef7a-6cee-5df4-b6ce-6274d59cfded"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "db482d7a-0d30-5907-89c1-d2126f60692d"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "d47054a4-f872-511d-8b1f-4da30f60f214"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "9bab41c1-3b25-5673-9547-1a70676b8b43"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "5b94aa89-e71c-509e-acbb-151a3b7b56d7"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -3318,7 +3318,7 @@ description: Operations executed modular-shelf-grid.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3342,7 +3342,7 @@ description: Operations executed modular-shelf-grid.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3366,7 +3366,7 @@ description: Operations executed modular-shelf-grid.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3390,7 +3390,7 @@ description: Operations executed modular-shelf-grid.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3414,7 +3414,7 @@ description: Operations executed modular-shelf-grid.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3438,7 +3438,7 @@ description: Operations executed modular-shelf-grid.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3462,7 +3462,7 @@ description: Operations executed modular-shelf-grid.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3486,7 +3486,7 @@ description: Operations executed modular-shelf-grid.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

@@ -46,6 +46,7 @@ import {
   EngineConnectionStateType,
   REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE,
   validateStreamDimensions,
+  type EngineDisconnectEventDetail,
 } from '@src/lib/engineConnection/utils'
 import {
   isExportResponse,
@@ -777,7 +778,6 @@ export class ConnectionManager extends EventTarget {
     if (message.command.type === 'modeling_cmd_req') {
       const commandName = message.command.cmd.type
       if (commandName.includes('export')) {
-        // If the command name includes export of any type do not time it out within 60 seconds
         timeoutPendingCommand = false
       }
     }
@@ -1080,12 +1080,20 @@ export class ConnectionManager extends EventTarget {
     // It was torn down from a websocket close.
     if (options?.websocketClosed) {
       this.dispatchEvent(
-        new CustomEvent(EngineConnectionManagerEvents.WebsocketClosed, {
-          detail: {
-            code: options.code,
-            connectionError: options.connectionError,
-          },
-        })
+        new CustomEvent<EngineDisconnectEventDetail>(
+          EngineConnectionManagerEvents.WebsocketClosed,
+          {
+            detail: {
+              code: options.code,
+              connectionError: options.connectionError,
+              reconnectRequested: options.reconnectRequested ?? false,
+            },
+          }
+        )
+      )
+    } else if (options?.pingPongTimeout) {
+      this.dispatchEvent(
+        new CustomEvent(EngineConnectionManagerEvents.pingPongTimeout, {})
       )
     } else if (options?.peerConnectionClosed) {
       this.dispatchEvent(

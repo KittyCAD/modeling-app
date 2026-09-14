@@ -6,8 +6,8 @@ description: Variables in memory after executing truss-structure.kcl
   "__sketch_107_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
-      "id": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "objectId": 89,
       "kind": "Custom",
       "origin": {
@@ -39,8 +39,8 @@ description: Variables in memory after executing truss-structure.kcl
   "__sketch_125_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
-      "id": "7c4571e0-7b14-576f-a82e-22280b05874d",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -71,8 +71,8 @@ description: Variables in memory after executing truss-structure.kcl
   "__sketch_151_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
-      "id": "ff863943-02de-5b48-baf7-471ff32b980f",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -103,8 +103,8 @@ description: Variables in memory after executing truss-structure.kcl
   "__sketch_169_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
-      "id": "2f4a2fd0-fa42-52f3-9036-f434f97207a7",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -135,8 +135,8 @@ description: Variables in memory after executing truss-structure.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
-      "id": "7c4571e0-7b14-576f-a82e-22280b05874d",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -167,8 +167,8 @@ description: Variables in memory after executing truss-structure.kcl
   "__sketch_55_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "468f6520-a683-5392-9492-de009fdcddef",
-      "id": "468f6520-a683-5392-9492-de009fdcddef",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "objectId": 54,
       "kind": "Custom",
       "origin": {
@@ -200,8 +200,8 @@ description: Variables in memory after executing truss-structure.kcl
   "__sketch_72_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "468f6520-a683-5392-9492-de009fdcddef",
-      "id": "468f6520-a683-5392-9492-de009fdcddef",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "objectId": 54,
       "kind": "Custom",
       "origin": {
@@ -233,8 +233,8 @@ description: Variables in memory after executing truss-structure.kcl
   "__sketch_90_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
-      "id": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "objectId": 89,
       "kind": "Custom",
       "origin": {
@@ -270,14 +270,14 @@ description: Variables in memory after executing truss-structure.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "8eada7d4-6cff-576e-9660-4b58911de9a7",
-          "originalId": "8eada7d4-6cff-576e-9660-4b58911de9a7",
-          "topologyId": "8eada7d4-6cff-576e-9660-4b58911de9a7",
-          "artifactId": "fc66f518-029e-5b30-8772-13859f39ce6d",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "1dc6373c-2887-573e-8d09-5a6dd4f68ae2",
-              "id": "1886b9ec-420a-527f-aed2-21b9844d8eb5",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 5236,
@@ -290,8 +290,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "a9fec2f4-46f7-5e19-a6fc-d9054f7a99ce",
-              "id": "3b3afb9e-514f-56f8-bbd8-05d2bbabedcf",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 5337,
@@ -304,8 +304,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "c4ad3022-7b62-5629-86f0-b8e669dfc912",
-              "id": "d29d23ab-62a5-5a65-89a3-8ca8ea34624c",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 5448,
@@ -318,8 +318,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "0a714a70-862c-534f-ac83-2abc20ceffe4",
-              "id": "c680540c-5e57-59f7-842d-157455b9b338",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 5549,
@@ -332,8 +332,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "223af289-b502-504b-beb0-5622898d56a4",
-              "id": "7c53f39d-b8d6-5c8b-8b22-4532f319b68c",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 5651,
@@ -346,8 +346,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "eac85d5f-acbd-5498-9f7e-121eb950a2f2",
-              "id": "22356bb0-e3ba-55ca-bf70-b47613d3599a",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 5764,
@@ -363,11 +363,11 @@ description: Variables in memory after executing truss-structure.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "8eada7d4-6cff-576e-9660-4b58911de9a7",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "1886b9ec-420a-527f-aed2-21b9844d8eb5",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -391,7 +391,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "3b3afb9e-514f-56f8-bbd8-05d2bbabedcf",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -415,7 +415,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "d29d23ab-62a5-5a65-89a3-8ca8ea34624c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -439,7 +439,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "c680540c-5e57-59f7-842d-157455b9b338",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -463,7 +463,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "7c53f39d-b8d6-5c8b-8b22-4532f319b68c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -487,7 +487,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "22356bb0-e3ba-55ca-bf70-b47613d3599a",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -512,8 +512,8 @@ description: Variables in memory after executing truss-structure.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
-              "id": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 124,
               "kind": "Custom",
               "origin": {
@@ -553,7 +553,7 @@ description: Variables in memory after executing truss-structure.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -583,13 +583,13 @@ description: Variables in memory after executing truss-structure.kcl
                 "value": "line6"
               }
             },
-            "artifactId": "8eada7d4-6cff-576e-9660-4b58911de9a7",
-            "originalId": "8eada7d4-6cff-576e-9660-4b58911de9a7",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "0db3a56c-95a9-5215-a18c-dff22df69cc7",
-          "endCapId": "7b0a7581-a4d3-5078-b729-28410e2f9196",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -598,14 +598,14 @@ description: Variables in memory after executing truss-structure.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "18480650-2f07-5069-abda-8fbfde28512e",
-          "originalId": "8eada7d4-6cff-576e-9660-4b58911de9a7",
-          "topologyId": "8eada7d4-6cff-576e-9660-4b58911de9a7",
-          "artifactId": "18480650-2f07-5069-abda-8fbfde28512e",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "1dc6373c-2887-573e-8d09-5a6dd4f68ae2",
-              "id": "1886b9ec-420a-527f-aed2-21b9844d8eb5",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 5236,
@@ -618,8 +618,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "a9fec2f4-46f7-5e19-a6fc-d9054f7a99ce",
-              "id": "3b3afb9e-514f-56f8-bbd8-05d2bbabedcf",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 5337,
@@ -632,8 +632,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "c4ad3022-7b62-5629-86f0-b8e669dfc912",
-              "id": "d29d23ab-62a5-5a65-89a3-8ca8ea34624c",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 5448,
@@ -646,8 +646,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "0a714a70-862c-534f-ac83-2abc20ceffe4",
-              "id": "c680540c-5e57-59f7-842d-157455b9b338",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 5549,
@@ -660,8 +660,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "223af289-b502-504b-beb0-5622898d56a4",
-              "id": "7c53f39d-b8d6-5c8b-8b22-4532f319b68c",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 5651,
@@ -674,8 +674,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "eac85d5f-acbd-5498-9f7e-121eb950a2f2",
-              "id": "22356bb0-e3ba-55ca-bf70-b47613d3599a",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 5764,
@@ -691,11 +691,11 @@ description: Variables in memory after executing truss-structure.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "18480650-2f07-5069-abda-8fbfde28512e",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "1886b9ec-420a-527f-aed2-21b9844d8eb5",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -719,7 +719,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "3b3afb9e-514f-56f8-bbd8-05d2bbabedcf",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -743,7 +743,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "d29d23ab-62a5-5a65-89a3-8ca8ea34624c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -767,7 +767,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "c680540c-5e57-59f7-842d-157455b9b338",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -791,7 +791,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "7c53f39d-b8d6-5c8b-8b22-4532f319b68c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -815,7 +815,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "22356bb0-e3ba-55ca-bf70-b47613d3599a",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -840,8 +840,8 @@ description: Variables in memory after executing truss-structure.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
-              "id": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 124,
               "kind": "Custom",
               "origin": {
@@ -881,7 +881,7 @@ description: Variables in memory after executing truss-structure.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -911,13 +911,13 @@ description: Variables in memory after executing truss-structure.kcl
                 "value": "line6"
               }
             },
-            "artifactId": "8eada7d4-6cff-576e-9660-4b58911de9a7",
-            "originalId": "8eada7d4-6cff-576e-9660-4b58911de9a7",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "0db3a56c-95a9-5215-a18c-dff22df69cc7",
-          "endCapId": "7b0a7581-a4d3-5078-b729-28410e2f9196",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -933,7 +933,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
+                "id": "[uuid]",
                 "objectId": 128,
                 "kind": {
                   "line": {
@@ -1007,8 +1007,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
-                  "id": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 124,
                   "origin": {
@@ -1037,7 +1037,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "ba769d4c-3a67-5309-824d-fd59f263bb46",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1053,7 +1053,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511",
+                "id": "[uuid]",
                 "objectId": 131,
                 "kind": {
                   "line": {
@@ -1127,8 +1127,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
-                  "id": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 124,
                   "origin": {
@@ -1157,7 +1157,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "ba769d4c-3a67-5309-824d-fd59f263bb46",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -1173,7 +1173,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
+                "id": "[uuid]",
                 "objectId": 134,
                 "kind": {
                   "line": {
@@ -1247,8 +1247,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
-                  "id": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 124,
                   "origin": {
@@ -1277,7 +1277,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "ba769d4c-3a67-5309-824d-fd59f263bb46",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -1293,7 +1293,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "035728b5-01db-5e9b-b285-181bc5693d5a",
+                "id": "[uuid]",
                 "objectId": 137,
                 "kind": {
                   "line": {
@@ -1367,8 +1367,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
-                  "id": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 124,
                   "origin": {
@@ -1397,7 +1397,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "ba769d4c-3a67-5309-824d-fd59f263bb46",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -1413,7 +1413,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
+                "id": "[uuid]",
                 "objectId": 140,
                 "kind": {
                   "line": {
@@ -1487,8 +1487,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
-                  "id": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 124,
                   "origin": {
@@ -1517,7 +1517,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "ba769d4c-3a67-5309-824d-fd59f263bb46",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -1533,7 +1533,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "2b45af9b-6b90-5530-b9b7-b193031152d8",
+                "id": "[uuid]",
                 "objectId": 143,
                 "kind": {
                   "line": {
@@ -1607,8 +1607,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
-                  "id": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 124,
                   "origin": {
@@ -1637,7 +1637,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "ba769d4c-3a67-5309-824d-fd59f263bb46",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -1654,11 +1654,11 @@ description: Variables in memory after executing truss-structure.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "ba769d4c-3a67-5309-824d-fd59f263bb46",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1682,7 +1682,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1706,7 +1706,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1730,7 +1730,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "035728b5-01db-5e9b-b285-181bc5693d5a",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1754,7 +1754,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1778,7 +1778,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "2b45af9b-6b90-5530-b9b7-b193031152d8",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1803,8 +1803,8 @@ description: Variables in memory after executing truss-structure.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
-                "id": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 124,
                 "kind": "Custom",
                 "origin": {
@@ -1844,7 +1844,7 @@ description: Variables in memory after executing truss-structure.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -1874,8 +1874,8 @@ description: Variables in memory after executing truss-structure.kcl
                   "value": "line6"
                 }
               },
-              "artifactId": "ba769d4c-3a67-5309-824d-fd59f263bb46",
-              "originalId": "ba769d4c-3a67-5309-824d-fd59f263bb46",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "in",
               "isClosed": "implicitly"
             }
@@ -1893,14 +1893,14 @@ description: Variables in memory after executing truss-structure.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
-          "originalId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
-          "topologyId": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
-          "artifactId": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "6a53ed1e-2352-5a1f-a4ef-b3b531f371ee",
-              "id": "d2b06f35-ea05-5264-984b-74fa897e9a5b",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 478,
@@ -1913,8 +1913,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "769d022e-b2e4-5add-a763-a3bfa8de164c",
-              "id": "6ea65b2a-e9e0-5641-8682-4d6a44de8d5b",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 550,
@@ -1927,8 +1927,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "612dd905-3244-5750-9d68-7a3c6dd61abb",
-              "id": "a8c8ad7e-a026-52de-943d-b27a9e788973",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 624,
@@ -1941,8 +1941,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "ffb367e9-813a-5e8b-805f-6e31ade555c7",
-              "id": "883c4870-b730-5b6f-9675-27e77bbaebc1",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 707,
@@ -1955,8 +1955,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "4de601f3-ddb6-51f7-9421-5e10bb79be86",
-              "id": "4908086d-384e-57c0-9ee6-45ad487ac80b",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 789,
@@ -1969,8 +1969,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "5dde4c51-4e05-5f34-bc09-b7b46ffecdaa",
-              "id": "1efca929-fe34-54d8-9ed8-e1134788307a",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1057,
@@ -1983,8 +1983,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "a630a4f8-fb73-511f-a2ae-521436f26104",
-              "id": "572f14f1-fb6c-5f94-af46-4e374245e733",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1135,
@@ -1997,8 +1997,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "d444ac3b-2687-5fa8-8297-a6345ec4cd96",
-              "id": "80d76757-de32-59f8-8fba-f5af593bf071",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1223,
@@ -2011,8 +2011,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "c6067e9a-9389-5c4f-8262-42fb87da780b",
-              "id": "72b492f4-6c37-540b-b639-5e45e8bab8be",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1323,
@@ -2025,8 +2025,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "edab71e9-f3ef-5004-b0df-3df075fba296",
-              "id": "764d918c-3ea4-518f-95b0-ed91be932636",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1634,
@@ -2039,8 +2039,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "352c273b-c284-553a-bc0a-cb21ac5ff6c5",
-              "id": "c929f0d6-92f3-5ed0-bb81-1fbdd2a44e6a",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1713,
@@ -2053,8 +2053,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "bc92816f-9d3d-58c6-8f56-e50e15625142",
-              "id": "9a3b2a86-fd83-5532-aed7-53028568dfdb",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1802,
@@ -2067,8 +2067,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "ef99b48a-ee8d-527c-9bbd-4999b12b1698",
-              "id": "4e32e2e4-798a-5c71-9bcc-5c07a6b32dfe",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1903,
@@ -2084,11 +2084,11 @@ description: Variables in memory after executing truss-structure.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "d2b06f35-ea05-5264-984b-74fa897e9a5b",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -2112,7 +2112,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "6ea65b2a-e9e0-5641-8682-4d6a44de8d5b",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -2136,7 +2136,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "a8c8ad7e-a026-52de-943d-b27a9e788973",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -2160,7 +2160,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "883c4870-b730-5b6f-9675-27e77bbaebc1",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -2184,7 +2184,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "4908086d-384e-57c0-9ee6-45ad487ac80b",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -2208,7 +2208,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "1efca929-fe34-54d8-9ed8-e1134788307a",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -2232,7 +2232,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "572f14f1-fb6c-5f94-af46-4e374245e733",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -2256,7 +2256,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "80d76757-de32-59f8-8fba-f5af593bf071",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -2280,7 +2280,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "72b492f4-6c37-540b-b639-5e45e8bab8be",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -2304,7 +2304,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "764d918c-3ea4-518f-95b0-ed91be932636",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -2328,7 +2328,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "c929f0d6-92f3-5ed0-bb81-1fbdd2a44e6a",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -2352,7 +2352,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "9a3b2a86-fd83-5532-aed7-53028568dfdb",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -2376,7 +2376,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "4e32e2e4-798a-5c71-9bcc-5c07a6b32dfe",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -2401,8 +2401,8 @@ description: Variables in memory after executing truss-structure.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-              "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 0,
               "kind": "Custom",
               "origin": {
@@ -2442,7 +2442,7 @@ description: Variables in memory after executing truss-structure.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -2500,13 +2500,13 @@ description: Variables in memory after executing truss-structure.kcl
                 "value": "rightOpening4"
               }
             },
-            "artifactId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
-            "originalId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "1f04315a-9330-5d86-aec7-9abe35ceea20",
-          "endCapId": "0503ff9c-66b6-5519-9fbe-bb2bd2641f1f",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -2515,14 +2515,14 @@ description: Variables in memory after executing truss-structure.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "3c698764-8b3e-5871-81ba-19b0b351515c",
-          "originalId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
-          "topologyId": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
-          "artifactId": "3c698764-8b3e-5871-81ba-19b0b351515c",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "6a53ed1e-2352-5a1f-a4ef-b3b531f371ee",
-              "id": "d2b06f35-ea05-5264-984b-74fa897e9a5b",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 478,
@@ -2535,8 +2535,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "769d022e-b2e4-5add-a763-a3bfa8de164c",
-              "id": "6ea65b2a-e9e0-5641-8682-4d6a44de8d5b",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 550,
@@ -2549,8 +2549,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "612dd905-3244-5750-9d68-7a3c6dd61abb",
-              "id": "a8c8ad7e-a026-52de-943d-b27a9e788973",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 624,
@@ -2563,8 +2563,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "ffb367e9-813a-5e8b-805f-6e31ade555c7",
-              "id": "883c4870-b730-5b6f-9675-27e77bbaebc1",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 707,
@@ -2577,8 +2577,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "4de601f3-ddb6-51f7-9421-5e10bb79be86",
-              "id": "4908086d-384e-57c0-9ee6-45ad487ac80b",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 789,
@@ -2591,8 +2591,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "5dde4c51-4e05-5f34-bc09-b7b46ffecdaa",
-              "id": "1efca929-fe34-54d8-9ed8-e1134788307a",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1057,
@@ -2605,8 +2605,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "a630a4f8-fb73-511f-a2ae-521436f26104",
-              "id": "572f14f1-fb6c-5f94-af46-4e374245e733",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1135,
@@ -2619,8 +2619,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "d444ac3b-2687-5fa8-8297-a6345ec4cd96",
-              "id": "80d76757-de32-59f8-8fba-f5af593bf071",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1223,
@@ -2633,8 +2633,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "c6067e9a-9389-5c4f-8262-42fb87da780b",
-              "id": "72b492f4-6c37-540b-b639-5e45e8bab8be",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1323,
@@ -2647,8 +2647,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "edab71e9-f3ef-5004-b0df-3df075fba296",
-              "id": "764d918c-3ea4-518f-95b0-ed91be932636",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1634,
@@ -2661,8 +2661,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "352c273b-c284-553a-bc0a-cb21ac5ff6c5",
-              "id": "c929f0d6-92f3-5ed0-bb81-1fbdd2a44e6a",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1713,
@@ -2675,8 +2675,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "bc92816f-9d3d-58c6-8f56-e50e15625142",
-              "id": "9a3b2a86-fd83-5532-aed7-53028568dfdb",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1802,
@@ -2689,8 +2689,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "ef99b48a-ee8d-527c-9bbd-4999b12b1698",
-              "id": "4e32e2e4-798a-5c71-9bcc-5c07a6b32dfe",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1903,
@@ -2706,11 +2706,11 @@ description: Variables in memory after executing truss-structure.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "3c698764-8b3e-5871-81ba-19b0b351515c",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "d2b06f35-ea05-5264-984b-74fa897e9a5b",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -2734,7 +2734,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "6ea65b2a-e9e0-5641-8682-4d6a44de8d5b",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -2758,7 +2758,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "a8c8ad7e-a026-52de-943d-b27a9e788973",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -2782,7 +2782,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "883c4870-b730-5b6f-9675-27e77bbaebc1",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -2806,7 +2806,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "4908086d-384e-57c0-9ee6-45ad487ac80b",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -2830,7 +2830,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "1efca929-fe34-54d8-9ed8-e1134788307a",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -2854,7 +2854,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "572f14f1-fb6c-5f94-af46-4e374245e733",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -2878,7 +2878,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "80d76757-de32-59f8-8fba-f5af593bf071",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -2902,7 +2902,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "72b492f4-6c37-540b-b639-5e45e8bab8be",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -2926,7 +2926,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "764d918c-3ea4-518f-95b0-ed91be932636",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -2950,7 +2950,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "c929f0d6-92f3-5ed0-bb81-1fbdd2a44e6a",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -2974,7 +2974,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "9a3b2a86-fd83-5532-aed7-53028568dfdb",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -2998,7 +2998,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "4e32e2e4-798a-5c71-9bcc-5c07a6b32dfe",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3023,8 +3023,8 @@ description: Variables in memory after executing truss-structure.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-              "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 0,
               "kind": "Custom",
               "origin": {
@@ -3064,7 +3064,7 @@ description: Variables in memory after executing truss-structure.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -3122,13 +3122,13 @@ description: Variables in memory after executing truss-structure.kcl
                 "value": "rightOpening4"
               }
             },
-            "artifactId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
-            "originalId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "1f04315a-9330-5d86-aec7-9abe35ceea20",
-          "endCapId": "0503ff9c-66b6-5519-9fbe-bb2bd2641f1f",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -3137,14 +3137,14 @@ description: Variables in memory after executing truss-structure.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "8ba91012-7f71-5cc1-b05f-8a2f28aad790",
-          "originalId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
-          "topologyId": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
-          "artifactId": "8ba91012-7f71-5cc1-b05f-8a2f28aad790",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "6a53ed1e-2352-5a1f-a4ef-b3b531f371ee",
-              "id": "d2b06f35-ea05-5264-984b-74fa897e9a5b",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 478,
@@ -3157,8 +3157,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "769d022e-b2e4-5add-a763-a3bfa8de164c",
-              "id": "6ea65b2a-e9e0-5641-8682-4d6a44de8d5b",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 550,
@@ -3171,8 +3171,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "612dd905-3244-5750-9d68-7a3c6dd61abb",
-              "id": "a8c8ad7e-a026-52de-943d-b27a9e788973",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 624,
@@ -3185,8 +3185,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "ffb367e9-813a-5e8b-805f-6e31ade555c7",
-              "id": "883c4870-b730-5b6f-9675-27e77bbaebc1",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 707,
@@ -3199,8 +3199,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "4de601f3-ddb6-51f7-9421-5e10bb79be86",
-              "id": "4908086d-384e-57c0-9ee6-45ad487ac80b",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 789,
@@ -3213,8 +3213,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "5dde4c51-4e05-5f34-bc09-b7b46ffecdaa",
-              "id": "1efca929-fe34-54d8-9ed8-e1134788307a",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1057,
@@ -3227,8 +3227,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "a630a4f8-fb73-511f-a2ae-521436f26104",
-              "id": "572f14f1-fb6c-5f94-af46-4e374245e733",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1135,
@@ -3241,8 +3241,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "d444ac3b-2687-5fa8-8297-a6345ec4cd96",
-              "id": "80d76757-de32-59f8-8fba-f5af593bf071",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1223,
@@ -3255,8 +3255,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "c6067e9a-9389-5c4f-8262-42fb87da780b",
-              "id": "72b492f4-6c37-540b-b639-5e45e8bab8be",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1323,
@@ -3269,8 +3269,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "edab71e9-f3ef-5004-b0df-3df075fba296",
-              "id": "764d918c-3ea4-518f-95b0-ed91be932636",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1634,
@@ -3283,8 +3283,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "352c273b-c284-553a-bc0a-cb21ac5ff6c5",
-              "id": "c929f0d6-92f3-5ed0-bb81-1fbdd2a44e6a",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1713,
@@ -3297,8 +3297,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "bc92816f-9d3d-58c6-8f56-e50e15625142",
-              "id": "9a3b2a86-fd83-5532-aed7-53028568dfdb",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1802,
@@ -3311,8 +3311,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "ef99b48a-ee8d-527c-9bbd-4999b12b1698",
-              "id": "4e32e2e4-798a-5c71-9bcc-5c07a6b32dfe",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1903,
@@ -3328,11 +3328,11 @@ description: Variables in memory after executing truss-structure.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "8ba91012-7f71-5cc1-b05f-8a2f28aad790",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "d2b06f35-ea05-5264-984b-74fa897e9a5b",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3356,7 +3356,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "6ea65b2a-e9e0-5641-8682-4d6a44de8d5b",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3380,7 +3380,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "a8c8ad7e-a026-52de-943d-b27a9e788973",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3404,7 +3404,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "883c4870-b730-5b6f-9675-27e77bbaebc1",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3428,7 +3428,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "4908086d-384e-57c0-9ee6-45ad487ac80b",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3452,7 +3452,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "1efca929-fe34-54d8-9ed8-e1134788307a",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3476,7 +3476,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "572f14f1-fb6c-5f94-af46-4e374245e733",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3500,7 +3500,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "80d76757-de32-59f8-8fba-f5af593bf071",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3524,7 +3524,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "72b492f4-6c37-540b-b639-5e45e8bab8be",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3548,7 +3548,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "764d918c-3ea4-518f-95b0-ed91be932636",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3572,7 +3572,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "c929f0d6-92f3-5ed0-bb81-1fbdd2a44e6a",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3596,7 +3596,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "9a3b2a86-fd83-5532-aed7-53028568dfdb",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3620,7 +3620,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "4e32e2e4-798a-5c71-9bcc-5c07a6b32dfe",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -3645,8 +3645,8 @@ description: Variables in memory after executing truss-structure.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-              "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 0,
               "kind": "Custom",
               "origin": {
@@ -3686,7 +3686,7 @@ description: Variables in memory after executing truss-structure.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -3744,13 +3744,13 @@ description: Variables in memory after executing truss-structure.kcl
                 "value": "rightOpening4"
               }
             },
-            "artifactId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
-            "originalId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "1f04315a-9330-5d86-aec7-9abe35ceea20",
-          "endCapId": "0503ff9c-66b6-5519-9fbe-bb2bd2641f1f",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -3761,14 +3761,14 @@ description: Variables in memory after executing truss-structure.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "bee9909d-abbf-534c-b266-2c2c04133834",
-      "originalId": "bee9909d-abbf-534c-b266-2c2c04133834",
-      "topologyId": "bee9909d-abbf-534c-b266-2c2c04133834",
-      "artifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "2ee52ac2-e501-507c-8744-a2ccdf945cad",
-          "id": "34e011b3-781f-5f47-9fcc-4052db4f920d",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3864,
@@ -3781,8 +3781,8 @@ description: Variables in memory after executing truss-structure.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "384439ea-7a9c-5560-aab9-dc3249f73940",
-          "id": "87004f9b-f392-55f0-b9ca-3c754d9c77ab",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3939,
@@ -3795,8 +3795,8 @@ description: Variables in memory after executing truss-structure.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "d95c9239-12b5-54ac-bfb5-bb698f2ad74a",
-          "id": "15b8fa13-bb5e-5385-84b5-11376bf35ba7",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4016,
@@ -3809,8 +3809,8 @@ description: Variables in memory after executing truss-structure.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "e3753369-f18f-56b9-9e00-77ecdea3b77e",
-          "id": "49d34a55-d81e-5c9a-8c9c-f8621d93f4e2",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4091,
@@ -3826,11 +3826,11 @@ description: Variables in memory after executing truss-structure.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "bee9909d-abbf-534c-b266-2c2c04133834",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "34e011b3-781f-5f47-9fcc-4052db4f920d",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3854,7 +3854,7 @@ description: Variables in memory after executing truss-structure.kcl
           },
           {
             "__geoMeta": {
-              "id": "87004f9b-f392-55f0-b9ca-3c754d9c77ab",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3878,7 +3878,7 @@ description: Variables in memory after executing truss-structure.kcl
           },
           {
             "__geoMeta": {
-              "id": "15b8fa13-bb5e-5385-84b5-11376bf35ba7",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3902,7 +3902,7 @@ description: Variables in memory after executing truss-structure.kcl
           },
           {
             "__geoMeta": {
-              "id": "49d34a55-d81e-5c9a-8c9c-f8621d93f4e2",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3927,8 +3927,8 @@ description: Variables in memory after executing truss-structure.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
-          "id": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 89,
           "kind": "Custom",
           "origin": {
@@ -3968,7 +3968,7 @@ description: Variables in memory after executing truss-structure.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "93954f29-a246-54bd-ac2a-62572f26d508",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -3990,13 +3990,13 @@ description: Variables in memory after executing truss-structure.kcl
             "value": "line4"
           }
         },
-        "artifactId": "bee9909d-abbf-534c-b266-2c2c04133834",
-        "originalId": "bee9909d-abbf-534c-b266-2c2c04133834",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
-      "startCapId": "0a865255-d282-51e5-9a6a-2e3d4ec493cb",
-      "endCapId": "12fcd524-80ae-5d81-bb28-f879c7a203af",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "in",
       "sectional": false
     }
@@ -4010,7 +4010,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "44621ebd-5856-5dfd-9426-dda5d969f375",
+                "id": "[uuid]",
                 "objectId": 93,
                 "kind": {
                   "line": {
@@ -4084,8 +4084,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
-                  "id": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 89,
                   "origin": {
@@ -4114,7 +4114,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -4130,7 +4130,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
+                "id": "[uuid]",
                 "objectId": 96,
                 "kind": {
                   "line": {
@@ -4204,8 +4204,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
-                  "id": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 89,
                   "origin": {
@@ -4234,7 +4234,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -4250,7 +4250,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
+                "id": "[uuid]",
                 "objectId": 99,
                 "kind": {
                   "line": {
@@ -4324,8 +4324,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
-                  "id": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 89,
                   "origin": {
@@ -4354,7 +4354,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -4370,7 +4370,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
+                "id": "[uuid]",
                 "objectId": 102,
                 "kind": {
                   "line": {
@@ -4444,8 +4444,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
-                  "id": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 89,
                   "origin": {
@@ -4474,7 +4474,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -4491,11 +4491,11 @@ description: Variables in memory after executing truss-structure.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "44621ebd-5856-5dfd-9426-dda5d969f375",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -4519,7 +4519,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -4543,7 +4543,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -4567,7 +4567,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -4592,8 +4592,8 @@ description: Variables in memory after executing truss-structure.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
-                "id": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 89,
                 "kind": "Custom",
                 "origin": {
@@ -4633,7 +4633,7 @@ description: Variables in memory after executing truss-structure.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "93954f29-a246-54bd-ac2a-62572f26d508",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -4655,8 +4655,8 @@ description: Variables in memory after executing truss-structure.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
-              "originalId": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "in",
               "isClosed": "implicitly"
             }
@@ -4691,14 +4691,14 @@ description: Variables in memory after executing truss-structure.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "0030d44a-e936-52d0-b5b6-efd80f2f6770",
-      "originalId": "0030d44a-e936-52d0-b5b6-efd80f2f6770",
-      "topologyId": "0030d44a-e936-52d0-b5b6-efd80f2f6770",
-      "artifactId": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "8d51e38b-0ba8-5dd3-a2cf-659900889ed2",
-          "id": "44807f6e-46ea-5bc5-b6de-cc539ef65011",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3132,
@@ -4711,8 +4711,8 @@ description: Variables in memory after executing truss-structure.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "76aa5ce5-ad3c-50f7-bfb3-38c96ecb798e",
-          "id": "c78e2c1e-b97e-5bda-a62e-23474e23e966",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3218,
@@ -4725,8 +4725,8 @@ description: Variables in memory after executing truss-structure.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "e0ee3e9c-01ec-55e8-8367-8100f1358709",
-          "id": "eda41f48-c4a8-5674-8b08-bd9bcf7226fb",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3324,
@@ -4739,8 +4739,8 @@ description: Variables in memory after executing truss-structure.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "db4fdb78-b74f-5d51-8a8a-7a584f66de0f",
-          "id": "51728232-788e-5fb2-9e2e-10de646814af",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3426,
@@ -4756,11 +4756,11 @@ description: Variables in memory after executing truss-structure.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "0030d44a-e936-52d0-b5b6-efd80f2f6770",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "44807f6e-46ea-5bc5-b6de-cc539ef65011",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4784,7 +4784,7 @@ description: Variables in memory after executing truss-structure.kcl
           },
           {
             "__geoMeta": {
-              "id": "c78e2c1e-b97e-5bda-a62e-23474e23e966",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4808,7 +4808,7 @@ description: Variables in memory after executing truss-structure.kcl
           },
           {
             "__geoMeta": {
-              "id": "eda41f48-c4a8-5674-8b08-bd9bcf7226fb",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4832,7 +4832,7 @@ description: Variables in memory after executing truss-structure.kcl
           },
           {
             "__geoMeta": {
-              "id": "51728232-788e-5fb2-9e2e-10de646814af",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4857,8 +4857,8 @@ description: Variables in memory after executing truss-structure.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "468f6520-a683-5392-9492-de009fdcddef",
-          "id": "468f6520-a683-5392-9492-de009fdcddef",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 54,
           "kind": "Custom",
           "origin": {
@@ -4898,7 +4898,7 @@ description: Variables in memory after executing truss-structure.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -4920,13 +4920,13 @@ description: Variables in memory after executing truss-structure.kcl
             "value": "line4"
           }
         },
-        "artifactId": "0030d44a-e936-52d0-b5b6-efd80f2f6770",
-        "originalId": "0030d44a-e936-52d0-b5b6-efd80f2f6770",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
-      "startCapId": "fd13719b-94bf-52b6-acc2-a6668f6a7577",
-      "endCapId": "6b322270-73b2-5990-bda7-277f5e688bab",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "in",
       "sectional": false
     }
@@ -4940,7 +4940,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+                "id": "[uuid]",
                 "objectId": 75,
                 "kind": {
                   "line": {
@@ -5014,8 +5014,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "468f6520-a683-5392-9492-de009fdcddef",
-                  "id": "468f6520-a683-5392-9492-de009fdcddef",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 54,
                   "origin": {
@@ -5044,7 +5044,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -5060,7 +5060,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "a54ad82c-be8d-599a-9764-c6498922dd5c",
+                "id": "[uuid]",
                 "objectId": 78,
                 "kind": {
                   "line": {
@@ -5134,8 +5134,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "468f6520-a683-5392-9492-de009fdcddef",
-                  "id": "468f6520-a683-5392-9492-de009fdcddef",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 54,
                   "origin": {
@@ -5164,7 +5164,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -5180,7 +5180,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "724b87fd-c709-5232-b7a1-547c15affb9b",
+                "id": "[uuid]",
                 "objectId": 81,
                 "kind": {
                   "line": {
@@ -5254,8 +5254,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "468f6520-a683-5392-9492-de009fdcddef",
-                  "id": "468f6520-a683-5392-9492-de009fdcddef",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 54,
                   "origin": {
@@ -5284,7 +5284,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -5300,7 +5300,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
+                "id": "[uuid]",
                 "objectId": 84,
                 "kind": {
                   "line": {
@@ -5374,8 +5374,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "468f6520-a683-5392-9492-de009fdcddef",
-                  "id": "468f6520-a683-5392-9492-de009fdcddef",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 54,
                   "origin": {
@@ -5404,7 +5404,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -5421,11 +5421,11 @@ description: Variables in memory after executing truss-structure.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -5449,7 +5449,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "a54ad82c-be8d-599a-9764-c6498922dd5c",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -5473,7 +5473,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "724b87fd-c709-5232-b7a1-547c15affb9b",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -5497,7 +5497,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -5522,8 +5522,8 @@ description: Variables in memory after executing truss-structure.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "468f6520-a683-5392-9492-de009fdcddef",
-                "id": "468f6520-a683-5392-9492-de009fdcddef",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 54,
                 "kind": "Custom",
                 "origin": {
@@ -5563,7 +5563,7 @@ description: Variables in memory after executing truss-structure.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -5585,8 +5585,8 @@ description: Variables in memory after executing truss-structure.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
-              "originalId": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "in",
               "isClosed": "implicitly"
             }
@@ -5600,8 +5600,8 @@ description: Variables in memory after executing truss-structure.kcl
   "legPlane": {
     "type": "Plane",
     "value": {
-      "artifactId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
-      "id": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "objectId": 89,
       "kind": "Custom",
       "origin": {
@@ -5664,14 +5664,14 @@ description: Variables in memory after executing truss-structure.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "f2e3fae3-4069-58be-a5a5-17ae327df966",
-      "originalId": "f2e3fae3-4069-58be-a5a5-17ae327df966",
-      "topologyId": "f2e3fae3-4069-58be-a5a5-17ae327df966",
-      "artifactId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "c3f769ac-db1d-5010-9264-bae1acf9956a",
-          "id": "a8d54d8e-6dcf-5d88-ae40-664bf52b5ba0",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4480,
@@ -5684,8 +5684,8 @@ description: Variables in memory after executing truss-structure.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "e0372001-4291-5ed9-9081-aed280a202e7",
-          "id": "978bebe6-c971-55e7-9870-41911b5ec984",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4553,
@@ -5698,8 +5698,8 @@ description: Variables in memory after executing truss-structure.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "990ce11d-cb9b-59a1-afda-371611eec5fd",
-          "id": "70d13eb9-8067-57c2-b280-568d9ad19439",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4628,
@@ -5712,8 +5712,8 @@ description: Variables in memory after executing truss-structure.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "84ab37df-5dbf-57b6-9c10-fa7576b442a9",
-          "id": "fb341494-e93d-5c32-ab1b-e20571f9199a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4701,
@@ -5729,11 +5729,11 @@ description: Variables in memory after executing truss-structure.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "f2e3fae3-4069-58be-a5a5-17ae327df966",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "a8d54d8e-6dcf-5d88-ae40-664bf52b5ba0",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5757,7 +5757,7 @@ description: Variables in memory after executing truss-structure.kcl
           },
           {
             "__geoMeta": {
-              "id": "978bebe6-c971-55e7-9870-41911b5ec984",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5781,7 +5781,7 @@ description: Variables in memory after executing truss-structure.kcl
           },
           {
             "__geoMeta": {
-              "id": "70d13eb9-8067-57c2-b280-568d9ad19439",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5805,7 +5805,7 @@ description: Variables in memory after executing truss-structure.kcl
           },
           {
             "__geoMeta": {
-              "id": "fb341494-e93d-5c32-ab1b-e20571f9199a",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5830,8 +5830,8 @@ description: Variables in memory after executing truss-structure.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
-          "id": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 89,
           "kind": "Custom",
           "origin": {
@@ -5871,7 +5871,7 @@ description: Variables in memory after executing truss-structure.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "c8da3189-2eee-5307-9477-076b12db84a5",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -5893,13 +5893,13 @@ description: Variables in memory after executing truss-structure.kcl
             "value": "line4"
           }
         },
-        "artifactId": "f2e3fae3-4069-58be-a5a5-17ae327df966",
-        "originalId": "f2e3fae3-4069-58be-a5a5-17ae327df966",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
-      "startCapId": "7b4e77e8-6e40-5e20-9f38-ec7f03861ffb",
-      "endCapId": "80c46ef0-788a-50aa-ac41-56299b895ac3",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "in",
       "sectional": false
     }
@@ -5913,7 +5913,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "d7d0ea25-9730-5767-b40a-0f2fd595f8fb",
+                "id": "[uuid]",
                 "objectId": 110,
                 "kind": {
                   "line": {
@@ -5987,8 +5987,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
-                  "id": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 89,
                   "origin": {
@@ -6017,7 +6017,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -6033,7 +6033,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "fa75438f-b2d0-5142-b452-608454e1806a",
+                "id": "[uuid]",
                 "objectId": 113,
                 "kind": {
                   "line": {
@@ -6107,8 +6107,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
-                  "id": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 89,
                   "origin": {
@@ -6137,7 +6137,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -6153,7 +6153,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "2e4398f0-3503-52f1-9fb1-caadee14f488",
+                "id": "[uuid]",
                 "objectId": 116,
                 "kind": {
                   "line": {
@@ -6227,8 +6227,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
-                  "id": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 89,
                   "origin": {
@@ -6257,7 +6257,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -6273,7 +6273,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "eb4a5516-04df-5d3c-a783-6699c67f971f",
+                "id": "[uuid]",
                 "objectId": 119,
                 "kind": {
                   "line": {
@@ -6347,8 +6347,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
-                  "id": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 89,
                   "origin": {
@@ -6377,7 +6377,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -6394,11 +6394,11 @@ description: Variables in memory after executing truss-structure.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "d7d0ea25-9730-5767-b40a-0f2fd595f8fb",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -6422,7 +6422,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "fa75438f-b2d0-5142-b452-608454e1806a",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -6446,7 +6446,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "2e4398f0-3503-52f1-9fb1-caadee14f488",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -6470,7 +6470,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "eb4a5516-04df-5d3c-a783-6699c67f971f",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -6495,8 +6495,8 @@ description: Variables in memory after executing truss-structure.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
-                "id": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 89,
                 "kind": "Custom",
                 "origin": {
@@ -6536,7 +6536,7 @@ description: Variables in memory after executing truss-structure.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "c8da3189-2eee-5307-9477-076b12db84a5",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -6558,8 +6558,8 @@ description: Variables in memory after executing truss-structure.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
-              "originalId": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "in",
               "isClosed": "implicitly"
             }
@@ -6594,14 +6594,14 @@ description: Variables in memory after executing truss-structure.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "e8637a6d-00c2-5b87-831e-2db8c2223948",
-      "originalId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
-      "topologyId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
-      "artifactId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "1bc6c00c-96c3-5857-8e6d-1b1b4471fef1",
-          "id": "34362590-c667-5932-b331-07b35cc22699",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2443,
@@ -6614,8 +6614,8 @@ description: Variables in memory after executing truss-structure.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "854851da-e00b-5b25-9522-165d6aaf77f0",
-          "id": "b55a379a-dc25-516e-8111-19caa5131bd5",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2527,
@@ -6628,8 +6628,8 @@ description: Variables in memory after executing truss-structure.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "c904122f-c0ea-55fb-a034-7311a78e9fd8",
-          "id": "a6c56052-ed67-50dc-be87-f3e19a154b69",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2631,
@@ -6642,8 +6642,8 @@ description: Variables in memory after executing truss-structure.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "6f31116e-b45a-50ac-b77b-57b2b4fe9de7",
-          "id": "9a57bd4b-ae79-53bb-8b10-034093e10a96",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2731,
@@ -6659,11 +6659,11 @@ description: Variables in memory after executing truss-structure.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "e8637a6d-00c2-5b87-831e-2db8c2223948",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "34362590-c667-5932-b331-07b35cc22699",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6687,7 +6687,7 @@ description: Variables in memory after executing truss-structure.kcl
           },
           {
             "__geoMeta": {
-              "id": "b55a379a-dc25-516e-8111-19caa5131bd5",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6711,7 +6711,7 @@ description: Variables in memory after executing truss-structure.kcl
           },
           {
             "__geoMeta": {
-              "id": "a6c56052-ed67-50dc-be87-f3e19a154b69",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6735,7 +6735,7 @@ description: Variables in memory after executing truss-structure.kcl
           },
           {
             "__geoMeta": {
-              "id": "9a57bd4b-ae79-53bb-8b10-034093e10a96",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6760,8 +6760,8 @@ description: Variables in memory after executing truss-structure.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "468f6520-a683-5392-9492-de009fdcddef",
-          "id": "468f6520-a683-5392-9492-de009fdcddef",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 54,
           "kind": "Custom",
           "origin": {
@@ -6801,7 +6801,7 @@ description: Variables in memory after executing truss-structure.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -6823,13 +6823,13 @@ description: Variables in memory after executing truss-structure.kcl
             "value": "line4"
           }
         },
-        "artifactId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
-        "originalId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
-      "startCapId": "360294e3-5a13-5229-b2d2-6cc8dcef20f4",
-      "endCapId": "23395655-43bf-573e-99a3-49c402cb3fba",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "in",
       "sectional": false
     }
@@ -6843,7 +6843,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+                "id": "[uuid]",
                 "objectId": 58,
                 "kind": {
                   "line": {
@@ -6917,8 +6917,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "468f6520-a683-5392-9492-de009fdcddef",
-                  "id": "468f6520-a683-5392-9492-de009fdcddef",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 54,
                   "origin": {
@@ -6947,7 +6947,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "4593843c-7d41-5ede-b7fa-ab9201f55957",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -6963,7 +6963,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "226ae769-fcaa-56af-ac65-5807ed297dad",
+                "id": "[uuid]",
                 "objectId": 61,
                 "kind": {
                   "line": {
@@ -7037,8 +7037,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "468f6520-a683-5392-9492-de009fdcddef",
-                  "id": "468f6520-a683-5392-9492-de009fdcddef",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 54,
                   "origin": {
@@ -7067,7 +7067,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "4593843c-7d41-5ede-b7fa-ab9201f55957",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -7083,7 +7083,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "2269b169-b2b2-5ec2-a665-24cb3822e91f",
+                "id": "[uuid]",
                 "objectId": 64,
                 "kind": {
                   "line": {
@@ -7157,8 +7157,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "468f6520-a683-5392-9492-de009fdcddef",
-                  "id": "468f6520-a683-5392-9492-de009fdcddef",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 54,
                   "origin": {
@@ -7187,7 +7187,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "4593843c-7d41-5ede-b7fa-ab9201f55957",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -7203,7 +7203,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "62f92a38-07e6-5321-9e56-be9dd50f1d7b",
+                "id": "[uuid]",
                 "objectId": 67,
                 "kind": {
                   "line": {
@@ -7277,8 +7277,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "468f6520-a683-5392-9492-de009fdcddef",
-                  "id": "468f6520-a683-5392-9492-de009fdcddef",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 54,
                   "origin": {
@@ -7307,7 +7307,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "4593843c-7d41-5ede-b7fa-ab9201f55957",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -7324,11 +7324,11 @@ description: Variables in memory after executing truss-structure.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "4593843c-7d41-5ede-b7fa-ab9201f55957",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -7352,7 +7352,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "226ae769-fcaa-56af-ac65-5807ed297dad",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -7376,7 +7376,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "2269b169-b2b2-5ec2-a665-24cb3822e91f",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -7400,7 +7400,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "62f92a38-07e6-5321-9e56-be9dd50f1d7b",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -7425,8 +7425,8 @@ description: Variables in memory after executing truss-structure.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "468f6520-a683-5392-9492-de009fdcddef",
-                "id": "468f6520-a683-5392-9492-de009fdcddef",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 54,
                 "kind": "Custom",
                 "origin": {
@@ -7466,7 +7466,7 @@ description: Variables in memory after executing truss-structure.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -7488,8 +7488,8 @@ description: Variables in memory after executing truss-structure.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "4593843c-7d41-5ede-b7fa-ab9201f55957",
-              "originalId": "4593843c-7d41-5ede-b7fa-ab9201f55957",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "in",
               "isClosed": "implicitly"
             }
@@ -7507,14 +7507,14 @@ description: Variables in memory after executing truss-structure.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "12610836-7dea-569b-a3df-ec2ff8b2c295",
-          "originalId": "12610836-7dea-569b-a3df-ec2ff8b2c295",
-          "topologyId": "12610836-7dea-569b-a3df-ec2ff8b2c295",
-          "artifactId": "f296bd37-495b-5038-81a3-eade3812cc2e",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "63dcb63b-4d18-5e44-a2af-12e21b4d24f1",
-              "id": "ead4b229-59e9-5f99-a4ff-6c9ba075df0c",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 6332,
@@ -7527,8 +7527,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "6f122334-d368-5046-9a4e-715e33bd2595",
-              "id": "7bd86a61-0ae6-5c1d-829c-67ebfee45439",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 6414,
@@ -7541,8 +7541,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "e2561fbb-5894-517d-8a6f-7a74789570c7",
-              "id": "4fe9fd5d-81fb-5d01-91be-07637b5b0171",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 6495,
@@ -7555,8 +7555,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "b1616657-104c-591a-b99d-b248b3f7b3c6",
-              "id": "9e555a5d-4688-5f32-be85-f7fcbd56f2bc",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 6577,
@@ -7572,11 +7572,11 @@ description: Variables in memory after executing truss-structure.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "12610836-7dea-569b-a3df-ec2ff8b2c295",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "ead4b229-59e9-5f99-a4ff-6c9ba075df0c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -7600,7 +7600,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "7bd86a61-0ae6-5c1d-829c-67ebfee45439",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -7624,7 +7624,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "4fe9fd5d-81fb-5d01-91be-07637b5b0171",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -7648,7 +7648,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "9e555a5d-4688-5f32-be85-f7fcbd56f2bc",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -7673,8 +7673,8 @@ description: Variables in memory after executing truss-structure.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "662e081e-0c36-5b97-b2b8-ea0464220525",
-              "id": "662e081e-0c36-5b97-b2b8-ea0464220525",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 150,
               "kind": "Custom",
               "origin": {
@@ -7714,7 +7714,7 @@ description: Variables in memory after executing truss-structure.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "985c5da4-4467-570a-8e44-4d58a9c442ba",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -7736,13 +7736,13 @@ description: Variables in memory after executing truss-structure.kcl
                 "value": "line4"
               }
             },
-            "artifactId": "12610836-7dea-569b-a3df-ec2ff8b2c295",
-            "originalId": "12610836-7dea-569b-a3df-ec2ff8b2c295",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "67ba789e-19d9-54ff-9be3-1cb87c4ee9e7",
-          "endCapId": "ac909ca5-a8bd-5382-82a2-e2018e708801",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -7751,14 +7751,14 @@ description: Variables in memory after executing truss-structure.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "a0432a58-5517-5489-a3d1-3e75850d8b89",
-          "originalId": "12610836-7dea-569b-a3df-ec2ff8b2c295",
-          "topologyId": "12610836-7dea-569b-a3df-ec2ff8b2c295",
-          "artifactId": "a0432a58-5517-5489-a3d1-3e75850d8b89",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "63dcb63b-4d18-5e44-a2af-12e21b4d24f1",
-              "id": "ead4b229-59e9-5f99-a4ff-6c9ba075df0c",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 6332,
@@ -7771,8 +7771,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "6f122334-d368-5046-9a4e-715e33bd2595",
-              "id": "7bd86a61-0ae6-5c1d-829c-67ebfee45439",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 6414,
@@ -7785,8 +7785,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "e2561fbb-5894-517d-8a6f-7a74789570c7",
-              "id": "4fe9fd5d-81fb-5d01-91be-07637b5b0171",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 6495,
@@ -7799,8 +7799,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "b1616657-104c-591a-b99d-b248b3f7b3c6",
-              "id": "9e555a5d-4688-5f32-be85-f7fcbd56f2bc",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 6577,
@@ -7816,11 +7816,11 @@ description: Variables in memory after executing truss-structure.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "a0432a58-5517-5489-a3d1-3e75850d8b89",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "ead4b229-59e9-5f99-a4ff-6c9ba075df0c",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -7844,7 +7844,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "7bd86a61-0ae6-5c1d-829c-67ebfee45439",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -7868,7 +7868,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "4fe9fd5d-81fb-5d01-91be-07637b5b0171",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -7892,7 +7892,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "9e555a5d-4688-5f32-be85-f7fcbd56f2bc",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -7917,8 +7917,8 @@ description: Variables in memory after executing truss-structure.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "662e081e-0c36-5b97-b2b8-ea0464220525",
-              "id": "662e081e-0c36-5b97-b2b8-ea0464220525",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 150,
               "kind": "Custom",
               "origin": {
@@ -7958,7 +7958,7 @@ description: Variables in memory after executing truss-structure.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "985c5da4-4467-570a-8e44-4d58a9c442ba",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -7980,13 +7980,13 @@ description: Variables in memory after executing truss-structure.kcl
                 "value": "line4"
               }
             },
-            "artifactId": "12610836-7dea-569b-a3df-ec2ff8b2c295",
-            "originalId": "12610836-7dea-569b-a3df-ec2ff8b2c295",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "67ba789e-19d9-54ff-9be3-1cb87c4ee9e7",
-          "endCapId": "ac909ca5-a8bd-5382-82a2-e2018e708801",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -7995,14 +7995,14 @@ description: Variables in memory after executing truss-structure.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "c0a92fa6-be55-5cfb-a650-710b68437549",
-          "originalId": "c0a92fa6-be55-5cfb-a650-710b68437549",
-          "topologyId": "c0a92fa6-be55-5cfb-a650-710b68437549",
-          "artifactId": "df641c7f-27a7-5524-a6c2-93d1677bc829",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "1218bdcf-a285-54ab-b922-793f8b2edb11",
-              "id": "d914875f-0684-589d-b416-972fcec03b3d",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 6859,
@@ -8015,8 +8015,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "915e208d-f553-5d0e-9c69-bc9bfe8bbd44",
-              "id": "b678d77e-4cf4-5fae-88c5-ce82a5fc75cb",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 6935,
@@ -8029,8 +8029,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "05360924-6cee-5db6-be02-49d1d4d8d8ce",
-              "id": "179ef6e3-7012-5cc4-b14f-546330baf7a8",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 7010,
@@ -8043,8 +8043,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "9bdaddc6-deb2-5992-88ea-7888921921df",
-              "id": "7a0b848e-e521-561b-b0ac-f62b7979cd43",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 7086,
@@ -8060,11 +8060,11 @@ description: Variables in memory after executing truss-structure.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "c0a92fa6-be55-5cfb-a650-710b68437549",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "d914875f-0684-589d-b416-972fcec03b3d",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -8088,7 +8088,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "b678d77e-4cf4-5fae-88c5-ce82a5fc75cb",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -8112,7 +8112,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "179ef6e3-7012-5cc4-b14f-546330baf7a8",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -8136,7 +8136,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "7a0b848e-e521-561b-b0ac-f62b7979cd43",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -8161,8 +8161,8 @@ description: Variables in memory after executing truss-structure.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "9ee9b0d5-39f2-5f42-ae00-6377cef02bc7",
-              "id": "9ee9b0d5-39f2-5f42-ae00-6377cef02bc7",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 168,
               "kind": "Custom",
               "origin": {
@@ -8202,7 +8202,7 @@ description: Variables in memory after executing truss-structure.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "94906884-1803-5336-93e6-0aca938f73f1",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -8224,13 +8224,13 @@ description: Variables in memory after executing truss-structure.kcl
                 "value": "line4"
               }
             },
-            "artifactId": "c0a92fa6-be55-5cfb-a650-710b68437549",
-            "originalId": "c0a92fa6-be55-5cfb-a650-710b68437549",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "732b9b18-0e7a-549a-9aa6-f65c1c126c66",
-          "endCapId": "59edd12a-e707-50c4-befe-1c8991d73989",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -8239,14 +8239,14 @@ description: Variables in memory after executing truss-structure.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "8bc11d78-d293-5f6e-86c2-e701c3117100",
-          "originalId": "c0a92fa6-be55-5cfb-a650-710b68437549",
-          "topologyId": "c0a92fa6-be55-5cfb-a650-710b68437549",
-          "artifactId": "8bc11d78-d293-5f6e-86c2-e701c3117100",
+          "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
+          "artifactId": "[uuid]",
           "value": [
             {
-              "faceId": "1218bdcf-a285-54ab-b922-793f8b2edb11",
-              "id": "d914875f-0684-589d-b416-972fcec03b3d",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 6859,
@@ -8259,8 +8259,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "915e208d-f553-5d0e-9c69-bc9bfe8bbd44",
-              "id": "b678d77e-4cf4-5fae-88c5-ce82a5fc75cb",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 6935,
@@ -8273,8 +8273,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "05360924-6cee-5db6-be02-49d1d4d8d8ce",
-              "id": "179ef6e3-7012-5cc4-b14f-546330baf7a8",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 7010,
@@ -8287,8 +8287,8 @@ description: Variables in memory after executing truss-structure.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "9bdaddc6-deb2-5992-88ea-7888921921df",
-              "id": "7a0b848e-e521-561b-b0ac-f62b7979cd43",
+              "faceId": "[uuid]",
+              "id": "[uuid]",
               "sourceRange": [],
               "tag": {
                 "commentStart": 7086,
@@ -8304,11 +8304,11 @@ description: Variables in memory after executing truss-structure.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "8bc11d78-d293-5f6e-86c2-e701c3117100",
+            "id": "[uuid]",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "d914875f-0684-589d-b416-972fcec03b3d",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -8332,7 +8332,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "b678d77e-4cf4-5fae-88c5-ce82a5fc75cb",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -8356,7 +8356,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "179ef6e3-7012-5cc4-b14f-546330baf7a8",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -8380,7 +8380,7 @@ description: Variables in memory after executing truss-structure.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "7a0b848e-e521-561b-b0ac-f62b7979cd43",
+                  "id": "[uuid]",
                   "sourceRange": []
                 },
                 "from": [
@@ -8405,8 +8405,8 @@ description: Variables in memory after executing truss-structure.kcl
             ],
             "on": {
               "type": "plane",
-              "artifactId": "9ee9b0d5-39f2-5f42-ae00-6377cef02bc7",
-              "id": "9ee9b0d5-39f2-5f42-ae00-6377cef02bc7",
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
               "objectId": 168,
               "kind": "Custom",
               "origin": {
@@ -8446,7 +8446,7 @@ description: Variables in memory after executing truss-structure.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "94906884-1803-5336-93e6-0aca938f73f1",
+                "id": "[uuid]",
                 "sourceRange": []
               }
             },
@@ -8468,13 +8468,13 @@ description: Variables in memory after executing truss-structure.kcl
                 "value": "line4"
               }
             },
-            "artifactId": "c0a92fa6-be55-5cfb-a650-710b68437549",
-            "originalId": "c0a92fa6-be55-5cfb-a650-710b68437549",
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
             "units": "in",
             "isClosed": "explicitly"
           },
-          "startCapId": "732b9b18-0e7a-549a-9aa6-f65c1c126c66",
-          "endCapId": "59edd12a-e707-50c4-befe-1c8991d73989",
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -8490,7 +8490,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "c8fe1f51-8285-5882-9af3-7e3b8d0e3598",
+                "id": "[uuid]",
                 "objectId": 172,
                 "kind": {
                   "line": {
@@ -8564,8 +8564,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "9ee9b0d5-39f2-5f42-ae00-6377cef02bc7",
-                  "id": "9ee9b0d5-39f2-5f42-ae00-6377cef02bc7",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 168,
                   "origin": {
@@ -8594,7 +8594,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "ab136157-9d5c-5ca2-93db-6deedd96b088",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -8610,7 +8610,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "e9531b65-3013-5f8b-bebc-accdbd43919c",
+                "id": "[uuid]",
                 "objectId": 175,
                 "kind": {
                   "line": {
@@ -8684,8 +8684,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "9ee9b0d5-39f2-5f42-ae00-6377cef02bc7",
-                  "id": "9ee9b0d5-39f2-5f42-ae00-6377cef02bc7",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 168,
                   "origin": {
@@ -8714,7 +8714,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "ab136157-9d5c-5ca2-93db-6deedd96b088",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -8730,7 +8730,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "aa43dd44-3af9-5d70-8bc7-9c69475889f4",
+                "id": "[uuid]",
                 "objectId": 178,
                 "kind": {
                   "line": {
@@ -8804,8 +8804,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "9ee9b0d5-39f2-5f42-ae00-6377cef02bc7",
-                  "id": "9ee9b0d5-39f2-5f42-ae00-6377cef02bc7",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 168,
                   "origin": {
@@ -8834,7 +8834,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "ab136157-9d5c-5ca2-93db-6deedd96b088",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -8850,7 +8850,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "6f0d489a-c010-523a-b796-8b9fcc04c74d",
+                "id": "[uuid]",
                 "objectId": 181,
                 "kind": {
                   "line": {
@@ -8924,8 +8924,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "9ee9b0d5-39f2-5f42-ae00-6377cef02bc7",
-                  "id": "9ee9b0d5-39f2-5f42-ae00-6377cef02bc7",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 168,
                   "origin": {
@@ -8954,7 +8954,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "ab136157-9d5c-5ca2-93db-6deedd96b088",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -8971,11 +8971,11 @@ description: Variables in memory after executing truss-structure.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "ab136157-9d5c-5ca2-93db-6deedd96b088",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "c8fe1f51-8285-5882-9af3-7e3b8d0e3598",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -8999,7 +8999,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "e9531b65-3013-5f8b-bebc-accdbd43919c",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -9023,7 +9023,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "aa43dd44-3af9-5d70-8bc7-9c69475889f4",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -9047,7 +9047,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "6f0d489a-c010-523a-b796-8b9fcc04c74d",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -9072,8 +9072,8 @@ description: Variables in memory after executing truss-structure.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "9ee9b0d5-39f2-5f42-ae00-6377cef02bc7",
-                "id": "9ee9b0d5-39f2-5f42-ae00-6377cef02bc7",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 168,
                 "kind": "Custom",
                 "origin": {
@@ -9113,7 +9113,7 @@ description: Variables in memory after executing truss-structure.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "94906884-1803-5336-93e6-0aca938f73f1",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -9135,8 +9135,8 @@ description: Variables in memory after executing truss-structure.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "ab136157-9d5c-5ca2-93db-6deedd96b088",
-              "originalId": "ab136157-9d5c-5ca2-93db-6deedd96b088",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "in",
               "isClosed": "implicitly"
             }
@@ -9156,7 +9156,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "fd9de7dd-b79f-57cc-9aca-d5f0c32b8322",
+                "id": "[uuid]",
                 "objectId": 154,
                 "kind": {
                   "line": {
@@ -9230,8 +9230,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "662e081e-0c36-5b97-b2b8-ea0464220525",
-                  "id": "662e081e-0c36-5b97-b2b8-ea0464220525",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 150,
                   "origin": {
@@ -9260,7 +9260,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -9276,7 +9276,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "bd2c7879-5553-55c3-bc25-46df0c8081fc",
+                "id": "[uuid]",
                 "objectId": 157,
                 "kind": {
                   "line": {
@@ -9350,8 +9350,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "662e081e-0c36-5b97-b2b8-ea0464220525",
-                  "id": "662e081e-0c36-5b97-b2b8-ea0464220525",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 150,
                   "origin": {
@@ -9380,7 +9380,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -9396,7 +9396,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "93fe6743-e0aa-5d65-834b-87a82208c703",
+                "id": "[uuid]",
                 "objectId": 160,
                 "kind": {
                   "line": {
@@ -9470,8 +9470,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "662e081e-0c36-5b97-b2b8-ea0464220525",
-                  "id": "662e081e-0c36-5b97-b2b8-ea0464220525",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 150,
                   "origin": {
@@ -9500,7 +9500,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -9516,7 +9516,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
+                "id": "[uuid]",
                 "objectId": 163,
                 "kind": {
                   "line": {
@@ -9590,8 +9590,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "662e081e-0c36-5b97-b2b8-ea0464220525",
-                  "id": "662e081e-0c36-5b97-b2b8-ea0464220525",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 150,
                   "origin": {
@@ -9620,7 +9620,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -9637,11 +9637,11 @@ description: Variables in memory after executing truss-structure.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "fd9de7dd-b79f-57cc-9aca-d5f0c32b8322",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -9665,7 +9665,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "bd2c7879-5553-55c3-bc25-46df0c8081fc",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -9689,7 +9689,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "93fe6743-e0aa-5d65-834b-87a82208c703",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -9713,7 +9713,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -9738,8 +9738,8 @@ description: Variables in memory after executing truss-structure.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "662e081e-0c36-5b97-b2b8-ea0464220525",
-                "id": "662e081e-0c36-5b97-b2b8-ea0464220525",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 150,
                 "kind": "Custom",
                 "origin": {
@@ -9779,7 +9779,7 @@ description: Variables in memory after executing truss-structure.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "985c5da4-4467-570a-8e44-4d58a9c442ba",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -9801,8 +9801,8 @@ description: Variables in memory after executing truss-structure.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
-              "originalId": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "in",
               "isClosed": "implicitly"
             }
@@ -9816,8 +9816,8 @@ description: Variables in memory after executing truss-structure.kcl
   "sparPlane": {
     "type": "Plane",
     "value": {
-      "artifactId": "468f6520-a683-5392-9492-de009fdcddef",
-      "id": "468f6520-a683-5392-9492-de009fdcddef",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "objectId": 54,
       "kind": "Custom",
       "origin": {
@@ -9850,14 +9850,14 @@ description: Variables in memory after executing truss-structure.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
-      "originalId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
-      "topologyId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
-      "artifactId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "6a53ed1e-2352-5a1f-a4ef-b3b531f371ee",
-          "id": "d2b06f35-ea05-5264-984b-74fa897e9a5b",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 478,
@@ -9870,8 +9870,8 @@ description: Variables in memory after executing truss-structure.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "769d022e-b2e4-5add-a763-a3bfa8de164c",
-          "id": "6ea65b2a-e9e0-5641-8682-4d6a44de8d5b",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 550,
@@ -9884,8 +9884,8 @@ description: Variables in memory after executing truss-structure.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "612dd905-3244-5750-9d68-7a3c6dd61abb",
-          "id": "a8c8ad7e-a026-52de-943d-b27a9e788973",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 624,
@@ -9898,8 +9898,8 @@ description: Variables in memory after executing truss-structure.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "ffb367e9-813a-5e8b-805f-6e31ade555c7",
-          "id": "883c4870-b730-5b6f-9675-27e77bbaebc1",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 707,
@@ -9912,8 +9912,8 @@ description: Variables in memory after executing truss-structure.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "4de601f3-ddb6-51f7-9421-5e10bb79be86",
-          "id": "4908086d-384e-57c0-9ee6-45ad487ac80b",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 789,
@@ -9926,8 +9926,8 @@ description: Variables in memory after executing truss-structure.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "5dde4c51-4e05-5f34-bc09-b7b46ffecdaa",
-          "id": "1efca929-fe34-54d8-9ed8-e1134788307a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1057,
@@ -9940,8 +9940,8 @@ description: Variables in memory after executing truss-structure.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "a630a4f8-fb73-511f-a2ae-521436f26104",
-          "id": "572f14f1-fb6c-5f94-af46-4e374245e733",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1135,
@@ -9954,8 +9954,8 @@ description: Variables in memory after executing truss-structure.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "d444ac3b-2687-5fa8-8297-a6345ec4cd96",
-          "id": "80d76757-de32-59f8-8fba-f5af593bf071",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1223,
@@ -9968,8 +9968,8 @@ description: Variables in memory after executing truss-structure.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "c6067e9a-9389-5c4f-8262-42fb87da780b",
-          "id": "72b492f4-6c37-540b-b639-5e45e8bab8be",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1323,
@@ -9982,8 +9982,8 @@ description: Variables in memory after executing truss-structure.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "edab71e9-f3ef-5004-b0df-3df075fba296",
-          "id": "764d918c-3ea4-518f-95b0-ed91be932636",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1634,
@@ -9996,8 +9996,8 @@ description: Variables in memory after executing truss-structure.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "352c273b-c284-553a-bc0a-cb21ac5ff6c5",
-          "id": "c929f0d6-92f3-5ed0-bb81-1fbdd2a44e6a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1713,
@@ -10010,8 +10010,8 @@ description: Variables in memory after executing truss-structure.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "bc92816f-9d3d-58c6-8f56-e50e15625142",
-          "id": "9a3b2a86-fd83-5532-aed7-53028568dfdb",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1802,
@@ -10024,8 +10024,8 @@ description: Variables in memory after executing truss-structure.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "ef99b48a-ee8d-527c-9bbd-4999b12b1698",
-          "id": "4e32e2e4-798a-5c71-9bcc-5c07a6b32dfe",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1903,
@@ -10041,11 +10041,11 @@ description: Variables in memory after executing truss-structure.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "d2b06f35-ea05-5264-984b-74fa897e9a5b",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -10069,7 +10069,7 @@ description: Variables in memory after executing truss-structure.kcl
           },
           {
             "__geoMeta": {
-              "id": "6ea65b2a-e9e0-5641-8682-4d6a44de8d5b",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -10093,7 +10093,7 @@ description: Variables in memory after executing truss-structure.kcl
           },
           {
             "__geoMeta": {
-              "id": "a8c8ad7e-a026-52de-943d-b27a9e788973",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -10117,7 +10117,7 @@ description: Variables in memory after executing truss-structure.kcl
           },
           {
             "__geoMeta": {
-              "id": "883c4870-b730-5b6f-9675-27e77bbaebc1",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -10141,7 +10141,7 @@ description: Variables in memory after executing truss-structure.kcl
           },
           {
             "__geoMeta": {
-              "id": "4908086d-384e-57c0-9ee6-45ad487ac80b",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -10165,7 +10165,7 @@ description: Variables in memory after executing truss-structure.kcl
           },
           {
             "__geoMeta": {
-              "id": "1efca929-fe34-54d8-9ed8-e1134788307a",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -10189,7 +10189,7 @@ description: Variables in memory after executing truss-structure.kcl
           },
           {
             "__geoMeta": {
-              "id": "572f14f1-fb6c-5f94-af46-4e374245e733",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -10213,7 +10213,7 @@ description: Variables in memory after executing truss-structure.kcl
           },
           {
             "__geoMeta": {
-              "id": "80d76757-de32-59f8-8fba-f5af593bf071",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -10237,7 +10237,7 @@ description: Variables in memory after executing truss-structure.kcl
           },
           {
             "__geoMeta": {
-              "id": "72b492f4-6c37-540b-b639-5e45e8bab8be",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -10261,7 +10261,7 @@ description: Variables in memory after executing truss-structure.kcl
           },
           {
             "__geoMeta": {
-              "id": "764d918c-3ea4-518f-95b0-ed91be932636",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -10285,7 +10285,7 @@ description: Variables in memory after executing truss-structure.kcl
           },
           {
             "__geoMeta": {
-              "id": "c929f0d6-92f3-5ed0-bb81-1fbdd2a44e6a",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -10309,7 +10309,7 @@ description: Variables in memory after executing truss-structure.kcl
           },
           {
             "__geoMeta": {
-              "id": "9a3b2a86-fd83-5532-aed7-53028568dfdb",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -10333,7 +10333,7 @@ description: Variables in memory after executing truss-structure.kcl
           },
           {
             "__geoMeta": {
-              "id": "4e32e2e4-798a-5c71-9bcc-5c07a6b32dfe",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -10358,8 +10358,8 @@ description: Variables in memory after executing truss-structure.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -10399,7 +10399,7 @@ description: Variables in memory after executing truss-structure.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -10457,13 +10457,13 @@ description: Variables in memory after executing truss-structure.kcl
             "value": "rightOpening4"
           }
         },
-        "artifactId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
-        "originalId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
-      "startCapId": "1f04315a-9330-5d86-aec7-9abe35ceea20",
-      "endCapId": "0503ff9c-66b6-5519-9fbe-bb2bd2641f1f",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "in",
       "sectional": false
     }
@@ -10477,7 +10477,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
+                "id": "[uuid]",
                 "objectId": 40,
                 "kind": {
                   "line": {
@@ -10551,8 +10551,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -10581,7 +10581,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leftOpening1"
@@ -10597,7 +10597,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+                "id": "[uuid]",
                 "objectId": 43,
                 "kind": {
                   "line": {
@@ -10671,8 +10671,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -10701,7 +10701,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leftOpening2"
@@ -10717,7 +10717,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "f084ad07-5777-5607-a544-c69f455c2aab",
+                "id": "[uuid]",
                 "objectId": 46,
                 "kind": {
                   "line": {
@@ -10791,8 +10791,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -10821,7 +10821,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leftOpening3"
@@ -10837,7 +10837,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+                "id": "[uuid]",
                 "objectId": 49,
                 "kind": {
                   "line": {
@@ -10911,8 +10911,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -10941,7 +10941,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leftOpening4"
@@ -10957,7 +10957,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "id": "[uuid]",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -11031,8 +11031,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -11061,7 +11061,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -11077,7 +11077,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                "id": "[uuid]",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -11151,8 +11151,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -11181,7 +11181,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -11197,7 +11197,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+                "id": "[uuid]",
                 "objectId": 10,
                 "kind": {
                   "line": {
@@ -11271,8 +11271,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -11301,7 +11301,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -11317,7 +11317,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                "id": "[uuid]",
                 "objectId": 13,
                 "kind": {
                   "line": {
@@ -11391,8 +11391,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -11421,7 +11421,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -11437,7 +11437,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+                "id": "[uuid]",
                 "objectId": 16,
                 "kind": {
                   "line": {
@@ -11511,8 +11511,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -11541,7 +11541,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -11558,11 +11558,11 @@ description: Variables in memory after executing truss-structure.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -11586,7 +11586,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -11610,7 +11610,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -11634,7 +11634,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -11658,7 +11658,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -11682,7 +11682,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "01e801cc-22ef-5071-814b-847d3fcf22d5",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -11699,7 +11699,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -11723,7 +11723,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -11747,7 +11747,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -11771,7 +11771,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -11795,7 +11795,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -11812,7 +11812,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -11836,7 +11836,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -11860,7 +11860,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "f084ad07-5777-5607-a544-c69f455c2aab",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -11884,7 +11884,7 @@ description: Variables in memory after executing truss-structure.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -11909,8 +11909,8 @@ description: Variables in memory after executing truss-structure.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 0,
                 "kind": "Custom",
                 "origin": {
@@ -11950,7 +11950,7 @@ description: Variables in memory after executing truss-structure.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -12008,8 +12008,8 @@ description: Variables in memory after executing truss-structure.kcl
                   "value": "rightOpening4"
                 }
               },
-              "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
-              "originalId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "in",
               "isClosed": "implicitly"
             }
@@ -12023,7 +12023,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+                "id": "[uuid]",
                 "objectId": 24,
                 "kind": {
                   "line": {
@@ -12097,8 +12097,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -12127,7 +12127,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rightOpening1"
@@ -12143,7 +12143,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+                "id": "[uuid]",
                 "objectId": 27,
                 "kind": {
                   "line": {
@@ -12217,8 +12217,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -12247,7 +12247,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rightOpening2"
@@ -12263,7 +12263,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+                "id": "[uuid]",
                 "objectId": 30,
                 "kind": {
                   "line": {
@@ -12337,8 +12337,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -12367,7 +12367,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rightOpening3"
@@ -12383,7 +12383,7 @@ description: Variables in memory after executing truss-structure.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+                "id": "[uuid]",
                 "objectId": 33,
                 "kind": {
                   "line": {
@@ -12457,8 +12457,8 @@ description: Variables in memory after executing truss-structure.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -12487,7 +12487,7 @@ description: Variables in memory after executing truss-structure.kcl
                     "units": null
                   }
                 },
-                "sketchId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rightOpening4"

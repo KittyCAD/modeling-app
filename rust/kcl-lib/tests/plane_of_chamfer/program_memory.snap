@@ -12,28 +12,28 @@ description: Variables in memory after executing plane_of_chamfer.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "topologyId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "artifactId": "41c630c9-9d44-581b-98af-caee575bea48",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "f858b0f4-ee1c-59f8-9496-132f50940789",
-          "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "ad0b192d-4915-585b-b28d-d6f09a4d6fb8",
-          "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "a77db112-51c4-5a35-b8a5-dbaeb4ea6453",
-          "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 277,
@@ -46,8 +46,8 @@ description: Variables in memory after executing plane_of_chamfer.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "14e5189b-50c0-50d0-ac67-fb5a7c7e6b4b",
-          "id": "14e5189b-50c0-50d0-ac67-fb5a7c7e6b4b",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 352,
@@ -60,8 +60,8 @@ description: Variables in memory after executing plane_of_chamfer.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "7b681387-29ea-57f1-8713-d63280827139",
-          "id": "7b681387-29ea-57f1-8713-d63280827139",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 487,
@@ -87,11 +87,11 @@ description: Variables in memory after executing plane_of_chamfer.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -108,7 +108,7 @@ description: Variables in memory after executing plane_of_chamfer.kcl
           },
           {
             "__geoMeta": {
-              "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -125,7 +125,7 @@ description: Variables in memory after executing plane_of_chamfer.kcl
           },
           {
             "__geoMeta": {
-              "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -150,8 +150,8 @@ description: Variables in memory after executing plane_of_chamfer.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
-          "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "XY",
           "origin": {
@@ -191,7 +191,7 @@ description: Variables in memory after executing plane_of_chamfer.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -209,17 +209,17 @@ description: Variables in memory after executing plane_of_chamfer.kcl
             "value": "seg02"
           }
         },
-        "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-        "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "3ec3901f-e043-5dab-b99a-4563417d71cf",
-      "endCapId": "14e5189b-50c0-50d0-ac67-fb5a7c7e6b4b",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "edgeCuts": [
         {
           "type": "chamfer",
-          "id": "7b681387-29ea-57f1-8713-d63280827139",
+          "id": "[uuid]",
           "length": {
             "n": 1.0,
             "ty": {
@@ -228,7 +228,7 @@ description: Variables in memory after executing plane_of_chamfer.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "af8d249f-d33d-5049-a5f5-bf4aa8f6c5da",
+          "edgeId": "[uuid]",
           "tag": {
             "commentStart": 487,
             "end": 493,
@@ -246,8 +246,8 @@ description: Variables in memory after executing plane_of_chamfer.kcl
   "p0": {
     "type": "Plane",
     "value": {
-      "artifactId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
-      "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "objectId": 1,
       "kind": "Custom",
       "origin": {
@@ -280,11 +280,11 @@ description: Variables in memory after executing plane_of_chamfer.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -301,7 +301,7 @@ description: Variables in memory after executing plane_of_chamfer.kcl
         },
         {
           "__geoMeta": {
-            "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -318,7 +318,7 @@ description: Variables in memory after executing plane_of_chamfer.kcl
         },
         {
           "__geoMeta": {
-            "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -343,8 +343,8 @@ description: Variables in memory after executing plane_of_chamfer.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
-        "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "XY",
         "origin": {
@@ -384,7 +384,7 @@ description: Variables in memory after executing plane_of_chamfer.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -402,8 +402,8 @@ description: Variables in memory after executing plane_of_chamfer.kcl
           "value": "seg02"
         }
       },
-      "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -421,8 +421,8 @@ description: Variables in memory after executing plane_of_chamfer.kcl
   "sketch001": {
     "type": "Plane",
     "value": {
-      "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
-      "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "objectId": 0,
       "kind": "XY",
       "origin": {
@@ -455,11 +455,11 @@ description: Variables in memory after executing plane_of_chamfer.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -483,8 +483,8 @@ description: Variables in memory after executing plane_of_chamfer.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
-        "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 1,
         "kind": "Custom",
         "origin": {
@@ -524,12 +524,12 @@ description: Variables in memory after executing plane_of_chamfer.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
-      "artifactId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
-      "originalId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }

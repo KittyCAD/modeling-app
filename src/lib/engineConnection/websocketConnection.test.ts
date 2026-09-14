@@ -15,13 +15,15 @@ import { createOnWebSocketMessage } from '@src/lib/engineConnection/websocketCon
 const disconnectAll = vi.fn()
 const tearDownManager = vi.fn()
 
-const createMessageHandler = (cloudProjectId?: string) =>
+const createMessageHandler = (
+  cloudProjectId?: string,
+  requestReconnect = vi.fn()
+) =>
   createOnWebSocketMessage({
     disconnectAll,
     setPong: vi.fn(),
     dispatchEvent: vi.fn(() => true),
     ping: vi.fn(),
-    setPing: vi.fn(),
     createPeerConnection: vi.fn(),
     send: vi.fn(),
     setSdpAnswer: vi.fn(),
@@ -33,6 +35,7 @@ const createMessageHandler = (cloudProjectId?: string) =>
     setApiCallId: vi.fn(),
     getCloudProjectId: () => cloudProjectId,
     tearDownManager,
+    requestReconnect,
   })
 
 const dispatchFailureMessage = (message: string, cloudProjectId?: string) => {
@@ -51,6 +54,39 @@ describe('createOnWebSocketMessage', () => {
     vi.clearAllMocks()
     vi.spyOn(console, 'error').mockImplementation(() => {})
     vi.spyOn(console, 'warn').mockImplementation(() => {})
+  })
+
+  it('requests reconnection for a reconnect response without reporting a failure', () => {
+    const requestReconnect = vi.fn()
+    const handler = createMessageHandler(undefined, requestReconnect)
+    handler(
+      new MessageEvent('message', {
+        data: JSON.stringify({
+          success: true,
+          request_id: null,
+          resp: { type: 'reconnect', data: {} },
+        }),
+      })
+    )
+    expect(requestReconnect).toHaveBeenCalledOnce()
+    expect(reportClientError).not.toHaveBeenCalled()
+  })
+
+  it('does not request reconnection for a pong response', () => {
+    const requestReconnect = vi.fn()
+    createMessageHandler(
+      undefined,
+      requestReconnect
+    )(
+      new MessageEvent('message', {
+        data: JSON.stringify({
+          success: true,
+          request_id: null,
+          resp: { type: 'pong', data: {} },
+        }),
+      })
+    )
+    expect(requestReconnect).not.toHaveBeenCalled()
   })
 
   it('reports backend Engine disconnect failures with the cloud project ID', () => {

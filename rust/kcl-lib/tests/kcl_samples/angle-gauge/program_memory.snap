@@ -6,8 +6,8 @@ description: Variables in memory after executing angle-gauge.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
-      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -86,14 +86,14 @@ description: Variables in memory after executing angle-gauge.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
-      "originalId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
-      "topologyId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
-      "artifactId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "d1b70a94-c9b3-5485-a4da-49c4162f6f1b",
-          "id": "0d37746a-0831-5508-8b7b-f53342c45c32",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 425,
@@ -106,8 +106,8 @@ description: Variables in memory after executing angle-gauge.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "e787d545-0147-5453-be42-479d7cb8fd0d",
-          "id": "ce6cf2e3-333a-5d81-a218-ad72debffe40",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 505,
@@ -120,8 +120,8 @@ description: Variables in memory after executing angle-gauge.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "c6895390-6ee1-5890-9fe4-ca65fe8aedd4",
-          "id": "891296e8-0c13-519d-8afe-59158f8fca73",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 589,
@@ -134,8 +134,8 @@ description: Variables in memory after executing angle-gauge.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "35fcb6d3-4eae-5aa6-8e79-97e4dd9098d3",
-          "id": "11238134-bd51-5920-907f-45af8ba43955",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 804,
@@ -148,8 +148,8 @@ description: Variables in memory after executing angle-gauge.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "f0b5033d-ab4c-5c7e-b564-d2803f64d4d7",
-          "id": "547c2965-cf92-5fe0-b1cd-12e4ede8b85b",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 894,
@@ -162,8 +162,8 @@ description: Variables in memory after executing angle-gauge.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "0d096139-0eb1-527f-9185-26f880a097b5",
-          "id": "143f8a6b-cb5c-5294-b607-2fa264a0e255",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1695,
@@ -176,8 +176,8 @@ description: Variables in memory after executing angle-gauge.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "48074c54-c4ca-5e90-a769-aa07fedf724a",
-          "id": "e399799a-9d34-57d8-aaf4-123081b7efda",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1785,
@@ -190,8 +190,8 @@ description: Variables in memory after executing angle-gauge.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "39eb24b5-b442-587f-adb7-4fbd42682ff1",
-          "id": "72bf6900-96ac-5ebd-a788-216d48167e7a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1882,
@@ -207,11 +207,11 @@ description: Variables in memory after executing angle-gauge.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "0d37746a-0831-5508-8b7b-f53342c45c32",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -235,7 +235,7 @@ description: Variables in memory after executing angle-gauge.kcl
           },
           {
             "__geoMeta": {
-              "id": "ce6cf2e3-333a-5d81-a218-ad72debffe40",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -259,7 +259,7 @@ description: Variables in memory after executing angle-gauge.kcl
           },
           {
             "__geoMeta": {
-              "id": "891296e8-0c13-519d-8afe-59158f8fca73",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -283,7 +283,7 @@ description: Variables in memory after executing angle-gauge.kcl
           },
           {
             "__geoMeta": {
-              "id": "11238134-bd51-5920-907f-45af8ba43955",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -307,7 +307,7 @@ description: Variables in memory after executing angle-gauge.kcl
           },
           {
             "__geoMeta": {
-              "id": "547c2965-cf92-5fe0-b1cd-12e4ede8b85b",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -331,7 +331,7 @@ description: Variables in memory after executing angle-gauge.kcl
           },
           {
             "__geoMeta": {
-              "id": "143f8a6b-cb5c-5294-b607-2fa264a0e255",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -355,7 +355,7 @@ description: Variables in memory after executing angle-gauge.kcl
           },
           {
             "__geoMeta": {
-              "id": "e399799a-9d34-57d8-aaf4-123081b7efda",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -379,7 +379,7 @@ description: Variables in memory after executing angle-gauge.kcl
           },
           {
             "__geoMeta": {
-              "id": "72bf6900-96ac-5ebd-a788-216d48167e7a",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -404,8 +404,8 @@ description: Variables in memory after executing angle-gauge.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -445,7 +445,7 @@ description: Variables in memory after executing angle-gauge.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "01e801cc-22ef-5071-814b-847d3fcf22d5",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -483,13 +483,13 @@ description: Variables in memory after executing angle-gauge.kcl
             "value": "upperRightOuterEdge"
           }
         },
-        "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
-        "originalId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
-      "startCapId": "f3392c9f-2c65-57e1-b85d-432ccd574fc3",
-      "endCapId": "79584c2b-3e9c-52ae-b76b-74afa81f3f84",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "in",
       "sectional": false
     }
@@ -512,7 +512,7 @@ description: Variables in memory after executing angle-gauge.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+                "id": "[uuid]",
                 "objectId": 19,
                 "kind": {
                   "line": {
@@ -586,8 +586,8 @@ description: Variables in memory after executing angle-gauge.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -616,7 +616,7 @@ description: Variables in memory after executing angle-gauge.kcl
                     "units": null
                   }
                 },
-                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bottomOuterEdge"
@@ -632,7 +632,7 @@ description: Variables in memory after executing angle-gauge.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+                "id": "[uuid]",
                 "objectId": 44,
                 "kind": {
                   "line": {
@@ -707,8 +707,8 @@ description: Variables in memory after executing angle-gauge.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -737,7 +737,7 @@ description: Variables in memory after executing angle-gauge.kcl
                     "units": null
                   }
                 },
-                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "cutoutAngleReferenceEdge"
@@ -753,7 +753,7 @@ description: Variables in memory after executing angle-gauge.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+                "id": "[uuid]",
                 "objectId": 35,
                 "kind": {
                   "line": {
@@ -827,8 +827,8 @@ description: Variables in memory after executing angle-gauge.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -857,7 +857,7 @@ description: Variables in memory after executing angle-gauge.kcl
                     "units": null
                   }
                 },
-                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "cutoutAngledEdge"
@@ -873,7 +873,7 @@ description: Variables in memory after executing angle-gauge.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "f084ad07-5777-5607-a544-c69f455c2aab",
+                "id": "[uuid]",
                 "objectId": 38,
                 "kind": {
                   "line": {
@@ -947,8 +947,8 @@ description: Variables in memory after executing angle-gauge.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -977,7 +977,7 @@ description: Variables in memory after executing angle-gauge.kcl
                     "units": null
                   }
                 },
-                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "cutoutLeftVerticalEdge"
@@ -993,7 +993,7 @@ description: Variables in memory after executing angle-gauge.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+                "id": "[uuid]",
                 "objectId": 41,
                 "kind": {
                   "line": {
@@ -1067,8 +1067,8 @@ description: Variables in memory after executing angle-gauge.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1097,7 +1097,7 @@ description: Variables in memory after executing angle-gauge.kcl
                     "units": null
                   }
                 },
-                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "cutoutTopEdge"
@@ -1113,7 +1113,7 @@ description: Variables in memory after executing angle-gauge.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "id": "[uuid]",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -1187,8 +1187,8 @@ description: Variables in memory after executing angle-gauge.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1217,7 +1217,7 @@ description: Variables in memory after executing angle-gauge.kcl
                     "units": null
                   }
                 },
-                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leftOuterEdge"
@@ -1233,7 +1233,7 @@ description: Variables in memory after executing angle-gauge.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+                "id": "[uuid]",
                 "objectId": 16,
                 "kind": {
                   "line": {
@@ -1307,8 +1307,8 @@ description: Variables in memory after executing angle-gauge.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1337,7 +1337,7 @@ description: Variables in memory after executing angle-gauge.kcl
                     "units": null
                   }
                 },
-                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "lowerRightOuterEdge"
@@ -1354,11 +1354,11 @@ description: Variables in memory after executing angle-gauge.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1382,7 +1382,7 @@ description: Variables in memory after executing angle-gauge.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1406,7 +1406,7 @@ description: Variables in memory after executing angle-gauge.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1430,7 +1430,7 @@ description: Variables in memory after executing angle-gauge.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1447,7 +1447,7 @@ description: Variables in memory after executing angle-gauge.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1471,7 +1471,7 @@ description: Variables in memory after executing angle-gauge.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1495,7 +1495,7 @@ description: Variables in memory after executing angle-gauge.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1512,7 +1512,7 @@ description: Variables in memory after executing angle-gauge.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1536,7 +1536,7 @@ description: Variables in memory after executing angle-gauge.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "f084ad07-5777-5607-a544-c69f455c2aab",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1560,7 +1560,7 @@ description: Variables in memory after executing angle-gauge.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -1585,8 +1585,8 @@ description: Variables in memory after executing angle-gauge.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 0,
                 "kind": "Custom",
                 "origin": {
@@ -1626,7 +1626,7 @@ description: Variables in memory after executing angle-gauge.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "01e801cc-22ef-5071-814b-847d3fcf22d5",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -1664,8 +1664,8 @@ description: Variables in memory after executing angle-gauge.kcl
                   "value": "upperRightOuterEdge"
                 }
               },
-              "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
-              "originalId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "in",
               "isClosed": "implicitly"
             }
@@ -1679,7 +1679,7 @@ description: Variables in memory after executing angle-gauge.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                "id": "[uuid]",
                 "objectId": 13,
                 "kind": {
                   "line": {
@@ -1754,8 +1754,8 @@ description: Variables in memory after executing angle-gauge.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1784,7 +1784,7 @@ description: Variables in memory after executing angle-gauge.kcl
                     "units": null
                   }
                 },
-                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rightCutoutConstructionEdge"
@@ -1800,7 +1800,7 @@ description: Variables in memory after executing angle-gauge.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                "id": "[uuid]",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -1874,8 +1874,8 @@ description: Variables in memory after executing angle-gauge.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1904,7 +1904,7 @@ description: Variables in memory after executing angle-gauge.kcl
                     "units": null
                   }
                 },
-                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "topOuterEdge"
@@ -1920,7 +1920,7 @@ description: Variables in memory after executing angle-gauge.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+                "id": "[uuid]",
                 "objectId": 10,
                 "kind": {
                   "line": {
@@ -1994,8 +1994,8 @@ description: Variables in memory after executing angle-gauge.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2024,7 +2024,7 @@ description: Variables in memory after executing angle-gauge.kcl
                     "units": null
                   }
                 },
-                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "upperRightOuterEdge"
@@ -2041,11 +2041,11 @@ description: Variables in memory after executing angle-gauge.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "0d37746a-0831-5508-8b7b-f53342c45c32",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -2069,7 +2069,7 @@ description: Variables in memory after executing angle-gauge.kcl
         },
         {
           "__geoMeta": {
-            "id": "ce6cf2e3-333a-5d81-a218-ad72debffe40",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -2093,7 +2093,7 @@ description: Variables in memory after executing angle-gauge.kcl
         },
         {
           "__geoMeta": {
-            "id": "891296e8-0c13-519d-8afe-59158f8fca73",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -2117,7 +2117,7 @@ description: Variables in memory after executing angle-gauge.kcl
         },
         {
           "__geoMeta": {
-            "id": "11238134-bd51-5920-907f-45af8ba43955",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -2141,7 +2141,7 @@ description: Variables in memory after executing angle-gauge.kcl
         },
         {
           "__geoMeta": {
-            "id": "547c2965-cf92-5fe0-b1cd-12e4ede8b85b",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -2165,7 +2165,7 @@ description: Variables in memory after executing angle-gauge.kcl
         },
         {
           "__geoMeta": {
-            "id": "143f8a6b-cb5c-5294-b607-2fa264a0e255",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -2189,7 +2189,7 @@ description: Variables in memory after executing angle-gauge.kcl
         },
         {
           "__geoMeta": {
-            "id": "e399799a-9d34-57d8-aaf4-123081b7efda",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -2213,7 +2213,7 @@ description: Variables in memory after executing angle-gauge.kcl
         },
         {
           "__geoMeta": {
-            "id": "72bf6900-96ac-5ebd-a788-216d48167e7a",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -2238,8 +2238,8 @@ description: Variables in memory after executing angle-gauge.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -2279,7 +2279,7 @@ description: Variables in memory after executing angle-gauge.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "01e801cc-22ef-5071-814b-847d3fcf22d5",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -2317,8 +2317,8 @@ description: Variables in memory after executing angle-gauge.kcl
           "value": "upperRightOuterEdge"
         }
       },
-      "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
-      "originalId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "in",
       "isClosed": "explicitly"
     }

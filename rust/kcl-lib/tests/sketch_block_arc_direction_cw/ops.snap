@@ -657,7 +657,7 @@ description: Operations executed sketch_block_arc_direction_cw.kcl
             "value": {
               "base": {
                 "type": "Segment",
-                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+                "artifact_id": "[uuid]"
               },
               "meta": {
                 "type": "Object",
@@ -665,18 +665,18 @@ description: Operations executed sketch_block_arc_direction_cw.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79"
+                      "artifactId": "[uuid]"
                     }
                   }
                 }
               },
               "mid": {
                 "type": "Segment",
-                "artifact_id": "523b9fc1-d681-5ef3-b407-128525533bfe"
+                "artifact_id": "[uuid]"
               },
               "top": {
                 "type": "Segment",
-                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
+                "artifact_id": "[uuid]"
               }
             }
           },
@@ -709,7 +709,7 @@ description: Operations executed sketch_block_arc_direction_cw.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -843,7 +843,7 @@ description: Operations executed sketch_block_arc_direction_cw.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -867,7 +867,7 @@ description: Operations executed sketch_block_arc_direction_cw.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -891,7 +891,7 @@ description: Operations executed sketch_block_arc_direction_cw.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -915,7 +915,7 @@ description: Operations executed sketch_block_arc_direction_cw.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -939,7 +939,7 @@ description: Operations executed sketch_block_arc_direction_cw.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -963,7 +963,7 @@ description: Operations executed sketch_block_arc_direction_cw.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -987,7 +987,7 @@ description: Operations executed sketch_block_arc_direction_cw.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1011,7 +1011,7 @@ description: Operations executed sketch_block_arc_direction_cw.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

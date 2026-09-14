@@ -20,6 +20,12 @@ instance pattern with zero transformations.
 Really only use this function if YOU ARE SURE you need it. In most cases you
 do not need clone and using a pattern with `instance = 2` is more appropriate.
 
+A clone inherits all transforms already applied to the source geometry.
+Because of [a known rotation-origin bug](https://github.com/KittyCAD/modeling-app/issues/9983),
+rotating a clone of an already-translated body can also move its inherited
+placement. Until that bug is fixed, clone an untransformed seed, rotate it
+first, and then apply that instance's complete translation.
+
 
 
 
@@ -489,6 +495,42 @@ outputArray[0]
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-clone11.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+// Work around #9983 by rotating an untransformed seed before placing it.
+seedSketch = sketch(on = XY) {
+  bottom = line(start = [var -5mm, var -5mm], end = [var 5mm, var -5mm])
+  right = line(start = [var 5mm, var -5mm], end = [var 5mm, var 5mm])
+  top = line(start = [var 5mm, var 5mm], end = [var -5mm, var 5mm])
+  left = line(start = [var -5mm, var 5mm], end = [var -5mm, var -5mm])
+}
+seedRegion = region(segments = [seedSketch.bottom, seedSketch.right])
+seed = extrude(seedRegion, length = 10mm)
+
+leftPart = clone(seed)
+  |> translate(x = -20mm, y = 20mm, global = true)
+
+rightPart = clone(seed)
+  |> rotate(axis = Z, angle = 90deg, global = true)
+  |> translate(x = 20mm, y = 20mm, global = true)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the clone function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-clone12_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-clone12.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

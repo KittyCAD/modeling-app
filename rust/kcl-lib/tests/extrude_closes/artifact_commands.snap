@@ -5,7 +5,7 @@ description: Artifact commands extrude_closes.kcl
 {
   "rust/kcl-lib/tests/extrude_closes/input.kcl": [
     {
-      "cmdId": "3c085bb9-a401-55d5-8042-5a9095193d55",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,11 +30,11 @@ description: Artifact commands extrude_closes.kcl
       }
     },
     {
-      "cmdId": "91226189-7e64-5690-9203-67ee33a6eb03",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -46,18 +46,18 @@ description: Artifact commands extrude_closes.kcl
       }
     },
     {
-      "cmdId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "path": "[uuid]",
         "to": {
           "x": -1.89,
           "y": -3.77,
@@ -66,18 +66,18 @@ description: Artifact commands extrude_closes.kcl
       }
     },
     {
-      "cmdId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -90,11 +90,11 @@ description: Artifact commands extrude_closes.kcl
       }
     },
     {
-      "cmdId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -107,11 +107,11 @@ description: Artifact commands extrude_closes.kcl
       }
     },
     {
-      "cmdId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -124,11 +124,11 @@ description: Artifact commands extrude_closes.kcl
       }
     },
     {
-      "cmdId": "523b9fc1-d681-5ef3-b407-128525533bfe",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {
@@ -141,11 +141,11 @@ description: Artifact commands extrude_closes.kcl
       }
     },
     {
-      "cmdId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -157,11 +157,11 @@ description: Artifact commands extrude_closes.kcl
       }
     },
     {
-      "cmdId": "41c630c9-9d44-581b-98af-caee575bea48",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "target": "[uuid]",
         "distance": 5.0,
         "faces": null,
         "opposite": "None",
@@ -170,36 +170,36 @@ description: Artifact commands extrude_closes.kcl
       }
     },
     {
-      "cmdId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+        "object_id": "[uuid]"
       }
     },
     {
-      "cmdId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-        "edge_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
-      "cmdId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-        "edge_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     }
   ]

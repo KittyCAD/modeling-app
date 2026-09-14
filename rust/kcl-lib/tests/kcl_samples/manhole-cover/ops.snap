@@ -3872,7 +3872,7 @@ description: Operations executed manhole-cover.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -3902,7 +3902,7 @@ description: Operations executed manhole-cover.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "29f44732-9f58-5550-8e28-aea348bd8ebb"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -3950,7 +3950,7 @@ description: Operations executed manhole-cover.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -4919,11 +4919,11 @@ description: Operations executed manhole-cover.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "c0c1140b-284f-50ff-b80d-615b8b938475"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "2be53470-95a0-52f3-9baa-988a35cbe7a5"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -4953,7 +4953,7 @@ description: Operations executed manhole-cover.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -4995,7 +4995,7 @@ description: Operations executed manhole-cover.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "0a3927a3-4dca-5e67-855f-5c8045a33997"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -5008,7 +5008,7 @@ description: Operations executed manhole-cover.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "2b45af9b-6b90-5530-b9b7-b193031152d8"
+                  "artifactId": "[uuid]"
                 }
               }
             ]
@@ -5042,13 +5042,13 @@ description: Operations executed manhole-cover.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "c8da3189-2eee-5307-9477-076b12db84a5"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -5168,7 +5168,7 @@ description: Operations executed manhole-cover.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5192,7 +5192,7 @@ description: Operations executed manhole-cover.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5216,7 +5216,7 @@ description: Operations executed manhole-cover.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5240,7 +5240,7 @@ description: Operations executed manhole-cover.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5264,7 +5264,7 @@ description: Operations executed manhole-cover.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5288,7 +5288,7 @@ description: Operations executed manhole-cover.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5312,7 +5312,7 @@ description: Operations executed manhole-cover.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5336,7 +5336,7 @@ description: Operations executed manhole-cover.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

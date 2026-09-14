@@ -6,8 +6,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
-      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,8 +38,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
   "__sketch_39_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
-      "id": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 4.0,
@@ -70,8 +70,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
   "__sketch_63_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
-      "id": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 4.2,
@@ -102,8 +102,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
   "__sketch_76_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
-      "id": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": -0.2,
@@ -134,8 +134,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
   "__sketch_89_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
-      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -182,14 +182,14 @@ description: Variables in memory after executing bracket-with-slot.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "72dddee3-1330-5c4f-b767-659f762ad674",
-      "originalId": "72dddee3-1330-5c4f-b767-659f762ad674",
-      "topologyId": "72dddee3-1330-5c4f-b767-659f762ad674",
-      "artifactId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "70234578-22da-5570-b77f-9ab44bbf8710",
-          "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 729,
@@ -202,8 +202,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "96c71cb9-3d0a-5ae9-af8e-0674c606a31d",
-          "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 801,
@@ -216,8 +216,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "0bcc35a7-9852-5856-882a-1b89c7df4b6a",
-          "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 912,
@@ -230,8 +230,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "09c354a2-d6d5-5d42-9fdf-bf50650f057c",
-          "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1022,
@@ -244,8 +244,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "e6d910f3-f438-5bd9-91a4-357f3e469646",
-          "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1133,
@@ -258,8 +258,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "638fc546-4103-5d59-9bf1-24031278ff97",
-          "id": "1084cca5-0297-5dc3-92ac-287642feefac",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1247,
@@ -272,8 +272,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
-          "id": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2315,
@@ -286,8 +286,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
-          "id": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2293,
@@ -313,11 +313,11 @@ description: Variables in memory after executing bracket-with-slot.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "72dddee3-1330-5c4f-b767-659f762ad674",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -341,7 +341,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           {
             "__geoMeta": {
-              "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -365,7 +365,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           {
             "__geoMeta": {
-              "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -389,7 +389,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           {
             "__geoMeta": {
-              "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -413,7 +413,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           {
             "__geoMeta": {
-              "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -437,7 +437,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           {
             "__geoMeta": {
-              "id": "1084cca5-0297-5dc3-92ac-287642feefac",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -462,8 +462,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -503,7 +503,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -541,13 +541,13 @@ description: Variables in memory after executing bracket-with-slot.kcl
             "value": "line6"
           }
         },
-        "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674",
-        "originalId": "72dddee3-1330-5c4f-b767-659f762ad674",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
-      "endCapId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -556,14 +556,14 @@ description: Variables in memory after executing bracket-with-slot.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "969d96c2-dff1-582e-8974-a3f5fef9c547",
-      "originalId": "72dddee3-1330-5c4f-b767-659f762ad674",
-      "topologyId": "969d96c2-dff1-582e-8974-a3f5fef9c547",
-      "artifactId": "969d96c2-dff1-582e-8974-a3f5fef9c547",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "70234578-22da-5570-b77f-9ab44bbf8710",
-          "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 729,
@@ -576,8 +576,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "96c71cb9-3d0a-5ae9-af8e-0674c606a31d",
-          "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 801,
@@ -590,8 +590,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "0bcc35a7-9852-5856-882a-1b89c7df4b6a",
-          "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 912,
@@ -604,8 +604,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "09c354a2-d6d5-5d42-9fdf-bf50650f057c",
-          "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1022,
@@ -618,8 +618,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "e6d910f3-f438-5bd9-91a4-357f3e469646",
-          "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1133,
@@ -632,8 +632,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "638fc546-4103-5d59-9bf1-24031278ff97",
-          "id": "1084cca5-0297-5dc3-92ac-287642feefac",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1247,
@@ -646,8 +646,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
-          "id": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2315,
@@ -660,8 +660,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
-          "id": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2293,
@@ -687,11 +687,11 @@ description: Variables in memory after executing bracket-with-slot.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "969d96c2-dff1-582e-8974-a3f5fef9c547",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -715,7 +715,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           {
             "__geoMeta": {
-              "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -739,7 +739,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           {
             "__geoMeta": {
-              "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -763,7 +763,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           {
             "__geoMeta": {
-              "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -787,7 +787,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           {
             "__geoMeta": {
-              "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -811,7 +811,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           {
             "__geoMeta": {
-              "id": "1084cca5-0297-5dc3-92ac-287642feefac",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -836,8 +836,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -877,7 +877,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -915,17 +915,17 @@ description: Variables in memory after executing bracket-with-slot.kcl
             "value": "line6"
           }
         },
-        "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674",
-        "originalId": "72dddee3-1330-5c4f-b767-659f762ad674",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
-      "endCapId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "7d4c814d-f292-503d-a012-68ab58c77524",
+          "id": "[uuid]",
           "radius": {
             "n": 8.0,
             "ty": {
@@ -934,12 +934,12 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "e8e8a799-080a-5af7-b552-92f258391b5a",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
+          "id": "[uuid]",
           "radius": {
             "n": 12.0,
             "ty": {
@@ -948,12 +948,12 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "375909ca-005f-5bf2-83c9-5f0b348dac37",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+          "id": "[uuid]",
           "radius": {
             "n": 20.0,
             "ty": {
@@ -962,12 +962,12 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+          "id": "[uuid]",
           "radius": {
             "n": 20.0,
             "ty": {
@@ -976,12 +976,12 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "41d8aa02-4a9b-5fb6-90fb-724c008b2567",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+          "id": "[uuid]",
           "radius": {
             "n": 20.0,
             "ty": {
@@ -990,12 +990,12 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "1084cca5-0297-5dc3-92ac-287642feefac",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+          "id": "[uuid]",
           "radius": {
             "n": 20.0,
             "ty": {
@@ -1004,7 +1004,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "9efbcccc-288a-5a5c-b7f4-7d2f8bbae204",
+          "edgeId": "[uuid]",
           "tag": null
         }
       ],
@@ -1016,14 +1016,14 @@ description: Variables in memory after executing bracket-with-slot.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
-      "originalId": "72dddee3-1330-5c4f-b767-659f762ad674",
-      "topologyId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
-      "artifactId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "70234578-22da-5570-b77f-9ab44bbf8710",
-          "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 729,
@@ -1036,8 +1036,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "96c71cb9-3d0a-5ae9-af8e-0674c606a31d",
-          "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 801,
@@ -1050,8 +1050,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "0bcc35a7-9852-5856-882a-1b89c7df4b6a",
-          "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 912,
@@ -1064,8 +1064,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "09c354a2-d6d5-5d42-9fdf-bf50650f057c",
-          "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1022,
@@ -1078,8 +1078,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "e6d910f3-f438-5bd9-91a4-357f3e469646",
-          "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1133,
@@ -1092,8 +1092,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "638fc546-4103-5d59-9bf1-24031278ff97",
-          "id": "1084cca5-0297-5dc3-92ac-287642feefac",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1247,
@@ -1106,8 +1106,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
-          "id": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2315,
@@ -1120,8 +1120,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
-          "id": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2293,
@@ -1147,11 +1147,11 @@ description: Variables in memory after executing bracket-with-slot.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1175,7 +1175,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           {
             "__geoMeta": {
-              "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1199,7 +1199,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           {
             "__geoMeta": {
-              "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1223,7 +1223,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           {
             "__geoMeta": {
-              "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1247,7 +1247,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           {
             "__geoMeta": {
-              "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1271,7 +1271,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           {
             "__geoMeta": {
-              "id": "1084cca5-0297-5dc3-92ac-287642feefac",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1296,8 +1296,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -1337,7 +1337,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -1375,17 +1375,17 @@ description: Variables in memory after executing bracket-with-slot.kcl
             "value": "line6"
           }
         },
-        "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674",
-        "originalId": "72dddee3-1330-5c4f-b767-659f762ad674",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
-      "endCapId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "7d4c814d-f292-503d-a012-68ab58c77524",
+          "id": "[uuid]",
           "radius": {
             "n": 8.0,
             "ty": {
@@ -1394,12 +1394,12 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "e8e8a799-080a-5af7-b552-92f258391b5a",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
+          "id": "[uuid]",
           "radius": {
             "n": 12.0,
             "ty": {
@@ -1408,12 +1408,12 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "375909ca-005f-5bf2-83c9-5f0b348dac37",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+          "id": "[uuid]",
           "radius": {
             "n": 20.0,
             "ty": {
@@ -1422,12 +1422,12 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+          "id": "[uuid]",
           "radius": {
             "n": 20.0,
             "ty": {
@@ -1436,12 +1436,12 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "41d8aa02-4a9b-5fb6-90fb-724c008b2567",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+          "id": "[uuid]",
           "radius": {
             "n": 20.0,
             "ty": {
@@ -1450,12 +1450,12 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "1084cca5-0297-5dc3-92ac-287642feefac",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+          "id": "[uuid]",
           "radius": {
             "n": 20.0,
             "ty": {
@@ -1464,7 +1464,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "9efbcccc-288a-5a5c-b7f4-7d2f8bbae204",
+          "edgeId": "[uuid]",
           "tag": null
         }
       ],
@@ -1588,11 +1588,11 @@ description: Variables in memory after executing bracket-with-slot.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "e176a3df-d320-541a-8388-fdd46efabae4",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -1623,8 +1623,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
-        "id": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 75,
         "kind": "Custom",
         "origin": {
@@ -1664,7 +1664,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -1674,8 +1674,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "value": "bottomCircle"
         }
       },
-      "artifactId": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
-      "originalId": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -1689,7 +1689,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+                "id": "[uuid]",
                 "objectId": 82,
                 "kind": {
                   "circle": {
@@ -1763,8 +1763,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
-                  "id": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 75,
                   "origin": {
@@ -1793,7 +1793,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bottomCircle"
@@ -1809,7 +1809,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62",
+                "id": "[uuid]",
                 "objectId": 79,
                 "kind": {
                   "line": {
@@ -1884,8 +1884,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
-                  "id": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 75,
                   "origin": {
@@ -1914,7 +1914,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bottomGuide"
@@ -1931,11 +1931,11 @@ description: Variables in memory after executing bracket-with-slot.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -1966,8 +1966,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
-                "id": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 75,
                 "kind": "Custom",
                 "origin": {
@@ -2007,7 +2007,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -2017,8 +2017,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   "value": "bottomCircle"
                 }
               },
-              "artifactId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
-              "originalId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "no"
             }
@@ -2038,14 +2038,14 @@ description: Variables in memory after executing bracket-with-slot.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
-      "originalId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
-      "topologyId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
-      "artifactId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "c5817aa6-3738-52de-9593-c590ee024812",
-          "id": "a796ac51-f320-5542-b7e6-2eaeaba5cb25",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4987,
@@ -2061,11 +2061,11 @@ description: Variables in memory after executing bracket-with-slot.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "a796ac51-f320-5542-b7e6-2eaeaba5cb25",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -2096,8 +2096,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
-          "id": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 62,
           "kind": "Custom",
           "origin": {
@@ -2137,7 +2137,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -2147,13 +2147,13 @@ description: Variables in memory after executing bracket-with-slot.kcl
             "value": "topCircle"
           }
         },
-        "artifactId": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce",
-        "originalId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "702e8a73-6cac-5a51-bb38-91b261cbd27d",
-      "endCapId": "6497ef6c-3c06-5a84-abaa-cd05a8fa4797",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -2300,11 +2300,11 @@ description: Variables in memory after executing bracket-with-slot.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "a796ac51-f320-5542-b7e6-2eaeaba5cb25",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -2335,8 +2335,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
-        "id": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 62,
         "kind": "Custom",
         "origin": {
@@ -2376,7 +2376,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -2386,8 +2386,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "value": "topCircle"
         }
       },
-      "artifactId": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce",
-      "originalId": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -2402,11 +2402,11 @@ description: Variables in memory after executing bracket-with-slot.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "a54ad82c-be8d-599a-9764-c6498922dd5c",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -2437,8 +2437,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
-                "id": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 62,
                 "kind": "Custom",
                 "origin": {
@@ -2478,7 +2478,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -2488,8 +2488,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   "value": "topCircle"
                 }
               },
-              "artifactId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
-              "originalId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "no"
             }
@@ -2503,7 +2503,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "a54ad82c-be8d-599a-9764-c6498922dd5c",
+                "id": "[uuid]",
                 "objectId": 69,
                 "kind": {
                   "circle": {
@@ -2577,8 +2577,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
-                  "id": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 62,
                   "origin": {
@@ -2607,7 +2607,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "topCircle"
@@ -2623,7 +2623,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+                "id": "[uuid]",
                 "objectId": 66,
                 "kind": {
                   "line": {
@@ -2698,8 +2698,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
-                  "id": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 62,
                   "origin": {
@@ -2728,7 +2728,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "topGuide"
@@ -2768,14 +2768,14 @@ description: Variables in memory after executing bracket-with-slot.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "72dddee3-1330-5c4f-b767-659f762ad674",
-      "originalId": "72dddee3-1330-5c4f-b767-659f762ad674",
-      "topologyId": "72dddee3-1330-5c4f-b767-659f762ad674",
-      "artifactId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "70234578-22da-5570-b77f-9ab44bbf8710",
-          "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 729,
@@ -2788,8 +2788,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "96c71cb9-3d0a-5ae9-af8e-0674c606a31d",
-          "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 801,
@@ -2802,8 +2802,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "0bcc35a7-9852-5856-882a-1b89c7df4b6a",
-          "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 912,
@@ -2816,8 +2816,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "09c354a2-d6d5-5d42-9fdf-bf50650f057c",
-          "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1022,
@@ -2830,8 +2830,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "e6d910f3-f438-5bd9-91a4-357f3e469646",
-          "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1133,
@@ -2844,8 +2844,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "638fc546-4103-5d59-9bf1-24031278ff97",
-          "id": "1084cca5-0297-5dc3-92ac-287642feefac",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1247,
@@ -2858,8 +2858,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
-          "id": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2315,
@@ -2872,8 +2872,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
-          "id": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2293,
@@ -2899,11 +2899,11 @@ description: Variables in memory after executing bracket-with-slot.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "72dddee3-1330-5c4f-b767-659f762ad674",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2927,7 +2927,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           {
             "__geoMeta": {
-              "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2951,7 +2951,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           {
             "__geoMeta": {
-              "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2975,7 +2975,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           {
             "__geoMeta": {
-              "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -2999,7 +2999,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           {
             "__geoMeta": {
-              "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3023,7 +3023,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           {
             "__geoMeta": {
-              "id": "1084cca5-0297-5dc3-92ac-287642feefac",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -3048,8 +3048,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -3089,7 +3089,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -3127,17 +3127,17 @@ description: Variables in memory after executing bracket-with-slot.kcl
             "value": "line6"
           }
         },
-        "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674",
-        "originalId": "72dddee3-1330-5c4f-b767-659f762ad674",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
-      "endCapId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "7d4c814d-f292-503d-a012-68ab58c77524",
+          "id": "[uuid]",
           "radius": {
             "n": 8.0,
             "ty": {
@@ -3146,12 +3146,12 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "e8e8a799-080a-5af7-b552-92f258391b5a",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
+          "id": "[uuid]",
           "radius": {
             "n": 12.0,
             "ty": {
@@ -3160,12 +3160,12 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "375909ca-005f-5bf2-83c9-5f0b348dac37",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+          "id": "[uuid]",
           "radius": {
             "n": 20.0,
             "ty": {
@@ -3174,12 +3174,12 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+          "id": "[uuid]",
           "radius": {
             "n": 20.0,
             "ty": {
@@ -3188,12 +3188,12 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "41d8aa02-4a9b-5fb6-90fb-724c008b2567",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+          "id": "[uuid]",
           "radius": {
             "n": 20.0,
             "ty": {
@@ -3202,12 +3202,12 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "1084cca5-0297-5dc3-92ac-287642feefac",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+          "id": "[uuid]",
           "radius": {
             "n": 20.0,
             "ty": {
@@ -3216,7 +3216,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "9efbcccc-288a-5a5c-b7f4-7d2f8bbae204",
+          "edgeId": "[uuid]",
           "tag": null
         }
       ],
@@ -3237,11 +3237,11 @@ description: Variables in memory after executing bracket-with-slot.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -3272,8 +3272,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
-        "id": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 75,
         "kind": "Custom",
         "origin": {
@@ -3313,7 +3313,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -3323,8 +3323,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "value": "bottomCircle"
         }
       },
-      "artifactId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
-      "originalId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "no"
     }
@@ -3333,11 +3333,11 @@ description: Variables in memory after executing bracket-with-slot.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "a54ad82c-be8d-599a-9764-c6498922dd5c",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -3368,8 +3368,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
-        "id": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 62,
         "kind": "Custom",
         "origin": {
@@ -3409,7 +3409,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -3419,8 +3419,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "value": "topCircle"
         }
       },
-      "artifactId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
-      "originalId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "no"
     }
@@ -3429,11 +3429,11 @@ description: Variables in memory after executing bracket-with-slot.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3457,7 +3457,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
         },
         {
           "__geoMeta": {
-            "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3481,7 +3481,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
         },
         {
           "__geoMeta": {
-            "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3505,7 +3505,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
         },
         {
           "__geoMeta": {
-            "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3529,7 +3529,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
         },
         {
           "__geoMeta": {
-            "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3553,7 +3553,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
         },
         {
           "__geoMeta": {
-            "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3578,8 +3578,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -3619,7 +3619,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -3649,8 +3649,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "value": "line6"
         }
       },
-      "artifactId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
-      "originalId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "implicitly"
     }
@@ -3659,11 +3659,11 @@ description: Variables in memory after executing bracket-with-slot.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3687,7 +3687,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
         },
         {
           "__geoMeta": {
-            "id": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": false,
@@ -3717,7 +3717,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
         },
         {
           "__geoMeta": {
-            "id": "e02115f0-d853-5684-82c8-298aa25e4541",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3741,7 +3741,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
         },
         {
           "__geoMeta": {
-            "id": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": false,
@@ -3772,8 +3772,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
-        "id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 88,
         "kind": "Custom",
         "origin": {
@@ -3813,7 +3813,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -3835,8 +3835,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "value": "line3"
         }
       },
-      "artifactId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
-      "originalId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "implicitly"
     }
@@ -3845,11 +3845,11 @@ description: Variables in memory after executing bracket-with-slot.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -3879,7 +3879,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
         },
         {
           "__geoMeta": {
-            "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3896,7 +3896,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
         },
         {
           "__geoMeta": {
-            "id": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -3927,8 +3927,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
-        "id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 38,
         "kind": "Custom",
         "origin": {
@@ -3968,7 +3968,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -3982,8 +3982,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "value": "fastenerCircle"
         }
       },
-      "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
-      "originalId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "no"
     }
@@ -3992,14 +3992,14 @@ description: Variables in memory after executing bracket-with-slot.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "72dddee3-1330-5c4f-b767-659f762ad674",
-      "originalId": "72dddee3-1330-5c4f-b767-659f762ad674",
-      "topologyId": "72dddee3-1330-5c4f-b767-659f762ad674",
-      "artifactId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "70234578-22da-5570-b77f-9ab44bbf8710",
-          "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 729,
@@ -4012,8 +4012,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "96c71cb9-3d0a-5ae9-af8e-0674c606a31d",
-          "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 801,
@@ -4026,8 +4026,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "0bcc35a7-9852-5856-882a-1b89c7df4b6a",
-          "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 912,
@@ -4040,8 +4040,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "09c354a2-d6d5-5d42-9fdf-bf50650f057c",
-          "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1022,
@@ -4054,8 +4054,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "e6d910f3-f438-5bd9-91a4-357f3e469646",
-          "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1133,
@@ -4068,8 +4068,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "638fc546-4103-5d59-9bf1-24031278ff97",
-          "id": "1084cca5-0297-5dc3-92ac-287642feefac",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1247,
@@ -4082,8 +4082,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
-          "id": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2315,
@@ -4096,8 +4096,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
-          "id": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2293,
@@ -4123,11 +4123,11 @@ description: Variables in memory after executing bracket-with-slot.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "72dddee3-1330-5c4f-b767-659f762ad674",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4151,7 +4151,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           {
             "__geoMeta": {
-              "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4175,7 +4175,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           {
             "__geoMeta": {
-              "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4199,7 +4199,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           {
             "__geoMeta": {
-              "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4223,7 +4223,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           {
             "__geoMeta": {
-              "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4247,7 +4247,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           {
             "__geoMeta": {
-              "id": "1084cca5-0297-5dc3-92ac-287642feefac",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -4272,8 +4272,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -4313,7 +4313,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -4351,17 +4351,17 @@ description: Variables in memory after executing bracket-with-slot.kcl
             "value": "line6"
           }
         },
-        "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674",
-        "originalId": "72dddee3-1330-5c4f-b767-659f762ad674",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
-      "endCapId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "7d4c814d-f292-503d-a012-68ab58c77524",
+          "id": "[uuid]",
           "radius": {
             "n": 8.0,
             "ty": {
@@ -4370,7 +4370,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "e8e8a799-080a-5af7-b552-92f258391b5a",
+          "edgeId": "[uuid]",
           "tag": null
         }
       ],
@@ -4426,7 +4426,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "id": "[uuid]",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -4500,8 +4500,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4530,7 +4530,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -4546,7 +4546,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                "id": "[uuid]",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -4620,8 +4620,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4650,7 +4650,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -4666,7 +4666,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                "id": "[uuid]",
                 "objectId": 11,
                 "kind": {
                   "line": {
@@ -4740,8 +4740,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4770,7 +4770,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -4786,7 +4786,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+                "id": "[uuid]",
                 "objectId": 15,
                 "kind": {
                   "line": {
@@ -4860,8 +4860,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4890,7 +4890,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -4906,7 +4906,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
+                "id": "[uuid]",
                 "objectId": 19,
                 "kind": {
                   "line": {
@@ -4980,8 +4980,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5010,7 +5010,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -5026,7 +5026,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+                "id": "[uuid]",
                 "objectId": 23,
                 "kind": {
                   "line": {
@@ -5100,8 +5100,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5130,7 +5130,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -5147,11 +5147,11 @@ description: Variables in memory after executing bracket-with-slot.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -5175,7 +5175,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -5199,7 +5199,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -5223,7 +5223,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -5247,7 +5247,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -5271,7 +5271,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -5296,8 +5296,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 0,
                 "kind": "Custom",
                 "origin": {
@@ -5337,7 +5337,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -5367,8 +5367,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   "value": "line6"
                 }
               },
-              "artifactId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
-              "originalId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -5383,11 +5383,11 @@ description: Variables in memory after executing bracket-with-slot.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "72dddee3-1330-5c4f-b767-659f762ad674",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -5411,7 +5411,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
         },
         {
           "__geoMeta": {
-            "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -5435,7 +5435,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
         },
         {
           "__geoMeta": {
-            "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -5459,7 +5459,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
         },
         {
           "__geoMeta": {
-            "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -5483,7 +5483,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
         },
         {
           "__geoMeta": {
-            "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -5507,7 +5507,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
         },
         {
           "__geoMeta": {
-            "id": "1084cca5-0297-5dc3-92ac-287642feefac",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -5532,8 +5532,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -5573,7 +5573,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -5611,8 +5611,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "value": "line6"
         }
       },
-      "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674",
-      "originalId": "72dddee3-1330-5c4f-b767-659f762ad674",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -5621,14 +5621,14 @@ description: Variables in memory after executing bracket-with-slot.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "72dddee3-1330-5c4f-b767-659f762ad674",
-      "originalId": "72dddee3-1330-5c4f-b767-659f762ad674",
-      "topologyId": "72dddee3-1330-5c4f-b767-659f762ad674",
-      "artifactId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "70234578-22da-5570-b77f-9ab44bbf8710",
-          "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 729,
@@ -5641,8 +5641,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "96c71cb9-3d0a-5ae9-af8e-0674c606a31d",
-          "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 801,
@@ -5655,8 +5655,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "0bcc35a7-9852-5856-882a-1b89c7df4b6a",
-          "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 912,
@@ -5669,8 +5669,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "09c354a2-d6d5-5d42-9fdf-bf50650f057c",
-          "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1022,
@@ -5683,8 +5683,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "e6d910f3-f438-5bd9-91a4-357f3e469646",
-          "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1133,
@@ -5697,8 +5697,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "638fc546-4103-5d59-9bf1-24031278ff97",
-          "id": "1084cca5-0297-5dc3-92ac-287642feefac",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 1247,
@@ -5711,8 +5711,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
-          "id": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2315,
@@ -5725,8 +5725,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
-          "id": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 2293,
@@ -5752,11 +5752,11 @@ description: Variables in memory after executing bracket-with-slot.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "72dddee3-1330-5c4f-b767-659f762ad674",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5780,7 +5780,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           {
             "__geoMeta": {
-              "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5804,7 +5804,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           {
             "__geoMeta": {
-              "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5828,7 +5828,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           {
             "__geoMeta": {
-              "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5852,7 +5852,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           {
             "__geoMeta": {
-              "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5876,7 +5876,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           {
             "__geoMeta": {
-              "id": "1084cca5-0297-5dc3-92ac-287642feefac",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -5901,8 +5901,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -5942,7 +5942,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "e383621f-755a-5f2e-ada3-608aff393dab",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -5980,17 +5980,17 @@ description: Variables in memory after executing bracket-with-slot.kcl
             "value": "line6"
           }
         },
-        "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674",
-        "originalId": "72dddee3-1330-5c4f-b767-659f762ad674",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
-      "endCapId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "7d4c814d-f292-503d-a012-68ab58c77524",
+          "id": "[uuid]",
           "radius": {
             "n": 8.0,
             "ty": {
@@ -5999,12 +5999,12 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "e8e8a799-080a-5af7-b552-92f258391b5a",
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
+          "id": "[uuid]",
           "radius": {
             "n": 12.0,
             "ty": {
@@ -6013,7 +6013,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "375909ca-005f-5bf2-83c9-5f0b348dac37",
+          "edgeId": "[uuid]",
           "tag": null
         }
       ],
@@ -6061,14 +6061,14 @@ description: Variables in memory after executing bracket-with-slot.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a",
-      "originalId": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a",
-      "topologyId": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a",
-      "artifactId": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "13c223ab-055f-59b6-858c-147ca04a4ae7",
-          "id": "e1f6cd1f-6071-5d4d-872c-bd968e2f300b",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 6385,
@@ -6081,8 +6081,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "898a3549-24a6-55ce-930f-cbd1ca566293",
-          "id": "3df72a37-176e-50b7-a300-421ed01496b3",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 6460,
@@ -6095,8 +6095,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "297e8a54-cbea-5883-809b-dfec617ac879",
-          "id": "6e04fdcd-9d9e-5f96-8b40-9d47d4ce7089",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 6600,
@@ -6109,8 +6109,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "7201fb5f-8a9b-5412-8a4c-4c48dd06067d",
-          "id": "4864d83b-006d-595b-80e0-1a2fbc9b5540",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 6714,
@@ -6126,11 +6126,11 @@ description: Variables in memory after executing bracket-with-slot.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "e1f6cd1f-6071-5d4d-872c-bd968e2f300b",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6154,7 +6154,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           {
             "__geoMeta": {
-              "id": "3df72a37-176e-50b7-a300-421ed01496b3",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -6184,7 +6184,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           {
             "__geoMeta": {
-              "id": "6e04fdcd-9d9e-5f96-8b40-9d47d4ce7089",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -6208,7 +6208,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           {
             "__geoMeta": {
-              "id": "4864d83b-006d-595b-80e0-1a2fbc9b5540",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -6239,8 +6239,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
-          "id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 88,
           "kind": "Custom",
           "origin": {
@@ -6280,7 +6280,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -6302,13 +6302,13 @@ description: Variables in memory after executing bracket-with-slot.kcl
             "value": "line3"
           }
         },
-        "artifactId": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a",
-        "originalId": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "be3e7291-a64f-58c5-bb05-c589f8e551aa",
-      "endCapId": "4600d0b9-367f-5b66-a581-f32de3783157",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -6331,7 +6331,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
+                "id": "[uuid]",
                 "objectId": 96,
                 "kind": {
                   "arc": {
@@ -6437,8 +6437,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
-                  "id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 88,
                   "origin": {
@@ -6467,7 +6467,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc2"
@@ -6483,7 +6483,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
+                "id": "[uuid]",
                 "objectId": 105,
                 "kind": {
                   "arc": {
@@ -6589,8 +6589,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
-                  "id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 88,
                   "origin": {
@@ -6619,7 +6619,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc4"
@@ -6635,7 +6635,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "fa75438f-b2d0-5142-b452-608454e1806a",
+                "id": "[uuid]",
                 "objectId": 124,
                 "kind": {
                   "line": {
@@ -6710,8 +6710,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
-                  "id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 88,
                   "origin": {
@@ -6740,7 +6740,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leftBottomGuide"
@@ -6756,7 +6756,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "29f44732-9f58-5550-8e28-aea348bd8ebb",
+                "id": "[uuid]",
                 "objectId": 118,
                 "kind": {
                   "line": {
@@ -6831,8 +6831,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
-                  "id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 88,
                   "origin": {
@@ -6861,7 +6861,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leftTopGuide"
@@ -6877,7 +6877,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc",
+                "id": "[uuid]",
                 "objectId": 92,
                 "kind": {
                   "line": {
@@ -6951,8 +6951,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
-                  "id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 88,
                   "origin": {
@@ -6981,7 +6981,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -6997,7 +6997,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "e02115f0-d853-5684-82c8-298aa25e4541",
+                "id": "[uuid]",
                 "objectId": 100,
                 "kind": {
                   "line": {
@@ -7071,8 +7071,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
-                  "id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 88,
                   "origin": {
@@ -7101,7 +7101,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -7118,11 +7118,11 @@ description: Variables in memory after executing bracket-with-slot.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -7146,7 +7146,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -7176,7 +7176,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "e02115f0-d853-5684-82c8-298aa25e4541",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -7200,7 +7200,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -7231,8 +7231,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
-                "id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 88,
                 "kind": "Custom",
                 "origin": {
@@ -7272,7 +7272,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -7294,8 +7294,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   "value": "line3"
                 }
               },
-              "artifactId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
-              "originalId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -7309,7 +7309,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "d848303b-8f89-5fe5-9391-dbf9dbcbfed9",
+                "id": "[uuid]",
                 "objectId": 136,
                 "kind": {
                   "line": {
@@ -7384,8 +7384,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
-                  "id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 88,
                   "origin": {
@@ -7414,7 +7414,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rightBottomGuide"
@@ -7430,7 +7430,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "d7522563-c424-5aea-962e-3d6a85a0b99d",
+                "id": "[uuid]",
                 "objectId": 130,
                 "kind": {
                   "line": {
@@ -7505,8 +7505,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
-                  "id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 88,
                   "origin": {
@@ -7535,7 +7535,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rightTopGuide"
@@ -7551,7 +7551,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
+                "id": "[uuid]",
                 "objectId": 112,
                 "kind": {
                   "line": {
@@ -7626,8 +7626,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
-                  "id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 88,
                   "origin": {
@@ -7656,7 +7656,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slotCenterline"
@@ -7673,11 +7673,11 @@ description: Variables in memory after executing bracket-with-slot.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "e1f6cd1f-6071-5d4d-872c-bd968e2f300b",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -7701,7 +7701,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
         },
         {
           "__geoMeta": {
-            "id": "3df72a37-176e-50b7-a300-421ed01496b3",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": false,
@@ -7731,7 +7731,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
         },
         {
           "__geoMeta": {
-            "id": "6e04fdcd-9d9e-5f96-8b40-9d47d4ce7089",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -7755,7 +7755,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
         },
         {
           "__geoMeta": {
-            "id": "4864d83b-006d-595b-80e0-1a2fbc9b5540",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": false,
@@ -7786,8 +7786,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
-        "id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 88,
         "kind": "Custom",
         "origin": {
@@ -7827,7 +7827,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -7849,8 +7849,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "value": "line3"
         }
       },
-      "artifactId": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a",
-      "originalId": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -7975,7 +7975,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
+                "id": "[uuid]",
                 "objectId": 45,
                 "kind": {
                   "circle": {
@@ -8049,8 +8049,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
-                  "id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 38,
                   "origin": {
@@ -8079,7 +8079,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "countersinkCircle"
@@ -8095,7 +8095,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
+                "id": "[uuid]",
                 "objectId": 55,
                 "kind": {
                   "line": {
@@ -8170,8 +8170,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
-                  "id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 38,
                   "origin": {
@@ -8200,7 +8200,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "countersinkGuide"
@@ -8216,7 +8216,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
+                "id": "[uuid]",
                 "objectId": 42,
                 "kind": {
                   "circle": {
@@ -8290,8 +8290,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
-                  "id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 38,
                   "origin": {
@@ -8320,7 +8320,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "fastenerCircle"
@@ -8336,7 +8336,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+                "id": "[uuid]",
                 "objectId": 48,
                 "kind": {
                   "line": {
@@ -8411,8 +8411,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
-                  "id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 38,
                   "origin": {
@@ -8441,7 +8441,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                     "units": null
                   }
                 },
-                "sketchId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "fastenerGuide"
@@ -8458,11 +8458,11 @@ description: Variables in memory after executing bracket-with-slot.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -8492,7 +8492,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -8509,7 +8509,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -8540,8 +8540,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
-                "id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 38,
                 "kind": "Custom",
                 "origin": {
@@ -8581,7 +8581,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -8595,8 +8595,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   "value": "fastenerCircle"
                 }
               },
-              "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
-              "originalId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "no"
             }

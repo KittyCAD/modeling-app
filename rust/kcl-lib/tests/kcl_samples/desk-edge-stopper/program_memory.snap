@@ -6,8 +6,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
-      "id": "7c4571e0-7b14-576f-a82e-22280b05874d",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,8 +38,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
   "__sketch_59_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
-      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -71,14 +71,14 @@ description: Variables in memory after executing desk-edge-stopper.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
-      "originalId": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
-      "topologyId": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
-      "artifactId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "21c09184-b0bc-51f6-9ef5-26d75c4dddbd",
-          "id": "f9950a89-06f3-552c-92f9-7e5a5a21672c",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 5296,
@@ -94,11 +94,11 @@ description: Variables in memory after executing desk-edge-stopper.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "f9950a89-06f3-552c-92f9-7e5a5a21672c",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -129,8 +129,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "468f6520-a683-5392-9492-de009fdcddef",
-          "id": "468f6520-a683-5392-9492-de009fdcddef",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 58,
           "kind": "Custom",
           "origin": {
@@ -170,7 +170,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -180,13 +180,13 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "value": "circle1"
           }
         },
-        "artifactId": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
-        "originalId": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "00f24d88-0844-52e1-a13c-ee1cdec77036",
-      "endCapId": "acc77049-bcb3-552b-acd7-cbda6cdaf957",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -200,14 +200,14 @@ description: Variables in memory after executing desk-edge-stopper.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
-      "originalId": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
-      "topologyId": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
-      "artifactId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "f47bcacf-1753-5276-997f-c0c1ffd4d33c",
-          "id": "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3149,
@@ -220,8 +220,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "1c3e749c-689e-57cb-90c0-d95d51e4de6a",
-          "id": "52bef512-0cce-5353-b647-7fe1b72c36ad",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3219,
@@ -234,8 +234,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "997407b6-c34d-53a9-b417-758aff870eb4",
-          "id": "3a6ce3d7-4036-5d3a-867e-1feec0a610b6",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3332,
@@ -248,8 +248,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "e176a3df-d320-541a-8388-fdd46efabae4",
-          "id": "3ada940a-3c51-57fe-9367-77fb64618817",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3445,
@@ -262,8 +262,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "756e0578-600d-5cca-afa7-598ce881e304",
-          "id": "c1029a14-e9cb-502c-a530-136a2e5abede",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3557,
@@ -276,8 +276,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "308d50c0-5c84-5b65-a461-16fc28e5b775",
-          "id": "7f4b36d6-2b05-5232-a97f-2d411901b50b",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3670,
@@ -290,8 +290,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "9b0fee7c-931c-58c2-9bc8-33f62acd78e0",
-          "id": "aeeea145-d12c-5a9a-b426-983ea72fe1f5",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3783,
@@ -304,8 +304,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "533e17e7-79f2-5bc0-b665-2ee470395921",
-          "id": "e2970b5b-5156-5923-9f19-d4ab1e22a323",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3896,
@@ -318,8 +318,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "7250d660-7df4-5fbf-b1e5-7a55ff71e3e0",
-          "id": "19b80591-b217-553e-b524-394df234e28a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4009,
@@ -332,8 +332,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "cfa59c6c-63ae-562e-9e17-7889254a83f8",
-          "id": "975296b2-086b-5a76-86ec-c84703e9f49a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4121,
@@ -349,11 +349,11 @@ description: Variables in memory after executing desk-edge-stopper.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -377,7 +377,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           },
           {
             "__geoMeta": {
-              "id": "52bef512-0cce-5353-b647-7fe1b72c36ad",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -401,7 +401,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           },
           {
             "__geoMeta": {
-              "id": "3a6ce3d7-4036-5d3a-867e-1feec0a610b6",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -425,7 +425,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           },
           {
             "__geoMeta": {
-              "id": "3ada940a-3c51-57fe-9367-77fb64618817",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -449,7 +449,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           },
           {
             "__geoMeta": {
-              "id": "c1029a14-e9cb-502c-a530-136a2e5abede",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -473,7 +473,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           },
           {
             "__geoMeta": {
-              "id": "7f4b36d6-2b05-5232-a97f-2d411901b50b",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -497,7 +497,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           },
           {
             "__geoMeta": {
-              "id": "aeeea145-d12c-5a9a-b426-983ea72fe1f5",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -521,7 +521,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           },
           {
             "__geoMeta": {
-              "id": "e2970b5b-5156-5923-9f19-d4ab1e22a323",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -545,7 +545,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           },
           {
             "__geoMeta": {
-              "id": "19b80591-b217-553e-b524-394df234e28a",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -569,7 +569,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           },
           {
             "__geoMeta": {
-              "id": "975296b2-086b-5a76-86ec-c84703e9f49a",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -594,8 +594,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -635,7 +635,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "2f87eb95-71f2-5911-bdbf-6255b335334d",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -681,13 +681,13 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "value": "line9"
           }
         },
-        "artifactId": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
-        "originalId": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "c59e8764-957d-5f02-a838-91974f1eb675",
-      "endCapId": "f153a951-c271-5455-acd9-35400c149dd2",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -696,14 +696,14 @@ description: Variables in memory after executing desk-edge-stopper.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
-      "originalId": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
-      "topologyId": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
-      "artifactId": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "f47bcacf-1753-5276-997f-c0c1ffd4d33c",
-          "id": "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3149,
@@ -716,8 +716,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "1c3e749c-689e-57cb-90c0-d95d51e4de6a",
-          "id": "52bef512-0cce-5353-b647-7fe1b72c36ad",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3219,
@@ -730,8 +730,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "997407b6-c34d-53a9-b417-758aff870eb4",
-          "id": "3a6ce3d7-4036-5d3a-867e-1feec0a610b6",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3332,
@@ -744,8 +744,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "e176a3df-d320-541a-8388-fdd46efabae4",
-          "id": "3ada940a-3c51-57fe-9367-77fb64618817",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3445,
@@ -758,8 +758,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "756e0578-600d-5cca-afa7-598ce881e304",
-          "id": "c1029a14-e9cb-502c-a530-136a2e5abede",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3557,
@@ -772,8 +772,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "308d50c0-5c84-5b65-a461-16fc28e5b775",
-          "id": "7f4b36d6-2b05-5232-a97f-2d411901b50b",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3670,
@@ -786,8 +786,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "9b0fee7c-931c-58c2-9bc8-33f62acd78e0",
-          "id": "aeeea145-d12c-5a9a-b426-983ea72fe1f5",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3783,
@@ -800,8 +800,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "533e17e7-79f2-5bc0-b665-2ee470395921",
-          "id": "e2970b5b-5156-5923-9f19-d4ab1e22a323",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 3896,
@@ -814,8 +814,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "7250d660-7df4-5fbf-b1e5-7a55ff71e3e0",
-          "id": "19b80591-b217-553e-b524-394df234e28a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4009,
@@ -828,8 +828,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "cfa59c6c-63ae-562e-9e17-7889254a83f8",
-          "id": "975296b2-086b-5a76-86ec-c84703e9f49a",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 4121,
@@ -845,11 +845,11 @@ description: Variables in memory after executing desk-edge-stopper.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -873,7 +873,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           },
           {
             "__geoMeta": {
-              "id": "52bef512-0cce-5353-b647-7fe1b72c36ad",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -897,7 +897,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           },
           {
             "__geoMeta": {
-              "id": "3a6ce3d7-4036-5d3a-867e-1feec0a610b6",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -921,7 +921,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           },
           {
             "__geoMeta": {
-              "id": "3ada940a-3c51-57fe-9367-77fb64618817",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -945,7 +945,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           },
           {
             "__geoMeta": {
-              "id": "c1029a14-e9cb-502c-a530-136a2e5abede",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -969,7 +969,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           },
           {
             "__geoMeta": {
-              "id": "7f4b36d6-2b05-5232-a97f-2d411901b50b",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -993,7 +993,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           },
           {
             "__geoMeta": {
-              "id": "aeeea145-d12c-5a9a-b426-983ea72fe1f5",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1017,7 +1017,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           },
           {
             "__geoMeta": {
-              "id": "e2970b5b-5156-5923-9f19-d4ab1e22a323",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1041,7 +1041,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           },
           {
             "__geoMeta": {
-              "id": "19b80591-b217-553e-b524-394df234e28a",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1065,7 +1065,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           },
           {
             "__geoMeta": {
-              "id": "975296b2-086b-5a76-86ec-c84703e9f49a",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -1090,8 +1090,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "Custom",
           "origin": {
@@ -1131,7 +1131,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "2f87eb95-71f2-5911-bdbf-6255b335334d",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -1177,13 +1177,13 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "value": "line9"
           }
         },
-        "artifactId": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
-        "originalId": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "c59e8764-957d-5f02-a838-91974f1eb675",
-      "endCapId": "f153a951-c271-5455-acd9-35400c149dd2",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -1206,7 +1206,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "id": "[uuid]",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -1280,8 +1280,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1310,7 +1310,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2c522d90-5fef-5750-b489-b008732bd2c3",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1326,7 +1326,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+                "id": "[uuid]",
                 "objectId": 39,
                 "kind": {
                   "line": {
@@ -1400,8 +1400,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1430,7 +1430,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2c522d90-5fef-5750-b489-b008732bd2c3",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line10"
@@ -1446,7 +1446,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                "id": "[uuid]",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -1520,8 +1520,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1550,7 +1550,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2c522d90-5fef-5750-b489-b008732bd2c3",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -1566,7 +1566,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                "id": "[uuid]",
                 "objectId": 11,
                 "kind": {
                   "line": {
@@ -1640,8 +1640,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1670,7 +1670,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2c522d90-5fef-5750-b489-b008732bd2c3",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -1686,7 +1686,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+                "id": "[uuid]",
                 "objectId": 15,
                 "kind": {
                   "line": {
@@ -1760,8 +1760,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1790,7 +1790,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2c522d90-5fef-5750-b489-b008732bd2c3",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -1806,7 +1806,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
+                "id": "[uuid]",
                 "objectId": 19,
                 "kind": {
                   "line": {
@@ -1880,8 +1880,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1910,7 +1910,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2c522d90-5fef-5750-b489-b008732bd2c3",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -1926,7 +1926,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+                "id": "[uuid]",
                 "objectId": 23,
                 "kind": {
                   "line": {
@@ -2000,8 +2000,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2030,7 +2030,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2c522d90-5fef-5750-b489-b008732bd2c3",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -2046,7 +2046,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+                "id": "[uuid]",
                 "objectId": 27,
                 "kind": {
                   "line": {
@@ -2120,8 +2120,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2150,7 +2150,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2c522d90-5fef-5750-b489-b008732bd2c3",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line7"
@@ -2166,7 +2166,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+                "id": "[uuid]",
                 "objectId": 31,
                 "kind": {
                   "line": {
@@ -2240,8 +2240,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2270,7 +2270,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2c522d90-5fef-5750-b489-b008732bd2c3",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line8"
@@ -2286,7 +2286,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+                "id": "[uuid]",
                 "objectId": 35,
                 "kind": {
                   "line": {
@@ -2360,8 +2360,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2390,7 +2390,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2c522d90-5fef-5750-b489-b008732bd2c3",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line9"
@@ -2407,11 +2407,11 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -2435,7 +2435,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -2459,7 +2459,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -2483,7 +2483,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -2507,7 +2507,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -2531,7 +2531,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -2555,7 +2555,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -2579,7 +2579,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -2603,7 +2603,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -2627,7 +2627,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -2652,8 +2652,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 0,
                 "kind": "Custom",
                 "origin": {
@@ -2693,7 +2693,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "2f87eb95-71f2-5911-bdbf-6255b335334d",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -2739,8 +2739,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   "value": "line9"
                 }
               },
-              "artifactId": "2c522d90-5fef-5750-b489-b008732bd2c3",
-              "originalId": "2c522d90-5fef-5750-b489-b008732bd2c3",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -2755,11 +2755,11 @@ description: Variables in memory after executing desk-edge-stopper.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -2783,7 +2783,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         },
         {
           "__geoMeta": {
-            "id": "52bef512-0cce-5353-b647-7fe1b72c36ad",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -2807,7 +2807,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         },
         {
           "__geoMeta": {
-            "id": "3a6ce3d7-4036-5d3a-867e-1feec0a610b6",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -2831,7 +2831,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         },
         {
           "__geoMeta": {
-            "id": "3ada940a-3c51-57fe-9367-77fb64618817",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -2855,7 +2855,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         },
         {
           "__geoMeta": {
-            "id": "c1029a14-e9cb-502c-a530-136a2e5abede",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -2879,7 +2879,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         },
         {
           "__geoMeta": {
-            "id": "7f4b36d6-2b05-5232-a97f-2d411901b50b",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -2903,7 +2903,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         },
         {
           "__geoMeta": {
-            "id": "aeeea145-d12c-5a9a-b426-983ea72fe1f5",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -2927,7 +2927,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         },
         {
           "__geoMeta": {
-            "id": "e2970b5b-5156-5923-9f19-d4ab1e22a323",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -2951,7 +2951,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         },
         {
           "__geoMeta": {
-            "id": "19b80591-b217-553e-b524-394df234e28a",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -2975,7 +2975,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         },
         {
           "__geoMeta": {
-            "id": "975296b2-086b-5a76-86ec-c84703e9f49a",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3000,8 +3000,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -3041,7 +3041,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "2f87eb95-71f2-5911-bdbf-6255b335334d",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -3087,8 +3087,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "value": "line9"
         }
       },
-      "artifactId": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
-      "originalId": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -3097,11 +3097,11 @@ description: Variables in memory after executing desk-edge-stopper.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3125,7 +3125,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         },
         {
           "__geoMeta": {
-            "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3149,7 +3149,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         },
         {
           "__geoMeta": {
-            "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3173,7 +3173,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         },
         {
           "__geoMeta": {
-            "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3197,7 +3197,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         },
         {
           "__geoMeta": {
-            "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3221,7 +3221,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         },
         {
           "__geoMeta": {
-            "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3245,7 +3245,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         },
         {
           "__geoMeta": {
-            "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3269,7 +3269,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         },
         {
           "__geoMeta": {
-            "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3293,7 +3293,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         },
         {
           "__geoMeta": {
-            "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3317,7 +3317,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         },
         {
           "__geoMeta": {
-            "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -3342,8 +3342,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -3383,7 +3383,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "2f87eb95-71f2-5911-bdbf-6255b335334d",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -3429,8 +3429,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "value": "line9"
         }
       },
-      "artifactId": "2c522d90-5fef-5750-b489-b008732bd2c3",
-      "originalId": "2c522d90-5fef-5750-b489-b008732bd2c3",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "implicitly"
     }
@@ -3439,11 +3439,11 @@ description: Variables in memory after executing desk-edge-stopper.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -3474,8 +3474,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "468f6520-a683-5392-9492-de009fdcddef",
-        "id": "468f6520-a683-5392-9492-de009fdcddef",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 58,
         "kind": "Custom",
         "origin": {
@@ -3515,7 +3515,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -3525,8 +3525,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "value": "circle1"
         }
       },
-      "artifactId": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
-      "originalId": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "no"
     }
@@ -3535,14 +3535,14 @@ description: Variables in memory after executing desk-edge-stopper.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
-      "originalId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
-      "topologyId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
-      "artifactId": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "c1350d6a-83f6-5873-a10a-23bc14b7ecd5",
-          "id": "03b5a388-1f14-59c9-97f4-ce9f308a01f6",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 5296,
@@ -3558,11 +3558,11 @@ description: Variables in memory after executing desk-edge-stopper.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "03b5a388-1f14-59c9-97f4-ce9f308a01f6",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -3593,8 +3593,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "468f6520-a683-5392-9492-de009fdcddef",
-          "id": "468f6520-a683-5392-9492-de009fdcddef",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 58,
           "kind": "Custom",
           "origin": {
@@ -3634,7 +3634,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -3644,13 +3644,13 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "value": "circle1"
           }
         },
-        "artifactId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
-        "originalId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "67ec3fd6-269d-5d7f-aed0-a79fdd488a32",
-      "endCapId": "1d54086c-7b2b-520a-a9d9-0e85d4bd0894",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -3659,14 +3659,14 @@ description: Variables in memory after executing desk-edge-stopper.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "a54ad82c-be8d-599a-9764-c6498922dd5c",
-      "originalId": "a54ad82c-be8d-599a-9764-c6498922dd5c",
-      "topologyId": "a54ad82c-be8d-599a-9764-c6498922dd5c",
-      "artifactId": "724b87fd-c709-5232-b7a1-547c15affb9b",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "20fe08c0-31be-5ce4-ac8a-2900b3ac9b22",
-          "id": "fee5d7fa-a364-5a8a-8537-617369b494e6",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 5296,
@@ -3682,11 +3682,11 @@ description: Variables in memory after executing desk-edge-stopper.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "a54ad82c-be8d-599a-9764-c6498922dd5c",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "fee5d7fa-a364-5a8a-8537-617369b494e6",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -3717,8 +3717,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "468f6520-a683-5392-9492-de009fdcddef",
-          "id": "468f6520-a683-5392-9492-de009fdcddef",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 58,
           "kind": "Custom",
           "origin": {
@@ -3758,7 +3758,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -3768,13 +3768,13 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "value": "circle1"
           }
         },
-        "artifactId": "a54ad82c-be8d-599a-9764-c6498922dd5c",
-        "originalId": "a54ad82c-be8d-599a-9764-c6498922dd5c",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "031803b4-286b-5fe0-9f93-b05dc840248d",
-      "endCapId": "76bf223b-47d9-561f-9b89-ee502aceeffe",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -3833,7 +3833,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
+                "id": "[uuid]",
                 "objectId": 62,
                 "kind": {
                   "circle": {
@@ -3907,8 +3907,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "468f6520-a683-5392-9492-de009fdcddef",
-                  "id": "468f6520-a683-5392-9492-de009fdcddef",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 58,
                   "origin": {
@@ -3937,7 +3937,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "units": null
                   }
                 },
-                "sketchId": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -3954,11 +3954,11 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -3989,8 +3989,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "468f6520-a683-5392-9492-de009fdcddef",
-                "id": "468f6520-a683-5392-9492-de009fdcddef",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 58,
                 "kind": "Custom",
                 "origin": {
@@ -4030,7 +4030,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -4040,8 +4040,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   "value": "circle1"
                 }
               },
-              "artifactId": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
-              "originalId": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "no"
             }
@@ -4055,7 +4055,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+                "id": "[uuid]",
                 "objectId": 65,
                 "kind": {
                   "line": {
@@ -4130,8 +4130,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "468f6520-a683-5392-9492-de009fdcddef",
-                  "id": "468f6520-a683-5392-9492-de009fdcddef",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 58,
                   "origin": {
@@ -4160,7 +4160,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "units": null
                   }
                 },
-                "sketchId": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "radiusGuide"
@@ -4186,11 +4186,11 @@ description: Variables in memory after executing desk-edge-stopper.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "f9950a89-06f3-552c-92f9-7e5a5a21672c",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -4221,8 +4221,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "468f6520-a683-5392-9492-de009fdcddef",
-        "id": "468f6520-a683-5392-9492-de009fdcddef",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 58,
         "kind": "Custom",
         "origin": {
@@ -4262,7 +4262,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -4272,8 +4272,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "value": "circle1"
         }
       },
-      "artifactId": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
-      "originalId": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }

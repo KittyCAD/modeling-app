@@ -532,6 +532,16 @@ const FileList = (props: { files: MlCopilotFile[] } & AttachmentFetchProps) => {
     [props.attachmentFetches, props.files]
   )
 
+  // Hashes identify loaded bytes; inline files fall back to their contents.
+  const contentKey = JSON.stringify(
+    resolvedFiles.map((file) => [
+      file.attachment_ref?.content_hash ?? file.data,
+      file.mimetype,
+      file.data.length > 0,
+      isReplayAttachmentUnavailable(file),
+    ])
+  )
+
   useEffect(() => {
     // Create object URLs for all files
     const urls = resolvedFiles.map((file) =>
@@ -549,7 +559,9 @@ const FileList = (props: { files: MlCopilotFile[] } & AttachmentFetchProps) => {
         }
       })
     }
-  }, [resolvedFiles])
+    // The key covers every file value used to create or skip an object URL.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [contentKey])
 
   const handleDownload = (url: string, filename: string) => {
     const link = document.createElement('a')
