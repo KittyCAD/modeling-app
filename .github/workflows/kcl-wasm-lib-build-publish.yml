@@ -105,7 +105,7 @@ jobs:
         run: |
           npm install "@kittycad/kcl-wasm-lib@$VERSION" --package-lock-only --ignore-scripts
           git config user.name zoo-github-actions-auth[bot]
-          git config user.email zoo-github-actions-auth[bot]@users.noreply.github.com
+          git config user.email 155849648+zoo-github-actions-auth[bot]@users.noreply.github.com
           git add package.json package-lock.json
           git commit -m "Update kcl-wasm-lib to $VERSION"
           git push origin main
