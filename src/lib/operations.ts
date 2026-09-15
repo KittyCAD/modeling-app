@@ -3602,6 +3602,7 @@ export function getOperationLabel(op: Operation): string {
         return '' // unreachable
       }
     case 'ModuleInstance':
+    case 'ImportedGeometry':
       return op.name
     case 'GroupEnd':
       return 'Group end'
@@ -3649,6 +3650,7 @@ export function getOperationIcon(op: Operation): CustomIconName {
       }
       return 'make-variable'
     case 'ModuleInstance':
+    case 'ImportedGeometry':
       return 'import' // TODO: Use insert icon.
     case 'GroupEnd':
       return 'questionMark'
@@ -3710,7 +3712,8 @@ export function getOperationVariableName(
     op.type !== 'StdLibCall' &&
     !(op.type === 'GroupBegin' && op.group.type === 'SketchBlock') &&
     !(op.type === 'GroupBegin' && op.group.type === 'FunctionCall') &&
-    op.type !== 'ModuleInstance'
+    op.type !== 'ModuleInstance' &&
+    op.type !== 'ImportedGeometry'
   ) {
     return undefined
   }
@@ -3722,8 +3725,8 @@ export function getOperationVariableName(
   // Find the AST node.
   const pathToNode = pathToNodeFromRustNodePath(op.nodePath)
 
-  // If this is a module instance, the variable name is the import alias.
-  if (op.type === 'ModuleInstance') {
+  // Imports use their alias as the variable name.
+  if (op.type === 'ModuleInstance' || op.type === 'ImportedGeometry') {
     const statement = getNodeFromPath<ImportStatement>(
       program,
       pathToNode,

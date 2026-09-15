@@ -3,6 +3,7 @@ import {
   addAppearance,
   addClone,
   addDelete,
+  addHide,
   addMirror3D,
   addRotate,
   addScale,
@@ -1130,6 +1131,46 @@ extrude001 = extrude(profile001, length = 1)`
     })
   })
 
+  describe('Testing addHide', () => {
+    it('should add a standalone call on imported geometry selection', () => {
+      const code = `@settings(kclVersion = 2.0)
+
+@(targetRepresentation = mesh)
+import "cube.step" as cube`
+      const ast = assertParse(code, instanceInThisFile)
+      const importStatement = ast.body[0]
+      const sourceRange: [number, number, number] = [
+        importStatement.start,
+        importStatement.end,
+        0,
+      ]
+      const codeRef = {
+        range: sourceRange,
+        pathToNode: getNodePathFromSourceRange(ast, sourceRange),
+        nodePath: { steps: [] },
+      }
+      const importedGeometry: Artifact = {
+        type: 'importedGeometry',
+        id: 'imported-geometry-id',
+        codeRef,
+      }
+      const result = addHide({
+        ast,
+        artifactGraph: new Map([[importedGeometry.id, importedGeometry]]),
+        objects: {
+          graphSelections: [{ artifact: importedGeometry, codeRef }],
+          otherSelections: [],
+        },
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
+        `${code}\nhidden001 = hide(cube)`
+      )
+    })
+  })
+
   describe('Testing addAppearance', () => {
     async function runAddAppearanceTest(
       code: string,
@@ -1157,6 +1198,46 @@ extrude001 = extrude(profile001, length = 1)`
     const box = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
 extrude001 = extrude(profile001, length = 1)`
+
+    it('should add a standalone call on imported geometry selection', () => {
+      const code = `@settings(kclVersion = 2.0)
+
+@(targetRepresentation = mesh)
+import "cube.step" as cube`
+      const ast = assertParse(code, instanceInThisFile)
+      const importStatement = ast.body[0]
+      const sourceRange: [number, number, number] = [
+        importStatement.start,
+        importStatement.end,
+        0,
+      ]
+      const codeRef = {
+        range: sourceRange,
+        pathToNode: getNodePathFromSourceRange(ast, sourceRange),
+        nodePath: { steps: [] },
+      }
+      const importedGeometry: Artifact = {
+        type: 'importedGeometry',
+        id: 'imported-geometry-id',
+        codeRef,
+      }
+      const result = addAppearance({
+        ast,
+        artifactGraph: new Map([[importedGeometry.id, importedGeometry]]),
+        objects: {
+          graphSelections: [{ artifact: importedGeometry, codeRef }],
+          otherSelections: [],
+        },
+        color: '#FF0000',
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
+        `${code}\nappearance(cube, color = "#FF0000")`
+      )
+    })
+
     it('should add a standalone call on sweep selection', async () => {
       const expectedNewLine = `appearance(extrude001, color = "#FF0000")`
       const newCode = await runAddAppearanceTest(
