@@ -4567,7 +4567,6 @@ description: Variables in memory after executing loop_tag.kcl
   },
   "problematicTag": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "problematicTag"
   },
   "radius": {

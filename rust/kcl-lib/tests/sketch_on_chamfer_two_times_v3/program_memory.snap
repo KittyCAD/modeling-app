@@ -786,41 +786,33 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
   },
   "rectangleSegmentA001": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "rectangleSegmentA001"
   },
   "rectangleSegmentA002": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "rectangleSegmentA002"
   },
   "rectangleSegmentA003": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "rectangleSegmentA003"
   },
   "rectangleSegmentB001": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "rectangleSegmentB001"
   },
   "rectangleSegmentB002": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "rectangleSegmentB002"
   },
   "rectangleSegmentC001": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "rectangleSegmentC001"
   },
   "rectangleSegmentC002": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "rectangleSegmentC002"
   },
   "seg01": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "seg01"
   },
@@ -830,16 +822,13 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
   },
   "seg02": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "seg02"
   },
   "seg03": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "seg03"
   },
   "seg04": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "seg04"
   },

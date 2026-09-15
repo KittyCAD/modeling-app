@@ -894,7 +894,6 @@ description: Variables in memory after executing sketch_block_on_face.kcl
   },
   "side": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "side"
   }
 }

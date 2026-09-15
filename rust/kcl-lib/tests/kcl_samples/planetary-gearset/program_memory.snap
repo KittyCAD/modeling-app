@@ -221,7 +221,6 @@ description: Variables in memory after executing planetary-gearset.kcl
   },
   "seg01": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "seg01"
   }
 }
