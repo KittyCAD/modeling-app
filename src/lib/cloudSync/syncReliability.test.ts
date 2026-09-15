@@ -246,7 +246,7 @@ describe('cloud sync reliability', () => {
     await expect(getAllOutboxEntries()).resolves.toEqual([])
   })
 
-  it('declares observed local file deletions in a replacement upload', async () => {
+  it('derives replacement deletions from the acknowledged base manifest', async () => {
     const deletedFilePath = `${projectPath}/obsolete.kcl`
     const files = new Map([
       [`${projectPath}/main.kcl`, 'base = 1\n'],
@@ -264,7 +264,6 @@ describe('cloud sync reliability', () => {
       projectPath,
       kind: 'upsert',
       targetPath: deletedFilePath,
-      deletedPaths: ['obsolete.kcl'],
       createdAt: '2026-08-24T12:00:00.000Z',
     })
     let uploadedDeletedPaths: string[] | undefined

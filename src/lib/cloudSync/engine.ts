@@ -2477,30 +2477,17 @@ function latestOutboxKind(entries: OutboxEntry[]) {
   return entries.toSorted((a, b) => (a.id ?? 0) - (b.id ?? 0)).at(-1)?.kind
 }
 
-function getOutboxDeletedPaths(
-  entries: OutboxEntry[],
-  uploadedFiles: ProjectArchiveFile[],
-  currentPaths?: Iterable<string>
+function getRemovedProjectManifestPaths(
+  baseManifest: ProjectManifest,
+  uploadedFiles: ProjectArchiveFile[]
 ) {
   const uploadedPaths = new Set(
     uploadedFiles.map((file) => normalizeRelativePath(file.relativePath))
   )
-  const currentPathSet = currentPaths
-    ? new Set(Array.from(currentPaths, normalizeRelativePath))
-    : undefined
-  return Array.from(
-    new Set(
-      entries
-        .flatMap((entry) => entry.deletedPaths ?? [])
-        .map(normalizeRelativePath)
-        .filter(
-          (path) =>
-            Boolean(path) &&
-            !uploadedPaths.has(path) &&
-            (!currentPathSet || currentPathSet.has(path))
-        )
-    )
-  ).sort()
+  return Object.keys(baseManifest.files)
+    .map(normalizeRelativePath)
+    .filter((path) => Boolean(path) && !uploadedPaths.has(path))
+    .sort()
 }
 
 function getRemovedProjectFilePaths(
@@ -3013,11 +3000,12 @@ async function syncProject(
             files: localFiles,
             expectedRevision: metadata.remoteRevision,
             entrypointPath: getRemoteProjectEntrypointPath(remoteProject),
-            deletedPaths: getOutboxDeletedPaths(
-              entries,
-              localFiles,
-              Object.keys(metadata.baseManifest?.files ?? {})
-            ),
+            deletedPaths: metadata.baseManifest
+              ? getRemovedProjectManifestPaths(
+                  metadata.baseManifest,
+                  localFiles
+                )
+              : [],
           })
       ).catch(rejectRemoteUploadFailure)
       await clearOutboxEntriesForProject(metadata.localProjectPath)
@@ -3099,10 +3087,9 @@ async function syncProject(
             project: remoteProject,
             files: autoReconciledFiles,
             expectedRevision: remoteRevision,
-            deletedPaths: getOutboxDeletedPaths(
-              entries,
-              autoReconciledFiles,
-              remoteFiles.map((file) => file.relativePath)
+            deletedPaths: getRemovedProjectManifestPaths(
+              remoteManifest,
+              autoReconciledFiles
             ),
           })
       ).catch(rejectRemoteUploadFailure)
