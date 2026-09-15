@@ -63,6 +63,7 @@
 //! Real engine required (`ZOO_API_TOKEN`): mock execution cannot reach some
 //! construction paths (pattern copies get engine-assigned ids).
 
+use futures::FutureExt;
 use kittycad_modeling_cmds::ModelingCmd;
 use kittycad_modeling_cmds::each_cmd as mcmd;
 use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
@@ -675,20 +676,30 @@ async fn named_views_hide_ids_plane() {
 hide(plane001)
 "#;
     let (ctx, observed) = execute_and_observe_open(code, None).await;
-    assert_ids_equal(&observed);
 
-    let artifact_id = observed.recorded_in_operations[0];
-    let plane = observed
-        .plane_ids
-        .iter()
-        .find(|plane| plane.id == artifact_id)
-        .unwrap_or_else(|| panic!("no Artifact::Plane node with id {artifact_id:?}"));
-    assert!(
-        plane.path_ids.is_empty(),
-        "a standalone offset plane should not support any sketch paths"
-    );
-    assert_engine_entity_is_plane(&ctx, artifact_id).await;
+    // Close the context even if an assertion panics, then let the panic continue.
+    let test_result = std::panic::AssertUnwindSafe(async {
+        assert_ids_equal(&observed);
+
+        let artifact_id = observed.recorded_in_operations[0];
+        let plane = observed
+            .plane_ids
+            .iter()
+            .find(|plane| plane.id == artifact_id)
+            .unwrap_or_else(|| panic!("no Artifact::Plane node with id {artifact_id:?}"));
+        assert!(
+            plane.path_ids.is_empty(),
+            "a standalone offset plane should not support any sketch paths"
+        );
+        assert_engine_entity_is_plane(&ctx, artifact_id).await;
+    })
+    .catch_unwind()
+    .await;
+
     ctx.close().await;
+    if let Err(panic) = test_result {
+        std::panic::resume_unwind(panic);
+    }
 }
 
 /// A plane used as a sketch surface is hidden by the executor. The artifact
@@ -699,32 +710,41 @@ async fn named_views_plane_used_for_sketch_has_path_ids() {
     let code = include_str!("../../tests/sketch_block_on_offset_plane/input.kcl");
     let (ctx, observed) = execute_and_observe_open(code, None).await;
 
-    assert!(
-        observed.recorded_in_operations.is_empty(),
-        "the executor's plane-hiding command should not create a KCL hide operation"
-    );
-    assert_eq!(
-        observed.plane_ids.len(),
-        1,
-        "the fixture should create exactly one plane artifact"
-    );
-    let plane = &observed.plane_ids[0];
-    assert_eq!(
-        plane.path_ids.len(),
-        1,
-        "the plane artifact should contain the sketch path id"
-    );
-    let path_id = plane.path_ids[0];
-    assert!(
-        observed.path_plane_links.contains(&(path_id, plane.id)),
-        "the sketch path should identify the plane that contains its id"
-    );
-    assert!(
-        observed.hidden_object_ids().contains(&in_engine_domain(plane.id)),
-        "the executor should hide the plane used as the sketch surface"
-    );
-    assert_engine_entity_is_plane(&ctx, plane.id).await;
+    // Close the context even if an assertion panics, then let the panic continue.
+    let test_result = std::panic::AssertUnwindSafe(async {
+        assert!(
+            observed.recorded_in_operations.is_empty(),
+            "the executor's plane-hiding command should not create a KCL hide operation"
+        );
+        assert_eq!(
+            observed.plane_ids.len(),
+            1,
+            "the fixture should create exactly one plane artifact"
+        );
+        let plane = &observed.plane_ids[0];
+        assert_eq!(
+            plane.path_ids.len(),
+            1,
+            "the plane artifact should contain the sketch path id"
+        );
+        let path_id = plane.path_ids[0];
+        assert!(
+            observed.path_plane_links.contains(&(path_id, plane.id)),
+            "the sketch path should identify the plane that contains its id"
+        );
+        assert!(
+            observed.hidden_object_ids().contains(&in_engine_domain(plane.id)),
+            "the executor should hide the plane used as the sketch surface"
+        );
+        assert_engine_entity_is_plane(&ctx, plane.id).await;
+    })
+    .catch_unwind()
+    .await;
+
     ctx.close().await;
+    if let Err(panic) = test_result {
+        std::panic::resume_unwind(panic);
+    }
 }
 
 /// `planeOf()` uses its `FaceIsPlanar` command id for the runtime value, the
@@ -741,23 +761,33 @@ plane001 = planeOf(body, face = END)
 hide(plane001)
 "#;
     let (ctx, observed) = execute_and_observe_open(code, None).await;
-    assert_ids_equal(&observed);
 
-    assert_eq!(
-        observed.face_is_planar_command_ids.len(),
-        1,
-        "the fixture should send exactly one FaceIsPlanar command"
-    );
-    assert_eq!(
-        observed.plane_of_face_ids.len(),
-        1,
-        "an unused planeOf result should remain an Artifact::PlaneOfFace"
-    );
-    let artifact_id = observed.recorded_in_operations[0];
-    assert_eq!(observed.face_is_planar_command_ids[0], artifact_id);
-    assert_eq!(observed.plane_of_face_ids[0], artifact_id);
-    assert_engine_entity_is_plane(&ctx, artifact_id).await;
+    // Close the context even if an assertion panics, then let the panic continue.
+    let test_result = std::panic::AssertUnwindSafe(async {
+        assert_ids_equal(&observed);
+
+        assert_eq!(
+            observed.face_is_planar_command_ids.len(),
+            1,
+            "the fixture should send exactly one FaceIsPlanar command"
+        );
+        assert_eq!(
+            observed.plane_of_face_ids.len(),
+            1,
+            "an unused planeOf result should remain an Artifact::PlaneOfFace"
+        );
+        let artifact_id = observed.recorded_in_operations[0];
+        assert_eq!(observed.face_is_planar_command_ids[0], artifact_id);
+        assert_eq!(observed.plane_of_face_ids[0], artifact_id);
+        assert_engine_entity_is_plane(&ctx, artifact_id).await;
+    })
+    .catch_unwind()
+    .await;
+
     ctx.close().await;
+    if let Err(panic) = test_result {
+        std::panic::resume_unwind(panic);
+    }
 }
 
 /// Route-independent: the program contains no sketch, so V1/V2 does not
