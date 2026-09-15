@@ -12,6 +12,11 @@ export interface PathLockRequirement {
   readonly mode: 'shared' | 'exclusive'
 }
 
+/** Compare lock keys by code unit to provide a deterministic total order. */
+export function comparePathLockKeys(left: string, right: string): number {
+  return left < right ? -1 : left > right ? 1 : 0
+}
+
 /**
  * Builds a stable, duplicate-free lock plan for one or more mutation targets.
  */
@@ -43,6 +48,6 @@ export function pathLockRequirements(
   }
 
   return [...modesByPath]
-    .sort(([left], [right]) => left.localeCompare(right))
+    .sort(([left], [right]) => comparePathLockKeys(left, right))
     .map(([path, mode]) => ({ path, mode }))
 }

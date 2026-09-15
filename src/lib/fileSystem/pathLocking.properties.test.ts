@@ -1,4 +1,5 @@
 import {
+  comparePathLockKeys,
   type PathLockRequirement,
   pathLockRequirements,
 } from '@src/lib/fileSystem/pathLocking'
@@ -51,7 +52,7 @@ function mergePlans(
   }
 
   return [...modesByPath]
-    .sort(([left], [right]) => left.localeCompare(right))
+    .sort(([left], [right]) => comparePathLockKeys(left, right))
     .map(([path, mode]) => ({ path, mode }))
 }
 
@@ -72,12 +73,19 @@ describe('filesystem path lock planning', () => {
             plan
               .filter(({ mode }) => mode === 'exclusive')
               .map(({ path }) => path)
-          ).toEqual(
-            [...targetPaths].sort((left, right) => left.localeCompare(right))
-          )
+          ).toEqual([...targetPaths].sort(comparePathLockKeys))
         }
       )
     )
+  })
+
+  it('orders distinct Unicode lock keys distinctly', () => {
+    const left = nodeFileSystem.impl.resolve('workspace', 'ab')
+    const right = nodeFileSystem.impl.resolve('workspace', 'a\u200bb')
+
+    expect(left.localeCompare(right)).toBe(0)
+    expect(comparePathLockKeys(left, right)).not.toBe(0)
+    expect(requirements([right, left])).toEqual(requirements([left, right]))
   })
 
   it('captures hierarchical conflicts without blocking siblings', () => {
