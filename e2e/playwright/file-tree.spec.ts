@@ -126,6 +126,7 @@ test.describe(
       page,
       folderSetupFn,
       fs,
+      homePage,
       scene,
     }) => {
       const { dir } = await folderSetupFn(async (dir) => {
@@ -145,7 +146,7 @@ test.describe(
 
       // Let the reload from folderSetupFn finish initializing before replacing
       // the document; WebKit otherwise interrupts in-flight OPFS reads.
-      await u.waitForPageLoad()
+      await homePage.projectsLoaded()
 
       const startingFilePath = await fs.join(
         dir,
