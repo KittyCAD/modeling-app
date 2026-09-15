@@ -1025,11 +1025,15 @@ export const readAppSettingsFile = async (
   fileOperations: FileOperationsRegistryService,
   wasmInstance: ModuleType
 ): Promise<DeepPartial<Configuration>> => {
-  const configuration = await readPersistedAppSettingsFile(wasmInstance)
+  const configuration = await readPersistedAppSettingsFile(
+    fileOperations,
+    wasmInstance
+  )
   return withPlaywrightSeededPlugins(configuration, wasmInstance)
 }
 
 const readPersistedAppSettingsFile = async (
+  fileOperations: FileOperationsRegistryService,
   wasmInstance: ModuleType
 ): Promise<DeepPartial<Configuration>> => {
   const settingsPath = await getAppSettingsFilePath()
