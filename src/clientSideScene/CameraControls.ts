@@ -45,9 +45,10 @@ import {
 } from '@src/lib/utils'
 import { deg2Rad } from '@src/lib/utils2d'
 import { type ConnectionManager } from '@src/lib/engineConnection/connectionManager'
-import type {
-  Subscription,
-  UnreliableSubscription,
+import {
+  getDimensions,
+  type Subscription,
+  type UnreliableSubscription,
 } from '@src/lib/engineConnection/utils'
 import { degToRad } from 'three/src/math/MathUtils'
 
@@ -438,13 +439,30 @@ export class CameraControls {
 
   public readonly cameraChange = new LegacySignal()
 
-  onWindowResize = () => {
-    if (this.camera instanceof PerspectiveCamera) {
-      this.camera.aspect =
-        this.domElement.clientWidth / this.domElement.clientHeight
-    } else if (this.camera instanceof OrthographicCamera) {
-      const aspect = this.domElement.clientWidth / this.domElement.clientHeight
+  /**
+   * The client camera and engine stream must use the same normalized viewport
+   * aspect. Deriving it from the displayed canvas also avoids racing a delayed
+   * engine resize against a camera projection change.
+   */
+  private normalizedViewportAspect = () => {
+    const displayWidth = this.domElement.clientWidth
+    const displayHeight = this.domElement.clientHeight
+    if (displayWidth > 0 && displayHeight > 0) {
+      const { width, height } = getDimensions(displayWidth, displayHeight)
+      return width / height
+    }
 
+    return (
+      this.engineCommandManager.streamDimensions.width /
+      this.engineCommandManager.streamDimensions.height
+    )
+  }
+
+  onWindowResize = () => {
+    const aspect = this.normalizedViewportAspect()
+    if (this.camera instanceof PerspectiveCamera) {
+      this.camera.aspect = aspect
+    } else if (this.camera instanceof OrthographicCamera) {
       this.camera.left = -ORTHOGRAPHIC_CAMERA_SIZE * aspect
       this.camera.right = ORTHOGRAPHIC_CAMERA_SIZE * aspect
       this.camera.top = ORTHOGRAPHIC_CAMERA_SIZE
@@ -653,9 +671,7 @@ export class CameraControls {
     const { x: px, y: py, z: pz } = this.camera.position
     const { x: qx, y: qy, z: qz, w: qw } = this.camera.quaternion
     const oldCamUp = this.camera.up.clone()
-    const aspect =
-      this.engineCommandManager.streamDimensions.width /
-      this.engineCommandManager.streamDimensions.height
+    const aspect = this.normalizedViewportAspect()
     this.lastPerspectiveFov = this.camera.fov
     const { z_near, z_far } = calculateNearFarFromFOV(this.lastPerspectiveFov)
     this.camera = new OrthographicCamera(
@@ -693,8 +709,7 @@ export class CameraControls {
     const previousCamUp = this.camera.up.clone()
     this.camera = new PerspectiveCamera(
       this.lastPerspectiveFov,
-      this.engineCommandManager.streamDimensions.width /
-        this.engineCommandManager.streamDimensions.height,
+      this.normalizedViewportAspect(),
       z_near,
       z_far
     )
