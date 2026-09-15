@@ -805,7 +805,6 @@ const Home = () => {
           ...defaultGlobalStatusBarItems({
             autoUpdateDownloadProgress,
             autoUpdateReady,
-            hasCloudSyncFeature,
             onRestartToUpdate: () => {
               window.electron?.appRestart()
             },
