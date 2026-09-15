@@ -73,7 +73,7 @@ import {
 } from '@src/lib/utils'
 import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import { ClientErrorCode, reportClientError } from '../clientErrors'
+import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 
 export type ConnectionSystemDeps = {
   settingsActor: SettingsActorType
