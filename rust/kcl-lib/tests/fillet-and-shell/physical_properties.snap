@@ -5,14 +5,14 @@ description: Physical properties fillet-and-shell.kcl
 {
   "bounding_box": {
     "center": {
-      "x": 19.0,
+      "x": 18.2,
       "y": 36.5,
-      "z": 4.0
+      "z": 4.35
     },
     "dimensions": {
-      "x": 38.0,
-      "y": 73.0,
-      "z": 8.0
+      "x": 41.6,
+      "y": 85.19999999999999,
+      "z": 8.7
     },
     "unit": "mm"
   },

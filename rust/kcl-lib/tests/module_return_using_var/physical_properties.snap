@@ -5,7 +5,7 @@ description: Physical properties module_return_using_var.kcl
 {
   "bounding_box": {
     "center": {
-      "x": 0.5,
+      "x": 5.5,
       "y": 0.5,
       "z": 0.5
     },
