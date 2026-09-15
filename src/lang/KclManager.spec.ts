@@ -130,6 +130,7 @@ function enableSketchSolveEditorExecution(kclManager: KclManager) {
     matches: (value: unknown) => value === 'sketchSolveMode',
   } as unknown as NonNullable<KclManager['modelingState']>
   kclManager.engineCommandManager.connection = {
+    kclVersion: '1.0',
     connected: true,
   } as unknown as typeof kclManager.engineCommandManager.connection
 }
@@ -491,7 +492,10 @@ describe('KclManager diagnostics', () => {
       .mockResolvedValue(undefined)
 
     kclManager.engineCommandManager.started = false
-    kclManager.engineCommandManager.connection = { connected: true } as any
+    kclManager.engineCommandManager.connection = {
+      connected: true,
+      kclVersion: '1.0',
+    } as any
 
     kclManager.editorView.dispatch({
       changes: { from: 1, to: 1, insert: 'b' },
@@ -519,7 +523,10 @@ describe('KclManager diagnostics', () => {
       .spyOn(kclManager, 'executeCode')
       .mockResolvedValue(undefined)
 
-    kclManager.engineCommandManager.connection = { connected: true } as any
+    kclManager.engineCommandManager.connection = {
+      connected: true,
+      kclVersion: '1.0',
+    } as any
 
     kclManager.editorView.dispatch({
       changes: { from: 1, to: 1, insert: 'b' },
@@ -541,7 +548,10 @@ describe('KclManager diagnostics', () => {
     const execution = createDeferred<undefined>()
     vi.spyOn(kclManager, 'executeCode').mockReturnValue(execution.promise)
 
-    kclManager.engineCommandManager.connection = { connected: true } as any
+    kclManager.engineCommandManager.connection = {
+      connected: true,
+      kclVersion: '1.0',
+    } as any
 
     kclManager.editorView.dispatch({
       changes: { from: 1, to: 1, insert: 'b' },
@@ -573,7 +583,10 @@ describe('KclManager diagnostics', () => {
     }
 
     kclManager.engineCommandManager.started = true
-    kclManager.engineCommandManager.connection = { connected: true } as any
+    kclManager.engineCommandManager.connection = {
+      connected: true,
+      kclVersion: '1.0',
+    } as any
     const rustExecuteSpy = vi
       .spyOn(kclManager.rustContext, 'execute')
       .mockReturnValueOnce(activeRender.promise)

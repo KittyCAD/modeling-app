@@ -1,7 +1,11 @@
 import { join } from 'node:path'
 import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
-import { isAtLeastKclV3, programUsesKclV3 } from '@src/lang/kclLanguageVersion'
+import {
+  getKclLanguageVersion,
+  isAtLeastKclV3,
+  programUsesKclV3,
+} from '@src/lang/kclLanguageVersion'
 import { parse } from '@src/lang/wasm'
 import type { Program } from '@src/lang/wasm'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
@@ -71,5 +75,27 @@ x = 1`)
     const program = parseProgram(`@settings(defaultLengthUnit = in)
 x = 1`)
     expect(programUsesKclV3(program, getInstance())).toBe(false)
+  })
+})
+
+describe('getKclLanguageVersion', () => {
+  it.each([
+    ['', '1.0'],
+    ['@settings(defaultLengthUnit = mm)', '1.0'],
+    ['@settings(kclVersion = 2.0)', '2.0'],
+    ['@settings(kclVersion = "3.0-preview")', '3.0-preview'],
+  ])('resolves %s before execution', (code, expected) => {
+    expect(getKclLanguageVersion(code, getInstance())).toBe(expected)
+    expect(getKclLanguageVersion(parseProgram(code), getInstance())).toBe(
+      expected
+    )
+  })
+
+  it.each([
+    '@settings(kclVersion = 99.0)',
+    '@settings(kclVersion = "future")',
+    'x = (',
+  ])('rejects invalid input %s', (code) => {
+    expect(getKclLanguageVersion(code, getInstance())).toBeInstanceOf(Error)
   })
 })

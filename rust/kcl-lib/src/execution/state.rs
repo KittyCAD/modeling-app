@@ -1397,12 +1397,13 @@ impl ExecState {
     /// applies. Must be assigned unconditionally at the start of every
     /// execution since the state may be reused across executions whose
     /// programs declare different versions.
-    pub(crate) fn set_entry_point_kcl_version(&mut self, program: &crate::Program) {
-        let declared = program.meta_settings().ok().flatten().map(|s| s.kcl_version);
+    pub(crate) fn set_entry_point_kcl_version(&mut self, program: &crate::Program) -> Result<(), KclError> {
+        let declared = program.language_version()?;
         self.global.entry_point_kcl_version = match declared {
-            Some(v) if v >= KclVersion::V3Preview => Some(v),
+            v if v >= KclVersion::V3Preview => Some(v),
             _ => None,
         };
+        Ok(())
     }
 
     /// KCL 3.0: an imported file may not declare a kclVersion that differs

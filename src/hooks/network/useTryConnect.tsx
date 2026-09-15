@@ -15,7 +15,7 @@ import {
   getSettingsFromActorContext,
   jsAppSettings,
 } from '@src/lib/settings/settingsUtils'
-import { reportRejection } from '@src/lib/trap'
+import { isErr, reportRejection } from '@src/lib/trap'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import { useRef } from 'react'
 
@@ -31,6 +31,7 @@ const attemptToConnectToEngine = async ({
   timeToConnect,
   engineCommandManager,
   rustContext,
+  kclManager,
 }: {
   authToken: string
   videoWrapperRef: React.RefObject<HTMLDivElement | null>
@@ -40,6 +41,7 @@ const attemptToConnectToEngine = async ({
   timeToConnect: number
   engineCommandManager: ConnectionManager
   rustContext: RustContext
+  kclManager: KclManager
 }) => {
   const codecError = await preflightEngineVideoCodecSupport()
   if (codecError) {
@@ -83,7 +85,14 @@ const attemptToConnectToEngine = async ({
           videoWrapperRef.current.clientHeight
         )
 
+        const kclVersion = await kclManager.getLanguageVersion()
+        if (isErr(kclVersion)) {
+          clearTimeout(cancelTimeout)
+          return reject(kclVersion)
+        }
+
         await engineCommandManager.start({
+          kclVersion,
           width,
           height,
           token: authToken,
@@ -162,7 +171,7 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
     label: 'onEngineConnectionReadyForRequests',
     message: 'kclManager.executeCode()',
   })
-  await kclManager.executeCode()
+  await kclManager.executeAfterReconnect()
   // TODO: resolve the ~12 remaining dependent playwright tests on this functions isPlaywright() check
   // Once zoom to fit and view isometric work on empty scenes (only grid planes) we can improve the functions
   // business logic
@@ -259,6 +268,7 @@ export async function tryConnecting({
             timeToConnect,
             engineCommandManager,
             rustContext,
+            kclManager,
           })
 
           // Do not count the 30 second timer to connect within the kcl execution and scene setup
