@@ -14,6 +14,7 @@ use kcmc::websocket::ModelingSessionData;
 use kcmc::websocket::OkWebSocketResponseData;
 use kcmc::websocket::WebSocketRequest;
 use kcmc::websocket::WebSocketResponse;
+use kittycad_modeling_cmds::ModelingCmdEndpoint;
 use kittycad_modeling_cmds::length_unit::LengthUnit;
 use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
 use kittycad_modeling_cmds::websocket::ModelingBatch;
@@ -524,10 +525,14 @@ impl EngineManager {
         // Create the map of original command IDs to source range.
         // This is for the wasm side, kurt needs it for selections.
         let mut id_to_source_range = HashMap::new();
+
+        let mut id_to_command = HashMap::new();
         for (req, range) in orig_requests.iter() {
             match req {
-                WebSocketRequest::ModelingCmdReq(ModelingCmdReq { cmd: _, cmd_id }) => {
-                    id_to_source_range.insert(Uuid::from(*cmd_id), *range);
+                WebSocketRequest::ModelingCmdReq(ModelingCmdReq { cmd, cmd_id }) => {
+                    let id = Uuid::from(*cmd_id);
+                    id_to_source_range.insert(id, *range);
+                    id_to_command.insert(id, ModelingCmdEndpoint::from(cmd.clone()));
                 }
                 _ => {
                     return Err(KclError::new_engine(KclErrorDetails::new(
@@ -557,7 +562,7 @@ impl EngineManager {
                 // If we have a batch response, we want to return the specific id we care about.
                 if let OkWebSocketResponseData::ModelingBatch { responses } = response {
                     let responses = responses.into_iter().map(|(k, v)| (Uuid::from(k), v)).collect();
-                    self.parse_batch_responses(last_id.into(), id_to_source_range, responses)
+                    self.parse_batch_responses(last_id.into(), id_to_source_range, id_to_command, responses)
                 } else {
                     // We should never get here.
                     Err(KclError::new_engine(KclErrorDetails::new(
@@ -745,6 +750,8 @@ impl EngineManager {
         id: uuid::Uuid,
         // The mapping of source ranges to command IDs.
         id_to_source_range: HashMap<uuid::Uuid, SourceRange>,
+        // Allows us to print which command failed
+        id_to_command: HashMap<uuid::Uuid, ModelingCmdEndpoint>,
         // The response from the engine.
         responses: HashMap<uuid::Uuid, BatchResponse>,
     ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {
@@ -758,6 +765,7 @@ impl EngineManager {
                 BatchResponse::Success { response } => {
                     if cmd_id == &id {
                         // This is the response we care about.
+                        // Returning here could drop errors that could be important
                         return Ok(OkWebSocketResponseData::Modeling {
                             modeling_response: response.clone(),
                         });
@@ -767,21 +775,26 @@ impl EngineManager {
                     }
                 }
                 BatchResponse::Failure { errors } => {
+                    let command = id_to_command
+                        .get(cmd_id)
+                        .map(ModelingCmdEndpoint::to_string)
+                        .unwrap_or("[missing entry]".to_string());
                     // Get the source range for the command.
                     let source_range = id_to_source_range.get(cmd_id).cloned().ok_or_else(|| {
                         KclError::new_engine(KclErrorDetails::new(
-                            format!("Failed to get source range for command ID: {cmd_id:?}"),
+                            format!("Failed to get source range for command {command} with ID: {cmd_id:?}"),
                             vec![],
                         ))
                     })?;
                     if errors.is_empty() {
                         return Err(KclError::new_engine(KclErrorDetails::new(
-                            "Failure response for batch with no error details".to_owned(),
+                            format!("Failure response for batch with no error details at command {command}"),
                             vec![source_range],
                         )));
                     }
+                    let errors = errors.iter().map(|e| e.message.clone()).collect::<Vec<_>>().join("\n");
                     return Err(KclError::new_engine(KclErrorDetails::new(
-                        errors.iter().map(|e| e.message.clone()).collect::<Vec<_>>().join("\n"),
+                        format!("command {command} resulted in errors: \n {errors}"),
                         vec![source_range],
                     )));
                 }
