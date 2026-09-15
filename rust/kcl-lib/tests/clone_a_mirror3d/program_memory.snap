@@ -37,7 +37,6 @@ description: Variables in memory after executing clone_a_mirror3d.kcl
   },
   "circle1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "circle1"
   },
   "doop": {

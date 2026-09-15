@@ -37,7 +37,6 @@ description: Variables in memory after executing angle-gauge.kcl
   },
   "bottomOuterEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bottomOuterEdge"
   },
   "cutoutAngle": {
@@ -50,7 +49,6 @@ description: Variables in memory after executing angle-gauge.kcl
     }
   },
   "cutoutAngledEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "cutoutAngledEdge"
   },
@@ -65,11 +63,9 @@ description: Variables in memory after executing angle-gauge.kcl
   },
   "cutoutLeftVerticalEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "cutoutLeftVerticalEdge"
   },
   "cutoutTopEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "cutoutTopEdge"
   },
@@ -2343,7 +2339,6 @@ description: Variables in memory after executing angle-gauge.kcl
   },
   "leftOuterEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "leftOuterEdge"
   },
   "lowerCutoutStartY": {
@@ -2357,16 +2352,13 @@ description: Variables in memory after executing angle-gauge.kcl
   },
   "lowerRightOuterEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "lowerRightOuterEdge"
   },
   "topOuterEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "topOuterEdge"
   },
   "upperRightOuterEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "upperRightOuterEdge"
   }

@@ -661,11 +661,9 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
   },
   "shaftEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "shaftEdge"
   },
   "shaftEnd": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "shaftEnd"
   },
