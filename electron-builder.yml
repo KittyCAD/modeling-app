@@ -52,7 +52,6 @@ nsis:
 linux:
   artifactName: "${productName}-${version}-${arch}-${os}.${ext}"
   executableName: zoo-modeling-app
-  icon: "assets/icon.png"
   target:
     - target: appImage
       arch:
