@@ -15,6 +15,7 @@ use image::RgbaImage;
 
 use super::model::InternalPoint;
 use super::model::InternalSegment;
+use super::region::ResolvedSketchRegion;
 use super::types::SketchVisualizationBounds;
 use super::types::SketchVisualizationError;
 use super::types::SketchVisualizationPoint;
@@ -24,12 +25,18 @@ const CANVAS_WIDTH: u32 = 1024;
 const CANVAS_HEIGHT: u32 = 1024;
 const CANVAS_PADDING: u32 = 48;
 const PRIMARY_LINE_WIDTH: f64 = 3.0;
+const HIGHLIGHT_LINE_WIDTH: f64 = 7.0;
+const HIGHLIGHT_SEPARATOR_WIDTH: f64 = 5.0;
 const POINT_RADIUS: f64 = 4.0;
 const CONTACT_POINT_RADIUS: f64 = 5.0;
 
 const FREE_COLOR: Color = Color::rgb(0x3c, 0x73, 0xff);
 const CONFLICT_COLOR: Color = Color::rgb(0xff, 0x5e, 0x5b);
 const FIXED_COLOR: Color = Color::rgb(0xff, 0xff, 0xff);
+const HIGHLIGHT_COLOR: Color = Color::rgb(0xff, 0xc0, 0x00);
+// #75ff5a at 20% opacity over the dark background. The fill is drawn once,
+// before strokes and points, so their original constraint colors stay intact.
+const REGION_FILL_COLOR: Color = Color::rgb(43, 72, 43);
 const DARK_BACKGROUND: Color = Color::rgb(0x18, 0x1a, 0x1f);
 const POINT_OUTLINE_DARK: Color = Color::rgb(0x18, 0x1a, 0x1f);
 
@@ -64,23 +71,47 @@ pub(super) fn render_png(
     points: &BTreeMap<usize, InternalPoint>,
     contact_point_ids: &BTreeSet<usize>,
     bounds: SketchVisualizationBounds,
+    resolved_region: Option<&ResolvedSketchRegion>,
 ) -> Result<Vec<u8>, SketchVisualizationError> {
     let mut image = RgbaImage::from_pixel(CANVAS_WIDTH, CANVAS_HEIGHT, DARK_BACKGROUND.to_rgba());
     let transform = Transform::new(bounds);
 
-    // Segment polylines were sampled in world coordinates by extraction. The
-    // transform below is the only world-to-screen conversion in the raster path.
+    if let Some(region) = resolved_region {
+        fill_region(&mut image, &region.contours, &transform);
+    }
+
+    // Gold halos and a dark separator sit below all constraint-colored strokes.
+    for segment in segments.values().filter(|segment| segment.highlighted) {
+        draw_polyline(
+            &mut image,
+            &segment.polyline,
+            HIGHLIGHT_COLOR,
+            HIGHLIGHT_LINE_WIDTH,
+            segment.construction,
+            &transform,
+        );
+        draw_polyline(
+            &mut image,
+            &segment.polyline,
+            DARK_BACKGROUND,
+            HIGHLIGHT_SEPARATOR_WIDTH,
+            segment.construction,
+            &transform,
+        );
+    }
     for segment in segments.values() {
-        let color = dof_color(segment.freedom);
-        draw_polyline(&mut image, &segment.polyline, color, segment.construction, &transform);
+        draw_polyline(
+            &mut image,
+            &segment.polyline,
+            dof_color(segment.freedom),
+            PRIMARY_LINE_WIDTH,
+            segment.construction,
+            &transform,
+        );
     }
 
     for (point_id, point) in points {
-        let owner_color = point
-            .owner
-            .and_then(|owner| segments.get(&owner))
-            .map(|segment| dof_color(segment.freedom));
-        let color = owner_color.unwrap_or_else(|| dof_color(Some(point.freedom)));
+        let color = dof_color(Some(point.freedom));
         let radius = if contact_point_ids.contains(point_id) {
             CONTACT_POINT_RADIUS
         } else {
@@ -95,6 +126,38 @@ pub(super) fn render_png(
     let mut cursor = Cursor::new(Vec::new());
     dynamic.write_to(&mut cursor, ImageFormat::Png)?;
     Ok(cursor.into_inner())
+}
+
+/// Even-odd scanline filling preserves nested holes regardless of winding.
+/// Contours have already been checked for closure; never infer closing edges.
+fn fill_region(image: &mut RgbaImage, contours: &[Vec<SketchVisualizationPoint>], transform: &Transform) {
+    let edges = contours
+        .iter()
+        .flat_map(|contour| {
+            contour
+                .windows(2)
+                .map(|edge| (transform.point(edge[0]), transform.point(edge[1])))
+        })
+        .collect::<Vec<_>>();
+    let mut crossings = Vec::new();
+    for row in 0..image.height() {
+        let y = row as f64 + 0.5;
+        crossings.clear();
+        for &(a, b) in &edges {
+            // Half-open intervals count a shared vertex only once.
+            if (a.y <= y && y < b.y) || (b.y <= y && y < a.y) {
+                crossings.push(a.x + (y - a.y) * (b.x - a.x) / (b.y - a.y));
+            }
+        }
+        crossings.sort_by(f64::total_cmp);
+        for pair in crossings.as_chunks::<2>().0 {
+            let start = (pair[0] - 0.5).ceil().clamp(0.0, image.width() as f64) as u32;
+            let end = (pair[1] - 0.5).ceil().clamp(0.0, image.width() as f64) as u32;
+            for column in start..end {
+                image.put_pixel(column, row, REGION_FILL_COLOR.to_rgba());
+            }
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -141,6 +204,7 @@ fn draw_polyline(
     image: &mut RgbaImage,
     points: &[SketchVisualizationPoint],
     color: Color,
+    line_width: f64,
     dashed: bool,
     transform: &Transform,
 ) {
@@ -148,14 +212,14 @@ fn draw_polyline(
         let start = transform.point(segment[0]);
         let end = transform.point(segment[1]);
         if dashed {
-            draw_dashed_line(image, start, end, color);
+            draw_dashed_line(image, start, end, color, line_width);
         } else {
-            draw_line(image, start, end, color);
+            draw_line(image, start, end, color, line_width);
         }
     }
 }
 
-fn draw_dashed_line(image: &mut RgbaImage, start: ScreenPoint, end: ScreenPoint, color: Color) {
+fn draw_dashed_line(image: &mut RgbaImage, start: ScreenPoint, end: ScreenPoint, color: Color, line_width: f64) {
     let length = screen_distance(start, end);
     if length <= f64::EPSILON {
         return;
@@ -169,15 +233,15 @@ fn draw_dashed_line(image: &mut RgbaImage, start: ScreenPoint, end: ScreenPoint,
         let dash_end = libm::fmin(cursor + dash, length);
         let from = interpolate_screen(start, end, cursor / length);
         let to = interpolate_screen(start, end, dash_end / length);
-        draw_line(image, from, to, color);
+        draw_line(image, from, to, color, line_width);
         cursor += step;
     }
 }
 
-fn draw_line(image: &mut RgbaImage, start: ScreenPoint, end: ScreenPoint, color: Color) {
+fn draw_line(image: &mut RgbaImage, start: ScreenPoint, end: ScreenPoint, color: Color, line_width: f64) {
     let length = screen_distance(start, end);
     if length <= f64::EPSILON {
-        draw_filled_circle(image, start, PRIMARY_LINE_WIDTH * 0.5, color);
+        draw_filled_circle(image, start, line_width * 0.5, color);
         return;
     }
 
@@ -187,12 +251,7 @@ fn draw_line(image: &mut RgbaImage, start: ScreenPoint, end: ScreenPoint, color:
     let samples = length.ceil() as usize;
     for index in 0..=samples {
         let t = index as f64 / samples as f64;
-        draw_filled_circle(
-            image,
-            interpolate_screen(start, end, t),
-            PRIMARY_LINE_WIDTH * 0.5,
-            color,
-        );
+        draw_filled_circle(image, interpolate_screen(start, end, t), line_width * 0.5, color);
     }
 }
 
@@ -225,5 +284,125 @@ fn interpolate_screen(a: ScreenPoint, b: ScreenPoint, t: f64) -> ScreenPoint {
     ScreenPoint {
         x: a.x + (b.x - a.x) * t,
         y: a.y + (b.y - a.y) * t,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::tooling::sketch_visualizer::sampling::sample_circle;
+
+    #[test]
+    fn selected_strokes_keep_constraint_colors_separate_from_gold_and_region_fill() {
+        let point = |x, y| SketchVisualizationPoint { x, y };
+        let bounds = SketchVisualizationBounds {
+            min: point(-12.0, -12.0),
+            max: point(12.0, 12.0),
+        };
+        let region = ResolvedSketchRegion {
+            name: "region".to_owned(),
+            id: uuid::Uuid::nil(),
+            origin_sketch_id: uuid::Uuid::nil(),
+            contours: vec![vec![
+                point(-5.0, -5.0),
+                point(5.0, -5.0),
+                point(5.0, 5.0),
+                point(-5.0, 5.0),
+                point(-5.0, -5.0),
+            ]],
+        };
+        for freedom in [Freedom::Free, Freedom::Fixed, Freedom::Conflict] {
+            for resolved_region in [None, Some(&region)] {
+                let segments = BTreeMap::from([(
+                    1,
+                    InternalSegment {
+                        construction: false,
+                        freedom: Some(freedom),
+                        highlighted: true,
+                        polyline: vec![point(-10.0, 0.0), point(10.0, 0.0)],
+                    },
+                )]);
+                let png = render_png(&segments, &BTreeMap::new(), &BTreeSet::new(), bounds, resolved_region).unwrap();
+                let image = image::load_from_memory(&png).unwrap().into_rgba8();
+                // Probe both sides of the stroke, inside and outside the region.
+                for world_x in [-8.0, 0.0, 8.0] {
+                    let x = Transform::new(bounds).point(point(world_x, 0.0)).x as u32;
+                    for y in [511, 512] {
+                        assert_eq!(*image.get_pixel(x, y), dof_color(Some(freedom)).to_rgba());
+                    }
+                    for y in [510, 513] {
+                        assert_eq!(*image.get_pixel(x, y), DARK_BACKGROUND.to_rgba());
+                    }
+                    for y in [509, 514] {
+                        assert_eq!(*image.get_pixel(x, y), HIGHLIGHT_COLOR.to_rgba());
+                    }
+                    let background = if resolved_region.is_some() && world_x == 0.0 {
+                        REGION_FILL_COLOR
+                    } else {
+                        DARK_BACKGROUND
+                    };
+                    for y in [508, 515] {
+                        assert_eq!(*image.get_pixel(x, y), background.to_rgba());
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn point_colors_are_independent_of_segment_colors() {
+        let center = SketchVisualizationPoint { x: 0.0, y: 0.0 };
+        let bounds = SketchVisualizationBounds {
+            min: SketchVisualizationPoint { x: -12.0, y: -12.0 },
+            max: SketchVisualizationPoint { x: 12.0, y: 12.0 },
+        };
+        for segment_freedom in [Freedom::Free, Freedom::Fixed, Freedom::Conflict] {
+            for point_freedom in [Freedom::Free, Freedom::Fixed, Freedom::Conflict] {
+                for highlighted in [false, true] {
+                    let segments = BTreeMap::from([(
+                        1,
+                        InternalSegment {
+                            construction: false,
+                            freedom: Some(segment_freedom),
+                            highlighted,
+                            polyline: sample_circle(center, 10.0),
+                        },
+                    )]);
+                    let start = SketchVisualizationPoint { x: 10.0, y: 0.0 };
+                    let points = BTreeMap::from([
+                        (
+                            2,
+                            InternalPoint {
+                                position: center,
+                                freedom: point_freedom,
+                            },
+                        ),
+                        (
+                            3,
+                            InternalPoint {
+                                position: start,
+                                freedom: point_freedom,
+                            },
+                        ),
+                    ]);
+                    let png = render_png(&segments, &points, &BTreeSet::new(), bounds, None).unwrap();
+                    let image = image::load_from_memory(&png).unwrap().into_rgba8();
+                    for position in [center, start] {
+                        let pixel = Transform::new(bounds).point(position);
+                        assert_eq!(
+                            *image.get_pixel(pixel.x as u32, pixel.y as u32),
+                            dof_color(Some(point_freedom)).to_rgba(),
+                            "point={point_freedom:?}, segment={segment_freedom:?}, highlighted={highlighted}"
+                        );
+                    }
+                    let rim = Transform::new(bounds).point(SketchVisualizationPoint { x: -10.0, y: 0.0 });
+                    assert_eq!(
+                        *image.get_pixel(rim.x as u32, rim.y as u32),
+                        dof_color(Some(segment_freedom)).to_rgba(),
+                        "the circle stroke must retain its segment constraint color"
+                    );
+                }
+            }
+        }
     }
 }

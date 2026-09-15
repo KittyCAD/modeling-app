@@ -6,7 +6,6 @@ use crate::front::Freedom;
 #[derive(Debug, Clone)]
 pub(super) struct InternalPoint {
     pub(super) position: SketchVisualizationPoint,
-    pub(super) owner: Option<usize>,
     pub(super) freedom: Freedom,
 }
 
@@ -14,5 +13,6 @@ pub(super) struct InternalPoint {
 pub(super) struct InternalSegment {
     pub(super) construction: bool,
     pub(super) freedom: Option<Freedom>,
+    pub(super) highlighted: bool,
     pub(super) polyline: Vec<SketchVisualizationPoint>,
 }
