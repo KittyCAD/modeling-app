@@ -430,6 +430,14 @@ pub(crate) async fn inner_imprint(
 
     if args.ctx.no_engine_commands().await {
         if separate_bodies {
+            exec_state.warn(
+                CompilationIssue::err(
+                    args.source_range,
+                    "Mock execution cannot determine how many bodies `split(..., merge = false)` produces. The returned mock bodies are placeholders; use real execution before relying on their count or indexing them."
+                        .to_owned(),
+                ),
+                annotations::WARN_MOCK_GEOMETRY_CARDINALITY,
+            );
             let extra_solid_id = exec_state.next_uuid();
             let mut new_solid = body.clone();
             new_solid.set_id(extra_solid_id);
@@ -844,6 +852,13 @@ second = subtract(first, tools = [tool])
         ctx.close().await;
 
         assert!(outcome.variables.contains_key("second"));
+        assert!(
+            outcome.issues.iter().any(|issue| issue
+                .message
+                .contains("Mock execution cannot determine how many bodies `split")),
+            "expected mock cardinality warning, got: {:#?}",
+            outcome.issues
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
