@@ -13,8 +13,7 @@ import {
   getCodeRefsByArtifactId,
 } from '@src/lang/std/artifactGraph'
 import { type ArtifactGraph, getAllOperations } from '@src/lang/wasm'
-import { useApp, useSingletons } from '@src/lib/boot'
-import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
+import { useSingletons } from '@src/lib/boot'
 import { sendSelectionEvent } from '@src/lib/featureTree'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import {
@@ -84,21 +83,11 @@ function BodiesList({
 }: {
   bodies: Map<string, PropsOf<typeof BodyItem>>
 }) {
-  const { userFeatures } = useApp()
-  const showExperimentalPointAndClick = userFeatures.useHas(
-    EXPERIMENTAL_POINT_AND_CLICK_FLAG,
-    false
-  )
-
   return (
     <section className="overflow-auto mr-1 pb-8">
       <ul>
         {Array.from(bodies.entries()).map(([id, props], i) => (
-          <BodyItem
-            key={id || i}
-            {...props}
-            showExperimentalPointAndClick={showExperimentalPointAndClick}
-          />
+          <BodyItem key={id || i} {...props} />
         ))}
       </ul>
     </section>
@@ -112,7 +101,6 @@ function BodyItem({
   hideOperation,
   engineEntityId,
   patternIndex,
-  showExperimentalPointAndClick = false,
 }: {
   label: string
   artifact: SolidArtifact
@@ -120,7 +108,6 @@ function BodyItem({
   hideOperation?: HideOperation
   engineEntityId?: string
   patternIndex?: number
-  showExperimentalPointAndClick?: boolean
 }) {
   const { kclManager } = useSingletons()
   const {
@@ -189,18 +176,14 @@ function BodyItem({
         onClick={onSelect}
         onContextMenu={() => onSelect()}
         isSelected={isSelected}
-        menuItems={
-          showExperimentalPointAndClick
-            ? [
-                <ContextMenuItem
-                  onClick={handleDelete}
-                  data-testid="context-menu-delete"
-                >
-                  Delete
-                </ContextMenuItem>,
-              ]
-            : undefined
-        }
+        menuItems={[
+          <ContextMenuItem
+            onClick={handleDelete}
+            data-testid="context-menu-delete"
+          >
+            Delete
+          </ContextMenuItem>,
+        ]}
         Toggle={
           <VisibilityToggle
             visible={hideOperation === undefined}
