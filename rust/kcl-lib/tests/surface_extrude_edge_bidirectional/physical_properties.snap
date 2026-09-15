@@ -5,13 +5,13 @@ description: Physical properties surface_extrude_edge_bidirectional.kcl
 {
   "bounding_box": {
     "center": {
-      "x": -0.5129318397204008,
-      "y": -0.0509982826661286,
+      "x": -3.8116147563770415,
+      "y": 3.504446979935679,
       "z": 2.5
     },
     "dimensions": {
-      "x": 5.164495600268674,
-      "y": 5.880952178243334,
+      "x": 11.761861433581956,
+      "y": 12.991842703446949,
       "z": 5.0
     },
     "unit": "mm"
