@@ -505,8 +505,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_dif
             "n": 20.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -519,8 +521,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_dif
             "n": 50.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -540,8 +544,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_dif
             "n": 50.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",

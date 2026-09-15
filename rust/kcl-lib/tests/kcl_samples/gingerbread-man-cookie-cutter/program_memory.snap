@@ -68,17 +68,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": 0.000002660896662901046,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 548.9994886639428,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -86,17 +90,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -59.000015141044926,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 334.9997811364389,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -104,17 +112,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": 0.6002616609015986,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 433.7009490632447,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -220,17 +232,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -169.99928821253525,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -53.00046784210689,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -238,17 +254,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -87.99933021779096,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -112.00052622224077,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -256,17 +276,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -127.75276314235624,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -80.7680118717353,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -372,17 +396,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -232.00006772237364,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 195.00010690988384,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -390,17 +418,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -187.00007622924323,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 130.00010102057345,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -408,17 +440,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -210.82971209674997,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 161.5795841389201,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -524,17 +560,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -59.00001514104422,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 311.9994709300523,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -542,17 +582,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -108.00032766575106,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 290.0004277025982,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -560,17 +604,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -36.88954842629934,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 197.18020273476037,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -676,17 +724,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -694,17 +746,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -87.99933021779162,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -112.00052622224024,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -796,17 +852,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -169.99928821253596,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -53.000467842106424,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -814,17 +874,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -77.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 57.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -916,17 +980,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -77.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 57.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -934,17 +1002,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -77.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 213.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1036,17 +1108,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -77.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 213.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1054,17 +1130,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -187.00007622924315,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 130.00010102057337,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1156,17 +1236,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -232.0000677223736,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 195.00010690988375,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1174,17 +1258,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -108.00032766575073,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 290.00042770259773,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1276,17 +1364,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -59.00001514104444,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 311.9994709300529,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1294,17 +1386,21 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                       {
                         "n": -59.00001514104468,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 334.99978113643914,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3038,8 +3134,10 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
     "value": 1.2,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "thickness": {
@@ -3047,8 +3145,10 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
     "value": 100.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "wallThickness": {
@@ -3056,8 +3156,10 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
     "value": 10.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   }
 }

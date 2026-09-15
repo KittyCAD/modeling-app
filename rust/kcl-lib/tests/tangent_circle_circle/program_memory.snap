@@ -52,17 +52,21 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                       {
                         "n": 5.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -70,17 +74,21 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                       {
                         "n": -5.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -88,17 +96,21 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                       {
                         "n": 0.00000000000000002754018274720378,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -204,17 +216,21 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                       {
                         "n": -5.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -222,17 +238,21 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                       {
                         "n": 5.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -240,17 +260,21 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                       {
                         "n": 0.00000000000000003457209145663137,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -356,17 +380,21 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                       {
                         "n": 11.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -374,17 +402,21 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                       {
                         "n": 5.000000000000001,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -392,17 +424,21 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                       {
                         "n": 8.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -508,17 +544,21 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                       {
                         "n": 5.000000000000001,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -526,17 +566,21 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                       {
                         "n": 11.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -544,17 +588,21 @@ description: Variables in memory after executing tangent_circle_circle.kcl
                       {
                         "n": 8.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],

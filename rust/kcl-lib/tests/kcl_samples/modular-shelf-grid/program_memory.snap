@@ -112,8 +112,10 @@ description: Variables in memory after executing modular-shelf-grid.kcl
     "value": 5.0,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "firstShelf": {
@@ -377,17 +379,21 @@ description: Variables in memory after executing modular-shelf-grid.kcl
                       {
                         "n": -0.18,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.4,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -395,17 +401,21 @@ description: Variables in memory after executing modular-shelf-grid.kcl
                       {
                         "n": 0.18,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.4,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -497,17 +507,21 @@ description: Variables in memory after executing modular-shelf-grid.kcl
                       {
                         "n": -0.18,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -515,17 +529,21 @@ description: Variables in memory after executing modular-shelf-grid.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -618,17 +636,21 @@ description: Variables in memory after executing modular-shelf-grid.kcl
                       {
                         "n": 0.18,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -636,17 +658,21 @@ description: Variables in memory after executing modular-shelf-grid.kcl
                       {
                         "n": -0.18,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -738,17 +764,21 @@ description: Variables in memory after executing modular-shelf-grid.kcl
                       {
                         "n": -0.18,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -756,17 +786,21 @@ description: Variables in memory after executing modular-shelf-grid.kcl
                       {
                         "n": -0.18,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.4,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -1038,17 +1072,21 @@ description: Variables in memory after executing modular-shelf-grid.kcl
                       {
                         "n": 0.18,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.4,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -1056,17 +1094,21 @@ description: Variables in memory after executing modular-shelf-grid.kcl
                       {
                         "n": 0.18,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -16335,8 +16377,10 @@ description: Variables in memory after executing modular-shelf-grid.kcl
     "value": 0.02,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "rightEdge": {
@@ -16348,8 +16392,10 @@ description: Variables in memory after executing modular-shelf-grid.kcl
     "value": 3.0,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "shelfDepth": {
@@ -16357,8 +16403,10 @@ description: Variables in memory after executing modular-shelf-grid.kcl
     "value": 0.4,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "shelfSpacing": {
@@ -16366,8 +16414,10 @@ description: Variables in memory after executing modular-shelf-grid.kcl
     "value": 0.48,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "shelfThickness": {
@@ -16375,8 +16425,10 @@ description: Variables in memory after executing modular-shelf-grid.kcl
     "value": 0.02,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "shelfWidth": {
@@ -16384,8 +16436,10 @@ description: Variables in memory after executing modular-shelf-grid.kcl
     "value": 0.36000000000000004,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "shelves": {
@@ -17130,8 +17184,10 @@ description: Variables in memory after executing modular-shelf-grid.kcl
     "value": 0.38,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "sidePanelProfile": {
@@ -17151,17 +17207,21 @@ description: Variables in memory after executing modular-shelf-grid.kcl
                       {
                         "n": -0.2,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.4,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -17169,17 +17229,21 @@ description: Variables in memory after executing modular-shelf-grid.kcl
                       {
                         "n": -0.18,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.4,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -17271,17 +17335,21 @@ description: Variables in memory after executing modular-shelf-grid.kcl
                       {
                         "n": -0.18,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.4,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -17289,17 +17357,21 @@ description: Variables in memory after executing modular-shelf-grid.kcl
                       {
                         "n": -0.18,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -17571,17 +17643,21 @@ description: Variables in memory after executing modular-shelf-grid.kcl
                       {
                         "n": -0.18,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -17589,17 +17665,21 @@ description: Variables in memory after executing modular-shelf-grid.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -17692,17 +17772,21 @@ description: Variables in memory after executing modular-shelf-grid.kcl
                       {
                         "n": -0.2,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -17710,17 +17794,21 @@ description: Variables in memory after executing modular-shelf-grid.kcl
                       {
                         "n": -0.2,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.4,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -17812,17 +17900,21 @@ description: Variables in memory after executing modular-shelf-grid.kcl
                       {
                         "n": -0.18,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -17830,17 +17922,21 @@ description: Variables in memory after executing modular-shelf-grid.kcl
                       {
                         "n": -0.2,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -18597,8 +18693,10 @@ description: Variables in memory after executing modular-shelf-grid.kcl
     "value": 0.4,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "unitHeight": {
@@ -18606,8 +18704,10 @@ description: Variables in memory after executing modular-shelf-grid.kcl
     "value": 0.5,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "unitWidth": {
@@ -18615,8 +18715,10 @@ description: Variables in memory after executing modular-shelf-grid.kcl
     "value": 0.4,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   }
 }

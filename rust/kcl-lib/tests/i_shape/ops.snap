@@ -12,8 +12,10 @@ description: Operations executed i_shape.kcl
         "value": 68.4,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -41,8 +43,10 @@ description: Operations executed i_shape.kcl
         "value": 120.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -70,8 +74,10 @@ description: Operations executed i_shape.kcl
         "value": 24.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -99,8 +105,10 @@ description: Operations executed i_shape.kcl
         "value": 5.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -244,8 +252,10 @@ description: Operations executed i_shape.kcl
             "value": 3.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -308,7 +318,9 @@ description: Operations executed i_shape.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -336,7 +348,9 @@ description: Operations executed i_shape.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",

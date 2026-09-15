@@ -39,18 +39,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -43.52,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -65,18 +69,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -73.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -130,18 +138,22 @@ description: Operations executed extrude_split.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -194,18 +206,22 @@ description: Operations executed extrude_split.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -254,18 +270,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -2.55,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -78.22,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -280,18 +300,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -34.37,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -5.97,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -341,18 +365,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -184.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -367,18 +395,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -90.31,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -432,18 +464,22 @@ description: Operations executed extrude_split.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -496,18 +532,22 @@ description: Operations executed extrude_split.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -556,18 +596,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -30.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -90.31,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -582,18 +626,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -2.55,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -78.22,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -608,18 +656,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -90.31,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -891,18 +943,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -37.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -917,18 +973,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -43.52,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -982,18 +1042,22 @@ description: Operations executed extrude_split.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -1049,18 +1113,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -37.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1075,18 +1143,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -34.37,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -5.97,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1231,18 +1303,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -84.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1257,18 +1333,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -2.55,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -78.22,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1366,18 +1446,22 @@ description: Operations executed extrude_split.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -1433,18 +1517,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -90.31,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1459,18 +1547,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -84.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1700,18 +1792,22 @@ description: Operations executed extrude_split.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -1814,18 +1910,22 @@ description: Operations executed extrude_split.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -1924,18 +2024,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -43.52,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -10.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1950,18 +2054,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -43.52,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1976,18 +2084,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -34.37,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -5.97,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2331,8 +2443,10 @@ description: Operations executed extrude_split.kcl
             "value": 150.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2396,18 +2510,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 40.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -134.01,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2422,18 +2540,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 40.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2483,18 +2605,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -31.95,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -145.02,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2509,18 +2635,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -4.57,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -160.23,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2570,18 +2700,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2596,18 +2730,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -46.58,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -111.92,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2664,18 +2802,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 40.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2690,18 +2832,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -20.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2918,18 +3064,22 @@ description: Operations executed extrude_split.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -2988,18 +3138,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 40.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -185.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3014,18 +3168,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -4.57,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -160.23,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3126,18 +3284,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 40.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -134.01,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3152,18 +3314,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 40.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -185.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3300,18 +3466,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -51.78,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -134.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3326,18 +3496,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -31.95,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -145.02,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3438,18 +3612,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -46.58,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -111.92,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3464,18 +3642,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -51.78,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -134.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3789,18 +3971,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -17.38,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -118.79,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3815,18 +4001,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -31.95,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -145.02,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3841,18 +4031,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -46.58,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -111.92,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4117,18 +4311,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 10.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -134.01,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4143,18 +4341,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 40.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -134.01,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4169,18 +4371,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -4.57,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -160.23,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4586,18 +4792,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -17.38,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -118.79,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4612,18 +4822,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -28.8,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -139.34,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4638,18 +4852,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -5.97,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -98.25,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4699,18 +4917,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 10.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -134.01,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4725,18 +4947,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 21.41,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -113.47,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4751,18 +4977,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -1.41,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -154.55,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4812,18 +5042,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -1.41,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -154.55,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4838,18 +5072,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -28.8,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -139.34,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4987,18 +5225,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 21.41,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -113.47,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5013,18 +5255,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -5.97,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -98.25,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5561,18 +5807,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -17.38,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -118.79,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5587,18 +5837,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -4.07,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -116.56,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5731,18 +5985,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 10.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -134.01,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5757,18 +6015,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 22.92,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -130.09,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5906,18 +6168,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -12.38,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -113.79,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5932,18 +6198,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -22.38,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -113.79,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5993,18 +6263,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -12.38,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -123.79,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6019,18 +6293,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -12.38,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -113.79,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6080,18 +6358,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -22.38,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -123.79,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6106,18 +6388,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -12.38,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -123.79,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6167,18 +6453,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -22.38,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -113.79,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6193,18 +6483,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -22.38,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -123.79,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6696,18 +6990,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -17.38,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -123.79,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6722,18 +7020,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -17.38,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -118.79,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6921,18 +7223,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -12.38,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -118.79,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6947,18 +7253,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -17.38,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -118.79,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -7211,18 +7521,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 15.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -139.01,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -7237,18 +7551,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 5.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -139.01,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -7298,18 +7616,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 15.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -129.01,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -7324,18 +7646,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 15.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -139.01,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -7385,18 +7711,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 5.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -129.01,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -7411,18 +7741,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 15.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -129.01,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -7472,18 +7806,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 5.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -139.01,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -7498,18 +7836,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 5.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -129.01,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -7998,18 +8340,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 5.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -134.01,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8024,18 +8370,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 10.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -134.01,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8223,18 +8573,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 10.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -139.01,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8249,18 +8603,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 10.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -134.01,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8513,18 +8871,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 0.58,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -69.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8539,18 +8901,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 14.08,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -69.2,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8600,18 +8966,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 10.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -29.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8626,18 +8996,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 22.89,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -33.01,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8741,18 +9115,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 10.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -29.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8767,18 +9145,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 0.58,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -69.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9101,18 +9483,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 0.58,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -69.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9127,18 +9513,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": -3.54,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -67.19,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9232,18 +9622,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 10.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -29.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9258,18 +9652,22 @@ description: Operations executed extrude_split.kcl
                 "type": "SketchVar",
                 "value": 6.68,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -25.96,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9491,18 +9889,22 @@ description: Operations executed extrude_split.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -9592,8 +9994,10 @@ description: Operations executed extrude_split.kcl
             "value": 200.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -9705,7 +10109,9 @@ description: Operations executed extrude_split.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -9733,7 +10139,9 @@ description: Operations executed extrude_split.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",

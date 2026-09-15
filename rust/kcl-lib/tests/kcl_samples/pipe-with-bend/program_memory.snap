@@ -39,9 +39,11 @@ description: Variables in memory after executing pipe-with-bend.kcl
     "type": "Number",
     "value": 90.0,
     "ty": {
-      "degrees": null,
       "type": "Known",
-      "type": "Angle"
+      "value": {
+        "type": "Angle",
+        "value": "degrees"
+      }
     }
   },
   "bendRadius": {
@@ -49,8 +51,10 @@ description: Variables in memory after executing pipe-with-bend.kcl
     "value": 30.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "innerCircle": {
@@ -62,8 +66,10 @@ description: Variables in memory after executing pipe-with-bend.kcl
     "value": 10.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "outerCircle": {
@@ -75,8 +81,10 @@ description: Variables in memory after executing pipe-with-bend.kcl
     "value": 20.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "pipe": {
@@ -398,17 +406,21 @@ description: Variables in memory after executing pipe-with-bend.kcl
                       {
                         "n": 35.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -416,17 +428,21 @@ description: Variables in memory after executing pipe-with-bend.kcl
                       {
                         "n": 30.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -671,17 +687,21 @@ description: Variables in memory after executing pipe-with-bend.kcl
                       {
                         "n": 40.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -689,17 +709,21 @@ description: Variables in memory after executing pipe-with-bend.kcl
                       {
                         "n": 30.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],

@@ -69,18 +69,22 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "type": "SketchVar",
                 "value": 3.73,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.07,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -95,18 +99,22 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "type": "SketchVar",
                 "value": 1.36,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.07,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -156,18 +164,22 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "type": "SketchVar",
                 "value": 3.73,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 3.51,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -182,18 +194,22 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "type": "SketchVar",
                 "value": 3.73,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.07,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -243,18 +259,22 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "type": "SketchVar",
                 "value": 1.36,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 3.51,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -269,18 +289,22 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "type": "SketchVar",
                 "value": 3.73,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 3.51,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -330,18 +354,22 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "type": "SketchVar",
                 "value": 1.36,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.07,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -356,18 +384,22 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "type": "SketchVar",
                 "value": 1.36,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 3.51,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -788,18 +820,22 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "type": "SketchVar",
                 "value": 3.04,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.27,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -814,18 +850,22 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "type": "SketchVar",
                 "value": 0.86,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.27,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -875,18 +915,22 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "type": "SketchVar",
                 "value": 3.04,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 3.06,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -901,18 +945,22 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "type": "SketchVar",
                 "value": 3.04,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.27,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -962,18 +1010,22 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "type": "SketchVar",
                 "value": 0.86,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 3.06,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -988,18 +1040,22 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "type": "SketchVar",
                 "value": 3.04,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 3.06,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1049,18 +1105,22 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "type": "SketchVar",
                 "value": 0.86,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.27,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1075,18 +1135,22 @@ description: Operations executed sketch_block_import_multiple.kcl
                 "type": "SketchVar",
                 "value": 0.86,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 3.06,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1507,7 +1571,9 @@ description: Operations executed sketch_block_import_multiple.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -1535,7 +1601,9 @@ description: Operations executed sketch_block_import_multiple.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",

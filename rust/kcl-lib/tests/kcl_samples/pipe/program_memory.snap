@@ -220,8 +220,10 @@ description: Variables in memory after executing pipe.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "pipeLength": {
@@ -229,8 +231,10 @@ description: Variables in memory after executing pipe.kcl
     "value": 6.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "pipeOuterDiameter": {
@@ -238,8 +242,10 @@ description: Variables in memory after executing pipe.kcl
     "value": 2.375,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "pipeSection": {
@@ -259,17 +265,21 @@ description: Variables in memory after executing pipe.kcl
                       {
                         "n": 1.1874999990500001,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -277,17 +287,21 @@ description: Variables in memory after executing pipe.kcl
                       {
                         "n": -0.00000000023749996596524477,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -379,17 +393,21 @@ description: Variables in memory after executing pipe.kcl
                       {
                         "n": 0.9761870629602243,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.21693045918634368,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -397,17 +415,21 @@ description: Variables in memory after executing pipe.kcl
                       {
                         "n": 0.0000000007338128321805248,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.00000000016306954056475418,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -646,8 +668,10 @@ description: Variables in memory after executing pipe.kcl
     "value": 0.1875,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "ringRegion": {
