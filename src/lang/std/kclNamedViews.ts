@@ -113,6 +113,10 @@ function isIndependentlyHideable(artifact: VisibilityArtifact): boolean {
   }
 }
 
+function isConsumed(artifact: VisibilityArtifact): boolean {
+  return 'consumed' in artifact && artifact.consumed
+}
+
 /**
  * Returns the body a pattern made its copies from.
  *
@@ -153,7 +157,11 @@ export function getViewUniverse(
 ): VisibilityUniverse {
   const universe: VisibilityUniverse = new Map(
     filterArtifacts(
-      { types: [...VISIBILITY_KINDS], predicate: isIndependentlyHideable },
+      {
+        types: [...VISIBILITY_KINDS],
+        predicate: (artifact) =>
+          !isConsumed(artifact) && isIndependentlyHideable(artifact),
+      },
       artifactGraph
     )
   )

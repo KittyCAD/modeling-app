@@ -138,10 +138,14 @@ function path({
   }
 }
 
-function gdtAnnotation(
+function gdtAnnotation({
+  id,
+  consumed = false,
+}: {
   id: string
-): Extract<Artifact, { type: 'gdtAnnotation' }> {
-  return { type: 'gdtAnnotation', id, codeRef: codeRef() }
+  consumed?: boolean
+}): Extract<Artifact, { type: 'gdtAnnotation' }> {
+  return { type: 'gdtAnnotation', id, codeRef: codeRef(), consumed }
 }
 
 function pattern({
@@ -293,7 +297,7 @@ describe('getViewUniverse', () => {
       sweep({ id: 'body' }),
       compositeSolid({ id: 'union' }),
       path({ id: 'sketch' }),
-      gdtAnnotation('annotation'),
+      gdtAnnotation({ id: 'annotation' }),
     ])
 
     expect([...getViewUniverse(graph).keys()].sort()).toEqual([
@@ -304,12 +308,13 @@ describe('getViewUniverse', () => {
     ])
   })
 
-  it('drops consumed artifacts, whose engine id another member answers to', () => {
+  it('drops consumed artifacts that no longer have independent engine objects', () => {
     const graph = graphOf([
       sweep({ id: 'body' }),
       sweep({ id: 'merged-away', consumed: true }),
       path({ id: 'region', consumed: true }),
       compositeSolid({ id: 'consumed-union', consumed: true }),
+      gdtAnnotation({ id: 'deleted-annotation', consumed: true }),
     ])
 
     expect([...getViewUniverse(graph).keys()]).toEqual(['body'])
@@ -380,7 +385,7 @@ describe('visibilityForView', () => {
     graphOf([
       sweep({ id: 'body-1' }),
       sweep({ id: 'body-2' }),
-      gdtAnnotation('annotation'),
+      gdtAnnotation({ id: 'annotation' }),
     ])
   )
 
@@ -556,7 +561,7 @@ describe('engineIdForArtifact', () => {
   it('sends a composite solid, a sketch and an annotation to their own ids', () => {
     const boolean = compositeSolid({ id: 'boolean-1' })
     const sketch = path({ id: 'sketch-1' })
-    const annotation = gdtAnnotation('gdt-1')
+    const annotation = gdtAnnotation({ id: 'gdt-1' })
     const graph = graphOf([boolean, sketch, annotation])
 
     for (const artifact of [boolean, sketch, annotation]) {
@@ -597,7 +602,7 @@ describe('engineIdForArtifact', () => {
       sweep({ id: 'mirrored-1', pathId: 'body-1-path' }),
       pattern({ id: 'pattern-1', sourceId: 'body-1', copyIds: ['copy-1'] }),
       path({ id: 'sketch-1' }),
-      gdtAnnotation('gdt-1'),
+      gdtAnnotation({ id: 'gdt-1' }),
     ])
 
     const universe = getViewUniverse(graph)
@@ -628,7 +633,7 @@ describe('engineIdsForVisibility', () => {
     const graph = graphOf([
       path({ id: 'body-1-path', consumed: true, sweepId: 'body-1' }),
       body,
-      gdtAnnotation('gdt-1'),
+      gdtAnnotation({ id: 'gdt-1' }),
     ])
     const universe = getViewUniverse(graph)
 
@@ -650,7 +655,7 @@ describe('engineIdsForVisibility', () => {
   })
 
   it('skips an artifact id the universe does not hold', () => {
-    const graph = graphOf([gdtAnnotation('gdt-1')])
+    const graph = graphOf([gdtAnnotation({ id: 'gdt-1' })])
 
     const hiddenByObjectId = engineIdsForVisibility({
       visibility: new Map([
@@ -696,7 +701,7 @@ describe('engineIdsForVisibility', () => {
   })
 
   it('returns nothing for an empty visibility', () => {
-    const graph = graphOf([gdtAnnotation('gdt-1')])
+    const graph = graphOf([gdtAnnotation({ id: 'gdt-1' })])
 
     expect(
       engineIdsForVisibility({
