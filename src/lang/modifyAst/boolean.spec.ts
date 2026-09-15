@@ -240,6 +240,50 @@ extrude002 = extrude(profile002, length = -1)`
       }
     )
 
+    it.each(['union', 'intersect'] as const)(
+      'should keep distinct variable-less bodies for %s',
+      async (operation) => {
+        const pipeCode = `startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 2)
+  |> extrude(length = 2)
+
+startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = 2)
+  |> extrude(length = 2)`
+        const { ast, artifactGraph, solids } = await getSolidsAndTools(
+          pipeCode,
+          [0, 1],
+          [],
+          instanceInThisFile,
+          kclManagerInThisFile
+        )
+        const result =
+          operation === 'union'
+            ? addUnion({
+                ast,
+                artifactGraph,
+                solids,
+                wasmInstance: instanceInThisFile,
+              })
+            : addIntersect({
+                ast,
+                artifactGraph,
+                solids,
+                wasmInstance: instanceInThisFile,
+              })
+        if (err(result)) {
+          throw result
+        }
+
+        const output = recast(result.modifiedAst, instanceInThisFile)
+        expect(output).toContain('solid001 = startSketchOn(XY)')
+        expect(output).toContain('solid002 = startSketchOn(XZ)')
+        expect(output).toContain(
+          `solid003 = ${operation}([solid001, solid002])`
+        )
+      }
+    )
+
     it.each(['subtract', 'split'] as const)(
       'should reject the same variable-less pipe in %s targets and tools',
       async (operation) => {
