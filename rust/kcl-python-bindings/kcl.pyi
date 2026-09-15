@@ -21,6 +21,7 @@ __all__ = [
     "DxfExportOptions",
     "DxfStorage",
     "ExecOutcome",
+    "ExecutionOptions",
     "ExportFile",
     "FbxExportOptions",
     "FbxImportOptions",
@@ -205,6 +206,14 @@ class ExecOutcome:
         freedom.
         """
     def report_all(self) -> builtins.list[builtins.str]: ...
+
+@typing.final
+class ExecutionOptions:
+    r"""
+    Connection settings scoped to one execution, including its retries.
+    The callback runs synchronously on the native reader thread and must not block.
+    """
+    def __new__(cls, *, token: typing.Optional[builtins.str] = None, on_engine_session: typing.Optional[typing.Any] = None) -> ExecutionOptions: ...
 
 @typing.final
 class ExportFile:
@@ -1305,59 +1314,59 @@ async def default_units(path: builtins.str) -> zooDefaultUnits:
     Get the default length and angle units from a kcl file.
     """
 
-async def execute(path: builtins.str) -> zooExecOutcome:
+async def execute(path: builtins.str, *, options: typing.Optional[ExecutionOptions] = None) -> zooExecOutcome:
     r"""
     Execute the kcl code from a file path.
     """
 
-async def execute_and_bounding_box(path: builtins.str, entity_ids: typing.Optional[typing.Sequence[builtins.str]] = None, output_unit: typing.Optional[UnitLength] = None) -> zooBoundingBoxResponse:
+async def execute_and_bounding_box(path: builtins.str, entity_ids: typing.Optional[typing.Sequence[builtins.str]] = None, output_unit: typing.Optional[UnitLength] = None, *, options: typing.Optional[ExecutionOptions] = None) -> zooBoundingBoxResponse:
     r"""
     Execute a kcl file and return the model's bounding box.
     """
 
-async def execute_and_export(path: builtins.str, export_format: zooFileExportFormat) -> builtins.list[RawFile]:
+async def execute_and_export(path: builtins.str, export_format: zooFileExportFormat, *, options: typing.Optional[ExecutionOptions] = None) -> builtins.list[RawFile]:
     r"""
     Execute a kcl file and export it to a specific file format.
     """
 
-async def execute_and_measure(path: builtins.str, request: zooPhysicalPropertiesRequest) -> zooPhysicalPropertiesResponse:
+async def execute_and_measure(path: builtins.str, request: zooPhysicalPropertiesRequest, *, options: typing.Optional[ExecutionOptions] = None) -> zooPhysicalPropertiesResponse:
     r"""
     Execute a kcl file and measure physical properties of the resulting model.
     """
 
-async def execute_and_snapshot(path: builtins.str, image_format: zooImageFormat, *, zoom: typing.Optional[builtins.bool] = None, highlight_edges: typing.Optional[builtins.bool] = None) -> builtins.list[builtins.int]:
+async def execute_and_snapshot(path: builtins.str, image_format: zooImageFormat, *, zoom: typing.Optional[builtins.bool] = None, highlight_edges: typing.Optional[builtins.bool] = None, options: typing.Optional[ExecutionOptions] = None) -> builtins.list[builtins.int]:
     r"""
     Execute a kcl file and snapshot it in a specific format.
     """
 
-async def execute_and_snapshot_views(path: builtins.str, image_format: zooImageFormat, snapshot_options: typing.Sequence[SnapshotOptions], *, zoom: typing.Optional[builtins.bool] = None, highlight_edges: typing.Optional[builtins.bool] = None) -> builtins.list[builtins.list[builtins.int]]: ...
+async def execute_and_snapshot_views(path: builtins.str, image_format: zooImageFormat, snapshot_options: typing.Sequence[SnapshotOptions], *, zoom: typing.Optional[builtins.bool] = None, highlight_edges: typing.Optional[builtins.bool] = None, options: typing.Optional[ExecutionOptions] = None) -> builtins.list[builtins.list[builtins.int]]: ...
 
-async def execute_code(code: builtins.str) -> zooExecOutcome:
+async def execute_code(code: builtins.str, *, options: typing.Optional[ExecutionOptions] = None) -> zooExecOutcome:
     r"""
     Execute the kcl code.
     """
 
-async def execute_code_and_bounding_box(code: builtins.str, entity_ids: typing.Optional[typing.Sequence[builtins.str]] = None, output_unit: typing.Optional[UnitLength] = None) -> zooBoundingBoxResponse:
+async def execute_code_and_bounding_box(code: builtins.str, entity_ids: typing.Optional[typing.Sequence[builtins.str]] = None, output_unit: typing.Optional[UnitLength] = None, *, options: typing.Optional[ExecutionOptions] = None) -> zooBoundingBoxResponse:
     r"""
     Execute the kcl code and return the model's bounding box.
     """
 
-async def execute_code_and_export(code: builtins.str, export_format: zooFileExportFormat) -> builtins.list[RawFile]:
+async def execute_code_and_export(code: builtins.str, export_format: zooFileExportFormat, *, options: typing.Optional[ExecutionOptions] = None) -> builtins.list[RawFile]:
     r"""
     Execute the kcl code and export it to a specific file format.
     """
 
-async def execute_code_and_measure(code: builtins.str, request: zooPhysicalPropertiesRequest) -> zooPhysicalPropertiesResponse:
+async def execute_code_and_measure(code: builtins.str, request: zooPhysicalPropertiesRequest, *, options: typing.Optional[ExecutionOptions] = None) -> zooPhysicalPropertiesResponse:
     r"""
     Execute the kcl code and measure physical properties of the resulting model.
     """
 
-async def execute_code_and_snapshot(code: builtins.str, image_format: zooImageFormat, *, zoom: typing.Optional[builtins.bool] = None, highlight_edges: typing.Optional[builtins.bool] = None) -> builtins.list[builtins.int]:
+async def execute_code_and_snapshot(code: builtins.str, image_format: zooImageFormat, *, zoom: typing.Optional[builtins.bool] = None, highlight_edges: typing.Optional[builtins.bool] = None, options: typing.Optional[ExecutionOptions] = None) -> builtins.list[builtins.int]:
     r"""
     Execute the kcl code and snapshot it in a specific format.
     """
 
-async def execute_code_and_snapshot_views(code: builtins.str, image_format: zooImageFormat, snapshot_options: typing.Sequence[SnapshotOptions], *, zoom: typing.Optional[builtins.bool] = None, highlight_edges: typing.Optional[builtins.bool] = None) -> builtins.list[builtins.list[builtins.int]]:
+async def execute_code_and_snapshot_views(code: builtins.str, image_format: zooImageFormat, snapshot_options: typing.Sequence[SnapshotOptions], *, zoom: typing.Optional[builtins.bool] = None, highlight_edges: typing.Optional[builtins.bool] = None, options: typing.Optional[ExecutionOptions] = None) -> builtins.list[builtins.list[builtins.int]]:
     r"""
     Execute the kcl code and snapshot it in a specific format.
     Returns one image for each camera angle you provide.
@@ -1374,19 +1383,19 @@ async def format_dir(dir: builtins.str) -> None:
     Format a whole directory of kcl code.
     """
 
-async def get_sketch_constraint_status(path: builtins.str) -> zooSketchConstraintReport:
+async def get_sketch_constraint_status(path: builtins.str, *, options: typing.Optional[ExecutionOptions] = None) -> zooSketchConstraintReport:
     r"""
     Execute a kcl file and return a report of sketch constraint status.
     """
 
-async def get_sketch_constraint_status_code(code: builtins.str) -> zooSketchConstraintReport:
+async def get_sketch_constraint_status_code(code: builtins.str, *, options: typing.Optional[ExecutionOptions] = None) -> zooSketchConstraintReport:
     r"""
     Execute kcl code and return a report of sketch constraint status.
     """
 
-async def import_and_snapshot(filepaths: typing.Sequence[builtins.str], format: zooInputFormat3d, image_format: zooImageFormat, *, zoom: typing.Optional[builtins.bool] = None, highlight_edges: typing.Optional[builtins.bool] = None) -> builtins.list[builtins.int]: ...
+async def import_and_snapshot(filepaths: typing.Sequence[builtins.str], format: zooInputFormat3d, image_format: zooImageFormat, *, zoom: typing.Optional[builtins.bool] = None, highlight_edges: typing.Optional[builtins.bool] = None, options: typing.Optional[ExecutionOptions] = None) -> builtins.list[builtins.int]: ...
 
-async def import_and_snapshot_views(filepaths: typing.Sequence[builtins.str], format: zooInputFormat3d, image_format: zooImageFormat, snapshot_options: typing.Sequence[SnapshotOptions], *, zoom: typing.Optional[builtins.bool] = None, highlight_edges: typing.Optional[builtins.bool] = None) -> builtins.list[builtins.list[builtins.int]]: ...
+async def import_and_snapshot_views(filepaths: typing.Sequence[builtins.str], format: zooInputFormat3d, image_format: zooImageFormat, snapshot_options: typing.Sequence[SnapshotOptions], *, zoom: typing.Optional[builtins.bool] = None, highlight_edges: typing.Optional[builtins.bool] = None, options: typing.Optional[ExecutionOptions] = None) -> builtins.list[builtins.list[builtins.int]]: ...
 
 def lint(code: builtins.str) -> builtins.list[Discovered]:
     r"""
