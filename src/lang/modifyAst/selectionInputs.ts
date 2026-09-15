@@ -18,6 +18,7 @@ import type {
   PathToNode,
   Program,
 } from '@src/lang/wasm'
+import { STD_LIB_COMMANDS } from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -36,6 +37,63 @@ export type SelectionInputRequest = {
 
 type SelectionInputRecord = SelectionInputPlan & {
   pipeBodyIndex?: number
+}
+
+function directName(expr: Expr | null): string | null {
+  if (expr?.type !== 'Name' || expr.path.length > 0) {
+    return null
+  }
+  return expr.name.name
+}
+
+function expressionReferencesName(expr: Expr | null, name: string): boolean {
+  if (!expr) {
+    return false
+  }
+  if (directName(expr) === name) {
+    return true
+  }
+  return (
+    expr.type === 'ArrayExpression' &&
+    expr.elements.some((element) => expressionReferencesName(element, name))
+  )
+}
+
+function callReturnsSolid(call: Extract<Expr, { type: 'CallExpressionKw' }>) {
+  const qualifiedName = [
+    ...call.callee.path.map(({ name }) => name),
+    call.callee.name.name,
+  ].join('::')
+  const command =
+    STD_LIB_COMMANDS[qualifiedName as keyof typeof STD_LIB_COMMANDS]
+  return Boolean(command?.returnType && /\bSolid\b/.test(command.returnType))
+}
+
+export function resolveLatestSolidInput(
+  input: Expr | null,
+  ast: Node<Program>
+): Expr | null {
+  let currentName = directName(input)
+  if (!currentName) {
+    return input
+  }
+
+  for (const statement of ast.body) {
+    if (statement.type !== 'VariableDeclaration') {
+      continue
+    }
+    const init = statement.declaration.init
+    if (
+      init.type !== 'CallExpressionKw' ||
+      !callReturnsSolid(init) ||
+      !expressionReferencesName(init.unlabeled, currentName)
+    ) {
+      continue
+    }
+    currentName = statement.declaration.id.name
+  }
+
+  return createLocalName(currentName)
 }
 
 export function resolveSelectionInputPlan({
