@@ -6,12 +6,12 @@ description: Physical properties wheel-hub.kcl
   "bounding_box": {
     "center": {
       "x": 0.0,
-      "y": -48.006428571427485,
+      "y": -51.43500000000003,
       "z": 0.0
     },
     "dimensions": {
       "x": 182.88,
-      "y": 109.72714285714515,
+      "y": 102.87000000000006,
       "z": 182.88
     },
     "unit": "mm"

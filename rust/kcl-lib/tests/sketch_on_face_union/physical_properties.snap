@@ -5,13 +5,13 @@ description: Physical properties sketch_on_face_union.kcl
 {
   "bounding_box": {
     "center": {
-      "x": 25.4,
-      "y": 0.0,
+      "x": 0.0,
+      "y": -25.4,
       "z": -51.1009209344802
     },
     "dimensions": {
-      "x": 50.8,
-      "y": 3657.6,
+      "x": 3657.6,
+      "y": 50.80000000000081,
       "z": 2336.1981581310392
     },
     "unit": "mm"
