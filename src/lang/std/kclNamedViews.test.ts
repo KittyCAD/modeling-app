@@ -144,6 +144,43 @@ function gdtAnnotation(
   return { type: 'gdtAnnotation', id, codeRef: codeRef() }
 }
 
+function helix({
+  id,
+  consumed = false,
+}: {
+  id: string
+  consumed?: boolean
+}): Extract<Artifact, { type: 'helix' }> {
+  return {
+    type: 'helix',
+    id,
+    axisId: null,
+    trajectorySweepId: null,
+    consumed,
+    codeRef: codeRef(),
+  }
+}
+
+function plane({
+  id,
+  pathIds = [],
+}: {
+  id: string
+  pathIds?: string[]
+}): Extract<Artifact, { type: 'plane' }> {
+  return { type: 'plane', id, pathIds, codeRef: codeRef() }
+}
+
+function planeOfFace(id: string): Extract<Artifact, { type: 'planeOfFace' }> {
+  return { type: 'planeOfFace', id, faceId: 'face-1', codeRef: codeRef() }
+}
+
+function importedGeometry(
+  id: string
+): Extract<Artifact, { type: 'importedGeometry' }> {
+  return { type: 'importedGeometry', id, codeRef: codeRef() }
+}
+
 function pattern({
   id,
   sourceId,
@@ -294,11 +331,17 @@ describe('getViewUniverse', () => {
       compositeSolid({ id: 'union' }),
       path({ id: 'sketch' }),
       gdtAnnotation('annotation'),
+      helix({ id: 'helix' }),
+      plane({ id: 'plane' }),
+      importedGeometry('imported'),
     ])
 
     expect([...getViewUniverse(graph).keys()].sort()).toEqual([
       'annotation',
       'body',
+      'helix',
+      'imported',
+      'plane',
       'sketch',
       'union',
     ])
@@ -310,25 +353,20 @@ describe('getViewUniverse', () => {
       sweep({ id: 'merged-away', consumed: true }),
       path({ id: 'region', consumed: true }),
       compositeSolid({ id: 'consumed-union', consumed: true }),
+      helix({ id: 'consumed-helix', consumed: true }),
     ])
 
     expect([...getViewUniverse(graph).keys()]).toEqual(['body'])
   })
 
-  it('leaves out the kinds `except` cannot name, which is a decision and not an omission', () => {
+  it('includes only planes that are independently visible', () => {
     const graph = graphOf([
-      { type: 'plane', id: 'plane-1', pathIds: [], codeRef: codeRef() },
-      {
-        type: 'helix',
-        id: 'helix-1',
-        axisId: null,
-        trajectorySweepId: null,
-        consumed: false,
-        codeRef: codeRef(),
-      },
+      plane({ id: 'standalone-plane' }),
+      plane({ id: 'sketch-support-plane', pathIds: ['sketch'] }),
+      planeOfFace('plane-of-face'),
     ])
 
-    expect([...getViewUniverse(graph).keys()]).toEqual([])
+    expect([...getViewUniverse(graph).keys()]).toEqual(['standalone-plane'])
   })
 
   it('adds a pattern copy under its own id, against the pattern artifact', () => {
@@ -553,13 +591,18 @@ describe('engineIdForArtifact', () => {
     ).toBe('body-1')
   })
 
-  it('sends a composite solid, a sketch and an annotation to their own ids', () => {
-    const boolean = compositeSolid({ id: 'boolean-1' })
-    const sketch = path({ id: 'sketch-1' })
-    const annotation = gdtAnnotation('gdt-1')
-    const graph = graphOf([boolean, sketch, annotation])
+  it('sends every identity-domain artifact to its own id', () => {
+    const artifacts = [
+      compositeSolid({ id: 'boolean-1' }),
+      path({ id: 'sketch-1' }),
+      gdtAnnotation('gdt-1'),
+      helix({ id: 'helix-1' }),
+      plane({ id: 'plane-1' }),
+      importedGeometry('imported-1'),
+    ]
+    const graph = graphOf(artifacts)
 
-    for (const artifact of [boolean, sketch, annotation]) {
+    for (const artifact of artifacts) {
       expect(
         engineIdForArtifact({
           id: artifact.id,
@@ -598,6 +641,9 @@ describe('engineIdForArtifact', () => {
       pattern({ id: 'pattern-1', sourceId: 'body-1', copyIds: ['copy-1'] }),
       path({ id: 'sketch-1' }),
       gdtAnnotation('gdt-1'),
+      helix({ id: 'helix-1' }),
+      plane({ id: 'plane-1' }),
+      importedGeometry('imported-1'),
     ])
 
     const universe = getViewUniverse(graph)
@@ -616,6 +662,9 @@ describe('engineIdForArtifact', () => {
         ['mirrored-1', 'mirrored-1'],
         ['sketch-1', 'sketch-1'],
         ['gdt-1', 'gdt-1'],
+        ['helix-1', 'helix-1'],
+        ['plane-1', 'plane-1'],
+        ['imported-1', 'imported-1'],
         ['copy-1', 'copy-1'],
       ])
     )
@@ -629,6 +678,9 @@ describe('engineIdsForVisibility', () => {
       path({ id: 'body-1-path', consumed: true, sweepId: 'body-1' }),
       body,
       gdtAnnotation('gdt-1'),
+      helix({ id: 'helix-1' }),
+      plane({ id: 'plane-1' }),
+      importedGeometry('imported-1'),
     ])
     const universe = getViewUniverse(graph)
 
@@ -636,6 +688,9 @@ describe('engineIdsForVisibility', () => {
       visibility: new Map([
         ['body-1', true],
         ['gdt-1', false],
+        ['helix-1', false],
+        ['plane-1', true],
+        ['imported-1', false],
       ]),
       universe,
       artifactGraph: graph,
@@ -645,6 +700,9 @@ describe('engineIdsForVisibility', () => {
       new Map([
         ['body-1-path', true],
         ['gdt-1', false],
+        ['helix-1', false],
+        ['plane-1', true],
+        ['imported-1', false],
       ])
     )
   })

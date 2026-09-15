@@ -72,6 +72,9 @@ export const VISIBILITY_KINDS = [
   'compositeSolid',
   'path',
   'gdtAnnotation',
+  'helix',
+  'plane',
+  'importedGeometry',
 ] as const satisfies readonly Artifact['type'][]
 
 export type VisibilityKind = (typeof VISIBILITY_KINDS)[number]
@@ -103,8 +106,12 @@ function isIndependentlyHideable(artifact: VisibilityArtifact): boolean {
     case 'sweep':
     case 'compositeSolid':
     case 'path':
+    case 'helix':
       return !artifact.consumed
+    case 'plane':
+      return artifact.pathIds.length === 0
     case 'gdtAnnotation':
+    case 'importedGeometry':
       return true
     default: {
       const _exhaustiveCheck: never = artifact
@@ -144,9 +151,14 @@ function sourceBodyForPattern(
 /**
  * Returns every object a view can address in the given execution.
  *
- * Kinds outside `VISIBILITY_KINDS` are excluded by decision. `setPlaneHidden`
- * owns the default planes. Helixes and imported geometry wait until `except` can
- * name them.
+ * Kinds outside `VISIBILITY_KINDS` are excluded by decision.
+ *
+ * - Default planes are absent from the artifact graph and remain under
+ *   `setPlaneHidden`.
+ * - `planeOf()` produces `planeOfFace`, which is not a visibility kind because
+ *   the engine creates it hidden.
+ * - A `plane` with `pathIds` supports a sketch and is excluded by
+ *   `isIndependentlyHideable` because the executor hid it.
  */
 export function getViewUniverse(
   artifactGraph: ArtifactGraph
@@ -216,7 +228,7 @@ function engineIdForSweep(
 /**
  * Returns the engine object id that addresses a universe entry.
  *
- * - `compositeSolid`, `path`, `gdtAnnotation`: the artifact id is also the
+ * - Every non-sweep, non-pattern universe artifact uses its artifact id as its
  *   engine object id.
  * - `pattern`: the key is the copy id the engine assigned.
  *
@@ -238,6 +250,9 @@ export function engineIdForArtifact({
     case 'compositeSolid':
     case 'path':
     case 'gdtAnnotation':
+    case 'helix':
+    case 'plane':
+    case 'importedGeometry':
       return artifact.id
     case 'pattern':
       return id

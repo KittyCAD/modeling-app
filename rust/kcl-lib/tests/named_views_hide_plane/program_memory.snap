@@ -537,10 +537,10 @@ description: Variables in memory after executing named_views_hide_plane.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 431,
-                    "end": 436,
+                    "commentStart": 417,
+                    "end": 422,
                     "moduleId": 0,
-                    "start": 431,
+                    "start": 417,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -561,10 +561,10 @@ description: Variables in memory after executing named_views_hide_plane.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 494,
-                    "end": 499,
+                    "commentStart": 480,
+                    "end": 485,
                     "moduleId": 0,
-                    "start": 494,
+                    "start": 480,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -585,10 +585,10 @@ description: Variables in memory after executing named_views_hide_plane.kcl
                     10.0
                   ],
                   "tag": {
-                    "commentStart": 558,
-                    "end": 563,
+                    "commentStart": 544,
+                    "end": 549,
                     "moduleId": 0,
-                    "start": 558,
+                    "start": 544,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -609,10 +609,10 @@ description: Variables in memory after executing named_views_hide_plane.kcl
                     10.0
                   ],
                   "tag": {
-                    "commentStart": 623,
-                    "end": 628,
+                    "commentStart": 609,
+                    "end": 614,
                     "moduleId": 0,
-                    "start": 623,
+                    "start": 609,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -715,10 +715,10 @@ description: Variables in memory after executing named_views_hide_plane.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 431,
-            "end": 436,
+            "commentStart": 417,
+            "end": 422,
             "moduleId": 0,
-            "start": 431,
+            "start": 417,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -729,10 +729,10 @@ description: Variables in memory after executing named_views_hide_plane.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 494,
-            "end": 499,
+            "commentStart": 480,
+            "end": 485,
             "moduleId": 0,
-            "start": 494,
+            "start": 480,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -743,10 +743,10 @@ description: Variables in memory after executing named_views_hide_plane.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 558,
-            "end": 563,
+            "commentStart": 544,
+            "end": 549,
             "moduleId": 0,
-            "start": 558,
+            "start": 544,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -757,10 +757,10 @@ description: Variables in memory after executing named_views_hide_plane.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 623,
-            "end": 628,
+            "commentStart": 609,
+            "end": 614,
             "moduleId": 0,
-            "start": 623,
+            "start": 609,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -782,10 +782,10 @@ description: Variables in memory after executing named_views_hide_plane.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 431,
-              "end": 436,
+              "commentStart": 417,
+              "end": 422,
               "moduleId": 0,
-              "start": 431,
+              "start": 417,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -806,10 +806,10 @@ description: Variables in memory after executing named_views_hide_plane.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 494,
-              "end": 499,
+              "commentStart": 480,
+              "end": 485,
               "moduleId": 0,
-              "start": 494,
+              "start": 480,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -830,10 +830,10 @@ description: Variables in memory after executing named_views_hide_plane.kcl
               10.0
             ],
             "tag": {
-              "commentStart": 558,
-              "end": 563,
+              "commentStart": 544,
+              "end": 549,
               "moduleId": 0,
-              "start": 558,
+              "start": 544,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -854,10 +854,10 @@ description: Variables in memory after executing named_views_hide_plane.kcl
               10.0
             ],
             "tag": {
-              "commentStart": 623,
-              "end": 628,
+              "commentStart": 609,
+              "end": 614,
               "moduleId": 0,
-              "start": 623,
+              "start": 609,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -976,6 +976,26 @@ description: Variables in memory after executing named_views_hide_plane.kcl
         "z": 1.0,
         "units": null
       }
+    }
+  },
+  "planeView": {
+    "type": "NamedView",
+    "value": {
+      "artifactId": "[uuid]",
+      "name": "Near plane",
+      "camera": {
+        "look": {
+          "type": "oriented",
+          "orientation": "Isometric"
+        },
+        "target": null,
+        "distance": null,
+        "projection": "Orthographic"
+      },
+      "baseline": "Show",
+      "exceptIds": [
+        "[uuid]"
+      ]
     }
   },
   "planeVisible": {

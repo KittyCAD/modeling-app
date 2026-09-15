@@ -316,6 +316,49 @@ describe('activateNamedView', () => {
     expect(activeViewSignal.value).toEqual({ name: 'Front', moduleKey: 'Main' })
   })
 
+  it('sends every newly nameable artifact kind to the engine', async () => {
+    setFlag(true)
+    const f = fakes()
+    const artifacts: Artifact[] = [
+      {
+        type: 'plane',
+        id: 'plane-1',
+        pathIds: [],
+        codeRef: CODE_REF,
+      },
+      {
+        type: 'helix',
+        id: 'helix-1',
+        axisId: null,
+        trajectorySweepId: null,
+        consumed: false,
+        codeRef: CODE_REF,
+      },
+      {
+        type: 'importedGeometry',
+        id: 'imported-1',
+        codeRef: CODE_REF,
+      },
+    ]
+    for (const artifact of artifacts) {
+      f.raw.execState.artifactGraph.set(artifact.id, artifact)
+    }
+
+    await activateNamedView({
+      target: { kind: 'declared', view: declaredView('Front') },
+      kclManager: f.kclManager,
+    })
+
+    expect(f.setObjectsHidden).toHaveBeenCalledWith(
+      new Map([
+        ['body-1', false],
+        ['plane-1', false],
+        ['helix-1', false],
+        ['imported-1', false],
+      ])
+    )
+  })
+
   it('sends no camera of its own for Default View', async () => {
     setFlag(true)
     const f = fakes()

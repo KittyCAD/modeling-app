@@ -10831,7 +10831,7 @@ export default {
       },
       {
         "name": "except",
-        "ty": "[Solid | Sketch | GdtAnnotation; 1+]",
+        "ty": "[Solid | Sketch | GdtAnnotation | Helix | Plane | ImportedGeometry; 1+]",
         "docs": "The objects the baseline does not apply to: the hidden ones under a `Show` baseline, and the only visible ones under `Hide`.",
         "required": false,
         "special": false,
