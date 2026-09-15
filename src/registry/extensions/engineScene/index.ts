@@ -6,14 +6,15 @@ import {
 import { computed } from '@preact/signals-core'
 import type { Command } from '@src/lib/commandTypes'
 import {
+  commandScopeService,
   FILE_COMMAND_SCOPES,
   MODE_MODELING_COMMAND_SCOPE,
   provideCommand,
 } from '@src/registry/contracts/commands'
 import {
-  type EngineSceneExtensionContext,
   defineEngineSceneStreamClassName,
   defineEngineSceneViewExtension,
+  type EngineSceneExtensionContext,
   engineSceneStreamClassNamesValueSpec,
   engineSceneViewExtensionsValueSpec,
 } from '@src/registry/contracts/engineScene'
@@ -27,7 +28,7 @@ import {
   statusBarGlobalItemsValueSpec,
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
-import { Suspense, createElement, lazy } from 'react'
+import { createElement, lazy, Suspense } from 'react'
 import executionIndicator from './executionIndicator'
 import { measurementToolService } from './measurementToolService'
 import { physicalAnalysisService } from './physicalAnalysis/physicalAnalysisService'
@@ -260,7 +261,15 @@ const EngineSceneScreenshotStatusBarItem = () =>
  * the scene and the default view chrome rendered around the engine stream.
  */
 const engineSceneExtension = defineRegistryItemFactory((ctx) => {
+  const commandScopes = ctx.services.signal(commandScopeService)
   const executionService = ctx.services.signal(executingEditorService)
+  const showAnalysisStatusBarItems = computed(
+    () =>
+      commandScopes.value === undefined ||
+      commandScopes.value.activeScopes.value.includes(
+        MODE_MODELING_COMMAND_SCOPE
+      )
+  )
   const selectionStatusBarItem = computed(() => {
     const selectionStatusLabel = executionService.value?.selectionStatusLabel
     return nullableStatusBarItem(
@@ -279,7 +288,7 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
   })
   const measurementStatusBarItem = computed(() =>
     nullableStatusBarItem(
-      executionService.value
+      executionService.value && showAnalysisStatusBarItems.value
         ? {
             id: 'measure',
             component: EngineSceneMeasurementStatusBarItem,
@@ -291,7 +300,7 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
   )
   const physicalAnalysisStatusBarItem = computed(() =>
     nullableStatusBarItem(
-      executionService.value
+      executionService.value && showAnalysisStatusBarItems.value
         ? {
             id: 'physical-analysis',
             component: EngineScenePhysicalAnalysisStatusBarItem,
