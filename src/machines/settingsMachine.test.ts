@@ -4,11 +4,41 @@ import { createSettings } from '@src/lib/settings/initialSettings'
 import type { BaseUnit } from '@src/lib/settings/settingsTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
-import { settingsMachine } from '@src/machines/settingsMachine'
+import {
+  getOnlySettingsFromContext,
+  settingsMachine,
+  type SettingsMachineContext,
+} from '@src/machines/settingsMachine'
 import { describe, expect, it } from 'vitest'
 import { createActor, fromCallback, fromPromise, waitFor } from 'xstate'
 
 describe('settingsMachine', () => {
+  it('keeps service dependencies out of settings values', () => {
+    const settings = createSettings()
+    const wasmInstancePromise = Promise.resolve({} as ModuleType)
+    const commandBarActor = createActor(commandBarMachine, {
+      input: {
+        commands: [],
+        wasmInstancePromise,
+        machineManager: {} as MachineManager,
+      },
+    }).start()
+    const context: SettingsMachineContext = {
+      ...settings,
+      commandBarActor,
+      defaultProjectLibraries: [],
+      projectLibrarySettingDefaultPolicies: [],
+      extensionSettings: {},
+      fileOperations: testFileOperations,
+      wasmInstancePromise,
+      deferredEvents: [],
+    }
+
+    expect(getOnlySettingsFromContext(context)).toEqual(settings)
+
+    commandBarActor.stop()
+  })
+
   it('serializes settings events received while persistence is pending', async () => {
     const persistedUnits: Array<BaseUnit | undefined> = []
     const finishPersisting: Array<() => void> = []

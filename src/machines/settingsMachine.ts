@@ -750,6 +750,7 @@ export function getOnlySettingsFromContext(
     defaultProjectLibraries: _defaultProjectLibraries,
     projectLibrarySettingDefaultPolicies: _projectLibrarySettingDefaultPolicies,
     extensionSettings: _extensionSettings,
+    fileOperations: _fileOperations,
     wasmInstancePromise: _w,
     deferredEvents: _deferredEvents,
     ...settings
