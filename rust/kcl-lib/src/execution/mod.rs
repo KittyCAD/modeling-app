@@ -5448,11 +5448,12 @@ face = disc()
         }
     }
 
-    /// Without a KCL 3.0 entry point, versions may still be mixed, as before.
+    /// Without a KCL 3.0 entry point, KCL 1.0 and 2.0 may still be mixed, as
+    /// before.
     #[tokio::test(flavor = "multi_thread")]
-    async fn kcl_version_mismatch_is_not_checked_without_v3_entry_point() {
+    async fn pre_v3_kcl_versions_may_be_mixed_without_v3_entry_point() {
         for main_header in ["", "@settings(kclVersion = 1.0)\n", "@settings(kclVersion = 2.0)\n"] {
-            for dep_version in ["1.0", "2.0", "\"3.0-preview\""] {
+            for dep_version in ["1.0", "2.0"] {
                 let main = format!("{main_header}import width from \"dep.kcl\"\nx = width\n");
                 let dep = dep_declaring(dep_version);
                 run_versioned_modules(&main, &[("dep.kcl", &dep)])
@@ -5460,6 +5461,164 @@ face = disc()
                     .unwrap_or_else(|err| panic!("main={main_header:?} dep={dep_version}: {err:#?}"));
             }
         }
+    }
+
+    /// The error an entry point `main.kcl` that declares no kclVersion must
+    /// produce when it imports a 3.0-preview `dep.kcl`.
+    const V3_DEP_UNDER_UNDECLARED_ENTRY_POINT: &str = "Mixing KCL versions in a single program is not allowed. The entry point `/zma-kcl-version-mismatch/main.kcl` does not declare a kclVersion, but the imported file `/zma-kcl-version-mismatch/dep.kcl` declares kclVersion 3.0-preview. Declare the same kclVersion in the entry point, or update the setting in the imported file.";
+
+    /// Without a KCL 3.0 entry point, an imported file may not declare KCL
+    /// 3.0: the legacy per-module lookup would otherwise apply KCL 3.0
+    /// semantics to that file alone. The error names both files, says what
+    /// the entry point declares (if anything), points at the declaration in
+    /// the imported file, and carries the import site in the entry point as
+    /// its outer frame.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn v3_import_requires_v3_entry_point() {
+        for (main_header, entry_point_declares, fix) in [
+            (
+                "",
+                "does not declare a kclVersion",
+                "Declare the same kclVersion in the entry point, or update the setting in the imported file.",
+            ),
+            (
+                "@settings(kclVersion = 1.0)\n",
+                "declares kclVersion 1.0",
+                "Update the kclVersion setting in one of these files to match the other.",
+            ),
+            (
+                "@settings(kclVersion = 2.0)\n",
+                "declares kclVersion 2.0",
+                "Update the kclVersion setting in one of these files to match the other.",
+            ),
+        ] {
+            let main = format!("{main_header}import width from \"dep.kcl\"\nx = width\n");
+            let dep = dep_declaring("\"3.0-preview\"");
+            let error = run_versioned_modules(&main, &[("dep.kcl", &dep)])
+                .await
+                .expect_err("a KCL 3.0 import without a KCL 3.0 entry point should be rejected");
+            assert!(matches!(error, KclError::Semantic { .. }), "{error:#?}");
+            assert_eq!(
+                error.message(),
+                format!(
+                    "Mixing KCL versions in a single program is not allowed. The entry point `/zma-kcl-version-mismatch/main.kcl` {entry_point_declares}, but the imported file `/zma-kcl-version-mismatch/dep.kcl` declares kclVersion 3.0-preview. {fix}"
+                ),
+                "main={main_header:?}"
+            );
+
+            let ranges = error.source_ranges();
+            assert_eq!(ranges.len(), 2, "{ranges:#?}");
+            // The `kclVersion = ...` setting in dep.kcl.
+            assert!(!ranges[0].module_id().is_top_level());
+            let declaration = "kclVersion = \"3.0-preview\"";
+            let start = dep.find(declaration).unwrap();
+            assert_eq!((ranges[0].start(), ranges[0].end()), (start, start + declaration.len()));
+            // The import statement in main.kcl.
+            assert!(ranges[1].module_id().is_top_level());
+            let import_stmt = "import width from \"dep.kcl\"";
+            let start = main.find(import_stmt).unwrap();
+            assert_eq!((ranges[1].start(), ranges[1].end()), (start, start + import_stmt.len()));
+            assert_eq!(
+                error
+                    .backtrace()
+                    .iter()
+                    .map(|frame| frame.fn_name.as_deref())
+                    .collect::<Vec<_>>(),
+                [Some("import dep.kcl"), None]
+            );
+        }
+    }
+
+    /// Every accepted spelling of 3.0-preview is rejected, and the message
+    /// uses the canonical spelling.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn v3_import_spellings_are_all_rejected_without_v3_entry_point() {
+        let main = "import width from \"dep.kcl\"\nx = width\n";
+        for dep_version in ["\"3-preview\"", "\"3.0.0-preview\""] {
+            let dep = dep_declaring(dep_version);
+            let error = run_versioned_modules(main, &[("dep.kcl", &dep)])
+                .await
+                .expect_err("a KCL 3.0 import without a KCL 3.0 entry point should be rejected");
+            assert_eq!(
+                error.message(),
+                V3_DEP_UNDER_UNDECLARED_ENTRY_POINT,
+                "dep={dep_version}"
+            );
+        }
+    }
+
+    /// Mock execution runs a whole-module import's body only when the module
+    /// is referenced, so the check also runs at the import site.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unreferenced_v3_whole_module_import_is_checked_in_mock_execution() {
+        let main = "import \"dep.kcl\" as dep\nx = 1\n";
+        let dep = dep_declaring("\"3.0-preview\"");
+        let error = run_versioned_modules_mock(main, &[("dep.kcl", &dep)])
+            .await
+            .expect_err("a KCL 3.0 import without a KCL 3.0 entry point should be rejected in mock execution");
+        assert_eq!(error.message(), V3_DEP_UNDER_UNDECLARED_ENTRY_POINT);
+        let ranges = error.source_ranges();
+        assert_eq!(ranges.len(), 2, "{ranges:#?}");
+        assert!(!ranges[0].module_id().is_top_level());
+        assert!(ranges[1].module_id().is_top_level());
+        let import_stmt = "import \"dep.kcl\" as dep";
+        let start = main.find(import_stmt).unwrap();
+        assert_eq!((ranges[1].start(), ranges[1].end()), (start, start + import_stmt.len()));
+
+        // Engine execution runs the module eagerly and rejects it too.
+        let error = run_versioned_modules(main, &[("dep.kcl", &dep)])
+            .await
+            .expect_err("a KCL 3.0 import without a KCL 3.0 entry point should be rejected in engine execution");
+        assert_eq!(error.message(), V3_DEP_UNDER_UNDECLARED_ENTRY_POINT);
+    }
+
+    /// The check covers transitive imports. The message names the entry point
+    /// and the mismatched file; the file in between appears in the import
+    /// backtrace.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn transitive_v3_import_requires_v3_entry_point() {
+        let main = "import doubled from \"a.kcl\"\nx = doubled\n";
+        let a = "import width from \"b.kcl\"\nexport doubled = width * 2\n";
+        let b = dep_declaring("\"3.0-preview\"");
+        let error = run_versioned_modules(main, &[("a.kcl", a), ("b.kcl", &b)])
+            .await
+            .expect_err("a transitive KCL 3.0 import without a KCL 3.0 entry point should be rejected");
+        assert_eq!(
+            error.message(),
+            "Mixing KCL versions in a single program is not allowed. The entry point `/zma-kcl-version-mismatch/main.kcl` does not declare a kclVersion, but the imported file `/zma-kcl-version-mismatch/b.kcl` declares kclVersion 3.0-preview. Declare the same kclVersion in the entry point, or update the setting in the imported file."
+        );
+        assert_eq!(
+            error
+                .backtrace()
+                .iter()
+                .map(|frame| frame.fn_name.as_deref())
+                .collect::<Vec<_>>(),
+            [Some("import b.kcl"), Some("import a.kcl"), None]
+        );
+    }
+
+    /// When execution was started without a file path, the message still
+    /// describes the entry point, just without a path.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn v3_import_without_v3_entry_point_or_entry_point_path() {
+        let main = "import width from \"dep.kcl\"\nx = width\n";
+        let dep = dep_declaring("\"3.0-preview\"");
+        let error = execute_with_modules(main, &[("dep.kcl", &dep)])
+            .await
+            .expect_err("a KCL 3.0 import without a KCL 3.0 entry point should be rejected");
+        let message = error.message();
+        assert!(
+            message.starts_with(
+                "Mixing KCL versions in a single program is not allowed. The entry point does not declare a kclVersion, but the imported file `"
+            ),
+            "{message}"
+        );
+        assert!(
+            message.ends_with(
+                "dep.kcl` declares kclVersion 3.0-preview. Declare the same kclVersion in the entry point, or update the setting in the imported file."
+            ),
+            "{message}"
+        );
     }
 
     /// The check covers transitive imports. The message names the entry point
@@ -5822,21 +5981,13 @@ x = f()
     }
 
     /// Early return is gated on the entry point's kclVersion, not the
-    /// defining module's.
+    /// defining module's. A module cannot opt into KCL 3.0 on its own.
     #[tokio::test(flavor = "multi_thread")]
     async fn return_semantics_gated_on_entry_point_not_module() {
-        // A 2.0 entry point keeps write-and-continue everywhere, even inside an
-        // imported KCL 3.0 module: its function still runs code after return,
-        // and a return escaping its module-level if-arm is still silently
-        // ignored.
+        // A 2.0 entry point importing a module that declares KCL 3.0 is
+        // rejected as a version mismatch before the module runs, so its
+        // function never gets to observe either return semantics.
         let dep = r#"@settings(kclVersion = "3.0-preview")
-ignored = if true {
-  return 1
-  0
-} else {
-  0
-}
-
 export fn f() {
   return 1
   assert(1, isEqualTo = 2, error = "ran past return")
@@ -5848,7 +5999,8 @@ x = f()
 "#;
         let err = execute_with_modules(main, &[("dep.kcl", dep)]).await.unwrap_err();
         assert!(
-            err.message().contains("ran past return"),
+            err.message()
+                .starts_with("Mixing KCL versions in a single program is not allowed."),
             "unexpected message: {}",
             err.message()
         );
@@ -6342,11 +6494,12 @@ assert(1, isEqualTo = 2, error = "code after exit ran")
     }
 
     /// If-arm scoping is gated on the entry point's kclVersion, not the
-    /// defining module's.
+    /// defining module's. A module cannot opt into KCL 3.0 on its own.
     #[tokio::test(flavor = "multi_thread")]
     async fn if_arm_scoping_gated_on_entry_point_not_module() {
-        // A 2.0 entry point keeps leaking arms everywhere, even inside an
-        // imported KCL 3.0 module.
+        // A 2.0 entry point importing a module that declares KCL 3.0 is
+        // rejected as a version mismatch before the module runs, so its arms
+        // never get to leak or not leak.
         let dep = r#"@settings(kclVersion = "3.0-preview")
 ignored = if true {
   leaked = 1
@@ -6360,8 +6513,13 @@ export leakCheck = leaked
 import leakCheck from "dep.kcl"
 x = leakCheck
 "#;
-        let result = execute_with_modules(main, &[("dep.kcl", dep)]).await.unwrap();
-        assert_eq!(variable_f64(&result, "x"), 1.0);
+        let err = execute_with_modules(main, &[("dep.kcl", dep)]).await.unwrap_err();
+        assert!(
+            err.message()
+                .starts_with("Mixing KCL versions in a single program is not allowed."),
+            "unexpected message: {}",
+            err.message()
+        );
 
         // A KCL 3.0 entry point applies arm scoping everywhere, including
         // inside an imported module that declares no kclVersion (1.0 under the
