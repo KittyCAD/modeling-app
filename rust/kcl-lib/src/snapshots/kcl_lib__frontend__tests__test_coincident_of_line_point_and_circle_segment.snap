@@ -1,10 +1,21 @@
 ---
 source: kcl-lib/src/frontend.rs
-expression: "src_delta.text.as_str()"
+expression: src_delta.text.as_str()
 ---
 sketch(on = XY) {
-  circle1 = circle(start = [var 7.02mm, var 0mm], center = [var -0.01mm, var 0.22mm])
-  line1 = line(start = [var 7mm, var 0.78mm], end = [var 10mm, var 2mm])
+  circle1 = circle(
+    start = [var 7.01536571598906mm, var 0mm],
+    center = [
+      var -0.012326514358330288mm,
+      var 0.22255992568911492mm
+    ],
+  )
+  line1 = line(
+    start = [
+      var 6.996960113166079mm,
+      var 0.777440074310885mm
+    ],
+    end = [var 10mm, var 2mm],
+  )
   coincident([line1.start, circle1])
 }
-

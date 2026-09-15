@@ -46,6 +46,18 @@ pub fn format_number_literal(
         with_decimals.trim_end_matches('0').trim_end_matches('.').to_string()
     };
 
+    append_numeric_suffix(&formatted, suffix)
+}
+
+/// Serialize geometry without changing its floating-point value.
+pub(crate) fn format_number_literal_full_precision(
+    value: f64,
+    suffix: NumericSuffix,
+) -> Result<String, FormatNumericSuffixError> {
+    append_numeric_suffix(&normalize_negative_zero(value).to_string(), suffix)
+}
+
+fn append_numeric_suffix(formatted: &str, suffix: NumericSuffix) -> Result<String, FormatNumericSuffixError> {
     match suffix {
         // There isn't a syntactic suffix for these. For unknown, we don't want
         // to ever generate the unknown suffix. We currently warn on it, and we
@@ -225,6 +237,19 @@ mod tests {
             format_number_literal(-0.0, NumericSuffix::Mm, None),
             Ok("0mm".to_owned())
         );
+    }
+
+    #[test]
+    fn test_geometry_literal_round_trip() {
+        for value in [0.125, -0.125, 2.3333 / 17.0, -2.3333 / 17.0, 1e-12, 1e20] {
+            let literal = format_number_literal_full_precision(value, NumericSuffix::Mm).unwrap();
+            assert_eq!(literal.strip_suffix("mm").unwrap().parse::<f64>().unwrap(), value);
+        }
+        assert_eq!(
+            format_number_literal_full_precision(-0.0, NumericSuffix::Mm).unwrap(),
+            "0mm"
+        );
+        assert_eq!(format_number_literal(0.125, NumericSuffix::Mm, None).unwrap(), "0.13mm");
     }
 
     #[test]

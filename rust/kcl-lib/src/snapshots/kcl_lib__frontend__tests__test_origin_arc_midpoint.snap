@@ -1,9 +1,21 @@
 ---
 source: kcl-lib/src/frontend.rs
-expression: "src_delta.text.as_str()"
+expression: src_delta.text.as_str()
 ---
 sketch(on = XY) {
-  arc1 = arc(start = [var 0.35, var 2.24], end = [var 1.62, var -1.58], center = [var 2.34, var 0.78])
+  arc1 = arc(
+    start = [
+      var 0.348797811112891,
+      var 2.2379640543075245
+    ],
+    end = [
+      var 1.621816682868758,
+      var -1.5810925553484505
+    ],
+    center = [
+      var 2.3429893223710354,
+      var 0.7809964419379222
+    ],
+  )
   midpoint(arc1, point = ORIGIN)
 }
-
