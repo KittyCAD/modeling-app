@@ -17,7 +17,7 @@ import * as nodeFsP from 'fs/promises'
 
 // Some of these sketches are KCL 1.0, so editing them needs the legacy sketch flag.
 test.use({
-  userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG, OPFS_CLOUD_FEATURE_FLAG],
+  userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG],
 })
 
 const exists = async (
@@ -122,6 +122,8 @@ test.describe(
   'when file tree creation navigates within the same project',
   { tag: ['@web'] },
   () => {
+    test.use({ userFeatures: [OPFS_CLOUD_FEATURE_FLAG] })
+
     test('creates a KCL file inside a folder without leaving the explorer disabled', async ({
       page,
       folderSetupFn,

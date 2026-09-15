@@ -12,9 +12,7 @@ import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test.describe('Command bar tests', { tag: '@desktop' }, () => {
   // Some of these sketches are KCL 1.0, so editing them needs the legacy sketch flag.
-  test.use({
-    userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG, OPFS_CLOUD_FEATURE_FLAG],
-  })
+  test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
 
   test('Extrude from command bar selects extrude line after', async ({
     page,
@@ -802,20 +800,6 @@ export exported = 2`,
     })
   })
 
-  test(
-    'Command palette can be opened via query parameter - web',
-    { tag: '@web' },
-    async ({ page, cmdBar }) => {
-      await page.goto(`${page.url()}/?cmd=app.theme&groupId=settings`)
-      await expect(page).toHaveURL(
-        (url) =>
-          !url.searchParams.has('cmd') && !url.searchParams.has('groupId'),
-        { timeout: 15_000 }
-      )
-      await cmdBar.expectCommandName('Settings · app · theme')
-    }
-  )
-
   test('Step back works on non-required and required arguments and closes', async ({
     page,
     homePage,
@@ -950,4 +934,22 @@ export exported = 2`,
     await cmdBar.stepBack()
     await cmdBar.expectState({ stage: 'commandBarClosed' })
   })
+})
+
+test.describe('Command bar tests', () => {
+  test.use({ userFeatures: [OPFS_CLOUD_FEATURE_FLAG] })
+
+  test(
+    'Command palette can be opened via query parameter - web',
+    { tag: '@web' },
+    async ({ page, cmdBar }) => {
+      await page.goto(`${page.url()}/?cmd=app.theme&groupId=settings`)
+      await expect(page).toHaveURL(
+        (url) =>
+          !url.searchParams.has('cmd') && !url.searchParams.has('groupId'),
+        { timeout: 15_000 }
+      )
+      await cmdBar.expectCommandName('Settings · app · theme')
+    }
+  )
 })
