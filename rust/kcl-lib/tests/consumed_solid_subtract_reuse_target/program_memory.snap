@@ -630,15 +630,15 @@ description: Variables in memory after executing consumed_solid_subtract_reuse_t
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -648,15 +648,15 @@ description: Variables in memory after executing consumed_solid_subtract_reuse_t
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -746,15 +746,15 @@ description: Variables in memory after executing consumed_solid_subtract_reuse_t
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -764,15 +764,15 @@ description: Variables in memory after executing consumed_solid_subtract_reuse_t
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -862,15 +862,15 @@ description: Variables in memory after executing consumed_solid_subtract_reuse_t
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -880,15 +880,15 @@ description: Variables in memory after executing consumed_solid_subtract_reuse_t
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -978,15 +978,15 @@ description: Variables in memory after executing consumed_solid_subtract_reuse_t
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -996,15 +996,15 @@ description: Variables in memory after executing consumed_solid_subtract_reuse_t
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -1524,15 +1524,15 @@ description: Variables in memory after executing consumed_solid_subtract_reuse_t
                       {
                         "n": -7.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": -11.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -1542,15 +1542,15 @@ description: Variables in memory after executing consumed_solid_subtract_reuse_t
                       {
                         "n": -11.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": -11.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -1640,15 +1640,15 @@ description: Variables in memory after executing consumed_solid_subtract_reuse_t
                       {
                         "n": -7.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": -7.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -1658,15 +1658,15 @@ description: Variables in memory after executing consumed_solid_subtract_reuse_t
                       {
                         "n": -7.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": -11.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -1756,15 +1756,15 @@ description: Variables in memory after executing consumed_solid_subtract_reuse_t
                       {
                         "n": -11.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": -7.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -1774,15 +1774,15 @@ description: Variables in memory after executing consumed_solid_subtract_reuse_t
                       {
                         "n": -7.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": -7.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -1872,15 +1872,15 @@ description: Variables in memory after executing consumed_solid_subtract_reuse_t
                       {
                         "n": -11.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": -11.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -1890,15 +1890,15 @@ description: Variables in memory after executing consumed_solid_subtract_reuse_t
                       {
                         "n": -11.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": -7.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -2418,15 +2418,15 @@ description: Variables in memory after executing consumed_solid_subtract_reuse_t
                       {
                         "n": 11.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": 7.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -2436,15 +2436,15 @@ description: Variables in memory after executing consumed_solid_subtract_reuse_t
                       {
                         "n": 7.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": 7.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -2534,15 +2534,15 @@ description: Variables in memory after executing consumed_solid_subtract_reuse_t
                       {
                         "n": 11.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": 11.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -2552,15 +2552,15 @@ description: Variables in memory after executing consumed_solid_subtract_reuse_t
                       {
                         "n": 11.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": 7.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -2650,15 +2650,15 @@ description: Variables in memory after executing consumed_solid_subtract_reuse_t
                       {
                         "n": 7.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": 11.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -2668,15 +2668,15 @@ description: Variables in memory after executing consumed_solid_subtract_reuse_t
                       {
                         "n": 11.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": 11.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -2766,15 +2766,15 @@ description: Variables in memory after executing consumed_solid_subtract_reuse_t
                       {
                         "n": 7.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": 7.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -2784,15 +2784,15 @@ description: Variables in memory after executing consumed_solid_subtract_reuse_t
                       {
                         "n": 7.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": 11.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],

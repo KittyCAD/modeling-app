@@ -7,7 +7,7 @@ use crate::UnitLength;
 
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[serde(tag = "type", content = "value")]
 pub enum UnitType {
     Count,
     Length(UnitLength),
@@ -49,7 +49,7 @@ impl std::fmt::Display for UnitType {
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[serde(tag = "type", content = "value")]
 pub enum NumericType {
     // Specified by the user (directly or indirectly)
     Known(UnitType),
