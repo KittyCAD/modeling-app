@@ -6,12 +6,12 @@ description: Physical properties stylized-pickup-truck.kcl
   "bounding_box": {
     "center": {
       "x": 0.0000018000009731622413,
-      "y": 14.749998059999823,
+      "y": 0.0,
       "z": 1144.9999998879998
     },
     "dimensions": {
       "x": 5039.999994719999,
-      "y": 2110.4999961199997,
+      "y": 2081.0,
       "z": 2430.0000002240004
     },
     "unit": "mm"
