@@ -668,6 +668,10 @@ export class Connection extends EventTarget {
         this.apiCallId = apiCallId
       },
       getCloudProjectId: this.getCloudProjectId,
+      getConnectionContext: () => ({
+        connectionId: this.id,
+        modelingApiCallId: this.apiCallId ?? null,
+      }),
       tearDownManager: this.tearDownManager.bind(this),
       requestReconnect: () => {
         if (

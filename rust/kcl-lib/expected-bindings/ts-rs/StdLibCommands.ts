@@ -963,6 +963,18 @@ export default {
         "deprecated": false,
         "deprecatedSince": null,
         "removedIn": "3.0"
+      },
+      {
+        "name": "tangentChain",
+        "ty": "bool",
+        "docs": "If true, also chamfer edges that are tangent to the selected edges. Defaults to true.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": "3.0",
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
@@ -1390,7 +1402,7 @@ export default {
     "returnType": null,
     "deprecated": false,
     "deprecatedSince": null,
-    "experimental": true,
+    "experimental": false,
     "docHidden": false,
     "args": [
       {
@@ -2170,6 +2182,18 @@ export default {
         "deprecated": false,
         "deprecatedSince": null,
         "removedIn": "3.0"
+      },
+      {
+        "name": "tangentChain",
+        "ty": "bool",
+        "docs": "If true, also fillet edges that are tangent to the selected edges. Defaults to true.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": "3.0",
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },

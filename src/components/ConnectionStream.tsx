@@ -103,10 +103,12 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const isNetworkOkay =
     overallState === NetworkHealthState.Ok ||
     overallState === NetworkHealthState.Weak
-  const { tryConnecting, isConnecting, numberOfConnectionAttempts } =
-    useTryConnect(() => {
-      abnormalCloseRetries.current = 0
-    })
+  const {
+    tryConnecting,
+    isConnecting,
+    numberOfConnectionAttempts,
+    abnormalCloseRetries,
+  } = useTryConnect()
   const safariObjectFitClass = useMemo(() => {
     // on safari we want to apply object-fit: fill to fix video resize bug
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
@@ -133,6 +135,8 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
             .length,
           hasConnection: Boolean(connection),
           connectionId: connection?.id,
+          websocketBufferedAmount: connection?.websocket?.bufferedAmount,
+          modelingApiCallId: connection?.apiCallId ?? null,
           connectionConnected: connection?.connected,
           peerConnectionState: connection?.peerConnection?.connectionState,
           iceConnectionState: connection?.peerConnection?.iceConnectionState,
@@ -494,6 +498,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         setShowManualConnect(true)
       },
       engineCommandManager,
+      abnormalCloseRetries,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
@@ -502,9 +507,10 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       props.authToken,
       reportEngineDisconnect,
       settings,
+      abnormalCloseRetries,
     ]
   )
-  const abnormalCloseRetries = useOnWebsocketClose(onWebSocketCloseParams)
+  useOnWebsocketClose(onWebSocketCloseParams)
 
   const onVitestEngineOnline = useMemo(
     () => ({
