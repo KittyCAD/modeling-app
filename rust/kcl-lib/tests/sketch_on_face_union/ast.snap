@@ -4094,6 +4094,7 @@ description: Result of parsing sketch_on_face_union.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

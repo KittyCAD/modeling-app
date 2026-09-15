@@ -604,6 +604,7 @@ description: Result of parsing named_views_units_are_millimeters.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

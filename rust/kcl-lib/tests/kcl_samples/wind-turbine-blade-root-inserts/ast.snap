@@ -17074,6 +17074,7 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
         }
       ]
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

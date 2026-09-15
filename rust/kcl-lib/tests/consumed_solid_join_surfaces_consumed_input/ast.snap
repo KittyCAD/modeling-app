@@ -5375,6 +5375,7 @@ description: Result of parsing consumed_solid_join_surfaces_consumed_input.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

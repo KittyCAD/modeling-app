@@ -4240,6 +4240,7 @@ description: Result of parsing gingerbread-man-cookie-cutter.kcl
         }
       ]
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

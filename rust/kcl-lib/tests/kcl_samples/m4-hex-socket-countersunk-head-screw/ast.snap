@@ -7674,6 +7674,7 @@ description: Result of parsing m4-hex-socket-countersunk-head-screw.kcl
         }
       ]
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

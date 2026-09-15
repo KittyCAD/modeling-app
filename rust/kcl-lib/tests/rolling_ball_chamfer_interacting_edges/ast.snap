@@ -2020,6 +2020,7 @@ description: Result of parsing rolling_ball_chamfer_interacting_edges.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

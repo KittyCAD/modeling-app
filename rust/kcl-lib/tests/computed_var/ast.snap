@@ -995,6 +995,7 @@ description: Result of parsing computed_var.kcl
         }
       ]
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

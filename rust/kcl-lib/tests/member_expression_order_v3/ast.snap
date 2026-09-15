@@ -2092,7 +2092,8 @@ description: Result of parsing member_expression_order_v3.kcl
                 },
                 "startNodes": []
               },
-              "start": 0
+              "start": 0,
+              "type": "Program"
             },
             "commentStart": 0,
             "end": 0,
@@ -2611,7 +2612,8 @@ description: Result of parsing member_expression_order_v3.kcl
               "commentStart": 0,
               "end": 0,
               "moduleId": 0,
-              "start": 0
+              "start": 0,
+              "type": "Program"
             },
             "commentStart": 0,
             "end": 0,
@@ -2843,6 +2845,7 @@ description: Result of parsing member_expression_order_v3.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }
