@@ -380,6 +380,46 @@ export function getSweepFromSuspectedSweepSurface(
   )
 }
 
+/** Resolve face-merged extrusions back to their shared body. */
+export function getSweepBodyArtifact(
+  sweep: Extract<Artifact, { type: 'sweep' }>,
+  artifactGraph: ArtifactGraph
+): Extract<Artifact, { type: 'sweep' | 'compositeSolid' }> | Error {
+  const visited = new Set<ArtifactId>()
+  let current = sweep
+
+  while (!visited.has(current.id)) {
+    visited.add(current.id)
+    const path = artifactGraph.get(current.pathId)
+    if (path?.type !== 'path') return current
+
+    if (path.compositeSolidId) {
+      return getArtifactOfTypes(
+        { key: path.compositeSolidId, types: ['compositeSolid'] },
+        artifactGraph
+      )
+    }
+
+    // Loft, sweep and twist artifacts default to "merge" without establishing
+    // shared body identity. Only follow explicit extrusion merges.
+    if (
+      current.subType !== 'extrusion' ||
+      current.method !== 'merge' ||
+      current.sourceSweepId
+    ) {
+      return current
+    }
+
+    const face = artifactGraph.get(path.planeId)
+    if (face?.type !== 'cap' && face?.type !== 'wall') return current
+    const parentSweep = artifactGraph.get(face.sweepId)
+    if (parentSweep?.type !== 'sweep') return current
+    current = parentSweep
+  }
+
+  return new Error('Cycle detected while resolving sweep body')
+}
+
 export function getCommonFacesForEdge(
   artifact: SweepEdge | SegmentArtifact,
   artifactGraph: ArtifactGraph
