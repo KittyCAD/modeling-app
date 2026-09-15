@@ -214,16 +214,13 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
   },
   "edge1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "edge1"
   },
   "edge2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "edge2"
   },
   "edge3": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "edge3"
   },

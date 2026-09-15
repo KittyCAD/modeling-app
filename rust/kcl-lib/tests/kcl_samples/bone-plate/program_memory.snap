@@ -69,61 +69,49 @@ description: Variables in memory after executing bone-plate.kcl
   },
   "arc1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc1"
   },
   "arc11": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc11"
   },
   "arc13": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc13"
   },
   "arc14": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc14"
   },
   "arc2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc2"
   },
   "arc3": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc3"
   },
   "arc4": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc4"
   },
   "arc5": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc5"
   },
   "arc6": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc6"
   },
   "arc7": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc7"
   },
   "arc8": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc8"
   },
   "arc9": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc9"
   },
@@ -261,7 +249,6 @@ description: Variables in memory after executing bone-plate.kcl
     }
   },
   "circle01": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "circle01"
   },
@@ -1701,21 +1688,17 @@ description: Variables in memory after executing bone-plate.kcl
   },
   "line10": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line10"
   },
   "line12": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line12"
   },
   "line15": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line15"
   },
   "line16": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line16"
   },

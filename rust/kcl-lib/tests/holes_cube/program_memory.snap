@@ -5,11 +5,9 @@ description: Variables in memory after executing holes_cube.kcl
 {
   "a": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "a"
   },
   "b": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "b"
   },
@@ -429,7 +427,6 @@ description: Variables in memory after executing holes_cube.kcl
   },
   "c": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "c"
   },
   "cubeLen": {
@@ -442,7 +439,6 @@ description: Variables in memory after executing holes_cube.kcl
     }
   },
   "d": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "d"
   }

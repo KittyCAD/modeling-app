@@ -233,46 +233,37 @@ description: Variables in memory after executing hammer.kcl
   },
   "arc11": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc11"
   },
   "arc14": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc14"
   },
   "arc2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc2"
   },
   "arc3": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc3"
   },
   "arc4": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc4"
   },
   "arc5": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc5"
   },
   "arc6": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc6"
   },
   "arc7": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc7"
   },
   "arc9": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc9"
   },
@@ -426,11 +417,9 @@ description: Variables in memory after executing hammer.kcl
   },
   "capStart001": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "capStart001"
   },
   "circle1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "circle1"
   },
@@ -7086,66 +7075,53 @@ description: Variables in memory after executing hammer.kcl
   },
   "line1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line1"
   },
   "line10": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line10"
   },
   "line12": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line12"
   },
   "line13": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line13"
   },
   "line15": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line15"
   },
   "line2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line2"
   },
   "line3": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line3"
   },
   "line4": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line4"
   },
   "line5": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line5"
   },
   "line6": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line6"
   },
   "line7": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line7"
   },
   "line8": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line8"
   },
   "line9": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line9"
   },
