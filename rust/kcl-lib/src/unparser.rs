@@ -883,9 +883,14 @@ impl Literal {
                 if let Some(suggestion) = deprecation(s, DeprecationKind::String) {
                     return write!(buf, "{suggestion}").unwrap();
                 }
-                let quote = if self.raw.trim().starts_with('"') { '"' } else { '\'' };
+                if is_valid_string_literal_raw(&self.raw) {
+                    write(buf, &self.raw);
+                    return;
+                }
+
+                let quote = if self.raw.trim().starts_with('\'') { '\'' } else { '"' };
                 write(buf, quote);
-                write(buf, s);
+                write(buf, escape_string_literal_value(s, quote));
                 write(buf, quote);
             }
             LiteralValue::Bool(_) => {
@@ -893,6 +898,61 @@ impl Literal {
             }
         }
     }
+}
+
+fn is_valid_string_literal_raw(raw: &str) -> bool {
+    let trimmed = raw.trim();
+    let mut chars = trimmed.chars();
+    let Some(quote) = chars.next() else {
+        return false;
+    };
+    if quote != '"' && quote != '\'' {
+        return false;
+    }
+    if !trimmed.ends_with(quote) {
+        return false;
+    }
+
+    let start = quote.len_utf8();
+    let end = trimmed.len() - quote.len_utf8();
+    if start > end {
+        return false;
+    }
+
+    let mut escaped = false;
+    for ch in trimmed[start..end].chars() {
+        if escaped {
+            escaped = false;
+            continue;
+        }
+        if ch == '\\' {
+            escaped = true;
+            continue;
+        }
+        if ch == quote {
+            return false;
+        }
+    }
+
+    !escaped
+}
+
+fn escape_string_literal_value(value: &str, quote: char) -> String {
+    let mut escaped = String::with_capacity(value.len());
+    for ch in value.chars() {
+        match ch {
+            '\\' => escaped.push_str("\\\\"),
+            '\n' => escaped.push_str("\\n"),
+            '\r' => escaped.push_str("\\r"),
+            '\t' => escaped.push_str("\\t"),
+            _ if ch == quote => {
+                escaped.push('\\');
+                escaped.push(ch);
+            }
+            _ => escaped.push(ch),
+        }
+    }
+    escaped
 }
 
 impl TagDeclarator {
@@ -3500,6 +3560,52 @@ fn f() {
             let mut actual = String::new();
             literal.recast(&mut actual);
             assert_eq!(actual, expected, "failed test {i}, which is testing that {reason}");
+        }
+    }
+
+    #[test]
+    fn recast_string_literal_escapes_generated_values() {
+        for (literal, expected, reason) in [
+            (
+                Literal {
+                    value: LiteralValue::String(r#"Use "datum A" after polish"#.to_owned()),
+                    raw: r#""Use "datum A" after polish""#.to_owned(),
+                    digest: None,
+                },
+                r#""Use \"datum A\" after polish""#,
+                "generated AST string literals with invalid raw quotes should be escaped",
+            ),
+            (
+                Literal {
+                    value: LiteralValue::String("line1\nline2\tpath\\to".to_owned()),
+                    raw: String::new(),
+                    digest: None,
+                },
+                r#""line1\nline2\tpath\\to""#,
+                "generated AST string literals without valid raw should be escaped",
+            ),
+            (
+                Literal {
+                    value: LiteralValue::String(r#"Use \"datum A\" after polish"#.to_owned()),
+                    raw: r#""Use \"datum A\" after polish""#.to_owned(),
+                    digest: None,
+                },
+                r#""Use \"datum A\" after polish""#,
+                "valid raw string literals from parsed source should be preserved",
+            ),
+            (
+                Literal {
+                    value: LiteralValue::String(r#"Use "datum A" after polish"#.to_owned()),
+                    raw: r#"'Use "datum A" after polish'"#.to_owned(),
+                    digest: None,
+                },
+                r#"'Use "datum A" after polish'"#,
+                "valid single-quoted raw string literals should be preserved",
+            ),
+        ] {
+            let mut actual = String::new();
+            literal.recast(&mut actual);
+            assert_eq!(actual, expected, "{reason}");
         }
     }
 
