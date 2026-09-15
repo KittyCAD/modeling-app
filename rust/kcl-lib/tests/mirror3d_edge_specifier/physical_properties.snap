@@ -5,12 +5,12 @@ description: Physical properties mirror3d_edge_specifier.kcl
 {
   "bounding_box": {
     "center": {
-      "x": 5.0,
+      "x": 0.0,
       "y": 5.0,
       "z": 2.5
     },
     "dimensions": {
-      "x": 10.0,
+      "x": 20.0,
       "y": 10.0,
       "z": 5.0
     },

@@ -6,12 +6,12 @@ description: Physical properties cone.kcl
   "bounding_box": {
     "center": {
       "x": 0.0,
-      "y": 2.5,
+      "y": 0.0,
       "z": 5.0
     },
     "dimensions": {
       "x": 10.0,
-      "y": 15.0,
+      "y": 10.0,
       "z": 10.0
     },
     "unit": "mm"

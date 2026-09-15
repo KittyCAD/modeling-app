@@ -5,8 +5,6 @@ excerpt: "Deletes something from the scene. Once it's deleted, you can't use it 
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 Deletes something from the scene. Once it's deleted, you can't use it anymore. This means deleting something twice is an error, as is hiding something after you delete it.
 
 ```kcl
