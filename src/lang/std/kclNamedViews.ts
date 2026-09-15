@@ -106,18 +106,21 @@ function isIndependentlyHideable(artifact: VisibilityArtifact): boolean {
     case 'sweep':
     case 'compositeSolid':
     case 'path':
-    case 'helix':
-      return !artifact.consumed
-    case 'plane':
-      return artifact.pathIds.length === 0
     case 'gdtAnnotation':
+    case 'helix':
     case 'importedGeometry':
       return true
+    case 'plane':
+      return artifact.pathIds.length === 0
     default: {
       const _exhaustiveCheck: never = artifact
       return _exhaustiveCheck
     }
   }
+}
+
+function isConsumed(artifact: VisibilityArtifact): boolean {
+  return 'consumed' in artifact && artifact.consumed
 }
 
 /**
@@ -165,7 +168,11 @@ export function getViewUniverse(
 ): VisibilityUniverse {
   const universe: VisibilityUniverse = new Map(
     filterArtifacts(
-      { types: [...VISIBILITY_KINDS], predicate: isIndependentlyHideable },
+      {
+        types: [...VISIBILITY_KINDS],
+        predicate: (artifact) =>
+          !isConsumed(artifact) && isIndependentlyHideable(artifact),
+      },
       artifactGraph
     )
   )

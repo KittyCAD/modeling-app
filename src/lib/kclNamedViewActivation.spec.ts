@@ -13,8 +13,8 @@ vi.mock('react-hot-toast', () => ({
 }))
 
 import type { CameraViewState } from '@kittycad/lib'
-import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
 import { signal } from '@preact/signals-core'
+import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
 
 import type { KclManager } from '@src/lang/KclManager'
 import type { KclNamedView } from '@src/lang/std/kclNamedViews'
@@ -337,6 +337,7 @@ describe('activateNamedView', () => {
       {
         type: 'importedGeometry',
         id: 'imported-1',
+        consumed: false,
         codeRef: CODE_REF,
       },
     ]
