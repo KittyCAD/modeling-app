@@ -14,6 +14,18 @@ export type ProjectManifest = {
   files: Record<string, ProjectManifestEntry>
 }
 
+/**
+ * The cloud revision and local manifest acknowledged by that revision.
+ *
+ * IndexedDB records created by older releases store these as separate optional
+ * fields on ProjectMetadata. Cloud operations must parse that persistence shape
+ * into this type before using either value as a synchronization base.
+ */
+export type AcknowledgedSyncBase = {
+  revision: Revision
+  manifest: ProjectManifest
+}
+
 /** One normalized file payload included in a cloud project archive upload. */
 export type ProjectArchiveFile = {
   relativePath: string
@@ -31,8 +43,10 @@ export type ProjectMetadata = {
   localProjectPath: string
   projectName: string
   remoteProjectId?: string
+  /** Legacy IndexedDB field; consume through parseAcknowledgedSyncBase. */
   remoteRevision?: Revision
   remoteUpdatedAt?: string
+  /** Legacy IndexedDB field; consume through parseAcknowledgedSyncBase. */
   baseManifest?: ProjectManifest
   tombstone?: boolean
   conflict?: {

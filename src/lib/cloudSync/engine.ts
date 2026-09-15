@@ -35,6 +35,7 @@ import {
   withProjectTitleInArchiveFiles,
   withUpdatedProjectTomlInArchiveFiles,
 } from '@src/lib/cloudSync/projectArchive'
+import { parseAcknowledgedSyncBase } from '@src/lib/cloudSync/syncBase'
 import {
   appendOutboxEntry as appendSyncDbOutboxEntry,
   clearLegacyConflictCopyReferences,
@@ -2803,14 +2804,15 @@ async function localProjectChangedFromSyncBase(metadata: ProjectMetadata) {
   if (!metadata.remoteProjectId) {
     return false
   }
-  if (!metadata.baseManifest) {
+  const syncBase = parseAcknowledgedSyncBase(metadata)
+  if (!syncBase) {
     return true
   }
 
   const localManifest = await collectLocalProjectFiles(
     metadata.localProjectPath
   ).then(projectManifestFromFiles)
-  return !projectManifestsEqual(localManifest, metadata.baseManifest)
+  return !projectManifestsEqual(localManifest, syncBase.manifest)
 }
 
 async function syncProject(
@@ -2843,6 +2845,7 @@ async function syncProject(
 
   try {
     metadata = await bindRemoteProjectIdFromToml(metadata, cloudBinding)
+    const syncBase = parseAcknowledgedSyncBase(metadata)
     if (!shouldSyncCloudLibraryProject(metadata) && entries.length === 0) {
       return
     }
@@ -2862,7 +2865,7 @@ async function syncProject(
       hasRemoteProjectId: Boolean(metadata.remoteProjectId),
       localChanged: false,
       remoteChanged: false,
-      hasRemoteRevision: Boolean(metadata.remoteRevision),
+      hasRemoteRevision: Boolean(syncBase),
     })
     if (initialAction === 'delete-remote') {
       await syncDeletedProject(metadata, throttleProjectApiRequest)
@@ -2910,24 +2913,24 @@ async function syncProject(
     const localManifest = await projectManifestFromFiles(localFiles)
 
     if (metadata.remoteProjectId) {
-      remoteChanged =
-        Boolean(metadata.remoteRevision && remoteRevision) &&
-        metadata.remoteRevision !== remoteRevision
-      localChanged = metadata.baseManifest
-        ? !projectManifestsEqual(localManifest, metadata.baseManifest)
+      remoteChanged = Boolean(
+        syncBase && remoteRevision && syncBase.revision !== remoteRevision
+      )
+      localChanged = syncBase
+        ? !projectManifestsEqual(localManifest, syncBase.manifest)
         : true
     }
 
     if (
       entries.length === 0 &&
       metadata.remoteProjectId &&
-      metadata.baseManifest &&
+      syncBase &&
       localChanged
     ) {
       reportCloudSyncUntrackedLocalChanges({
         remoteProjectId: metadata.remoteProjectId,
-        remoteRevision: metadata.remoteRevision,
-        baseFileCount: Object.keys(metadata.baseManifest.files).length,
+        remoteRevision: syncBase.revision,
+        baseFileCount: Object.keys(syncBase.manifest.files).length,
         localFileCount: Object.keys(localManifest.files).length,
       })
     }
@@ -2939,7 +2942,7 @@ async function syncProject(
       hasRemoteProjectId: Boolean(metadata.remoteProjectId),
       localChanged,
       remoteChanged,
-      hasRemoteRevision: Boolean(metadata.remoteRevision),
+      hasRemoteRevision: Boolean(syncBase),
     })
 
     if (preflightAction === 'create-remote') {
@@ -2990,6 +2993,12 @@ async function syncProject(
     }
 
     if (preflightAction === 'push-local-with-expected-revision') {
+      if (!syncBase) {
+        // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+        throw new Error(
+          'Cloud sync cannot update without an acknowledged base.'
+        )
+      }
       const updated = await runCloudSyncProjectApiRequest(
         throttleProjectApiRequest,
         () =>
@@ -2998,14 +3007,12 @@ async function syncProject(
             projectPath: metadata.localProjectPath,
             project: remoteProject,
             files: localFiles,
-            expectedRevision: metadata.remoteRevision,
+            expectedRevision: syncBase.revision,
             entrypointPath: getRemoteProjectEntrypointPath(remoteProject),
-            deletedPaths: metadata.baseManifest
-              ? getRemovedProjectManifestPaths(
-                  metadata.baseManifest,
-                  localFiles
-                )
-              : [],
+            deletedPaths: getRemovedProjectManifestPaths(
+              syncBase.manifest,
+              localFiles
+            ),
           })
       ).catch(rejectRemoteUploadFailure)
       await clearOutboxEntriesForProject(metadata.localProjectPath)
@@ -3035,12 +3042,9 @@ async function syncProject(
         projectManifestsEqual(localManifest, metadata.baseManifest)
     )
     const autoReconciledFiles =
-      metadata.baseManifest &&
-      remoteRevision &&
-      !localMatchesRemote &&
-      !localClean
+      syncBase && remoteRevision && !localMatchesRemote && !localClean
         ? getCloudSyncAutoReconciledProjectFiles({
-            baseManifest: metadata.baseManifest,
+            baseManifest: syncBase.manifest,
             localFiles,
             localManifest,
             remoteFiles,
