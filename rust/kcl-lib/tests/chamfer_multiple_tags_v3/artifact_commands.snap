@@ -339,7 +339,8 @@ description: Artifact commands chamfer_multiple_tags_v3.kcl
           "[uuid]",
           "[uuid]"
         ],
-        "version": "v2"
+        "version": "v2",
+        "tangent_chain": true
       }
     }
   ]

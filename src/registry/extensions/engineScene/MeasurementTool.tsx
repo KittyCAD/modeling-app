@@ -445,8 +445,12 @@ export function MeasurementTool() {
   const latestRequestKey = useRef<string | null>(null)
 
   const selectedEntities = useMemo(
-    () => getMeasurementEntities(state.context.selectionRanges),
-    [state.context.selectionRanges]
+    () =>
+      getMeasurementEntities(
+        state.context.selectionRanges,
+        kclManager.artifactGraph
+      ),
+    [state.context.selectionRanges, kclManager.artifactGraph]
   )
   const selectedEntityIdsKey = selectedEntities
     .map((entity) => `${entity.kind}:${entity.id}`)
@@ -713,8 +717,12 @@ export function MeasurementStatusBarItem() {
 
   const isIdle = state.matches('idle')
   const selectedEntities = useMemo(
-    () => getMeasurementEntities(state.context.selectionRanges),
-    [state.context.selectionRanges]
+    () =>
+      getMeasurementEntities(
+        state.context.selectionRanges,
+        kclManager.artifactGraph
+      ),
+    [state.context.selectionRanges, kclManager.artifactGraph]
   )
   const graphSelectionsAreCurrent = useMemo(
     () =>
