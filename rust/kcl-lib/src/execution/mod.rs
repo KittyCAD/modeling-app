@@ -1169,9 +1169,10 @@ impl ExecutorContext {
         Self::new_with_engine_and_fs(engine, crate::fs::new_file_system_handle(FileManager::new()), settings)
     }
 
-    /// Create a new default executor context.
+    /// Open an engine session for the entrypoint's resolved `Program::language_version()`.
+    /// The version is fixed for the lifetime of this connection.
     #[cfg(not(target_arch = "wasm32"))]
-    pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
+    pub async fn new(client: &kittycad::Client, settings: ExecutorSettings, kcl_version: KclVersion) -> Result<Self> {
         let pr = std::env::var("ZOO_ENGINE_PR").ok().and_then(|s| s.parse().ok());
         let (ws, headers) = client
             .modeling()
@@ -1192,12 +1193,16 @@ impl ExecutorContext {
                     settings.pool.clone()
                 },
                 geometry_only: Some(settings.geometry_only),
-                kcl_version: None,
                 pr,
                 unlocked_framerate: None,
                 webrtc: Some(false),
                 video_res_width: settings.video_res_width,
                 video_res_height: settings.video_res_height,
+                kcl_version: Some(match kcl_version {
+                    KclVersion::V1 => kittycad::types::KclVersion::One0,
+                    KclVersion::V2 => kittycad::types::KclVersion::Two0,
+                    KclVersion::V3Preview => kittycad::types::KclVersion::Three0Preview,
+                }),
             })
             .await?;
 
@@ -1290,28 +1295,46 @@ impl ExecutorContext {
         settings: ExecutorSettings,
         token: Option<String>,
         engine_addr: Option<String>,
+        kcl_version: KclVersion,
     ) -> Result<Self> {
         // Create the client.
         let client = crate::engine::new_zoo_client(token, engine_addr)?;
 
-        let ctx = Self::new(&client, settings).await?;
+        let ctx = Self::new(&client, settings, kcl_version).await?;
         Ok(ctx)
     }
 
     /// Create a new default executor context.
-    /// With the default kittycad client.
+    /// With a kittycad client.
     /// This allows for passing in `ZOO_API_TOKEN` and `ZOO_HOST` as environment
     /// variables.
+    /// But also allows for passing in a token and engine address directly.
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn new_with_version(kcl_version: KclVersion) -> Result<Self> {
+        Self::new_with_client(Default::default(), None, None, kcl_version).await
+    }
+
+    /// Create a new default executor context.
+    /// With the default kittycad client and the default (unannotated) KCL version.
+    /// For a versioned entrypoint, use `new_with_client` or `new_with_version`
+    /// with `Program::language_version()`.
+    /// This allows for passing in `ZOO_API_TOKEN` and `ZOO_HOST` as environment
+    /// variables.
+    #[cfg_attr(not(test), deprecated(note = "use fn new_with_version() instead"))]
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new_with_default_client() -> Result<Self> {
-        // Create the client.
-        let ctx = Self::new_with_client(Default::default(), None, None).await?;
-        Ok(ctx)
+        Self::new_with_client(Default::default(), None, None, KclVersion::default()).await
     }
 
     /// Create a geometry-only executor context with the default client.
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new_geometry_only_with_default_client() -> Result<Self> {
+        Self::new_geometry_only_with_version(KclVersion::default()).await
+    }
+
+    /// Create a geometry-only executor context for the entrypoint's KCL version.
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn new_geometry_only_with_version(kcl_version: KclVersion) -> Result<Self> {
         Self::new_with_client(
             ExecutorSettings {
                 geometry_only: true,
@@ -1319,13 +1342,14 @@ impl ExecutorContext {
             },
             None,
             None,
+            kcl_version,
         )
         .await
     }
 
     /// For executing unit tests.
     #[cfg(not(target_arch = "wasm32"))]
-    pub async fn new_for_unit_test(engine_addr: Option<String>) -> Result<Self> {
+    pub async fn new_for_unit_test(engine_addr: Option<String>, kcl_version: KclVersion) -> Result<Self> {
         let ctx = ExecutorContext::new_with_client(
             ExecutorSettings {
                 highlight_edges: true,
@@ -1345,6 +1369,7 @@ impl ExecutorContext {
             },
             None,
             engine_addr,
+            kcl_version,
         )
         .await?;
         Ok(ctx)
@@ -2534,6 +2559,61 @@ mod tests {
         ($file:literal) => {
             include_str!(concat!("../../e2e/executor/inputs/", $file, ".kcl"))
         };
+    }
+
+    #[cfg(not(target_arch = "wasm32"))]
+    #[tokio::test]
+    async fn native_websocket_sends_entrypoint_kcl_version() {
+        use tokio::io::AsyncReadExt;
+        use tokio::io::AsyncWriteExt;
+
+        for (source, expected) in [
+            ("", "1.0"),
+            ("@settings(defaultLengthUnit = mm)", "1.0"),
+            ("@settings(kclVersion = 2.0)", "2.0"),
+            ("@settings(kclVersion = \"3.0-preview\")", "3.0-preview"),
+        ] {
+            let program = crate::Program::parse_no_errs(source).unwrap();
+            let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+            let address = listener.local_addr().unwrap();
+            let request = tokio::spawn(async move {
+                let (mut socket, _) = listener.accept().await.unwrap();
+                let mut request = Vec::new();
+                let mut buffer = [0; 1024];
+                while !request.windows(4).any(|bytes| bytes == b"\r\n\r\n") {
+                    let count = socket.read(&mut buffer).await.unwrap();
+                    assert_ne!(count, 0, "connection closed before sending HTTP headers");
+                    request.extend_from_slice(&buffer[..count]);
+                }
+                // Inspect the handshake without starting an engine session.
+                socket
+                    .write_all(b"HTTP/1.1 400 Bad Request\r\nContent-Length: 0\r\nConnection: close\r\n\r\n")
+                    .await
+                    .unwrap();
+                String::from_utf8(request).unwrap()
+            });
+            let mut client = kittycad::Client::new("test-token");
+            client.set_base_url(format!("http://{address}"));
+            let result = tokio::time::timeout(
+                std::time::Duration::from_secs(5),
+                ExecutorContext::new(&client, Default::default(), program.language_version().unwrap()),
+            )
+            .await
+            .unwrap();
+            assert!(result.is_err(), "the test server deliberately rejects the upgrade");
+            let request = tokio::time::timeout(std::time::Duration::from_secs(5), request)
+                .await
+                .unwrap()
+                .unwrap();
+            let target = request.lines().next().unwrap().split_whitespace().nth(1).unwrap();
+            let url = url::Url::parse(&format!("http://localhost{target}")).unwrap();
+            let versions: Vec<_> = url
+                .query_pairs()
+                .filter(|(key, _)| key == "kcl_version")
+                .map(|(_, value)| value.into_owned())
+                .collect();
+            assert_eq!(versions, vec![expected]);
+        }
     }
 
     #[test]
@@ -4548,8 +4628,10 @@ w = f() + f()
 )
 "#;
 
-        let ctx = crate::test_server::new_context(true, None, true).await.unwrap();
         let old_program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = crate::test_server::new_context(true, None, true, old_program.language_version().unwrap())
+            .await
+            .unwrap();
 
         // Execute the program.
         if let Err(err) = ctx.run_with_caching(old_program).await {
@@ -4601,8 +4683,10 @@ w = f() + f()
 )
 "#;
 
-        let mut ctx = crate::test_server::new_context(true, None, true).await.unwrap();
         let old_program = crate::Program::parse_no_errs(code).unwrap();
+        let mut ctx = crate::test_server::new_context(true, None, true, old_program.language_version().unwrap())
+            .await
+            .unwrap();
 
         // Execute the program.
         ctx.run_with_caching(old_program.clone()).await.unwrap();
@@ -7066,7 +7150,9 @@ fillet(solid001, radius = 0.1, tags = yoyo)
 
     async fn run_constraint_report(kcl: &str) -> SketchConstraintReport {
         let program = crate::Program::parse_no_errs(kcl).unwrap();
-        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_version(program.language_version().unwrap())
+            .await
+            .unwrap();
         let mut exec_state = ExecState::new(&ctx);
         let (env_ref, _) = ctx.run(&program, &mut exec_state).await.unwrap();
         let outcome = exec_state
