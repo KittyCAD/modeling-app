@@ -1,4 +1,3 @@
-import { attachRendererCrashDiagnostics } from '@e2e/playwright/fixtures/electronCrashDiagnostics'
 import { expect, test as playwrightTestFn } from '@e2e/playwright/base-test'
 import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'
 import {
@@ -50,48 +49,49 @@ const playwrightTestFnWithFixtures_ = playwrightTestFn.extend<{
       const setupTimeout = isFirstRun ? 120_000 : 30_000
       let timeoutId: NodeJS.Timeout | undefined
 
-      const setupPromise = new Promise<void>((resolve, reject) => {
-        timeoutId = setTimeout(() => {
-          reject(
-            new Error(
-              `tronApp setup timed out after ${setupTimeout}ms${isFirstRun ? ' (first run)' : ' (subsequent run)'}`
-            )
-          )
-        }, setupTimeout)
-
-        // Execute the async setup in a separate function
-        const doSetup = async () => {
-          try {
-            await electronZooInstance.createInstanceIfMissing(
-              testInfo,
-              userFeatures
-            )
-            resolve()
-          } catch (error) {
-            reject(error)
-          }
-        }
-
-        // Start the setup process
-        void doSetup()
-      })
-
       try {
-        await setupPromise
+        await Promise.race([
+          electronZooInstance.createInstanceIfMissing(
+            testInfo,
+            userFeatures,
+            setupTimeout
+          ),
+          new Promise<never>((_, reject) => {
+            timeoutId = setTimeout(() => {
+              reject(
+                new Error(
+                  `tronApp setup timed out after ${setupTimeout}ms${isFirstRun ? ' (first run)' : ' (subsequent run)'}`
+                )
+              )
+            }, setupTimeout)
+          }),
+        ])
         if (timeoutId) clearTimeout(timeoutId)
 
         // First run is complete at this point
         isFirstRun = false
 
         await use(electronZooInstance)
-        await electronZooInstance.makeAvailableAgain()
+        if (
+          testInfo.status === 'timedOut' ||
+          electronZooInstance.rendererCrashed
+        ) {
+          await electronZooInstance.dispose(testInfo)
+        } else {
+          await electronZooInstance.makeAvailableAgain()
+        }
       } catch (error) {
-        await attachRendererCrashDiagnostics(
-          electronZooInstance.electron,
-          testInfo
-        )
-        if (timeoutId) clearTimeout(timeoutId)
+        try {
+          await electronZooInstance.dispose(testInfo)
+        } catch (cleanupError) {
+          throw new AggregateError(
+            [error, cleanupError],
+            'Electron fixture failure and cleanup failed'
+          )
+        }
         throw error
+      } finally {
+        if (timeoutId) clearTimeout(timeoutId)
       }
     },
     { timeout: 120_000 }, // Keep the global timeout as fallback
