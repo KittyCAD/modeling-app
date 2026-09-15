@@ -1021,6 +1021,30 @@ impl ExecutorContext {
                     };
                     exec_state.err(CompilationIssue::err(annotation.as_source_range(), message));
                 }
+            } else if annotation.name() == Some(annotations::WARNINGS) {
+                // KCL 3.0 renamed `@warnings` to `@diagnostics`. This is only
+                // reached in KCL 3.0-preview or later, since before that the
+                // attribute is handled above. Report a non-fatal error with
+                // the fix, and ignore the attribute.
+                let mut issue = CompilationIssue::err(
+                    annotation.as_source_range(),
+                    format!(
+                        "The `@{old}` attribute was renamed to `@{new}` in KCL 3.0, so this attribute is ignored. Replace `@{old}` with `@{new}`; its `{allow}` and `{deny}` properties are unchanged.",
+                        old = annotations::WARNINGS,
+                        new = annotations::DIAGNOSTICS,
+                        allow = annotations::WARN_ALLOW,
+                        deny = annotations::WARN_DENY,
+                    ),
+                );
+                if let Some(name) = &annotation.name {
+                    issue = issue.with_suggestion(
+                        format!("Rename to `@{}`", annotations::DIAGNOSTICS),
+                        annotations::DIAGNOSTICS,
+                        Some(name.as_source_range()),
+                        crate::errors::Tag::None,
+                    );
+                }
+                exec_state.err(issue);
             } else {
                 exec_state.warn(
                     CompilationIssue::err(annotation.as_source_range(), "Unknown annotation"),
@@ -8134,6 +8158,45 @@ a = PI * 2
                 error.message()
             );
         }
+    }
+
+    /// KCL 3.0: using the old `@warnings` name is a non-fatal error that
+    /// explains the rename and offers the fix. The attribute is ignored, so
+    /// the warning it tried to allow is still reported.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn warnings_attribute_is_renamed_in_v3() {
+        let code = "@settings(kclVersion = \"3.0-preview\")\n@warnings(allow = unknownUnits)\na = PI * 2\n";
+        let result = parse_execute(code).await.unwrap();
+        let issues = result.exec_state.issues();
+        assert_eq!(issues.len(), 2, "{issues:#?}");
+
+        let renamed = &issues[0];
+        assert_eq!(renamed.severity, Severity::Error);
+        assert_eq!(
+            renamed.message,
+            "The `@warnings` attribute was renamed to `@diagnostics` in KCL 3.0, so this attribute is ignored. Replace `@warnings` with `@diagnostics`; its `allow` and `deny` properties are unchanged."
+        );
+        assert_eq!(
+            &code[renamed.source_range.start()..renamed.source_range.end()],
+            "@warnings(allow = unknownUnits)"
+        );
+        let suggestion = renamed.suggestion.as_ref().unwrap();
+        assert_eq!(suggestion.title, "Rename to `@diagnostics`");
+        assert_eq!(
+            suggestion.apply(code),
+            "@settings(kclVersion = \"3.0-preview\")\n@diagnostics(allow = unknownUnits)\na = PI * 2\n"
+        );
+
+        assert_eq!(issues[1].severity, Severity::Warning);
+        assert_eq!(issues[1].tag, crate::errors::Tag::UnknownNumericUnits);
+
+        // Since the attribute is ignored, its properties aren't checked.
+        let code = "@settings(kclVersion = \"3.0-preview\")\n@warnings(allow = bogus)\n";
+        let result = parse_execute(code).await.unwrap();
+        let issues = result.exec_state.issues();
+        assert_eq!(issues.len(), 1, "{issues:#?}");
+        assert_eq!(issues[0].severity, Severity::Error);
+        assert!(issues[0].message.starts_with("The `@warnings` attribute was renamed"));
     }
 
     #[tokio::test(flavor = "multi_thread")]

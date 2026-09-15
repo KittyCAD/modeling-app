@@ -5055,6 +5055,25 @@ startSketchOn(XY)
                 assert_eq!(variable_f64(&result.unwrap(), "x"), 1.0, "main={main}");
             }
         }
+
+        // The old `@warnings` name follows the same version: recognized, and
+        // so validated, before KCL 3.0, and an ignored attribute with a
+        // non-fatal error under KCL 3.0.
+        let dep = "@warnings(allow = bogus)\nexport x = 1\n";
+        for version in ["1.0", "2.0", "\"3.0-preview\""] {
+            let main = format!("@settings(kclVersion = {version})\nimport x from \"dep.kcl\"\n");
+            let result = execute_with_modules(&main, &[("dep.kcl", dep)]).await;
+            if version == "\"3.0-preview\"" {
+                assert_eq!(variable_f64(&result.unwrap(), "x"), 1.0, "main={main}");
+            } else {
+                let error = result.unwrap_err();
+                let message = error.message();
+                assert!(
+                    message.starts_with("Unexpected warning value: `bogus`; accepted values: "),
+                    "main={main}, message={message}"
+                );
+            }
+        }
     }
 
     /// The entry point's declared kclVersion is recorded whatever it is, so
