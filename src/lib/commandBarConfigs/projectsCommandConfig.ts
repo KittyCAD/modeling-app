@@ -607,6 +607,7 @@ export function createProjectCommands({
   const importFileFromURL: Command = {
     scopes: GLOBAL_COMMAND_SCOPES,
     name: 'Import file from URL',
+    hideFromSearch: true,
     groupId: 'projects',
     icon: 'file',
     description: 'Create a file',

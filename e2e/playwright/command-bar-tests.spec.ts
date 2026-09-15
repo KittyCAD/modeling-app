@@ -477,6 +477,12 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
         projectCards: [],
         sortBy: 'last-modified-desc',
       })
+      await page.keyboard.press('ControlOrMeta+K')
+      await page.getByPlaceholder('Search commands').fill('import')
+      await expect(
+        page.getByRole('option', { name: 'Import file from URL', exact: false })
+      ).toHaveCount(0)
+      await page.keyboard.press('Escape')
       await page.goto(page.url() + targetURL)
     })
 

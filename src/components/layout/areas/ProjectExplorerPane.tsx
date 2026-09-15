@@ -185,7 +185,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
         openCodeEditorPaneIfClosed()
         openActiveTextFile(entry.path).catch(reportRejection)
       } else if (isRelevantFile(entry.path) && projectRef.current?.value.path) {
-        // Allow insert if it is a importable file
+        // Allow importing supported files
         toast.custom(
           ToastInsert({
             onInsert: () => {
@@ -196,7 +196,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
               commands.send({
                 type: 'Find and select command',
                 data: {
-                  name: 'Insert',
+                  name: 'Import',
                   groupId: 'code',
                   argDefaultValues: { path: relativeFilePath },
                 },

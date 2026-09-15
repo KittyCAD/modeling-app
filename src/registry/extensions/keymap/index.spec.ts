@@ -17,6 +17,8 @@ import {
   commandSystemService,
 } from '@src/registry/contracts/commands'
 import {
+  createKeymapItemsFromContributions,
+  resolveKeymapItems,
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
   EDITABLE_FOCUSED_KEYMAP_SCOPE,
@@ -85,6 +87,36 @@ describe('keymap extension', () => {
   it('keeps the keymap scope ValueSpec as a command scope alias', () => {
     expect(keymapScopesValueSpec).toBe(commandScopesValueSpec)
     expect(keymapContract.keymapScopesValueSpec).toBe(commandScopesValueSpec)
+  })
+
+  it('preserves saved Insert shortcut overrides after the Import rename', () => {
+    const items = createKeymapItemsFromContributions([defaultKeymap]).filter(
+      (item) => item.id === 'toolbar.modeling.insert'
+    )
+    const resolved = resolveKeymapItems(items, {
+      version: KEYMAP_SCHEMA_VERSION,
+      bindings: [{ command: 'code:Insert', keystrokes: ['mod+shift+i'] }],
+    })
+    expect(resolved).toHaveLength(1)
+    expect(resolved[0].title).toBe('Import')
+    expect(resolved[0].keystrokes).toEqual(['mod+shift+i'])
+  })
+
+  it('preserves saved Insert shortcut unbindings after the Import rename', () => {
+    const items = createKeymapItemsFromContributions([defaultKeymap]).filter(
+      (item) => item.id === 'toolbar.modeling.insert'
+    )
+    const resolved = resolveKeymapItems(items, {
+      version: KEYMAP_SCHEMA_VERSION,
+      bindings: [
+        {
+          command: '-code:Insert',
+          keystrokes: ['i'],
+          when: [CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE],
+        },
+      ],
+    })
+    expect(resolved).toHaveLength(0)
   })
 
   it('uses Shift+Escape to exit sketch across desktop and web', () => {
