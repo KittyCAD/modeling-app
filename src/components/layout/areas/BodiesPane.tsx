@@ -5,12 +5,13 @@ import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMen
 import { VisibilityToggle } from '@src/components/VisibilityToggle'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { toUtf16 } from '@src/lang/errors'
+import { sourceRangeToUtf16, toUtf16 } from '@src/lang/errors'
 import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import {
   type Artifact,
   getBodiesFromArtifactGraph,
   getCodeRefsByArtifactId,
+  getEngineEntityIdForSweep,
 } from '@src/lang/std/artifactGraph'
 import { type ArtifactGraph, getAllOperations } from '@src/lang/wasm'
 import { useApp, useSingletons } from '@src/lib/boot'
@@ -56,7 +57,14 @@ export function BodiesPane(props: AreaTypeComponentProps) {
         artifactGraph,
         label: `Body ${i + 1}`,
         hideOperation,
-        engineEntityId: artifact.type === 'pattern' ? id : undefined,
+        engineEntityId:
+          artifact.type === 'pattern'
+            ? patternIndex === 0
+              ? artifact.sourceId
+              : id
+            : artifact.type === 'sweep'
+              ? getEngineEntityIdForSweep(artifact, artifactGraph)
+              : undefined,
         patternIndex,
       })
       i++
@@ -136,7 +144,10 @@ function BodyItem({
   }
   const selection: Selection = {
     artifact,
-    codeRef,
+    codeRef: {
+      ...codeRef,
+      range: sourceRangeToUtf16(codeRef.range, kclManager.code),
+    },
     ...(engineEntityId ? { engineEntityId } : {}),
     ...(patternIndex !== undefined ? { patternIndex } : {}),
   }
@@ -146,8 +157,10 @@ function BodyItem({
   }
 
   const isSelected = engineEntityId
-    ? modelingContext.selectionRanges.graphSelections.some(
-        (selection) => selection.engineEntityId === engineEntityId
+    ? modelingContext.selectionRanges.graphSelections.some((selection) =>
+        selection.engineEntityId !== undefined
+          ? selection.engineEntityId === engineEntityId
+          : selection.artifact?.id === artifact.id
       )
     : kclManager.editorState.selection.main.from >=
         toUtf16(sourceRange[0], kclManager.code) &&

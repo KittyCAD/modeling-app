@@ -1,7 +1,10 @@
 import type { ArtifactVisibility } from '@rust/kcl-lib/bindings/Artifact'
 import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
 
-import { filterArtifacts } from '@src/lang/std/artifactGraph'
+import {
+  filterArtifacts,
+  getEngineEntityIdForSweep,
+} from '@src/lang/std/artifactGraph'
 import type {
   Artifact,
   ArtifactGraph,
@@ -176,44 +179,6 @@ export function getViewUniverse(
 }
 
 /**
- * Returns the engine object id of a swept body.
- *
- * - `loft` and `blend`: the artifact id. Both override the base sketch's id with
- *   their own command id.
- * - Any other subtype whose base path points back through `Path.sweepId`:
- *   `pathId`. The body answers to the path's id.
- * - Any other subtype without that back-link: the artifact id. `mirror3d` copied
- *   this node from the source body, overwrote `id` with the mirrored body's
- *   engine object id, and left `pathId` naming the source body's path
- *   (`rust/kcl-lib/src/execution/artifact.rs:1286-1294`). `pathId` here
- *   addresses the source body.
- */
-function engineIdForSweep(
-  sweep: Extract<Artifact, { type: 'sweep' }>,
-  artifactGraph: ArtifactGraph
-): ArtifactId {
-  switch (sweep.subType) {
-    case 'extrusion':
-    case 'extrusionTwist':
-    case 'revolve':
-    case 'revolveAboutEdge':
-    case 'sweep': {
-      const basePath = artifactGraph.get(sweep.pathId)
-      const pathPointsBack =
-        basePath?.type === 'path' && basePath.sweepId === sweep.id
-      return pathPointsBack ? sweep.pathId : sweep.id
-    }
-    case 'loft':
-    case 'blend':
-      return sweep.id
-    default: {
-      const _exhaustiveCheck: never = sweep.subType
-      return _exhaustiveCheck
-    }
-  }
-}
-
-/**
  * Returns the engine object id that addresses a universe entry.
  *
  * - `compositeSolid`, `path`, `gdtAnnotation`: the artifact id is also the
@@ -234,7 +199,7 @@ export function engineIdForArtifact({
 }): ArtifactId {
   switch (artifact.type) {
     case 'sweep':
-      return engineIdForSweep(artifact, artifactGraph)
+      return getEngineEntityIdForSweep(artifact, artifactGraph)
     case 'compositeSolid':
     case 'path':
     case 'gdtAnnotation':

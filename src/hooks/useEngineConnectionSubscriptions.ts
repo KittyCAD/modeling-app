@@ -2,7 +2,10 @@ import { useEffect, useRef } from 'react'
 
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { defaultSourceRange } from '@src/lang/sourceRange'
-import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
+import {
+  getCodeRefsByArtifactId,
+  resolveEngineSelectionArtifact,
+} from '@src/lang/std/artifactGraph'
 import { useApp } from '@src/lib/boot'
 import { SEGMENTS_BASED_REGIONS_FEATURE_FLAG } from '@src/lib/constants'
 import {
@@ -31,8 +34,15 @@ export function useEngineConnectionSubscriptions() {
       event: 'highlight_set_entity',
       callback: ({ data }) => {
         if (data?.entity_id) {
+          const engineArtifact = kclManager.artifactGraph.get(data.entity_id)
+          const semanticArtifact = engineArtifact
+            ? resolveEngineSelectionArtifact(
+                engineArtifact,
+                kclManager.artifactGraph
+              )
+            : undefined
           const codeRefs = getCodeRefsByArtifactId(
-            data.entity_id,
+            semanticArtifact?.id ?? data.entity_id,
             kclManager.artifactGraph
           )
           if (codeRefs) {
