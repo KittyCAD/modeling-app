@@ -9,7 +9,6 @@ import type { KclManager } from '@src/lang/KclManager'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import { roundOff } from '@src/lib/utils'
 import {
   isArcSegment,
   isConstraint,
@@ -123,12 +122,12 @@ export const machine = setup({
           const segmentCtor: SegmentCtor = {
             type: 'Line',
             start: {
-              x: { type: 'Var', value: roundOff(x), units },
-              y: { type: 'Var', value: roundOff(y), units },
+              x: { type: 'Var', value: x, units },
+              y: { type: 'Var', value: y, units },
             },
             end: {
-              x: { type: 'Var', value: roundOff(x), units },
-              y: { type: 'Var', value: roundOff(y), units },
+              x: { type: 'Var', value: x, units },
+              y: { type: 'Var', value: y, units },
             },
           }
 
@@ -245,8 +244,8 @@ export const machine = setup({
           const segmentCtor: SegmentCtor = {
             type: 'Point',
             position: {
-              x: { type: 'Var', value: roundOff(x), units },
-              y: { type: 'Var', value: roundOff(y), units },
+              x: { type: 'Var', value: x, units },
+              y: { type: 'Var', value: y, units },
             },
           }
           const coincidentSegments = getCoincidentSegmentsForSnapTarget(
@@ -487,12 +486,12 @@ export const machine = setup({
           const newLineCtor: SegmentCtor = {
             type: 'Line',
             start: {
-              x: { type: 'Var', value: roundOff(startX), units },
-              y: { type: 'Var', value: roundOff(startY), units },
+              x: { type: 'Var', value: startX, units },
+              y: { type: 'Var', value: startY, units },
             },
             end: {
-              x: { type: 'Var', value: roundOff(endX), units },
-              y: { type: 'Var', value: roundOff(endY), units },
+              x: { type: 'Var', value: endX, units },
+              y: { type: 'Var', value: endY, units },
             },
           }
 

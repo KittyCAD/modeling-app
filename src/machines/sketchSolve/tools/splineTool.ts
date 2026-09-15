@@ -12,7 +12,6 @@ import type { Coords2d } from '@src/lang/util'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import { roundOff } from '@src/lib/utils'
 import { distance2d } from '@src/lib/utils2d'
 import {
   getControlPointSplinePoints,
@@ -42,6 +41,7 @@ import {
   sendHoveredSnappingCandidate,
   updateToolSnappingPreview,
 } from '@src/machines/sketchSolve/tools/toolSnappingUtils'
+import { resolveSketchPoint } from '@src/machines/sketchSolve/tools/sketchCoordinates'
 import { Group } from 'three'
 import { Line2 } from 'three/examples/jsm/lines/Line2.js'
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js'
@@ -173,12 +173,12 @@ function toPointExpr(point: Coords2d, units: string) {
   return {
     x: {
       type: 'Var' as const,
-      value: roundOff(point[0]),
+      value: point[0],
       units,
     },
     y: {
       type: 'Var' as const,
-      value: roundOff(point[1]),
+      value: point[1],
       units,
     },
   }
@@ -613,7 +613,7 @@ function addFirstPointListener({
       })
       self.send({
         type: 'add point',
-        data: snappingCandidate?.position ?? mousePosition,
+        data: resolveSketchPoint(mousePosition, snappingCandidate),
         clickNumber: 1,
         snapTarget: snappingCandidate?.target,
       })
@@ -661,7 +661,7 @@ function addSecondPointListener({
       })
       self.send({
         type: 'add point',
-        data: snappingCandidate?.position ?? mousePosition,
+        data: resolveSketchPoint(mousePosition, snappingCandidate),
         clickNumber: 2,
         snapTarget: snappingCandidate?.target,
       })
@@ -680,7 +680,7 @@ function addSecondPointListener({
         mousePosition,
         mouseEvent: args.mouseEvent,
       })
-      const previewPoint = snappingCandidate?.position ?? mousePosition
+      const previewPoint = resolveSketchPoint(mousePosition, snappingCandidate)
       sendHoveredSnappingCandidate(self, snappingCandidate)
       updateToolSnappingPreview({
         sceneInfra: context.sceneInfra,
@@ -720,7 +720,7 @@ function addInitialSplineMoveListener({
       })
       self.send({
         type: 'start initial spline',
-        data: snappingCandidate?.position ?? mousePosition,
+        data: resolveSketchPoint(mousePosition, snappingCandidate),
       })
     },
     onClick: () => {},
@@ -755,7 +755,7 @@ function addAppendMoveListener({
       })
       self.send({
         type: 'start next draft point',
-        data: snappingCandidate?.position ?? mousePosition,
+        data: resolveSketchPoint(mousePosition, snappingCandidate),
       })
     },
     onClick: () => {},
@@ -802,7 +802,7 @@ function animateDraftPointListener({
         target: snappingCandidate,
       })
 
-      const [x, y] = snappingCandidate?.position ?? mousePosition
+      const [x, y] = resolveSketchPoint(mousePosition, snappingCandidate)
       const units = baseUnitToNumericSuffix(
         context.kclManager.fileSettings.defaultLengthUnit
       )
@@ -819,8 +819,8 @@ function animateDraftPointListener({
               ctor: {
                 type: 'Point',
                 position: {
-                  x: { type: 'Var', value: roundOff(x), units },
-                  y: { type: 'Var', value: roundOff(y), units },
+                  x: { type: 'Var', value: x, units },
+                  y: { type: 'Var', value: y, units },
                 },
               },
             },
@@ -870,7 +870,7 @@ function animateDraftPointListener({
           : null)
       self.send({
         type: 'add point',
-        data: snappingCandidate?.position ?? mousePosition,
+        data: resolveSketchPoint(mousePosition, snappingCandidate),
         clickNumber: 3,
         snapTarget: snappingCandidate?.target,
       })

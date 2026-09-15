@@ -1,0 +1,24 @@
+---
+source: kcl-lib/src/frontend.rs
+expression: src_delta.text.as_str()
+---
+sketch(on = XY) {
+  line1 = line(
+    start = [var 0mm, var 0.00001270188881249765mm],
+    end = [
+      var 4mm,
+      var -0.000012701885856848663mm
+    ],
+  )
+  line2 = line(
+    start = [
+      var 0.000011000369638933118mm,
+      var -0.0000063511539693477024mm
+    ],
+    end = [
+      var 1.999988999630361mm,
+      var 3.4640063511539694mm
+    ],
+  )
+  angle([line1, line2], labelPosition = [10mm, 11mm]) == 60deg
+}

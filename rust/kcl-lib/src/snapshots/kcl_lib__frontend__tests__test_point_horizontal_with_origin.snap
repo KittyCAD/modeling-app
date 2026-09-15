@@ -1,9 +1,11 @@
 ---
 source: kcl-lib/src/frontend.rs
-expression: "src_delta.text.as_str()"
+expression: src_delta.text.as_str()
 ---
 sketch001 = sketch(on = XY) {
-  p0 = point(at = [var -2.23mm, var 0mm])
+  p0 = point(at = [
+    var -2.23mm,
+    var 0.00000000310000025649515mm
+  ])
   horizontal([p0, ORIGIN])
 }
-

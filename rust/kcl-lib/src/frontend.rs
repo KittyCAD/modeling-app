@@ -33,6 +33,7 @@ use crate::execution::cache::read_old_memory;
 use crate::execution::cache::write_old_memory;
 use crate::execution::types::adjust_length;
 use crate::fmt::format_number_literal;
+use crate::fmt::format_number_literal_full_precision;
 use crate::front::Angle;
 use crate::front::ArcCtor;
 use crate::front::ArcDirection;
@@ -6995,7 +6996,7 @@ fn to_source_number(number: Number) -> anyhow::Result<ast::NumericLiteral> {
     Ok(ast::NumericLiteral {
         value: number.value,
         suffix: number.units,
-        raw: format_number_literal(number.value, number.units, None)?,
+        raw: format_number_literal_full_precision(number.value, number.units)?,
         digest: None,
     })
 }
@@ -7555,6 +7556,69 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
         frontend.program = program.clone();
         let outcome = mock_ctx.run_mock(program, &MockConfig::default()).await.unwrap();
         frontend.update_state_after_exec(outcome, true);
+    }
+
+    #[tokio::test]
+    async fn test_grid_precision_survives_create_edit_and_reload() {
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        for step in [0.125, 2.3333 / 17.0, 0.0000125] {
+            let mut frontend = FrontendState::new();
+            let program = Program::parse("s = sketch(on = XY) {}\n").unwrap().0.unwrap();
+            seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
+            let sketch_id = find_first_sketch_object(&frontend.scene_graph).unwrap().id;
+            let (source, _) = frontend
+                .add_segment(
+                    &mock_ctx,
+                    Version(0),
+                    sketch_id,
+                    SegmentCtor::Point(PointCtor {
+                        position: point_expr_mm(step, -step),
+                    }),
+                    None,
+                )
+                .await
+                .unwrap();
+            let point_id = frontend
+                .scene_graph
+                .objects
+                .iter()
+                .find(|object| {
+                    matches!(
+                        &object.kind,
+                        ObjectKind::Segment {
+                            segment: Segment::Point(_)
+                        }
+                    )
+                })
+                .unwrap()
+                .id;
+            let position = point_position(&frontend.scene_graph, point_id);
+            assert_eq!(position.x.value, step);
+            assert_eq!(position.y.value, -step);
+
+            let saved = Program::parse(&source.text).unwrap().0.unwrap();
+            seed_frontend_with_mock(&mut frontend, &mock_ctx, &saved).await;
+            let (source, _) = frontend
+                .edit_segments(
+                    &mock_ctx,
+                    Version(0),
+                    sketch_id,
+                    vec![ExistingSegmentCtor {
+                        id: point_id,
+                        ctor: SegmentCtor::Point(PointCtor {
+                            position: point_expr_mm(-step, step),
+                        }),
+                    }],
+                )
+                .await
+                .unwrap();
+            let saved = Program::parse(&source.text).unwrap().0.unwrap();
+            seed_frontend_with_mock(&mut frontend, &mock_ctx, &saved).await;
+            let position = point_position(&frontend.scene_graph, point_id);
+            assert_eq!(position.x.value, -step);
+            assert_eq!(position.y.value, step);
+        }
+        mock_ctx.close().await;
     }
 
     #[test]
@@ -11226,16 +11290,7 @@ sketch(on = XY) {
             )
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
-  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.46mm])
-  angle([line1, line2], labelPosition = [10mm, 11mm]) == 60deg
-}
-"
-        );
+        insta::assert_snapshot!("test_edit_angle_constraint_label_position", src_delta.text.as_str());
 
         let constraint_object = scene_delta.new_graph.objects.get(constraint_id.0).unwrap();
         let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
@@ -11293,15 +11348,9 @@ sketch(on = XY) {
             )
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
-  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.46mm])
-  60deg == angleDimension(lines = [line1, line2], sector = 1, labelPosition = [10mm, 11mm])
-}
-"
+        insta::assert_snapshot!(
+            "test_edit_angle_constraint_label_position_with_call_on_right",
+            src_delta.text.as_str()
         );
 
         let constraint_object = scene_delta.new_graph.objects.get(constraint_id.0).unwrap();
