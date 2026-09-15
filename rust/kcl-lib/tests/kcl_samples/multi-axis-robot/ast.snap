@@ -192,6 +192,7 @@ description: Result of parsing multi-axis-robot.kcl
       }
     ],
     "moduleId": 0,
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

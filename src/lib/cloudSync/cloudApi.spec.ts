@@ -24,6 +24,16 @@ function projectFile(relativePath: string, contents = ''): ProjectArchiveFile {
   }
 }
 
+function projectFiles() {
+  return [
+    projectFile('main.kcl'),
+    projectFile(
+      'project.toml',
+      'title = "bracket"\ndefault_file = "main.kcl"\n'
+    ),
+  ]
+}
+
 async function uploadBodyFromRequest(init?: RequestInit) {
   expect(init?.body).toBeInstanceOf(FormData)
   const bodyPart = (init?.body as FormData).get('body')
@@ -61,7 +71,7 @@ describe('remote project uploads', () => {
         baseUrl: 'https://api.dev.zoo.dev',
       },
       '/projects/bracket',
-      [projectFile('main.kcl')]
+      projectFiles()
     )
 
     expect(uploadedBody).toEqual({
@@ -92,7 +102,7 @@ describe('remote project uploads', () => {
         description: 'Existing Aquarium description.',
         category_ids: ['category-a', 'category-b'],
       },
-      files: [projectFile('main.kcl')],
+      files: projectFiles(),
       expectedRevision: 'rev-1',
     })
 
@@ -131,7 +141,7 @@ describe('remote project uploads', () => {
         description: '',
         category_ids: [],
       },
-      files: [projectFile('main.kcl')],
+      files: projectFiles(),
       expectedRevision: 'rev-1',
       deletedPaths: [],
     })
@@ -157,7 +167,7 @@ describe('remote project uploads', () => {
         description: '',
         category_ids: [],
       },
-      files: [projectFile('main.kcl')],
+      files: projectFiles(),
       expectedRevision: 'rev-1',
       deletedPaths: ['old/part.kcl', 'obsolete.kcl', 'obsolete.kcl'],
     })

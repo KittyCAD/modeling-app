@@ -15,7 +15,7 @@ use kcmc::websocket::OkWebSocketResponseData;
 use kcmc::websocket::SuccessWebSocketResponse;
 use kcmc::websocket::WebSocketRequest;
 use kcmc::websocket::WebSocketResponse;
-use kittycad_modeling_cmds::{self as kcmc};
+use kittycad_modeling_cmds as kcmc;
 use tokio::sync::RwLock;
 use tokio::sync::mpsc;
 use tokio::sync::oneshot;

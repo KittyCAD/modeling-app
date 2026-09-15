@@ -198,6 +198,7 @@ description: Result of parsing import_whole_transitive_import.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

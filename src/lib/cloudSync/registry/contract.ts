@@ -9,6 +9,7 @@ import type {
   CloudSyncStatus,
   RemoteProjectSummary,
 } from '@src/lib/cloudSync'
+import type { CloudSyncProjectNowResult } from '@src/lib/cloudSync/types'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import type { ProjectLibraryRealization } from '@src/registry/contracts/projectLibraries'
 
@@ -71,6 +72,8 @@ export type CloudProjectRelationshipsRegistryService = {
    * contribution surface.
    */
   relationships: ReadonlySignal<CloudProjectRelationship[]>
+  /** Fetch and refresh a visible card's thumbnail until the returned cleanup runs. */
+  watchRemoteThumbnail: (remoteProjectId: string) => () => void
 }
 
 /** Runtime inputs registry callers may override before activation policy runs. */
@@ -93,6 +96,11 @@ export type CloudSyncRegistryService = {
    * policy is not auto-enrolling existing local projects.
    */
   startProjectSync: (projectPath: string) => Promise<void>
+  /**
+   * Synchronize one explicitly enrolled project before returning. This is for
+   * workflows that need its remote identity and exact API archive immediately.
+   */
+  syncNow: (projectPath: string) => Promise<CloudSyncProjectNowResult>
   /**
    * Delete the remote cloud project and keep the local project as local-only.
    * The local project is marked excluded so later edits do not recreate it.

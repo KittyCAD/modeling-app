@@ -1591,6 +1591,7 @@ description: Result of parsing face_api_fillet_chamfer_tags_and_edge_refs.kcl
       }
     ],
     "moduleId": 0,
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

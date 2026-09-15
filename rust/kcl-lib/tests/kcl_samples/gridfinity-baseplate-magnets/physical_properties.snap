@@ -5,14 +5,14 @@ description: Physical properties gridfinity-baseplate-magnets.kcl
 {
   "bounding_box": {
     "center": {
-      "x": 17.1425,
-      "y": 38.1425,
-      "z": 0.0
+      "x": 42.0,
+      "y": 63.0,
+      "z": 0.15749999999999975
     },
     "dimensions": {
-      "x": 134.285,
-      "y": 176.285,
-      "z": 100.0
+      "x": 84.57,
+      "y": 126.57,
+      "z": 9.915
     },
     "unit": "mm"
   },

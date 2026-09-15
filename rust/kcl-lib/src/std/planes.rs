@@ -226,7 +226,7 @@ async fn inner_offset_plane(
 
 // Engine-side effectful creation of an actual plane object.
 // offset planes are shown by default, and hidden by default if they
-// are used as a sketch plane. That hiding command is sent within inner_start_profile_at
+// are used as a sketch plane. That hiding command is sent within create_sketch.
 async fn make_offset_plane_in_engine(
     plane: &mut Plane,
     exec_state: &mut ExecState,

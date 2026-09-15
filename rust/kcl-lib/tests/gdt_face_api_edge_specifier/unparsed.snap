@@ -28,6 +28,7 @@ gdt::straightness(
       sideFaces = [region001.tags.line1, capStart001]
     }
   ],
+  annotationName = "sample GD&T annotation",
   tolerance = 0.1mm,
   framePosition = [12mm, 8mm],
   framePlane = XZ,

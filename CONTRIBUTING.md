@@ -77,6 +77,13 @@ npm run tronb:package:prod
 
 This will use electron-builder to generate runnable artifacts in the `out` directory (eg. `Zoo Design Studio.app` on macOS and `Zoo Design Studio.exe` on Windows). The regular sign-in flow should work as expected.
 
+## Shipping releases
+
+Create a new issue using the **Release** issue template: https://github.com/KittyCAD/modeling-app/issues/new?template=release.md
+
+Follow the embedded instructions to facilitate changelog discussions and release testing.
+
+
 ## Developing locally
 
 This section and the following ones should only be relevant to Zoo employees, as the non-production dev.zoo.dev infrastructure which allows CORS is not publicly accessible.
@@ -152,6 +159,17 @@ You may use `-- -g "my test"` to match specific test titles, or `-- path/to/file
 
 ```
 npm run test:e2e:web
+```
+
+#### Web tests (WebKit on macOS)
+
+[Playwright WebKit](https://playwright.dev/docs/browsers#webkit) provides the
+closest automated coverage to Safari; Playwright does not automate the branded
+Safari browser itself.
+
+```
+npm run playwright -- install webkit
+npm run test:e2e:web:webkit
 ```
 
 #### Snapshot tests (Google Chrome on Ubuntu only)
@@ -337,9 +355,3 @@ Before you submit a contribution PR to this repo, please ensure that:
   - `npm run tsc`
   - `npm run test`
   - Here they are all together: `npm run fmt && npm run tsc && npm run test`
-
-## Shipping releases
-
-Create a new issue using the **Release** issue template: https://github.com/KittyCAD/modeling-app/issues/new?template=release.md
-
-Follow the embedded instructions to facilitate changelog discussions and release testing.

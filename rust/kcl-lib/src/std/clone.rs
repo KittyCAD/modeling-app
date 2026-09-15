@@ -511,6 +511,8 @@ fn get_named_cap_tags(solid: &Solid) -> (Option<TagNode>, Option<TagNode>) {
 
 #[cfg(test)]
 mod tests {
+    use kcl_api::SolidCreatorView;
+    use kcl_api::SolidView;
     use kcl_api::artifact::SweepSubType;
     use kittycad_modeling_cmds::shared::BodyType;
     use pretty_assertions::assert_eq;
@@ -519,11 +521,26 @@ mod tests {
     use crate::exec::KclValueView;
     use crate::execution::Artifact;
     use crate::execution::ArtifactGraph;
-    use crate::execution::ArtifactId;
+    use crate::execution::EdgeCutViewExt;
+    use crate::execution::ExecOutcome;
+    use crate::execution::ExtrudeSurfaceViewExt;
+    use crate::execution::KclValue;
+    use crate::execution::PathViewExt;
     use crate::execution::Solid;
-    use crate::execution::SolidCreator;
+    use crate::execution::SolidViewExt;
 
-    fn assert_cloned_composite_topology(artifact_graph: &ArtifactGraph, cloned_composite: &Solid) {
+    fn runtime_solid<'a>(outcome: &'a ExecOutcome, name: &str) -> &'a Solid {
+        let value = outcome
+            .test_program_memory
+            .get(name)
+            .unwrap_or_else(|| panic!("Expected runtime value for {name}"));
+        let KclValue::Solid { value } = value else {
+            panic!("Expected {name} to be a runtime solid, got: {value:?}");
+        };
+        value
+    }
+
+    fn assert_cloned_composite_topology(artifact_graph: &ArtifactGraph, cloned_composite: &SolidView) {
         let Some(Artifact::CompositeSolid(cloned_artifact)) = artifact_graph.get(&cloned_composite.artifact_id) else {
             panic!("Expected a cloned composite solid artifact at the engine entity ID");
         };
@@ -711,8 +728,11 @@ surfaceLoftClone = clone(surfaceLoft)
             };
 
             assert_ne!(source.id, cloned.id);
-            assert_eq!(cloned.best_guess_body_type, Some(BodyType::Surface));
-            assert!(matches!(cloned.creator, SolidCreator::Sketch(_)));
+            assert_eq!(
+                runtime_solid(&result, clone_name).best_guess_body_type,
+                Some(BodyType::Surface)
+            );
+            assert!(matches!(cloned.creator, SolidCreatorView::Sketch(_)));
             assert!(!cloned.value.is_empty());
         }
 
@@ -752,17 +772,28 @@ cloned = clone(source)
         let KclValueView::Solid { value: cloned } = result.variables.get("cloned").unwrap() else {
             panic!("Expected a cloned edge-created surface");
         };
-        let SolidCreator::Edge(source_creator) = &source.creator else {
+        let SolidCreatorView::Edge {
+            edge_id: source_edge_id,
+            ..
+        } = &source.creator
+        else {
             panic!("Expected the source surface to retain its edge creator");
         };
-        let SolidCreator::Edge(cloned_creator) = &cloned.creator else {
+        let SolidCreatorView::Edge {
+            edge_id: cloned_edge_id,
+            body_id: cloned_body_id,
+        } = &cloned.creator
+        else {
             panic!("Expected the cloned surface to retain its edge creator");
         };
 
         assert_ne!(source.id, cloned.id);
-        assert_eq!(cloned.best_guess_body_type, Some(BodyType::Surface));
-        assert_eq!(cloned_creator.body_id, cloned.id);
-        assert_ne!(source_creator.edge_id, cloned_creator.edge_id);
+        assert_eq!(
+            runtime_solid(&result, "cloned").best_guess_body_type,
+            Some(BodyType::Surface)
+        );
+        assert_eq!(*cloned_body_id, cloned.id);
+        assert_ne!(source_edge_id, cloned_edge_id);
         assert_ne!(source.value[0].get_id(), cloned.value[0].get_id());
         assert_ne!(source.value[0].face_id(), cloned.value[0].face_id());
 
@@ -790,18 +821,28 @@ cloned = clone(source)
         let KclValueView::Solid { value: cloned } = result.variables.get("cloned").unwrap() else {
             panic!("Expected a cloned face-created body");
         };
-        let SolidCreator::Face(source_creator) = &source.creator else {
+        let SolidCreatorView::Face {
+            face_id: source_face_id,
+            solid_id: source_solid_id,
+            sketch: source_sketch,
+        } = &source.creator
+        else {
             panic!("Expected the source body to retain its face creator");
         };
-        let SolidCreator::Face(cloned_creator) = &cloned.creator else {
+        let SolidCreatorView::Face {
+            face_id: cloned_face_id,
+            solid_id: cloned_solid_id,
+            sketch: cloned_sketch,
+        } = &cloned.creator
+        else {
             panic!("Expected the cloned body to retain its face creator");
         };
 
         assert_ne!(source.id, cloned.id);
-        assert_ne!(source_creator.face_id, cloned_creator.face_id);
-        assert_ne!(source_creator.solid_id, cloned_creator.solid_id);
-        assert_ne!(source_creator.sketch.id, cloned_creator.sketch.id);
-        assert_ne!(source_creator.sketch.original_id, cloned_creator.sketch.original_id);
+        assert_ne!(source_face_id, cloned_face_id);
+        assert_ne!(source_solid_id, cloned_solid_id);
+        assert_ne!(source_sketch.id, cloned_sketch.id);
+        assert_ne!(source_sketch.original_id, cloned_sketch.original_id);
 
         ctx.close().await;
     }
@@ -849,8 +890,11 @@ bridgeClone = clone(bridge)
         };
 
         assert_ne!(bridge.id, cloned.id);
-        assert_eq!(cloned.best_guess_body_type, Some(BodyType::Surface));
-        assert!(matches!(cloned.creator, SolidCreator::Procedural));
+        assert_eq!(
+            runtime_solid(&result, "bridgeClone").best_guess_body_type,
+            Some(BodyType::Surface)
+        );
+        assert!(matches!(cloned.creator, SolidCreatorView::Procedural));
         let Some(Artifact::Sweep(cloned_sweep)) = result.artifact_graph.get(&cloned.artifact_id) else {
             panic!("Expected the blend clone to have a sweep artifact");
         };
@@ -904,9 +948,9 @@ joinedClone = clone(joined)
         };
 
         assert_ne!(joined.id, cloned.id);
-        assert!(joined.best_guess_body_type.is_none());
-        assert!(cloned.best_guess_body_type.is_some());
-        assert!(matches!(cloned.creator, SolidCreator::Procedural));
+        assert!(runtime_solid(&result, "joined").best_guess_body_type.is_none());
+        assert!(runtime_solid(&result, "joinedClone").best_guess_body_type.is_some());
+        assert!(matches!(cloned.creator, SolidCreatorView::Procedural));
 
         ctx.close().await;
     }
@@ -1130,16 +1174,7 @@ clonedCube = clone(cube)
         }
 
         for (tag_name, tag) in &cube.tags {
-            let cloned_tag = cloned_cube.tags.get(tag_name).unwrap();
-
-            let tag_info = tag.get_cur_info().unwrap();
-            let cloned_tag_info = cloned_tag.get_cur_info().unwrap();
-
-            assert_ne!(tag_info.id, cloned_tag_info.id);
-            assert_ne!(tag_info.geometry.id(), cloned_tag_info.geometry.id());
-            assert_ne!(tag_info.path, cloned_tag_info.path);
-            assert_eq!(tag_info.surface, None);
-            assert_eq!(cloned_tag_info.surface, None);
+            assert_eq!(Some(tag), cloned_cube.tags.get(tag_name));
         }
 
         ctx.close().await;
@@ -1198,32 +1233,11 @@ clonedCube = clone(cube)
         }
 
         for (tag_name, tag) in &cube_sketch.tags {
-            let cloned_tag = cloned_cube_sketch.tags.get(tag_name).unwrap();
-
-            let tag_info = tag.get_cur_info().unwrap();
-            let cloned_tag_info = cloned_tag.get_cur_info().unwrap();
-
-            assert_ne!(tag_info.id, cloned_tag_info.id);
-            assert_ne!(tag_info.geometry.id(), cloned_tag_info.geometry.id());
-            assert_eq!(tag_info.path.is_some(), cloned_tag_info.path.is_some());
-            if let (Some(path), Some(cloned_path)) = (&tag_info.path, &cloned_tag_info.path) {
-                assert_ne!(path, cloned_path);
-            }
-            assert_eq!(tag_info.surface.is_some(), cloned_tag_info.surface.is_some());
-            if let (Some(surface), Some(cloned_surface)) = (&tag_info.surface, &cloned_tag_info.surface) {
-                assert_ne!(surface, cloned_surface);
-            }
+            assert_eq!(Some(tag), cloned_cube_sketch.tags.get(tag_name));
         }
 
         for (tag_name, tag) in &cube.faces {
-            let cloned_tag = cloned_cube.faces.get(tag_name).unwrap();
-
-            let tag_info = tag.get_cur_info().unwrap();
-            let cloned_tag_info = cloned_tag.get_cur_info().unwrap();
-
-            assert_ne!(tag_info.id, cloned_tag_info.id);
-            assert_ne!(tag_info.geometry.id(), cloned_tag_info.geometry.id());
-            assert_ne!(tag_info.surface, cloned_tag_info.surface);
+            assert_eq!(Some(tag), cloned_cube.faces.get(tag_name));
         }
         assert!(cube.faces.contains_key("endCap"));
         assert!(cloned_cube.faces.contains_key("endCap"));
@@ -1280,29 +1294,8 @@ clonedCopy = clone(patternCopy)
         assert!(result.artifact_graph.get(&pattern_copy.artifact_id).is_none());
         assert_ne!(cloned_copy.artifact_id, cloned_copy.id.into());
 
-        let pattern_wall = pattern_sketch.tags.get("wall").unwrap().get_cur_info().unwrap();
-        let cloned_wall = cloned_sketch.tags.get("wall").unwrap().get_cur_info().unwrap();
-        assert_ne!(pattern_wall.id, cloned_wall.id);
-        assert_ne!(pattern_wall.surface, cloned_wall.surface);
-        let cloned_wall_id = ArtifactId::new(
-            cloned_wall
-                .surface
-                .as_ref()
-                .expect("Expected cloned wall tag to reference a surface")
-                .face_id(),
-        );
-
-        let pattern_cap = pattern_copy.faces.get("endCap").unwrap().get_cur_info().unwrap();
-        let cloned_cap = cloned_copy.faces.get("endCap").unwrap().get_cur_info().unwrap();
-        assert_ne!(pattern_cap.id, cloned_cap.id);
-        assert_ne!(pattern_cap.surface, cloned_cap.surface);
-        let cloned_cap_id = ArtifactId::new(
-            cloned_cap
-                .surface
-                .as_ref()
-                .expect("Expected cloned cap tag to reference a surface")
-                .face_id(),
-        );
+        assert_eq!(pattern_sketch.tags.get("wall"), cloned_sketch.tags.get("wall"));
+        assert_eq!(pattern_copy.faces.get("endCap"), cloned_copy.faces.get("endCap"));
 
         assert!(matches!(
             result.artifact_graph.get(&cloned_copy.artifact_id),
@@ -1314,14 +1307,18 @@ clonedCopy = clone(patternCopy)
             Some(Artifact::Path(path))
                 if path.sweep_id == Some(cloned_copy.artifact_id)
         ));
-        assert!(matches!(
-            result.artifact_graph.get(&cloned_wall_id),
-            Some(Artifact::Wall(wall)) if wall.sweep_id == cloned_copy.artifact_id
-        ));
-        assert!(matches!(
-            result.artifact_graph.get(&cloned_cap_id),
-            Some(Artifact::Cap(cap)) if cap.sweep_id == cloned_copy.artifact_id
-        ));
+        assert!(
+            result
+                .artifact_graph
+                .values()
+                .any(|artifact| matches!(artifact, Artifact::Wall(wall) if wall.sweep_id == cloned_copy.artifact_id))
+        );
+        assert!(
+            result
+                .artifact_graph
+                .values()
+                .any(|artifact| matches!(artifact, Artifact::Cap(cap) if cap.sweep_id == cloned_copy.artifact_id))
+        );
 
         ctx.close().await;
     }
@@ -1383,15 +1380,7 @@ clonedCube = clone(cube)
         }
 
         for (tag_name, tag) in &cube_sketch.tags {
-            let cloned_tag = cloned_cube_sketch.tags.get(tag_name).unwrap();
-
-            let tag_info = tag.get_cur_info().unwrap();
-            let cloned_tag_info = cloned_tag.get_cur_info().unwrap();
-
-            assert_ne!(tag_info.id, cloned_tag_info.id);
-            assert_ne!(tag_info.geometry.id(), cloned_tag_info.geometry.id());
-            assert_ne!(tag_info.path, cloned_tag_info.path);
-            assert_ne!(tag_info.surface, cloned_tag_info.surface);
+            assert_eq!(Some(tag), cloned_cube_sketch.tags.get(tag_name));
         }
 
         for (edge_cut, cloned_edge_cut) in cube.edge_cuts.iter().zip(cloned_cube.edge_cuts.iter()) {
@@ -1440,6 +1429,99 @@ clonedCube = clone(cube)
     length = 2,
     tags = [
       getNextAdjacentEdge(tag05),
+    ],
+    tag = $chamfer02,
+  )
+
+clonedCube = clone(cube)
+"#;
+        let ctx = crate::test_server::new_context(true, None).await.unwrap();
+        let program = crate::Program::parse_no_errs(code).unwrap();
+
+        // Execute the program.
+        let result = ctx.run_with_caching(program.clone()).await.unwrap();
+        let cube = result.variables.get("cube").unwrap();
+        let cloned_cube = result.variables.get("clonedCube").unwrap();
+
+        assert_ne!(cube, cloned_cube);
+
+        let KclValueView::Solid { value: cube } = cube else {
+            panic!("Expected a solid, got: {cube:?}");
+        };
+        let KclValueView::Solid { value: cloned_cube } = cloned_cube else {
+            panic!("Expected a solid, got: {cloned_cube:?}");
+        };
+        let cube_sketch = cube.sketch().expect("Expected cube to have a sketch");
+        let cloned_cube_sketch = cloned_cube.sketch().expect("Expected cloned cube to have a sketch");
+
+        assert_ne!(cube.id, cloned_cube.id);
+        assert_ne!(cube_sketch.id, cloned_cube_sketch.id);
+        assert_ne!(cube_sketch.original_id, cloned_cube_sketch.original_id);
+        assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
+        assert_ne!(cube_sketch.artifact_id, cloned_cube_sketch.artifact_id);
+
+        assert_ne!(cloned_cube.artifact_id, cloned_cube.id.into());
+
+        for (value, cloned_value) in cube.value.iter().zip(cloned_cube.value.iter()) {
+            assert_ne!(value.get_id(), cloned_value.get_id());
+            assert_eq!(value.get_tag(), cloned_value.get_tag());
+        }
+
+        for (edge_cut, cloned_edge_cut) in cube.edge_cuts.iter().zip(cloned_cube.edge_cuts.iter()) {
+            assert_ne!(edge_cut.id(), cloned_edge_cut.id());
+            assert_ne!(edge_cut.edge_id(), cloned_edge_cut.edge_id());
+            assert_eq!(edge_cut.tag(), cloned_edge_cut.tag());
+        }
+
+        ctx.close().await;
+    }
+
+    // KCL 3.0 copy of kcl_test_clone_solid_with_edge_cuts. Edge cuts are sent
+    // to the engine immediately, so every adjacent edge is looked up before
+    // the first fillet consumes any of them.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_clone_solid_with_edge_cuts_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+
+baseCube = startSketchOn(XY)
+    |> startProfile(at = [0,0]) // tag this one
+    |> line(end = [0, 10], tag = $tag02)
+    |> line(end = [10, 0], tag = $tag03)
+    |> line(end = [0, -10], tag = $tag04)
+    |> close(tag = $tag05)
+    |> extrude(length = 5) // TODO: Tag these
+
+tag02NextAdjacentEdge = getNextAdjacentEdge(tag02)
+tag03NextAdjacentEdge = getNextAdjacentEdge(tag03)
+tag04NextAdjacentEdge = getNextAdjacentEdge(tag04)
+tag05NextAdjacentEdge = getNextAdjacentEdge(tag05)
+
+cube = baseCube
+  |> fillet(
+    radius = 2,
+    tags = [
+      tag02NextAdjacentEdge,
+    ],
+    tag = $fillet01,
+  )
+  |> fillet(
+    radius = 2,
+    tags = [
+      tag04NextAdjacentEdge,
+    ],
+    tag = $fillet02,
+  )
+  |> chamfer(
+    length = 2,
+    tags = [
+      tag03NextAdjacentEdge,
+    ],
+    tag = $chamfer01,
+  )
+  |> chamfer(
+    length = 2,
+    tags = [
+      tag05NextAdjacentEdge,
     ],
     tag = $chamfer02,
   )

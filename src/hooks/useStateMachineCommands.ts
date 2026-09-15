@@ -24,6 +24,7 @@ interface UseStateMachineCommandsArgs<
   send: (event: EventFrom<T>) => void
   actor: Actor<T>
   commandBarConfig?: StateMachineCommandSetConfig<T, S>
+  scopes: Command['scopes']
   isExecuting: boolean
   onCancel?: () => void
 }
@@ -44,6 +45,7 @@ export default function useStateMachineCommands<
   send,
   actor,
   commandBarConfig,
+  scopes,
   onCancel,
   isExecuting,
 }: UseStateMachineCommandsArgs<T, S>) {
@@ -83,6 +85,7 @@ export default function useStateMachineCommands<
           send,
           actor,
           commandBarConfig,
+          defaultScopes: scopes,
           onCancel,
           forceDisable: shouldDisableEngineCommands,
           showExperimentalCommands,
@@ -102,5 +105,10 @@ export default function useStateMachineCommands<
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [shouldDisableEngineCommands, showExperimentalCommands, commandBarConfig])
+  }, [
+    shouldDisableEngineCommands,
+    showExperimentalCommands,
+    commandBarConfig,
+    scopes,
+  ])
 }

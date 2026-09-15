@@ -7,12 +7,12 @@ description: Physical properties csg_subtract_multi_target_result_reuse.kcl
     "center": {
       "x": 0.0,
       "y": 0.0,
-      "z": 1.7000000000000002
+      "z": 2.0
     },
     "dimensions": {
-      "x": 100.0,
-      "y": 100.0,
-      "z": 5.4
+      "x": 10.0,
+      "y": 4.0,
+      "z": 4.800000000000001
     },
     "unit": "mm"
   },

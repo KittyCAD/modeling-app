@@ -104,8 +104,8 @@ description: Variables in memory after executing food-service-spatula.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 73,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 7.5,
@@ -177,6 +177,8 @@ description: Variables in memory after executing food-service-spatula.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -837,17 +839,17 @@ description: Variables in memory after executing food-service-spatula.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -951,8 +953,8 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -995,6 +997,8 @@ description: Variables in memory after executing food-service-spatula.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1655,17 +1659,17 @@ description: Variables in memory after executing food-service-spatula.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1769,8 +1773,8 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -2221,17 +2225,17 @@ description: Variables in memory after executing food-service-spatula.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2335,8 +2339,8 @@ description: Variables in memory after executing food-service-spatula.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "flipperSketch": {
@@ -4430,17 +4434,17 @@ description: Variables in memory after executing food-service-spatula.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -5112,6 +5116,8 @@ description: Variables in memory after executing food-service-spatula.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -5450,17 +5456,17 @@ description: Variables in memory after executing food-service-spatula.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 99,
+          "kind": "Custom",
           "origin": {
             "x": 208.593833,
             "y": 0.0,
             "z": 75.921946,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.342019894888923,
             "y": -0.0,
@@ -5532,8 +5538,8 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -5546,6 +5552,8 @@ description: Variables in memory after executing food-service-spatula.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -5884,17 +5892,17 @@ description: Variables in memory after executing food-service-spatula.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 99,
+          "kind": "Custom",
           "origin": {
             "x": 208.593833,
             "y": 0.0,
             "z": 75.921946,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.342019894888923,
             "y": -0.0,
@@ -5966,8 +5974,8 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -5989,6 +5997,8 @@ description: Variables in memory after executing food-service-spatula.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -6163,17 +6173,17 @@ description: Variables in memory after executing food-service-spatula.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 137,
+          "kind": "Custom",
           "origin": {
             "x": 190.56114818,
             "y": 0.0,
             "z": 90.43648769,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.9396927126390862,
             "y": 0.0,
@@ -6229,8 +6239,8 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -7038,17 +7048,17 @@ description: Variables in memory after executing food-service-spatula.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 137,
+                "kind": "Custom",
                 "origin": {
                   "x": 190.56114818,
                   "y": 0.0,
                   "z": 90.43648769,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 0.9396927126390862,
                   "y": 0.0,
@@ -8441,17 +8451,17 @@ description: Variables in memory after executing food-service-spatula.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 99,
+                "kind": "Custom",
                 "origin": {
                   "x": 208.593833,
                   "y": 0.0,
                   "z": 75.921946,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 0.342019894888923,
                   "y": -0.0,
@@ -8547,6 +8557,8 @@ description: Variables in memory after executing food-service-spatula.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -8785,17 +8797,17 @@ description: Variables in memory after executing food-service-spatula.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 73,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 7.5,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -8859,8 +8871,8 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -8903,6 +8915,8 @@ description: Variables in memory after executing food-service-spatula.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -9141,17 +9155,17 @@ description: Variables in memory after executing food-service-spatula.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 73,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 7.5,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -9215,8 +9229,8 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -9510,17 +9524,17 @@ description: Variables in memory after executing food-service-spatula.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 73,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 7.5,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -9584,8 +9598,8 @@ description: Variables in memory after executing food-service-spatula.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "handleSketch": {
@@ -10466,17 +10480,17 @@ description: Variables in memory after executing food-service-spatula.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 73,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 7.5,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,

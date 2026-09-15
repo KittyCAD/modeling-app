@@ -20,6 +20,11 @@ export type ProjectArchiveFile = {
   data: Uint8Array
 }
 
+/** Result of synchronizing one explicitly enrolled project to convergence. */
+export type CloudSyncProjectNowResult = {
+  remoteProjectId: string
+}
+
 /** Durable per-project sync metadata stored locally in the cloud sync DB. */
 export type ProjectMetadata = {
   schemaVersion: 1

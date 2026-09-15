@@ -365,6 +365,7 @@ function isPrimitiveReferenceArtifact(artifact: Artifact | undefined): boolean {
 function recastExpr(expr: Expr, wasmInstance: ModuleType) {
   const code = recast(
     {
+      type: 'Program',
       start: 0,
       end: 0,
       moduleId: 0,

@@ -21,7 +21,13 @@ export default defineConfig({
         inline: [/e2e/, /packages/],
       },
     },
-    reporters: ['default', 'junit'],
+    reporters: [
+      'default',
+      'junit',
+      ...(process.env.GITHUB_ACTIONS === 'true'
+        ? (['github-actions'] as const)
+        : []),
+    ],
     outputFile: {
       junit: 'test-results/junit.xml',
     },

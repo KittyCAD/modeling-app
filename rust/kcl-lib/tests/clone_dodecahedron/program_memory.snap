@@ -38,6 +38,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -144,17 +146,17 @@ description: Variables in memory after executing clone_dodecahedron.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XY",
               "objectId": 0,
+              "kind": "XY",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -192,7 +194,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -205,6 +208,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -311,17 +316,17 @@ description: Variables in memory after executing clone_dodecahedron.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XY",
               "objectId": 1,
+              "kind": "XY",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -359,7 +364,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -372,6 +378,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -478,17 +486,17 @@ description: Variables in memory after executing clone_dodecahedron.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XY",
               "objectId": 2,
+              "kind": "XY",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -526,7 +534,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -539,6 +548,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -645,17 +656,17 @@ description: Variables in memory after executing clone_dodecahedron.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XY",
               "objectId": 3,
+              "kind": "XY",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -693,7 +704,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -706,6 +718,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -812,17 +826,17 @@ description: Variables in memory after executing clone_dodecahedron.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XY",
               "objectId": 4,
+              "kind": "XY",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -860,7 +874,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -873,6 +888,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -979,17 +996,17 @@ description: Variables in memory after executing clone_dodecahedron.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XY",
               "objectId": 5,
+              "kind": "XY",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1027,7 +1044,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1040,6 +1058,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1146,17 +1166,17 @@ description: Variables in memory after executing clone_dodecahedron.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XY",
               "objectId": 6,
+              "kind": "XY",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1194,7 +1214,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1207,6 +1228,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1313,17 +1336,17 @@ description: Variables in memory after executing clone_dodecahedron.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XY",
               "objectId": 7,
+              "kind": "XY",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1361,7 +1384,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1374,6 +1398,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1480,17 +1506,17 @@ description: Variables in memory after executing clone_dodecahedron.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XY",
               "objectId": 8,
+              "kind": "XY",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1528,7 +1554,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1541,6 +1568,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1647,17 +1676,17 @@ description: Variables in memory after executing clone_dodecahedron.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XY",
               "objectId": 9,
+              "kind": "XY",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1695,7 +1724,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1708,6 +1738,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1814,17 +1846,17 @@ description: Variables in memory after executing clone_dodecahedron.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XY",
               "objectId": 10,
+              "kind": "XY",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1862,7 +1894,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1875,6 +1908,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1981,17 +2016,17 @@ description: Variables in memory after executing clone_dodecahedron.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XY",
               "objectId": 11,
+              "kind": "XY",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2029,7 +2064,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2562,6 +2598,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
@@ -2639,17 +2677,17 @@ description: Variables in memory after executing clone_dodecahedron.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XY",
               "objectId": 10,
+              "kind": "XY",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2687,7 +2725,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": null,
@@ -2700,6 +2739,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
@@ -2777,17 +2818,17 @@ description: Variables in memory after executing clone_dodecahedron.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XY",
               "objectId": 10,
+              "kind": "XY",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2825,7 +2866,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": null,
@@ -2838,6 +2880,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
@@ -2915,17 +2959,17 @@ description: Variables in memory after executing clone_dodecahedron.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XY",
               "objectId": 10,
+              "kind": "XY",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2963,7 +3007,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": null,
@@ -2976,6 +3021,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
@@ -3053,17 +3100,17 @@ description: Variables in memory after executing clone_dodecahedron.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XY",
               "objectId": 10,
+              "kind": "XY",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3101,7 +3148,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": null,
@@ -3114,6 +3162,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
@@ -3191,17 +3241,17 @@ description: Variables in memory after executing clone_dodecahedron.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XY",
               "objectId": 10,
+              "kind": "XY",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3239,7 +3289,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": null,
@@ -3252,6 +3303,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
@@ -3329,17 +3382,17 @@ description: Variables in memory after executing clone_dodecahedron.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XY",
               "objectId": 10,
+              "kind": "XY",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3377,7 +3430,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": null,
@@ -3390,6 +3444,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
@@ -3467,17 +3523,17 @@ description: Variables in memory after executing clone_dodecahedron.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XY",
               "objectId": 10,
+              "kind": "XY",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3515,7 +3571,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": null,
@@ -3528,6 +3585,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
@@ -3605,17 +3664,17 @@ description: Variables in memory after executing clone_dodecahedron.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XY",
               "objectId": 10,
+              "kind": "XY",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3653,7 +3712,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": null,
@@ -3666,6 +3726,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
@@ -3743,17 +3805,17 @@ description: Variables in memory after executing clone_dodecahedron.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XY",
               "objectId": 10,
+              "kind": "XY",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3791,7 +3853,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": null,
@@ -3804,6 +3867,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
@@ -3881,17 +3946,17 @@ description: Variables in memory after executing clone_dodecahedron.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XY",
               "objectId": 10,
+              "kind": "XY",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3929,7 +3994,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": null,
@@ -3942,6 +4008,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
@@ -4019,17 +4087,17 @@ description: Variables in memory after executing clone_dodecahedron.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XY",
               "objectId": 10,
+              "kind": "XY",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4067,7 +4135,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": null,
@@ -4080,6 +4149,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
@@ -4157,17 +4228,17 @@ description: Variables in memory after executing clone_dodecahedron.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XY",
               "objectId": 10,
+              "kind": "XY",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4205,7 +4276,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": null,
@@ -4218,6 +4290,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
@@ -4295,17 +4369,17 @@ description: Variables in memory after executing clone_dodecahedron.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XY",
               "objectId": 10,
+              "kind": "XY",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4343,7 +4417,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": null,
@@ -4356,6 +4431,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
@@ -4433,17 +4510,17 @@ description: Variables in memory after executing clone_dodecahedron.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XY",
               "objectId": 10,
+              "kind": "XY",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4481,7 +4558,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": null,
@@ -4494,6 +4572,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
@@ -4571,17 +4651,17 @@ description: Variables in memory after executing clone_dodecahedron.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XY",
               "objectId": 10,
+              "kind": "XY",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4619,7 +4699,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": null,
@@ -4632,6 +4713,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
@@ -4709,17 +4792,17 @@ description: Variables in memory after executing clone_dodecahedron.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XY",
               "objectId": 10,
+              "kind": "XY",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4757,7 +4840,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": null,
@@ -4770,6 +4854,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
@@ -4847,17 +4933,17 @@ description: Variables in memory after executing clone_dodecahedron.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XY",
               "objectId": 10,
+              "kind": "XY",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4895,7 +4981,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": null,
@@ -4908,6 +4995,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
@@ -4985,17 +5074,17 @@ description: Variables in memory after executing clone_dodecahedron.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XY",
               "objectId": 10,
+              "kind": "XY",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5033,7 +5122,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": null,
@@ -5046,6 +5136,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
@@ -5123,17 +5215,17 @@ description: Variables in memory after executing clone_dodecahedron.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XY",
               "objectId": 10,
+              "kind": "XY",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5171,7 +5263,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": null,
@@ -5184,6 +5277,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [],
           "sketch": {
@@ -5261,17 +5356,17 @@ description: Variables in memory after executing clone_dodecahedron.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XY",
               "objectId": 10,
+              "kind": "XY",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5309,7 +5404,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": null,
           "endCapId": null,
@@ -5342,6 +5438,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -5448,17 +5546,17 @@ description: Variables in memory after executing clone_dodecahedron.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "XY",
           "objectId": 10,
+          "kind": "XY",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -5496,7 +5594,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -5518,6 +5617,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -5624,17 +5725,17 @@ description: Variables in memory after executing clone_dodecahedron.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "XY",
           "objectId": 10,
+          "kind": "XY",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -5672,7 +5773,8 @@ description: Variables in memory after executing clone_dodecahedron.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",

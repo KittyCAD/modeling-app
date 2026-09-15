@@ -753,12 +753,9 @@ impl TryFrom<PlaneData> for PlaneInfo {
 impl From<&PlaneData> for PlaneKind {
     fn from(value: &PlaneData) -> Self {
         match value {
-            PlaneData::XY => PlaneKind::XY,
-            PlaneData::NegXY => PlaneKind::XY,
-            PlaneData::XZ => PlaneKind::XZ,
-            PlaneData::NegXZ => PlaneKind::XZ,
-            PlaneData::YZ => PlaneKind::YZ,
-            PlaneData::NegYZ => PlaneKind::YZ,
+            PlaneData::XY | PlaneData::NegXY => PlaneKind::XY,
+            PlaneData::XZ | PlaneData::NegXZ => PlaneKind::XZ,
+            PlaneData::YZ | PlaneData::NegYZ => PlaneKind::YZ,
             PlaneData::Plane(_) => PlaneKind::Custom,
         }
     }
@@ -766,15 +763,13 @@ impl From<&PlaneData> for PlaneKind {
 
 impl From<&PlaneInfo> for PlaneKind {
     fn from(value: &PlaneInfo) -> Self {
-        let data = PlaneData::Plane(value.clone());
-        PlaneKind::from(&data)
+        PlaneKind::from(&PlaneData::Plane(value.clone()))
     }
 }
 
 impl From<PlaneInfo> for PlaneKind {
     fn from(value: PlaneInfo) -> Self {
-        let data = PlaneData::Plane(value);
-        PlaneKind::from(&data)
+        PlaneKind::from(&PlaneData::Plane(value))
     }
 }
 

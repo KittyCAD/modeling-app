@@ -1,9 +1,11 @@
-import type { ProjectPublishSubmission } from '@src/lib/share'
+import type { ProjectPublishSubmission, PublishedProject } from '@src/lib/share'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 
 type PublishDialogTestProps = {
-  onSubmit: (submission: ProjectPublishSubmission) => Promise<boolean>
+  onSubmit: (
+    submission: ProjectPublishSubmission
+  ) => Promise<boolean | PublishedProject>
   willMoveProjectToCloud: boolean
 }
 
@@ -11,6 +13,7 @@ const mockState = vi.hoisted(() => ({
   useProjectStatus: vi.fn(),
   publishCurrentProject: vi.fn(),
   getCurrentProjectPublicationDetails: vi.fn(),
+  writeProjectTitleToProjectToml: vi.fn(),
   publishDialogProps: null as PublishDialogTestProps | null,
 }))
 
@@ -24,6 +27,10 @@ vi.mock('@src/lib/share', () => ({
     mockState.getCurrentProjectPublicationDetails,
 }))
 
+vi.mock('@src/lib/desktop', () => ({
+  writeProjectTitleToProjectToml: mockState.writeProjectTitleToProjectToml,
+}))
+
 vi.mock('@src/components/PublishDialog', () => ({
   PublishDialog: (props: PublishDialogTestProps) => {
     mockState.publishDialogProps = props
@@ -33,6 +40,7 @@ vi.mock('@src/components/PublishDialog', () => ({
 
 import { PublishButton } from '@src/components/PublishButton'
 import type { App } from '@src/lib/app'
+import { cloudSyncService } from '@src/lib/cloudSync/registry/contract'
 import type { Project } from '@src/lib/project'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
@@ -62,6 +70,8 @@ const localProject = {
 
 const homeProject = {
   localProjectPath: localProject.path,
+  name: 'example',
+  title: 'Old Example',
 } as HomeProjectEntry
 
 const cloudLibraryTarget = {
@@ -81,6 +91,8 @@ function createApp({
   project = defaultProject,
   hasCloudSyncFeature = false,
   homeProjectActions,
+  startProjectSync = vi.fn().mockResolvedValue(undefined),
+  syncNow = vi.fn().mockResolvedValue({ remoteProjectId: 'remote-synced' }),
   writeToFile = vi.fn().mockResolvedValue(undefined),
   closeProject = vi.fn(),
   settingsSend = vi.fn(),
@@ -88,6 +100,8 @@ function createApp({
   project?: Project
   hasCloudSyncFeature?: boolean
   homeProjectActions?: HomeProjectActionsService
+  startProjectSync?: ReturnType<typeof vi.fn>
+  syncNow?: ReturnType<typeof vi.fn>
   writeToFile?: ReturnType<typeof vi.fn>
   closeProject?: ReturnType<typeof vi.fn>
   settingsSend?: ReturnType<typeof vi.fn>
@@ -126,8 +140,15 @@ function createApp({
       },
     },
     registry: {
-      optional: (service: unknown) =>
-        service === homeProjectActionsService ? homeProjectActions : undefined,
+      optional: (service: unknown) => {
+        if (service === homeProjectActionsService) {
+          return homeProjectActions
+        }
+        if (service === cloudSyncService) {
+          return { startProjectSync, syncNow }
+        }
+        return undefined
+      },
       get: (valueSpec: unknown) =>
         valueSpec === homeProjectEntriesValueSpec ? [homeProject] : [],
     },
@@ -157,7 +178,9 @@ describe('PublishButton', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockState.useProjectStatus.mockReturnValue(null)
-    mockState.publishCurrentProject.mockResolvedValue(true)
+    mockState.publishCurrentProject.mockResolvedValue({
+      remoteProjectId: 'remote-published',
+    })
     mockState.getCurrentProjectPublicationDetails.mockResolvedValue(null)
     mockState.publishDialogProps = null
   })
@@ -227,11 +250,19 @@ describe('PublishButton', () => {
     async (_label, hasCloudSyncFeature, shouldMove) => {
       const moveToLibrary = vi.fn().mockResolvedValue({
         defaultFile: '/cloud/example/main.kcl',
+        localProjectPath: '/cloud/example',
       })
+      const rename = vi.fn().mockResolvedValue(undefined)
+      const startProjectSync = vi.fn().mockResolvedValue(undefined)
+      const syncNow = vi
+        .fn()
+        .mockResolvedValue({ remoteProjectId: 'remote-synced' })
       const writeToFile = vi.fn().mockResolvedValue(undefined)
       const closeProject = vi.fn()
       const settingsSend = vi.fn()
       const homeProjectActions = {
+        canRename: vi.fn().mockReturnValue(true),
+        rename,
         getMoveToLibraryTargets: vi.fn().mockReturnValue([cloudLibraryTarget]),
         moveToLibrary,
       } as unknown as HomeProjectActionsService
@@ -239,6 +270,8 @@ describe('PublishButton', () => {
         project: localProject,
         hasCloudSyncFeature,
         homeProjectActions,
+        startProjectSync,
+        syncNow,
         writeToFile,
         closeProject,
         settingsSend,
@@ -255,21 +288,70 @@ describe('PublishButton', () => {
       expect(writeToFile).toHaveBeenCalledBefore(
         mockState.publishCurrentProject
       )
+      expect(rename).toHaveBeenCalledTimes(shouldMove ? 0 : 1)
+      expect(startProjectSync).not.toHaveBeenCalled()
+      expect(syncNow).toHaveBeenCalledTimes(shouldMove ? 1 : 0)
       expect(moveToLibrary).toHaveBeenCalledTimes(shouldMove ? 1 : 0)
       if (shouldMove) {
+        expect(mockState.writeProjectTitleToProjectToml).toHaveBeenCalledWith(
+          localProject.path,
+          'Example'
+        )
+        expect(syncNow).toHaveBeenCalledWith('/cloud/example')
+        expect(syncNow).toHaveBeenCalledBefore(mockState.publishCurrentProject)
+        expect(mockState.publishCurrentProject).toHaveBeenCalledWith(
+          expect.objectContaining({ remoteProjectId: 'remote-synced' })
+        )
         expect(moveToLibrary).toHaveBeenCalledWith(
           homeProject,
           'personal-cloud'
         )
-        expect(
-          mockState.publishCurrentProject.mock.invocationCallOrder[0]
-        ).toBeLessThan(moveToLibrary.mock.invocationCallOrder[0])
+        expect(moveToLibrary).toHaveBeenCalledBefore(syncNow)
         expect(closeProject).toHaveBeenCalledOnce()
         expect(settingsSend).toHaveBeenCalledWith({
           type: 'clear.project',
         })
         expect(closeProject).toHaveBeenCalledBefore(moveToLibrary)
+      } else {
+        expect(rename).toHaveBeenCalledWith(homeProject, 'Example', {
+          notify: false,
+        })
+        expect(rename).toHaveBeenCalledBefore(mockState.publishCurrentProject)
+        expect(mockState.publishCurrentProject).toHaveBeenCalledWith(
+          expect.objectContaining({ remoteProjectId: undefined })
+        )
       }
     }
   )
+
+  test('does not publish when cloud sync fails after moving the project', async () => {
+    const homeProjectActions = {
+      canRename: vi.fn().mockReturnValue(true),
+      rename: vi.fn().mockResolvedValue(undefined),
+      getMoveToLibraryTargets: vi.fn().mockReturnValue([cloudLibraryTarget]),
+      moveToLibrary: vi.fn().mockResolvedValue({
+        defaultFile: '/cloud/example/main.kcl',
+        localProjectPath: '/cloud/example',
+      }),
+    } as unknown as HomeProjectActionsService
+    const syncNow = vi.fn().mockRejectedValue(new Error('sync failed'))
+    const app = createApp({
+      project: localProject,
+      hasCloudSyncFeature: true,
+      homeProjectActions,
+      syncNow,
+    })
+    const dialogProps = await openPublishDialog(app)
+
+    await act(async () => {
+      await expect(dialogProps.onSubmit(publishSubmission)).resolves.toBe(false)
+    })
+
+    expect(syncNow).toHaveBeenCalledWith('/cloud/example')
+    expect(mockState.publishCurrentProject).not.toHaveBeenCalled()
+    expect(homeProjectActions.moveToLibrary).toHaveBeenCalledWith(
+      homeProject,
+      'personal-cloud'
+    )
+  })
 })
