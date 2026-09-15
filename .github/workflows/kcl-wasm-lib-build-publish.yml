@@ -79,7 +79,7 @@ jobs:
           npm publish --access public --provenance
 
       - name: Create kittycad.ts repository token
-        if: ${{ steps.version_check.outputs.should_publish == 'true' && startsWith(github.ref, 'refs/tags/v') }}
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         id: kittycad_ts_token
         uses: actions/create-github-app-token@v2
         with:
@@ -89,7 +89,7 @@ jobs:
           repositories: kittycad.ts
 
       - name: Check out kittycad.ts
-        if: ${{ steps.version_check.outputs.should_publish == 'true' && startsWith(github.ref, 'refs/tags/v') }}
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         uses: actions/checkout@v7.0.1
         with:
           repository: KittyCAD/kittycad.ts
@@ -98,11 +98,15 @@ jobs:
           token: ${{ steps.kittycad_ts_token.outputs.token }}
 
       - name: Update kittycad.ts KCL Wasm dependency
-        if: ${{ steps.version_check.outputs.should_publish == 'true' && startsWith(github.ref, 'refs/tags/v') }}
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         working-directory: kittycad.ts
         env:
           VERSION: ${{ steps.version_check.outputs.local_version }}
         run: |
+          current_version="$(jq -r '.dependencies["@kittycad/kcl-wasm-lib"]' package.json)"
+          if [ "$current_version" = "$VERSION" ]; then
+            exit 0
+          fi
           npm install "@kittycad/kcl-wasm-lib@$VERSION" --package-lock-only --ignore-scripts
           git config user.name zoo-github-actions-auth[bot]
           git config user.email zoo-github-actions-auth[bot]@users.noreply.github.com
