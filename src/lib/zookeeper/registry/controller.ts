@@ -1,9 +1,13 @@
 import {
+  batch,
+  computed,
   effect,
   type ReadonlySignal,
   signal,
+  type Signal,
   untracked,
 } from '@preact/signals-core'
+import type { AttachmentRef, MlCopilotAccessDeniedCode } from '@kittycad/lib'
 import type { KclManager, ZDSProject } from '@src/lang/KclManager'
 import { BillingTransition } from '@src/lib/billing'
 import type { BillingRegistryService } from '@src/lib/billing/registry/contract'
@@ -17,10 +21,14 @@ import {
   zookeeperConversationStore,
 } from '@src/lib/zookeeper/zookeeperConversationStore'
 import {
+  type Conversation,
   createZookeeperManagerActor,
   hasBeenInterruptedOnLast,
   type MlCopilotModeId,
+  type MlCopilotModeOption,
   stopZookeeperManagerActor,
+  type ZookeeperAttachmentFetchState,
+  ZookeeperConversationToMarkdown,
   type ZookeeperManagerActor,
   ZookeeperManagerStates,
   ZookeeperManagerTransitions,
@@ -51,17 +59,43 @@ export interface QueuedMessage {
   attachments: File[]
 }
 
+export interface ZookeeperSessionView {
+  accessDeniedCode?: MlCopilotAccessDeniedCode
+  attachmentFetches: Record<string, ZookeeperAttachmentFetchState>
+  canClearChat: boolean
+  connectionError?: string
+  connectionFailed: boolean
+  conversation?: Conversation
+  defaultMode?: MlCopilotModeId
+  disabled: boolean
+  hasPromptCompleted: boolean
+  interruptedTurnAwaitingResume: boolean
+  isClearingChat: boolean
+  isLoading: boolean
+  isLoadingAttachments: boolean
+  isProcessing: boolean
+  isResumingInterruptedTurn: boolean
+  loadingMessage?: string
+  modeOptions?: MlCopilotModeOption[]
+  needsReconnect: boolean
+  queue: readonly QueuedMessage[]
+  showManualConnect: boolean
+}
+
+export interface ZookeeperConversationExport {
+  fileName: string
+  markdown: string
+}
+
 export interface ZookeeperSessionController {
-  readonly actor: ZookeeperManagerActor
-  readonly isClearingChat: ReadonlySignal<boolean>
-  readonly isResumingInterruptedTurn: ReadonlySignal<boolean>
   readonly projectPath: string
-  readonly queue: ReadonlySignal<readonly QueuedMessage[]>
-  readonly showManualConnect: ReadonlySignal<boolean>
+  readonly view: ReadonlySignal<ZookeeperSessionView>
   cancel(): void
   checkBillingAccess(): void
   clearConversation(): Promise<void>
   dispose(): Promise<void>
+  fetchAttachment(attachmentRef: AttachmentRef): void
+  getConversationExport(): ZookeeperConversationExport
   reconnect(): void
   removeQueued(id: string): void
   resumeInterruptedTurn(): void
@@ -77,24 +111,21 @@ export interface ZookeeperSessionController {
 type ZookeeperSnapshot = SnapshotFrom<ZookeeperManagerActor>
 
 class SessionController implements ZookeeperSessionController {
-  readonly actor: ZookeeperManagerActor
   readonly projectPath: string
+  readonly view: ReadonlySignal<ZookeeperSessionView>
+
+  private readonly actor: ZookeeperManagerActor
+  private readonly snapshotSignal: Signal<ZookeeperSnapshot>
 
   private readonly queueSignal = signal<QueuedMessage[]>([])
-  readonly queue: ReadonlySignal<readonly QueuedMessage[]> = this.queueSignal
 
   private readonly isClearingChatSignal = signal(false)
-  readonly isClearingChat: ReadonlySignal<boolean> = this.isClearingChatSignal
 
   private readonly isResumingInterruptedTurnSignal = signal(false)
-  readonly isResumingInterruptedTurn: ReadonlySignal<boolean> =
-    this.isResumingInterruptedTurnSignal
 
   private readonly showManualConnectSignal = signal(
     typeof navigator !== 'undefined' && navigator.onLine === false
   )
-  readonly showManualConnect: ReadonlySignal<boolean> =
-    this.showManualConnectSignal
 
   private apiToken: string
   private active = true
@@ -126,6 +157,8 @@ class SessionController implements ZookeeperSessionController {
     this.projectId = deps.projectId
     this.projectPath = deps.projectPath
     this.actor = createZookeeperManagerActor(deps.apiToken)
+    this.snapshotSignal = signal(this.actor.getSnapshot())
+    this.view = computed(() => this.createView(this.snapshotSignal.value))
     this.history = new ZookeeperEditPatchHistory(deps.kclManager)
     this.fileRequestProcessor = new ZookeeperFileRequestProcessor({
       getProject: () => this.getProject(),
@@ -143,7 +176,10 @@ class SessionController implements ZookeeperSessionController {
     })
 
     this.actorSubscription = this.actor.subscribe((snapshot) => {
-      this.handleSnapshot(snapshot)
+      batch(() => {
+        this.snapshotSignal.value = snapshot
+        this.handleSnapshot(snapshot)
+      })
     })
 
     if (typeof window !== 'undefined') {
@@ -244,6 +280,24 @@ class SessionController implements ZookeeperSessionController {
       apiToken: this.apiToken,
     })
     this.reconnect()
+  }
+
+  fetchAttachment(attachmentRef: AttachmentRef) {
+    if (!this.active) {
+      return
+    }
+    this.actor.send({
+      type: ZookeeperManagerTransitions.AttachmentFetch,
+      attachmentRef,
+    })
+  }
+
+  getConversationExport(): ZookeeperConversationExport {
+    const { conversation, conversationId } = this.actor.getSnapshot().context
+    return {
+      fileName: `${conversationId ?? new Date().toISOString()}.md`,
+      markdown: ZookeeperConversationToMarkdown(conversation),
+    }
   }
 
   reconnect = () => {
@@ -555,6 +609,57 @@ class SessionController implements ZookeeperSessionController {
     this.tryConnectWhenIdle(snapshot)
     this.reconcileReconnect(snapshot)
     this.flushQueue(snapshot)
+  }
+
+  private createView(snapshot: ZookeeperSnapshot): ZookeeperSessionView {
+    const { context } = snapshot
+    const showManualConnect = this.showManualConnectSignal.value
+    const isClearingChat = this.isClearingChatSignal.value
+    const isResumingInterruptedTurn = this.isResumingInterruptedTurnSignal.value
+    const needsReconnect = context.abruptlyClosed || showManualConnect
+    const interruptedTurnAwaitingResume =
+      snapshot.matches(ZookeeperManagerStates.WaitForContinueCheck) &&
+      hasBeenInterruptedOnLast(context.conversation?.exchanges ?? [])
+    const conversation =
+      snapshot.matches(S.Await) && !context.abruptlyClosed
+        ? undefined
+        : context.conversation
+
+    return {
+      accessDeniedCode: context.accessDeniedCode,
+      attachmentFetches: context.attachmentFetches,
+      canClearChat: context.setupFailed && context.conversationId !== undefined,
+      connectionError: showManualConnect
+        ? 'No internet connection.'
+        : context.closeReason,
+      connectionFailed: context.setupFailed,
+      conversation,
+      defaultMode: context.defaultMode,
+      disabled:
+        needsReconnect ||
+        isClearingChat ||
+        interruptedTurnAwaitingResume ||
+        isResumingInterruptedTurn,
+      hasPromptCompleted:
+        !context.awaitingResponse && !interruptedTurnAwaitingResume,
+      interruptedTurnAwaitingResume,
+      isClearingChat,
+      isLoading: conversation === undefined,
+      isLoadingAttachments:
+        !context.attachmentsLoadedForCurrentPrompt &&
+        conversation !== undefined,
+      isProcessing: context.awaitingResponse,
+      isResumingInterruptedTurn,
+      loadingMessage: snapshot.matches(ZookeeperManagerStates.Setup)
+        ? 'Connecting to Zookeeper...'
+        : needsReconnect
+          ? 'Reconnecting...'
+          : undefined,
+      modeOptions: context.modeOptions,
+      needsReconnect,
+      queue: this.queueSignal.value,
+      showManualConnect,
+    }
   }
 
   private updateBilling(isPromptRunning: boolean) {
