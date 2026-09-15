@@ -507,8 +507,10 @@ description: Variables in memory after executing propeller.kcl
         "value": 4.154527795602054,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -516,8 +518,10 @@ description: Variables in memory after executing propeller.kcl
         "value": 3.8759550876832067,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -530,8 +534,10 @@ description: Variables in memory after executing propeller.kcl
         "value": 4.453202661189174,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -539,8 +545,10 @@ description: Variables in memory after executing propeller.kcl
         "value": 2.182085752502209,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -550,8 +558,10 @@ description: Variables in memory after executing propeller.kcl
     "value": 1.72,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "bladeCount": {
@@ -559,8 +569,10 @@ description: Variables in memory after executing propeller.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "bladeDiameter": {
@@ -568,8 +580,10 @@ description: Variables in memory after executing propeller.kcl
     "value": 86.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "bladeEnvelope": {
@@ -1457,17 +1471,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 43.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1475,17 +1493,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 3.0489331069412065,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1577,17 +1599,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 3.0489331069392986,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.5583586455162908,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1595,17 +1621,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 4.453202661188654,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.1820857525051536,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1613,17 +1643,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 4.154527795604477,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 3.875955087682557,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1729,17 +1763,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 3.0489331069412065,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1747,17 +1785,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 3.048933106939298,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.5583586455162903,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1849,17 +1891,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 43.00000000000004,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.010000000000003843,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1867,17 +1913,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 37.53012573811085,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 5.048752418389949,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1885,17 +1935,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 37.52090220505797,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.4495782107770982,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2001,17 +2055,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 43.00000000000004,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.010000000000003843,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2019,17 +2077,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 43.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2121,17 +2183,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 37.53012573811218,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 5.04875241916883,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2139,17 +2205,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 4.4532026611834015,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.1820857525349444,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2157,17 +2227,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 37.22226787699149,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -183.66077718104697,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2602,8 +2676,10 @@ description: Variables in memory after executing propeller.kcl
         "value": 3.0489331069412065,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -2611,8 +2687,10 @@ description: Variables in memory after executing propeller.kcl
         "value": 2.5583586455185645,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -2900,17 +2978,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": -8.556093467170257,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.0496273075820661,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2918,17 +3000,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 8.556093467170257,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.0496273075820661,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2936,17 +3022,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 0.0000000000000000000005161037720034402,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 69.63416195918276,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3052,17 +3142,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 8.556093467108767,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.04962730707911994,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3070,17 +3164,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 8.600000000506691,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.0000000000003052674653932394,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3088,17 +3186,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 8.549999999554798,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.0000000005026408908098126,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3204,17 +3306,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": -8.600000000506691,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.0000000000003052674654059167,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3222,17 +3328,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": -8.556093467108767,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.04962730707911994,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3240,17 +3350,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": -8.549999999554798,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.0000000005026408908132007,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3713,17 +3827,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 8.556093467170257,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0496273075820661,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3731,17 +3849,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": -8.556093467170257,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0496273075820661,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3749,17 +3871,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": -0.0000000000000000000005161037720034402,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -69.63416195918276,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3865,17 +3991,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 8.600000000506691,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0000000000003052674654059167,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3883,17 +4013,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 8.556093467108767,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.04962730707911994,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3901,17 +4035,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 8.549999999554798,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0000000005026408908132007,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4017,17 +4155,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": -8.556093467108767,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.04962730707911994,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4035,17 +4177,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": -8.600000000506691,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0000000000003052674653932394,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4053,17 +4199,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": -8.549999999554798,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0000000005026408908098126,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4166,8 +4316,10 @@ description: Variables in memory after executing propeller.kcl
         "value": 43.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -4175,8 +4327,10 @@ description: Variables in memory after executing propeller.kcl
         "value": 0.01,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -4553,8 +4707,10 @@ description: Variables in memory after executing propeller.kcl
         "value": 37.53012573811225,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -4562,8 +4718,10 @@ description: Variables in memory after executing propeller.kcl
         "value": 5.048752419168876,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -5242,8 +5400,10 @@ description: Variables in memory after executing propeller.kcl
     "value": 0.4,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "boreCutter": {
@@ -5737,17 +5897,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5755,17 +5919,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5857,17 +6025,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5875,17 +6047,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.6,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5977,17 +6153,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5995,17 +6175,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6097,17 +6281,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.6,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6115,17 +6303,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 1.4,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6425,17 +6617,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 1.4,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6443,17 +6639,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6539,8 +6739,10 @@ description: Variables in memory after executing propeller.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "boreWall": {
@@ -6600,8 +6802,10 @@ description: Variables in memory after executing propeller.kcl
     "value": 0.25,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "holePatternRadius": {
@@ -6609,8 +6813,10 @@ description: Variables in memory after executing propeller.kcl
     "value": 2.6666666666666665,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "hub": {
@@ -7267,8 +7473,10 @@ description: Variables in memory after executing propeller.kcl
             "n": 0.6666666666666666,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -7281,8 +7489,10 @@ description: Variables in memory after executing propeller.kcl
             "n": 0.6666666666666666,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -8184,17 +8394,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 4.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -8202,17 +8416,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -8400,8 +8618,10 @@ description: Variables in memory after executing propeller.kcl
     "value": 8.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "hubEnd": {
@@ -9506,8 +9726,10 @@ description: Variables in memory after executing propeller.kcl
             "n": 0.6666666666666666,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -9520,8 +9742,10 @@ description: Variables in memory after executing propeller.kcl
             "n": 0.6666666666666666,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -9549,17 +9773,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 0.12499955555792623,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.6669999988148154,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -9567,17 +9795,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 0.00000000000000020773053642125138,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.6666666666666665,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -9669,17 +9901,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": -1.4424279129509858,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.157000001737265,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -9687,17 +9923,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": -1.5674273394465947,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.1573786516665265,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -9789,17 +10029,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": -2.411150718335414,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.8240000000029785,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -9807,17 +10051,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": -2.5361507101204093,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.8240453183331933,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -9909,17 +10157,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": -2.411150718335414,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.8240000000029785,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -9927,17 +10179,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": -2.5361507101204093,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.8240453183331939,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10029,17 +10285,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": -1.4424279129509863,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.157000001737265,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10047,17 +10307,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": -1.5674273394465952,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.157378651666526,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10149,17 +10413,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 0.12499955555792558,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.6669999988148154,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10167,17 +10435,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": -0.0000000000000004454144218177136,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.6666666666666665,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10269,17 +10541,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 1.6924267659422032,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.1570000017372775,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10287,17 +10563,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 1.5674273394465943,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.1573786516665265,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10389,17 +10669,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 2.6611507019054046,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.824000000002978,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10407,17 +10691,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 2.5361507101204093,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.8240453183331936,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10509,17 +10797,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 2.6611507019054046,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.824000000002978,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10527,17 +10819,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 2.5361507101204093,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.824045318333193,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10629,17 +10925,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 1.6924267659422039,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.1570000017372775,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10647,17 +10947,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 1.567427339446595,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.1573786516665265,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11361,17 +11665,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 4.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11379,17 +11687,21 @@ description: Variables in memory after executing propeller.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11479,8 +11791,10 @@ description: Variables in memory after executing propeller.kcl
     "value": 4.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "lowerCamber": {
@@ -11516,8 +11830,10 @@ description: Variables in memory after executing propeller.kcl
     "value": 8.6,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "sectionLowerCamberCenter": {
@@ -11528,8 +11844,10 @@ description: Variables in memory after executing propeller.kcl
         "value": 0.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -11537,8 +11855,10 @@ description: Variables in memory after executing propeller.kcl
         "value": 69.63416195918276,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -11551,8 +11871,10 @@ description: Variables in memory after executing propeller.kcl
         "value": 8.556093467170257,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -11560,8 +11882,10 @@ description: Variables in memory after executing propeller.kcl
         "value": -0.0496273075820661,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -11574,8 +11898,10 @@ description: Variables in memory after executing propeller.kcl
         "value": -8.556093467170257,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -11583,8 +11909,10 @@ description: Variables in memory after executing propeller.kcl
         "value": -0.0496273075820661,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -11594,8 +11922,10 @@ description: Variables in memory after executing propeller.kcl
     "value": 0.05,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "sectionOppositeEnd": {
@@ -11606,8 +11936,10 @@ description: Variables in memory after executing propeller.kcl
         "value": -8.556093467170257,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -11615,8 +11947,10 @@ description: Variables in memory after executing propeller.kcl
         "value": 0.0496273075820661,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -11629,8 +11963,10 @@ description: Variables in memory after executing propeller.kcl
         "value": 0.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -11638,8 +11974,10 @@ description: Variables in memory after executing propeller.kcl
         "value": -69.63416195918276,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -11652,8 +11990,10 @@ description: Variables in memory after executing propeller.kcl
         "value": 8.556093467170257,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -11661,8 +12001,10 @@ description: Variables in memory after executing propeller.kcl
         "value": 0.0496273075820661,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -11680,8 +12022,10 @@ description: Variables in memory after executing propeller.kcl
     "value": 0.000000005,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "topRadius": {
@@ -11692,9 +12036,11 @@ description: Variables in memory after executing propeller.kcl
     "type": "Number",
     "value": 45.0,
     "ty": {
-      "degrees": null,
       "type": "Known",
-      "type": "Angle"
+      "value": {
+        "type": "Angle",
+        "value": "degrees"
+      }
     }
   },
   "upperCamber": {

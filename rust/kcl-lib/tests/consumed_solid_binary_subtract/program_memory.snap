@@ -1118,15 +1118,15 @@ description: Variables in memory after executing consumed_solid_binary_subtract.
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -1136,15 +1136,15 @@ description: Variables in memory after executing consumed_solid_binary_subtract.
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -1234,15 +1234,15 @@ description: Variables in memory after executing consumed_solid_binary_subtract.
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -1252,15 +1252,15 @@ description: Variables in memory after executing consumed_solid_binary_subtract.
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -1530,15 +1530,15 @@ description: Variables in memory after executing consumed_solid_binary_subtract.
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -1548,15 +1548,15 @@ description: Variables in memory after executing consumed_solid_binary_subtract.
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -1646,15 +1646,15 @@ description: Variables in memory after executing consumed_solid_binary_subtract.
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -1664,15 +1664,15 @@ description: Variables in memory after executing consumed_solid_binary_subtract.
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -1768,15 +1768,15 @@ description: Variables in memory after executing consumed_solid_binary_subtract.
                       {
                         "n": 3.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": -3.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -1786,15 +1786,15 @@ description: Variables in memory after executing consumed_solid_binary_subtract.
                       {
                         "n": -3.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": -3.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -1884,15 +1884,15 @@ description: Variables in memory after executing consumed_solid_binary_subtract.
                       {
                         "n": -3.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": -3.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -1902,15 +1902,15 @@ description: Variables in memory after executing consumed_solid_binary_subtract.
                       {
                         "n": -3.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": 3.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -2180,15 +2180,15 @@ description: Variables in memory after executing consumed_solid_binary_subtract.
                       {
                         "n": 3.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": 3.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -2198,15 +2198,15 @@ description: Variables in memory after executing consumed_solid_binary_subtract.
                       {
                         "n": 3.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": -3.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -2296,15 +2296,15 @@ description: Variables in memory after executing consumed_solid_binary_subtract.
                       {
                         "n": -3.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": 3.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -2314,15 +2314,15 @@ description: Variables in memory after executing consumed_solid_binary_subtract.
                       {
                         "n": 3.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": 3.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -2418,15 +2418,15 @@ description: Variables in memory after executing consumed_solid_binary_subtract.
                       {
                         "n": 14.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": 12.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -2436,15 +2436,15 @@ description: Variables in memory after executing consumed_solid_binary_subtract.
                       {
                         "n": 12.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": 12.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -2534,15 +2534,15 @@ description: Variables in memory after executing consumed_solid_binary_subtract.
                       {
                         "n": 12.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": 12.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -2552,15 +2552,15 @@ description: Variables in memory after executing consumed_solid_binary_subtract.
                       {
                         "n": 12.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": 14.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -2830,15 +2830,15 @@ description: Variables in memory after executing consumed_solid_binary_subtract.
                       {
                         "n": 14.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": 14.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -2848,15 +2848,15 @@ description: Variables in memory after executing consumed_solid_binary_subtract.
                       {
                         "n": 14.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": 12.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -2946,15 +2946,15 @@ description: Variables in memory after executing consumed_solid_binary_subtract.
                       {
                         "n": 12.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": 14.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],
@@ -2964,15 +2964,15 @@ description: Variables in memory after executing consumed_solid_binary_subtract.
                       {
                         "n": 14.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       },
                       {
                         "n": 14.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Length",
+                          "value": "mm"
                         }
                       }
                     ],

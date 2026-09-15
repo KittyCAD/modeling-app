@@ -154,8 +154,10 @@ description: Variables in memory after executing clone_an_import.kcl
     "value": 1999.8,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "pistonPole": {

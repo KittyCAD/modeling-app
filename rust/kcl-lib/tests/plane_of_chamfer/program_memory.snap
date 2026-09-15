@@ -223,8 +223,10 @@ description: Variables in memory after executing plane_of_chamfer.kcl
             "n": 1.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
