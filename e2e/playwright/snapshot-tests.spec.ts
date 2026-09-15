@@ -129,6 +129,11 @@ function runTestForTheme(mode: Themes) {
       await toolbar.exitSketchBtn.click()
       await expect(toolbar.startSketchBtn).not.toBeDisabled()
       await scene.settled()
+      await expect(
+        page.getByRole('tooltip').filter({
+          hasText: 'Pull a sketch into 3D along its normal or perpendicular.',
+        })
+      ).toBeVisible()
 
       await expect(page).toHaveScreenshot(
         screenshotName(step++, 'sketch-exited', mode),
