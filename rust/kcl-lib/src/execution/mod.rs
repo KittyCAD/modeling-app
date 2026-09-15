@@ -1733,7 +1733,9 @@ impl ExecutorContext {
         // Record the entry point's kclVersion before anything executes;
         // imported modules pre-execute on clones of this state below and must
         // inherit it.
-        exec_state.set_entry_point_kcl_version(program);
+        exec_state
+            .set_entry_point_kcl_version(program)
+            .map_err(KclErrorWithOutputs::no_outputs)?;
 
         // Reuse our cached universe if we have one.
 
@@ -2012,7 +2014,9 @@ impl ExecutorContext {
         // Record the entry point's kclVersion. Mock execution reaches here
         // without going through run_concurrent; on the engine path this
         // re-assigns the same value, which is harmless.
-        exec_state.set_entry_point_kcl_version(program);
+        exec_state
+            .set_entry_point_kcl_version(program)
+            .map_err(KclErrorWithOutputs::no_outputs)?;
 
         // Re-apply the settings, in case the cache was busted.
         let grid_scale = if self.settings.fixed_size_grid {

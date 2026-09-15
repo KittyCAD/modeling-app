@@ -1401,11 +1401,11 @@ impl ExecState {
     /// execution, or `None` when it declares no kclVersion. Must be assigned
     /// unconditionally at the start of every execution since the state may be
     /// reused across executions whose programs declare different versions.
-    pub(crate) fn set_entry_point_kcl_version(&mut self, program: &crate::Program) {
-        self.global.entry_point_kcl_version = declared_kcl_version(&program.ast)
-            .ok()
-            .flatten()
-            .map(|(version, _)| version);
+    pub(crate) fn set_entry_point_kcl_version(&mut self, program: &crate::Program) -> Result<(), KclError> {
+        let version = program.language_version()?;
+        // Import diagnostics distinguish an explicit version from the default.
+        self.global.entry_point_kcl_version = declared_kcl_version(&program.ast)?.map(|_| version);
+        Ok(())
     }
 
     /// KCL 3.0: the entry point's declared kclVersion decides which kclVersion
