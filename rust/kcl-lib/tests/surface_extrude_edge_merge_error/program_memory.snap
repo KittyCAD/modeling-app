@@ -709,15 +709,21 @@ description: Variables in memory after executing surface_extrude_edge_merge_erro
                       {
                         "n": -1.32,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -754,15 +760,21 @@ description: Variables in memory after executing surface_extrude_edge_merge_erro
                       {
                         "n": 1.84,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.32,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -825,15 +837,21 @@ description: Variables in memory after executing surface_extrude_edge_merge_erro
                       {
                         "n": 0.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 1.52,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -870,15 +888,21 @@ description: Variables in memory after executing surface_extrude_edge_merge_erro
                       {
                         "n": 3.37,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 2.21,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -968,15 +992,21 @@ description: Variables in memory after executing surface_extrude_edge_merge_erro
                       {
                         "n": 3.61,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 6.24,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -986,15 +1016,21 @@ description: Variables in memory after executing surface_extrude_edge_merge_erro
                       {
                         "n": -6.36,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -3.01,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],

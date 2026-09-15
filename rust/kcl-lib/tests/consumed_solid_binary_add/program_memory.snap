@@ -1118,15 +1118,21 @@ description: Variables in memory after executing consumed_solid_binary_add.kcl
                       {
                         "n": 10.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1136,15 +1142,21 @@ description: Variables in memory after executing consumed_solid_binary_add.kcl
                       {
                         "n": -10.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1234,15 +1246,21 @@ description: Variables in memory after executing consumed_solid_binary_add.kcl
                       {
                         "n": -10.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1252,15 +1270,21 @@ description: Variables in memory after executing consumed_solid_binary_add.kcl
                       {
                         "n": -10.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1530,15 +1554,21 @@ description: Variables in memory after executing consumed_solid_binary_add.kcl
                       {
                         "n": 10.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1548,15 +1578,21 @@ description: Variables in memory after executing consumed_solid_binary_add.kcl
                       {
                         "n": 10.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1646,15 +1682,21 @@ description: Variables in memory after executing consumed_solid_binary_add.kcl
                       {
                         "n": -10.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1664,15 +1706,21 @@ description: Variables in memory after executing consumed_solid_binary_add.kcl
                       {
                         "n": 10.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1768,15 +1816,21 @@ description: Variables in memory after executing consumed_solid_binary_add.kcl
                       {
                         "n": 3.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -3.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1786,15 +1840,21 @@ description: Variables in memory after executing consumed_solid_binary_add.kcl
                       {
                         "n": -3.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -3.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1884,15 +1944,21 @@ description: Variables in memory after executing consumed_solid_binary_add.kcl
                       {
                         "n": -3.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -3.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1902,15 +1968,21 @@ description: Variables in memory after executing consumed_solid_binary_add.kcl
                       {
                         "n": -3.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 3.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2180,15 +2252,21 @@ description: Variables in memory after executing consumed_solid_binary_add.kcl
                       {
                         "n": 3.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 3.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2198,15 +2276,21 @@ description: Variables in memory after executing consumed_solid_binary_add.kcl
                       {
                         "n": 3.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -3.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2296,15 +2380,21 @@ description: Variables in memory after executing consumed_solid_binary_add.kcl
                       {
                         "n": -3.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 3.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2314,15 +2404,21 @@ description: Variables in memory after executing consumed_solid_binary_add.kcl
                       {
                         "n": 3.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 3.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2418,15 +2514,21 @@ description: Variables in memory after executing consumed_solid_binary_add.kcl
                       {
                         "n": 14.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 12.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2436,15 +2538,21 @@ description: Variables in memory after executing consumed_solid_binary_add.kcl
                       {
                         "n": 12.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 12.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2534,15 +2642,21 @@ description: Variables in memory after executing consumed_solid_binary_add.kcl
                       {
                         "n": 12.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 12.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2552,15 +2666,21 @@ description: Variables in memory after executing consumed_solid_binary_add.kcl
                       {
                         "n": 12.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 14.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2830,15 +2950,21 @@ description: Variables in memory after executing consumed_solid_binary_add.kcl
                       {
                         "n": 14.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 14.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2848,15 +2974,21 @@ description: Variables in memory after executing consumed_solid_binary_add.kcl
                       {
                         "n": 14.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 12.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2946,15 +3078,21 @@ description: Variables in memory after executing consumed_solid_binary_add.kcl
                       {
                         "n": 12.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 14.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2964,15 +3102,21 @@ description: Variables in memory after executing consumed_solid_binary_add.kcl
                       {
                         "n": 14.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 14.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],

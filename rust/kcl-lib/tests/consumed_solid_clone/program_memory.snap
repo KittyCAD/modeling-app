@@ -598,15 +598,21 @@ description: Variables in memory after executing consumed_solid_clone.kcl
                       {
                         "n": 10.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -616,15 +622,21 @@ description: Variables in memory after executing consumed_solid_clone.kcl
                       {
                         "n": -10.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -714,15 +726,21 @@ description: Variables in memory after executing consumed_solid_clone.kcl
                       {
                         "n": -10.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -732,15 +750,21 @@ description: Variables in memory after executing consumed_solid_clone.kcl
                       {
                         "n": -10.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1010,15 +1034,21 @@ description: Variables in memory after executing consumed_solid_clone.kcl
                       {
                         "n": 10.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1028,15 +1058,21 @@ description: Variables in memory after executing consumed_solid_clone.kcl
                       {
                         "n": 10.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1126,15 +1162,21 @@ description: Variables in memory after executing consumed_solid_clone.kcl
                       {
                         "n": -10.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1144,15 +1186,21 @@ description: Variables in memory after executing consumed_solid_clone.kcl
                       {
                         "n": 10.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1492,15 +1540,21 @@ description: Variables in memory after executing consumed_solid_clone.kcl
                       {
                         "n": 3.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -3.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1510,15 +1564,21 @@ description: Variables in memory after executing consumed_solid_clone.kcl
                       {
                         "n": -3.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -3.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1608,15 +1668,21 @@ description: Variables in memory after executing consumed_solid_clone.kcl
                       {
                         "n": -3.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -3.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1626,15 +1692,21 @@ description: Variables in memory after executing consumed_solid_clone.kcl
                       {
                         "n": -3.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 3.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1904,15 +1976,21 @@ description: Variables in memory after executing consumed_solid_clone.kcl
                       {
                         "n": 3.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 3.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1922,15 +2000,21 @@ description: Variables in memory after executing consumed_solid_clone.kcl
                       {
                         "n": 3.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -3.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2020,15 +2104,21 @@ description: Variables in memory after executing consumed_solid_clone.kcl
                       {
                         "n": -3.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 3.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2038,15 +2128,21 @@ description: Variables in memory after executing consumed_solid_clone.kcl
                       {
                         "n": 3.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 3.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],

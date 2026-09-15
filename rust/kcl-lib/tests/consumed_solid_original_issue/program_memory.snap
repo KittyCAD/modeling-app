@@ -641,15 +641,21 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                       {
                         "n": 0.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -686,15 +692,21 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                       {
                         "n": 2.5,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4015,15 +4027,21 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                       {
                         "n": 11.59110991546882,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 3.105828541230249,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4072,15 +4090,21 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                       {
                         "n": 12.99038105676658,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 7.499999999999999,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4090,15 +4114,21 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                       {
                         "n": 15.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.0000000000000000724060042227431,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4161,15 +4191,21 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                       {
                         "n": 17.67766952966369,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 17.677669529663685,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4218,15 +4254,21 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                       {
                         "n": 12.99038105676658,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 7.499999999999999,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4236,15 +4278,21 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                       {
                         "n": 7.500000000000002,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 12.990381056766578,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4334,15 +4382,21 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                       {
                         "n": 15.0,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.000000000000000049629976485344605,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4352,15 +4406,21 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                       {
                         "n": 0.00000000000000004751442319125145,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.00000000000000001251222676741394,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4450,15 +4510,21 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                       {
                         "n": 0.00000000000000007000425470851272,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.0000000000000000022143988957514074,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4468,15 +4534,21 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                       {
                         "n": 7.500000000000002,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 12.990381056766578,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4771,15 +4843,21 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                       {
                         "n": 2.041265954987697,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 34.80437917672039,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4828,15 +4906,21 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                       {
                         "n": -0.000000000000000000016830833092421413,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 49.845833277214716,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4846,15 +4930,21 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                       {
                         "n": 17.22059756513261,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 34.80477969331079,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4944,15 +5034,21 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                       {
                         "n": 17.22059756513262,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0000000000000000000000000000000000000000000000000000000000046672614583958563,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4962,15 +5058,21 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                       {
                         "n": -0.00000000000000000000420770827310535,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0000000000000000000000000000000000000000000000000000000000035782337847701565,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5060,15 +5162,21 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                       {
                         "n": 17.22059756513262,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 34.80477969331079,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5078,15 +5186,21 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                       {
                         "n": 17.22059756513262,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.000000000000000000000000000000000000000000000000000000000009334522916791713,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5176,15 +5290,21 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                       {
                         "n": -0.0000000000000000000084154165462107,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0000000000000000000000000000000000000000000000000000000000049784122222889134,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5194,15 +5314,21 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                       {
                         "n": -0.000000000000000000012623124819316055,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 49.845833277214716,
                         "ty": {
-                          "type": "Length",
-                          "value": "mm"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
