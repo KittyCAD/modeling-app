@@ -1429,7 +1429,9 @@ impl ExecState {
         program: &Node<Program>,
         import_range: Option<SourceRange>,
     ) -> Result<(), KclError> {
-        if !matches!(path, ModulePath::Local { .. }) {
+        if !path.is_local() {
+            // stdlib is exempt from the restriction, and `Main` is the version
+            // we're checking against.
             return Ok(());
         }
         let Some((declared, declared_range)) = declared_kcl_version(program)? else {
