@@ -1,5 +1,6 @@
 import type { UnitArea, UnitVolume } from '@kittycad/lib'
 import type { Artifact } from '@src/lang/std/artifactGraph'
+import type { ArtifactGraph } from '@src/lang/wasm'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { describe, expect, it } from 'vitest'
 import {
@@ -36,6 +37,47 @@ describe('MeasurementTool helpers', () => {
     return value as Artifact
   }
 
+  function sweepArtifact(value: {
+    id: string
+    pathId: string
+    subType: Extract<Artifact, { type: 'sweep' }>['subType']
+  }): Extract<Artifact, { type: 'sweep' }> {
+    return {
+      ...value,
+      type: 'sweep',
+      surfaceIds: [],
+      edgeIds: [],
+      codeRef: {
+        range: [0, 1, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+      trajectoryId: null,
+      method: 'new',
+      consumed: false,
+    }
+  }
+
+  function pathArtifact(value: {
+    id: string
+    sweepId?: string | null
+  }): Extract<Artifact, { type: 'path' }> {
+    return {
+      ...value,
+      type: 'path',
+      subType: 'sketch',
+      planeId: 'plane-id',
+      segIds: [],
+      trajectorySweepId: null,
+      consumed: false,
+      codeRef: {
+        range: [0, 1, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+    }
+  }
+
   function patternArtifact(value: {
     id: string
     copyIds: string[]
@@ -46,6 +88,10 @@ describe('MeasurementTool helpers', () => {
       ...value,
       type: 'pattern',
     } as Artifact
+  }
+
+  function graph(...artifacts: Artifact[]): ArtifactGraph {
+    return new Map(artifacts.map((artifact) => [artifact.id, artifact]))
   }
 
   it('resolves graph selections to engine entity ids', () => {
@@ -156,6 +202,136 @@ describe('MeasurementTool helpers', () => {
       { id: 'body-id', kind: 'body' },
       { id: 'face-id', kind: 'face' },
       { id: 'edge-id', kind: 'edge' },
+    ])
+  })
+
+  it('routes original swept body selections to engine object ids', () => {
+    const path = pathArtifact({ id: 'engine-body-id', sweepId: 'sweep-id' })
+    const sweep = sweepArtifact({
+      id: 'sweep-id',
+      pathId: path.id,
+      subType: 'extrusion',
+    })
+    const selections: Selections = {
+      graphSelections: [
+        {
+          artifact: sweep,
+          codeRef: sweep.codeRef,
+        },
+      ],
+      otherSelections: [],
+    }
+
+    expect(getMeasurementEntities(selections, graph(path, sweep))).toEqual([
+      { id: 'engine-body-id', kind: 'body' },
+    ])
+  })
+
+  it('keeps loft body selections on the artifact id domain', () => {
+    const path = pathArtifact({ id: 'loft-profile-id', sweepId: 'loft-id' })
+    const loft = sweepArtifact({
+      id: 'loft-id',
+      pathId: path.id,
+      subType: 'loft',
+    })
+    const selections: Selections = {
+      graphSelections: [
+        {
+          artifact: loft,
+          codeRef: loft.codeRef,
+        },
+      ],
+      otherSelections: [],
+    }
+
+    expect(getMeasurementEntities(selections, graph(path, loft))).toEqual([
+      { id: 'loft-id', kind: 'body' },
+    ])
+  })
+
+  it('does not route mirrored swept bodies through the source path id', () => {
+    const sourcePath = pathArtifact({
+      id: 'source-engine-body-id',
+      sweepId: 'source-sweep-id',
+    })
+    const mirroredSweep = sweepArtifact({
+      id: 'mirrored-engine-body-id',
+      pathId: sourcePath.id,
+      subType: 'extrusion',
+    })
+    const selections: Selections = {
+      graphSelections: [
+        {
+          artifact: mirroredSweep,
+          codeRef: mirroredSweep.codeRef,
+        },
+      ],
+      otherSelections: [],
+    }
+
+    expect(
+      getMeasurementEntities(selections, graph(sourcePath, mirroredSweep))
+    ).toEqual([{ id: 'mirrored-engine-body-id', kind: 'body' }])
+  })
+
+  it('routes pattern source rows through their source sweep bridge', () => {
+    const sourcePath = pathArtifact({
+      id: 'source-engine-body-id',
+      sweepId: 'source-sweep-id',
+    })
+    const sourceSweep = sweepArtifact({
+      id: 'source-sweep-id',
+      pathId: sourcePath.id,
+      subType: 'extrusion',
+    })
+    const pattern = patternArtifact({
+      id: 'pattern-id',
+      copyIds: ['copy-body-id'],
+      copyFaceIds: [],
+      copyEdgeIds: [],
+    })
+    const selections: Selections = {
+      graphSelections: [
+        {
+          artifact: pattern,
+          engineEntityId: sourceSweep.id,
+          codeRef: sourceSweep.codeRef,
+        },
+      ],
+      otherSelections: [],
+    }
+
+    expect(
+      getMeasurementEntities(
+        selections,
+        graph(sourcePath, sourceSweep, pattern)
+      )
+    ).toEqual([{ id: 'source-engine-body-id', kind: 'body' }])
+  })
+
+  it('keeps pattern copy rows on their copy engine object id', () => {
+    const pattern = patternArtifact({
+      id: 'pattern-id',
+      copyIds: ['copy-body-id'],
+      copyFaceIds: [],
+      copyEdgeIds: [],
+    })
+    const selections: Selections = {
+      graphSelections: [
+        {
+          artifact: pattern,
+          engineEntityId: 'copy-body-id',
+          codeRef: {
+            range: [0, 1, 0],
+            pathToNode: [],
+          },
+        },
+      ],
+      otherSelections: [],
+    }
+
+    expect(getMeasurementEntities(selections, graph(pattern))).toEqual([
+      { id: 'copy-body-id', kind: 'body' },
     ])
   })
 

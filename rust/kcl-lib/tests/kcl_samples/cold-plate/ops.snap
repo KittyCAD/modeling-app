@@ -7413,7 +7413,7 @@ description: Operations executed cold-plate.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -7443,7 +7443,7 @@ description: Operations executed cold-plate.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "bae7e631-b71d-5980-89ea-29b2140a8a32"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -7492,7 +7492,7 @@ description: Operations executed cold-plate.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "94e50507-a449-5f71-8fce-fd2931e7c6c9"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -7517,7 +7517,7 @@ description: Operations executed cold-plate.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -13493,7 +13493,7 @@ description: Operations executed cold-plate.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "5d2a2786-5258-5364-b1b2-b28334229017"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -13523,7 +13523,7 @@ description: Operations executed cold-plate.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -13572,7 +13572,7 @@ description: Operations executed cold-plate.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "cb96bce2-64b3-5697-9ac4-41978548d779"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -13663,25 +13663,25 @@ description: Operations executed cold-plate.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "cb96bce2-64b3-5697-9ac4-41978548d779"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "be0592ee-a1e3-547d-9a8c-9c3702a9acf2"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "3edc8b0a-c205-55ac-9e46-2b51deaeab65"
+                "artifactId": "[uuid]"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "9e05a952-badd-5a9c-897b-a46d38793558"
+                "artifactId": "[uuid]"
               }
             }
           ]
@@ -13720,7 +13720,7 @@ description: Operations executed cold-plate.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "3322387d-5b58-56ea-8103-4d2112d432af"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -13745,7 +13745,7 @@ description: Operations executed cold-plate.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -14862,7 +14862,7 @@ description: Operations executed cold-plate.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "29fea619-5b87-50e6-8f7f-c8ae57816964"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -14892,7 +14892,7 @@ description: Operations executed cold-plate.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "bcea99ab-ad5b-5250-892e-7591c3803c32"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -14904,31 +14904,31 @@ description: Operations executed cold-plate.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "0807f469-38fd-5e01-a326-82a66aa0f1d0"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "0616b09c-75f9-545b-bd98-b7fbaf5b3587"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "d4559fd3-915b-52c0-aaa4-3c74444e5f37"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "ae192af4-cbf2-5f1b-a2e5-767390f86588"
+                "artifact_id": "[uuid]"
               },
               {
                 "type": "Segment",
-                "artifact_id": "95b7331f-664e-5be5-b9c0-fdd7570bf701"
+                "artifact_id": "[uuid]"
               }
             ]
           },
@@ -14958,7 +14958,7 @@ description: Operations executed cold-plate.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "b1cdf7ed-6958-5e8e-89b9-a5267c842343"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -14995,7 +14995,7 @@ description: Operations executed cold-plate.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "d1e38581-6d4a-5346-9b30-84adae73d10c"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -15021,7 +15021,7 @@ description: Operations executed cold-plate.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -15139,7 +15139,7 @@ description: Operations executed cold-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -15163,7 +15163,7 @@ description: Operations executed cold-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -15187,7 +15187,7 @@ description: Operations executed cold-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -15211,7 +15211,7 @@ description: Operations executed cold-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -15235,7 +15235,7 @@ description: Operations executed cold-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -15259,7 +15259,7 @@ description: Operations executed cold-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -15283,7 +15283,7 @@ description: Operations executed cold-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -15307,7 +15307,7 @@ description: Operations executed cold-plate.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

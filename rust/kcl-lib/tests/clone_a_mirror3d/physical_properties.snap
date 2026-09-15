@@ -7,12 +7,12 @@ description: Physical properties clone_a_mirror3d.kcl
     "center": {
       "x": 50.0,
       "y": 0.0,
-      "z": 0.0
+      "z": 1.3799999999999997
     },
     "dimensions": {
       "x": 100.0,
-      "y": 100.0,
-      "z": 100.0
+      "y": 2.7491264066972265,
+      "z": 2.749126406697226
     },
     "unit": "mm"
   },

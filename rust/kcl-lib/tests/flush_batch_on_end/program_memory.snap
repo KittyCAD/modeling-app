@@ -26,11 +26,11 @@ description: Variables in memory after executing flush_batch_on_end.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -61,8 +61,8 @@ description: Variables in memory after executing flush_batch_on_end.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
-        "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "XY",
         "origin": {
@@ -102,7 +102,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -112,8 +112,8 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           "value": "arc001"
         }
       },
-      "artifactId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
-      "originalId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "in",
       "isClosed": "explicitly"
     }
@@ -140,11 +140,11 @@ description: Variables in memory after executing flush_batch_on_end.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -175,8 +175,8 @@ description: Variables in memory after executing flush_batch_on_end.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
-        "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "XY",
         "origin": {
@@ -216,7 +216,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -230,8 +230,8 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           "value": "arc001"
         }
       },
-      "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "in",
       "isClosed": "explicitly"
     }
@@ -240,14 +240,14 @@ description: Variables in memory after executing flush_batch_on_end.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "topologyId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "artifactId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "14aa04e6-93c1-5d43-9d42-89ba1278654b",
-          "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 360,
@@ -260,8 +260,8 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "4cb02b26-137b-5339-8840-f65819fcbdd8",
-          "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 515,
@@ -277,11 +277,11 @@ description: Variables in memory after executing flush_batch_on_end.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -313,7 +313,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         "innerPaths": [
           {
             "__geoMeta": {
-              "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -344,8 +344,8 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
-          "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "XY",
           "origin": {
@@ -385,7 +385,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -399,13 +399,13 @@ description: Variables in memory after executing flush_batch_on_end.kcl
             "value": "arc001"
           }
         },
-        "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-        "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "in",
         "isClosed": "explicitly"
       },
-      "startCapId": "c5fc6fc5-f2b3-5ae1-abd7-bdd3d741632d",
-      "endCapId": "9b090b71-4f72-5fe6-b0fd-a299f67a4d05",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "in",
       "sectional": false
     }
@@ -414,11 +414,11 @@ description: Variables in memory after executing flush_batch_on_end.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -450,7 +450,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
       "innerPaths": [
         {
           "__geoMeta": {
-            "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -481,8 +481,8 @@ description: Variables in memory after executing flush_batch_on_end.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
-        "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "XY",
         "origin": {
@@ -522,7 +522,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -536,8 +536,8 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           "value": "arc001"
         }
       },
-      "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "in",
       "isClosed": "explicitly"
     }
@@ -545,8 +545,8 @@ description: Variables in memory after executing flush_batch_on_end.kcl
   "sketch000": {
     "type": "Plane",
     "value": {
-      "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
-      "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "objectId": 0,
       "kind": "XY",
       "origin": {

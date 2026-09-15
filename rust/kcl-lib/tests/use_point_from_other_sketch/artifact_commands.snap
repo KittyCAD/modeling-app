@@ -5,7 +5,7 @@ description: Artifact commands use_point_from_other_sketch.kcl
 {
   "rust/kcl-lib/tests/use_point_from_other_sketch/input.kcl": [
     {
-      "cmdId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,7 +30,7 @@ description: Artifact commands use_point_from_other_sketch.kcl
       }
     },
     {
-      "cmdId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -55,20 +55,20 @@ description: Artifact commands use_point_from_other_sketch.kcl
       }
     },
     {
-      "cmdId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+        "object_id": "[uuid]",
         "hidden": true
       }
     },
     {
-      "cmdId": "59bc8baf-257f-5783-ad91-95db236aa6b0",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+        "entity_id": "[uuid]",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -80,18 +80,18 @@ description: Artifact commands use_point_from_other_sketch.kcl
       }
     },
     {
-      "cmdId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "037b0f2d-13ef-58af-b918-43b89e77393e",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+        "path": "[uuid]",
         "to": {
           "x": 0.0,
           "y": 0.0,
@@ -100,18 +100,18 @@ description: Artifact commands use_point_from_other_sketch.kcl
       }
     },
     {
-      "cmdId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+      "cmdId": "[uuid]",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+        "path": "[uuid]",
         "segment": {
           "type": "line",
           "end": {

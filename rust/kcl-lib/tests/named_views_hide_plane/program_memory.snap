@@ -6,8 +6,8 @@ description: Variables in memory after executing named_views_hide_plane.kcl
   "__sketch_3_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
-      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -44,7 +44,7 @@ description: Variables in memory after executing named_views_hide_plane.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+                "id": "[uuid]",
                 "objectId": 6,
                 "kind": {
                   "line": {
@@ -118,8 +118,8 @@ description: Variables in memory after executing named_views_hide_plane.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
-                  "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 2,
                   "origin": {
@@ -148,7 +148,7 @@ description: Variables in memory after executing named_views_hide_plane.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -164,7 +164,7 @@ description: Variables in memory after executing named_views_hide_plane.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+                "id": "[uuid]",
                 "objectId": 9,
                 "kind": {
                   "line": {
@@ -238,8 +238,8 @@ description: Variables in memory after executing named_views_hide_plane.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
-                  "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 2,
                   "origin": {
@@ -268,7 +268,7 @@ description: Variables in memory after executing named_views_hide_plane.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -284,7 +284,7 @@ description: Variables in memory after executing named_views_hide_plane.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+                "id": "[uuid]",
                 "objectId": 12,
                 "kind": {
                   "line": {
@@ -358,8 +358,8 @@ description: Variables in memory after executing named_views_hide_plane.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
-                  "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 2,
                   "origin": {
@@ -388,7 +388,7 @@ description: Variables in memory after executing named_views_hide_plane.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -404,7 +404,7 @@ description: Variables in memory after executing named_views_hide_plane.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
+                "id": "[uuid]",
                 "objectId": 15,
                 "kind": {
                   "line": {
@@ -478,8 +478,8 @@ description: Variables in memory after executing named_views_hide_plane.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
-                  "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 2,
                   "origin": {
@@ -508,7 +508,7 @@ description: Variables in memory after executing named_views_hide_plane.kcl
                     "units": null
                   }
                 },
-                "sketchId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -525,11 +525,11 @@ description: Variables in memory after executing named_views_hide_plane.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -553,7 +553,7 @@ description: Variables in memory after executing named_views_hide_plane.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -577,7 +577,7 @@ description: Variables in memory after executing named_views_hide_plane.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -601,7 +601,7 @@ description: Variables in memory after executing named_views_hide_plane.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -626,8 +626,8 @@ description: Variables in memory after executing named_views_hide_plane.kcl
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
-                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 2,
                 "kind": "Custom",
                 "origin": {
@@ -667,7 +667,7 @@ description: Variables in memory after executing named_views_hide_plane.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -689,8 +689,8 @@ description: Variables in memory after executing named_views_hide_plane.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
-              "originalId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -705,14 +705,14 @@ description: Variables in memory after executing named_views_hide_plane.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
-      "originalId": "037b0f2d-13ef-58af-b918-43b89e77393e",
-      "topologyId": "037b0f2d-13ef-58af-b918-43b89e77393e",
-      "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
-          "id": "eb116575-1f8f-50df-810e-a61970915fe0",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 431,
@@ -725,8 +725,8 @@ description: Variables in memory after executing named_views_hide_plane.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
-          "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 494,
@@ -739,8 +739,8 @@ description: Variables in memory after executing named_views_hide_plane.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "00f8003d-3b65-5f10-b911-9092660fca40",
-          "id": "b44bf383-a793-5eea-8d35-f68ef319f015",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 558,
@@ -753,8 +753,8 @@ description: Variables in memory after executing named_views_hide_plane.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "092755e4-e002-58b9-a194-69b526ae6929",
-          "id": "983e53e7-634c-5fce-b7ed-378db54ddfe3",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 623,
@@ -770,11 +770,11 @@ description: Variables in memory after executing named_views_hide_plane.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "eb116575-1f8f-50df-810e-a61970915fe0",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -798,7 +798,7 @@ description: Variables in memory after executing named_views_hide_plane.kcl
           },
           {
             "__geoMeta": {
-              "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -822,7 +822,7 @@ description: Variables in memory after executing named_views_hide_plane.kcl
           },
           {
             "__geoMeta": {
-              "id": "b44bf383-a793-5eea-8d35-f68ef319f015",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -846,7 +846,7 @@ description: Variables in memory after executing named_views_hide_plane.kcl
           },
           {
             "__geoMeta": {
-              "id": "983e53e7-634c-5fce-b7ed-378db54ddfe3",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -871,8 +871,8 @@ description: Variables in memory after executing named_views_hide_plane.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
-          "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 2,
           "kind": "Custom",
           "origin": {
@@ -912,7 +912,7 @@ description: Variables in memory after executing named_views_hide_plane.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -934,13 +934,13 @@ description: Variables in memory after executing named_views_hide_plane.kcl
             "value": "line4"
           }
         },
-        "artifactId": "037b0f2d-13ef-58af-b918-43b89e77393e",
-        "originalId": "037b0f2d-13ef-58af-b918-43b89e77393e",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "b7cee757-9586-5711-ac1f-23ae3176eed2",
-      "endCapId": "e58c05cf-4ab8-5040-845d-4784b2b33e70",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -948,8 +948,8 @@ description: Variables in memory after executing named_views_hide_plane.kcl
   "planeHidden": {
     "type": "Plane",
     "value": {
-      "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "objectId": 1,
       "kind": "Custom",
       "origin": {
@@ -981,8 +981,8 @@ description: Variables in memory after executing named_views_hide_plane.kcl
   "planeVisible": {
     "type": "Plane",
     "value": {
-      "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-      "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "objectId": 0,
       "kind": "Custom",
       "origin": {

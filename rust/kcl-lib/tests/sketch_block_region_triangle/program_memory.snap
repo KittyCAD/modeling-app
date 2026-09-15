@@ -6,8 +6,8 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
-      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -39,11 +39,11 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "b3a327ba-a286-5e82-8eb4-ed878dab91fb",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -67,7 +67,7 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
         },
         {
           "__geoMeta": {
-            "id": "126498f1-2635-5500-bf0d-757df8fb0e18",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -91,7 +91,7 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
         },
         {
           "__geoMeta": {
-            "id": "bc451185-b0ef-5ce1-9c08-46bf9b850559",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -116,8 +116,8 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
       ],
       "on": {
         "type": "plane",
-        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "Custom",
         "origin": {
@@ -157,7 +157,7 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "f084ad07-5777-5607-a544-c69f455c2aab",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -175,8 +175,8 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
           "value": "line3"
         }
       },
-      "artifactId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
-      "originalId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -190,7 +190,7 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
           "repr": {
             "Solved": {
               "segment": {
-                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "id": "[uuid]",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -264,8 +264,8 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -294,7 +294,7 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
                     "units": null
                   }
                 },
-                "sketchId": "41c630c9-9d44-581b-98af-caee575bea48",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -310,7 +310,7 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
           "repr": {
             "Solved": {
               "segment": {
-                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                "id": "[uuid]",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -384,8 +384,8 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -414,7 +414,7 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
                     "units": null
                   }
                 },
-                "sketchId": "41c630c9-9d44-581b-98af-caee575bea48",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -430,7 +430,7 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
           "repr": {
             "Solved": {
               "segment": {
-                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                "id": "[uuid]",
                 "objectId": 11,
                 "kind": {
                   "line": {
@@ -504,8 +504,8 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
                   }
                 },
                 "surface": {
-                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -534,7 +534,7 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
                     "units": null
                   }
                 },
-                "sketchId": "41c630c9-9d44-581b-98af-caee575bea48",
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -551,11 +551,11 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "41c630c9-9d44-581b-98af-caee575bea48",
+              "id": "[uuid]",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -579,7 +579,7 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
                 },
                 {
                   "__geoMeta": {
-                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -603,7 +603,7 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
                 },
                 {
                   "__geoMeta": {
-                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+                    "id": "[uuid]",
                     "sourceRange": []
                   },
                   "from": [
@@ -628,8 +628,8 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
               ],
               "on": {
                 "type": "plane",
-                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
-                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
                 "objectId": 0,
                 "kind": "Custom",
                 "origin": {
@@ -669,7 +669,7 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "f084ad07-5777-5607-a544-c69f455c2aab",
+                  "id": "[uuid]",
                   "sourceRange": []
                 }
               },
@@ -687,8 +687,8 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
                   "value": "line3"
                 }
               },
-              "artifactId": "41c630c9-9d44-581b-98af-caee575bea48",
-              "originalId": "41c630c9-9d44-581b-98af-caee575bea48",
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
               "units": "mm",
               "isClosed": "implicitly"
             }

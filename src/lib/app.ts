@@ -39,7 +39,6 @@ import {
   buildZookeeperHistoryExtension,
   type PreparedZookeeperPatchFileReplay,
 } from '@src/lib/zookeeper/editorPlugin'
-import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
 import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
 import {
@@ -157,10 +156,6 @@ export type AppLayoutSystem = LayoutService
 
 export type AppRegistrySystem = Registry
 
-export type AppDebug = {
-  zookeeperManagerActor?: ZookeeperManagerActor
-}
-
 /** All of the subsystems needed to run the ZDS app */
 export interface AppSubsystems {
   wasmPromise: Promise<ModuleType>
@@ -186,7 +181,6 @@ export class App implements AppSubsystems {
   public get currentProjectLibraryIdSignal(): Signal<string | undefined> {
     return this.projectSession.currentProjectLibraryId
   }
-  public debug: AppDebug = {}
   get project() {
     return this.projectSession.getProject()
   }

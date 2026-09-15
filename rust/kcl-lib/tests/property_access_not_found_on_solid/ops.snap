@@ -35,7 +35,7 @@ description: Operations executed property_access_not_found_on_solid.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       },
@@ -77,7 +77,7 @@ description: Operations executed property_access_not_found_on_solid.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": []
@@ -235,7 +235,7 @@ description: Operations executed property_access_not_found_on_solid.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -259,7 +259,7 @@ description: Operations executed property_access_not_found_on_solid.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -283,7 +283,7 @@ description: Operations executed property_access_not_found_on_solid.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -307,7 +307,7 @@ description: Operations executed property_access_not_found_on_solid.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -331,7 +331,7 @@ description: Operations executed property_access_not_found_on_solid.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -355,7 +355,7 @@ description: Operations executed property_access_not_found_on_solid.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -379,7 +379,7 @@ description: Operations executed property_access_not_found_on_solid.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -403,7 +403,7 @@ description: Operations executed property_access_not_found_on_solid.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

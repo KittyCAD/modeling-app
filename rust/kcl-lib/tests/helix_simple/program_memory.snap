@@ -11,8 +11,8 @@ description: Variables in memory after executing helix_simple.kcl
   "helixPath": {
     "type": "Helix",
     "value": {
-      "value": "89316223-2ea1-5731-9c72-0492bc30fbe2",
-      "artifactId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+      "value": "[uuid]",
+      "artifactId": "[uuid]",
       "revolutions": 5.0,
       "angleStart": 0.0,
       "ccw": true,
@@ -24,11 +24,11 @@ description: Variables in memory after executing helix_simple.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -53,8 +53,8 @@ description: Variables in memory after executing helix_simple.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
-        "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "XZ",
         "origin": {
@@ -94,7 +94,7 @@ description: Variables in memory after executing helix_simple.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -104,8 +104,8 @@ description: Variables in memory after executing helix_simple.kcl
           "value": "edge001"
         }
       },
-      "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "no"
     }

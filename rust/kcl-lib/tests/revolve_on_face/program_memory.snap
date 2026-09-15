@@ -7,28 +7,28 @@ description: Variables in memory after executing revolve_on_face.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
-      "originalId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
-      "topologyId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
-      "artifactId": "f084ad07-5777-5607-a544-c69f455c2aab",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "3c283d18-d39d-5a65-9360-9f847fcb9bf8",
-          "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "3646813c-9c6a-5163-aa9d-b7cc6e22b15f",
-          "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "544977ad-458e-5b27-aac3-457f8aa7b557",
-          "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
@@ -37,11 +37,11 @@ description: Variables in memory after executing revolve_on_face.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -58,7 +58,7 @@ description: Variables in memory after executing revolve_on_face.kcl
           },
           {
             "__geoMeta": {
-              "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": false,
@@ -81,7 +81,7 @@ description: Variables in memory after executing revolve_on_face.kcl
           },
           {
             "__geoMeta": {
-              "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "from": [
@@ -99,8 +99,8 @@ description: Variables in memory after executing revolve_on_face.kcl
         ],
         "on": {
           "type": "face",
-          "id": "cd65f73d-2282-5b22-8533-f78e6a5bb5ca",
-          "artifactId": "cd65f73d-2282-5b22-8533-f78e6a5bb5ca",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
           "objectId": 1,
           "value": "end002",
           "xAxis": {
@@ -116,8 +116,8 @@ description: Variables in memory after executing revolve_on_face.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-            "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+            "solidId": "[uuid]",
+            "creatorSketchId": "[uuid]",
             "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
@@ -134,12 +134,12 @@ description: Variables in memory after executing revolve_on_face.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
-        "artifactId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
-        "originalId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
@@ -153,11 +153,11 @@ description: Variables in memory after executing revolve_on_face.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -174,7 +174,7 @@ description: Variables in memory after executing revolve_on_face.kcl
         },
         {
           "__geoMeta": {
-            "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": false,
@@ -197,7 +197,7 @@ description: Variables in memory after executing revolve_on_face.kcl
         },
         {
           "__geoMeta": {
-            "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "from": [
@@ -215,8 +215,8 @@ description: Variables in memory after executing revolve_on_face.kcl
       ],
       "on": {
         "type": "face",
-        "id": "cd65f73d-2282-5b22-8533-f78e6a5bb5ca",
-        "artifactId": "cd65f73d-2282-5b22-8533-f78e6a5bb5ca",
+        "id": "[uuid]",
+        "artifactId": "[uuid]",
         "objectId": 1,
         "value": "end002",
         "xAxis": {
@@ -232,8 +232,8 @@ description: Variables in memory after executing revolve_on_face.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-          "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "solidId": "[uuid]",
+          "creatorSketchId": "[uuid]",
           "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
@@ -250,12 +250,12 @@ description: Variables in memory after executing revolve_on_face.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
-      "artifactId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
-      "originalId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }
@@ -269,21 +269,21 @@ description: Variables in memory after executing revolve_on_face.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "topologyId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "artifactId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+      "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
+      "artifactId": "[uuid]",
       "value": [
         {
-          "faceId": "de06675a-22ea-58f0-8413-18c53d9c17f9",
-          "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "cd65f73d-2282-5b22-8533-f78e6a5bb5ca",
-          "id": "cd65f73d-2282-5b22-8533-f78e6a5bb5ca",
+          "faceId": "[uuid]",
+          "id": "[uuid]",
           "sourceRange": [],
           "tag": {
             "commentStart": 166,
@@ -305,11 +305,11 @@ description: Variables in memory after executing revolve_on_face.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "id": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
-              "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+              "id": "[uuid]",
               "sourceRange": []
             },
             "ccw": true,
@@ -333,8 +333,8 @@ description: Variables in memory after executing revolve_on_face.kcl
         ],
         "on": {
           "type": "plane",
-          "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
-          "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "XY",
           "origin": {
@@ -374,7 +374,7 @@ description: Variables in memory after executing revolve_on_face.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+            "id": "[uuid]",
             "sourceRange": []
           }
         },
@@ -384,13 +384,13 @@ description: Variables in memory after executing revolve_on_face.kcl
             "value": "end002"
           }
         },
-        "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-        "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": "7ad5aaba-f48b-5c69-9ae4-5f1455b2fd8e",
-      "endCapId": "cd65f73d-2282-5b22-8533-f78e6a5bb5ca",
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -399,11 +399,11 @@ description: Variables in memory after executing revolve_on_face.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "id": "[uuid]",
       "paths": [
         {
           "__geoMeta": {
-            "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
+            "id": "[uuid]",
             "sourceRange": []
           },
           "ccw": true,
@@ -427,8 +427,8 @@ description: Variables in memory after executing revolve_on_face.kcl
       ],
       "on": {
         "type": "plane",
-        "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
-        "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
         "objectId": 0,
         "kind": "XY",
         "origin": {
@@ -468,7 +468,7 @@ description: Variables in memory after executing revolve_on_face.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+          "id": "[uuid]",
           "sourceRange": []
         }
       },
@@ -478,8 +478,8 @@ description: Variables in memory after executing revolve_on_face.kcl
           "value": "end002"
         }
       },
-      "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
-      "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
       "units": "mm",
       "isClosed": "explicitly"
     }

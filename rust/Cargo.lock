@@ -110,7 +110,7 @@ version = "1.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "40c48f72fd53cd289104fc64099abca73db4166ad86ea0b4341abe65af83dadc"
 dependencies = [
- "windows-sys 0.61.2",
+ "windows-sys 0.60.2",
 ]
 
 [[package]]
@@ -121,7 +121,7 @@ checksum = "291e6a250ff86cd4a820112fb8898808a366d8f9f58ce16d1f538353ad55747d"
 dependencies = [
  "anstyle",
  "once_cell_polyfill",
- "windows-sys 0.61.2",
+ "windows-sys 0.60.2",
 ]
 
 [[package]]
@@ -189,7 +189,7 @@ checksum = "82f6aeea286b8eb4dd3431a1be1b59d290ace00f5bfd8e2a159bc2a05e2c1667"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 3.0.4",
+ "syn 3.0.5",
 ]
 
 [[package]]
@@ -351,7 +351,7 @@ dependencies = [
  "prettyplease 0.3.0",
  "proc-macro2",
  "quote",
- "syn 3.0.4",
+ "syn 3.0.5",
 ]
 
 [[package]]
@@ -556,7 +556,7 @@ dependencies = [
  "heck",
  "proc-macro2",
  "quote",
- "syn 3.0.4",
+ "syn 3.0.5",
 ]
 
 [[package]]
@@ -889,7 +889,7 @@ dependencies = [
  "proc-macro2",
  "quote",
  "strsim",
- "syn 3.0.4",
+ "syn 3.0.5",
 ]
 
 [[package]]
@@ -922,7 +922,7 @@ checksum = "2ac7135c3ef02b2f7833bbeb1be5ba7f966dcde8a87c6b87f65a778d71a02785"
 dependencies = [
  "darling_core 0.24.1",
  "quote",
- "syn 3.0.4",
+ "syn 3.0.5",
 ]
 
 [[package]]
@@ -1212,7 +1212,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "39cab71617ae0d63f51a36d69f866391735b51691dbda63cf6f96d042b63efeb"
 dependencies = [
  "libc",
- "windows-sys 0.61.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -1430,7 +1430,7 @@ checksum = "9fb9654ba8355388abeb8dcb4fc62f511300867002afc858860463bdd9fe0c44"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 3.0.4",
+ "syn 3.0.5",
 ]
 
 [[package]]
@@ -2269,7 +2269,7 @@ checksum = "3640c1c38b8e4e43584d8df18be5fc6b0aa314ce6ebf51b53313d4306cca8e46"
 dependencies = [
  "hermit-abi",
  "libc",
- "windows-sys 0.61.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -2351,7 +2351,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-api"
-version = "0.2.182"
+version = "0.2.184"
 dependencies = [
  "arbitrary",
  "euler",
@@ -2372,7 +2372,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-bumper"
-version = "0.1.182"
+version = "0.1.184"
 dependencies = [
  "anyhow",
  "clap",
@@ -2383,26 +2383,26 @@ dependencies = [
 
 [[package]]
 name = "kcl-derive-docs"
-version = "0.2.182"
+version = "0.2.184"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 3.0.4",
+ "syn 3.0.5",
 ]
 
 [[package]]
 name = "kcl-directory-test-macro"
-version = "0.1.182"
+version = "0.1.184"
 dependencies = [
  "convert_case",
  "proc-macro2",
  "quote",
- "syn 3.0.4",
+ "syn 3.0.5",
 ]
 
 [[package]]
 name = "kcl-engine-codec"
-version = "0.2.182"
+version = "0.2.184"
 dependencies = [
  "kittycad-modeling-cmds",
  "rmp-serde",
@@ -2411,7 +2411,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-error"
-version = "0.2.182"
+version = "0.2.184"
 dependencies = [
  "miette",
  "pyo3",
@@ -2424,7 +2424,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server"
-version = "0.2.182"
+version = "0.2.184"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2455,7 +2455,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server-release"
-version = "0.1.182"
+version = "0.1.184"
 dependencies = [
  "anyhow",
  "clap",
@@ -2475,7 +2475,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.182"
+version = "0.2.184"
 dependencies = [
  "ahash",
  "anyhow",
@@ -2557,7 +2557,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-python-bindings"
-version = "0.3.182"
+version = "0.3.184"
 dependencies = [
  "anyhow",
  "kcl-api",
@@ -2574,7 +2574,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-syntax"
-version = "0.2.182"
+version = "0.2.184"
 dependencies = [
  "logos",
  "proptest",
@@ -2582,7 +2582,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.2.182"
+version = "0.2.184"
 dependencies = [
  "anyhow",
  "hyper 0.14.32",
@@ -2595,7 +2595,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-wasm-lib"
-version = "0.1.182"
+version = "0.1.184"
 dependencies = [
  "anyhow",
  "console_error_panic_hook",
@@ -2671,9 +2671,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.226"
+version = "0.2.232"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0ffff04fdb1e477bb9f81a0d2c1ae3e50f64a03ae95d9929a5b20e7833f2c9f3"
+checksum = "34dbb766dcf2e5363a405f8b5abe43dd20e6e2741e6e5029926e3c822c9097d8"
 dependencies = [
  "anyhow",
  "bon",
@@ -3156,7 +3156,7 @@ version = "0.50.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7957b9740744892f114936ab4a57b3f487491bbeafaf8083688b16841a4240e5"
 dependencies = [
- "windows-sys 0.61.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -3721,7 +3721,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2bfe0f4c752e450fc2faf62654f1c134747922825d5b04ca717b8874f41a40c0"
 dependencies = [
  "proc-macro2",
- "syn 3.0.4",
+ "syn 3.0.5",
 ]
 
 [[package]]
@@ -3755,7 +3755,7 @@ dependencies = [
  "proc-macro-error-attr3",
  "proc-macro2",
  "quote",
- "syn 3.0.4",
+ "syn 3.0.5",
 ]
 
 [[package]]
@@ -4404,7 +4404,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys 0.12.1",
- "windows-sys 0.61.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -4695,7 +4695,7 @@ checksum = "e7a5d71263a5a7d47b41f6b3f06ba276f10cc18b0931f1799f710578e2309348"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 3.0.4",
+ "syn 3.0.5",
 ]
 
 [[package]]
@@ -4981,7 +4981,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3a766e1110788c36f4fa1c2b71b387a7815aa65f88ce0229841826633d93723e"
 dependencies = [
  "libc",
- "windows-sys 0.61.2",
+ "windows-sys 0.60.2",
 ]
 
 [[package]]
@@ -5121,9 +5121,9 @@ dependencies = [
 
 [[package]]
 name = "syn"
-version = "3.0.4"
+version = "3.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e6275cddf4610d1775e6d1fe9469b2e77d0f39fd98fb7450901b821e0c53649f"
+checksum = "12df2e0110f65b775f769bb17ef989067a1d931b2eb822bd4346631eeada89f9"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -5186,7 +5186,7 @@ dependencies = [
  "getrandom 0.4.1",
  "once_cell",
  "rustix 1.1.4",
- "windows-sys 0.61.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -5195,7 +5195,7 @@ version = "1.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d8c27177b12a6399ffc08b98f76f7c9a1f4fe9fc967c784c5a071fa8d93cf7e1"
 dependencies = [
- "windows-sys 0.61.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -5264,7 +5264,7 @@ checksum = "bc04cd3e1236dd4a98afca4569f2deb3f120e5422a4023be2cb683f8486292af"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 3.0.4",
+ "syn 3.0.5",
 ]
 
 [[package]]
@@ -5426,9 +5426,9 @@ dependencies = [
 
 [[package]]
 name = "toml"
-version = "1.1.4+spec-1.1.0"
+version = "1.1.5+spec-1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3aace63f4bbcdfc2c965b059de67119c89c4017a70d633be6c104910f67056f5"
+checksum = "12c0ba9680044b4ce98d391a62094047eada0d64860b80166c39f4a6b5640785"
 dependencies = [
  "indexmap 2.14.2",
  "serde_core",
@@ -6160,7 +6160,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.61.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
