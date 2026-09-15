@@ -26,8 +26,9 @@ pub struct RequestBody {
 /// Executes a kcl program and takes a snapshot of the result.
 /// This returns the bytes of the snapshot.
 pub async fn execute_and_snapshot(code: &str, current_file: Option<PathBuf>) -> Result<image::DynamicImage, ExecError> {
-    let ctx = new_context(true, current_file).await?;
     let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
+    let version = program.language_version().map_err(KclErrorWithOutputs::no_outputs)?;
+    let ctx = new_context(true, current_file, version).await?;
     let res = do_execute_and_snapshot(&ctx, program, None)
         .await
         .map(|(_, _, snap)| snap)
@@ -38,8 +39,9 @@ pub async fn execute_and_snapshot(code: &str, current_file: Option<PathBuf>) -> 
 
 /// Executes a KCL program. Only returns success or error.
 pub async fn execute(code: &str, current_file: Option<PathBuf>) -> Result<(), ExecError> {
-    let ctx = new_context(true, current_file).await?;
     let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
+    let version = program.language_version().map_err(KclErrorWithOutputs::no_outputs)?;
+    let ctx = new_context(true, current_file, version).await?;
     let res = do_execute(&ctx, program, None)
         .await
         .map(|_| ())
@@ -69,8 +71,9 @@ pub async fn execute_and_snapshot_3d(
     current_file: Option<PathBuf>,
     request_gltf: bool,
 ) -> Result<Snapshot3d, ExecError> {
-    let ctx = new_context(true, current_file).await?;
     let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
+    let version = program.language_version().map_err(KclErrorWithOutputs::no_outputs)?;
+    let ctx = new_context(true, current_file, version).await?;
     let image = do_execute_and_snapshot(&ctx, program, None)
         .await
         .map(|(_, _, snap)| snap)
@@ -169,7 +172,15 @@ async fn execute_and_snapshot_ast_with_heartbeats(
     ),
     ExecErrorWithState,
 > {
-    let ctx = new_context_with_heartbeats(true, current_file, heartbeats).await?;
+    let ctx = new_context_with_heartbeats(
+        true,
+        current_file,
+        heartbeats,
+        ast.language_version()
+            .map_err(KclErrorWithOutputs::no_outputs)
+            .map_err(ExecError::from)?,
+    )
+    .await?;
     let (exec_state, env, img) = match do_execute_and_snapshot(&ctx, ast, deprecation_version_override).await {
         Ok((exec_state, env_ref, img)) => (exec_state, env_ref, img),
         Err(err) => {
@@ -203,8 +214,9 @@ pub async fn execute_and_snapshot_no_auth(
     code: &str,
     current_file: Option<PathBuf>,
 ) -> Result<(image::DynamicImage, EnvironmentRef), ExecError> {
-    let ctx = new_context(false, current_file).await?;
     let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
+    let version = program.language_version().map_err(KclErrorWithOutputs::no_outputs)?;
+    let ctx = new_context(false, current_file, version).await?;
     let res = do_execute_and_snapshot(&ctx, program, None)
         .await
         .map(|(_, env_ref, snap)| (snap, env_ref))
@@ -270,14 +282,19 @@ async fn do_execute_and_snapshot(
     Ok((exec_state, env_ref, img))
 }
 
-pub async fn new_context(with_auth: bool, current_file: Option<PathBuf>) -> Result<ExecutorContext, ConnectionError> {
-    new_context_with_heartbeats(with_auth, current_file, None).await
+pub async fn new_context(
+    with_auth: bool,
+    current_file: Option<PathBuf>,
+    kcl_version: crate::KclVersion,
+) -> Result<ExecutorContext, ConnectionError> {
+    new_context_with_heartbeats(with_auth, current_file, None, kcl_version).await
 }
 
 async fn new_context_with_heartbeats(
     with_auth: bool,
     current_file: Option<PathBuf>,
     heartbeats: Option<u64>,
+    kcl_version: crate::KclVersion,
 ) -> Result<ExecutorContext, ConnectionError> {
     let mut client = new_zoo_client(if with_auth { None } else { Some("bad_token".to_string()) }, None)
         .map_err(ConnectionError::CouldNotMakeClient)?;
@@ -303,7 +320,7 @@ async fn new_context_with_heartbeats(
     if let Some(current_file) = current_file {
         settings.with_current_file(crate::TypedPath(current_file));
     }
-    let ctx = ExecutorContext::new(&client, settings)
+    let ctx = ExecutorContext::new(&client, settings, kcl_version)
         .await
         .map_err(ConnectionError::Establishing)?;
     Ok(ctx)
@@ -320,11 +337,15 @@ pub async fn execute_and_export_step(
     ),
     ExecErrorWithState,
 > {
-    let ctx = new_context(true, current_file).await?;
+    let program = Program::parse_no_errs(code)
+        .map_err(KclErrorWithOutputs::no_outputs)
+        .map_err(ExecError::from)?;
+    let version = program
+        .language_version()
+        .map_err(KclErrorWithOutputs::no_outputs)
+        .map_err(ExecError::from)?;
+    let ctx = new_context(true, current_file, version).await?;
     let mut exec_state = ExecState::new(&ctx);
-    let program = Program::parse_no_errs(code).map_err(|err| {
-        ExecErrorWithState::new(KclErrorWithOutputs::no_outputs(err).into(), exec_state.clone(), None)
-    })?;
     let result = ctx
         .run(&program, &mut exec_state)
         .await

@@ -511,7 +511,7 @@ mod test {
             );
         }
         let invalid = Program::parse_no_errs("@settings(kclVersion = 99.0)").unwrap();
-        assert!(invalid.language_version().is_err());
+        invalid.language_version().unwrap_err();
     }
 
     #[test]
