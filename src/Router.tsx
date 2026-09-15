@@ -7,6 +7,7 @@ import { MachineApiController } from '@src/components/MachineApiController'
 import ModelingMachineProvider from '@src/components/ModelingMachineProvider'
 import ModelingPageProvider from '@src/components/ModelingPageProvider'
 import { OpenedProject } from '@src/components/OpenedProject'
+import { PendingFileNavigation } from '@src/components/PendingFileNavigation'
 import { NetworkContext } from '@src/hooks/useNetworkContext'
 import { useNetworkStatus } from '@src/hooks/useNetworkStatus'
 import { useApp, useSingletons } from '@src/lib/boot'
@@ -71,9 +72,11 @@ export const Router = () => {
                     }
                   >
                     <ModelingMachineProvider>
-                      <Outlet />
-                      <OpenedProject />
-                      <CommandBar />
+                      <PendingFileNavigation>
+                        <Outlet />
+                        <OpenedProject />
+                        <CommandBar />
+                      </PendingFileNavigation>
                     </ModelingMachineProvider>
                   </Suspense>
                 </ModelingPageProvider>
