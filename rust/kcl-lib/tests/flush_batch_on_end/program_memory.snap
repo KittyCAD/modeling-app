@@ -5,11 +5,9 @@ description: Variables in memory after executing flush_batch_on_end.kcl
 {
   "arc000": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc000"
   },
   "arc001": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc001"
   },

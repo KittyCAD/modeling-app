@@ -18,7 +18,7 @@
 //! | solid from `extrude` (with or without `twistAngle`), `revolve` (either axis form), or `sweep`; a pattern's ORIGINAL | differ |
 //! | solid from `loft` or `blend`, each of which overrides the profile id with its own command id | equal |
 //! | solid from `mirror3d` | equal |
-//! | sketch, plane, helix, GD&T annotation, imported geometry, pattern COPIES | equal |
+//! | sketch, plane from `offsetPlane` or `planeOf`, helix, GD&T annotation, imported geometry, pattern COPIES | equal |
 //!
 //! For the divergent kinds, the artifact graph's `Artifact::Sweep` node holds
 //! the pair: its `id` is the artifact id and its `path_id` is the engine
@@ -63,11 +63,18 @@
 //! Real engine required (`ZOO_API_TOKEN`): mock execution cannot reach some
 //! construction paths (pattern copies get engine-assigned ids).
 
+use futures::FutureExt;
 use kittycad_modeling_cmds::ModelingCmd;
+use kittycad_modeling_cmds::each_cmd as mcmd;
+use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
+use kittycad_modeling_cmds::shared::EntityType;
+use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
 use uuid::Uuid;
 
 use super::ExecState;
+use super::ExecutorContext;
 use super::Operation;
+use crate::SourceRange;
 use crate::execution::Artifact;
 use crate::execution::ArtifactId;
 
@@ -96,6 +103,13 @@ struct SweepIds {
     path_id: ArtifactId,
 }
 
+/// An `Artifact::Plane` node's identity and sketch paths.
+#[derive(Debug)]
+struct PlaneIds {
+    id: ArtifactId,
+    path_ids: Vec<ArtifactId>,
+}
+
 /// One execution's `hide()` call as seen by its three observers: the engine
 /// channel, the operations stream, and the artifact graph.
 struct ObservedIds {
@@ -112,6 +126,14 @@ struct ObservedIds {
     /// back-link to tell an original swept body from a `mirror3d` copy. Both
     /// carry the same `path_id`.
     path_back_links: Vec<(ArtifactId, Option<ArtifactId>)>,
+    /// From the artifact graph: each plane and the paths that use it.
+    plane_ids: Vec<PlaneIds>,
+    /// From the artifact graph: each plane produced by `planeOf()`.
+    plane_of_face_ids: Vec<ArtifactId>,
+    /// From the artifact graph: each path paired with its supporting plane.
+    path_plane_links: Vec<(ArtifactId, ArtifactId)>,
+    /// From the recorded command stream: ids assigned to `FaceIsPlanar`.
+    face_is_planar_command_ids: Vec<ArtifactId>,
 }
 
 impl ObservedIds {
@@ -125,7 +147,10 @@ impl ObservedIds {
     }
 }
 
-async fn execute_and_observe(code: &str, current_file: Option<std::path::PathBuf>) -> ObservedIds {
+async fn execute_and_observe_open(
+    code: &str,
+    current_file: Option<std::path::PathBuf>,
+) -> (ExecutorContext, ObservedIds) {
     let ctx = crate::test_server::new_context(true, current_file).await.unwrap();
     let program = crate::Program::parse_no_errs(code).unwrap();
     let mut exec_state = ExecState::new(&ctx);
@@ -183,14 +208,101 @@ async fn execute_and_observe(code: &str, current_file: Option<std::path::PathBuf
         })
         .collect();
 
-    ctx.close().await;
+    let plane_ids = exec_state
+        .global
+        .artifacts
+        .graph
+        .values()
+        .filter_map(|artifact| match artifact {
+            Artifact::Plane(plane) => Some(PlaneIds {
+                id: plane.id,
+                path_ids: plane.path_ids.clone(),
+            }),
+            _ => None,
+        })
+        .collect();
 
-    ObservedIds {
-        sent_to_engine,
-        recorded_in_operations,
-        sweep_ids,
-        path_back_links,
-    }
+    let plane_of_face_ids = exec_state
+        .global
+        .artifacts
+        .graph
+        .values()
+        .filter_map(|artifact| match artifact {
+            Artifact::PlaneOfFace(plane) => Some(plane.id),
+            _ => None,
+        })
+        .collect();
+
+    let path_plane_links = exec_state
+        .global
+        .artifacts
+        .graph
+        .values()
+        .filter_map(|artifact| match artifact {
+            Artifact::Path(path) => Some((path.id, path.plane_id)),
+            _ => None,
+        })
+        .collect();
+
+    let face_is_planar_command_ids = exec_state
+        .global
+        .root_module_artifacts
+        .commands
+        .iter()
+        .filter_map(|artifact_command| match artifact_command.command {
+            ModelingCmd::FaceIsPlanar(_) => Some(ArtifactId::new(artifact_command.cmd_id)),
+            _ => None,
+        })
+        .collect();
+
+    (
+        ctx,
+        ObservedIds {
+            sent_to_engine,
+            recorded_in_operations,
+            sweep_ids,
+            path_back_links,
+            plane_ids,
+            plane_of_face_ids,
+            path_plane_links,
+            face_is_planar_command_ids,
+        },
+    )
+}
+
+async fn execute_and_observe(code: &str, current_file: Option<std::path::PathBuf>) -> ObservedIds {
+    let (ctx, observed) = execute_and_observe_open(code, current_file).await;
+    ctx.close().await;
+    observed
+}
+
+/// Verifies that the engine resolves an artifact id to a plane entity.
+async fn assert_engine_entity_is_plane(ctx: &ExecutorContext, artifact_id: ArtifactId) {
+    let response = ctx
+        .engine
+        .send_modeling_cmd(
+            &ctx.engine_batch,
+            Uuid::new_v4(),
+            SourceRange::default(),
+            &ModelingCmd::from(
+                mcmd::GetEntityType::builder()
+                    .entity_id(Uuid::from(artifact_id))
+                    .build(),
+            ),
+        )
+        .await
+        .unwrap_or_else(|err| panic!("engine did not resolve plane artifact id {artifact_id:?}: {err}"));
+    let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::GetEntityType(entity),
+    } = response
+    else {
+        panic!("expected GetEntityType for plane artifact id {artifact_id:?}, got {response:?}");
+    };
+    assert_eq!(
+        entity.entity_type,
+        EntityType::Plane,
+        "artifact id {artifact_id:?} should identify an engine plane"
+    );
 }
 
 /// Collects every value under an artifact-id key, at any depth. The nesting
@@ -563,8 +675,119 @@ async fn named_views_hide_ids_plane() {
 
 hide(plane001)
 "#;
-    let observed = execute_and_observe(code, None).await;
-    assert_ids_equal(&observed);
+    let (ctx, observed) = execute_and_observe_open(code, None).await;
+
+    // Close the context even if an assertion panics, then let the panic continue.
+    let test_result = std::panic::AssertUnwindSafe(async {
+        assert_ids_equal(&observed);
+
+        let artifact_id = observed.recorded_in_operations[0];
+        let plane = observed
+            .plane_ids
+            .iter()
+            .find(|plane| plane.id == artifact_id)
+            .unwrap_or_else(|| panic!("no Artifact::Plane node with id {artifact_id:?}"));
+        assert!(
+            plane.path_ids.is_empty(),
+            "a standalone offset plane should not support any sketch paths"
+        );
+        assert_engine_entity_is_plane(&ctx, artifact_id).await;
+    })
+    .catch_unwind()
+    .await;
+
+    ctx.close().await;
+    if let Err(panic) = test_result {
+        std::panic::resume_unwind(panic);
+    }
+}
+
+/// A plane used as a sketch surface is hidden by the executor. The artifact
+/// graph records that purpose through reciprocal plane-to-path and
+/// path-to-plane links.
+#[tokio::test(flavor = "multi_thread")]
+async fn named_views_plane_used_for_sketch_has_path_ids() {
+    let code = include_str!("../../tests/sketch_block_on_offset_plane/input.kcl");
+    let (ctx, observed) = execute_and_observe_open(code, None).await;
+
+    // Close the context even if an assertion panics, then let the panic continue.
+    let test_result = std::panic::AssertUnwindSafe(async {
+        assert!(
+            observed.recorded_in_operations.is_empty(),
+            "the executor's plane-hiding command should not create a KCL hide operation"
+        );
+        assert_eq!(
+            observed.plane_ids.len(),
+            1,
+            "the fixture should create exactly one plane artifact"
+        );
+        let plane = &observed.plane_ids[0];
+        assert_eq!(
+            plane.path_ids.len(),
+            1,
+            "the plane artifact should contain the sketch path id"
+        );
+        let path_id = plane.path_ids[0];
+        assert!(
+            observed.path_plane_links.contains(&(path_id, plane.id)),
+            "the sketch path should identify the plane that contains its id"
+        );
+        assert!(
+            observed.hidden_object_ids().contains(&in_engine_domain(plane.id)),
+            "the executor should hide the plane used as the sketch surface"
+        );
+        assert_engine_entity_is_plane(&ctx, plane.id).await;
+    })
+    .catch_unwind()
+    .await;
+
+    ctx.close().await;
+    if let Err(panic) = test_result {
+        std::panic::resume_unwind(panic);
+    }
+}
+
+/// `planeOf()` uses its `FaceIsPlanar` command id for the runtime value, the
+/// artifact graph and the engine entity.
+#[tokio::test(flavor = "multi_thread")]
+async fn named_views_plane_of_id_is_engine_addressable() {
+    let code = r#"sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var 3, var 0], center = [var 0, var 0])
+}
+
+body = extrude(region(point = [0, 0], sketch = sketch001), length = 5)
+plane001 = planeOf(body, face = END)
+
+hide(plane001)
+"#;
+    let (ctx, observed) = execute_and_observe_open(code, None).await;
+
+    // Close the context even if an assertion panics, then let the panic continue.
+    let test_result = std::panic::AssertUnwindSafe(async {
+        assert_ids_equal(&observed);
+
+        assert_eq!(
+            observed.face_is_planar_command_ids.len(),
+            1,
+            "the fixture should send exactly one FaceIsPlanar command"
+        );
+        assert_eq!(
+            observed.plane_of_face_ids.len(),
+            1,
+            "an unused planeOf result should remain an Artifact::PlaneOfFace"
+        );
+        let artifact_id = observed.recorded_in_operations[0];
+        assert_eq!(observed.face_is_planar_command_ids[0], artifact_id);
+        assert_eq!(observed.plane_of_face_ids[0], artifact_id);
+        assert_engine_entity_is_plane(&ctx, artifact_id).await;
+    })
+    .catch_unwind()
+    .await;
+
+    ctx.close().await;
+    if let Err(panic) = test_result {
+        std::panic::resume_unwind(panic);
+    }
 }
 
 /// Route-independent: the program contains no sketch, so V1/V2 does not

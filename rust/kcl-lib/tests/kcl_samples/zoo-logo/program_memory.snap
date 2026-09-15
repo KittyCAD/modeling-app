@@ -10291,21 +10291,17 @@ description: Variables in memory after executing zoo-logo.kcl
   },
   "o1Arc01": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "o1Arc01"
   },
   "o1Arc02": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "o1Arc02"
   },
   "o1Arc03": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "o1Arc03"
   },
   "o1Arc04": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "o1Arc04"
   },
@@ -18816,21 +18812,17 @@ description: Variables in memory after executing zoo-logo.kcl
   },
   "o1Line01": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "o1Line01"
   },
   "o1Line02": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "o1Line02"
   },
   "o1Line03": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "o1Line03"
   },
   "o1Line04": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "o1Line04"
   },
@@ -27696,21 +27688,17 @@ description: Variables in memory after executing zoo-logo.kcl
   },
   "o2Arc01": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "o2Arc01"
   },
   "o2Arc02": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "o2Arc02"
   },
   "o2Arc03": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "o2Arc03"
   },
   "o2Arc04": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "o2Arc04"
   },
@@ -36221,21 +36209,17 @@ description: Variables in memory after executing zoo-logo.kcl
   },
   "o2Line01": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "o2Line01"
   },
   "o2Line02": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "o2Line02"
   },
   "o2Line03": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "o2Line03"
   },
   "o2Line04": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "o2Line04"
   },
@@ -36613,81 +36597,65 @@ description: Variables in memory after executing zoo-logo.kcl
   },
   "zLine01": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "zLine01"
   },
   "zLine02": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "zLine02"
   },
   "zLine03": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "zLine03"
   },
   "zLine04": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "zLine04"
   },
   "zLine05": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "zLine05"
   },
   "zLine06": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "zLine06"
   },
   "zLine07": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "zLine07"
   },
   "zLine08": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "zLine08"
   },
   "zLine09": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "zLine09"
   },
   "zLine10": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "zLine10"
   },
   "zLine11": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "zLine11"
   },
   "zLine12": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "zLine12"
   },
   "zLine13": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "zLine13"
   },
   "zLine14": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "zLine14"
   },
   "zLine15": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "zLine15"
   },
   "zLine16": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "zLine16"
   },

@@ -606,7 +606,6 @@ description: Variables in memory after executing utility-sink.kcl
   },
   "bottomEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bottomEdge"
   },
   "doorBody": {
@@ -3377,7 +3376,6 @@ description: Variables in memory after executing utility-sink.kcl
   },
   "grip": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "grip"
   },
   "handleBody": {
@@ -5916,16 +5914,13 @@ description: Variables in memory after executing utility-sink.kcl
   },
   "leftArc": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "leftArc"
   },
   "leftEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "leftEdge"
   },
   "leftLeg": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "leftLeg"
   },
@@ -15671,21 +15666,17 @@ description: Variables in memory after executing utility-sink.kcl
   },
   "rightArc": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "rightArc"
   },
   "rightEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "rightEdge"
   },
   "rightLeg": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "rightLeg"
   },
   "sectionCircle": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "sectionCircle"
   },
@@ -19620,7 +19611,6 @@ description: Variables in memory after executing utility-sink.kcl
   },
   "tapHandleCircle": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "tapHandleCircle"
   },
   "tapHandleRegion": {
@@ -20559,7 +20549,6 @@ description: Variables in memory after executing utility-sink.kcl
     }
   },
   "tapNoseCircle": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "tapNoseCircle"
   },
@@ -21500,7 +21489,6 @@ description: Variables in memory after executing utility-sink.kcl
   },
   "tapPillarCircle": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "tapPillarCircle"
   },
   "tapPillarRegion": {
@@ -22440,7 +22428,6 @@ description: Variables in memory after executing utility-sink.kcl
   },
   "tapPlateCircle": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "tapPlateCircle"
   },
   "tapPlateRegion": {
@@ -23255,7 +23242,6 @@ description: Variables in memory after executing utility-sink.kcl
     "constrainable": false
   },
   "topEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "topEdge"
   },

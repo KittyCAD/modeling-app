@@ -871,6 +871,7 @@ describe('Testing findOperationArtifact', () => {
     return {
       type: 'gdtAnnotation',
       id,
+      consumed: false,
       codeRef: {
         range: sourceRange,
         nodePath: defaultNodePath(),

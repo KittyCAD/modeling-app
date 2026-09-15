@@ -50,6 +50,7 @@ use crate::execution::types::ArrayLen;
 use crate::import_format::import_format_from_path;
 use crate::parsing::PIPE_OPERATOR;
 use crate::parsing::PIPE_SUBSTITUTION_OPERATOR;
+use crate::parsing::ast::types::ABSOLUTE_PATHS_NOT_SUPPORTED;
 use crate::parsing::ast::types::Annotation;
 use crate::parsing::ast::types::ArrayExpression;
 use crate::parsing::ast::types::ArrayRangeExpression;
@@ -3336,6 +3337,12 @@ fn identifier_or_keyword(i: &mut TokenSlice) -> ModalResult<Token> {
 fn nameable_identifier(i: &mut TokenSlice) -> ModalResult<Node<Identifier>> {
     let result = identifier.parse_next(i)?;
 
+    report_unnameable_identifier(&result);
+
+    Ok(result)
+}
+
+fn report_unnameable_identifier(result: &Node<Identifier>) {
     if !result.is_nameable() {
         let desc = if result.name == "_" {
             "Underscores"
@@ -3347,13 +3354,11 @@ fn nameable_identifier(i: &mut TokenSlice) -> ModalResult<Node<Identifier>> {
             format!("{desc} cannot be referred to, only declared."),
         ));
     }
-
-    Ok(result)
 }
 
-fn name(i: &mut TokenSlice) -> ModalResult<Node<Name>> {
+fn unvalidated_name(i: &mut TokenSlice) -> ModalResult<Node<Name>> {
     let abs_path = opt(double_colon).parse_next(i)?;
-    let mut idents: NodeList<Identifier> = separated(1.., nameable_identifier, double_colon)
+    let mut idents: NodeList<Identifier> = separated(1.., identifier, double_colon)
         .parse_next(i)
         .map_err(|e| e.backtrack())?;
 
@@ -3366,7 +3371,7 @@ fn name(i: &mut TokenSlice) -> ModalResult<Node<Name>> {
     let name = idents.pop().unwrap();
     let end = name.end;
     let module_id = name.module_id;
-    let result = Node::new(
+    Ok(Node::new(
         Name {
             name,
             path: idents,
@@ -3376,7 +3381,15 @@ fn name(i: &mut TokenSlice) -> ModalResult<Node<Name>> {
         start,
         end,
         module_id,
-    );
+    ))
+}
+
+fn name(i: &mut TokenSlice) -> ModalResult<Node<Name>> {
+    let result = unvalidated_name.parse_next(i)?;
+
+    for ident in result.path.iter().chain(std::iter::once(&result.name)) {
+        report_unnameable_identifier(ident);
+    }
 
     if let Some(suggestion) = super::deprecation(&result.to_string(), DeprecationKind::Const) {
         ParseContext::warn(
@@ -3844,13 +3857,13 @@ fn type_not_union(i: &mut TokenSlice) -> ModalResult<Node<Type>> {
             }),
         // Array types
         array_type,
-        // Primitive types
-        primitive_type.map(|t| t.map(Type::Primitive)),
+        // Primary types
+        primary_type,
     ))
     .parse_next(i)
 }
 
-fn primitive_type(i: &mut TokenSlice) -> ModalResult<Node<PrimitiveType>> {
+fn primary_type(i: &mut TokenSlice) -> ModalResult<Node<Type>> {
     alt((
         // A function type: `fn` (`(` type?, (id: type,)* `)` (`:` type)?)?
         (
@@ -3903,24 +3916,46 @@ fn primitive_type(i: &mut TokenSlice) -> ModalResult<Node<PrimitiveType>> {
                     }
                 }
 
-                Node::new(PrimitiveType::Function(ft), t.start, t.end, t.module_id)
+                Node::new(
+                    Type::Primitive(PrimitiveType::Function(ft)),
+                    t.start,
+                    t.end,
+                    t.module_id,
+                )
             }),
         // A named type, possibly with a numeric suffix.
-        (identifier, opt(delimited(open_paren, uom_for_type, close_paren))).map(|(ident, suffix)| {
-            let start = ident.start;
-            let end = ident.end;
-            let module_id = ident.module_id;
-            let result = Node::new(
-                PrimitiveType::primitive_from_str(&ident.name, suffix).unwrap_or(PrimitiveType::Named { id: ident }),
-                start,
-                end,
-                module_id,
-            );
+        (unvalidated_name, opt(delimited(open_paren, uom_for_type, close_paren))).map(|(name, suffix)| {
+            if name.abs_path {
+                ParseContext::err(CompilationIssue::fatal(
+                    name.as_source_range(),
+                    ABSOLUTE_PATHS_NOT_SUPPORTED,
+                ));
+            }
+            if !name.path.is_empty() && suffix.is_some() {
+                ParseContext::err(CompilationIssue::fatal(
+                    name.as_source_range(),
+                    "Numeric suffixes cannot be applied to qualified type names",
+                ));
+            }
 
-            if *result == PrimitiveType::None {
+            let start = name.start;
+            let end = name.end;
+            let module_id = name.module_id;
+            let primitive = if name.path.is_empty() && !name.abs_path {
+                PrimitiveType::primitive_from_str(&name.name.name, suffix)
+            } else {
+                None
+            };
+            let result = if let Some(primitive) = primitive {
+                Node::new(Type::Primitive(primitive), start, end, module_id)
+            } else {
+                Node::new(Type::Named { name }, start, end, module_id)
+            };
+
+            if *result == Type::Primitive(PrimitiveType::None) {
                 ParseContext::experimental("none type", result.as_source_range());
             }
-            if *result == PrimitiveType::Never {
+            if *result == Type::Primitive(PrimitiveType::Never) {
                 ParseContext::experimental("never type", result.as_source_range());
             }
 
@@ -6955,6 +6990,86 @@ type foo = fn([fn])
 type foo = fn(fn, f: fn(number(_))): [fn([any]): string]
     "#;
         assert_no_err(code);
+    }
+
+    #[test]
+    fn qualified_type_path_in_parameter_types() {
+        assert_no_err("fn labeled(@o: view::Orientation) {}\nfn unlabeled(o: view::Orientation) {}");
+    }
+
+    #[test]
+    fn qualified_type_path_in_return_type() {
+        assert_no_err("fn front(): view::Orientation {}");
+    }
+
+    #[test]
+    fn qualified_type_path_in_type_alias() {
+        assert_no_err("@settings(experimentalFeatures = allow)\ntype Front = view::Orientation");
+    }
+
+    #[test]
+    fn qualified_type_path_in_ascription() {
+        assert_no_err("front = orientation: view::Orientation");
+    }
+
+    #[test]
+    fn qualified_type_path_in_union_member() {
+        assert_no_err("@settings(experimentalFeatures = allow)\ntype Direction = view::Orientation | math::Axis");
+    }
+
+    #[test]
+    fn qualified_type_path_in_array_element() {
+        assert_no_err("@settings(experimentalFeatures = allow)\ntype Views = [view::Orientation; 3]");
+    }
+
+    #[test]
+    fn qualified_type_path_in_object_field() {
+        assert_no_err("@settings(experimentalFeatures = allow)\ntype View = { front: view::Orientation }");
+    }
+
+    #[test]
+    fn qualified_type_path_in_function_type() {
+        assert_no_err(
+            "@settings(experimentalFeatures = allow)\ntype Mapper = fn(view::Orientation, axis: math::Axis): view::Orientation",
+        );
+    }
+
+    #[test]
+    fn qualified_type_path_in_ascription_binary_lookahead() {
+        assert_no_err("x: a::b > 1");
+    }
+
+    #[test]
+    fn qualified_type_path_named_number_is_not_a_primitive() {
+        let tokens = crate::parsing::token::lex("view::number", ModuleId::default()).unwrap();
+        let ty = in_ctx(|| type_.parse(tokens.as_slice())).unwrap();
+
+        let Type::Named { name } = &*ty else {
+            panic!("expected a named type, found {ty:?}");
+        };
+        assert_eq!(name.path.iter().map(|p| p.name.as_str()).collect::<Vec<_>>(), ["view"]);
+        assert_eq!(name.name.name, "number");
+        assert_eq!(ty.to_string(), "view::number");
+        assert_eq!(ty.human_friendly_type(), "a value with type `view::number`");
+    }
+
+    #[test]
+    fn qualified_type_path_rejects_numeric_suffix() {
+        assert_err(
+            "fn front(@o: view::Orientation(mm)) {}",
+            "Numeric suffixes cannot be applied to qualified type names",
+            [13, 30],
+        );
+    }
+
+    #[test]
+    fn qualified_type_path_rejects_absolute_path() {
+        let code = "fn front(@o: ::view::Orientation) {}";
+        let result = crate::parsing::top_level_parse(code);
+        let errors = result.unwrap_errs().collect::<Vec<_>>();
+
+        assert_eq!(errors.len(), 1, "found errors: {errors:#?}");
+        assert_eq!(errors[0].message, ABSOLUTE_PATHS_NOT_SUPPORTED);
     }
 
     #[test]

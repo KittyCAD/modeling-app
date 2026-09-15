@@ -104,6 +104,7 @@ export const createOnWebSocketMessage = ({
   sdpAnswerReject,
   setApiCallId,
   getCloudProjectId,
+  getConnectionContext,
   tearDownManager,
   requestReconnect,
 }: {
@@ -121,6 +122,10 @@ export const createOnWebSocketMessage = ({
   sdpAnswerReject: (value: any) => void
   setApiCallId: (apiCallId: string) => void
   getCloudProjectId: () => string | undefined
+  getConnectionContext: () => {
+    connectionId: string
+    modelingApiCallId: string | null
+  }
   tearDownManager: (options?: ManagerTearDown) => void
   requestReconnect: () => void
 }) => {
@@ -149,12 +154,14 @@ export const createOnWebSocketMessage = ({
           message: backendDisconnectError.message,
           terminal: true,
         }
+        const connectionContext = getConnectionContext()
         tearDownManager({ websocketClosed: true, connectionError })
         const cloudProjectId = getCloudProjectId()
         void reportClientError({
           code: ClientErrorCode.EngineBackendDisconnect,
           message: backendDisconnectError.message,
           extra: {
+            ...connectionContext,
             source: 'EngineWebSocket',
             errorCode: backendDisconnectError.error_code,
             requestId: message.request_id,

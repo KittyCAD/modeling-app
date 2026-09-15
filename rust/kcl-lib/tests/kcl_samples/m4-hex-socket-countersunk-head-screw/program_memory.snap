@@ -341,7 +341,6 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
   },
   "boltAxis": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "boltAxis"
   },
   "boltBlank": {
@@ -1670,16 +1669,13 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
   },
   "bottomFacet": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bottomFacet"
   },
   "headTopEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "headTopEdge"
   },
   "headTransitionEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "headTransitionEdge"
   },
@@ -3879,21 +3875,17 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
   },
   "lowerLeftFacet": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "lowerLeftFacet"
   },
   "lowerRightFacet": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "lowerRightFacet"
   },
   "shankSideWall": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "shankSideWall"
   },
   "shankTopEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "shankTopEdge"
   },
@@ -3926,16 +3918,13 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
   },
   "topFacet": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "topFacet"
   },
   "upperLeftFacet": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "upperLeftFacet"
   },
   "upperRightFacet": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "upperRightFacet"
   }

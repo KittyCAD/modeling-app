@@ -102,7 +102,6 @@ description: Variables in memory after executing consumed_solid_original_issue.k
   },
   "arc1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc1"
   },
   "ballEnd": {
@@ -559,16 +558,13 @@ description: Variables in memory after executing consumed_solid_original_issue.k
   },
   "line1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line1"
   },
   "line2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line2"
   },
   "line3": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line3"
   },

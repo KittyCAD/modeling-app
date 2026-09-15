@@ -237,7 +237,6 @@ description: Variables in memory after executing sketch_on_face_union.kcl
   },
   "bottomFace": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bottomFace"
   },
   "height": {
@@ -1865,7 +1864,6 @@ description: Variables in memory after executing sketch_on_face_union.kcl
     }
   },
   "tag001": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "tag001"
   },

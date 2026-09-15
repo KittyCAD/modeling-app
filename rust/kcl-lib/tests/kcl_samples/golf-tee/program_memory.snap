@@ -37,7 +37,6 @@ description: Variables in memory after executing golf-tee.kcl
   },
   "axisEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "axisEdge"
   },
   "cupDepth": {
@@ -69,7 +68,6 @@ description: Variables in memory after executing golf-tee.kcl
   },
   "cupLipArc": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "cupLipArc"
   },
   "cupOuterRadius": {
@@ -82,7 +80,6 @@ description: Variables in memory after executing golf-tee.kcl
     }
   },
   "flareEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "flareEdge"
   },
@@ -374,7 +371,6 @@ description: Variables in memory after executing golf-tee.kcl
     }
   },
   "shaftEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "shaftEdge"
   },
@@ -1578,7 +1574,6 @@ description: Variables in memory after executing golf-tee.kcl
     }
   },
   "tipEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "tipEdge"
   },
