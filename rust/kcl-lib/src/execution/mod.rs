@@ -7327,6 +7327,24 @@ x = m + 1
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn qualified_type_paths_resolve_in_aliases_and_ascriptions() {
+        let main = r#"@settings(experimentalFeatures = allow)
+type ViewOrientation = view::Orientation
+front = view::Orientation::Front: view::Orientation
+"#;
+
+        parse_execute(main).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unknown_qualified_type_reports_the_written_name() {
+        let main = "fn f(@value: missing::Orientation) {}\n";
+
+        let err = parse_execute(main).await.unwrap_err();
+        assert_eq!(err.message(), "Unknown type: missing::Orientation");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn signature_types_resolve_under_import_alias() {
         // An import alias renames the caller's binding for the module. The
         // declaring module's scope is unaffected, so the signature must

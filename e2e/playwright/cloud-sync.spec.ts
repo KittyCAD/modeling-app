@@ -71,7 +71,9 @@ test(
       },
     })
 
-    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG])
+    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG], {
+      cloudSyncEnabled: true,
+    })
     await expectCloudFeatureEnabled(page)
     await expectCloudSyncHomeReady(page)
 

@@ -4,6 +4,7 @@ import {
   TEST_SETTINGS_DEFAULT_THEME,
   TEST_SETTINGS_KEY,
 } from '@e2e/playwright/storageStates'
+import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import {
   createProject,
   executorInputPath,
@@ -56,7 +57,7 @@ test.describe(
       'Stored settings are validated and fall back to defaults',
       { tag: ['@macos', '@windows'] },
       async ({ page, homePage, tronApp }) => {
-        if (!tronApp) throw new Error('tronApp is missing.')
+        if (!tronApp) throwTronAppMissing()
 
         // Override beforeEach test setup
         // with corrupted settings
@@ -315,7 +316,7 @@ test.describe(
       `Load desktop app with a settings file, but no project directory setting`,
       { tag: ['@macos', '@windows'] },
       async ({ page, tronApp }) => {
-        if (!tronApp) throw new Error('tronApp is missing.')
+        if (!tronApp) throwTronAppMissing()
 
         await tronApp.cleanProjectDir({
           modeling: {
@@ -692,7 +693,7 @@ test.describe(
       `Changing system theme preferences (via media query) should update UI and stream`,
       { tag: ['@macos', '@windows'] },
       async ({ page, homePage, tronApp }) => {
-        if (!tronApp) throw new Error('tronApp is missing.')
+        if (!tronApp) throwTronAppMissing()
 
         await tronApp.cleanProjectDir({
           // Override the settings so that the theme is set to `system`
@@ -750,7 +751,7 @@ test.describe(
       `Changing system theme preferences should not override fixed light theme`,
       { tag: ['@macos', '@windows'] },
       async ({ page, homePage, tronApp }) => {
-        if (!tronApp) throw new Error('tronApp is missing.')
+        if (!tronApp) throwTronAppMissing()
 
         await tronApp.cleanProjectDir({
           ...TEST_SETTINGS,
