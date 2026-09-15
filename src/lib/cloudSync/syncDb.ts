@@ -10,6 +10,12 @@ const DB_VERSION = 1
 const PROJECTS_STORE = 'projects'
 const OUTBOX_STORE = 'outbox'
 
+function outboxEntryWithoutId(entry: OutboxEntry) {
+  const entryWithoutId = { ...entry }
+  delete entryWithoutId.id
+  return entryWithoutId
+}
+
 function openSyncDb(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     if (typeof indexedDB === 'undefined') {
@@ -158,7 +164,10 @@ export async function appendOutboxEntry(entry: Omit<OutboxEntry, 'id'>) {
     const transaction = db.transaction(OUTBOX_STORE, 'readwrite')
     const store = transaction.objectStore(OUTBOX_STORE)
     const request = store.openCursor()
-    const matchingDeleteEntryKeys: IDBValidKey[] = []
+    const matchingDeleteEntries: Array<{
+      key: IDBValidKey
+      entry: OutboxEntry
+    }> = []
     const matchingUpsertEntries: Array<{
       key: IDBValidKey
       entry: OutboxEntry
@@ -169,7 +178,7 @@ export async function appendOutboxEntry(entry: Omit<OutboxEntry, 'id'>) {
       if (!cursor) {
         if (nextEntry.kind === 'delete') {
           for (const key of [
-            ...matchingDeleteEntryKeys,
+            ...matchingDeleteEntries.map(({ key }) => key),
             ...matchingUpsertEntries.map(({ key }) => key),
           ]) {
             store.delete(key)
@@ -178,14 +187,15 @@ export async function appendOutboxEntry(entry: Omit<OutboxEntry, 'id'>) {
           return
         }
 
-        const retainedDeleteEntryKey = matchingDeleteEntryKeys[0]
-        if (retainedDeleteEntryKey !== undefined) {
+        const retainedDeleteEntry = matchingDeleteEntries[0]
+        if (retainedDeleteEntry !== undefined) {
           for (const key of [
-            ...matchingDeleteEntryKeys.slice(1),
+            ...matchingDeleteEntries.map(({ key }) => key),
             ...matchingUpsertEntries.map(({ key }) => key),
           ]) {
             store.delete(key)
           }
+          store.add(outboxEntryWithoutId(retainedDeleteEntry.entry))
           return
         }
 
@@ -198,13 +208,13 @@ export async function appendOutboxEntry(entry: Omit<OutboxEntry, 'id'>) {
                 .map(normalizePathForSync)
             )
           ).sort()
-          store.put({
-            ...retainedUpsertEntry.entry,
-            deletedPaths: deletedPaths.length ? deletedPaths : undefined,
-          })
-          for (const { key } of matchingUpsertEntries.slice(1)) {
+          for (const { key } of matchingUpsertEntries) {
             store.delete(key)
           }
+          store.add({
+            ...outboxEntryWithoutId(retainedUpsertEntry.entry),
+            deletedPaths: deletedPaths.length ? deletedPaths : undefined,
+          })
           return
         }
 
@@ -218,7 +228,10 @@ export async function appendOutboxEntry(entry: Omit<OutboxEntry, 'id'>) {
         normalizedProjectPath
       ) {
         if (existingEntry.kind === 'delete') {
-          matchingDeleteEntryKeys.push(cursor.primaryKey)
+          matchingDeleteEntries.push({
+            key: cursor.primaryKey,
+            entry: existingEntry,
+          })
         } else {
           matchingUpsertEntries.push({
             key: cursor.primaryKey,
@@ -241,6 +254,18 @@ export async function appendOutboxEntry(entry: Omit<OutboxEntry, 'id'>) {
 export async function getAllOutboxEntries() {
   return withStore<OutboxEntry[]>(OUTBOX_STORE, 'readonly', (store) =>
     store.getAll()
+  )
+}
+
+/**
+ * The newest auto-incremented outbox id is the durable mutation generation for
+ * a project. Coalescing replaces a row instead of updating it in place, so each
+ * observed mutation advances this value even while only one row remains.
+ */
+export function getOutboxMutationGeneration(entries: readonly OutboxEntry[]) {
+  return entries.reduce(
+    (generation, entry) => Math.max(generation, entry.id ?? 0),
+    0
   )
 }
 
@@ -284,6 +309,55 @@ export async function clearOutboxEntriesForProject(projectPath: string) {
     transaction.oncomplete = () => {
       db.close()
       resolve()
+    }
+  })
+}
+
+/**
+ * Clear only the mutation generation a sync attempt actually observed. The
+ * read and deletes share one IndexedDB transaction, so a newer queued mutation
+ * cannot be mistaken for work acknowledged by an older network response.
+ */
+export async function clearOutboxEntriesForProjectAtGeneration(
+  projectPath: string,
+  expectedGeneration: number
+) {
+  const normalizedProjectPath = normalizePathForSync(projectPath)
+  const db = await openSyncDb()
+  return new Promise<boolean>((resolve, reject) => {
+    const transaction = db.transaction(OUTBOX_STORE, 'readwrite')
+    const store = transaction.objectStore(OUTBOX_STORE)
+    const request = store.openCursor()
+    const matchingEntryKeys: IDBValidKey[] = []
+    let generation = 0
+    let cleared = false
+
+    request.onsuccess = () => {
+      const cursor = request.result
+      if (!cursor) {
+        if (generation !== expectedGeneration) {
+          return
+        }
+        for (const key of matchingEntryKeys) {
+          store.delete(key)
+        }
+        cleared = true
+        return
+      }
+
+      const entry = cursor.value as OutboxEntry
+      if (normalizePathForSync(entry.projectPath) === normalizedProjectPath) {
+        matchingEntryKeys.push(cursor.primaryKey)
+        generation = Math.max(generation, entry.id ?? 0)
+      }
+      cursor.continue()
+    }
+    request.onerror = () => reject(request.error)
+    transaction.onerror = () => reject(transaction.error)
+    transaction.onabort = () => reject(transaction.error)
+    transaction.oncomplete = () => {
+      db.close()
+      resolve(cleared)
     }
   })
 }
