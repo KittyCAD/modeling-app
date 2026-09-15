@@ -1032,8 +1032,8 @@ impl ExecutorContext {
     ) -> Result<ModuleExecutionOutcome, (KclError, Option<EnvironmentRef>, Option<ModuleArtifactState>)> {
         crate::log::log(format!("enter module {path} {}", exec_state.stack()));
 
-        // KCL 3.0: reject an imported file whose declared kclVersion differs
-        // from the entry point's before any of it executes.
+        // KCL 3.0: reject an imported file whose declared kclVersion is not
+        // allowed with the entry point's before any of it executes.
         exec_state
             .check_imported_module_kcl_version(path, program, None)
             .map_err(|err| (err, None, None))?;
