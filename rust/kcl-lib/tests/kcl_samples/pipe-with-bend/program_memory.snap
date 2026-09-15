@@ -55,7 +55,6 @@ description: Variables in memory after executing pipe-with-bend.kcl
   },
   "innerCircle": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "innerCircle"
   },
   "innerDiameter": {
@@ -68,7 +67,6 @@ description: Variables in memory after executing pipe-with-bend.kcl
     }
   },
   "outerCircle": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "outerCircle"
   },

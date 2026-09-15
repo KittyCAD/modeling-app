@@ -37,7 +37,6 @@ description: Variables in memory after executing gdt_face_api_edge_specifier.kcl
   },
   "capStart001": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "capStart001"
   },
   "extrude001": {

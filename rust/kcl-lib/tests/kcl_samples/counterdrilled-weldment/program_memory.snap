@@ -232,7 +232,6 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
   },
   "baseEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "baseEdge"
   },
   "blockLength": {
@@ -281,7 +280,6 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
     }
   },
   "bottomEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "bottomEdge"
   },
@@ -1401,7 +1399,6 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
     }
   },
   "counterdrillCircle": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "counterdrillCircle"
   },
@@ -7230,7 +7227,6 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
   },
   "holeCircle": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "holeCircle"
   },
   "holeSeedPlane": {
@@ -7859,31 +7855,25 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
   },
   "innerCircle": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "innerCircle"
   },
   "innerHole": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "innerHole"
   },
   "innerWall": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "innerWall"
   },
   "leftEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "leftEdge"
   },
   "outerCircle": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "outerCircle"
   },
   "outerRise": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "outerRise"
   },
@@ -8012,7 +8002,6 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
     }
   },
   "pinholeCircle": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "pinholeCircle"
   },
@@ -10753,7 +10742,6 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
   },
   "plateTop": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "plateTop"
   },
   "plateTopExtrude": {
@@ -11448,11 +11436,9 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
   },
   "rightEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "rightEdge"
   },
   "slopedEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "slopedEdge"
   },
@@ -12440,7 +12426,6 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
     }
   },
   "topEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "topEdge"
   },

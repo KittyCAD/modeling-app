@@ -348,11 +348,9 @@ description: Variables in memory after executing surgical-drill-guide.kcl
   },
   "backFace": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "backFace"
   },
   "base": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "base"
   },
@@ -4257,46 +4255,37 @@ description: Variables in memory after executing surgical-drill-guide.kcl
   },
   "capEnd001": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "capEnd001"
   },
   "capEnd002": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "capEnd002"
   },
   "capEnd003": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "capEnd003"
   },
   "capEnd004": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "capEnd004"
   },
   "capEnd005": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "capEnd005"
   },
   "capStart001": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "capStart001"
   },
   "capStart002": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "capStart002"
   },
   "capStart003": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "capStart003"
   },
   "circle1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "circle1"
   },
@@ -4320,11 +4309,9 @@ description: Variables in memory after executing surgical-drill-guide.kcl
   },
   "frontBend": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "frontBend"
   },
   "frontFace": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "frontFace"
   },
@@ -8884,21 +8871,17 @@ description: Variables in memory after executing surgical-drill-guide.kcl
   },
   "heelArc": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "heelArc"
   },
   "innerCircle": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "innerCircle"
   },
   "outerCircle": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "outerCircle"
   },
   "returnEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "returnEdge"
   },
@@ -10079,11 +10062,9 @@ description: Variables in memory after executing surgical-drill-guide.kcl
   },
   "supportEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "supportEdge"
   },
   "topFace": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "topFace"
   }

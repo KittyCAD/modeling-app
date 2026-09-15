@@ -5,7 +5,6 @@ description: Variables in memory after executing get_opposite_edge_after_fillet_
 {
   "seg01": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "seg01"
   },
   "sketch001": {

@@ -69,7 +69,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
   },
   "backEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "backEdge"
   },
   "basePlane": {
@@ -105,7 +104,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
     }
   },
   "bottomEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "bottomEdge"
   },
@@ -1325,7 +1323,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
   },
   "frontEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "frontEdge"
   },
   "hiddenFirstShelfProfile": {
@@ -1678,11 +1675,9 @@ description: Variables in memory after executing modular-shelf-grid.kcl
   },
   "innerEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "innerEdge"
   },
   "leftEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "leftEdge"
   },
@@ -16333,7 +16328,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
   },
   "outerEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "outerEdge"
   },
   "panelThickness": {
@@ -16346,7 +16340,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
     }
   },
   "rightEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "rightEdge"
   },
@@ -18596,7 +18589,6 @@ description: Variables in memory after executing modular-shelf-grid.kcl
     ]
   },
   "topEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "topEdge"
   },

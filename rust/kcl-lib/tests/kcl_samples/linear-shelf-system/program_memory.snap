@@ -1352,7 +1352,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
   },
   "bottomEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bottomEdge"
   },
   "firstShelf": {
@@ -2594,7 +2593,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
     }
   },
   "leftEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "leftEdge"
   },
@@ -13594,7 +13592,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
   },
   "rightEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "rightEdge"
   },
   "shelfBoardCount": {
@@ -16828,7 +16825,6 @@ description: Variables in memory after executing linear-shelf-system.kcl
     ]
   },
   "topEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "topEdge"
   },

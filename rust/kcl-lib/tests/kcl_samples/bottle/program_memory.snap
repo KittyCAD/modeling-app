@@ -2064,7 +2064,6 @@ description: Variables in memory after executing bottle.kcl
   },
   "bottomArc": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bottomArc"
   },
   "halfBottleLength": {
@@ -2087,11 +2086,9 @@ description: Variables in memory after executing bottle.kcl
   },
   "leftSide": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "leftSide"
   },
   "neckCircle": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "neckCircle"
   },
@@ -2549,11 +2546,9 @@ description: Variables in memory after executing bottle.kcl
   },
   "neckTop": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "neckTop"
   },
   "rightSide": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "rightSide"
   },
@@ -2594,7 +2589,6 @@ description: Variables in memory after executing bottle.kcl
     }
   },
   "topArc": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "topArc"
   },
