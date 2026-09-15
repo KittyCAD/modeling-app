@@ -47,6 +47,9 @@ Valid properties are:
   cause a warning), `deny` (the default, experimental features cause an error).
 - `kclVersion`: the version of the KCL language and standard libary to execute with.
   - Accepted values: `1.0`, `2.0`, `"3.0-preview"` (experimental).
+  - A file that declares `"3.0-preview"` can only be imported when the file being executed
+    declares it too. Importing it from a file that declares `1.0`, `2.0`, or no `kclVersion`
+    is an error, so KCL 3.0 semantics never apply to only part of a program.
   - When the file being executed declares `"3.0-preview"`, that version governs the whole
     execution, including any files it imports. Under `"3.0-preview"`:
     - `return` immediately exits the enclosing function; statements after an executed
@@ -67,8 +70,5 @@ Valid properties are:
       file's version. But it's recommended to specify it in every file so that
       viewing an imported file doesn't unintentionally change `kclVersion` to
       the default of `1.0`.
-  - A file that declares `"3.0-preview"` can only be imported when the file being executed
-    declares it too. Importing it from a file that declares `1.0`, `2.0`, or no `kclVersion`
-    is an error, so KCL 3.0 semantics never apply to only part of a program.
 
 These settings override any project-wide settings (configured in project.toml or via the UI).
