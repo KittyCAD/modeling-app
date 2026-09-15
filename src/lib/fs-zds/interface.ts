@@ -6,6 +6,11 @@ export interface CopyOptions {
   readonly force?: boolean
 }
 
+/** File replacement policy supported by every filesystem backing. */
+export interface WriteFileOptions {
+  readonly flag?: 'w' | 'wx'
+}
+
 export interface IStat {
   dev: number
   ino: number
@@ -67,7 +72,7 @@ export interface IZooDesignStudioFS {
   writeFile: (
     src: string,
     data: Uint8Array<ArrayBuffer>,
-    options?: any
+    options?: WriteFileOptions
     // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   ) => Promise<undefined | void>
   readdir: (path: string, options?: any) => Promise<string[]>
