@@ -7,8 +7,11 @@ import {
   FileSystem,
   type FileSystemError,
   fileSystemError,
+  type OwnedFileContents,
+  ownFileContents,
 } from '@src/lib/fileSystem/fileSystem'
 import {
+  comparePathLockKeys,
   type PathLockRequirement,
   pathLockRequirements,
 } from '@src/lib/fileSystem/pathLocking'
@@ -44,10 +47,10 @@ export interface CopyOptions {
 
 const textEncoder = new TextEncoder()
 
-function snapshotFileContents(contents: FileContents): Uint8Array {
+function snapshotFileContents(contents: FileContents): OwnedFileContents {
   return typeof contents === 'string'
-    ? textEncoder.encode(contents)
-    : new Uint8Array(contents)
+    ? ownFileContents(textEncoder.encode(contents))
+    : ownFileContents(contents)
 }
 
 /**
@@ -98,7 +101,7 @@ export interface FileOperationsService {
   /** Write bytes or a UTF-8 string to a path. */
   readonly writeFile: (
     path: string,
-    contents: FileContents
+    contents: OwnedFileContents
   ) => Effect.Effect<void, FileSystemError>
   /**
    * Create exactly this path from bytes or a UTF-8 string without
@@ -106,7 +109,7 @@ export interface FileOperationsService {
    */
   readonly createFile: (
     path: string,
-    contents: FileContents
+    contents: OwnedFileContents
   ) => Effect.Effect<void, FileSystemError>
   /**
    * Create the preferred filename or a numbered variant from bytes or a UTF-8
@@ -115,7 +118,7 @@ export interface FileOperationsService {
   readonly createUniqueFile: (
     parent: string,
     name: FileNameParts,
-    contents: FileContents
+    contents: OwnedFileContents
   ) => Effect.Effect<string, FileSystemError>
   /** Create exactly this path, rejecting any existing file or directory. */
   readonly createDirectory: (
@@ -219,7 +222,7 @@ const makeFileOperations = (backing: IZooDesignStudioFS) =>
       withLocks(
         directoryMembershipLocks,
         [...new Set(paths.map((path) => backing.resolve(path)))]
-          .sort((left, right) => left.localeCompare(right))
+          .sort(comparePathLockKeys)
           .map((path) => ({ path, mode })),
         operation
       )
@@ -257,7 +260,7 @@ const makeFileOperations = (backing: IZooDesignStudioFS) =>
         )
       )
 
-    const coordinateWrite = (path: string, contents: Uint8Array) =>
+    const coordinateWrite = (path: string, contents: OwnedFileContents) =>
       trackMutation(
         withPathLocks(
           pathLockRequirements(backing, [path]),
@@ -277,45 +280,74 @@ const makeFileOperations = (backing: IZooDesignStudioFS) =>
         )
       )
 
-    const createEntryAt = <A>(
-      operation: 'create-directory' | 'create-file',
-      path: string,
-      create: Effect.Effect<A, FileSystemError>
-    ) =>
+    const directoryLineage = (path: string): readonly string[] => {
+      const lineage: string[] = []
+      let current = backing.resolve(path)
+
+      while (true) {
+        const parent = backing.dirname(current)
+        if (parent === current) {
+          return lineage.reverse()
+        }
+        lineage.push(current)
+        current = parent
+      }
+    }
+
+    /**
+     * Ensure each directory one segment at a time while excluding readers of
+     * the immediate parent's membership during that segment's creation.
+     */
+    const ensureDirectoryPath = (path: string) =>
+      Effect.forEach(
+        directoryLineage(path),
+        (directory) =>
+          withDirectoryMembershipLocks(
+            [backing.dirname(directory)],
+            'exclusive',
+            fileSystem
+              .exists(directory)
+              .pipe(
+                Effect.flatMap((exists) =>
+                  exists ? Effect.void : fileSystem.makeDirectory(directory)
+                )
+              )
+          ),
+        { discard: true }
+      )
+
+    const createDirectoryAt = (path: string) =>
       fileSystem.exists(path).pipe(
         Effect.flatMap((exists) =>
           exists
             ? Effect.fail(
                 fileSystemError(
-                  operation,
+                  'create-directory',
                   path,
                   Object.assign(new Error(`Path ${path} already exists`), {
                     code: 'EEXIST',
                   })
                 )
               )
-            : create
+            : fileSystem.makeDirectory(path)
         )
       )
-
-    const createFileAt = (path: string, contents: Uint8Array) =>
-      createEntryAt('create-file', path, fileSystem.writeFile(path, contents))
-
-    const createDirectoryAt = (path: string) =>
-      createEntryAt('create-directory', path, fileSystem.makeDirectory(path))
 
     const createUniqueFileAt = (
       parent: string,
       name: FileNameParts,
-      contents: Uint8Array
+      contents: OwnedFileContents
     ) =>
       Effect.gen(function* () {
         let suffix = 0
 
         while (true) {
           const path = backing.join(parent, fileNameCandidate(name, suffix))
-          if (!(yield* fileSystem.exists(path))) {
-            yield* fileSystem.writeFile(path, contents)
+          const created = yield* fileSystem.createFile(path, contents).pipe(
+            Effect.as(true),
+            Effect.catchTag('FileAlreadyExists', () => Effect.succeed(false))
+          )
+          if (created) {
             return path
           }
           suffix += 1
@@ -383,31 +415,49 @@ const makeFileOperations = (backing: IZooDesignStudioFS) =>
           [source, destination],
           moveEntry(source, destination)
         ),
-      writeFile: (path, contents) =>
-        coordinateWrite(path, snapshotFileContents(contents)),
+      writeFile: (path, contents) => coordinateWrite(path, contents),
       createFile: (path, contents) =>
-        coordinateMutation(
-          [path],
-          createFileAt(path, snapshotFileContents(contents))
-        ),
+        coordinateMutation([path], fileSystem.createFile(path, contents)),
       // As with unique directories, an exclusive parent lock makes candidate
       // selection and creation one coordinated operation.
       createUniqueFile: (parent, name, contents) =>
         coordinateMutation(
           [parent],
-          createUniqueFileAt(parent, name, snapshotFileContents(contents)),
+          createUniqueFileAt(parent, name, contents),
           [parent]
         ),
       createDirectory: (path) =>
-        coordinateMutation([path], createDirectoryAt(path)),
+        trackMutation(
+          withPathLocks(
+            pathLockRequirements(backing, [path]),
+            ensureDirectoryPath(backing.dirname(path)).pipe(
+              Effect.zipRight(
+                withDirectoryMembershipLocks(
+                  [backing.dirname(path)],
+                  'exclusive',
+                  createDirectoryAt(path)
+                )
+              )
+            )
+          )
+        ),
       // Lock the parent exclusively while selecting and creating the name.
       // Child mutations take a shared parent lock, so no coordinated caller
       // can claim the same candidate between the existence check and creation.
       createUniqueDirectory: (parent, preferredName) =>
-        coordinateMutation(
-          [parent],
-          createUniqueDirectoryAt(parent, preferredName),
-          [parent]
+        trackMutation(
+          withPathLocks(
+            pathLockRequirements(backing, [parent]),
+            ensureDirectoryPath(parent).pipe(
+              Effect.zipRight(
+                withDirectoryMembershipLocks(
+                  [parent],
+                  'exclusive',
+                  createUniqueDirectoryAt(parent, preferredName)
+                )
+              )
+            )
+          )
         ),
       remove: (path) => coordinateMutation([path], fileSystem.remove(path)),
       rename: (source, destination) =>
@@ -465,26 +515,32 @@ export const move = (source: string, destination: string) =>
     Effect.flatMap((operations) => operations.move(source, destination))
   )
 
-export const writeFile = (path: string, contents: FileContents) =>
-  FileOperations.pipe(
-    Effect.flatMap((operations) => operations.writeFile(path, contents))
+export const writeFile = (path: string, contents: FileContents) => {
+  const ownedContents = snapshotFileContents(contents)
+  return FileOperations.pipe(
+    Effect.flatMap((operations) => operations.writeFile(path, ownedContents))
   )
+}
 
-export const createFile = (path: string, contents: FileContents) =>
-  FileOperations.pipe(
-    Effect.flatMap((operations) => operations.createFile(path, contents))
+export const createFile = (path: string, contents: FileContents) => {
+  const ownedContents = snapshotFileContents(contents)
+  return FileOperations.pipe(
+    Effect.flatMap((operations) => operations.createFile(path, ownedContents))
   )
+}
 
 export const createUniqueFile = (
   parent: string,
   name: FileNameParts,
   contents: FileContents
-) =>
-  FileOperations.pipe(
+) => {
+  const ownedContents = snapshotFileContents(contents)
+  return FileOperations.pipe(
     Effect.flatMap((operations) =>
-      operations.createUniqueFile(parent, name, contents)
+      operations.createUniqueFile(parent, name, ownedContents)
     )
   )
+}
 
 export const createDirectory = (path: string) =>
   FileOperations.pipe(
