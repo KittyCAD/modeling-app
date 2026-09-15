@@ -67,5 +67,8 @@ Valid properties are:
       file's version. But it's recommended to specify it in every file so that
       viewing an imported file doesn't unintentionally change `kclVersion` to
       the default of `1.0`.
+  - A file that declares `"3.0-preview"` can only be imported when the file being executed
+    declares it too. Importing it from a file that declares `1.0`, `2.0`, or no `kclVersion`
+    is an error, so KCL 3.0 semantics never apply to only part of a program.
 
 These settings override any project-wide settings (configured in project.toml or via the UI).
