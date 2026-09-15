@@ -8,6 +8,8 @@ import {
   createLocalName,
   createName,
   createTagDeclarator,
+  createVariableDeclaration,
+  findUniqueName,
 } from '@src/lang/create'
 import { toUtf16 } from '@src/lang/errors'
 import {
@@ -676,6 +678,27 @@ export function addLoft({
     vars.exprs = selectionVars.exprs
     vars.pathIfPipe = selectionVars.pathIfPipe
 
+    const refreshedConsumedRegions =
+      insertFreshRegionsForConsumedLoftSelections({
+        sketches,
+        modifiedAst,
+        wasmInstance,
+      })
+    if (err(refreshedConsumedRegions)) {
+      return refreshedConsumedRegions
+    }
+
+    if (refreshedConsumedRegions.size > 0) {
+      vars.exprs = vars.exprs.map((expr) => {
+        if (expr.type !== 'Name') {
+          return expr
+        }
+
+        const freshRegionName = refreshedConsumedRegions.get(expr.name.name)
+        return freshRegionName ? createLocalName(freshRegionName) : expr
+      })
+    }
+
     const engineRegions = sketches.otherSelections.filter(
       isEngineRegionSelection
     )
@@ -777,6 +800,55 @@ export function addLoft({
     modifiedAst,
     pathToNode,
   }
+}
+
+function insertFreshRegionsForConsumedLoftSelections({
+  sketches,
+  modifiedAst,
+  wasmInstance,
+}: {
+  sketches: Selections
+  modifiedAst: Node<Program>
+  wasmInstance: ModuleType
+}): Error | Map<string, string> {
+  const refreshedRegions = new Map<string, string>()
+
+  for (const selection of sketches.graphSelections) {
+    const artifact = selection.artifact
+    if (
+      artifact?.type !== 'path' ||
+      artifact.subType !== 'region' ||
+      !artifact.consumed
+    ) {
+      continue
+    }
+
+    const regionVariable = getNodeFromPath<VariableDeclaration>(
+      modifiedAst,
+      selection.codeRef.pathToNode,
+      wasmInstance,
+      'VariableDeclaration'
+    )
+    if (err(regionVariable)) {
+      continue
+    }
+
+    const originalRegionName = regionVariable.node.declaration.id.name
+    if (refreshedRegions.has(originalRegionName)) {
+      continue
+    }
+
+    const freshRegionName = findUniqueName(modifiedAst, 'region')
+    modifiedAst.body.push(
+      createVariableDeclaration(
+        freshRegionName,
+        structuredClone(regionVariable.node.declaration.init)
+      )
+    )
+    refreshedRegions.set(originalRegionName, freshRegionName)
+  }
+
+  return refreshedRegions
 }
 
 export function addRevolve({
