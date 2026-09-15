@@ -383,6 +383,12 @@ impl Program {
         self.ast.meta_settings()
     }
 
+    /// Resolve the entry point's language version before connecting or executing.
+    /// Missing settings use the legacy version; invalid settings are errors.
+    pub fn language_version(&self) -> Result<KclVersion, KclError> {
+        Ok(self.meta_settings()?.unwrap_or_default().kcl_version)
+    }
+
     /// Change the meta settings for the kcl file.
     pub fn change_default_units(
         &self,
@@ -490,6 +496,23 @@ pub fn version() -> &'static str {
 #[cfg(test)]
 mod test {
     use super::*;
+
+    #[test]
+    fn entry_point_language_version() {
+        for (code, expected) in [
+            ("", KclVersion::V1),
+            ("@settings(defaultLengthUnit = mm)", KclVersion::V1),
+            ("@settings(kclVersion = 2.0)", KclVersion::V2),
+            ("@settings(kclVersion = \"3.0-preview\")", KclVersion::V3Preview),
+        ] {
+            assert_eq!(
+                Program::parse_no_errs(code).unwrap().language_version().unwrap(),
+                expected
+            );
+        }
+        let invalid = Program::parse_no_errs("@settings(kclVersion = 99.0)").unwrap();
+        assert!(invalid.language_version().is_err());
+    }
 
     #[test]
     fn proprietary_file_extensions_use_real_suffixes() {
