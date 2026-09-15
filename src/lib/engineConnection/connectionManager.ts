@@ -73,6 +73,7 @@ import {
 } from '@src/lib/utils'
 import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import { ClientErrorCode, reportClientError } from '../clientErrors'
 
 export type ConnectionSystemDeps = {
   settingsActor: SettingsActorType
@@ -1144,6 +1145,11 @@ export class ConnectionManager extends EventTarget {
 
     // Allow for restart!
     this.started = false
+
+    void reportClientError({
+      code: ClientErrorCode.EngineTeardown,
+      message: `Engine teardown called.`,
+    })
   }
 
   /**

@@ -40,6 +40,7 @@ export enum ClientErrorCode {
   ZookeeperSetupError = 'zookeeper_setup_error',
   ZookeeperWebsocketBinaryDecodeError = 'zookeeper_websocket_binary_decode_error',
   ZookeeperWebsocketJsonParseError = 'zookeeper_websocket_json_parse_error',
+  EngineTeardown = 'engine_teardown',
 }
 
 const reportedClientErrors = new Set<string>()
@@ -138,7 +139,8 @@ const buildStack = (params: ReportClientErrorParams) => {
   }
   if (
     params.code !== ClientErrorCode.EngineDisconnect &&
-    params.code !== ClientErrorCode.EngineBackendDisconnect
+    params.code !== ClientErrorCode.EngineBackendDisconnect &&
+    params.code !== ClientErrorCode.EngineTeardown
   ) {
     return JSON.stringify(context)
   }
