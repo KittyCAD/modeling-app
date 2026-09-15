@@ -115,6 +115,7 @@ impl WebSocketTransport {
         // Passed via EngineManager from elsewhere
         ws: reqwest::Upgraded,
         heartbeats: Option<u64>,
+        trace: Option<crate::engine::api_call_trace::ApiCallTrace>,
 
         // Created by EngineManager
         response_information: ResponseInformation,
@@ -204,6 +205,9 @@ impl WebSocketTransport {
                                 resp: OkWebSocketResponseData::ModelingSessionData { session },
                                 ..
                             }) => {
+                                if let Some(trace) = &trace {
+                                    trace.record(session.api_call_id.to_string());
+                                }
                                 let mut sd = session_data_for_read.write().await;
                                 sd.replace(session.clone());
                                 logln!("API Call ID: {}", session.api_call_id);

@@ -1122,8 +1122,18 @@ impl ExecutorContext {
     /// Create a new default executor context.
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
+        Self::new_with_trace(client, settings, None).await
+    }
+
+    /// Create a live context, retaining observed backend IDs even if connecting fails.
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn new_with_trace(
+        client: &kittycad::Client,
+        settings: ExecutorSettings,
+        trace: Option<crate::engine::api_call_trace::ApiCallTrace>,
+    ) -> Result<Self> {
         let pr = std::env::var("ZOO_ENGINE_PR").ok().and_then(|s| s.parse().ok());
-        let (ws, _headers) = client
+        let connection = client
             .modeling()
             .commands_ws(kittycad::modeling::CommandsWsParams {
                 api_call_id: None,
@@ -1143,9 +1153,22 @@ impl ExecutorContext {
                 video_res_width: None,
                 video_res_height: None,
             })
-            .await?;
+            .await;
 
-        let engine_conn = EngineManager::new_websocket_transport(ws, settings.heartbeats).await;
+        let (ws, headers) = match connection {
+            Ok(connection) => connection,
+            Err(error) => {
+                if let Some(trace) = &trace {
+                    trace.record_error(&error);
+                }
+                return Err(error.into());
+            }
+        };
+        if let Some(trace) = &trace {
+            trace.record_headers(&headers);
+        }
+
+        let engine_conn = EngineManager::new_websocket_transport_with_trace(ws, settings.heartbeats, trace).await;
         let engine = Arc::new(engine_conn);
 
         Ok(Self::new_with_engine(engine, settings))
@@ -1230,10 +1253,21 @@ impl ExecutorContext {
         token: Option<String>,
         engine_addr: Option<String>,
     ) -> Result<Self> {
+        Self::new_with_client_and_trace(settings, token, engine_addr, None).await
+    }
+
+    /// Create a live context with an optional backend API call collector.
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn new_with_client_and_trace(
+        settings: ExecutorSettings,
+        token: Option<String>,
+        engine_addr: Option<String>,
+        trace: Option<crate::ApiCallTrace>,
+    ) -> Result<Self> {
         // Create the client.
         let client = crate::engine::new_zoo_client(token, engine_addr)?;
 
-        let ctx = Self::new(&client, settings).await?;
+        let ctx = Self::new_with_trace(&client, settings, trace).await?;
         Ok(ctx)
     }
 
