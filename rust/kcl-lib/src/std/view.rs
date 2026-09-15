@@ -614,13 +614,9 @@ boss = extrude(bossRegion, length = 8mm)
         );
     }
 
-    /// The opaque `std::view` types resolve where a signature names them.
-    /// Resolution happens when the declaration executes, so executing these
-    /// declarations is the whole assertion; neither function is called.
-    ///
-    /// Type annotations parse only as bare identifiers, so the namespaced
-    /// spelling `view::CameraView` cannot appear in a signature and an
-    /// explicit import is the only route to these types from user code.
+    /// Imported opaque `std::view` types resolve by their bare names in signatures.
+    /// Resolution happens when each declaration executes, so neither function
+    /// needs to be called for this test to exercise signature resolution.
     #[tokio::test(flavor = "multi_thread")]
     async fn opaque_types_resolve_in_signatures() {
         let code = r#"@settings(experimentalFeatures = allow)
@@ -631,6 +627,21 @@ fn acceptsCamera(@camera: CameraView) {
 }
 
 fn passesNamed(@input: NamedView): NamedView {
+  return input
+}
+"#;
+        if let Err(err) = parse_execute(code).await {
+            panic!("expected the declarations to resolve, but got: {}", err.message());
+        }
+    }
+
+    /// A qualified `std::view` type resolves where a signature names it.
+    /// The signature is the first reference to the module, so this also verifies
+    /// that type resolution executes a registered standard-library module.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn qualified_type_path_resolves_in_signature() {
+        let code = r#"@settings(experimentalFeatures = allow)
+fn passesOrientation(@input: view::Orientation): view::Orientation {
   return input
 }
 "#;
