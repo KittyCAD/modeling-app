@@ -1,12 +1,16 @@
-import JSZip from 'jszip'
-import toast from 'react-hot-toast'
-
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import { EXPORT_TOAST_MESSAGES } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import type ModelingAppFile from '@src/lib/modelingAppFile'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
+import JSZip from 'jszip'
+import toast from 'react-hot-toast'
 
-const save_ = async (file: ModelingAppFile, toastId: string) => {
+const save_ = async (
+  fileOperations: FileOperationsRegistryService,
+  file: ModelingAppFile,
+  toastId: string
+) => {
   try {
     if (window.electron) {
       const extension = file.name.split('.').pop() || null
@@ -24,8 +28,7 @@ const save_ = async (file: ModelingAppFile, toastId: string) => {
           testSettingsPath,
           'downloads-during-playwright'
         )
-        await fsZds.mkdir(downloadDir, { recursive: true })
-        await fsZds.writeFile(
+        await fileOperations.writeFile(
           fsZds.join(downloadDir, file.name),
           new Uint8Array(file.contents)
         )
@@ -55,7 +58,7 @@ const save_ = async (file: ModelingAppFile, toastId: string) => {
       }
 
       // Write the file.
-      await fsZds.writeFile(
+      await fileOperations.writeFile(
         filePathMeta.filePath,
         new Uint8Array(file.contents)
       )
@@ -80,10 +83,12 @@ const save_ = async (file: ModelingAppFile, toastId: string) => {
 // Saves files locally from an export call.
 // We override the file's name with one passed in from the client side.
 export async function exportSave({
+  fileOperations,
   files,
   fileName,
   toastId,
 }: {
+  fileOperations: FileOperationsRegistryService
   files: ModelingAppFile[]
   fileName: string
   toastId: string
@@ -94,10 +99,14 @@ export async function exportSave({
       zip.file(file.name, new Uint8Array(file.contents), { binary: true })
     }
     return zip.generateAsync({ type: 'array' }).then((contents) => {
-      return save_({ name: `${fileName || 'output'}.zip`, contents }, toastId)
+      return save_(
+        fileOperations,
+        { name: `${fileName || 'output'}.zip`, contents },
+        toastId
+      )
     })
   } else {
     files[0].name = fileName || files[0].name
-    return save_(files[0], toastId)
+    return save_(fileOperations, files[0], toastId)
   }
 }

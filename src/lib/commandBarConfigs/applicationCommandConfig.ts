@@ -207,13 +207,14 @@ export function createApplicationCommands({
               const fileData = new Uint8Array(fr.result)
 
               getNextFileName({
+                fileOperations: app.fileOperations,
                 entryName: fileNameWithExtension,
                 baseDir: joinOSPaths(projectDirectoryPath, uniqueNameIfNeeded),
                 wasmInstance,
                 preserveUnknownExtension: true,
               })
                 .then(({ path }) => {
-                  return fsZds.writeFile(path, fileData)
+                  return app.fileOperations.writeFile(path, fileData)
                 })
                 .then(() => {
                   app.systemIOActor.send({
@@ -223,7 +224,7 @@ export function createApplicationCommands({
                 .catch(() => toast.error(error))
             }
           })
-          fsZds
+          app.fileOperations
             .readFile(selectedFilePath)
             .then((content) => {
               const blob = new Blob([new Uint8Array(content)])
@@ -472,7 +473,7 @@ export function createApplicationCommands({
         const requestedEnvironmentFormatted = returnSelfOrGetHostNameFromURL(
           data.environment
         )
-        writeEnvironmentFile(requestedEnvironmentFormatted)
+        writeEnvironmentFile(app.fileOperations, requestedEnvironmentFormatted)
           .then(() => {
             // Reload the application and it will trigger the correct sign in workflow for the new environment
             window.location.reload()
@@ -512,6 +513,7 @@ export function createApplicationCommands({
       const environmentName = env().VITE_ZOO_BASE_DOMAIN
       if (environmentName) {
         writeEnvironmentConfigurationKittycadWebSocketUrl(
+          app.fileOperations,
           environmentName,
           data?.url ?? ''
         )
@@ -558,6 +560,7 @@ export function createApplicationCommands({
       const environmentName = env().VITE_ZOO_BASE_DOMAIN
       if (environmentName) {
         writeEnvironmentConfigurationZookeeperWebSocketUrl(
+          app.fileOperations,
           environmentName,
           data?.url ?? ''
         )
@@ -669,6 +672,7 @@ export function createApplicationCommands({
       const wasmInstance = await app.wasmPromise
 
       await exportProjectZip({
+        fileOperations: app.fileOperations,
         project,
         currentFilePath: app.project?.executingPath,
         currentFileContents: executingEditor?.code,

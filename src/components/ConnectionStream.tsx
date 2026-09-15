@@ -70,7 +70,14 @@ interface ConnectionStreamProps {
 }
 
 export const ConnectionStream = (props: ConnectionStreamProps) => {
-  const { settings, project, wasmPromise, commands, userFeatures } = useApp()
+  const {
+    settings,
+    project,
+    wasmPromise,
+    commands,
+    userFeatures,
+    fileOperations,
+  } = useApp()
   const hasLegacySketchMode = userFeatures.useHas(
     LEGACY_SKETCH_MODE_FEATURE_FLAG,
     false
@@ -324,6 +331,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
             // Take a screen shot after the page mounts and zoom to fit runs
             if (projectIORef && projectIORef.path) {
               createThumbnailPNGOnDesktop({
+                fileOperations,
                 projectDirectoryWithoutEndingSlash: projectIORef.path,
               })
             }

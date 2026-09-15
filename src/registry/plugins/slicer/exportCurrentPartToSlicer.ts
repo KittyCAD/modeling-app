@@ -2,7 +2,7 @@ import type { IElectronAPI } from '@root/interface'
 import type { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { KclManager } from '@src/lang/KclManager'
 import { EXPORT_TOAST_MESSAGES } from '@src/lib/constants'
-import fsZds from '@src/lib/fs-zds'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import type { PluginIpcChannel } from '@src/registry/pluginIpc'
 import type { SlicerLaunchResult } from '@src/registry/plugins/slicer/types'
 import toast from 'react-hot-toast'
@@ -19,6 +19,7 @@ export type ExportCurrentPartToSlicerOptions = {
 type ExportCurrentPartToSlicerRuntime = {
   electron?: IElectronAPI
   kclManager?: KclManager
+  fileOperations?: FileOperationsRegistryService
 }
 
 const DEFAULT_STL_FORMAT: OutputFormat3d = {
@@ -63,6 +64,7 @@ export async function exportCurrentPartToSlicer(
 ) {
   const electron = runtime.electron ?? window.electron
   const kclManager = runtime.kclManager
+  const fileOperations = runtime.fileOperations
 
   if (!electron) {
     toast.error(`Export to ${slicerName} is only available in the desktop app.`)
@@ -71,6 +73,11 @@ export async function exportCurrentPartToSlicer(
 
   if (!kclManager) {
     toast.error('The app is not ready to export yet.')
+    return
+  }
+
+  if (!fileOperations) {
+    toast.error('File operations are not ready for export yet.')
     return
   }
 
@@ -114,8 +121,7 @@ export async function exportCurrentPartToSlicer(
       getExportFileName(kclManager.currentFileName, outputFileExtension)
     )
 
-    await fsZds.mkdir(exportDir, { recursive: true })
-    await fsZds.writeFile(exportPath, new Uint8Array(file.contents))
+    await fileOperations.writeFile(exportPath, new Uint8Array(file.contents))
 
     const result = await electron.pluginIpc.invoke<SlicerLaunchResult>(
       ipcChannel,
