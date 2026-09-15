@@ -5,6 +5,9 @@ import {
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLiteral,
+  createLocalName,
+  createVariableDeclaration,
+  findUniqueName,
 } from '@src/lang/create'
 import {
   createVariableExpressionsArray,
@@ -12,6 +15,7 @@ import {
   setCallInAst,
 } from '@src/lang/modifyAst'
 import {
+  getBodyIndex,
   getVariableExprsFromSelection,
   stringifyPathToNode,
   valueOrVariable,
@@ -31,6 +35,39 @@ type BooleanSelectionGroup = {
   selections: Selections
   exprs: Expr[]
   pathIfPipe?: PathToNode
+}
+
+function materializePipeForLabeledArg(
+  ast: Node<Program>,
+  selection: Pick<BooleanSelectionGroup, 'exprs' | 'pathIfPipe'>
+): Pick<BooleanSelectionGroup, 'exprs' | 'pathIfPipe'> | Error {
+  if (
+    !selection.pathIfPipe ||
+    selection.exprs.length !== 1 ||
+    selection.exprs[0].type !== 'PipeSubstitution'
+  ) {
+    return selection
+  }
+
+  const bodyIndex = getBodyIndex(selection.pathIfPipe)
+  if (err(bodyIndex)) {
+    return bodyIndex
+  }
+
+  const statement = ast.body[bodyIndex]
+  if (statement?.type !== 'ExpressionStatement') {
+    return new Error('Expected a variable-less Boolean tool pipe')
+  }
+
+  const variableName = findUniqueName(ast, KCL_DEFAULT_CONSTANT_PREFIXES.SOLID)
+  const declaration = createVariableDeclaration(
+    variableName,
+    statement.expression
+  )
+  declaration.preComments = statement.preComments
+  ast.body[bodyIndex] = declaration
+
+  return { exprs: [createLocalName(variableName)] }
 }
 
 function booleanInputKey(expr: Expr, pathIfPipe?: PathToNode): string {
@@ -291,6 +328,19 @@ export function addSubtract({
     if (selectionError) {
       return selectionError
     }
+    if (vars.pathIfPipe && toolVars.pathIfPipe) {
+      return new Error(
+        'Cannot use both solids and tools in a subtraction operation with a pipe'
+      )
+    }
+    const materializedToolVars = materializePipeForLabeledArg(
+      modifiedAst,
+      toolVars
+    )
+    if (err(materializedToolVars)) {
+      return materializedToolVars
+    }
+    toolVars = materializedToolVars
   }
 
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
@@ -312,13 +362,7 @@ export function addSubtract({
   if (tolerance && 'variableName' in tolerance && tolerance.variableName) {
     insertVariableAndOffsetPathToNode(tolerance, modifiedAst, mNodeToEdit)
   }
-  if (vars.pathIfPipe && toolVars.pathIfPipe) {
-    return new Error(
-      'Cannot use both solids and tools in a subtraction operation with a pipe'
-    )
-  }
-
-  const pathIfNewPipe = vars.pathIfPipe ?? toolVars.pathIfPipe
+  const pathIfNewPipe = vars.pathIfPipe
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end
@@ -423,17 +467,26 @@ export function addSplit({
       return selectionError
     }
 
-    const toolsExpr = createVariableExpressionsArray(toolVars.exprs)
-    if (toolsExpr === null) {
-      return new Error('No tools provided for split operation')
-    }
     if (vars.pathIfPipe && toolVars.pathIfPipe) {
       return new Error(
         'Cannot use both targets and tools in a split operation with a pipe'
       )
     }
 
-    pathIfNewPipe = vars.pathIfPipe ?? toolVars.pathIfPipe
+    const materializedToolVars = materializePipeForLabeledArg(
+      modifiedAst,
+      toolVars
+    )
+    if (err(materializedToolVars)) {
+      return materializedToolVars
+    }
+
+    const toolsExpr = createVariableExpressionsArray(materializedToolVars.exprs)
+    if (toolsExpr === null) {
+      return new Error('No tools provided for split operation')
+    }
+
+    pathIfNewPipe = vars.pathIfPipe
     labeledArgs.push(createLabeledArg('tools', toolsExpr))
   }
 
