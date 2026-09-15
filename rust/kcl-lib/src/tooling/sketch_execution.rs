@@ -235,6 +235,23 @@ pub fn first_instance(program: &Program, sketch_name: &str) -> Option<Program> {
         return None;
     }
 
+    // Dropping an outer binding can silently expose a same-named stdlib value.
+    // Keep full execution when a sketch reference might lose its binding.
+    let safe = walk(&block.body.clone().into(), |node| -> anyhow::Result<bool> {
+        let Node::Name(name) = node else {
+            return Ok(true);
+        };
+        Ok(!name.path.is_empty()
+            || name.abs_path
+            || !declared_names.contains(name.name.name.as_str())
+            || literal_names.contains(name.name.name.as_str())
+            || function.params.iter().any(|param| named(name, &param.identifier.name)))
+    })
+    .ok()?;
+    if !safe {
+        return None;
+    }
+
     let mut isolated = program.clone();
     isolated.ast.body = program.ast.body[..=selected_call]
         .iter()
@@ -368,6 +385,52 @@ second = makePad(r = 7mm, depth = depth)
         assert!(first_instance(&program, "curvedProfile").is_some());
         let shadowed = Program::parse_no_errs(&format!("sin = 3mm\n{code}")).unwrap();
         assert!(first_instance(&shadowed, "curvedProfile").is_none());
+    }
+
+    #[test]
+    fn first_instance_declines_removed_sketch_bindings() {
+        let curved = include_str!("../../tests/sketch_visualizer/curved_instance/input.kcl");
+        for (code, sketch) in [
+            (format!("CW = CCW\n{curved}"), "curvedProfile"),
+            (format!("CW = \"ccw\": string\n{curved}"), "curvedProfile"),
+            (
+                format!(
+                    "PI = 6 / 2\n{}",
+                    CODE.replace("radius(perimeter) == r", "radius(perimeter) == r * PI")
+                ),
+                "profile",
+            ),
+            (
+                format!(
+                    "size = 2mm + 3mm\n{}",
+                    CODE.replace("radius(perimeter) == r", "radius(perimeter) == size")
+                ),
+                "profile",
+            ),
+        ] {
+            let program = Program::parse_no_errs(&code).unwrap();
+            assert!(first_instance(&program, sketch).is_none(), "accepted {code}");
+        }
+    }
+
+    #[test]
+    fn first_instance_accepts_preserved_or_unused_bindings() {
+        let curved = include_str!("../../tests/sketch_visualizer/curved_instance/input.kcl");
+        for (code, sketch) in [
+            (format!("CW = \"ccw\"\n{curved}"), "curvedProfile"),
+            (format!("CW = CCW\n{CODE}"), "profile"),
+            (format!("r = 2mm + 3mm\n{CODE}"), "profile"),
+            (
+                format!(
+                    "PI = 3\n{}",
+                    CODE.replace("radius(perimeter) == r", "radius(perimeter) == r * PI")
+                ),
+                "profile",
+            ),
+        ] {
+            let program = Program::parse_no_errs(&code).unwrap();
+            assert!(first_instance(&program, sketch).is_some(), "rejected {code}");
+        }
     }
 
     #[tokio::test]
