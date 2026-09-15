@@ -1,3 +1,4 @@
+import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import type {
   ClientMetrics,
   WebSocketRequest,
@@ -54,6 +55,8 @@ interface IDeferredPromise {
 export class Connection extends EventTarget {
   // connection url for the new Websocket()
   readonly url: string
+  readonly kclVersion: KclVersion
+  readonly unitTestGeometryOnly: boolean
   // Authorization bearer token for headers on websocket
   private readonly _token: string | undefined
   private _lastPingSentAt: number | undefined
@@ -107,6 +110,7 @@ export class Connection extends EventTarget {
 
   constructor({
     url,
+    kclVersion,
     token,
     handleOnDataChannelMessage,
     tearDownManager,
@@ -117,6 +121,7 @@ export class Connection extends EventTarget {
     getCloudProjectId,
   }: {
     url: string
+    kclVersion: KclVersion
     token: string
     handleOnDataChannelMessage: (event: MessageEvent<any>) => void
     tearDownManager: (options?: ManagerTearDown) => void
@@ -135,6 +140,8 @@ export class Connection extends EventTarget {
       metadata: { id: this.id },
     })
     this.url = url
+    this.kclVersion = kclVersion
+    this.unitTestGeometryOnly = unitTestGeometryOnly ?? false
     this._token = token
     this.handleOnDataChannelMessage = handleOnDataChannelMessage
     this.tearDownManager = tearDownManager
@@ -172,7 +179,7 @@ export class Connection extends EventTarget {
     geometryOnly = false
   ) {
     const url = withKittycadWebSocketURL(
-      `?video_res_width=${256}&video_res_height=${256}&post_effect=ssao${geometryOnly ? '&webrtc=false' : ''}`
+      `?video_res_width=${256}&video_res_height=${256}&post_effect=ssao${geometryOnly ? '&webrtc=false' : ''}&kcl_version=${encodeURIComponent(this.kclVersion)}`
     )
     this.websocket = new WebSocket(url, [])
     this.websocket.binaryType = 'arraybuffer'
@@ -627,6 +634,19 @@ export class Connection extends EventTarget {
     return this.peerConnection
   }
 
+  requestReconnect() {
+    if (
+      this.reconnectRequested ||
+      this.websocket?.readyState !== WebSocket.OPEN
+    )
+      return
+    this.reconnectRequested = true
+    this.websocket.close(
+      WebSocketCloseCode.NormalClosure,
+      'reconnect requested'
+    )
+  }
+
   createWebSocketConnection() {
     if (!this.deferredSdpAnswer?.resolve) {
       console.warn('deferredSdpAnswer resolve is undefined')
@@ -673,20 +693,7 @@ export class Connection extends EventTarget {
         modelingApiCallId: this.apiCallId ?? null,
       }),
       tearDownManager: this.tearDownManager.bind(this),
-      requestReconnect: () => {
-        if (
-          this.reconnectRequested ||
-          this.websocket?.readyState !== WebSocket.OPEN
-        ) {
-          return
-        }
-
-        this.reconnectRequested = true
-        this.websocket.close(
-          WebSocketCloseCode.NormalClosure,
-          'reconnect requested'
-        )
-      },
+      requestReconnect: () => this.requestReconnect(),
     })
     const onWebSocketClose = createOnWebSocketClose({
       websocket: this.websocket,

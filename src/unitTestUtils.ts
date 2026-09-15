@@ -1,3 +1,4 @@
+import { getKclLanguageVersion } from '@src/lang/kclLanguageVersion'
 import { join } from 'path'
 import { defineRegistryItem } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
@@ -18,7 +19,7 @@ import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import { MachineManager } from '@src/lib/MachineManager'
 import RustContext from '@src/lib/rustContext'
 import { createSettings } from '@src/lib/settings/initialSettings'
-import { reportRejection } from '@src/lib/trap'
+import { isErr, reportRejection } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { settingsMachine } from '@src/machines/settingsMachine'
@@ -82,8 +83,10 @@ export function createSettledUserFeaturesForTest(): UserFeaturesSettleService {
 // if this runs in vitest the engineCommandManager will run a lite connection mode.
 export async function buildTheWorldAndConnectToEngine({
   geometryOnly = false,
+  entrypointCode = '',
 }: {
   geometryOnly?: boolean
+  entrypointCode?: string
 } = {}) {
   const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
   const instancePromise = loadAndInitialiseWasmInstance(WASM_PATH)
@@ -113,7 +116,7 @@ export async function buildTheWorldAndConnectToEngine({
     engineCommandManager,
     settingsActor
   )
-  const kclManager = new KclManager('some-file', '', {
+  const kclManager = new KclManager('some-file', entrypointCode, {
     wasmInstancePromise: instancePromise,
     settings: settingsActor,
     commandBar: commandBarActor,
@@ -123,9 +126,16 @@ export async function buildTheWorldAndConnectToEngine({
     projectPath: signal('some-project'),
   })
 
+  const kclVersion = getKclLanguageVersion(
+    entrypointCode,
+    await instancePromise
+  )
+  if (isErr(kclVersion)) return Promise.reject(kclVersion)
+
   await new Promise((resolve, reject) => {
     kclManager.engineCommandManager
       .start({
+        kclVersion,
         token: env().VITE_ZOO_API_TOKEN || '',
         width: 256,
         height: 256,

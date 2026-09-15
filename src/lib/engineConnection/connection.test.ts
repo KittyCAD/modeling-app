@@ -10,6 +10,7 @@ const createConnection = () => {
   const send = vi.fn()
   const tearDownManager = vi.fn()
   const connection = new Connection({
+    kclVersion: '3.0-preview',
     url: 'wss://example.test/modeling',
     token: '',
     handleOnDataChannelMessage: vi.fn(),
@@ -91,6 +92,7 @@ function createUnitTestConnection({
 }) {
   const callbackOnUnitTestingConnection = vi.fn()
   const connection = new Connection({
+    kclVersion: '3.0-preview',
     url: 'unused-by-unit-test-connection',
     token: 'token',
     handleOnDataChannelMessage: vi.fn(),
@@ -119,6 +121,7 @@ describe('unit testing engine connection', () => {
 
     const websocketUrl = new URL(TestWebSocket.instances[0].url)
     expect(websocketUrl.searchParams.get('webrtc')).toBe('false')
+    expect(websocketUrl.searchParams.get('kcl_version')).toBe('3.0-preview')
   })
 
   it('treats session data as the successful geometry-only handshake', () => {

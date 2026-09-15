@@ -23,6 +23,7 @@ import type {
   is_points_ccw as IsPointsCcw,
   kcl_lint as KclLint,
   kcl_settings as KclSettings,
+  kcl_language_version as KclLanguageVersion,
   node_path_from_range as NodePathFromRange,
   parse_app_settings as ParseAppSettings,
   parse_project_settings as ParseProjectSettings,
@@ -104,6 +105,9 @@ export const default_project_settings: typeof DefaultProjectSettings = (
 }
 export const base64_decode: typeof Base64Decode = (...args) => {
   return getModule().base64_decode(...args)
+}
+export const kcl_language_version: typeof KclLanguageVersion = (...args) => {
+  return getModule().kcl_language_version(...args)
 }
 export const kcl_settings: typeof KclSettings = (...args) => {
   return getModule().kcl_settings(...args)

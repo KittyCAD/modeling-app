@@ -1,3 +1,4 @@
+import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import type {
   ModelingCmdReq,
   WebSocketRequest,
@@ -156,6 +157,7 @@ export class ConnectionManager extends EventTarget {
   // helps avoids duplicates as well
   allEventListeners: Map<string, IEventListenerTracked>
 
+  private unitTestingRustContext: RustContext | undefined
   callbackOnUnitTestingConnection: ((message: string) => void) | null
 
   constructor(systemDeps: ConnectionSystemDeps) {
@@ -184,6 +186,7 @@ export class ConnectionManager extends EventTarget {
     callbackOnUnitTestingConnection,
     unitTestGeometryOnly,
     rustContext,
+    kclVersion,
   }: {
     width: number
     height: number
@@ -192,6 +195,7 @@ export class ConnectionManager extends EventTarget {
     callbackOnUnitTestingConnection?: (message: string) => void
     unitTestGeometryOnly?: boolean
     rustContext?: RustContext
+    kclVersion: KclVersion
   }) {
     EngineDebugger.addLog({
       label: 'connectionManager',
@@ -227,9 +231,10 @@ export class ConnectionManager extends EventTarget {
 
     const handleMessage = this.createMessageHandler(rustContext)
 
-    const url = this.generateWebsocketURL()
+    const url = this.generateWebsocketURL(kclVersion)
     this.connection = new Connection({
       url,
+      kclVersion,
       token,
       handleOnDataChannelMessage: this.handleOnDataChannelMessage.bind(this),
       tearDownManager: this.tearDown.bind(this),
@@ -244,6 +249,7 @@ export class ConnectionManager extends EventTarget {
 
     // Nothing more to do when using a lite engine initialization
     if (callbackOnUnitTestingConnection) {
+      this.unitTestingRustContext = rustContext
       this.callbackOnUnitTestingConnection = callbackOnUnitTestingConnection
       return
     }
@@ -392,12 +398,12 @@ export class ConnectionManager extends EventTarget {
     )
   }
 
-  generateWebsocketURL() {
+  generateWebsocketURL(kclVersion: KclVersion) {
     let additionalSettings = this.settings.enableSSAO ? '&post_effect=ssao' : ''
     additionalSettings +=
       '&show_grid=' + (this.settings.showScaleGrid ? 'true' : 'false')
     const url = withKittycadWebSocketURL(
-      `?video_res_width=${this.streamDimensions.width}&video_res_height=${this.streamDimensions.height}${additionalSettings}`
+      `?video_res_width=${this.streamDimensions.width}&video_res_height=${this.streamDimensions.height}${additionalSettings}&kcl_version=${encodeURIComponent(kclVersion)}`
     )
     return url
   }
@@ -981,13 +987,44 @@ export class ConnectionManager extends EventTarget {
     delete this.unreliableSubscriptions[event][id]
   }
 
-  async startFromWasm(token: string): Promise<void> {
+  // Lightweight connections have no React reconnect lifecycle. Recreate their
+  // session here when a test starts executing a different entrypoint version.
+  async ensureUnitTestingKclVersion(kclVersion: KclVersion): Promise<boolean> {
+    const connection = this.connection
+    if (
+      !connection?.isUsingUnitTestingConnection ||
+      connection.kclVersion === kclVersion
+    )
+      return false
+    const token = connection.token ?? ''
+    const unitTestGeometryOnly = connection.unitTestGeometryOnly
+    this.tearDown()
+    await new Promise<void>((resolve, reject) => {
+      this.start({
+        ...this.streamDimensions,
+        token,
+        kclVersion,
+        unitTestGeometryOnly,
+        rustContext: this.unitTestingRustContext,
+        setStreamIsReady: () => {},
+        callbackOnUnitTestingConnection: (message) => {
+          if (message === 'auth success') resolve()
+          else if (message === 'auth_token_invalid')
+            reject(new Error('Engine authentication failed'))
+        },
+      }).catch(reject)
+    })
+    return true
+  }
+
+  async startFromWasm(token: string, kclVersion: KclVersion): Promise<void> {
     EngineDebugger.addLog({
       label: 'connectionManager',
       message: 'startFromWasm',
     })
     return await this.start({
       token,
+      kclVersion,
       width: 256,
       height: 256,
       setStreamIsReady: () => {

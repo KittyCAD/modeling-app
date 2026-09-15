@@ -1,3 +1,4 @@
+import { Themes } from '@src/lib/theme'
 import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import { Connection } from '@src/lib/engineConnection/connection'
@@ -18,7 +19,7 @@ class ReconnectTestWebSocket extends EventTarget {
     this.readyState = 2
   })
 
-  constructor() {
+  constructor(readonly url: string) {
     super()
     ReconnectTestWebSocket.instances.push(this)
   }
@@ -42,6 +43,7 @@ function startConnectionManager(
   { width, height }: { width: number; height: number }
 ) {
   return manager.start({
+    kclVersion: '3.0-preview',
     width,
     height,
     token: 'token',
@@ -50,6 +52,80 @@ function startConnectionManager(
 }
 
 describe('ConnectionManager', () => {
+  it('reopens lightweight sessions for a new entrypoint version', async () => {
+    const manager = createConnectionManager()
+    manager.started = true
+    manager.connection = {
+      isUsingUnitTestingConnection: true,
+      kclVersion: '2.0',
+      unitTestGeometryOnly: true,
+      token: 'token',
+      disconnectAll: vi.fn(),
+    } as unknown as Connection
+    const start = vi
+      .spyOn(manager, 'start')
+      .mockImplementation(async (options) => {
+        options.callbackOnUnitTestingConnection?.('auth success')
+      })
+    expect(await manager.ensureUnitTestingKclVersion('3.0-preview')).toBe(true)
+    expect(start).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({
+        kclVersion: '3.0-preview',
+        token: 'token',
+        unitTestGeometryOnly: true,
+      })
+    )
+  })
+
+  it('keeps a lightweight session when its version matches', async () => {
+    const manager = createConnectionManager()
+    manager.connection = {
+      isUsingUnitTestingConnection: true,
+      kclVersion: '2.0',
+    } as unknown as Connection
+    const start = vi.spyOn(manager, 'start')
+    expect(await manager.ensureUnitTestingKclVersion('2.0')).toBe(false)
+    expect(start).not.toHaveBeenCalled()
+  })
+
+  it.each(['1.0', '2.0', '3.0-preview'] as const)(
+    'sends the entrypoint version %s in the browser handshake',
+    (kclVersion) => {
+      vi.stubGlobal('WebSocket', ReconnectTestWebSocket)
+      const manager = createConnectionManager()
+      vi.spyOn(manager, 'settings', 'get').mockReturnValue({
+        enableSSAO: true,
+        showScaleGrid: true,
+        theme: Themes.Dark,
+        highlightEdges: true,
+        cameraProjection: 'perspective',
+        cameraOrbit: 'spherical',
+        backfaceColor: '#ffffff',
+      })
+      const connection = new Connection({
+        url: manager.generateWebsocketURL(kclVersion),
+        kclVersion,
+        token: 'token',
+        handleOnDataChannelMessage: vi.fn(),
+        tearDownManager: vi.fn(),
+        rejectPendingCommand: vi.fn(),
+        handleMessage: vi.fn(),
+        getCloudProjectId: () => undefined,
+      })
+      connection.deferredSdpAnswer = {
+        promise: Promise.resolve(),
+        resolve: vi.fn(),
+        reject: vi.fn(),
+      }
+      connection.createWebSocketConnection()
+      const url = new URL(ReconnectTestWebSocket.instances[0].url)
+      expect(url.searchParams.get('kcl_version')).toBe(kclVersion)
+      expect(url.searchParams.get('video_res_width')).toBe('256')
+      expect(url.searchParams.get('post_effect')).toBe('ssao')
+      expect(url.searchParams.get('show_grid')).toBe('true')
+    }
+  )
+
   it('reports a pong timeout separately from a WebSocket close', () => {
     const manager = createConnectionManager()
     const onPingPongTimeout = vi.fn()
@@ -85,6 +161,7 @@ describe('ConnectionManager', () => {
         }
       )
       const connection = new Connection({
+        kclVersion: '3.0-preview',
         url: 'ws://localhost/modeling-test',
         token: 'test-token',
         handleOnDataChannelMessage: vi.fn(),

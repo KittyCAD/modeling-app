@@ -151,8 +151,10 @@ async fn execute_and_observe_open(
     code: &str,
     current_file: Option<std::path::PathBuf>,
 ) -> (ExecutorContext, ObservedIds) {
-    let ctx = crate::test_server::new_context(true, current_file).await.unwrap();
     let program = crate::Program::parse_no_errs(code).unwrap();
+    let ctx = crate::test_server::new_context(true, current_file, program.language_version().unwrap())
+        .await
+        .unwrap();
     let mut exec_state = ExecState::new(&ctx);
     ctx.run(&program, &mut exec_state).await.unwrap();
 

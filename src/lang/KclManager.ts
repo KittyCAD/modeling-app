@@ -11,6 +11,7 @@ import {
   compilationIssuesToDiagnostics,
   kclErrorsToDiagnostics,
 } from '@src/lang/errors'
+import { getKclLanguageVersion } from '@src/lang/kclLanguageVersion'
 import { executeAst, executeAstMock, lintAst } from '@src/lang/langHelpers'
 import { refactorZ0006Unified } from '@src/lang/modifyAst/edges'
 import {
@@ -73,7 +74,7 @@ import {
   processCodeMirrorRanges,
   type processCodeMirrorRanges as processCodeMirrorRangesFn,
 } from '@src/lib/selections'
-import { err, reportRejection } from '@src/lib/trap'
+import { err, isErr, reportRejection } from '@src/lib/trap'
 import { deferredCallback, uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { reportSystemIOError } from '@src/machines/systemIO/errorReporting'
@@ -798,6 +799,7 @@ export class KclManager extends File {
   // SYSTEM DEPENDENCIES
 
   private _wasmInstance: ModuleType | null = null
+  private initialParsePromise: Promise<void> = Promise.resolve()
   /** in the case of WASM crash, we should ensure the new refreshed WASM module is held here. */
   get wasmInstancePromise() {
     return this.systemDeps.wasmInstancePromise
@@ -2289,7 +2291,7 @@ export class KclManager extends File {
         this.updateHistoryDepth()
       })
 
-    this.systemDeps.wasmInstancePromise
+    this.initialParsePromise = this.systemDeps.wasmInstancePromise
       .then(async (wasmInstance) => {
         this._kclVersion = getKclVersion(wasmInstance)
         if (typeof wasmInstance === 'string') {
@@ -2487,6 +2489,38 @@ export class KclManager extends File {
     }
   }
 
+  private executionAfterReconnect:
+    | { args: ExecuteArgs; code: string; path: string }
+    | undefined
+
+  private getExecutionAfterReconnect() {
+    const pending = this.executionAfterReconnect
+    if (pending?.code === this.code && pending.path === this.path)
+      return pending
+    this.executionAfterReconnect = undefined
+    return undefined
+  }
+
+  async executeAfterReconnect() {
+    const pending = this.getExecutionAfterReconnect()
+    this.executionAfterReconnect = undefined
+    if (pending) await this.executeAst(pending.args)
+    else await this.executeCode()
+  }
+
+  async getLanguageVersion() {
+    await this.initialParsePromise
+    const instance = await this.wasmInstancePromise
+    const program = this.getExecutionAfterReconnect()?.args.ast ?? this.code
+    const version = getKclLanguageVersion(program, instance)
+    if (isErr(version)) {
+      this.addDiagnostics([
+        { from: 0, to: 0, severity: 'error', message: version.message },
+      ])
+    }
+    return version
+  }
+
   async safeParse(
     code: string,
     wasmInstance: Promise<ModuleType> | ModuleType = this.wasmInstancePromise
@@ -2528,6 +2562,7 @@ export class KclManager extends File {
   // this function, too many other things that don't want it exist. For that,
   // use updateModelingState().
   async executeAst(args: ExecuteArgs = {}): Promise<void> {
+    const instance = await this.wasmInstancePromise
     if (!this.engineCommandManager.started) {
       console.warn('`executeAst` called before engine connection started')
       return
@@ -2544,7 +2579,31 @@ export class KclManager extends File {
       return
     }
 
+    this.executionAfterReconnect = undefined
     const ast = args.ast || this.ast
+    const version = getKclLanguageVersion(ast, instance)
+    if (isErr(version)) {
+      this.addDiagnostics([
+        { from: 0, to: 0, severity: 'error', message: version.message },
+      ])
+      return
+    }
+    const connection = this.engineCommandManager.connection
+    if (
+      connection &&
+      !connection.isUsingUnitTestingConnection &&
+      connection.kclVersion !== version
+    ) {
+      // Preserve AST edits that have not been written to the editor yet. A later
+      // edit or file switch invalidates this pending execution.
+      this.executionAfterReconnect = {
+        args: { ...args, ast },
+        code: this.code,
+        path: this.path,
+      }
+      connection.requestReconnect()
+      return
+    }
     markOnce('code/startExecuteAst')
 
     const currentExecutionId = args.executionId || Date.now()

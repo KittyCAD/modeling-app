@@ -26,6 +26,7 @@ import type { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 import { type Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
+import { getKclLanguageVersion } from '@src/lang/kclLanguageVersion'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { ExecCallbacks, ExecState } from '@src/lang/wasm'
 import { errFromErrWithOutputs, execStateFromRust } from '@src/lang/wasm'
@@ -38,7 +39,7 @@ import {
   jsAppSettings,
 } from '@src/lib/settings/settingsUtils'
 import { Signal as LegacySignal } from '@src/lib/signal'
-import { err, reportRejection } from '@src/lib/trap'
+import { err, isErr, reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
@@ -133,6 +134,11 @@ export default class RustContext {
     path?: string,
     callbacks?: ExecCallbacks
   ): Promise<ExecState> {
+    const version = getKclLanguageVersion(node, await this.wasmInstancePromise)
+    if (isErr(version)) return Promise.reject(version)
+    if (await this.engineCommandManager.ensureUnitTestingKclVersion(version)) {
+      await this.clearSceneAndBustCache(settings, path)
+    }
     const instance = await this._checkContextInstance()
     const executionContext = callbacks
       ? instance.cloneWithExecuteCallbacks(callbacks)
