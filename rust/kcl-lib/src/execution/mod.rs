@@ -5028,6 +5028,35 @@ startSketchOn(XY)
         }
     }
 
+    /// The attribute name recognized in an imported file follows the effective
+    /// kclVersion: the entry point's when it declares KCL 3.0, otherwise the
+    /// imported file's own (undeclared here, so 1.0). The imported file
+    /// declares no kclVersion because a KCL 3.0 entry point rejects an import
+    /// declaring a different one.
+    ///
+    /// Warnings raised while an imported file runs aren't observable here (it
+    /// runs on a clone of the execution state), so this checks the gate with
+    /// an unknown diagnostic name: a fatal error when the attribute is
+    /// recognized, and an unknown annotation otherwise.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn diagnostics_attribute_in_import_uses_effective_kcl_version() {
+        let dep = "@diagnostics(allow = bogus)\nexport x = 1\n";
+        for version in ["1.0", "2.0", "\"3.0-preview\""] {
+            let main = format!("@settings(kclVersion = {version})\nimport x from \"dep.kcl\"\n");
+            let result = execute_with_modules(&main, &[("dep.kcl", dep)]).await;
+            if version == "\"3.0-preview\"" {
+                let error = result.unwrap_err();
+                let message = error.message();
+                assert!(
+                    message.starts_with("Unexpected diagnostic value: `bogus`; accepted values: "),
+                    "main={main}, message={message}"
+                );
+            } else {
+                assert_eq!(variable_f64(&result.unwrap(), "x"), 1.0, "main={main}");
+            }
+        }
+    }
+
     /// The entry point's declared kclVersion is recorded whatever it is, so
     /// that errors can name it. Only KCL 3.0 or later pins the version for the
     /// whole execution; see [`ExecState::kcl_version`].
