@@ -11,6 +11,7 @@ use pyo3::PyResult;
 use pyo3::exceptions::PyException;
 use pyo3::pyclass;
 use pyo3::pymethods;
+use uuid::Uuid;
 
 use crate::bridge::bounding_box::BoundingBoxResponse;
 
@@ -25,6 +26,38 @@ pub struct PhysicalPropertiesRequest {
     pub surface_area: Option<kcmc::SurfaceArea>,
     pub density: Option<kcmc::Density>,
     pub bounding_box: Option<kcmc::BoundingBox>,
+}
+
+impl PhysicalPropertiesRequest {
+    pub(crate) fn is_empty(&self) -> bool {
+        self.volume.is_none()
+            && self.mass.is_none()
+            && self.center_of_mass.is_none()
+            && self.surface_area.is_none()
+            && self.density.is_none()
+            && self.bounding_box.is_none()
+    }
+
+    pub(crate) fn set_entity_ids(&mut self, entity_ids: &[Uuid]) {
+        if let Some(request) = &mut self.volume {
+            request.entity_ids = entity_ids.to_vec();
+        }
+        if let Some(request) = &mut self.mass {
+            request.entity_ids = entity_ids.to_vec();
+        }
+        if let Some(request) = &mut self.center_of_mass {
+            request.entity_ids = entity_ids.to_vec();
+        }
+        if let Some(request) = &mut self.surface_area {
+            request.entity_ids = entity_ids.to_vec();
+        }
+        if let Some(request) = &mut self.density {
+            request.entity_ids = entity_ids.to_vec();
+        }
+        if let Some(request) = &mut self.bounding_box {
+            request.entity_ids = entity_ids.to_vec();
+        }
+    }
 }
 
 /// Resulting data from a `PhysicalPropertiesRequest`.
