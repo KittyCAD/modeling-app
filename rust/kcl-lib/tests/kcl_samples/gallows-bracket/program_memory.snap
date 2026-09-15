@@ -1015,31 +1015,25 @@ description: Variables in memory after executing gallows-bracket.kcl
   },
   "beamBottomOuter": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "beamBottomOuter"
   },
   "beamCloseEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "beamCloseEdge"
   },
   "beamInnerTop": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "beamInnerTop"
   },
   "beamInnerWeb": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "beamInnerWeb"
   },
   "beamOuterLip": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "beamOuterLip"
   },
   "beamOuterWeb": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "beamOuterWeb"
   },
@@ -10338,16 +10332,13 @@ description: Variables in memory after executing gallows-bracket.kcl
   },
   "horizontalBottomOuter": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "horizontalBottomOuter"
   },
   "horizontalCloseEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "horizontalCloseEdge"
   },
   "horizontalHoleCircle": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "horizontalHoleCircle"
   },
@@ -11197,11 +11188,9 @@ description: Variables in memory after executing gallows-bracket.kcl
   },
   "horizontalInnerTop": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "horizontalInnerTop"
   },
   "horizontalInnerWeb": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "horizontalInnerWeb"
   },
@@ -11535,11 +11524,9 @@ description: Variables in memory after executing gallows-bracket.kcl
   },
   "horizontalOuterLip": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "horizontalOuterLip"
   },
   "horizontalOuterWeb": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "horizontalOuterWeb"
   },
@@ -12737,16 +12724,13 @@ description: Variables in memory after executing gallows-bracket.kcl
   },
   "horizontalStartBottomEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "horizontalStartBottomEdge"
   },
   "horizontalStartLeftEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "horizontalStartLeftEdge"
   },
   "horizontalStartMiterEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "horizontalStartMiterEdge"
   },
@@ -13872,7 +13856,6 @@ description: Variables in memory after executing gallows-bracket.kcl
   },
   "horizontalStartRightEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "horizontalStartRightEdge"
   },
   "horizontalWithHoles": {
@@ -14467,11 +14450,9 @@ description: Variables in memory after executing gallows-bracket.kcl
   },
   "legBottomEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "legBottomEdge"
   },
   "legLeftEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "legLeftEdge"
   },
@@ -15317,11 +15298,9 @@ description: Variables in memory after executing gallows-bracket.kcl
   },
   "legRightEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "legRightEdge"
   },
   "legTopEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "legTopEdge"
   },
@@ -15983,21 +15962,17 @@ description: Variables in memory after executing gallows-bracket.kcl
   },
   "strutBottomOuter": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "strutBottomOuter"
   },
   "strutCloseEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "strutCloseEdge"
   },
   "strutEndLeftEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "strutEndLeftEdge"
   },
   "strutEndMiterEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "strutEndMiterEdge"
   },
@@ -17123,21 +17098,17 @@ description: Variables in memory after executing gallows-bracket.kcl
   },
   "strutEndRightEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "strutEndRightEdge"
   },
   "strutEndTopEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "strutEndTopEdge"
   },
   "strutInnerTop": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "strutInnerTop"
   },
   "strutInnerWeb": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "strutInnerWeb"
   },
@@ -17480,11 +17451,9 @@ description: Variables in memory after executing gallows-bracket.kcl
   },
   "strutOuterLip": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "strutOuterLip"
   },
   "strutOuterWeb": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "strutOuterWeb"
   },
@@ -18691,16 +18660,13 @@ description: Variables in memory after executing gallows-bracket.kcl
   },
   "strutStartBottomEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "strutStartBottomEdge"
   },
   "strutStartLeftEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "strutStartLeftEdge"
   },
   "strutStartMiterEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "strutStartMiterEdge"
   },
@@ -20154,7 +20120,6 @@ description: Variables in memory after executing gallows-bracket.kcl
   },
   "strutStartRightEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "strutStartRightEdge"
   },
   "vertical": {
@@ -20815,21 +20780,17 @@ description: Variables in memory after executing gallows-bracket.kcl
   },
   "verticalBottomOuter": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "verticalBottomOuter"
   },
   "verticalCloseEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "verticalCloseEdge"
   },
   "verticalEndLeftEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "verticalEndLeftEdge"
   },
   "verticalEndMiterEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "verticalEndMiterEdge"
   },
@@ -21955,16 +21916,13 @@ description: Variables in memory after executing gallows-bracket.kcl
   },
   "verticalEndRightEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "verticalEndRightEdge"
   },
   "verticalEndTopEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "verticalEndTopEdge"
   },
   "verticalHoleCircle": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "verticalHoleCircle"
   },
@@ -23200,11 +23158,9 @@ description: Variables in memory after executing gallows-bracket.kcl
   },
   "verticalInnerTop": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "verticalInnerTop"
   },
   "verticalInnerWeb": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "verticalInnerWeb"
   },
@@ -23538,11 +23494,9 @@ description: Variables in memory after executing gallows-bracket.kcl
   },
   "verticalOuterLip": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "verticalOuterLip"
   },
   "verticalOuterWeb": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "verticalOuterWeb"
   },

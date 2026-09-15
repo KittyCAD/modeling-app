@@ -69,31 +69,25 @@ description: Variables in memory after executing cycloidal-gear.kcl
   },
   "arc1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc1"
   },
   "arc2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc2"
   },
   "arc3": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc3"
   },
   "arc4": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc4"
   },
   "arc5": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc5"
   },
   "arc6": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc6"
   },
@@ -1816,7 +1810,6 @@ description: Variables in memory after executing cycloidal-gear.kcl
     }
   },
   "hole": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "hole"
   },

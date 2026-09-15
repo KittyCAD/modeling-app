@@ -268,71 +268,57 @@ description: Variables in memory after executing gingerbread-man.kcl
   },
   "arc1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc1"
   },
   "arc10": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc10"
   },
   "arc11": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc11"
   },
   "arc13": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc13"
   },
   "arc15": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc15"
   },
   "arc19": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc19"
   },
   "arc2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc2"
   },
   "arc3": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc3"
   },
   "arc4": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc4"
   },
   "arc5": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc5"
   },
   "arc6": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc6"
   },
   "arc7": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc7"
   },
   "arc8": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc8"
   },
   "arc9": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc9"
   },
@@ -9384,7 +9370,6 @@ description: Variables in memory after executing gingerbread-man.kcl
   },
   "circle1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "circle1"
   },
   "cuffRegion": {
@@ -15773,61 +15758,49 @@ description: Variables in memory after executing gingerbread-man.kcl
   },
   "line1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line1"
   },
   "line12": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line12"
   },
   "line14": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line14"
   },
   "line16": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line16"
   },
   "line17": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line17"
   },
   "line18": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line18"
   },
   "line20": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line20"
   },
   "line3": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line3"
   },
   "line4": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line4"
   },
   "line5": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line5"
   },
   "line7": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line7"
   },
   "line9": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line9"
   },

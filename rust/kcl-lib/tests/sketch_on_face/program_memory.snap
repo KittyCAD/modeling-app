@@ -5,7 +5,6 @@ description: Variables in memory after executing sketch_on_face.kcl
 {
   "here": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "here"
   },
   "part001": {

@@ -9052,11 +9052,9 @@ description: Variables in memory after executing pattern_into_union.kcl
   },
   "seg01": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "seg01"
   },
   "seg02": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "seg02"
   },
@@ -9071,11 +9069,9 @@ description: Variables in memory after executing pattern_into_union.kcl
   },
   "toFillet": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "toFillet"
   },
   "toFillet2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "toFillet2"
   },

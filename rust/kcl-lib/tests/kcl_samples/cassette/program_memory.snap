@@ -59,21 +59,17 @@ description: Variables in memory after executing cassette.kcl
   },
   "innerArc": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "innerArc"
   },
   "outerArc": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "outerArc"
   },
   "radialIn": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "radialIn"
   },
   "radialOut": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "radialOut"
   },

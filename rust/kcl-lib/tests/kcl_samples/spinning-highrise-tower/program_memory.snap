@@ -2407,21 +2407,17 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
   },
   "edge1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "edge1"
   },
   "edge2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "edge2"
   },
   "edge3": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "edge3"
   },
   "edge4": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "edge4"
   },

@@ -5,21 +5,17 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
 {
   "a": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "a"
   },
   "arc_tag": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc_tag"
   },
   "b": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "b"
   },
   "c": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "c"
   },

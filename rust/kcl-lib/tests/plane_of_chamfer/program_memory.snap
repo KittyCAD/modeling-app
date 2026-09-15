@@ -5,7 +5,6 @@ description: Variables in memory after executing plane_of_chamfer.kcl
 {
   "capEnd001": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "capEnd001"
   },
   "extrude001": {
@@ -410,11 +409,9 @@ description: Variables in memory after executing plane_of_chamfer.kcl
   },
   "seg01": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "seg01"
   },
   "seg02": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "seg02"
   },

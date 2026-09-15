@@ -262,7 +262,6 @@ description: Variables in memory after executing revolve_on_face.kcl
   },
   "end002": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "end002"
   },
   "stemExtrude": {

@@ -113,7 +113,6 @@ description: Variables in memory after executing sketch_on_face_index.kcl
   },
   "top": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "face_id_[uuid]"
   }
 }

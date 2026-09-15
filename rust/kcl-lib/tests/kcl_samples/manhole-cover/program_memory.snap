@@ -70,11 +70,9 @@ description: Variables in memory after executing manhole-cover.kcl
   },
   "bottomEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bottomEdge"
   },
   "coverCircle": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "coverCircle"
   },
@@ -7703,7 +7701,6 @@ description: Variables in memory after executing manhole-cover.kcl
   },
   "leftEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "leftEdge"
   },
   "manhole": {
@@ -10563,191 +10560,153 @@ description: Variables in memory after executing manhole-cover.kcl
   },
   "rightEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "rightEdge"
   },
   "slot1Cap1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "slot1Cap1"
   },
   "slot1Cap2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "slot1Cap2"
   },
   "slot1Side1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "slot1Side1"
   },
   "slot1Side2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "slot1Side2"
   },
   "slot2Cap1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "slot2Cap1"
   },
   "slot2Cap2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "slot2Cap2"
   },
   "slot2Side1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "slot2Side1"
   },
   "slot2Side2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "slot2Side2"
   },
   "slot3Cap1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "slot3Cap1"
   },
   "slot3Cap2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "slot3Cap2"
   },
   "slot3Side1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "slot3Side1"
   },
   "slot3Side2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "slot3Side2"
   },
   "slot4Cap1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "slot4Cap1"
   },
   "slot4Cap2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "slot4Cap2"
   },
   "slot4Side1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "slot4Side1"
   },
   "slot4Side2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "slot4Side2"
   },
   "slot5Cap1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "slot5Cap1"
   },
   "slot5Cap2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "slot5Cap2"
   },
   "slot5Side1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "slot5Side1"
   },
   "slot5Side2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "slot5Side2"
   },
   "slot6Cap1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "slot6Cap1"
   },
   "slot6Cap2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "slot6Cap2"
   },
   "slot6Side1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "slot6Side1"
   },
   "slot6Side2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "slot6Side2"
   },
   "slot7Cap1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "slot7Cap1"
   },
   "slot7Cap2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "slot7Cap2"
   },
   "slot7Side1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "slot7Side1"
   },
   "slot7Side2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "slot7Side2"
   },
   "slot8Cap1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "slot8Cap1"
   },
   "slot8Cap2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "slot8Cap2"
   },
   "slot8Side1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "slot8Side1"
   },
   "slot8Side2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "slot8Side2"
   },
   "slot9Cap1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "slot9Cap1"
   },
   "slot9Cap2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "slot9Cap2"
   },
   "slot9Side1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "slot9Side1"
   },
   "slot9Side2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "slot9Side2"
   },
   "topEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "topEdge"
   },

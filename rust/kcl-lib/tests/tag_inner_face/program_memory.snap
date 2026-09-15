@@ -391,7 +391,6 @@ description: Variables in memory after executing tag_inner_face.kcl
   },
   "innerFace": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "innerFace"
   },
   "out": {
@@ -583,7 +582,6 @@ description: Variables in memory after executing tag_inner_face.kcl
     }
   },
   "outerFace": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "outerFace"
   },
