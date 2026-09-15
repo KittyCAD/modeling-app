@@ -40,7 +40,7 @@ solid2 = extrude(region(segments = [sketch1.circle2]), length = 2)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the solver::equalRadius function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solver-equalRadius0_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solver-equalRadius0_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solver-equalRadius0.png"
