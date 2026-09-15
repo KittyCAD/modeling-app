@@ -53,6 +53,7 @@ export type ProjectMetadata = {
     remoteRevision?: Revision
     remoteUpdatedAt?: string
     createdAt: string
+    reason?: 'divergent-changes' | 'remote-replacement-rejected'
     /**
      * Legacy conflict copies were persisted as sibling project folders. New
      * conflicts fetch the cloud version on demand instead; this path is retained
@@ -70,7 +71,9 @@ export type ProjectMetadata = {
   lastSyncedAt?: string
 }
 
-export type ProjectSyncFailureKind = 'remote-upload-forbidden'
+export type ProjectSyncFailureKind =
+  | 'remote-upload-forbidden'
+  | 'remote-replacement-rejected'
 
 export type ProjectSyncFailure = {
   message: string

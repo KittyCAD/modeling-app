@@ -35,7 +35,10 @@ import {
   withProjectTitleInArchiveFiles,
   withUpdatedProjectTomlInArchiveFiles,
 } from '@src/lib/cloudSync/projectArchive'
-import { createProjectReplacementAttempt } from '@src/lib/cloudSync/replacementAttempt'
+import {
+  createProjectReplacementAttempt,
+  type ProjectReplacementAttempt,
+} from '@src/lib/cloudSync/replacementAttempt'
 import { parseAcknowledgedSyncBase } from '@src/lib/cloudSync/syncBase'
 import {
   appendOutboxEntry as appendSyncDbOutboxEntry,
@@ -219,7 +222,10 @@ function errorMessage(error: unknown) {
 function isProjectSyncFailureKind(
   value: unknown
 ): value is ProjectSyncFailureKind {
-  return value === 'remote-upload-forbidden'
+  return (
+    value === 'remote-upload-forbidden' ||
+    value === 'remote-replacement-rejected'
+  )
 }
 
 function projectFailureKind(error: unknown) {
@@ -2157,6 +2163,87 @@ async function markProjectFailure(
   }
 }
 
+async function markProjectReplacementRejected({
+  metadata,
+  rejectedRemoteProject,
+  error,
+}: {
+  metadata: ProjectMetadata
+  rejectedRemoteProject: RemoteProject
+  error: CloudApiError
+}) {
+  const failedAt = nowIso()
+  const existingConflict = metadata.conflict
+  const message = `Cloud project replacement was rejected: ${error.message}. Local changes remain on this device.`
+  const nextMetadata: ProjectMetadata = {
+    ...metadata,
+    conflict: {
+      remoteRevision:
+        getRevision(rejectedRemoteProject) ?? existingConflict?.remoteRevision,
+      remoteUpdatedAt:
+        getRemoteUpdatedAt(rejectedRemoteProject) ??
+        existingConflict?.remoteUpdatedAt,
+      createdAt: existingConflict?.createdAt ?? failedAt,
+      reason: 'remote-replacement-rejected',
+      ...(existingConflict?.conflictProjectPath
+        ? { conflictProjectPath: existingConflict.conflictProjectPath }
+        : {}),
+    },
+    lastFailure: {
+      message,
+      at: failedAt,
+      kind: 'remote-replacement-rejected',
+    },
+  }
+  await putProjectMetadata(nextMetadata)
+  publishScopedProjectCloudProjectId(nextMetadata)
+  if (projectPathMatchesSyncScope(metadata.localProjectPath)) {
+    updateStatus({
+      state: 'conflict',
+      activeProjectPath: metadata.localProjectPath,
+      lastFailure: message,
+      lastFailureKind: 'remote-replacement-rejected',
+      lastFailureAt: failedAt,
+    })
+  }
+  reportCloudSyncFailure('sync', error)
+}
+
+async function submitProjectReplacement(
+  metadata: ProjectMetadata,
+  attempt: ProjectReplacementAttempt,
+  throttleProjectApiRequest: CloudSyncProjectApiRequestThrottle
+) {
+  try {
+    return await runCloudSyncProjectApiRequest(throttleProjectApiRequest, () =>
+      updateRemoteProject({
+        config,
+        projectPath: attempt.projectPath,
+        project: attempt.project,
+        files: attempt.files,
+        expectedRevision: attempt.expectedRevision,
+        entrypointPath: attempt.entrypointPath,
+        deletedPaths: attempt.deletedPaths,
+      })
+    )
+  } catch (error) {
+    if (!(error instanceof CloudApiError) || error.status !== 409) {
+      return rejectRemoteUploadFailure(error)
+    }
+
+    const reviewedRemoteProject = await runCloudSyncProjectApiRequest(
+      throttleProjectApiRequest,
+      () => getRemoteProject(config, attempt.project.id)
+    ).catch(() => attempt.project)
+    await markProjectReplacementRejected({
+      metadata,
+      rejectedRemoteProject: reviewedRemoteProject,
+      error,
+    })
+    return undefined
+  }
+}
+
 function markCloudMetadataFailure(error: unknown) {
   if (!isConfiguredForCloud()) {
     return
@@ -2435,13 +2522,14 @@ async function markProjectConflict(
   const createdAt = nowIso()
   const existingConflict = metadata.conflict
 
-  const nextMetadata = {
+  const nextMetadata: ProjectMetadata = {
     ...metadata,
     remoteUpdatedAt: remoteUpdatedAt ?? metadata.remoteUpdatedAt,
     conflict: {
       remoteRevision,
       remoteUpdatedAt,
       createdAt: existingConflict?.createdAt ?? createdAt,
+      reason: 'divergent-changes',
       ...(existingConflict?.conflictProjectPath
         ? { conflictProjectPath: existingConflict.conflictProjectPath }
         : {}),
@@ -2994,19 +3082,14 @@ async function syncProject(
         syncBase,
         entrypointPath: getRemoteProjectEntrypointPath(remoteProject),
       })
-      const updated = await runCloudSyncProjectApiRequest(
-        throttleProjectApiRequest,
-        () =>
-          updateRemoteProject({
-            config,
-            projectPath: replacementAttempt.projectPath,
-            project: replacementAttempt.project,
-            files: replacementAttempt.files,
-            expectedRevision: replacementAttempt.expectedRevision,
-            entrypointPath: replacementAttempt.entrypointPath,
-            deletedPaths: replacementAttempt.deletedPaths,
-          })
-      ).catch(rejectRemoteUploadFailure)
+      const updated = await submitProjectReplacement(
+        metadata,
+        replacementAttempt,
+        throttleProjectApiRequest
+      )
+      if (!updated) {
+        return
+      }
       await clearOutboxEntriesForProject(metadata.localProjectPath)
       await markProjectSynced(
         metadata,
@@ -3071,7 +3154,11 @@ async function syncProject(
       return
     }
 
-    if (reconciliationAction === 'auto-reconcile' && autoReconciledFiles) {
+    if (
+      reconciliationAction === 'auto-reconcile' &&
+      autoReconciledFiles &&
+      remoteRevision
+    ) {
       const replacementAttempt = await createProjectReplacementAttempt({
         projectPath: metadata.localProjectPath,
         project: remoteProject,
@@ -3081,19 +3168,14 @@ async function syncProject(
           manifest: remoteManifest,
         },
       })
-      const updated = await runCloudSyncProjectApiRequest(
-        throttleProjectApiRequest,
-        () =>
-          updateRemoteProject({
-            config,
-            projectPath: replacementAttempt.projectPath,
-            project: replacementAttempt.project,
-            files: replacementAttempt.files,
-            expectedRevision: replacementAttempt.expectedRevision,
-            entrypointPath: replacementAttempt.entrypointPath,
-            deletedPaths: replacementAttempt.deletedPaths,
-          })
-      ).catch(rejectRemoteUploadFailure)
+      const updated = await submitProjectReplacement(
+        metadata,
+        replacementAttempt,
+        throttleProjectApiRequest
+      )
+      if (!updated) {
+        return
+      }
       await replaceLocalProjectWithFiles(
         metadata.localProjectPath,
         replacementAttempt.files
