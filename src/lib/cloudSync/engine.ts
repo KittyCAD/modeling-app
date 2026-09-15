@@ -35,6 +35,7 @@ import {
   withProjectTitleInArchiveFiles,
   withUpdatedProjectTomlInArchiveFiles,
 } from '@src/lib/cloudSync/projectArchive'
+import { createProjectReplacementAttempt } from '@src/lib/cloudSync/replacementAttempt'
 import { parseAcknowledgedSyncBase } from '@src/lib/cloudSync/syncBase'
 import {
   appendOutboxEntry as appendSyncDbOutboxEntry,
@@ -2478,19 +2479,6 @@ function latestOutboxKind(entries: OutboxEntry[]) {
   return entries.toSorted((a, b) => (a.id ?? 0) - (b.id ?? 0)).at(-1)?.kind
 }
 
-function getRemovedProjectManifestPaths(
-  baseManifest: ProjectManifest,
-  uploadedFiles: ProjectArchiveFile[]
-) {
-  const uploadedPaths = new Set(
-    uploadedFiles.map((file) => normalizeRelativePath(file.relativePath))
-  )
-  return Object.keys(baseManifest.files)
-    .map(normalizeRelativePath)
-    .filter((path) => Boolean(path) && !uploadedPaths.has(path))
-    .sort()
-}
-
 function getRemovedProjectFilePaths(
   previousFiles: ProjectArchiveFile[],
   nextFiles: ProjectArchiveFile[]
@@ -2999,26 +2987,30 @@ async function syncProject(
           'Cloud sync cannot update without an acknowledged base.'
         )
       }
+      const replacementAttempt = await createProjectReplacementAttempt({
+        projectPath: metadata.localProjectPath,
+        project: remoteProject,
+        files: localFiles,
+        syncBase,
+        entrypointPath: getRemoteProjectEntrypointPath(remoteProject),
+      })
       const updated = await runCloudSyncProjectApiRequest(
         throttleProjectApiRequest,
         () =>
           updateRemoteProject({
             config,
-            projectPath: metadata.localProjectPath,
-            project: remoteProject,
-            files: localFiles,
-            expectedRevision: syncBase.revision,
-            entrypointPath: getRemoteProjectEntrypointPath(remoteProject),
-            deletedPaths: getRemovedProjectManifestPaths(
-              syncBase.manifest,
-              localFiles
-            ),
+            projectPath: replacementAttempt.projectPath,
+            project: replacementAttempt.project,
+            files: replacementAttempt.files,
+            expectedRevision: replacementAttempt.expectedRevision,
+            entrypointPath: replacementAttempt.entrypointPath,
+            deletedPaths: replacementAttempt.deletedPaths,
           })
       ).catch(rejectRemoteUploadFailure)
       await clearOutboxEntriesForProject(metadata.localProjectPath)
       await markProjectSynced(
         metadata,
-        localManifest,
+        replacementAttempt.manifest,
         remoteSyncMetadata(updated, { useNowAsUpdatedAtFallback: true })
       )
       return
@@ -3080,31 +3072,36 @@ async function syncProject(
     }
 
     if (reconciliationAction === 'auto-reconcile' && autoReconciledFiles) {
-      const autoReconciledManifest =
-        await projectManifestFromFiles(autoReconciledFiles)
+      const replacementAttempt = await createProjectReplacementAttempt({
+        projectPath: metadata.localProjectPath,
+        project: remoteProject,
+        files: autoReconciledFiles,
+        syncBase: {
+          revision: remoteRevision,
+          manifest: remoteManifest,
+        },
+      })
       const updated = await runCloudSyncProjectApiRequest(
         throttleProjectApiRequest,
         () =>
           updateRemoteProject({
             config,
-            projectPath: metadata.localProjectPath,
-            project: remoteProject,
-            files: autoReconciledFiles,
-            expectedRevision: remoteRevision,
-            deletedPaths: getRemovedProjectManifestPaths(
-              remoteManifest,
-              autoReconciledFiles
-            ),
+            projectPath: replacementAttempt.projectPath,
+            project: replacementAttempt.project,
+            files: replacementAttempt.files,
+            expectedRevision: replacementAttempt.expectedRevision,
+            entrypointPath: replacementAttempt.entrypointPath,
+            deletedPaths: replacementAttempt.deletedPaths,
           })
       ).catch(rejectRemoteUploadFailure)
       await replaceLocalProjectWithFiles(
         metadata.localProjectPath,
-        autoReconciledFiles
+        replacementAttempt.files
       )
       await clearOutboxEntriesForProject(metadata.localProjectPath)
       await markProjectSynced(
         metadata,
-        autoReconciledManifest,
+        replacementAttempt.manifest,
         remoteSyncMetadata(updated, { useNowAsUpdatedAtFallback: true })
       )
       return
