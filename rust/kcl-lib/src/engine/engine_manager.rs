@@ -532,7 +532,7 @@ impl EngineManager {
                 WebSocketRequest::ModelingCmdReq(ModelingCmdReq { cmd, cmd_id }) => {
                     let id = Uuid::from(*cmd_id);
                     id_to_source_range.insert(id, *range);
-                    id_to_command.insert(id, ModelingCmdEndpoint::from(cmd.clone()));
+                    id_to_command.insert(id, ModelingCmdEndpoint::from(cmd));
                 }
                 _ => {
                     return Err(KclError::new_engine(KclErrorDetails::new(
