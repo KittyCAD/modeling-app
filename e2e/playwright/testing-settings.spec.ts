@@ -174,10 +174,91 @@ test.describe(
         page.getByText(`${level}-level settings were reset`)
 
       await test.step(`Open the settings modal`, async () => {
-        await page.getByRole('link', { name: 'Settings' }).last().click()
-        await expect(
-          page.getByRole('heading', { name: 'Settings', exact: true })
-        ).toBeVisible()
+        const settingsLink = page.getByRole('link', { name: 'Settings' }).last()
+        const diagnostics = await settingsLink.evaluateHandle((link) => {
+          const events: object[] = []
+          const listeners = new AbortController()
+          const panel = () =>
+            document.querySelector('[data-testid="settings-dialog-panel"]')
+          let dialog = panel()
+          const record = (event: Event) => {
+            const target =
+              event.target instanceof Element
+                ? event.target.closest('a, button')
+                : null
+            events.push({
+              type: event.type,
+              time: performance.now(),
+              url: location.href,
+              focused: document.hasFocus(),
+              settingsHref: link.getAttribute('href'),
+              executingPath: window.app?.project?.executingPath,
+              settingsState: window.app?.settings.actor.getSnapshot().value,
+              dialog: Boolean(panel()),
+              target: target?.getAttribute('data-testid'),
+              href: target?.getAttribute('href'),
+            })
+          }
+          for (const type of [
+            'pointerdown',
+            'click',
+            'popstate',
+            'hashchange',
+            'focus',
+            'blur',
+          ]) {
+            window.addEventListener(type, record, {
+              capture: true,
+              signal: listeners.signal,
+            })
+          }
+          const observer = new MutationObserver(() => {
+            const nextDialog = panel()
+            if (nextDialog === dialog) return
+            dialog = nextDialog
+            record(new Event(dialog ? 'dialog-mounted' : 'dialog-removed'))
+          })
+          observer.observe(document.body, { childList: true, subtree: true })
+          record(new Event('before-click'))
+          return {
+            read: () => {
+              record(new Event('assertion-failed'))
+              return events
+            },
+            stop: () => {
+              observer.disconnect()
+              listeners.abort()
+            },
+          }
+        })
+        try {
+          await settingsLink.click()
+          await expect(
+            page.getByRole('heading', { name: 'Settings', exact: true })
+          ).toBeVisible()
+        } catch (error) {
+          await diagnostics
+            .evaluate(({ read }) => read())
+            .then(async (events) => {
+              const body = JSON.stringify(events, null, 2)
+              console.error(`Settings opening failed: ${body}`)
+              await test.info().attach('settings-opening-events', {
+                body,
+                contentType: 'application/json',
+              })
+            })
+            .catch((error) =>
+              console.warn('Settings diagnostics failed', error)
+            )
+          throw error
+        } finally {
+          await diagnostics
+            .evaluate(({ stop }) => stop())
+            .catch((error) =>
+              console.warn('Settings diagnostics cleanup failed', error)
+            )
+          await diagnostics.dispose()
+        }
       })
 
       await test.step('Check settings initial values', async () => {
