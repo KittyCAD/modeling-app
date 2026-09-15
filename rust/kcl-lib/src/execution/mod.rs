@@ -5173,13 +5173,9 @@ y = if true {
         }
     }
 
-    /// All fillet algorithm versions sent to the engine during the run,
-    /// across the root module and every imported module. The version emitted
-    /// is the observable for which kclVersion governed the filleting code;
-    /// see `default_edge_cut_version`.
-    fn emitted_fillet_versions_everywhere(
-        result: &ExecTestResults,
-    ) -> Vec<kittycad_modeling_cmds::shared::EdgeCutVersion> {
+    /// The modeling commands sent to the engine during the run, across the
+    /// root module and every imported module.
+    fn commands_everywhere(result: &ExecTestResults) -> impl Iterator<Item = &kittycad_modeling_cmds::ModelingCmd> {
         let module_commands = result
             .exec_state
             .global
@@ -5194,8 +5190,33 @@ y = if true {
             .root_module_artifact_commands()
             .iter()
             .chain(module_commands)
-            .filter_map(|artifact_command| match &artifact_command.command {
+            .map(|artifact_command| &artifact_command.command)
+    }
+
+    /// All fillet algorithm versions sent to the engine during the run. The
+    /// version emitted is the observable for which kclVersion governed the
+    /// filleting code; see `default_edge_cut_version`.
+    fn emitted_fillet_versions_everywhere(
+        result: &ExecTestResults,
+    ) -> Vec<kittycad_modeling_cmds::shared::EdgeCutVersion> {
+        commands_everywhere(result)
+            .filter_map(|command| match command {
                 kittycad_modeling_cmds::ModelingCmd::Solid3dCutEdges(command) => Some(command.version),
+                _ => None,
+            })
+            .collect()
+    }
+
+    /// All region algorithm versions sent to the engine during the run. The
+    /// version emitted is the observable for whether KCL 1.0 or 2.0 governed
+    /// the region code, their only runtime difference; see `region_version`
+    /// in `std::sketch`.
+    fn emitted_region_versions_everywhere(
+        result: &ExecTestResults,
+    ) -> Vec<kittycad_modeling_cmds::shared::RegionVersion> {
+        commands_everywhere(result)
+            .filter_map(|command| match command {
+                kittycad_modeling_cmds::ModelingCmd::CreateRegion(command) => Some(command.version.clone()),
                 _ => None,
             })
             .collect()
@@ -5251,28 +5272,45 @@ box = filletedBox()
         assert_eq!(emitted_fillet_versions_everywhere(&result), vec![EdgeCutVersion::V2]);
     }
 
+    const REGION_AT_MODULE_TOP_LEVEL: &str = r#"
+profile = sketch(on = XY) {
+  outline = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+disc = region(segments = [profile.outline])
+"#;
+
+    const REGION_IN_EXPORTED_FN: &str = r#"
+export fn disc() {
+  profile = sketch(on = XY) {
+    outline = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+  }
+  return region(segments = [profile.outline])
+}
+"#;
+
     /// Without a KCL 3.0 entry point, the legacy lookup applies unchanged,
     /// including its quirk: an imported module's module-level code observes the
     /// module's own declared version, but its functions observe the CALLING
-    /// module's version.
+    /// module's version. Pinned with KCL 1.0 and 2.0, so that the pin does not
+    /// depend on importing a KCL 3.0 file.
     #[tokio::test(flavor = "multi_thread")]
     async fn legacy_kcl_version_quirk_applies_without_v3_entry_point() {
-        use kittycad_modeling_cmds::shared::EdgeCutVersion;
+        use kittycad_modeling_cmds::shared::RegionVersion;
 
-        let dep = format!("@settings(kclVersion = \"3.0-preview\")\n{FILLET_AT_MODULE_TOP_LEVEL}");
+        let dep = format!("@settings(kclVersion = 1.0)\n{REGION_AT_MODULE_TOP_LEVEL}");
         let main = r#"@settings(kclVersion = 2.0)
 import "dep.kcl" as dep
 "#;
         let result = execute_with_modules(main, &[("dep.kcl", &dep)]).await.unwrap();
-        assert_eq!(emitted_fillet_versions_everywhere(&result), vec![EdgeCutVersion::V2]);
+        assert_eq!(emitted_region_versions_everywhere(&result), vec![RegionVersion::V0]);
 
-        let dep = format!("@settings(kclVersion = \"3.0-preview\")\n{FILLET_IN_EXPORTED_FN}");
+        let dep = format!("@settings(kclVersion = 1.0)\n{REGION_IN_EXPORTED_FN}");
         let main = r#"@settings(kclVersion = 2.0)
-import filletedBox from "dep.kcl"
-box = filletedBox()
+import disc from "dep.kcl"
+face = disc()
 "#;
         let result = execute_with_modules(main, &[("dep.kcl", &dep)]).await.unwrap();
-        assert_eq!(emitted_fillet_versions_everywhere(&result), vec![EdgeCutVersion::V1]);
+        assert_eq!(emitted_region_versions_everywhere(&result), vec![RegionVersion::V1]);
     }
 
     /// Builds a mock-engine context whose project directory holds `modules`
