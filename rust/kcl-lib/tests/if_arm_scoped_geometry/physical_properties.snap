@@ -6,13 +6,13 @@ description: Physical properties if_arm_scoped_geometry.kcl
   "bounding_box": {
     "center": {
       "x": 5.0,
-      "y": 5.0,
-      "z": 5.0
+      "y": 4.999999984786159,
+      "z": 4.9999999847861565
     },
     "dimensions": {
-      "x": 10.0,
-      "y": 10.0,
-      "z": 10.0
+      "x": 12.0,
+      "y": 10.000000030427682,
+      "z": 10.000000030427689
     },
     "unit": "mm"
   },

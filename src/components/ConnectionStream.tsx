@@ -129,6 +129,8 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
             .length,
           hasConnection: Boolean(connection),
           connectionId: connection?.id,
+          websocketBufferedAmount: connection?.websocket?.bufferedAmount,
+          modelingApiCallId: connection?.apiCallId ?? null,
           connectionConnected: connection?.connected,
           peerConnectionState: connection?.peerConnection?.connectionState,
           iceConnectionState: connection?.peerConnection?.iceConnectionState,
