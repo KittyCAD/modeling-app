@@ -1123,7 +1123,7 @@ impl ExecutorContext {
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
         let pr = std::env::var("ZOO_ENGINE_PR").ok().and_then(|s| s.parse().ok());
-        let (ws, _headers) = client
+        let (ws, headers) = client
             .modeling()
             .commands_ws(kittycad::modeling::CommandsWsParams {
                 api_call_id: None,
@@ -1145,7 +1145,7 @@ impl ExecutorContext {
             })
             .await?;
 
-        let engine_conn = EngineManager::new_websocket_transport(ws, settings.heartbeats).await;
+        let engine_conn = EngineManager::new_websocket_transport_with_headers(ws, settings.heartbeats, &headers).await;
         let engine = Arc::new(engine_conn);
 
         Ok(Self::new_with_engine(engine, settings))
