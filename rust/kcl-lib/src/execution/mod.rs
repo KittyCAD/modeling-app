@@ -5017,25 +5017,31 @@ startSketchOn(XY)
         }
     }
 
+    /// The entry point's declared kclVersion is recorded whatever it is, so
+    /// that errors can name it. Only KCL 3.0 or later pins the version for the
+    /// whole execution; see [`ExecState::kcl_version`].
     #[tokio::test(flavor = "multi_thread")]
-    async fn entry_point_kcl_version_recorded_only_for_v3() {
-        let result = parse_execute("@settings(kclVersion = \"3.0-preview\")\nx = 1\n")
-            .await
-            .unwrap();
-        assert_eq!(
-            result.exec_state.global.entry_point_kcl_version,
-            Some(KclVersion::V3Preview)
-        );
-        assert!(result.exec_state.entry_point_version_is_v3_or_higher());
-
-        for code in [
-            "x = 1\n",
-            "@settings(kclVersion = 1.0)\nx = 1\n",
-            "@settings(kclVersion = 2.0)\nx = 1\n",
+    async fn entry_point_kcl_version_records_declared_version() {
+        for (code, expected) in [
+            ("x = 1\n", None),
+            ("@settings(defaultLengthUnit = in)\nx = 1\n", None),
+            ("@settings(kclVersion = 1.0)\nx = 1\n", Some(KclVersion::V1)),
+            ("@settings(kclVersion = 2.0)\nx = 1\n", Some(KclVersion::V2)),
+            (
+                "@settings(kclVersion = \"3.0-preview\")\nx = 1\n",
+                Some(KclVersion::V3Preview),
+            ),
         ] {
             let result = parse_execute(code).await.unwrap();
-            assert_eq!(result.exec_state.global.entry_point_kcl_version, None, "code={code}");
-            assert!(!result.exec_state.entry_point_version_is_v3_or_higher(), "code={code}");
+            assert_eq!(
+                result.exec_state.global.entry_point_kcl_version, expected,
+                "code={code}"
+            );
+            assert_eq!(
+                result.exec_state.entry_point_version_is_v3_or_higher(),
+                expected == Some(KclVersion::V3Preview),
+                "code={code}"
+            );
         }
     }
 
@@ -5048,6 +5054,11 @@ startSketchOn(XY)
         exec_state.mod_local.settings.kcl_version = KclVersion::V2;
         assert_eq!(exec_state.kcl_version(), KclVersion::V2);
         assert_eq!(exec_state.legacy_caller_kcl_version(), KclVersion::V2);
+
+        // A pre-3.0 entry-point declaration does not pin the version: the
+        // module-local settings still apply.
+        exec_state.global.entry_point_kcl_version = Some(KclVersion::V1);
+        assert_eq!(exec_state.kcl_version(), KclVersion::V2);
 
         // An entry-point KCL 3.0 declaration overrides the module-local
         // settings for the unified lookup, but not for the legacy one.
@@ -5092,7 +5103,7 @@ startSketchOn(XY)
             // 3.0-preview...
             ctx.run_mock(&v3_program, &fresh_memory).await.unwrap();
             let (exec_state, _) = ctx.run_mock_returning_state(&v2_program, &prev_memory).await.unwrap();
-            assert_eq!(exec_state.global.entry_point_kcl_version, None);
+            assert_eq!(exec_state.global.entry_point_kcl_version, Some(KclVersion::V2));
             assert!(!exec_state.entry_point_version_is_v3_or_higher());
 
             // ...and that a 3.0-preview run restoring a 2.0 run's memory
