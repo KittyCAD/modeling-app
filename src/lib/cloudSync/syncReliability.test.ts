@@ -9,6 +9,7 @@ import {
   notifyCloudSyncWriteLikeMutation,
   type ProjectArchiveFile,
   setCloudSyncOpenedProject,
+  syncCloudSyncProjectNow,
 } from '@src/lib/cloudSync'
 import { projectManifestFromFiles } from '@src/lib/cloudSync/projectArchive'
 import {
@@ -35,6 +36,7 @@ const remoteProjectId = 'remote-project-123'
 const remoteRevision = 'revision-123'
 const updatedRemoteRevision = 'revision-124'
 const remoteProjectUrl = `${baseUrl}/user/projects/${remoteProjectId}`
+const remoteDownloadUrl = `${remoteProjectUrl}/download?format=zip`
 const encoder = new TextEncoder()
 const projectToml = `title = "Bracket"\n\n[cloud."${environmentName}"]\nproject_id = "${remoteProjectId}"\n`
 
@@ -385,6 +387,7 @@ describe('cloud sync reliability', () => {
       },
     })
   })
+
   it('preserves a rejected replacement when the project is reopened', async () => {
     const deletedFilePath = `${projectPath}/obsolete.kcl`
     const files = new Map([
@@ -508,4 +511,74 @@ describe('cloud sync reliability', () => {
     })
   })
 
+  it('does not hydrate over a local mutation made during the remote fetch', async () => {
+    const files = new Map([
+      [`${projectPath}/main.kcl`, 'base = 1\n'],
+      [`${projectPath}/${PROJECT_SETTINGS_FILE_NAME}`, projectToml],
+    ])
+    configureCloudSyncLocalFileSystem(
+      createCloudSyncTestFs(files, { projectDirectory })
+    )
+    await seedSyncedProject([
+      projectFile('main.kcl', 'base = 1\n'),
+      projectFile(PROJECT_SETTINGS_FILE_NAME, projectToml),
+    ])
+
+    let markDownloadStarted!: () => void
+    let releaseDownload!: () => void
+    const downloadStarted = new Promise<void>((resolve) => {
+      markDownloadStarted = resolve
+    })
+    const downloadGate = new Promise<void>((resolve) => {
+      releaseDownload = resolve
+    })
+    fetchMock.mockImplementation(async (input, init) => {
+      const url = getFetchUrl(input)
+      const method = getFetchMethod(input, init)
+      if (url === remoteProjectUrl && method === 'GET') {
+        return jsonResponse(remoteProject(updatedRemoteRevision))
+      }
+      if (url === remoteDownloadUrl && method === 'GET') {
+        markDownloadStarted()
+        await downloadGate
+        return jsonResponse({
+          files: [
+            { relativePath: 'main.kcl', contents: 'remote = 2\n' },
+            {
+              relativePath: PROJECT_SETTINGS_FILE_NAME,
+              contents: projectToml,
+            },
+          ],
+        })
+      }
+      if (url.endsWith('/user/client-errors') && method === 'POST') {
+        return jsonResponse({})
+      }
+      return jsonResponse(
+        { message: `Unexpected fetch: ${method} ${url}` },
+        500
+      )
+    })
+    vi.stubGlobal('fetch', fetchMock)
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+    configureCloudSyncEngine({
+      enabled: true,
+      baseUrl,
+      environmentName,
+      cloudProjectDirectoryPaths: [projectDirectory],
+      autoEnrollCloudLibraryProjects: true,
+    })
+
+    const sync = syncCloudSyncProjectNow(projectPath)
+    await downloadStarted
+    files.set(`${projectPath}/main.kcl`, 'local = 3\n')
+    await notifyCloudSyncWriteLikeMutation(`${projectPath}/main.kcl`)
+    releaseDownload()
+
+    await expect(sync).rejects.toThrow(
+      'Cloud sync found conflicting local and remote changes.'
+    )
+    expect(files.get(`${projectPath}/main.kcl`)).toBe('local = 3\n')
+    await expect(getAllOutboxEntries()).resolves.toHaveLength(1)
+  })
 })
