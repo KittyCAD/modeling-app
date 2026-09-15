@@ -1,12 +1,21 @@
 import { tmpdir } from 'node:os'
 import type * as ClientErrorsModule from '@src/lib/clientErrors'
-import { FileAlreadyExists } from '@src/lib/fileSystem/fileOperations'
+import {
+  createFile as createFileEffect,
+  createUniqueFile as createUniqueFileEffect,
+  FileAlreadyExists,
+  fileOperationsLayer,
+  writeFile as writeFileEffect,
+} from '@src/lib/fileSystem/fileOperations'
+import { fileSystemLayer } from '@src/lib/fileSystem/fileSystem'
 import {
   createFileOperationsRuntime,
   type FileOperationsRuntime,
 } from '@src/lib/fileSystem/runtime'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import nodeFileSystem from '@src/lib/fs-zds/nodefs'
+import * as Effect from 'effect/Effect'
+import * as Layer from 'effect/Layer'
 import fc from 'fast-check'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -128,6 +137,46 @@ describe('Effect filesystem operations', () => {
       'end:second',
     ])
     await expect(runtime.operations.pending()).resolves.toBe(0)
+  })
+
+  it('owns mutable bytes when file operation Effects are constructed', async () => {
+    const writes = new Map<string, Uint8Array>()
+    const backing: IZooDesignStudioFS = {
+      ...nodeFileSystem.impl,
+      writeFile: async (path, contents) => {
+        writes.set(path, new Uint8Array(contents))
+      },
+    }
+    const layer = fileOperationsLayer(backing).pipe(
+      Layer.provide(fileSystemLayer(backing))
+    )
+    const writeContents = new Uint8Array([1])
+    const createContents = new Uint8Array([2])
+    const uniqueContents = new Uint8Array([3])
+    const programs = [
+      writeFileEffect('/workspace/write.kcl', writeContents),
+      createFileEffect('/workspace/create.kcl', createContents),
+      createUniqueFileEffect(
+        '/workspace',
+        { stem: 'unique', extension: '.kcl' },
+        uniqueContents
+      ),
+    ]
+
+    writeContents[0] = 9
+    createContents[0] = 9
+    uniqueContents[0] = 9
+    for (const program of programs) {
+      await Effect.runPromise(program.pipe(Effect.provide(layer)))
+    }
+
+    expect(writes).toEqual(
+      new Map([
+        ['/workspace/write.kcl', new Uint8Array([1])],
+        ['/workspace/create.kcl', new Uint8Array([2])],
+        ['/workspace/unique.kcl', new Uint8Array([3])],
+      ])
+    )
   })
 
   it('accepts UTF-8 strings for every file-writing operation', async () => {
@@ -349,6 +398,54 @@ describe('Effect filesystem operations', () => {
     await expect(read).resolves.toEqual(['parts'])
     await create
     expect(events).toEqual(['create:start', 'create:end', 'read-directory'])
+  })
+
+  it('waits for ancestor directory reads before recursively creating beneath them', async () => {
+    const root = testPath(
+      nodeFileSystem.impl.join(
+        tmpdir(),
+        `zds-file-operations-ancestor-read-${crypto.randomUUID()}`
+      )
+    )
+    const projects = testPath(root, 'projects')
+    const target = testPath(projects, 'chair', 'parts')
+    await nodeFileSystem.impl.mkdir(projects, { recursive: true })
+    const finishRead = createGate()
+    const readStarted = createGate()
+    const events: string[] = []
+    const backing: IZooDesignStudioFS = {
+      ...nodeFileSystem.impl,
+      readdir: async (path) => {
+        events.push('read:start')
+        readStarted.open()
+        await finishRead.promise
+        events.push('read:end')
+        return nodeFileSystem.impl.readdir(path)
+      },
+      mkdir: async (path, options) => {
+        events.push(`create:${nodeFileSystem.impl.basename(path)}`)
+        return nodeFileSystem.impl.mkdir(path, options)
+      },
+    }
+    const runtime = createRuntime(backing)
+
+    const read = runtime.operations.readDirectory(projects)
+    await readStarted.promise
+    const create = runtime.operations.createDirectory(target)
+
+    await vi.waitFor(async () =>
+      expect(await runtime.operations.pending()).toBe(1)
+    )
+    expect(events).toEqual(['read:start'])
+    finishRead.open()
+
+    await Promise.all([read, create])
+    expect(events.indexOf('read:end')).toBeLessThan(
+      events.indexOf('create:chair')
+    )
+    expect(events.indexOf('create:chair')).toBeLessThan(
+      events.indexOf('create:parts')
+    )
   })
 
   it('makes a parent rename wait for a write beneath it', async () => {
@@ -665,6 +762,37 @@ describe('Effect filesystem operations', () => {
     expect(
       new TextDecoder().decode(await runtime.operations.readFile(path))
     ).toBe('first')
+  })
+
+  it('uses strict creation without an existence preflight', async () => {
+    const collision = Object.assign(new Error('external creator won'), {
+      code: 'EEXIST',
+    })
+    const stat = vi.fn<IZooDesignStudioFS['stat']>()
+    const writeFile = vi
+      .fn<IZooDesignStudioFS['writeFile']>()
+      .mockRejectedValue(collision)
+    const runtime = createRuntime({
+      ...nodeFileSystem.impl,
+      stat,
+      writeFile,
+    })
+
+    await expect(
+      runtime.operations.createFile('/project/main.kcl', 'code')
+    ).rejects.toEqual(
+      expect.objectContaining({
+        _tag: 'FileAlreadyExists',
+        cause: collision,
+        operation: 'create-file',
+      })
+    )
+    expect(stat).not.toHaveBeenCalled()
+    expect(writeFile).toHaveBeenCalledWith(
+      '/project/main.kcl',
+      new TextEncoder().encode('code'),
+      { flag: 'wx' }
+    )
   })
 
   it('allocates concurrent unique filenames without changing their full extensions', async () => {
