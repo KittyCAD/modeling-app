@@ -262,12 +262,13 @@ async fn new_context_state(
     current_file: Option<PathBuf>,
     mock: bool,
     highlight_edges: Option<bool>,
+    kcl_version: kcl_lib::KclVersion,
 ) -> Result<(ExecutorContext, kcl_lib::ExecState)> {
     let settings = executor_settings(current_file, highlight_edges);
     let ctx = if mock {
         ExecutorContext::new_mock(Some(settings)).await
     } else {
-        ExecutorContext::new_with_client(settings, None, None).await?
+        ExecutorContext::new_with_client(settings, None, None, kcl_version).await?
     };
     let state = kcl_lib::ExecState::new(&ctx);
     Ok((ctx, state))
@@ -346,9 +347,14 @@ async fn run_kcl(input: KclInput, mock: bool, highlight_edges: Option<bool>) -> 
         filename,
     } = load_and_parse(input).await?;
 
-    let (ctx, mut state) = new_context_state(path, mock, highlight_edges)
-        .await
-        .map_err(to_py_exception)?;
+    let (ctx, mut state) = new_context_state(
+        path,
+        mock,
+        highlight_edges,
+        program.language_version().map_err(to_py_exception)?,
+    )
+    .await
+    .map_err(to_py_exception)?;
     let (env_ref, _) = match ctx.run(&program, &mut state).await {
         Ok(result) => result,
         Err(err) => {
@@ -408,7 +414,9 @@ async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstr
         }
     };
 
-    let (ctx, mut state) = new_context_state(path, false, None).await.map_err(to_py_exception)?;
+    let (ctx, mut state) = new_context_state(path, false, None, program.language_version().map_err(to_py_exception)?)
+        .await
+        .map_err(to_py_exception)?;
     let result = match ctx.run(&program, &mut state).await {
         Ok((env_ref, _)) => {
             let outcome = state.into_exec_outcome(env_ref, &ctx).await.map_err(to_py_exception)?;
@@ -667,7 +675,7 @@ async fn import_and_snapshot_views(
 ) -> PyResult<Vec<Vec<u8>>> {
     let zoom = zoom.unwrap_or(true);
     spawn_py(async move {
-        let (ctx, _state) = new_context_state(None, false, highlight_edges)
+        let (ctx, _state) = new_context_state(None, false, highlight_edges, kcl_lib::KclVersion::default())
             .await
             .map_err(to_py_exception)?;
         if let Err(e) = import(&ctx, filepaths, format).await {
