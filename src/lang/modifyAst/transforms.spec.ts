@@ -1128,6 +1128,38 @@ extrude001 = extrude(profile001, length = 1)`
       )
       expect(newCode).toContain(code + '\n' + expectedNewLine)
     })
+
+    it('should edit an existing clone in place', async () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+extrude001 = extrude(profile001, length = 1)
+clone001 = clone(extrude001)`
+      const {
+        artifactGraph,
+        ast,
+        sketches: objects,
+      } = await getAstAndSketchSelections(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const result = addClone({
+        ast,
+        artifactGraph,
+        objects,
+        variableName: 'unusedDuringEdit',
+        nodeToEdit: [
+          ['body', ''],
+          [3, 'index'],
+          ['declaration', 'VariableDeclaration'],
+          ['init', 'VariableDeclarator'],
+        ],
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      expect(recast(result.modifiedAst, instanceInThisFile)).toBe(`${code}\n`)
+    })
   })
 
   describe('Testing addAppearance', () => {
