@@ -1474,6 +1474,7 @@ pub async fn recast_dir(dir: &std::path::Path, options: &crate::FormatOptions) -
                         kcl_source: contents.to_string(),
                         error: err,
                         filename: file.to_string_lossy().to_string(),
+                        label: file.to_string_lossy().to_string(),
                     };
                     let report = miette::Report::new(report);
                     anyhow::anyhow!("{:?}", report)
@@ -1484,6 +1485,7 @@ pub async fn recast_dir(dir: &std::path::Path, options: &crate::FormatOptions) -
                             kcl_source: contents.to_string(),
                             error: crate::KclError::new_semantic(ce.clone().into()),
                             filename: file.to_string_lossy().to_string(),
+                            label: file.to_string_lossy().to_string(),
                         };
                         let report = miette::Report::new(report);
                         anyhow::bail!("{:?}", report);
@@ -3100,7 +3102,7 @@ fn ghi(part001) {
 }
 "#;
         let mut program = crate::parsing::top_level_parse(some_program_string).unwrap();
-        program.rename_symbol("mySuperCoolPart", 6);
+        assert!(program.rename_symbol("mySuperCoolPart", 6));
 
         let recasted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -3128,7 +3130,7 @@ fn ghi(part001) {
   return x
 }"#;
         let mut program = crate::parsing::top_level_parse(some_program_string).unwrap();
-        program.rename_symbol("newName", 7);
+        assert!(program.rename_symbol("newName", 7));
 
         let recasted = program.recast_top(&Default::default(), 0);
         assert_eq!(

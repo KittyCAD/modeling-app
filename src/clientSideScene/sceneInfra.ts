@@ -17,7 +17,10 @@ import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer'
 
 import { CameraControls } from '@src/clientSideScene/CameraControls'
 import { orthoScale, perspScale } from '@src/clientSideScene/helpers'
-import { PROFILE_START } from '@src/clientSideScene/sceneConstants'
+import {
+  CANVAS_DRAG_THRESHOLD_PX,
+  PROFILE_START,
+} from '@src/clientSideScene/sceneConstants'
 import {
   AXIS_GROUP,
   DEBUG_SHOW_INTERSECTION_PLANE,
@@ -565,6 +568,26 @@ export class SceneInfra {
       this._processingMouseMove = true
     }
 
+    try {
+      await this.processMouseMove(mouseEvent)
+    } catch (error) {
+      console.error('[canvas mousemove] processing failed', error)
+      return Promise.reject(error)
+    } finally {
+      if (this.mouseMoveThrottling) {
+        this._processingMouseMove = false
+        const lastUnprocessedMouseEvent = this._lastUnprocessedMouseEvent
+        if (lastUnprocessedMouseEvent) {
+          // Another mousemove happened during the time this callback was processing
+          // -> process that event now
+          this._lastUnprocessedMouseEvent = undefined
+          void this.onMouseMove(lastUnprocessedMouseEvent)
+        }
+      }
+    }
+  }
+
+  private processMouseMove = async (mouseEvent: MouseEvent) => {
     this.updateCurrentMouseVector(mouseEvent)
 
     const planeIntersectPoint = this.getPlaneIntersectPoint()
@@ -574,7 +597,7 @@ export class SceneInfra {
       const hasBeenDragged = !vec2WithinDistance(
         this.ndc2screenSpace(this.currentMouseVector),
         this.ndc2screenSpace(this.selected.mouseDownVector),
-        10 // Drag threshold in pixels
+        CANVAS_DRAG_THRESHOLD_PX
       )
       if (!this.selected.hasBeenDragged && hasBeenDragged) {
         this.selected.hasBeenDragged = true
@@ -621,7 +644,7 @@ export class SceneInfra {
       const hasBeenDragged = !vec2WithinDistance(
         this.ndc2screenSpace(this.currentMouseVector),
         this.ndc2screenSpace(this.areaSelect.mouseDownVector),
-        10 // Drag threshold in pixels
+        CANVAS_DRAG_THRESHOLD_PX
       )
       if (!this.areaSelect.hasBeenDragged && hasBeenDragged) {
         this.areaSelect.hasBeenDragged = true
@@ -716,17 +739,6 @@ export class SceneInfra {
           })
           if (!this.selected) this.updateMouseState({ type: 'idle' })
         }
-      }
-    }
-
-    if (this.mouseMoveThrottling) {
-      this._processingMouseMove = false
-      const lastUnprocessedMouseEvent = this._lastUnprocessedMouseEvent
-      if (lastUnprocessedMouseEvent) {
-        // Another mousemove happened during the time this callback was processing
-        // -> process that event now
-        this._lastUnprocessedMouseEvent = undefined
-        void this.onMouseMove(lastUnprocessedMouseEvent)
       }
     }
   }

@@ -85,6 +85,8 @@ description: Variables in memory after executing engine-valve.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -92,10 +94,10 @@ description: Variables in memory after executing engine-valve.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 621,
-            "end": 626,
+            "commentStart": 661,
+            "end": 666,
             "moduleId": 0,
-            "start": 621,
+            "start": 661,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -106,10 +108,10 @@ description: Variables in memory after executing engine-valve.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 694,
-            "end": 698,
+            "commentStart": 734,
+            "end": 738,
             "moduleId": 0,
-            "start": 694,
+            "start": 734,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -120,10 +122,10 @@ description: Variables in memory after executing engine-valve.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 803,
-            "end": 807,
+            "commentStart": 843,
+            "end": 847,
             "moduleId": 0,
-            "start": 803,
+            "start": 843,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -134,10 +136,10 @@ description: Variables in memory after executing engine-valve.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 912,
-            "end": 917,
+            "commentStart": 952,
+            "end": 957,
             "moduleId": 0,
-            "start": 912,
+            "start": 952,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -148,10 +150,10 @@ description: Variables in memory after executing engine-valve.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1174,
-            "end": 1178,
+            "commentStart": 1214,
+            "end": 1218,
             "moduleId": 0,
-            "start": 1174,
+            "start": 1214,
             "type": "TagDeclarator",
             "value": "arc6"
           },
@@ -162,12 +164,12 @@ description: Variables in memory after executing engine-valve.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1284,
-            "end": 1289,
+            "commentStart": 1475,
+            "end": 1480,
             "moduleId": 0,
-            "start": 1284,
+            "start": 1475,
             "type": "TagDeclarator",
-            "value": "line7"
+            "value": "line8"
           },
           "type": "extrudePlane"
         },
@@ -176,10 +178,10 @@ description: Variables in memory after executing engine-valve.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1513,
-            "end": 1518,
+            "commentStart": 1553,
+            "end": 1558,
             "moduleId": 0,
-            "start": 1513,
+            "start": 1553,
             "type": "TagDeclarator",
             "value": "line9"
           },
@@ -190,10 +192,10 @@ description: Variables in memory after executing engine-valve.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1598,
-            "end": 1604,
+            "commentStart": 1638,
+            "end": 1644,
             "moduleId": 0,
-            "start": 1598,
+            "start": 1638,
             "type": "TagDeclarator",
             "value": "line10"
           },
@@ -204,10 +206,10 @@ description: Variables in memory after executing engine-valve.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1684,
-            "end": 1690,
+            "commentStart": 1724,
+            "end": 1730,
             "moduleId": 0,
-            "start": 1684,
+            "start": 1724,
             "type": "TagDeclarator",
             "value": "line11"
           },
@@ -218,10 +220,10 @@ description: Variables in memory after executing engine-valve.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1770,
-            "end": 1776,
+            "commentStart": 1810,
+            "end": 1816,
             "moduleId": 0,
-            "start": 1770,
+            "start": 1810,
             "type": "TagDeclarator",
             "value": "line12"
           },
@@ -232,10 +234,10 @@ description: Variables in memory after executing engine-valve.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1856,
-            "end": 1862,
+            "commentStart": 1896,
+            "end": 1902,
             "moduleId": 0,
-            "start": 1856,
+            "start": 1896,
             "type": "TagDeclarator",
             "value": "line13"
           },
@@ -246,10 +248,10 @@ description: Variables in memory after executing engine-valve.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1941,
-            "end": 1947,
+            "commentStart": 1981,
+            "end": 1987,
             "moduleId": 0,
-            "start": 1941,
+            "start": 1981,
             "type": "TagDeclarator",
             "value": "line14"
           },
@@ -260,10 +262,10 @@ description: Variables in memory after executing engine-valve.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2026,
-            "end": 2032,
+            "commentStart": 2066,
+            "end": 2072,
             "moduleId": 0,
-            "start": 2026,
+            "start": 2066,
             "type": "TagDeclarator",
             "value": "line15"
           },
@@ -274,10 +276,10 @@ description: Variables in memory after executing engine-valve.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2111,
-            "end": 2117,
+            "commentStart": 2151,
+            "end": 2157,
             "moduleId": 0,
-            "start": 2111,
+            "start": 2151,
             "type": "TagDeclarator",
             "value": "line16"
           },
@@ -288,10 +290,10 @@ description: Variables in memory after executing engine-valve.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2196,
-            "end": 2202,
+            "commentStart": 2236,
+            "end": 2242,
             "moduleId": 0,
-            "start": 2196,
+            "start": 2236,
             "type": "TagDeclarator",
             "value": "line17"
           },
@@ -302,10 +304,10 @@ description: Variables in memory after executing engine-valve.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2281,
-            "end": 2287,
+            "commentStart": 2321,
+            "end": 2327,
             "moduleId": 0,
-            "start": 2281,
+            "start": 2321,
             "type": "TagDeclarator",
             "value": "line18"
           },
@@ -316,10 +318,10 @@ description: Variables in memory after executing engine-valve.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2366,
-            "end": 2372,
+            "commentStart": 2406,
+            "end": 2412,
             "moduleId": 0,
-            "start": 2366,
+            "start": 2406,
             "type": "TagDeclarator",
             "value": "line19"
           },
@@ -330,10 +332,10 @@ description: Variables in memory after executing engine-valve.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2452,
-            "end": 2458,
+            "commentStart": 2492,
+            "end": 2498,
             "moduleId": 0,
-            "start": 2452,
+            "start": 2492,
             "type": "TagDeclarator",
             "value": "line20"
           },
@@ -344,10 +346,10 @@ description: Variables in memory after executing engine-valve.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2538,
-            "end": 2544,
+            "commentStart": 2578,
+            "end": 2584,
             "moduleId": 0,
-            "start": 2538,
+            "start": 2578,
             "type": "TagDeclarator",
             "value": "line21"
           },
@@ -358,10 +360,10 @@ description: Variables in memory after executing engine-valve.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2621,
-            "end": 2627,
+            "commentStart": 2661,
+            "end": 2667,
             "moduleId": 0,
-            "start": 2621,
+            "start": 2661,
             "type": "TagDeclarator",
             "value": "line22"
           },
@@ -372,10 +374,10 @@ description: Variables in memory after executing engine-valve.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2707,
-            "end": 2713,
+            "commentStart": 2747,
+            "end": 2753,
             "moduleId": 0,
-            "start": 2707,
+            "start": 2747,
             "type": "TagDeclarator",
             "value": "line23"
           },
@@ -397,10 +399,10 @@ description: Variables in memory after executing engine-valve.kcl
               30.0
             ],
             "tag": {
-              "commentStart": 621,
-              "end": 626,
+              "commentStart": 661,
+              "end": 666,
               "moduleId": 0,
-              "start": 621,
+              "start": 661,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -427,10 +429,10 @@ description: Variables in memory after executing engine-valve.kcl
             ],
             "radius": 12.487435529798132,
             "tag": {
-              "commentStart": 694,
-              "end": 698,
+              "commentStart": 734,
+              "end": 738,
               "moduleId": 0,
-              "start": 694,
+              "start": 734,
               "type": "TagDeclarator",
               "value": "arc3"
             },
@@ -457,10 +459,10 @@ description: Variables in memory after executing engine-valve.kcl
             ],
             "radius": 4.3944574921072865,
             "tag": {
-              "commentStart": 803,
-              "end": 807,
+              "commentStart": 843,
+              "end": 847,
               "moduleId": 0,
-              "start": 803,
+              "start": 843,
               "type": "TagDeclarator",
               "value": "arc4"
             },
@@ -481,10 +483,10 @@ description: Variables in memory after executing engine-valve.kcl
               0.0000000022181232406381923
             ],
             "tag": {
-              "commentStart": 912,
-              "end": 917,
+              "commentStart": 952,
+              "end": 957,
               "moduleId": 0,
-              "start": 912,
+              "start": 952,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -511,10 +513,10 @@ description: Variables in memory after executing engine-valve.kcl
             ],
             "radius": 41.37678765161909,
             "tag": {
-              "commentStart": 1174,
-              "end": 1178,
+              "commentStart": 1214,
+              "end": 1218,
               "moduleId": 0,
-              "start": 1174,
+              "start": 1214,
               "type": "TagDeclarator",
               "value": "arc6"
             },
@@ -535,10 +537,10 @@ description: Variables in memory after executing engine-valve.kcl
               1.660476875997979
             ],
             "tag": {
-              "commentStart": 1284,
-              "end": 1289,
+              "commentStart": 1324,
+              "end": 1329,
               "moduleId": 0,
-              "start": 1284,
+              "start": 1324,
               "type": "TagDeclarator",
               "value": "line7"
             },
@@ -559,10 +561,10 @@ description: Variables in memory after executing engine-valve.kcl
               30.0
             ],
             "tag": {
-              "commentStart": 1358,
-              "end": 1363,
+              "commentStart": 1398,
+              "end": 1403,
               "moduleId": 0,
-              "start": 1358,
+              "start": 1398,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -583,10 +585,10 @@ description: Variables in memory after executing engine-valve.kcl
               80.0
             ],
             "tag": {
-              "commentStart": 1435,
-              "end": 1440,
+              "commentStart": 1475,
+              "end": 1480,
               "moduleId": 0,
-              "start": 1435,
+              "start": 1475,
               "type": "TagDeclarator",
               "value": "line8"
             },
@@ -607,10 +609,10 @@ description: Variables in memory after executing engine-valve.kcl
               80.0
             ],
             "tag": {
-              "commentStart": 1513,
-              "end": 1518,
+              "commentStart": 1553,
+              "end": 1558,
               "moduleId": 0,
-              "start": 1513,
+              "start": 1553,
               "type": "TagDeclarator",
               "value": "line9"
             },
@@ -631,10 +633,10 @@ description: Variables in memory after executing engine-valve.kcl
               78.32999999233279
             ],
             "tag": {
-              "commentStart": 1598,
-              "end": 1604,
+              "commentStart": 1638,
+              "end": 1644,
               "moduleId": 0,
-              "start": 1598,
+              "start": 1638,
               "type": "TagDeclarator",
               "value": "line10"
             },
@@ -655,10 +657,10 @@ description: Variables in memory after executing engine-valve.kcl
               78.32999999233279
             ],
             "tag": {
-              "commentStart": 1684,
-              "end": 1690,
+              "commentStart": 1724,
+              "end": 1730,
               "moduleId": 0,
-              "start": 1684,
+              "start": 1724,
               "type": "TagDeclarator",
               "value": "line11"
             },
@@ -679,10 +681,10 @@ description: Variables in memory after executing engine-valve.kcl
               77.42999999233278
             ],
             "tag": {
-              "commentStart": 1770,
-              "end": 1776,
+              "commentStart": 1810,
+              "end": 1816,
               "moduleId": 0,
-              "start": 1770,
+              "start": 1810,
               "type": "TagDeclarator",
               "value": "line12"
             },
@@ -703,10 +705,10 @@ description: Variables in memory after executing engine-valve.kcl
               77.42999999233278
             ],
             "tag": {
-              "commentStart": 1856,
-              "end": 1862,
+              "commentStart": 1896,
+              "end": 1902,
               "moduleId": 0,
-              "start": 1856,
+              "start": 1896,
               "type": "TagDeclarator",
               "value": "line13"
             },
@@ -727,10 +729,10 @@ description: Variables in memory after executing engine-valve.kcl
               76.60000000468054
             ],
             "tag": {
-              "commentStart": 1941,
-              "end": 1947,
+              "commentStart": 1981,
+              "end": 1987,
               "moduleId": 0,
-              "start": 1941,
+              "start": 1981,
               "type": "TagDeclarator",
               "value": "line14"
             },
@@ -751,10 +753,10 @@ description: Variables in memory after executing engine-valve.kcl
               76.60000000468054
             ],
             "tag": {
-              "commentStart": 2026,
-              "end": 2032,
+              "commentStart": 2066,
+              "end": 2072,
               "moduleId": 0,
-              "start": 2026,
+              "start": 2066,
               "type": "TagDeclarator",
               "value": "line15"
             },
@@ -775,10 +777,10 @@ description: Variables in memory after executing engine-valve.kcl
               75.70000000468055
             ],
             "tag": {
-              "commentStart": 2111,
-              "end": 2117,
+              "commentStart": 2151,
+              "end": 2157,
               "moduleId": 0,
-              "start": 2111,
+              "start": 2151,
               "type": "TagDeclarator",
               "value": "line16"
             },
@@ -799,10 +801,10 @@ description: Variables in memory after executing engine-valve.kcl
               75.70000000468055
             ],
             "tag": {
-              "commentStart": 2196,
-              "end": 2202,
+              "commentStart": 2236,
+              "end": 2242,
               "moduleId": 0,
-              "start": 2196,
+              "start": 2236,
               "type": "TagDeclarator",
               "value": "line17"
             },
@@ -823,10 +825,10 @@ description: Variables in memory after executing engine-valve.kcl
               74.67249999758087
             ],
             "tag": {
-              "commentStart": 2281,
-              "end": 2287,
+              "commentStart": 2321,
+              "end": 2327,
               "moduleId": 0,
-              "start": 2281,
+              "start": 2321,
               "type": "TagDeclarator",
               "value": "line18"
             },
@@ -847,10 +849,10 @@ description: Variables in memory after executing engine-valve.kcl
               74.67249999758087
             ],
             "tag": {
-              "commentStart": 2366,
-              "end": 2372,
+              "commentStart": 2406,
+              "end": 2412,
               "moduleId": 0,
-              "start": 2366,
+              "start": 2406,
               "type": "TagDeclarator",
               "value": "line19"
             },
@@ -871,10 +873,10 @@ description: Variables in memory after executing engine-valve.kcl
               73.77249999758088
             ],
             "tag": {
-              "commentStart": 2452,
-              "end": 2458,
+              "commentStart": 2492,
+              "end": 2498,
               "moduleId": 0,
-              "start": 2452,
+              "start": 2492,
               "type": "TagDeclarator",
               "value": "line20"
             },
@@ -895,10 +897,10 @@ description: Variables in memory after executing engine-valve.kcl
               73.77249999758088
             ],
             "tag": {
-              "commentStart": 2538,
-              "end": 2544,
+              "commentStart": 2578,
+              "end": 2584,
               "moduleId": 0,
-              "start": 2538,
+              "start": 2578,
               "type": "TagDeclarator",
               "value": "line21"
             },
@@ -919,10 +921,10 @@ description: Variables in memory after executing engine-valve.kcl
               71.0
             ],
             "tag": {
-              "commentStart": 2621,
-              "end": 2627,
+              "commentStart": 2661,
+              "end": 2667,
               "moduleId": 0,
-              "start": 2621,
+              "start": 2661,
               "type": "TagDeclarator",
               "value": "line22"
             },
@@ -943,10 +945,10 @@ description: Variables in memory after executing engine-valve.kcl
               71.0
             ],
             "tag": {
-              "commentStart": 2707,
-              "end": 2713,
+              "commentStart": 2747,
+              "end": 2753,
               "moduleId": 0,
-              "start": 2707,
+              "start": 2747,
               "type": "TagDeclarator",
               "value": "line23"
             },
@@ -959,17 +961,17 @@ description: Variables in memory after executing engine-valve.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1101,8 +1103,8 @@ description: Variables in memory after executing engine-valve.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": null,
       "endCapId": null,
@@ -1162,10 +1164,10 @@ description: Variables in memory after executing engine-valve.kcl
             30.0
           ],
           "tag": {
-            "commentStart": 621,
-            "end": 626,
+            "commentStart": 661,
+            "end": 666,
             "moduleId": 0,
-            "start": 621,
+            "start": 661,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1192,10 +1194,10 @@ description: Variables in memory after executing engine-valve.kcl
           ],
           "radius": 12.487435529798132,
           "tag": {
-            "commentStart": 694,
-            "end": 698,
+            "commentStart": 734,
+            "end": 738,
             "moduleId": 0,
-            "start": 694,
+            "start": 734,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -1222,10 +1224,10 @@ description: Variables in memory after executing engine-valve.kcl
           ],
           "radius": 4.3944574921072865,
           "tag": {
-            "commentStart": 803,
-            "end": 807,
+            "commentStart": 843,
+            "end": 847,
             "moduleId": 0,
-            "start": 803,
+            "start": 843,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -1246,10 +1248,10 @@ description: Variables in memory after executing engine-valve.kcl
             0.0000000022181232406381923
           ],
           "tag": {
-            "commentStart": 912,
-            "end": 917,
+            "commentStart": 952,
+            "end": 957,
             "moduleId": 0,
-            "start": 912,
+            "start": 952,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -1276,10 +1278,10 @@ description: Variables in memory after executing engine-valve.kcl
           ],
           "radius": 41.37678765161909,
           "tag": {
-            "commentStart": 1174,
-            "end": 1178,
+            "commentStart": 1214,
+            "end": 1218,
             "moduleId": 0,
-            "start": 1174,
+            "start": 1214,
             "type": "TagDeclarator",
             "value": "arc6"
           },
@@ -1300,10 +1302,10 @@ description: Variables in memory after executing engine-valve.kcl
             1.660476875997979
           ],
           "tag": {
-            "commentStart": 1284,
-            "end": 1289,
+            "commentStart": 1324,
+            "end": 1329,
             "moduleId": 0,
-            "start": 1284,
+            "start": 1324,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -1324,10 +1326,10 @@ description: Variables in memory after executing engine-valve.kcl
             30.0
           ],
           "tag": {
-            "commentStart": 1358,
-            "end": 1363,
+            "commentStart": 1398,
+            "end": 1403,
             "moduleId": 0,
-            "start": 1358,
+            "start": 1398,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -1348,10 +1350,10 @@ description: Variables in memory after executing engine-valve.kcl
             80.0
           ],
           "tag": {
-            "commentStart": 1435,
-            "end": 1440,
+            "commentStart": 1475,
+            "end": 1480,
             "moduleId": 0,
-            "start": 1435,
+            "start": 1475,
             "type": "TagDeclarator",
             "value": "line8"
           },
@@ -1372,10 +1374,10 @@ description: Variables in memory after executing engine-valve.kcl
             80.0
           ],
           "tag": {
-            "commentStart": 1513,
-            "end": 1518,
+            "commentStart": 1553,
+            "end": 1558,
             "moduleId": 0,
-            "start": 1513,
+            "start": 1553,
             "type": "TagDeclarator",
             "value": "line9"
           },
@@ -1396,10 +1398,10 @@ description: Variables in memory after executing engine-valve.kcl
             78.32999999233279
           ],
           "tag": {
-            "commentStart": 1598,
-            "end": 1604,
+            "commentStart": 1638,
+            "end": 1644,
             "moduleId": 0,
-            "start": 1598,
+            "start": 1638,
             "type": "TagDeclarator",
             "value": "line10"
           },
@@ -1420,10 +1422,10 @@ description: Variables in memory after executing engine-valve.kcl
             78.32999999233279
           ],
           "tag": {
-            "commentStart": 1684,
-            "end": 1690,
+            "commentStart": 1724,
+            "end": 1730,
             "moduleId": 0,
-            "start": 1684,
+            "start": 1724,
             "type": "TagDeclarator",
             "value": "line11"
           },
@@ -1444,10 +1446,10 @@ description: Variables in memory after executing engine-valve.kcl
             77.42999999233278
           ],
           "tag": {
-            "commentStart": 1770,
-            "end": 1776,
+            "commentStart": 1810,
+            "end": 1816,
             "moduleId": 0,
-            "start": 1770,
+            "start": 1810,
             "type": "TagDeclarator",
             "value": "line12"
           },
@@ -1468,10 +1470,10 @@ description: Variables in memory after executing engine-valve.kcl
             77.42999999233278
           ],
           "tag": {
-            "commentStart": 1856,
-            "end": 1862,
+            "commentStart": 1896,
+            "end": 1902,
             "moduleId": 0,
-            "start": 1856,
+            "start": 1896,
             "type": "TagDeclarator",
             "value": "line13"
           },
@@ -1492,10 +1494,10 @@ description: Variables in memory after executing engine-valve.kcl
             76.60000000468054
           ],
           "tag": {
-            "commentStart": 1941,
-            "end": 1947,
+            "commentStart": 1981,
+            "end": 1987,
             "moduleId": 0,
-            "start": 1941,
+            "start": 1981,
             "type": "TagDeclarator",
             "value": "line14"
           },
@@ -1516,10 +1518,10 @@ description: Variables in memory after executing engine-valve.kcl
             76.60000000468054
           ],
           "tag": {
-            "commentStart": 2026,
-            "end": 2032,
+            "commentStart": 2066,
+            "end": 2072,
             "moduleId": 0,
-            "start": 2026,
+            "start": 2066,
             "type": "TagDeclarator",
             "value": "line15"
           },
@@ -1540,10 +1542,10 @@ description: Variables in memory after executing engine-valve.kcl
             75.70000000468055
           ],
           "tag": {
-            "commentStart": 2111,
-            "end": 2117,
+            "commentStart": 2151,
+            "end": 2157,
             "moduleId": 0,
-            "start": 2111,
+            "start": 2151,
             "type": "TagDeclarator",
             "value": "line16"
           },
@@ -1564,10 +1566,10 @@ description: Variables in memory after executing engine-valve.kcl
             75.70000000468055
           ],
           "tag": {
-            "commentStart": 2196,
-            "end": 2202,
+            "commentStart": 2236,
+            "end": 2242,
             "moduleId": 0,
-            "start": 2196,
+            "start": 2236,
             "type": "TagDeclarator",
             "value": "line17"
           },
@@ -1588,10 +1590,10 @@ description: Variables in memory after executing engine-valve.kcl
             74.67249999758087
           ],
           "tag": {
-            "commentStart": 2281,
-            "end": 2287,
+            "commentStart": 2321,
+            "end": 2327,
             "moduleId": 0,
-            "start": 2281,
+            "start": 2321,
             "type": "TagDeclarator",
             "value": "line18"
           },
@@ -1612,10 +1614,10 @@ description: Variables in memory after executing engine-valve.kcl
             74.67249999758087
           ],
           "tag": {
-            "commentStart": 2366,
-            "end": 2372,
+            "commentStart": 2406,
+            "end": 2412,
             "moduleId": 0,
-            "start": 2366,
+            "start": 2406,
             "type": "TagDeclarator",
             "value": "line19"
           },
@@ -1636,10 +1638,10 @@ description: Variables in memory after executing engine-valve.kcl
             73.77249999758088
           ],
           "tag": {
-            "commentStart": 2452,
-            "end": 2458,
+            "commentStart": 2492,
+            "end": 2498,
             "moduleId": 0,
-            "start": 2452,
+            "start": 2492,
             "type": "TagDeclarator",
             "value": "line20"
           },
@@ -1660,10 +1662,10 @@ description: Variables in memory after executing engine-valve.kcl
             73.77249999758088
           ],
           "tag": {
-            "commentStart": 2538,
-            "end": 2544,
+            "commentStart": 2578,
+            "end": 2584,
             "moduleId": 0,
-            "start": 2538,
+            "start": 2578,
             "type": "TagDeclarator",
             "value": "line21"
           },
@@ -1684,10 +1686,10 @@ description: Variables in memory after executing engine-valve.kcl
             71.0
           ],
           "tag": {
-            "commentStart": 2621,
-            "end": 2627,
+            "commentStart": 2661,
+            "end": 2667,
             "moduleId": 0,
-            "start": 2621,
+            "start": 2661,
             "type": "TagDeclarator",
             "value": "line22"
           },
@@ -1708,10 +1710,10 @@ description: Variables in memory after executing engine-valve.kcl
             71.0
           ],
           "tag": {
-            "commentStart": 2707,
-            "end": 2713,
+            "commentStart": 2747,
+            "end": 2753,
             "moduleId": 0,
-            "start": 2707,
+            "start": 2747,
             "type": "TagDeclarator",
             "value": "line23"
           },
@@ -1724,17 +1726,17 @@ description: Variables in memory after executing engine-valve.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1866,8 +1868,8 @@ description: Variables in memory after executing engine-valve.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "valveSketch": {
@@ -5111,10 +5113,10 @@ description: Variables in memory after executing engine-valve.kcl
                     30.0
                   ],
                   "tag": {
-                    "commentStart": 621,
-                    "end": 626,
+                    "commentStart": 661,
+                    "end": 666,
                     "moduleId": 0,
-                    "start": 621,
+                    "start": 661,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -5141,10 +5143,10 @@ description: Variables in memory after executing engine-valve.kcl
                   ],
                   "radius": 12.487435529798132,
                   "tag": {
-                    "commentStart": 694,
-                    "end": 698,
+                    "commentStart": 734,
+                    "end": 738,
                     "moduleId": 0,
-                    "start": 694,
+                    "start": 734,
                     "type": "TagDeclarator",
                     "value": "arc3"
                   },
@@ -5171,10 +5173,10 @@ description: Variables in memory after executing engine-valve.kcl
                   ],
                   "radius": 4.3944574921072865,
                   "tag": {
-                    "commentStart": 803,
-                    "end": 807,
+                    "commentStart": 843,
+                    "end": 847,
                     "moduleId": 0,
-                    "start": 803,
+                    "start": 843,
                     "type": "TagDeclarator",
                     "value": "arc4"
                   },
@@ -5195,10 +5197,10 @@ description: Variables in memory after executing engine-valve.kcl
                     0.0000000022181232406381923
                   ],
                   "tag": {
-                    "commentStart": 912,
-                    "end": 917,
+                    "commentStart": 952,
+                    "end": 957,
                     "moduleId": 0,
-                    "start": 912,
+                    "start": 952,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -5225,10 +5227,10 @@ description: Variables in memory after executing engine-valve.kcl
                   ],
                   "radius": 41.37678765161909,
                   "tag": {
-                    "commentStart": 1174,
-                    "end": 1178,
+                    "commentStart": 1214,
+                    "end": 1218,
                     "moduleId": 0,
-                    "start": 1174,
+                    "start": 1214,
                     "type": "TagDeclarator",
                     "value": "arc6"
                   },
@@ -5249,10 +5251,10 @@ description: Variables in memory after executing engine-valve.kcl
                     1.660476875997979
                   ],
                   "tag": {
-                    "commentStart": 1284,
-                    "end": 1289,
+                    "commentStart": 1324,
+                    "end": 1329,
                     "moduleId": 0,
-                    "start": 1284,
+                    "start": 1324,
                     "type": "TagDeclarator",
                     "value": "line7"
                   },
@@ -5273,10 +5275,10 @@ description: Variables in memory after executing engine-valve.kcl
                     30.0
                   ],
                   "tag": {
-                    "commentStart": 1358,
-                    "end": 1363,
+                    "commentStart": 1398,
+                    "end": 1403,
                     "moduleId": 0,
-                    "start": 1358,
+                    "start": 1398,
                     "type": "TagDeclarator",
                     "value": "line6"
                   },
@@ -5297,10 +5299,10 @@ description: Variables in memory after executing engine-valve.kcl
                     80.0
                   ],
                   "tag": {
-                    "commentStart": 1435,
-                    "end": 1440,
+                    "commentStart": 1475,
+                    "end": 1480,
                     "moduleId": 0,
-                    "start": 1435,
+                    "start": 1475,
                     "type": "TagDeclarator",
                     "value": "line8"
                   },
@@ -5321,10 +5323,10 @@ description: Variables in memory after executing engine-valve.kcl
                     80.0
                   ],
                   "tag": {
-                    "commentStart": 1513,
-                    "end": 1518,
+                    "commentStart": 1553,
+                    "end": 1558,
                     "moduleId": 0,
-                    "start": 1513,
+                    "start": 1553,
                     "type": "TagDeclarator",
                     "value": "line9"
                   },
@@ -5345,10 +5347,10 @@ description: Variables in memory after executing engine-valve.kcl
                     78.32999999233279
                   ],
                   "tag": {
-                    "commentStart": 1598,
-                    "end": 1604,
+                    "commentStart": 1638,
+                    "end": 1644,
                     "moduleId": 0,
-                    "start": 1598,
+                    "start": 1638,
                     "type": "TagDeclarator",
                     "value": "line10"
                   },
@@ -5369,10 +5371,10 @@ description: Variables in memory after executing engine-valve.kcl
                     78.32999999233279
                   ],
                   "tag": {
-                    "commentStart": 1684,
-                    "end": 1690,
+                    "commentStart": 1724,
+                    "end": 1730,
                     "moduleId": 0,
-                    "start": 1684,
+                    "start": 1724,
                     "type": "TagDeclarator",
                     "value": "line11"
                   },
@@ -5393,10 +5395,10 @@ description: Variables in memory after executing engine-valve.kcl
                     77.42999999233278
                   ],
                   "tag": {
-                    "commentStart": 1770,
-                    "end": 1776,
+                    "commentStart": 1810,
+                    "end": 1816,
                     "moduleId": 0,
-                    "start": 1770,
+                    "start": 1810,
                     "type": "TagDeclarator",
                     "value": "line12"
                   },
@@ -5417,10 +5419,10 @@ description: Variables in memory after executing engine-valve.kcl
                     77.42999999233278
                   ],
                   "tag": {
-                    "commentStart": 1856,
-                    "end": 1862,
+                    "commentStart": 1896,
+                    "end": 1902,
                     "moduleId": 0,
-                    "start": 1856,
+                    "start": 1896,
                     "type": "TagDeclarator",
                     "value": "line13"
                   },
@@ -5441,10 +5443,10 @@ description: Variables in memory after executing engine-valve.kcl
                     76.60000000468054
                   ],
                   "tag": {
-                    "commentStart": 1941,
-                    "end": 1947,
+                    "commentStart": 1981,
+                    "end": 1987,
                     "moduleId": 0,
-                    "start": 1941,
+                    "start": 1981,
                     "type": "TagDeclarator",
                     "value": "line14"
                   },
@@ -5465,10 +5467,10 @@ description: Variables in memory after executing engine-valve.kcl
                     76.60000000468054
                   ],
                   "tag": {
-                    "commentStart": 2026,
-                    "end": 2032,
+                    "commentStart": 2066,
+                    "end": 2072,
                     "moduleId": 0,
-                    "start": 2026,
+                    "start": 2066,
                     "type": "TagDeclarator",
                     "value": "line15"
                   },
@@ -5489,10 +5491,10 @@ description: Variables in memory after executing engine-valve.kcl
                     75.70000000468055
                   ],
                   "tag": {
-                    "commentStart": 2111,
-                    "end": 2117,
+                    "commentStart": 2151,
+                    "end": 2157,
                     "moduleId": 0,
-                    "start": 2111,
+                    "start": 2151,
                     "type": "TagDeclarator",
                     "value": "line16"
                   },
@@ -5513,10 +5515,10 @@ description: Variables in memory after executing engine-valve.kcl
                     75.70000000468055
                   ],
                   "tag": {
-                    "commentStart": 2196,
-                    "end": 2202,
+                    "commentStart": 2236,
+                    "end": 2242,
                     "moduleId": 0,
-                    "start": 2196,
+                    "start": 2236,
                     "type": "TagDeclarator",
                     "value": "line17"
                   },
@@ -5537,10 +5539,10 @@ description: Variables in memory after executing engine-valve.kcl
                     74.67249999758087
                   ],
                   "tag": {
-                    "commentStart": 2281,
-                    "end": 2287,
+                    "commentStart": 2321,
+                    "end": 2327,
                     "moduleId": 0,
-                    "start": 2281,
+                    "start": 2321,
                     "type": "TagDeclarator",
                     "value": "line18"
                   },
@@ -5561,10 +5563,10 @@ description: Variables in memory after executing engine-valve.kcl
                     74.67249999758087
                   ],
                   "tag": {
-                    "commentStart": 2366,
-                    "end": 2372,
+                    "commentStart": 2406,
+                    "end": 2412,
                     "moduleId": 0,
-                    "start": 2366,
+                    "start": 2406,
                     "type": "TagDeclarator",
                     "value": "line19"
                   },
@@ -5585,10 +5587,10 @@ description: Variables in memory after executing engine-valve.kcl
                     73.77249999758088
                   ],
                   "tag": {
-                    "commentStart": 2452,
-                    "end": 2458,
+                    "commentStart": 2492,
+                    "end": 2498,
                     "moduleId": 0,
-                    "start": 2452,
+                    "start": 2492,
                     "type": "TagDeclarator",
                     "value": "line20"
                   },
@@ -5609,10 +5611,10 @@ description: Variables in memory after executing engine-valve.kcl
                     73.77249999758088
                   ],
                   "tag": {
-                    "commentStart": 2538,
-                    "end": 2544,
+                    "commentStart": 2578,
+                    "end": 2584,
                     "moduleId": 0,
-                    "start": 2538,
+                    "start": 2578,
                     "type": "TagDeclarator",
                     "value": "line21"
                   },
@@ -5633,10 +5635,10 @@ description: Variables in memory after executing engine-valve.kcl
                     71.0
                   ],
                   "tag": {
-                    "commentStart": 2621,
-                    "end": 2627,
+                    "commentStart": 2661,
+                    "end": 2667,
                     "moduleId": 0,
-                    "start": 2621,
+                    "start": 2661,
                     "type": "TagDeclarator",
                     "value": "line22"
                   },
@@ -5657,10 +5659,10 @@ description: Variables in memory after executing engine-valve.kcl
                     71.0
                   ],
                   "tag": {
-                    "commentStart": 2707,
-                    "end": 2713,
+                    "commentStart": 2747,
+                    "end": 2753,
                     "moduleId": 0,
-                    "start": 2707,
+                    "start": 2747,
                     "type": "TagDeclarator",
                     "value": "line23"
                   },
@@ -5673,17 +5675,17 @@ description: Variables in memory after executing engine-valve.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,

@@ -2,7 +2,7 @@
 
 ## Scope
 
-This file applies to TypeScript and React development under `src/`. It complements the repo root `CONTRIBUTING.md` and `eslint.config.mjs`.
+This file applies to TypeScript and React development under `src/`. It supplements the repo root `AGENTS.md`, `CONTRIBUTING.md`, and `eslint.config.mjs`. A series of guiding development principles are available in `PRINCIPLES.md`.
 
 ## Project overview
 

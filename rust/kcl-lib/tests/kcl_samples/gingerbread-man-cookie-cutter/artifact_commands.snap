@@ -338,7 +338,8 @@ description: Artifact commands gingerbread-man-cookie-cutter.kcl
         "query_point": {
           "x": 0.0,
           "y": 260.0
-        }
+        },
+        "version": "V1"
       }
     },
     {

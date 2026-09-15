@@ -108,7 +108,7 @@
     "compile": "cross-env NODE_ENV=production tsc -b",
     "build": "npm run build-base -- --sourcemap",
     "watch": "npm run build-base -- --sourcemap --watch",
-    "pretest": "npm run build && npm run test-compile",
+    "pretest": "npm run build && npm run test-compile && mocha --ui tdd ./dist/client/src/test/suite/vscodeProfile.test.js",
     "test": "node ./dist/client/src/test/runTest.js",
     "package": "vsce package -o kcl-language-server.vsix"
   },
@@ -123,7 +123,7 @@
     "@vscode/test-electron": "^3.1.0",
     "@vscode/vsce": "^3.9.2",
     "cross-env": "^10.1.0",
-    "esbuild": "^0.28.1",
+    "esbuild": "^0.28.2",
     "glob": "^13.0.6",
     "mocha": "^11.7.6",
     "typescript": "7.0.2"

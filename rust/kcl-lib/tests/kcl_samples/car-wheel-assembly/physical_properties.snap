@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties car-wheel-assembly.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.0,
+      "y": -15.07999998976868,
+      "z": 0.0
+    },
+    "dimensions": {
+      "x": 610.1619588470033,
+      "y": 259.7354122936622,
+      "z": 610.1619588470033
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 2746390.878500077
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 18140.135792800287
+  }
+}

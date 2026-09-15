@@ -1,0 +1,24 @@
+// If/else arms with real geometry under KCL 3.0: each arm builds its own
+// profile with arm-local names, a tag declared in the taken arm is used
+// within that arm for a fillet, and the finished solid escapes the arm.
+@settings(kclVersion = "3.0-preview")
+
+useBigBox = true
+part = if useBigBox {
+  profile = startSketchOn(XY)
+    |> startProfile(at = [0, 0])
+    |> line(end = [10, 0], tag = $edge)
+    |> line(end = [0, 10])
+    |> line(end = [-10, 0])
+    |> close()
+  extrude(profile, length = 10)
+    |> fillet(tags = [edge], radius = 1)
+} else {
+  profile = startSketchOn(XY)
+    |> startProfile(at = [0, 0])
+    |> line(end = [5, 0])
+    |> line(end = [0, 5])
+    |> line(end = [-5, 0])
+    |> close()
+  extrude(profile, length = 5)
+}

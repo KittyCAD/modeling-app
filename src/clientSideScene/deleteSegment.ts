@@ -137,7 +137,8 @@ function updateSketchDetails(
   wasmInstance: ModuleType
 ): SketchDetails {
   const planeNodePath = stringifyPathToNode(sketchDetails.planeNodePath)
-  let planeArtifact = artifactGraph.values().find((artifact) => {
+  const artifacts = Array.from(artifactGraph.values())
+  let planeArtifact = artifacts.find((artifact) => {
     return (
       artifact.type === 'plane' &&
       stringifyPathToNode(artifact.codeRef.pathToNode) === planeNodePath
@@ -148,7 +149,7 @@ function updateSketchDetails(
       'Could not find plane artifact for sketch with path',
       planeNodePath
     )
-    planeArtifact = artifactGraph.values().find((artifact) => {
+    planeArtifact = artifacts.find((artifact) => {
       return artifact.type === 'plane'
     })
   }
@@ -170,7 +171,7 @@ function updateSketchDetails(
     if (isErr(entryNode)) {
       // sketchEntryNodePath is not valid anymore in the new AST (could have been deleted just now) -> find a valid path
       sketchEntryNodePath =
-        artifactGraph.values().find((artifact) => {
+        artifacts.find((artifact) => {
           return artifact.type === 'path'
         })?.codeRef.pathToNode || []
     }

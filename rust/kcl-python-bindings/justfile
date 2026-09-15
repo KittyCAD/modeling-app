@@ -1,11 +1,11 @@
 test:
     uv pip install .[test]
     mkdir -p test-results
-    uv run pytest tests/tests.py --junitxml=test-results/junit.xml
+    uv run --no-sync pytest tests/tests.py --junitxml=test-results/junit.xml
 
 test-filter name:
     uv pip install .[test]
-    uv run pytest tests/tests.py::{{name}}
+    uv run --no-sync pytest tests/tests.py::{{name}}
 
 # One-time setup for local dev loop.
 dev-install:

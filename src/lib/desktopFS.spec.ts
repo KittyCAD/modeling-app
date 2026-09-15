@@ -13,7 +13,7 @@ beforeAll(async () => {
 })
 
 const wasmInstance = {
-  relevant_file_extensions: () => ['kcl', 'stp', 'step'],
+  relevant_file_extensions: () => ['kcl', 'prt', 'stp', 'step'],
 } as ModuleType
 
 /** Create a dummy project */
@@ -89,6 +89,28 @@ describe(`Getting unique project names`, () => {
       })
 
       expect(nextFile.name).toBe('notes-1.pdf')
+    } finally {
+      await fsZds.rm(baseDir, { recursive: true, force: true })
+    }
+  })
+
+  it('preserves a versioned Creo extension when resolving a collision', async () => {
+    const baseDir = `/tmp/opencode/desktopfs-${crypto.randomUUID()}`
+    await fsZds.mkdir(baseDir, { recursive: true })
+
+    try {
+      await fsZds.writeFile(
+        fsZds.join(baseDir, 'bracket.prt.2'),
+        new TextEncoder().encode('a')
+      )
+
+      const nextFile = await getNextFileName({
+        entryName: 'bracket.prt.2',
+        baseDir,
+        wasmInstance,
+      })
+
+      expect(nextFile.name).toBe('bracket-1.prt.2')
     } finally {
       await fsZds.rm(baseDir, { recursive: true, force: true })
     }

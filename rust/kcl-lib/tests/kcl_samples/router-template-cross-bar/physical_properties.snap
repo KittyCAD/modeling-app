@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties router-template-cross-bar.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -0.0003983530770881316,
+      "y": 15.939999999999776,
+      "z": 15.939999999999776
+    },
+    "dimensions": {
+      "x": 205.26098900814873,
+      "y": 51.88000000000045,
+      "z": 51.88000000000045
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 14988.837398050237
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 26.966359282454277
+  }
+}

@@ -60,8 +60,8 @@ export class CmdBarFixture {
         inputs.map((input) => {
           const key = input
             .locator('[data-test-name="arg-name"]')
-            .innerText()
-            .then((a) => a.trim())
+            .getAttribute('data-test-arg-label')
+            .then((a) => a?.trim() || '')
           const value = input
             .getByTestId('header-arg-value')
             .innerText()
@@ -120,7 +120,7 @@ export class CmdBarFixture {
         this.page
           .locator('[data-is-current-arg="true"]')
           .locator('[data-test-name="arg-name"]')
-          .textContent(),
+          .getAttribute('data-test-arg-name'),
         getCommandName(),
         this.page.getByTestId('vector2d-x-input').inputValue(),
         this.page.getByTestId('vector2d-y-input').inputValue(),
@@ -167,7 +167,7 @@ export class CmdBarFixture {
         this.page
           .locator('[data-is-current-arg="true"]')
           .locator('[data-test-name="arg-name"]')
-          .textContent(),
+          .getAttribute('data-test-arg-name'),
         getCommandName(),
         this.page.getByTestId('vector3d-x-input').inputValue(),
         this.page.getByTestId('vector3d-y-input').inputValue(),
@@ -199,7 +199,7 @@ export class CmdBarFixture {
       this.page
         .locator('[data-is-current-arg="true"]')
         .locator('[data-test-name="arg-name"]')
-        .textContent(),
+        .getAttribute('data-test-arg-name'),
       getCommandName(),
     ])
     return {

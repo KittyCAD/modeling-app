@@ -3,6 +3,7 @@ import {
   cloudSyncStatus,
   configureCloudSyncEngine,
   configureCloudSyncLocalFileSystem,
+  disableCloudSyncEngineForTest,
   getCloudSyncProjectMetadata,
   setCloudSyncOpenedProject,
 } from '@src/lib/cloudSync'
@@ -41,7 +42,7 @@ describe('cloud sync conflict scoping', () => {
 
   afterEach(async () => {
     setCloudSyncOpenedProject(undefined)
-    configureCloudSyncEngine({ enabled: false })
+    await disableCloudSyncEngineForTest()
     vi.unstubAllGlobals()
     await deleteCloudSyncTestDatabase()
   })

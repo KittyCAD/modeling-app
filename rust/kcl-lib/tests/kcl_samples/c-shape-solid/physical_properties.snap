@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties c-shape-solid.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -0.025062814503304057,
+      "y": 0.00000000007704059612478886,
+      "z": 1.0
+    },
+    "dimensions": {
+      "x": 23.939849245843547,
+      "y": 25.11269457546165,
+      "z": 2.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 651.7843263509349
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.4511515325026731
+  }
+}

@@ -25,6 +25,9 @@ involuteCircular(
 This is part of sketch v1 and is deprecated in favor of
 [sketch-solve](/docs/kcl-std/modules/std-solver) and the
 [gear module](/docs/kcl-std/modules/std-gear).
+Legacy sketch functions cannot be used with constraints; strongly prefer
+the gear module when it applies. No constraint-based involute is available
+yet; first try approximating the shape with one or more constrained arcs.
 
 ### Arguments
 
@@ -68,7 +71,7 @@ startSketchOn(XZ)
 // Example: a gear that uses an involute circular profile for the teeth.
 @settings(defaultLengthUnit = mm)
 
-/// // Define gear parameters
+// Define gear parameters
 nTeeth = 21
 module = 1.5
 pressureAngle = 14deg

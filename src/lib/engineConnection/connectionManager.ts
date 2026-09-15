@@ -1,4 +1,8 @@
-import type { WebSocketRequest, WebSocketResponse } from '@kittycad/lib'
+import type {
+  ModelingCmdReq,
+  WebSocketRequest,
+  WebSocketResponse,
+} from '@kittycad/lib'
 import {
   decode as msgpackDecode,
   encode as msgpackEncode,
@@ -26,6 +30,7 @@ import {
   createOnEngineOffline,
 } from '@src/lib/engineConnection/connectionManagerEvents'
 import type {
+  EngineConnectionError,
   IEventListenerTracked,
   ManagerTearDown,
   ModelTypes,
@@ -40,6 +45,8 @@ import {
   EngineConnectionManagerEvents,
   EngineConnectionStateType,
   REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE,
+  validateStreamDimensions,
+  type EngineDisconnectEventDetail,
 } from '@src/lib/engineConnection/utils'
 import {
   isExportResponse,
@@ -51,6 +58,7 @@ import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
 import {
   darkModeMatcher,
+  edgeColor,
   getOppositeTheme,
   getThemeColorForEngine,
   type Themes,
@@ -97,9 +105,19 @@ export class ConnectionManager extends EventTarget {
   commandLogs: CommandLog[] = []
 
   connection: Connection | undefined
+  lastConnectionError: EngineConnectionError | undefined
 
   get apiCallId(): string | undefined {
     return this.connection?.apiCallId
+  }
+
+  /** True when a scene command sent now reaches the engine. */
+  get isReady(): boolean {
+    return (
+      this.connection !== undefined &&
+      this.started &&
+      this.connection.websocket?.readyState === WebSocket.OPEN
+    )
   }
   private readonly systemDeps: ConnectionSystemDeps
 
@@ -147,6 +165,7 @@ export class ConnectionManager extends EventTarget {
     this.allEventListeners = new Map()
     this.id = uuidv4()
     this.callbackOnUnitTestingConnection = null
+    this.lastConnectionError = undefined
   }
 
   setInSequence(sequence: number) {
@@ -163,6 +182,7 @@ export class ConnectionManager extends EventTarget {
     token,
     setStreamIsReady,
     callbackOnUnitTestingConnection,
+    unitTestGeometryOnly,
     rustContext,
   }: {
     width: number
@@ -170,6 +190,7 @@ export class ConnectionManager extends EventTarget {
     token: string
     setStreamIsReady: (setStreamIsReady: boolean) => void
     callbackOnUnitTestingConnection?: (message: string) => void
+    unitTestGeometryOnly?: boolean
     rustContext?: RustContext
   }) {
     EngineDebugger.addLog({
@@ -183,8 +204,6 @@ export class ConnectionManager extends EventTarget {
         )
       )
     }
-    this.started = true
-    this.rejectAllPendingCommands()
 
     if (this.connection) {
       return Promise.reject(
@@ -192,13 +211,14 @@ export class ConnectionManager extends EventTarget {
       )
     }
 
-    if (width <= 0) {
-      return Promise.reject(new Error(`width is <=0, ${width}`))
+    const invalidStreamDimensions = validateStreamDimensions({ width, height })
+    if (invalidStreamDimensions) {
+      return Promise.reject(invalidStreamDimensions)
     }
 
-    if (height <= 0) {
-      return Promise.reject(new Error(`height is <=0, ${height}`))
-    }
+    this.lastConnectionError = undefined
+    this.started = true
+    this.rejectAllPendingCommands()
 
     this.streamDimensions = {
       width,
@@ -215,7 +235,11 @@ export class ConnectionManager extends EventTarget {
       tearDownManager: this.tearDown.bind(this),
       rejectPendingCommand: this.rejectPendingCommand.bind(this),
       callbackOnUnitTestingConnection,
+      unitTestGeometryOnly,
       handleMessage,
+      getCloudProjectId: () =>
+        this.systemDeps.settingsActor.getSnapshot().context.currentProject
+          ?.cloudProjectId,
     })
 
     // Nothing more to do when using a lite engine initialization
@@ -381,7 +405,7 @@ export class ConnectionManager extends EventTarget {
 
   // Set the engine's theme
   async setTheme(theme: Themes) {
-    if (this.connection?.websocket?.readyState !== WebSocket.OPEN) {
+    if (!this.isReady) {
       EngineDebugger.addLog({
         label: 'connectionManager',
         message: 'setTheme, websocket is not ready',
@@ -392,7 +416,7 @@ export class ConnectionManager extends EventTarget {
       return
     }
 
-    await this.connection.deferredConnection?.promise
+    await this.connection?.deferredConnection?.promise
 
     // Set the stream background color
     // This takes RGBA values from 0-1
@@ -434,6 +458,7 @@ export class ConnectionManager extends EventTarget {
       color: defaultSystemColor,
       highlight_color: SYSTEM_HIGHLIGHT_COLOR,
       selection_color: SYSTEM_SELECTION_COLOR,
+      edge_3d_color: edgeColor(),
     } as const
     EngineDebugger.addLog({
       label: 'connectionManager',
@@ -754,7 +779,6 @@ export class ConnectionManager extends EventTarget {
     if (message.command.type === 'modeling_cmd_req') {
       const commandName = message.command.cmd.type
       if (commandName.includes('export')) {
-        // If the command name includes export of any type do not time it out within 60 seconds
         timeoutPendingCommand = false
       }
     }
@@ -997,6 +1021,11 @@ export class ConnectionManager extends EventTarget {
       return
     }
 
+    const invalidStreamDimensions = validateStreamDimensions({ width, height })
+    if (invalidStreamDimensions) {
+      return Promise.reject(invalidStreamDimensions)
+    }
+
     // Make sure the connection is ready otherwise you are sending the events too early.
     await this.connection.deferredConnection?.promise
 
@@ -1042,12 +1071,27 @@ export class ConnectionManager extends EventTarget {
       })
     }
 
+    if (options?.connectionError) {
+      this.lastConnectionError = options.connectionError
+    }
+
     // It was torn down from a websocket close.
     if (options?.websocketClosed) {
       this.dispatchEvent(
-        new CustomEvent(EngineConnectionManagerEvents.WebsocketClosed, {
-          detail: { code: options.code },
-        })
+        new CustomEvent<EngineDisconnectEventDetail>(
+          EngineConnectionManagerEvents.WebsocketClosed,
+          {
+            detail: {
+              code: options.code,
+              connectionError: options.connectionError,
+              reconnectRequested: options.reconnectRequested ?? false,
+            },
+          }
+        )
+      )
+    } else if (options?.pingPongTimeout) {
+      this.dispatchEvent(
+        new CustomEvent(EngineConnectionManagerEvents.pingPongTimeout, {})
       )
     } else if (options?.peerConnectionClosed) {
       this.dispatchEvent(
@@ -1431,6 +1475,34 @@ export class ConnectionManager extends EventTarget {
         object_id: id,
         hidden: hidden,
       },
+    })
+  }
+
+  /**
+   * Hides the engine objects whose flag is true, shows the ones whose flag is
+   * false, and sends them as one request.
+   */
+  async setObjectsHidden(hiddenByObjectId: ReadonlyMap<string, boolean>) {
+    if (hiddenByObjectId.size === 0) {
+      return
+    }
+
+    const requests: ModelingCmdReq[] = [...hiddenByObjectId].map(
+      ([objectId, hidden]) => ({
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'object_visible',
+          object_id: objectId,
+          hidden,
+        },
+      })
+    )
+
+    return await this.sendSceneCommand({
+      type: 'modeling_cmd_batch_req',
+      batch_id: uuidv4(),
+      requests,
+      responses: false,
     })
   }
 }

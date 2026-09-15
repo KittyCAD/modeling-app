@@ -3,6 +3,36 @@ source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands multiple-foreign-imports-all-render.kcl
 ---
 {
+  "rust/kcl-lib/tests/inputs/cube.step": [
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "import_files",
+        "files": [
+          {
+            "path": "cube.step",
+            "data": []
+          }
+        ],
+        "format": {
+          "type": "step",
+          "coords": {
+            "forward": {
+              "axis": "z",
+              "direction": "positive"
+            },
+            "up": {
+              "axis": "y",
+              "direction": "positive"
+            }
+          },
+          "split_closed_faces": false,
+          "target_representation": "brep"
+        }
+      }
+    }
+  ],
   "rust/kcl-lib/tests/multiple-foreign-imports-all-render/anothercube.kcl": [
     {
       "cmdId": "[uuid]",

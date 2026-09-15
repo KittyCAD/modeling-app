@@ -1,11 +1,11 @@
 ---
 title: "profileStart"
 subtitle: "Function in std::sketch"
-excerpt: "Extract the provided 2-dimensional sketch's profile's origin value."
+excerpt: "Extract the provided 2-dimensional sketch's profile origin as an array containing its X and Y values."
 layout: manual
 ---
 
-Extract the provided 2-dimensional sketch's profile's origin value.
+Extract the provided 2-dimensional sketch's profile origin as an array containing its X and Y values.
 
 ```kcl
 profileStart(@profile: Sketch): Point2d

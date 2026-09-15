@@ -139,17 +139,17 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -205,8 +205,8 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "rt": {
@@ -233,10 +233,7 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
         "value": "line4"
       }
     },
-    "constrainable": false,
-    "object_kind": {
-      "SketchTags": {}
-    }
+    "constrainable": false
   },
   "sketch001": {
     "type": "Object",
@@ -248,33 +245,40 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 4,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -29.28,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 125.8
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
                         }
                       },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -29.28
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 125.8,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -282,76 +286,65 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
                         "n": 0.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -29.28,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
+                    "end_freedom": "Free",
+                    "end_object_id": 3,
+                    "start": [
+                      {
+                        "n": -29.28,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 125.8,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 2,
-                    "end_object_id": 3,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 2
                   }
                 },
+                "objectId": 4,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -368,33 +361,40 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 7,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 99.31,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 100.13
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 117.07
                         }
                       },
-                      {
-                        "n": -22.51,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 99.31
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -22.51
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 100.13,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -402,76 +402,65 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
                         "n": 117.07,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 99.31,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -22.51,
-                          "units": "Mm"
+                    "end_freedom": "Free",
+                    "end_object_id": 6,
+                    "start": [
+                      {
+                        "n": 99.31,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 100.13,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 117.07,
-                          "units": "Mm"
+                      {
+                        "n": -22.51,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 5,
-                    "end_object_id": 6,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 5
                   }
                 },
+                "objectId": 7,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -488,33 +477,40 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 10,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 134.91,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -24.16
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 100.24
                         }
                       },
-                      {
-                        "n": 99.22,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 134.91
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 99.22
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -24.16,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -522,76 +518,65 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
                         "n": 100.24,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 134.91,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 99.22,
-                          "units": "Mm"
+                    "end_freedom": "Free",
+                    "end_object_id": 9,
+                    "start": [
+                      {
+                        "n": 134.91,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -24.16,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 100.24,
-                          "units": "Mm"
+                      {
+                        "n": 99.22,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 8,
-                    "end_object_id": 9,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 8
                   }
                 },
+                "objectId": 10,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -608,33 +593,40 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 13,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -28.12
                         }
                       },
-                      {
-                        "n": 111.97,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 111.97
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 0.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -642,76 +634,65 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
                         "n": -28.12,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 111.97,
-                          "units": "Mm"
+                    "end_freedom": "Free",
+                    "end_object_id": 12,
+                    "start": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -28.12,
-                          "units": "Mm"
+                      {
+                        "n": 111.97,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 11,
-                    "end_object_id": 12,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 11
                   }
                 },
+                "objectId": 13,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -879,17 +860,17 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,

@@ -44,6 +44,28 @@ describe('getCurrentProjectFile', () => {
     await fs.rm(tmpProjectDir, { recursive: true, force: true })
   })
 
+  test('wraps a versioned Creo part file', async () => {
+    const { instance } = await buildTheWorldAndNoEngineConnection()
+    const name = `kittycad-modeling-projects-${uuidv4()}`
+    const tmpProjectDir = path.join(os.tmpdir(), name)
+    const creoFile = path.join(tmpProjectDir, 'bracket.prt.2')
+    const wrapperFile = `${creoFile}.kcl`
+
+    await fs.mkdir(tmpProjectDir, { recursive: true })
+    await fs.writeFile(creoFile, '')
+
+    try {
+      const state = await getCurrentProjectFile(creoFile, instance)
+
+      expect(state).toBe(wrapperFile)
+      await expect(fs.readFile(wrapperFile, 'utf8')).resolves.toContain(
+        'import "bracket.prt.2"'
+      )
+    } finally {
+      await fs.rm(tmpProjectDir, { recursive: true, force: true })
+    }
+  })
+
   test('with source path dot', async () => {
     const { instance } = await buildTheWorldAndNoEngineConnection()
     const name = `kittycad-modeling-projects-${uuidv4()}`

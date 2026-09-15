@@ -1,22 +1,22 @@
 ---
 title: "patternCircular3d"
 subtitle: "Function in std::solid"
-excerpt: "Repeat a 3-dimensional solid some number of times along a partial or complete circle some specified number of times. Each object may additionally be rotated along the circle, ensuring orientation of the solid with respect to the center of the circle is maintained."
+excerpt: "Repeat a 3-dimensional body or imported geometry some number of times along a partial or complete circle some specified number of times. Each object may additionally be rotated along the circle, ensuring orientation of the solid with respect to the center of the circle is maintained."
 layout: manual
 ---
 
-Repeat a 3-dimensional solid some number of times along a partial or complete circle some specified number of times. Each object may additionally be rotated along the circle, ensuring orientation of the solid with respect to the center of the circle is maintained.
+Repeat a 3-dimensional body or imported geometry some number of times along a partial or complete circle some specified number of times. Each object may additionally be rotated along the circle, ensuring orientation of the solid with respect to the center of the circle is maintained.
 
 ```kcl
 patternCircular3d(
-  @solids: [Solid; 1+],
+  @solids: [Solid; 1+] | ImportedGeometry,
   instances: number(_),
   axis: Axis3d | Point3d,
   center?: Point3d,
   arcDegrees?: number(deg),
   rotateDuplicates?: bool,
   useOriginal?: bool,
-): [Solid; 1+]
+): [Solid | ImportedGeometry; 1+]
 ```
 
 
@@ -25,7 +25,7 @@ patternCircular3d(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `solids` | [[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] | The solid(s) to pattern. | Yes |
+| `solids` | [[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry) | The solid(s) or imported geometry to pattern. | Yes |
 | `instances` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect. | Yes |
 | `axis` | [`Axis3d`](/docs/kcl-std/types/std-types-Axis3d) or [`Point3d`](/docs/kcl-std/types/std-types-Point3d) | The axis of the pattern. A 3D vector. | Yes |
 | `center` | [`Point3d`](/docs/kcl-std/types/std-types-Point3d) | The center about which to make the pattern. This is a 3D vector. If not given, defaults to `[0, 0, 0]`. | No |
@@ -35,7 +35,7 @@ patternCircular3d(
 
 ### Returns
 
-[[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+]
+[[`Solid`](/docs/kcl-std/types/std-types-Solid) or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry); 1+]
 
 
 ### Examples

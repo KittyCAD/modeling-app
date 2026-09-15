@@ -77,6 +77,13 @@ npm run tronb:package:prod
 
 This will use electron-builder to generate runnable artifacts in the `out` directory (eg. `Zoo Design Studio.app` on macOS and `Zoo Design Studio.exe` on Windows). The regular sign-in flow should work as expected.
 
+## Shipping releases
+
+Create a new issue using the **Release** issue template: https://github.com/KittyCAD/modeling-app/issues/new?template=release.md
+
+Follow the embedded instructions to facilitate changelog discussions and release testing.
+
+
 ## Developing locally
 
 This section and the following ones should only be relevant to Zoo employees, as the non-production dev.zoo.dev infrastructure which allows CORS is not publicly accessible.
@@ -137,7 +144,7 @@ Integration tests will be slower, require more dependencies, and could be flaky.
 
 Prepare these system dependencies:
 
-- Set `$VITE_ZOO_API_TOKEN` from https://zoo.dev/account/api-tokens
+- Set `$VITE_ZOO_API_TOKEN` from https://zoo.dev/account/developer
 
 #### Desktop tests (Electron on all platforms)
 
@@ -152,6 +159,17 @@ You may use `-- -g "my test"` to match specific test titles, or `-- path/to/file
 
 ```
 npm run test:e2e:web
+```
+
+#### Web tests (WebKit on macOS)
+
+[Playwright WebKit](https://playwright.dev/docs/browsers#webkit) provides the
+closest automated coverage to Safari; Playwright does not automate the branded
+Safari browser itself.
+
+```
+npm run playwright -- install webkit
+npm run test:e2e:web:webkit
 ```
 
 #### Snapshot tests (Google Chrome on Ubuntu only)
@@ -243,14 +261,15 @@ Which will run our suite of [Vitest unit](https://vitest.dev/) and [React Testin
 
 Prepare these system dependencies:
 
-- Set `$ZOO_API_TOKEN` from https://zoo.dev/account/api-tokens
-- Install `just` following [these instructions](https://just.systems/man/en/packages.html)
+- Set `$ZOO_API_TOKEN` from https://zoo.dev/account/developer
+- Confirm that `just` is installed via the asdf instructions earlier.
 
 then run tests that target the KCL language:
 
 ```
 npm run test:e2e:kcl
 ```
+Note that the `TS-RS` typescript bindings generation runs as a series of "test" jobs alongside other Rust tests and under the multithreaded conditions of this command these jobs are expected to result in failures or flakiness. You may disregard test failures whose names start with `export_bindings`.
 
 ### Fuzzing the parser
 
@@ -317,6 +336,14 @@ diff --ignore-blank-lines -w /tmp/urls.txt ./scripts/known/urls.txt
 
 - `npm run circular-deps:diff`
 
+## Making issues
+
+We receive a lot of issues while we're building this app. Please follow these principles when creating issues, in order to help our team work as efficiently as possible:
+
+1. Look for duplicate issues. If you have edit access, feel free to edit an existing issue as needed. If not, please add a comment with your additional context instead of creating a new issue.
+2. If a new issue is needed, please start with a succinct one-sentence description of the request, specifying whether the request is a missing feature, bug, maintenance task, or a fun new idea along the way.
+3. For bugs, please provide reproduction steps whenever possible, as well as context around device, platform and your state. Sharing KCL is often very helpful for bugs.
+
 ## Proposing changes
 
 Before you submit a contribution PR to this repo, please ensure that:
@@ -328,9 +355,3 @@ Before you submit a contribution PR to this repo, please ensure that:
   - `npm run tsc`
   - `npm run test`
   - Here they are all together: `npm run fmt && npm run tsc && npm run test`
-
-## Shipping releases
-
-Create a new issue using the **Release** issue template: https://github.com/KittyCAD/modeling-app/issues/new?template=release.md
-
-Follow the embedded instructions to facilitate changelog discussions and release testing.

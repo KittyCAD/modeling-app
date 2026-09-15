@@ -8,8 +8,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 105,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -41,8 +41,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 112,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -74,8 +74,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 112,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -107,8 +107,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 141,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -140,8 +140,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 148,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -333,8 +333,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 259,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -366,8 +366,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 266,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -495,8 +495,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 76,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -528,8 +528,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 76,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -561,6 +561,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -568,10 +570,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5170,
-            "end": 5175,
+            "commentStart": 5214,
+            "end": 5219,
             "moduleId": 0,
-            "start": 5170,
+            "start": 5214,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -582,10 +584,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5240,
-            "end": 5244,
+            "commentStart": 5284,
+            "end": 5288,
             "moduleId": 0,
-            "start": 5240,
+            "start": 5284,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -607,10 +609,10 @@ description: Variables in memory after executing saturn-v.kcl
               -4.5
             ],
             "tag": {
-              "commentStart": 5170,
-              "end": 5175,
+              "commentStart": 5214,
+              "end": 5219,
               "moduleId": 0,
-              "start": 5170,
+              "start": 5214,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -637,10 +639,10 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "radius": 4.5,
             "tag": {
-              "commentStart": 5240,
-              "end": 5244,
+              "commentStart": 5284,
+              "end": 5288,
               "moduleId": 0,
-              "start": 5240,
+              "start": 5284,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -653,17 +655,17 @@ description: Variables in memory after executing saturn-v.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 76,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 6000.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -711,8 +713,8 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1014,10 +1016,10 @@ description: Variables in memory after executing saturn-v.kcl
                     -4.5
                   ],
                   "tag": {
-                    "commentStart": 5170,
-                    "end": 5175,
+                    "commentStart": 5214,
+                    "end": 5219,
                     "moduleId": 0,
-                    "start": 5170,
+                    "start": 5214,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -1044,10 +1046,10 @@ description: Variables in memory after executing saturn-v.kcl
                   ],
                   "radius": 4.5,
                   "tag": {
-                    "commentStart": 5240,
-                    "end": 5244,
+                    "commentStart": 5284,
+                    "end": 5288,
                     "moduleId": 0,
-                    "start": 5240,
+                    "start": 5284,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -1060,17 +1062,17 @@ description: Variables in memory after executing saturn-v.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 76,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 6000.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -1133,8 +1135,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 76,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -1166,8 +1168,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 105,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -1199,6 +1201,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1206,10 +1210,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3649,
-            "end": 3654,
+            "commentStart": 3693,
+            "end": 3698,
             "moduleId": 0,
-            "start": 3649,
+            "start": 3693,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1220,10 +1224,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3718,
-            "end": 3723,
+            "commentStart": 3762,
+            "end": 3767,
             "moduleId": 0,
-            "start": 3718,
+            "start": 3762,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1234,10 +1238,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3791,
-            "end": 3796,
+            "commentStart": 3835,
+            "end": 3840,
             "moduleId": 0,
-            "start": 3791,
+            "start": 3835,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1248,10 +1252,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3865,
-            "end": 3870,
+            "commentStart": 3909,
+            "end": 3914,
             "moduleId": 0,
-            "start": 3865,
+            "start": 3909,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1273,10 +1277,10 @@ description: Variables in memory after executing saturn-v.kcl
               6.0
             ],
             "tag": {
-              "commentStart": 3649,
-              "end": 3654,
+              "commentStart": 3693,
+              "end": 3698,
               "moduleId": 0,
-              "start": 3649,
+              "start": 3693,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -1297,10 +1301,10 @@ description: Variables in memory after executing saturn-v.kcl
               6.0
             ],
             "tag": {
-              "commentStart": 3718,
-              "end": 3723,
+              "commentStart": 3762,
+              "end": 3767,
               "moduleId": 0,
-              "start": 3718,
+              "start": 3762,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -1321,10 +1325,10 @@ description: Variables in memory after executing saturn-v.kcl
               8.2
             ],
             "tag": {
-              "commentStart": 3791,
-              "end": 3796,
+              "commentStart": 3835,
+              "end": 3840,
               "moduleId": 0,
-              "start": 3791,
+              "start": 3835,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -1345,10 +1349,10 @@ description: Variables in memory after executing saturn-v.kcl
               11.2
             ],
             "tag": {
-              "commentStart": 3865,
-              "end": 3870,
+              "commentStart": 3909,
+              "end": 3914,
               "moduleId": 0,
-              "start": 3865,
+              "start": 3909,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -1361,17 +1365,17 @@ description: Variables in memory after executing saturn-v.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 50,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -1427,8 +1431,8 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1441,6 +1445,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1448,10 +1454,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3649,
-            "end": 3654,
+            "commentStart": 3693,
+            "end": 3698,
             "moduleId": 0,
-            "start": 3649,
+            "start": 3693,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1462,10 +1468,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3718,
-            "end": 3723,
+            "commentStart": 3762,
+            "end": 3767,
             "moduleId": 0,
-            "start": 3718,
+            "start": 3762,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1476,10 +1482,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3791,
-            "end": 3796,
+            "commentStart": 3835,
+            "end": 3840,
             "moduleId": 0,
-            "start": 3791,
+            "start": 3835,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1490,10 +1496,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3865,
-            "end": 3870,
+            "commentStart": 3909,
+            "end": 3914,
             "moduleId": 0,
-            "start": 3865,
+            "start": 3909,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1515,10 +1521,10 @@ description: Variables in memory after executing saturn-v.kcl
               6.0
             ],
             "tag": {
-              "commentStart": 3649,
-              "end": 3654,
+              "commentStart": 3693,
+              "end": 3698,
               "moduleId": 0,
-              "start": 3649,
+              "start": 3693,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -1539,10 +1545,10 @@ description: Variables in memory after executing saturn-v.kcl
               6.0
             ],
             "tag": {
-              "commentStart": 3718,
-              "end": 3723,
+              "commentStart": 3762,
+              "end": 3767,
               "moduleId": 0,
-              "start": 3718,
+              "start": 3762,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -1563,10 +1569,10 @@ description: Variables in memory after executing saturn-v.kcl
               8.2
             ],
             "tag": {
-              "commentStart": 3791,
-              "end": 3796,
+              "commentStart": 3835,
+              "end": 3840,
               "moduleId": 0,
-              "start": 3791,
+              "start": 3835,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -1587,10 +1593,10 @@ description: Variables in memory after executing saturn-v.kcl
               11.2
             ],
             "tag": {
-              "commentStart": 3865,
-              "end": 3870,
+              "commentStart": 3909,
+              "end": 3914,
               "moduleId": 0,
-              "start": 3865,
+              "start": 3909,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -1603,17 +1609,17 @@ description: Variables in memory after executing saturn-v.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 50,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -1669,8 +1675,8 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1683,6 +1689,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1690,10 +1698,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3649,
-            "end": 3654,
+            "commentStart": 3693,
+            "end": 3698,
             "moduleId": 0,
-            "start": 3649,
+            "start": 3693,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1704,10 +1712,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3718,
-            "end": 3723,
+            "commentStart": 3762,
+            "end": 3767,
             "moduleId": 0,
-            "start": 3718,
+            "start": 3762,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1718,10 +1726,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3791,
-            "end": 3796,
+            "commentStart": 3835,
+            "end": 3840,
             "moduleId": 0,
-            "start": 3791,
+            "start": 3835,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1732,10 +1740,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3865,
-            "end": 3870,
+            "commentStart": 3909,
+            "end": 3914,
             "moduleId": 0,
-            "start": 3865,
+            "start": 3909,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1757,10 +1765,10 @@ description: Variables in memory after executing saturn-v.kcl
               6.0
             ],
             "tag": {
-              "commentStart": 3649,
-              "end": 3654,
+              "commentStart": 3693,
+              "end": 3698,
               "moduleId": 0,
-              "start": 3649,
+              "start": 3693,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -1781,10 +1789,10 @@ description: Variables in memory after executing saturn-v.kcl
               6.0
             ],
             "tag": {
-              "commentStart": 3718,
-              "end": 3723,
+              "commentStart": 3762,
+              "end": 3767,
               "moduleId": 0,
-              "start": 3718,
+              "start": 3762,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -1805,10 +1813,10 @@ description: Variables in memory after executing saturn-v.kcl
               8.2
             ],
             "tag": {
-              "commentStart": 3791,
-              "end": 3796,
+              "commentStart": 3835,
+              "end": 3840,
               "moduleId": 0,
-              "start": 3791,
+              "start": 3835,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -1829,10 +1837,10 @@ description: Variables in memory after executing saturn-v.kcl
               11.2
             ],
             "tag": {
-              "commentStart": 3865,
-              "end": 3870,
+              "commentStart": 3909,
+              "end": 3914,
               "moduleId": 0,
-              "start": 3865,
+              "start": 3909,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -1845,17 +1853,17 @@ description: Variables in memory after executing saturn-v.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 50,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -1911,8 +1919,8 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1925,6 +1933,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1932,10 +1942,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3649,
-            "end": 3654,
+            "commentStart": 3693,
+            "end": 3698,
             "moduleId": 0,
-            "start": 3649,
+            "start": 3693,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1946,10 +1956,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3718,
-            "end": 3723,
+            "commentStart": 3762,
+            "end": 3767,
             "moduleId": 0,
-            "start": 3718,
+            "start": 3762,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1960,10 +1970,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3791,
-            "end": 3796,
+            "commentStart": 3835,
+            "end": 3840,
             "moduleId": 0,
-            "start": 3791,
+            "start": 3835,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1974,10 +1984,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3865,
-            "end": 3870,
+            "commentStart": 3909,
+            "end": 3914,
             "moduleId": 0,
-            "start": 3865,
+            "start": 3909,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1999,10 +2009,10 @@ description: Variables in memory after executing saturn-v.kcl
               6.0
             ],
             "tag": {
-              "commentStart": 3649,
-              "end": 3654,
+              "commentStart": 3693,
+              "end": 3698,
               "moduleId": 0,
-              "start": 3649,
+              "start": 3693,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -2023,10 +2033,10 @@ description: Variables in memory after executing saturn-v.kcl
               6.0
             ],
             "tag": {
-              "commentStart": 3718,
-              "end": 3723,
+              "commentStart": 3762,
+              "end": 3767,
               "moduleId": 0,
-              "start": 3718,
+              "start": 3762,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -2047,10 +2057,10 @@ description: Variables in memory after executing saturn-v.kcl
               8.2
             ],
             "tag": {
-              "commentStart": 3791,
-              "end": 3796,
+              "commentStart": 3835,
+              "end": 3840,
               "moduleId": 0,
-              "start": 3791,
+              "start": 3835,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -2071,10 +2081,10 @@ description: Variables in memory after executing saturn-v.kcl
               11.2
             ],
             "tag": {
-              "commentStart": 3865,
-              "end": 3870,
+              "commentStart": 3909,
+              "end": 3914,
               "moduleId": 0,
-              "start": 3865,
+              "start": 3909,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -2087,17 +2097,17 @@ description: Variables in memory after executing saturn-v.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 50,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -2153,8 +2163,8 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -2664,10 +2674,10 @@ description: Variables in memory after executing saturn-v.kcl
                     6.0
                   ],
                   "tag": {
-                    "commentStart": 3649,
-                    "end": 3654,
+                    "commentStart": 3693,
+                    "end": 3698,
                     "moduleId": 0,
-                    "start": 3649,
+                    "start": 3693,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -2688,10 +2698,10 @@ description: Variables in memory after executing saturn-v.kcl
                     6.0
                   ],
                   "tag": {
-                    "commentStart": 3718,
-                    "end": 3723,
+                    "commentStart": 3762,
+                    "end": 3767,
                     "moduleId": 0,
-                    "start": 3718,
+                    "start": 3762,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -2712,10 +2722,10 @@ description: Variables in memory after executing saturn-v.kcl
                     8.2
                   ],
                   "tag": {
-                    "commentStart": 3791,
-                    "end": 3796,
+                    "commentStart": 3835,
+                    "end": 3840,
                     "moduleId": 0,
-                    "start": 3791,
+                    "start": 3835,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -2736,10 +2746,10 @@ description: Variables in memory after executing saturn-v.kcl
                     11.2
                   ],
                   "tag": {
-                    "commentStart": 3865,
-                    "end": 3870,
+                    "commentStart": 3909,
+                    "end": 3914,
                     "moduleId": 0,
-                    "start": 3865,
+                    "start": 3909,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -2752,17 +2762,17 @@ description: Variables in memory after executing saturn-v.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 50,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -2833,6 +2843,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -2840,10 +2852,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2039,
-            "end": 2044,
+            "commentStart": 2083,
+            "end": 2088,
             "moduleId": 0,
-            "start": 2039,
+            "start": 2083,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2854,10 +2866,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2112,
-            "end": 2117,
+            "commentStart": 2156,
+            "end": 2161,
             "moduleId": 0,
-            "start": 2112,
+            "start": 2156,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2868,10 +2880,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2185,
-            "end": 2190,
+            "commentStart": 2229,
+            "end": 2234,
             "moduleId": 0,
-            "start": 2185,
+            "start": 2229,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2893,10 +2905,10 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 2039,
-              "end": 2044,
+              "commentStart": 2083,
+              "end": 2088,
               "moduleId": 0,
-              "start": 2039,
+              "start": 2083,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -2917,10 +2929,10 @@ description: Variables in memory after executing saturn-v.kcl
               8.5
             ],
             "tag": {
-              "commentStart": 2112,
-              "end": 2117,
+              "commentStart": 2156,
+              "end": 2161,
               "moduleId": 0,
-              "start": 2112,
+              "start": 2156,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -2941,10 +2953,10 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 2185,
-              "end": 2190,
+              "commentStart": 2229,
+              "end": 2234,
               "moduleId": 0,
-              "start": 2185,
+              "start": 2229,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -2957,17 +2969,17 @@ description: Variables in memory after executing saturn-v.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 25,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -3019,8 +3031,8 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": null,
       "endCapId": null,
@@ -3033,6 +3045,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3040,10 +3054,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2039,
-            "end": 2044,
+            "commentStart": 2083,
+            "end": 2088,
             "moduleId": 0,
-            "start": 2039,
+            "start": 2083,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -3054,10 +3068,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2112,
-            "end": 2117,
+            "commentStart": 2156,
+            "end": 2161,
             "moduleId": 0,
-            "start": 2112,
+            "start": 2156,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -3068,10 +3082,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2185,
-            "end": 2190,
+            "commentStart": 2229,
+            "end": 2234,
             "moduleId": 0,
-            "start": 2185,
+            "start": 2229,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -3093,10 +3107,10 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 2039,
-              "end": 2044,
+              "commentStart": 2083,
+              "end": 2088,
               "moduleId": 0,
-              "start": 2039,
+              "start": 2083,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -3117,10 +3131,10 @@ description: Variables in memory after executing saturn-v.kcl
               8.5
             ],
             "tag": {
-              "commentStart": 2112,
-              "end": 2117,
+              "commentStart": 2156,
+              "end": 2161,
               "moduleId": 0,
-              "start": 2112,
+              "start": 2156,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -3141,10 +3155,10 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 2185,
-              "end": 2190,
+              "commentStart": 2229,
+              "end": 2234,
               "moduleId": 0,
-              "start": 2185,
+              "start": 2229,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -3157,17 +3171,17 @@ description: Variables in memory after executing saturn-v.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 25,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -3219,8 +3233,8 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": null,
       "endCapId": null,
@@ -3233,6 +3247,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3240,10 +3256,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2039,
-            "end": 2044,
+            "commentStart": 2083,
+            "end": 2088,
             "moduleId": 0,
-            "start": 2039,
+            "start": 2083,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -3254,10 +3270,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2112,
-            "end": 2117,
+            "commentStart": 2156,
+            "end": 2161,
             "moduleId": 0,
-            "start": 2112,
+            "start": 2156,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -3268,10 +3284,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2185,
-            "end": 2190,
+            "commentStart": 2229,
+            "end": 2234,
             "moduleId": 0,
-            "start": 2185,
+            "start": 2229,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -3293,10 +3309,10 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 2039,
-              "end": 2044,
+              "commentStart": 2083,
+              "end": 2088,
               "moduleId": 0,
-              "start": 2039,
+              "start": 2083,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -3317,10 +3333,10 @@ description: Variables in memory after executing saturn-v.kcl
               8.5
             ],
             "tag": {
-              "commentStart": 2112,
-              "end": 2117,
+              "commentStart": 2156,
+              "end": 2161,
               "moduleId": 0,
-              "start": 2112,
+              "start": 2156,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -3341,10 +3357,10 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 2185,
-              "end": 2190,
+              "commentStart": 2229,
+              "end": 2234,
               "moduleId": 0,
-              "start": 2185,
+              "start": 2229,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -3357,17 +3373,17 @@ description: Variables in memory after executing saturn-v.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 25,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -3419,8 +3435,8 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": null,
       "endCapId": null,
@@ -3433,6 +3449,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3440,10 +3458,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2039,
-            "end": 2044,
+            "commentStart": 2083,
+            "end": 2088,
             "moduleId": 0,
-            "start": 2039,
+            "start": 2083,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -3454,10 +3472,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2112,
-            "end": 2117,
+            "commentStart": 2156,
+            "end": 2161,
             "moduleId": 0,
-            "start": 2112,
+            "start": 2156,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -3468,10 +3486,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2185,
-            "end": 2190,
+            "commentStart": 2229,
+            "end": 2234,
             "moduleId": 0,
-            "start": 2185,
+            "start": 2229,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -3493,10 +3511,10 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 2039,
-              "end": 2044,
+              "commentStart": 2083,
+              "end": 2088,
               "moduleId": 0,
-              "start": 2039,
+              "start": 2083,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -3517,10 +3535,10 @@ description: Variables in memory after executing saturn-v.kcl
               8.5
             ],
             "tag": {
-              "commentStart": 2112,
-              "end": 2117,
+              "commentStart": 2156,
+              "end": 2161,
               "moduleId": 0,
-              "start": 2112,
+              "start": 2156,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -3541,10 +3559,10 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 2185,
-              "end": 2190,
+              "commentStart": 2229,
+              "end": 2234,
               "moduleId": 0,
-              "start": 2185,
+              "start": 2229,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -3557,17 +3575,17 @@ description: Variables in memory after executing saturn-v.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 25,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -3619,8 +3637,8 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": null,
       "endCapId": null,
@@ -4131,10 +4149,10 @@ description: Variables in memory after executing saturn-v.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 2039,
-                    "end": 2044,
+                    "commentStart": 2083,
+                    "end": 2088,
                     "moduleId": 0,
-                    "start": 2039,
+                    "start": 2083,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -4155,10 +4173,10 @@ description: Variables in memory after executing saturn-v.kcl
                     8.5
                   ],
                   "tag": {
-                    "commentStart": 2112,
-                    "end": 2117,
+                    "commentStart": 2156,
+                    "end": 2161,
                     "moduleId": 0,
-                    "start": 2112,
+                    "start": 2156,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -4179,10 +4197,10 @@ description: Variables in memory after executing saturn-v.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 2185,
-                    "end": 2190,
+                    "commentStart": 2229,
+                    "end": 2234,
                     "moduleId": 0,
-                    "start": 2185,
+                    "start": 2229,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -4195,17 +4213,17 @@ description: Variables in memory after executing saturn-v.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 25,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -4272,6 +4290,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -4279,10 +4299,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 14337,
-            "end": 14342,
+            "commentStart": 14381,
+            "end": 14386,
             "moduleId": 0,
-            "start": 14337,
+            "start": 14381,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -4293,10 +4313,24 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 14483,
-            "end": 14488,
+            "commentStart": 14451,
+            "end": 14456,
             "moduleId": 0,
-            "start": 14483,
+            "start": 14451,
+            "type": "TagDeclarator",
+            "value": "line2"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 14527,
+            "end": 14532,
+            "moduleId": 0,
+            "start": 14527,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -4307,10 +4341,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 14562,
-            "end": 14567,
+            "commentStart": 14606,
+            "end": 14611,
             "moduleId": 0,
-            "start": 14562,
+            "start": 14606,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -4321,10 +4355,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 14641,
-            "end": 14646,
+            "commentStart": 14685,
+            "end": 14690,
             "moduleId": 0,
-            "start": 14641,
+            "start": 14685,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -4335,26 +4369,12 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 14720,
-            "end": 14725,
+            "commentStart": 14764,
+            "end": 14769,
             "moduleId": 0,
-            "start": 14720,
+            "start": 14764,
             "type": "TagDeclarator",
             "value": "line6"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 14794,
-            "end": 14799,
-            "moduleId": 0,
-            "start": 14794,
-            "type": "TagDeclarator",
-            "value": "line7"
           },
           "type": "extrudePlane"
         }
@@ -4374,10 +4394,10 @@ description: Variables in memory after executing saturn-v.kcl
               80.0
             ],
             "tag": {
-              "commentStart": 14337,
-              "end": 14342,
+              "commentStart": 14381,
+              "end": 14386,
               "moduleId": 0,
-              "start": 14337,
+              "start": 14381,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -4398,10 +4418,10 @@ description: Variables in memory after executing saturn-v.kcl
               80.0
             ],
             "tag": {
-              "commentStart": 14407,
-              "end": 14412,
+              "commentStart": 14451,
+              "end": 14456,
               "moduleId": 0,
-              "start": 14407,
+              "start": 14451,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -4422,10 +4442,10 @@ description: Variables in memory after executing saturn-v.kcl
               87.2
             ],
             "tag": {
-              "commentStart": 14483,
-              "end": 14488,
+              "commentStart": 14527,
+              "end": 14532,
               "moduleId": 0,
-              "start": 14483,
+              "start": 14527,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -4446,10 +4466,10 @@ description: Variables in memory after executing saturn-v.kcl
               91.2
             ],
             "tag": {
-              "commentStart": 14562,
-              "end": 14567,
+              "commentStart": 14606,
+              "end": 14611,
               "moduleId": 0,
-              "start": 14562,
+              "start": 14606,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -4470,10 +4490,10 @@ description: Variables in memory after executing saturn-v.kcl
               92.4
             ],
             "tag": {
-              "commentStart": 14641,
-              "end": 14646,
+              "commentStart": 14685,
+              "end": 14690,
               "moduleId": 0,
-              "start": 14641,
+              "start": 14685,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -4494,10 +4514,10 @@ description: Variables in memory after executing saturn-v.kcl
               99.4
             ],
             "tag": {
-              "commentStart": 14720,
-              "end": 14725,
+              "commentStart": 14764,
+              "end": 14769,
               "moduleId": 0,
-              "start": 14720,
+              "start": 14764,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -4518,10 +4538,10 @@ description: Variables in memory after executing saturn-v.kcl
               100.0
             ],
             "tag": {
-              "commentStart": 14794,
-              "end": 14799,
+              "commentStart": 14838,
+              "end": 14843,
               "moduleId": 0,
-              "start": 14794,
+              "start": 14838,
               "type": "TagDeclarator",
               "value": "line7"
             },
@@ -4534,17 +4554,17 @@ description: Variables in memory after executing saturn-v.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 273,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4612,8 +4632,8 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": null,
       "endCapId": null,
@@ -5483,10 +5503,10 @@ description: Variables in memory after executing saturn-v.kcl
                     80.0
                   ],
                   "tag": {
-                    "commentStart": 14337,
-                    "end": 14342,
+                    "commentStart": 14381,
+                    "end": 14386,
                     "moduleId": 0,
-                    "start": 14337,
+                    "start": 14381,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -5507,10 +5527,10 @@ description: Variables in memory after executing saturn-v.kcl
                     80.0
                   ],
                   "tag": {
-                    "commentStart": 14407,
-                    "end": 14412,
+                    "commentStart": 14451,
+                    "end": 14456,
                     "moduleId": 0,
-                    "start": 14407,
+                    "start": 14451,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -5531,10 +5551,10 @@ description: Variables in memory after executing saturn-v.kcl
                     87.2
                   ],
                   "tag": {
-                    "commentStart": 14483,
-                    "end": 14488,
+                    "commentStart": 14527,
+                    "end": 14532,
                     "moduleId": 0,
-                    "start": 14483,
+                    "start": 14527,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -5555,10 +5575,10 @@ description: Variables in memory after executing saturn-v.kcl
                     91.2
                   ],
                   "tag": {
-                    "commentStart": 14562,
-                    "end": 14567,
+                    "commentStart": 14606,
+                    "end": 14611,
                     "moduleId": 0,
-                    "start": 14562,
+                    "start": 14606,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -5579,10 +5599,10 @@ description: Variables in memory after executing saturn-v.kcl
                     92.4
                   ],
                   "tag": {
-                    "commentStart": 14641,
-                    "end": 14646,
+                    "commentStart": 14685,
+                    "end": 14690,
                     "moduleId": 0,
-                    "start": 14641,
+                    "start": 14685,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -5603,10 +5623,10 @@ description: Variables in memory after executing saturn-v.kcl
                     99.4
                   ],
                   "tag": {
-                    "commentStart": 14720,
-                    "end": 14725,
+                    "commentStart": 14764,
+                    "end": 14769,
                     "moduleId": 0,
-                    "start": 14720,
+                    "start": 14764,
                     "type": "TagDeclarator",
                     "value": "line6"
                   },
@@ -5627,10 +5647,10 @@ description: Variables in memory after executing saturn-v.kcl
                     100.0
                   ],
                   "tag": {
-                    "commentStart": 14794,
-                    "end": 14799,
+                    "commentStart": 14838,
+                    "end": 14843,
                     "moduleId": 0,
-                    "start": 14794,
+                    "start": 14838,
                     "type": "TagDeclarator",
                     "value": "line7"
                   },
@@ -5643,17 +5663,17 @@ description: Variables in memory after executing saturn-v.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 273,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -5736,6 +5756,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -5743,10 +5765,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6933,
-            "end": 6938,
+            "commentStart": 6977,
+            "end": 6982,
             "moduleId": 0,
-            "start": 6933,
+            "start": 6977,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -5757,10 +5779,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7003,
-            "end": 7007,
+            "commentStart": 7047,
+            "end": 7051,
             "moduleId": 0,
-            "start": 7003,
+            "start": 7047,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -5782,10 +5804,10 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 6933,
-              "end": 6938,
+              "commentStart": 6977,
+              "end": 6982,
               "moduleId": 0,
-              "start": 6933,
+              "start": 6977,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -5812,10 +5834,10 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "radius": 4.5,
             "tag": {
-              "commentStart": 7003,
-              "end": 7007,
+              "commentStart": 7047,
+              "end": 7051,
               "moduleId": 0,
-              "start": 7003,
+              "start": 7047,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -5828,17 +5850,17 @@ description: Variables in memory after executing saturn-v.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 112,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 38000.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -5886,8 +5908,8 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -5900,8 +5922,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 112,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -6222,10 +6244,10 @@ description: Variables in memory after executing saturn-v.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 6933,
-                    "end": 6938,
+                    "commentStart": 6977,
+                    "end": 6982,
                     "moduleId": 0,
-                    "start": 6933,
+                    "start": 6977,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -6252,10 +6274,10 @@ description: Variables in memory after executing saturn-v.kcl
                   ],
                   "radius": 4.5,
                   "tag": {
-                    "commentStart": 7003,
-                    "end": 7007,
+                    "commentStart": 7047,
+                    "end": 7051,
                     "moduleId": 0,
-                    "start": 7003,
+                    "start": 7047,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -6268,17 +6290,17 @@ description: Variables in memory after executing saturn-v.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 112,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 38000.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -6630,10 +6652,10 @@ description: Variables in memory after executing saturn-v.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 7530,
-                    "end": 7535,
+                    "commentStart": 7574,
+                    "end": 7579,
                     "moduleId": 0,
-                    "start": 7530,
+                    "start": 7574,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -6660,10 +6682,10 @@ description: Variables in memory after executing saturn-v.kcl
                   ],
                   "radius": 4.5,
                   "tag": {
-                    "commentStart": 7600,
-                    "end": 7604,
+                    "commentStart": 7644,
+                    "end": 7648,
                     "moduleId": 0,
-                    "start": 7600,
+                    "start": 7644,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -6676,17 +6698,17 @@ description: Variables in memory after executing saturn-v.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 112,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 38000.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -6749,6 +6771,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -6756,10 +6780,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7530,
-            "end": 7535,
+            "commentStart": 7574,
+            "end": 7579,
             "moduleId": 0,
-            "start": 7530,
+            "start": 7574,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -6770,10 +6794,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7600,
-            "end": 7604,
+            "commentStart": 7644,
+            "end": 7648,
             "moduleId": 0,
-            "start": 7600,
+            "start": 7644,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -6795,10 +6819,10 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 7530,
-              "end": 7535,
+              "commentStart": 7574,
+              "end": 7579,
               "moduleId": 0,
-              "start": 7530,
+              "start": 7574,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -6825,10 +6849,10 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "radius": 4.5,
             "tag": {
-              "commentStart": 7600,
-              "end": 7604,
+              "commentStart": 7644,
+              "end": 7648,
               "moduleId": 0,
-              "start": 7600,
+              "start": 7644,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -6841,17 +6865,17 @@ description: Variables in memory after executing saturn-v.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 112,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 38000.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -6899,8 +6923,8 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -6913,6 +6937,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -6920,10 +6946,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 501,
-            "end": 506,
+            "commentStart": 545,
+            "end": 550,
             "moduleId": 0,
-            "start": 501,
+            "start": 545,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -6934,10 +6960,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 572,
-            "end": 577,
+            "commentStart": 616,
+            "end": 621,
             "moduleId": 0,
-            "start": 572,
+            "start": 616,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -6948,10 +6974,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 643,
-            "end": 648,
+            "commentStart": 687,
+            "end": 692,
             "moduleId": 0,
-            "start": 643,
+            "start": 687,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -6973,10 +6999,10 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 501,
-              "end": 506,
+              "commentStart": 545,
+              "end": 550,
               "moduleId": 0,
-              "start": 501,
+              "start": 545,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -6997,10 +7023,10 @@ description: Variables in memory after executing saturn-v.kcl
               9.0
             ],
             "tag": {
-              "commentStart": 572,
-              "end": 577,
+              "commentStart": 616,
+              "end": 621,
               "moduleId": 0,
-              "start": 572,
+              "start": 616,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -7021,10 +7047,10 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 643,
-              "end": 648,
+              "commentStart": 687,
+              "end": 692,
               "moduleId": 0,
-              "start": 643,
+              "start": 687,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -7037,17 +7063,17 @@ description: Variables in memory after executing saturn-v.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -7099,8 +7125,8 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": null,
       "endCapId": null,
@@ -7113,6 +7139,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -7120,10 +7148,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 501,
-            "end": 506,
+            "commentStart": 545,
+            "end": 550,
             "moduleId": 0,
-            "start": 501,
+            "start": 545,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -7134,10 +7162,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 572,
-            "end": 577,
+            "commentStart": 616,
+            "end": 621,
             "moduleId": 0,
-            "start": 572,
+            "start": 616,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -7148,10 +7176,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 643,
-            "end": 648,
+            "commentStart": 687,
+            "end": 692,
             "moduleId": 0,
-            "start": 643,
+            "start": 687,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -7173,10 +7201,10 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 501,
-              "end": 506,
+              "commentStart": 545,
+              "end": 550,
               "moduleId": 0,
-              "start": 501,
+              "start": 545,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -7197,10 +7225,10 @@ description: Variables in memory after executing saturn-v.kcl
               9.0
             ],
             "tag": {
-              "commentStart": 572,
-              "end": 577,
+              "commentStart": 616,
+              "end": 621,
               "moduleId": 0,
-              "start": 572,
+              "start": 616,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -7221,10 +7249,10 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 643,
-              "end": 648,
+              "commentStart": 687,
+              "end": 692,
               "moduleId": 0,
-              "start": 643,
+              "start": 687,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -7237,17 +7265,17 @@ description: Variables in memory after executing saturn-v.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -7299,8 +7327,8 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": null,
       "endCapId": null,
@@ -7313,6 +7341,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -7320,10 +7350,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 501,
-            "end": 506,
+            "commentStart": 545,
+            "end": 550,
             "moduleId": 0,
-            "start": 501,
+            "start": 545,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -7334,10 +7364,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 572,
-            "end": 577,
+            "commentStart": 616,
+            "end": 621,
             "moduleId": 0,
-            "start": 572,
+            "start": 616,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -7348,10 +7378,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 643,
-            "end": 648,
+            "commentStart": 687,
+            "end": 692,
             "moduleId": 0,
-            "start": 643,
+            "start": 687,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -7373,10 +7403,10 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 501,
-              "end": 506,
+              "commentStart": 545,
+              "end": 550,
               "moduleId": 0,
-              "start": 501,
+              "start": 545,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -7397,10 +7427,10 @@ description: Variables in memory after executing saturn-v.kcl
               9.0
             ],
             "tag": {
-              "commentStart": 572,
-              "end": 577,
+              "commentStart": 616,
+              "end": 621,
               "moduleId": 0,
-              "start": 572,
+              "start": 616,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -7421,10 +7451,10 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 643,
-              "end": 648,
+              "commentStart": 687,
+              "end": 692,
               "moduleId": 0,
-              "start": 643,
+              "start": 687,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -7437,17 +7467,17 @@ description: Variables in memory after executing saturn-v.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -7499,8 +7529,8 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": null,
       "endCapId": null,
@@ -7513,6 +7543,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -7520,10 +7552,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 501,
-            "end": 506,
+            "commentStart": 545,
+            "end": 550,
             "moduleId": 0,
-            "start": 501,
+            "start": 545,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -7534,10 +7566,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 572,
-            "end": 577,
+            "commentStart": 616,
+            "end": 621,
             "moduleId": 0,
-            "start": 572,
+            "start": 616,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -7548,10 +7580,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 643,
-            "end": 648,
+            "commentStart": 687,
+            "end": 692,
             "moduleId": 0,
-            "start": 643,
+            "start": 687,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -7573,10 +7605,10 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 501,
-              "end": 506,
+              "commentStart": 545,
+              "end": 550,
               "moduleId": 0,
-              "start": 501,
+              "start": 545,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -7597,10 +7629,10 @@ description: Variables in memory after executing saturn-v.kcl
               9.0
             ],
             "tag": {
-              "commentStart": 572,
-              "end": 577,
+              "commentStart": 616,
+              "end": 621,
               "moduleId": 0,
-              "start": 572,
+              "start": 616,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -7621,10 +7653,10 @@ description: Variables in memory after executing saturn-v.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 643,
-              "end": 648,
+              "commentStart": 687,
+              "end": 692,
               "moduleId": 0,
-              "start": 643,
+              "start": 687,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -7637,17 +7669,17 @@ description: Variables in memory after executing saturn-v.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -7699,8 +7731,8 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": null,
       "endCapId": null,
@@ -8211,10 +8243,10 @@ description: Variables in memory after executing saturn-v.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 501,
-                    "end": 506,
+                    "commentStart": 545,
+                    "end": 550,
                     "moduleId": 0,
-                    "start": 501,
+                    "start": 545,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -8235,10 +8267,10 @@ description: Variables in memory after executing saturn-v.kcl
                     9.0
                   ],
                   "tag": {
-                    "commentStart": 572,
-                    "end": 577,
+                    "commentStart": 616,
+                    "end": 621,
                     "moduleId": 0,
-                    "start": 572,
+                    "start": 616,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -8259,10 +8291,10 @@ description: Variables in memory after executing saturn-v.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 643,
-                    "end": 648,
+                    "commentStart": 687,
+                    "end": 692,
                     "moduleId": 0,
-                    "start": 643,
+                    "start": 687,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -8275,17 +8307,17 @@ description: Variables in memory after executing saturn-v.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -8381,10 +8413,10 @@ description: Variables in memory after executing saturn-v.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 501,
-            "end": 506,
+            "commentStart": 545,
+            "end": 550,
             "moduleId": 0,
-            "start": 501,
+            "start": 545,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -8405,10 +8437,10 @@ description: Variables in memory after executing saturn-v.kcl
             9.0
           ],
           "tag": {
-            "commentStart": 572,
-            "end": 577,
+            "commentStart": 616,
+            "end": 621,
             "moduleId": 0,
-            "start": 572,
+            "start": 616,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -8429,10 +8461,10 @@ description: Variables in memory after executing saturn-v.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 643,
-            "end": 648,
+            "commentStart": 687,
+            "end": 692,
             "moduleId": 0,
-            "start": 643,
+            "start": 687,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -8445,17 +8477,17 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -8507,8 +8539,8 @@ description: Variables in memory after executing saturn-v.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "region002": {
@@ -8527,10 +8559,10 @@ description: Variables in memory after executing saturn-v.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 2039,
-            "end": 2044,
+            "commentStart": 2083,
+            "end": 2088,
             "moduleId": 0,
-            "start": 2039,
+            "start": 2083,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -8551,10 +8583,10 @@ description: Variables in memory after executing saturn-v.kcl
             8.5
           ],
           "tag": {
-            "commentStart": 2112,
-            "end": 2117,
+            "commentStart": 2156,
+            "end": 2161,
             "moduleId": 0,
-            "start": 2112,
+            "start": 2156,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -8575,10 +8607,10 @@ description: Variables in memory after executing saturn-v.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 2185,
-            "end": 2190,
+            "commentStart": 2229,
+            "end": 2234,
             "moduleId": 0,
-            "start": 2185,
+            "start": 2229,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -8591,17 +8623,17 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 25,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -8653,8 +8685,8 @@ description: Variables in memory after executing saturn-v.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "region003": {
@@ -8673,10 +8705,10 @@ description: Variables in memory after executing saturn-v.kcl
             6.0
           ],
           "tag": {
-            "commentStart": 3649,
-            "end": 3654,
+            "commentStart": 3693,
+            "end": 3698,
             "moduleId": 0,
-            "start": 3649,
+            "start": 3693,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -8697,10 +8729,10 @@ description: Variables in memory after executing saturn-v.kcl
             6.0
           ],
           "tag": {
-            "commentStart": 3718,
-            "end": 3723,
+            "commentStart": 3762,
+            "end": 3767,
             "moduleId": 0,
-            "start": 3718,
+            "start": 3762,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -8721,10 +8753,10 @@ description: Variables in memory after executing saturn-v.kcl
             8.2
           ],
           "tag": {
-            "commentStart": 3791,
-            "end": 3796,
+            "commentStart": 3835,
+            "end": 3840,
             "moduleId": 0,
-            "start": 3791,
+            "start": 3835,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -8745,10 +8777,10 @@ description: Variables in memory after executing saturn-v.kcl
             11.2
           ],
           "tag": {
-            "commentStart": 3865,
-            "end": 3870,
+            "commentStart": 3909,
+            "end": 3914,
             "moduleId": 0,
-            "start": 3865,
+            "start": 3909,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -8761,17 +8793,17 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 50,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -8827,8 +8859,8 @@ description: Variables in memory after executing saturn-v.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "region004": {
@@ -8847,10 +8879,10 @@ description: Variables in memory after executing saturn-v.kcl
             -4.5
           ],
           "tag": {
-            "commentStart": 5170,
-            "end": 5175,
+            "commentStart": 5214,
+            "end": 5219,
             "moduleId": 0,
-            "start": 5170,
+            "start": 5214,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -8877,10 +8909,10 @@ description: Variables in memory after executing saturn-v.kcl
           ],
           "radius": 4.5,
           "tag": {
-            "commentStart": 5240,
-            "end": 5244,
+            "commentStart": 5284,
+            "end": 5288,
             "moduleId": 0,
-            "start": 5240,
+            "start": 5284,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -8893,17 +8925,17 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 76,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 6000.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -8951,8 +8983,8 @@ description: Variables in memory after executing saturn-v.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "region005": {
@@ -8971,10 +9003,10 @@ description: Variables in memory after executing saturn-v.kcl
             -4.5
           ],
           "tag": {
-            "commentStart": 5742,
-            "end": 5747,
+            "commentStart": 5786,
+            "end": 5791,
             "moduleId": 0,
-            "start": 5742,
+            "start": 5786,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -9001,10 +9033,10 @@ description: Variables in memory after executing saturn-v.kcl
           ],
           "radius": 4.5,
           "tag": {
-            "commentStart": 5812,
-            "end": 5816,
+            "commentStart": 5856,
+            "end": 5860,
             "moduleId": 0,
-            "start": 5812,
+            "start": 5856,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -9017,17 +9049,17 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 76,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 6000.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -9075,8 +9107,8 @@ description: Variables in memory after executing saturn-v.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "region006": {
@@ -9101,10 +9133,10 @@ description: Variables in memory after executing saturn-v.kcl
           ],
           "radius": 4.5,
           "tag": {
-            "commentStart": 6540,
-            "end": 6547,
+            "commentStart": 6584,
+            "end": 6591,
             "moduleId": 0,
-            "start": 6540,
+            "start": 6584,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -9117,17 +9149,17 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 105,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 20000.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -9171,8 +9203,8 @@ description: Variables in memory after executing saturn-v.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "region007": {
@@ -9191,10 +9223,10 @@ description: Variables in memory after executing saturn-v.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 6933,
-            "end": 6938,
+            "commentStart": 6977,
+            "end": 6982,
             "moduleId": 0,
-            "start": 6933,
+            "start": 6977,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -9221,10 +9253,10 @@ description: Variables in memory after executing saturn-v.kcl
           ],
           "radius": 4.5,
           "tag": {
-            "commentStart": 7003,
-            "end": 7007,
+            "commentStart": 7047,
+            "end": 7051,
             "moduleId": 0,
-            "start": 7003,
+            "start": 7047,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -9237,17 +9269,17 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 112,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 38000.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -9295,8 +9327,8 @@ description: Variables in memory after executing saturn-v.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "region008": {
@@ -9315,10 +9347,10 @@ description: Variables in memory after executing saturn-v.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 7530,
-            "end": 7535,
+            "commentStart": 7574,
+            "end": 7579,
             "moduleId": 0,
-            "start": 7530,
+            "start": 7574,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -9345,10 +9377,10 @@ description: Variables in memory after executing saturn-v.kcl
           ],
           "radius": 4.5,
           "tag": {
-            "commentStart": 7600,
-            "end": 7604,
+            "commentStart": 7644,
+            "end": 7648,
             "moduleId": 0,
-            "start": 7600,
+            "start": 7644,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -9361,17 +9393,17 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 112,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 38000.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -9419,8 +9451,8 @@ description: Variables in memory after executing saturn-v.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "region009": {
@@ -9445,10 +9477,10 @@ description: Variables in memory after executing saturn-v.kcl
           ],
           "radius": 4.5,
           "tag": {
-            "commentStart": 8152,
-            "end": 8159,
+            "commentStart": 8196,
+            "end": 8203,
             "moduleId": 0,
-            "start": 8152,
+            "start": 8196,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -9461,17 +9493,17 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 141,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 47000.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -9515,8 +9547,8 @@ description: Variables in memory after executing saturn-v.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "region010": {
@@ -9541,10 +9573,10 @@ description: Variables in memory after executing saturn-v.kcl
           ],
           "radius": 4.5,
           "tag": {
-            "commentStart": 8533,
-            "end": 8540,
+            "commentStart": 8577,
+            "end": 8584,
             "moduleId": 0,
-            "start": 8533,
+            "start": 8577,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -9557,17 +9589,17 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 148,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 49000.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -9611,8 +9643,8 @@ description: Variables in memory after executing saturn-v.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "region011": {
@@ -9631,10 +9663,10 @@ description: Variables in memory after executing saturn-v.kcl
             64.0
           ],
           "tag": {
-            "commentStart": 9047,
-            "end": 9052,
+            "commentStart": 9091,
+            "end": 9096,
             "moduleId": 0,
-            "start": 9047,
+            "start": 9091,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -9655,10 +9687,10 @@ description: Variables in memory after executing saturn-v.kcl
             64.0
           ],
           "tag": {
-            "commentStart": 9117,
-            "end": 9122,
+            "commentStart": 9161,
+            "end": 9166,
             "moduleId": 0,
-            "start": 9117,
+            "start": 9161,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -9679,10 +9711,10 @@ description: Variables in memory after executing saturn-v.kcl
             66.5
           ],
           "tag": {
-            "commentStart": 9193,
-            "end": 9198,
+            "commentStart": 9237,
+            "end": 9242,
             "moduleId": 0,
-            "start": 9193,
+            "start": 9237,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -9703,10 +9735,10 @@ description: Variables in memory after executing saturn-v.kcl
             66.5
           ],
           "tag": {
-            "commentStart": 9268,
-            "end": 9273,
+            "commentStart": 9312,
+            "end": 9317,
             "moduleId": 0,
-            "start": 9268,
+            "start": 9312,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -9719,17 +9751,17 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 155,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -9785,8 +9817,8 @@ description: Variables in memory after executing saturn-v.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "region012": {
@@ -9805,10 +9837,10 @@ description: Variables in memory after executing saturn-v.kcl
             64.0
           ],
           "tag": {
-            "commentStart": 10095,
-            "end": 10100,
+            "commentStart": 10139,
+            "end": 10144,
             "moduleId": 0,
-            "start": 10095,
+            "start": 10139,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -9829,10 +9861,10 @@ description: Variables in memory after executing saturn-v.kcl
             64.0
           ],
           "tag": {
-            "commentStart": 10165,
-            "end": 10170,
+            "commentStart": 10209,
+            "end": 10214,
             "moduleId": 0,
-            "start": 10165,
+            "start": 10209,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -9853,10 +9885,10 @@ description: Variables in memory after executing saturn-v.kcl
             66.5
           ],
           "tag": {
-            "commentStart": 10241,
-            "end": 10246,
+            "commentStart": 10285,
+            "end": 10290,
             "moduleId": 0,
-            "start": 10241,
+            "start": 10285,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -9877,10 +9909,10 @@ description: Variables in memory after executing saturn-v.kcl
             66.5
           ],
           "tag": {
-            "commentStart": 10316,
-            "end": 10321,
+            "commentStart": 10360,
+            "end": 10365,
             "moduleId": 0,
-            "start": 10316,
+            "start": 10360,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -9893,17 +9925,17 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 181,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -9959,8 +9991,8 @@ description: Variables in memory after executing saturn-v.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "region013": {
@@ -9979,10 +10011,10 @@ description: Variables in memory after executing saturn-v.kcl
             66.5
           ],
           "tag": {
-            "commentStart": 11159,
-            "end": 11164,
+            "commentStart": 11203,
+            "end": 11208,
             "moduleId": 0,
-            "start": 11159,
+            "start": 11203,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -10003,10 +10035,10 @@ description: Variables in memory after executing saturn-v.kcl
             66.5
           ],
           "tag": {
-            "commentStart": 11234,
-            "end": 11239,
+            "commentStart": 11278,
+            "end": 11283,
             "moduleId": 0,
-            "start": 11234,
+            "start": 11278,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -10027,10 +10059,10 @@ description: Variables in memory after executing saturn-v.kcl
             69.0
           ],
           "tag": {
-            "commentStart": 11310,
-            "end": 11315,
+            "commentStart": 11354,
+            "end": 11359,
             "moduleId": 0,
-            "start": 11310,
+            "start": 11354,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -10051,10 +10083,10 @@ description: Variables in memory after executing saturn-v.kcl
             69.0
           ],
           "tag": {
-            "commentStart": 11380,
-            "end": 11385,
+            "commentStart": 11424,
+            "end": 11429,
             "moduleId": 0,
-            "start": 11380,
+            "start": 11424,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -10067,17 +10099,17 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 207,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -10133,8 +10165,8 @@ description: Variables in memory after executing saturn-v.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "region014": {
@@ -10153,10 +10185,10 @@ description: Variables in memory after executing saturn-v.kcl
             66.5
           ],
           "tag": {
-            "commentStart": 12209,
-            "end": 12214,
+            "commentStart": 12253,
+            "end": 12258,
             "moduleId": 0,
-            "start": 12209,
+            "start": 12253,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -10177,10 +10209,10 @@ description: Variables in memory after executing saturn-v.kcl
             66.5
           ],
           "tag": {
-            "commentStart": 12284,
-            "end": 12289,
+            "commentStart": 12328,
+            "end": 12333,
             "moduleId": 0,
-            "start": 12284,
+            "start": 12328,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -10201,10 +10233,10 @@ description: Variables in memory after executing saturn-v.kcl
             69.0
           ],
           "tag": {
-            "commentStart": 12360,
-            "end": 12365,
+            "commentStart": 12404,
+            "end": 12409,
             "moduleId": 0,
-            "start": 12360,
+            "start": 12404,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -10225,10 +10257,10 @@ description: Variables in memory after executing saturn-v.kcl
             69.0
           ],
           "tag": {
-            "commentStart": 12430,
-            "end": 12435,
+            "commentStart": 12474,
+            "end": 12479,
             "moduleId": 0,
-            "start": 12430,
+            "start": 12474,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -10241,17 +10273,17 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 233,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -10307,8 +10339,8 @@ description: Variables in memory after executing saturn-v.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "region015": {
@@ -10333,10 +10365,10 @@ description: Variables in memory after executing saturn-v.kcl
           ],
           "radius": 3.2,
           "tag": {
-            "commentStart": 13453,
-            "end": 13460,
+            "commentStart": 13497,
+            "end": 13504,
             "moduleId": 0,
-            "start": 13453,
+            "start": 13497,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -10349,17 +10381,17 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 259,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 69000.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -10403,8 +10435,8 @@ description: Variables in memory after executing saturn-v.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "region016": {
@@ -10429,10 +10461,10 @@ description: Variables in memory after executing saturn-v.kcl
           ],
           "radius": 3.2,
           "tag": {
-            "commentStart": 13847,
-            "end": 13854,
+            "commentStart": 13891,
+            "end": 13898,
             "moduleId": 0,
-            "start": 13847,
+            "start": 13891,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -10445,17 +10477,17 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 266,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 78000.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -10499,8 +10531,8 @@ description: Variables in memory after executing saturn-v.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "region017": {
@@ -10519,10 +10551,10 @@ description: Variables in memory after executing saturn-v.kcl
             80.0
           ],
           "tag": {
-            "commentStart": 14337,
-            "end": 14342,
+            "commentStart": 14381,
+            "end": 14386,
             "moduleId": 0,
-            "start": 14337,
+            "start": 14381,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -10543,10 +10575,10 @@ description: Variables in memory after executing saturn-v.kcl
             80.0
           ],
           "tag": {
-            "commentStart": 14407,
-            "end": 14412,
+            "commentStart": 14451,
+            "end": 14456,
             "moduleId": 0,
-            "start": 14407,
+            "start": 14451,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -10567,10 +10599,10 @@ description: Variables in memory after executing saturn-v.kcl
             87.2
           ],
           "tag": {
-            "commentStart": 14483,
-            "end": 14488,
+            "commentStart": 14527,
+            "end": 14532,
             "moduleId": 0,
-            "start": 14483,
+            "start": 14527,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -10591,10 +10623,10 @@ description: Variables in memory after executing saturn-v.kcl
             91.2
           ],
           "tag": {
-            "commentStart": 14562,
-            "end": 14567,
+            "commentStart": 14606,
+            "end": 14611,
             "moduleId": 0,
-            "start": 14562,
+            "start": 14606,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -10615,10 +10647,10 @@ description: Variables in memory after executing saturn-v.kcl
             92.4
           ],
           "tag": {
-            "commentStart": 14641,
-            "end": 14646,
+            "commentStart": 14685,
+            "end": 14690,
             "moduleId": 0,
-            "start": 14641,
+            "start": 14685,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -10639,10 +10671,10 @@ description: Variables in memory after executing saturn-v.kcl
             99.4
           ],
           "tag": {
-            "commentStart": 14720,
-            "end": 14725,
+            "commentStart": 14764,
+            "end": 14769,
             "moduleId": 0,
-            "start": 14720,
+            "start": 14764,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -10663,10 +10695,10 @@ description: Variables in memory after executing saturn-v.kcl
             100.0
           ],
           "tag": {
-            "commentStart": 14794,
-            "end": 14799,
+            "commentStart": 14838,
+            "end": 14843,
             "moduleId": 0,
-            "start": 14794,
+            "start": 14838,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -10679,17 +10711,17 @@ description: Variables in memory after executing saturn-v.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 273,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -10757,8 +10789,8 @@ description: Variables in memory after executing saturn-v.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "m"
+      "units": "m",
+      "isClosed": "explicitly"
     }
   },
   "ringBand": {
@@ -10766,6 +10798,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -10773,10 +10807,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8152,
-            "end": 8159,
+            "commentStart": 8196,
+            "end": 8203,
             "moduleId": 0,
-            "start": 8152,
+            "start": 8196,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -10804,10 +10838,10 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "radius": 4.5,
             "tag": {
-              "commentStart": 8152,
-              "end": 8159,
+              "commentStart": 8196,
+              "end": 8203,
               "moduleId": 0,
-              "start": 8152,
+              "start": 8196,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -10820,17 +10854,17 @@ description: Variables in memory after executing saturn-v.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 141,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 47000.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -10874,8 +10908,8 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -10888,8 +10922,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 141,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -11064,10 +11098,10 @@ description: Variables in memory after executing saturn-v.kcl
                   ],
                   "radius": 4.5,
                   "tag": {
-                    "commentStart": 8152,
-                    "end": 8159,
+                    "commentStart": 8196,
+                    "end": 8203,
                     "moduleId": 0,
-                    "start": 8152,
+                    "start": 8196,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -11080,17 +11114,17 @@ description: Variables in memory after executing saturn-v.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 141,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 47000.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -11149,6 +11183,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -11156,10 +11192,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6540,
-            "end": 6547,
+            "commentStart": 6584,
+            "end": 6591,
             "moduleId": 0,
-            "start": 6540,
+            "start": 6584,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -11187,10 +11223,10 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "radius": 4.5,
             "tag": {
-              "commentStart": 6540,
-              "end": 6547,
+              "commentStart": 6584,
+              "end": 6591,
               "moduleId": 0,
-              "start": 6540,
+              "start": 6584,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -11203,17 +11239,17 @@ description: Variables in memory after executing saturn-v.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 105,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 20000.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -11257,8 +11293,8 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -11414,10 +11450,10 @@ description: Variables in memory after executing saturn-v.kcl
                   ],
                   "radius": 4.5,
                   "tag": {
-                    "commentStart": 6540,
-                    "end": 6547,
+                    "commentStart": 6584,
+                    "end": 6591,
                     "moduleId": 0,
-                    "start": 6540,
+                    "start": 6584,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -11430,17 +11466,17 @@ description: Variables in memory after executing saturn-v.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 105,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 20000.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -11499,6 +11535,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -11506,10 +11544,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 13847,
-            "end": 13854,
+            "commentStart": 13891,
+            "end": 13898,
             "moduleId": 0,
-            "start": 13847,
+            "start": 13891,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -11537,10 +11575,10 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "radius": 3.2,
             "tag": {
-              "commentStart": 13847,
-              "end": 13854,
+              "commentStart": 13891,
+              "end": 13898,
               "moduleId": 0,
-              "start": 13847,
+              "start": 13891,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -11553,17 +11591,17 @@ description: Variables in memory after executing saturn-v.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 266,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 78000.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -11607,8 +11645,8 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -11621,8 +11659,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 259,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -11797,10 +11835,10 @@ description: Variables in memory after executing saturn-v.kcl
                   ],
                   "radius": 3.2,
                   "tag": {
-                    "commentStart": 13453,
-                    "end": 13460,
+                    "commentStart": 13497,
+                    "end": 13504,
                     "moduleId": 0,
-                    "start": 13453,
+                    "start": 13497,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -11813,17 +11851,17 @@ description: Variables in memory after executing saturn-v.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 259,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 69000.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -11882,8 +11920,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 266,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -12058,10 +12096,10 @@ description: Variables in memory after executing saturn-v.kcl
                   ],
                   "radius": 3.2,
                   "tag": {
-                    "commentStart": 13847,
-                    "end": 13854,
+                    "commentStart": 13891,
+                    "end": 13898,
                     "moduleId": 0,
-                    "start": 13847,
+                    "start": 13891,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -12074,17 +12112,17 @@ description: Variables in memory after executing saturn-v.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 266,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 78000.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -12143,6 +12181,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -12150,10 +12190,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 13453,
-            "end": 13460,
+            "commentStart": 13497,
+            "end": 13504,
             "moduleId": 0,
-            "start": 13453,
+            "start": 13497,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -12181,10 +12221,10 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "radius": 3.2,
             "tag": {
-              "commentStart": 13453,
-              "end": 13460,
+              "commentStart": 13497,
+              "end": 13504,
               "moduleId": 0,
-              "start": 13453,
+              "start": 13497,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -12197,17 +12237,17 @@ description: Variables in memory after executing saturn-v.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 259,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 69000.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -12251,8 +12291,8 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -12265,6 +12305,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -12272,10 +12314,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10095,
-            "end": 10100,
+            "commentStart": 10139,
+            "end": 10144,
             "moduleId": 0,
-            "start": 10095,
+            "start": 10139,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -12286,12 +12328,12 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10241,
-            "end": 10246,
+            "commentStart": 10209,
+            "end": 10214,
             "moduleId": 0,
-            "start": 10241,
+            "start": 10209,
             "type": "TagDeclarator",
-            "value": "line3"
+            "value": "line2"
           },
           "type": "extrudePlane"
         },
@@ -12300,12 +12342,12 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10316,
-            "end": 10321,
+            "commentStart": 10285,
+            "end": 10290,
             "moduleId": 0,
-            "start": 10316,
+            "start": 10285,
             "type": "TagDeclarator",
-            "value": "line4"
+            "value": "line3"
           },
           "type": "extrudePlane"
         }
@@ -12325,10 +12367,10 @@ description: Variables in memory after executing saturn-v.kcl
               64.0
             ],
             "tag": {
-              "commentStart": 10095,
-              "end": 10100,
+              "commentStart": 10139,
+              "end": 10144,
               "moduleId": 0,
-              "start": 10095,
+              "start": 10139,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -12349,10 +12391,10 @@ description: Variables in memory after executing saturn-v.kcl
               64.0
             ],
             "tag": {
-              "commentStart": 10165,
-              "end": 10170,
+              "commentStart": 10209,
+              "end": 10214,
               "moduleId": 0,
-              "start": 10165,
+              "start": 10209,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -12373,10 +12415,10 @@ description: Variables in memory after executing saturn-v.kcl
               66.5
             ],
             "tag": {
-              "commentStart": 10241,
-              "end": 10246,
+              "commentStart": 10285,
+              "end": 10290,
               "moduleId": 0,
-              "start": 10241,
+              "start": 10285,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -12397,10 +12439,10 @@ description: Variables in memory after executing saturn-v.kcl
               66.5
             ],
             "tag": {
-              "commentStart": 10316,
-              "end": 10321,
+              "commentStart": 10360,
+              "end": 10365,
               "moduleId": 0,
-              "start": 10316,
+              "start": 10360,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -12413,17 +12455,17 @@ description: Variables in memory after executing saturn-v.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 181,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -12479,8 +12521,8 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -12990,10 +13032,10 @@ description: Variables in memory after executing saturn-v.kcl
                     64.0
                   ],
                   "tag": {
-                    "commentStart": 10095,
-                    "end": 10100,
+                    "commentStart": 10139,
+                    "end": 10144,
                     "moduleId": 0,
-                    "start": 10095,
+                    "start": 10139,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -13014,10 +13056,10 @@ description: Variables in memory after executing saturn-v.kcl
                     64.0
                   ],
                   "tag": {
-                    "commentStart": 10165,
-                    "end": 10170,
+                    "commentStart": 10209,
+                    "end": 10214,
                     "moduleId": 0,
-                    "start": 10165,
+                    "start": 10209,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -13038,10 +13080,10 @@ description: Variables in memory after executing saturn-v.kcl
                     66.5
                   ],
                   "tag": {
-                    "commentStart": 10241,
-                    "end": 10246,
+                    "commentStart": 10285,
+                    "end": 10290,
                     "moduleId": 0,
-                    "start": 10241,
+                    "start": 10285,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -13062,10 +13104,10 @@ description: Variables in memory after executing saturn-v.kcl
                     66.5
                   ],
                   "tag": {
-                    "commentStart": 10316,
-                    "end": 10321,
+                    "commentStart": 10360,
+                    "end": 10365,
                     "moduleId": 0,
-                    "start": 10316,
+                    "start": 10360,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -13078,17 +13120,17 @@ description: Variables in memory after executing saturn-v.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 181,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -13159,6 +13201,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -13166,10 +13210,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 9047,
-            "end": 9052,
+            "commentStart": 9091,
+            "end": 9096,
             "moduleId": 0,
-            "start": 9047,
+            "start": 9091,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -13180,12 +13224,12 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 9193,
-            "end": 9198,
+            "commentStart": 9161,
+            "end": 9166,
             "moduleId": 0,
-            "start": 9193,
+            "start": 9161,
             "type": "TagDeclarator",
-            "value": "line3"
+            "value": "line2"
           },
           "type": "extrudePlane"
         },
@@ -13194,12 +13238,12 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 9268,
-            "end": 9273,
+            "commentStart": 9237,
+            "end": 9242,
             "moduleId": 0,
-            "start": 9268,
+            "start": 9237,
             "type": "TagDeclarator",
-            "value": "line4"
+            "value": "line3"
           },
           "type": "extrudePlane"
         }
@@ -13219,10 +13263,10 @@ description: Variables in memory after executing saturn-v.kcl
               64.0
             ],
             "tag": {
-              "commentStart": 9047,
-              "end": 9052,
+              "commentStart": 9091,
+              "end": 9096,
               "moduleId": 0,
-              "start": 9047,
+              "start": 9091,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -13243,10 +13287,10 @@ description: Variables in memory after executing saturn-v.kcl
               64.0
             ],
             "tag": {
-              "commentStart": 9117,
-              "end": 9122,
+              "commentStart": 9161,
+              "end": 9166,
               "moduleId": 0,
-              "start": 9117,
+              "start": 9161,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -13267,10 +13311,10 @@ description: Variables in memory after executing saturn-v.kcl
               66.5
             ],
             "tag": {
-              "commentStart": 9193,
-              "end": 9198,
+              "commentStart": 9237,
+              "end": 9242,
               "moduleId": 0,
-              "start": 9193,
+              "start": 9237,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -13291,10 +13335,10 @@ description: Variables in memory after executing saturn-v.kcl
               66.5
             ],
             "tag": {
-              "commentStart": 9268,
-              "end": 9273,
+              "commentStart": 9312,
+              "end": 9317,
               "moduleId": 0,
-              "start": 9268,
+              "start": 9312,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -13307,17 +13351,17 @@ description: Variables in memory after executing saturn-v.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 155,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -13373,8 +13417,8 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -13884,10 +13928,10 @@ description: Variables in memory after executing saturn-v.kcl
                     64.0
                   ],
                   "tag": {
-                    "commentStart": 9047,
-                    "end": 9052,
+                    "commentStart": 9091,
+                    "end": 9096,
                     "moduleId": 0,
-                    "start": 9047,
+                    "start": 9091,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -13908,10 +13952,10 @@ description: Variables in memory after executing saturn-v.kcl
                     64.0
                   ],
                   "tag": {
-                    "commentStart": 9117,
-                    "end": 9122,
+                    "commentStart": 9161,
+                    "end": 9166,
                     "moduleId": 0,
-                    "start": 9117,
+                    "start": 9161,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -13932,10 +13976,10 @@ description: Variables in memory after executing saturn-v.kcl
                     66.5
                   ],
                   "tag": {
-                    "commentStart": 9193,
-                    "end": 9198,
+                    "commentStart": 9237,
+                    "end": 9242,
                     "moduleId": 0,
-                    "start": 9193,
+                    "start": 9237,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -13956,10 +14000,10 @@ description: Variables in memory after executing saturn-v.kcl
                     66.5
                   ],
                   "tag": {
-                    "commentStart": 9268,
-                    "end": 9273,
+                    "commentStart": 9312,
+                    "end": 9317,
                     "moduleId": 0,
-                    "start": 9268,
+                    "start": 9312,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -13972,17 +14016,17 @@ description: Variables in memory after executing saturn-v.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 155,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -14062,6 +14106,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -14069,10 +14115,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 11159,
-            "end": 11164,
+            "commentStart": 11203,
+            "end": 11208,
             "moduleId": 0,
-            "start": 11159,
+            "start": 11203,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -14083,12 +14129,12 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 11310,
-            "end": 11315,
+            "commentStart": 11278,
+            "end": 11283,
             "moduleId": 0,
-            "start": 11310,
+            "start": 11278,
             "type": "TagDeclarator",
-            "value": "line3"
+            "value": "line2"
           },
           "type": "extrudePlane"
         },
@@ -14097,12 +14143,12 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 11380,
-            "end": 11385,
+            "commentStart": 11354,
+            "end": 11359,
             "moduleId": 0,
-            "start": 11380,
+            "start": 11354,
             "type": "TagDeclarator",
-            "value": "line4"
+            "value": "line3"
           },
           "type": "extrudePlane"
         }
@@ -14122,10 +14168,10 @@ description: Variables in memory after executing saturn-v.kcl
               66.5
             ],
             "tag": {
-              "commentStart": 11159,
-              "end": 11164,
+              "commentStart": 11203,
+              "end": 11208,
               "moduleId": 0,
-              "start": 11159,
+              "start": 11203,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -14146,10 +14192,10 @@ description: Variables in memory after executing saturn-v.kcl
               66.5
             ],
             "tag": {
-              "commentStart": 11234,
-              "end": 11239,
+              "commentStart": 11278,
+              "end": 11283,
               "moduleId": 0,
-              "start": 11234,
+              "start": 11278,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -14170,10 +14216,10 @@ description: Variables in memory after executing saturn-v.kcl
               69.0
             ],
             "tag": {
-              "commentStart": 11310,
-              "end": 11315,
+              "commentStart": 11354,
+              "end": 11359,
               "moduleId": 0,
-              "start": 11310,
+              "start": 11354,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -14194,10 +14240,10 @@ description: Variables in memory after executing saturn-v.kcl
               69.0
             ],
             "tag": {
-              "commentStart": 11380,
-              "end": 11385,
+              "commentStart": 11424,
+              "end": 11429,
               "moduleId": 0,
-              "start": 11380,
+              "start": 11424,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -14210,17 +14256,17 @@ description: Variables in memory after executing saturn-v.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 207,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -14276,8 +14322,8 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -14787,10 +14833,10 @@ description: Variables in memory after executing saturn-v.kcl
                     66.5
                   ],
                   "tag": {
-                    "commentStart": 11159,
-                    "end": 11164,
+                    "commentStart": 11203,
+                    "end": 11208,
                     "moduleId": 0,
-                    "start": 11159,
+                    "start": 11203,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -14811,10 +14857,10 @@ description: Variables in memory after executing saturn-v.kcl
                     66.5
                   ],
                   "tag": {
-                    "commentStart": 11234,
-                    "end": 11239,
+                    "commentStart": 11278,
+                    "end": 11283,
                     "moduleId": 0,
-                    "start": 11234,
+                    "start": 11278,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -14835,10 +14881,10 @@ description: Variables in memory after executing saturn-v.kcl
                     69.0
                   ],
                   "tag": {
-                    "commentStart": 11310,
-                    "end": 11315,
+                    "commentStart": 11354,
+                    "end": 11359,
                     "moduleId": 0,
-                    "start": 11310,
+                    "start": 11354,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -14859,10 +14905,10 @@ description: Variables in memory after executing saturn-v.kcl
                     69.0
                   ],
                   "tag": {
-                    "commentStart": 11380,
-                    "end": 11385,
+                    "commentStart": 11424,
+                    "end": 11429,
                     "moduleId": 0,
-                    "start": 11380,
+                    "start": 11424,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -14875,17 +14921,17 @@ description: Variables in memory after executing saturn-v.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 207,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -14956,6 +15002,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -14963,10 +15011,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 12209,
-            "end": 12214,
+            "commentStart": 12253,
+            "end": 12258,
             "moduleId": 0,
-            "start": 12209,
+            "start": 12253,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -14977,12 +15025,12 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 12360,
-            "end": 12365,
+            "commentStart": 12328,
+            "end": 12333,
             "moduleId": 0,
-            "start": 12360,
+            "start": 12328,
             "type": "TagDeclarator",
-            "value": "line3"
+            "value": "line2"
           },
           "type": "extrudePlane"
         },
@@ -14991,12 +15039,12 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 12430,
-            "end": 12435,
+            "commentStart": 12404,
+            "end": 12409,
             "moduleId": 0,
-            "start": 12430,
+            "start": 12404,
             "type": "TagDeclarator",
-            "value": "line4"
+            "value": "line3"
           },
           "type": "extrudePlane"
         }
@@ -15016,10 +15064,10 @@ description: Variables in memory after executing saturn-v.kcl
               66.5
             ],
             "tag": {
-              "commentStart": 12209,
-              "end": 12214,
+              "commentStart": 12253,
+              "end": 12258,
               "moduleId": 0,
-              "start": 12209,
+              "start": 12253,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -15040,10 +15088,10 @@ description: Variables in memory after executing saturn-v.kcl
               66.5
             ],
             "tag": {
-              "commentStart": 12284,
-              "end": 12289,
+              "commentStart": 12328,
+              "end": 12333,
               "moduleId": 0,
-              "start": 12284,
+              "start": 12328,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -15064,10 +15112,10 @@ description: Variables in memory after executing saturn-v.kcl
               69.0
             ],
             "tag": {
-              "commentStart": 12360,
-              "end": 12365,
+              "commentStart": 12404,
+              "end": 12409,
               "moduleId": 0,
-              "start": 12360,
+              "start": 12404,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -15088,10 +15136,10 @@ description: Variables in memory after executing saturn-v.kcl
               69.0
             ],
             "tag": {
-              "commentStart": 12430,
-              "end": 12435,
+              "commentStart": 12474,
+              "end": 12479,
               "moduleId": 0,
-              "start": 12430,
+              "start": 12474,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -15104,17 +15152,17 @@ description: Variables in memory after executing saturn-v.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 233,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -15170,8 +15218,8 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -15681,10 +15729,10 @@ description: Variables in memory after executing saturn-v.kcl
                     66.5
                   ],
                   "tag": {
-                    "commentStart": 12209,
-                    "end": 12214,
+                    "commentStart": 12253,
+                    "end": 12258,
                     "moduleId": 0,
-                    "start": 12209,
+                    "start": 12253,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -15705,10 +15753,10 @@ description: Variables in memory after executing saturn-v.kcl
                     66.5
                   ],
                   "tag": {
-                    "commentStart": 12284,
-                    "end": 12289,
+                    "commentStart": 12328,
+                    "end": 12333,
                     "moduleId": 0,
-                    "start": 12284,
+                    "start": 12328,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -15729,10 +15777,10 @@ description: Variables in memory after executing saturn-v.kcl
                     69.0
                   ],
                   "tag": {
-                    "commentStart": 12360,
-                    "end": 12365,
+                    "commentStart": 12404,
+                    "end": 12409,
                     "moduleId": 0,
-                    "start": 12360,
+                    "start": 12404,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -15753,10 +15801,10 @@ description: Variables in memory after executing saturn-v.kcl
                     69.0
                   ],
                   "tag": {
-                    "commentStart": 12430,
-                    "end": 12435,
+                    "commentStart": 12474,
+                    "end": 12479,
                     "moduleId": 0,
-                    "start": 12430,
+                    "start": 12474,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -15769,17 +15817,17 @@ description: Variables in memory after executing saturn-v.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 233,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -15850,8 +15898,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 148,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -16026,10 +16074,10 @@ description: Variables in memory after executing saturn-v.kcl
                   ],
                   "radius": 4.5,
                   "tag": {
-                    "commentStart": 8533,
-                    "end": 8540,
+                    "commentStart": 8577,
+                    "end": 8584,
                     "moduleId": 0,
-                    "start": 8533,
+                    "start": 8577,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -16042,17 +16090,17 @@ description: Variables in memory after executing saturn-v.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 148,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 49000.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -16111,6 +16159,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -16118,10 +16168,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8533,
-            "end": 8540,
+            "commentStart": 8577,
+            "end": 8584,
             "moduleId": 0,
-            "start": 8533,
+            "start": 8577,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -16149,10 +16199,10 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "radius": 4.5,
             "tag": {
-              "commentStart": 8533,
-              "end": 8540,
+              "commentStart": 8577,
+              "end": 8584,
               "moduleId": 0,
-              "start": 8533,
+              "start": 8577,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -16165,17 +16215,17 @@ description: Variables in memory after executing saturn-v.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 148,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 49000.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -16219,8 +16269,8 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -16233,6 +16283,8 @@ description: Variables in memory after executing saturn-v.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -16240,10 +16292,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5742,
-            "end": 5747,
+            "commentStart": 5786,
+            "end": 5791,
             "moduleId": 0,
-            "start": 5742,
+            "start": 5786,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -16254,10 +16306,10 @@ description: Variables in memory after executing saturn-v.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5812,
-            "end": 5816,
+            "commentStart": 5856,
+            "end": 5860,
             "moduleId": 0,
-            "start": 5812,
+            "start": 5856,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -16279,10 +16331,10 @@ description: Variables in memory after executing saturn-v.kcl
               -4.5
             ],
             "tag": {
-              "commentStart": 5742,
-              "end": 5747,
+              "commentStart": 5786,
+              "end": 5791,
               "moduleId": 0,
-              "start": 5742,
+              "start": 5786,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -16309,10 +16361,10 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "radius": 4.5,
             "tag": {
-              "commentStart": 5812,
-              "end": 5816,
+              "commentStart": 5856,
+              "end": 5860,
               "moduleId": 0,
-              "start": 5812,
+              "start": 5856,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -16325,17 +16377,17 @@ description: Variables in memory after executing saturn-v.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 76,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 6000.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -16383,8 +16435,8 @@ description: Variables in memory after executing saturn-v.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "m"
+        "units": "m",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -16686,10 +16738,10 @@ description: Variables in memory after executing saturn-v.kcl
                     -4.5
                   ],
                   "tag": {
-                    "commentStart": 5742,
-                    "end": 5747,
+                    "commentStart": 5786,
+                    "end": 5791,
                     "moduleId": 0,
-                    "start": 5742,
+                    "start": 5786,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -16716,10 +16768,10 @@ description: Variables in memory after executing saturn-v.kcl
                   ],
                   "radius": 4.5,
                   "tag": {
-                    "commentStart": 5812,
-                    "end": 5816,
+                    "commentStart": 5856,
+                    "end": 5860,
                     "moduleId": 0,
-                    "start": 5812,
+                    "start": 5856,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -16732,17 +16784,17 @@ description: Variables in memory after executing saturn-v.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 76,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 6000.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,

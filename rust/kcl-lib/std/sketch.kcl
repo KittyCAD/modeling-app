@@ -13,6 +13,8 @@ import Axis2d, Axis3d, BoundedEdge, Edge, Face, Helix, Plane, Point2d, Point3d, 
 ///
 /// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
+/// Legacy sketch functions cannot be used with constraints; strongly prefer
+/// a [`sketch` block](/docs/kcl-lang/sketches) instead.
 ///
 /// ### Sketch on Face Behavior
 ///
@@ -292,6 +294,8 @@ export fn startSketchOn(
 ///
 /// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
+/// Legacy sketch functions cannot be used with constraints; strongly prefer
+/// a [`sketch` block](/docs/kcl-lang/sketches) instead.
 ///
 /// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
@@ -359,6 +363,9 @@ export fn startProfile(
 ///
 /// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
+/// Legacy sketch functions cannot be used with constraints; strongly prefer
+/// [`solver::line`](/docs/kcl-std/functions/std-solver-line) segments inside a
+/// `sketch` block instead.
 ///
 /// A rectangle can be defined by its width, height, and location. Either the center or corner must be provided, but not both, to specify its location.
 ///
@@ -395,8 +402,12 @@ export fn rectangle(
 /// Construct a 2-dimensional circle, of the specified radius, centered at
 /// the provided (x, y) origin point.
 ///
-/// This is part of sketch v1 and is deprecated in favor of
-/// [sketch-solve](/docs/kcl-std/modules/std-solver).
+/// This is part of sketch v1 and is deprecated. Legacy sketch functions cannot
+/// be used with constraints. Strongly prefer constraint-based sketch functions:
+/// in KCL 2, create a
+/// [`solver::circle`](/docs/kcl-std/functions/std-solver-circle) inside a
+/// [`sketch` block](/docs/kcl-lang/sketches), then select the
+/// closed profile with [`region`](/docs/kcl-std/functions/std-sketch-region).
 ///
 /// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(-XZ)
@@ -405,7 +416,11 @@ export fn rectangle(
 /// example = extrude(exampleSketch, length = 5)
 /// ```
 ///
+/// **Legacy KCL 1 example:** The next example uses deprecated `subtract2d`.
+///
 /// ```kcl,legacySketch
+/// @settings(kclVersion = 1.0)
+///
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [-15, 0])
 ///   |> line(end = [30, 0])
@@ -436,8 +451,10 @@ export fn circle(
 /// Construct a 2-dimensional ellipse, of the specified major/minor radius, centered at the provided (x, y) point.
 ///
 /// This is part of sketch v1 and is soft deprecated in favor of
-/// [sketch-solve](/docs/kcl-std/modules/std-solver). The sketch-solve version
-/// of ellipse is still under development.
+/// [sketch-solve](/docs/kcl-std/modules/std-solver). Legacy sketch functions
+/// cannot be used with constraints; strongly prefer constraint-based sketch
+/// functions when possible. No constraint-based ellipse is available yet; first
+/// try approximating the shape with one or more constrained arcs.
 ///
 /// ```kcl,no3d,legacySketch
 /// @settings(experimentalFeatures = allow)
@@ -903,7 +920,7 @@ export fn extrude(
   /// If specified, will extrude in this direction instead of the sketch plane normal.
   /// If an edge is being extruded, this defaults to halfway between the faces on either side of the edge.
   direction?: Point3d | Edge | TaggedEdge | Segment | any,
-  /// If specified, will also extrude in the opposite direction to 'distance' to the specified distance. If 'symmetric' is true, this value is ignored.
+  /// How far to extrude opposite the primary extrusion direction. Only used with `length`; incompatible with `symmetric`.
   bidirectionalLength?: number(Length),
   /// A named tag for the face at the start of the extrusion, i.e. the original sketch.
   tagStart?: TagDecl,
@@ -945,6 +962,9 @@ export fn extrude(
 ///
 /// You can provide more than one sketch to revolve, and they will all be
 /// revolved around the same axis.
+///
+/// **NOTE:** Currently,, revolved bodies don't support being scaled in a non-uniform
+/// way (i.e. scaled differently along each axis).
 ///
 /// ```kcl,legacySketch
 /// part001 = startSketchOn(XY)
@@ -1368,26 +1388,33 @@ export fn getPreviousAdjacentEdge(
 
 /// Get the shared edge between two faces.
 ///
-/// ```kcl,legacySketch
-/// // Get an edge shared between two faces, created after a chamfer.
+/// ```kcl,sketchSolve
+/// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
 ///
-/// scale = 20
-/// part001 = startSketchOn(XY)
-///     |> startProfile(at = [0, 0])
-///     |> line(end = [0, scale])
-///     |> line(end = [scale, 0])
-///     |> line(end = [0, -scale])
-///     |> close(tag = $line0)
-///     |> extrude(length = 20, tagEnd = $end0)
-///     // We tag the chamfer to reference it later.
-///     |> chamfer(length = 10, tags = [getOppositeEdge(line0)], tag = $chamfer0)
+/// scale = 20mm
+/// partSketch = sketch(on = XY) {
+///   left = line(start = [var 0mm, var 0mm], end = [var 0mm, var 20mm])
+///   top = line(start = [var 0mm, var 20mm], end = [var 20mm, var 20mm])
+///   right = line(start = [var 20mm, var 20mm], end = [var 20mm, var 0mm])
+///   line0 = line(start = [var 20mm, var 0mm], end = [var 0mm, var 0mm])
+///   coincident([left.end, top.start])
+///   coincident([top.end, right.start])
+///   coincident([right.end, line0.start])
+///   coincident([line0.end, left.start])
+/// }
+/// partRegion = region(segments = [partSketch.left, partSketch.top])
+/// part001 = extrude(partRegion, length = scale, tagEnd = $end0)
+///   |> chamfer(
+///        length = 10mm,
+///        tags = [getOppositeEdge(partRegion.tags.line0)],
+///        tag = $chamfer0,
+///      )
 ///
-/// // Get the shared edge between the chamfer and the extrusion.
-/// commonEdge = getCommonEdge(faces = [chamfer0, end0])
-///
-/// // Chamfer the shared edge.
-/// // TODO: uncomment this when ssi for fillets lands
-/// // chamfer(part001, length = 5, tags = [commonEdge])
+/// // Select the edge shared by the chamfer and the extrusion's end face.
+/// commonEdge = getCommonEdge(faces = [
+///   part001.faces.chamfer0,
+///   part001.faces.end0,
+/// ])
 /// ```
 @(impl = std_rust, feature_tree = false)
 export fn getCommonEdge(
@@ -1447,6 +1474,9 @@ export fn getBoundedEdge(
 ///
 /// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
+/// Legacy sketch functions cannot be used with constraints; strongly prefer
+/// [`solver::circle`](/docs/kcl-std/functions/std-solver-circle) inside a
+/// `sketch` block instead.
 ///
 /// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XY)
@@ -1471,6 +1501,9 @@ export fn circleThreePoint(
 ///
 /// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
+/// Legacy sketch functions cannot be used with constraints; strongly prefer
+/// [`solver::line`](/docs/kcl-std/functions/std-solver-line) segments inside a
+/// `sketch` block instead.
 ///
 /// ```kcl,legacySketch
 /// // Create a regular hexagon inscribed in a circle of radius 10
@@ -1523,32 +1556,27 @@ export fn polygon(
 /// You can provide more than one sketch to sweep, and they will all be
 /// swept along the same path.
 ///
-/// ```kcl,legacySketch
-/// // Create a pipe using a sweep.
+/// ```kcl,sketchSolve
+/// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
 ///
-/// // Create a path for the sweep.
-/// sweepPath = startSketchOn(XZ)
-///     |> startProfile(at = [0.05, 0.05])
-///     |> line(end = [0, 7])
-///     |> tangentialArc(angle = 90deg, radius = 5)
-///     |> line(end = [-3, 0])
-///     |> tangentialArc(angle = -90deg, radius = 5)
-///     |> line(end = [0, 7])
+/// sweepPath = sketch(on = XZ) {
+///   line1 = line(start = [var 0.05mm, var 0.05mm], end = [var 0.05mm, var 7.05mm])
+///   arc2 = arc(start = [var 0.05mm, var 7.05mm], end = [var -4.95mm, var 12.05mm], center = [var -4.95mm, var 7.05mm])
+///   coincident([line1.end, arc2.start])
+///   line3 = line(start = [var -4.95mm, var 12.05mm], end = [var -7.95mm, var 12.05mm])
+///   coincident([arc2.end, line3.start])
+///   arc4 = arc(start = [var -12.95mm, var 17.05mm], end = [var -7.95mm, var 12.05mm], center = [var -7.95mm, var 17.05mm])
+///   coincident([line3.end, arc4.end])
+///   line5 = line(start = [var -12.95mm, var 17.05mm], end = [var -12.95mm, var 24.05mm])
+///   coincident([arc4.start, line5.start])
+/// }
 ///
-/// // Create a hole for the pipe.
-/// pipeHole = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 1.5,
-///     )
-///
-/// sweepSketch = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 2,
-///         )
-///     |> subtract2d(tool = pipeHole)
-///     |> sweep(path = sweepPath)
+/// pipeProfile = sketch(on = XY) {
+///   outerCircle = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm])
+///   innerCircle = circle(start = [var 1.5mm, var 0mm], center = [var 0mm, var 0mm])
+/// }
+/// pipeRegion = region(segments = [pipeProfile.outerCircle])
+/// sweepSketch = sweep(pipeRegion, path = sweepPath)
 /// ```
 ///
 /// ```kcl,legacySketch
@@ -1819,7 +1847,7 @@ export fn sweep(
   tolerance?: number(Length),
   /// Use 'translateProfileToPath' and 'orientProfilePerpendicular' instead.
   /// What is the sweep relative to? Can be either 'sketchPlane' or 'trajectoryCurve'.
-  @(deprecated = true)
+  @(deprecated = true, removed_in = "3.0")
   relativeTo?: string = 'trajectoryCurve',
   /// If true, the profile being swept will be moved to the path being swept along,
   /// before the sweep starts.
@@ -1829,8 +1857,11 @@ export fn sweep(
   /// If true, before the sweep starts, the profile will be re-oriented
   /// so that it is perpendicular to the path being swept along.
   /// If false, the profile is left in its current orientation.
-  /// Defaults to false.
-  orientProfilePerpendicular?: bool = false,
+  /// On KCL 2.0 and earlier, defaults to false.
+  /// On KCL 3.0 and later, defaults to the value of `translateProfileToPath`,
+  /// so a profile that is moved to the path is also oriented perpendicular to
+  /// it unless you say otherwise.
+  orientProfilePerpendicular?: bool,
   /// A named tag for the face at the start of the sweep, i.e. the original sketch.
   tagStart?: TagDecl,
   /// A named tag for the face at the end of the sweep.
@@ -1838,8 +1869,14 @@ export fn sweep(
   /// What type of body to produce (solid or surface).
   /// Defaults to "solid".
   bodyType?: string = "solid",
-  /// What version of the sweeping algorithm to use (leave unspecified or use 0 to use the default algorithm).
-  version?: number(Count) = 0,
+  /// What version of the sweeping algorithm to use.
+  /// 0 means "let the Zoo engine choose whichever version is best",
+  /// 1 is the original Zoo sweep algorithm,
+  /// 2 is the newer algorithm.
+  /// On KCL 2.0 and earlier, the default is 0.
+  /// KCL 3.0 and later always use the newest algorithm.
+  @(removed_in = "3.0")
+  version?: number(Count),
 ): [Solid; 1+] {}
 
 /// Create a 3D surface or solid by interpolating between two or more sketches.
@@ -2010,7 +2047,7 @@ export fn sweep(
 /// ```
 /// ```kcl,sketchSolve
 /// // Demonstrates surface lofting of segments from multiple sketch blocks.
-/// @settings(defaultLengthUnit = mm, kclVersion = 1.0)
+/// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
 ///
 /// sketch002 = sketch(on = XY) {
 ///   arc1 = arc(start = [var -2.02mm, var -3.05mm], end = [var 2.03mm, var -3.01mm], center = [var 0.01mm, var -3.05mm])
@@ -2058,32 +2095,55 @@ export fn loft(
 /// Repeat a 2-dimensional sketch along some dimension, with a dynamic amount
 /// of distance between each repetition, some specified number of times.
 ///
-/// ```kcl,legacySketch
-/// /// Pattern using a named axis.
+/// Currently, KCL's type system limitations make the type signature here misleading.
+/// This function works with Regions from the new sketch blocks (that use constraint solvers),
+/// or the old, deprecated, imperative sketch/profile syntax from older versions of KCL.
+/// It does _not_ work as expected with sketch blocks, only with the regions that can be
+/// created from sketch blocks. In the following examples, a region is passed into the pattern
+/// function, which creates new regions in a pattern. You should _not_ pass a sketch block in.
 ///
-/// exampleSketch = startSketchOn(XZ)
-///   |> circle(center = [0, 0], radius = 1)
+/// ```kcl
+/// // Example of pattern using a named axis.
+///
+/// @settings(kclVersion = 2.0)
+///
+/// exampleSketch = sketch(on = XZ) {
+///   circle1 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
+///   fixed([circle1.center, ORIGIN])
+///   radius(circle1) == 1mm
+/// }
+///
+/// exampleProfiles = region(segments = [exampleSketch.circle1])
 ///   |> patternLinear2d(
 ///        axis = X,
 ///        instances = 7,
-///        distance = 4
+///        distance = 4mm
 ///      )
 ///
-/// example = extrude(exampleSketch, length = 1)
+/// example = extrude(exampleProfiles, length = 1mm)
+/// hide(exampleSketch)
 /// ```
 ///
-/// ```kcl,legacySketch
-/// /// Pattern using a raw axis.
+/// ```kcl
+/// // Example of pattern using a raw axis.
 ///
-/// exampleSketch = startSketchOn(XZ)
-///   |> circle(center = [0, 0], radius = 1)
+/// @settings(kclVersion = 2.0)
+///
+/// exampleSketch = sketch(on = XZ) {
+///   circle1 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
+///   fixed([circle1.center, ORIGIN])
+///   radius(circle1) == 1mm
+/// }
+///
+/// exampleProfiles = region(segments = [exampleSketch.circle1])
 ///   |> patternLinear2d(
 ///        axis = [1, 0],
 ///        instances = 7,
-///        distance = 4
+///        distance = 4mm
 ///      )
 ///
-/// example = extrude(exampleSketch, length = 1)
+/// example = extrude(exampleProfiles, length = 1mm)
+/// hide(exampleSketch)
 /// ```
 @(impl = std_rust, feature_tree = false)
 export fn patternLinear2d(
@@ -2440,7 +2500,7 @@ export fn tangentToEnd(
   @tag: TaggedEdge,
 ): number(Angle) {}
 
-/// Extract the provided 2-dimensional sketch's profile's origin value.
+/// Extract the provided 2-dimensional sketch's profile origin as an array containing its X and Y values.
 ///
 /// ```kcl,legacySketch
 /// sketch001 = startSketchOn(XY)
@@ -2491,6 +2551,9 @@ export fn profileStartY(
 /// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver) and the
 /// [gear module](/docs/kcl-std/modules/std-gear).
+/// Legacy sketch functions cannot be used with constraints; strongly prefer
+/// the gear module when it applies. No constraint-based involute is available
+/// yet; first try approximating the shape with one or more constrained arcs.
 ///
 /// ```kcl,no3d,legacySketch
 /// a = 10
@@ -2504,7 +2567,7 @@ export fn profileStartY(
 /// // Example: a gear that uses an involute circular profile for the teeth.
 /// @settings(defaultLengthUnit = mm)
 ///
-/// /// // Define gear parameters
+/// // Define gear parameters
 /// nTeeth = 21
 /// module = 1.5
 /// pressureAngle = 14deg
@@ -2572,6 +2635,9 @@ export fn involuteCircular(
 ///
 /// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
+/// Legacy sketch functions cannot be used with constraints; strongly prefer
+/// [`solver::line`](/docs/kcl-std/functions/std-solver-line) inside a `sketch`
+/// block instead.
 ///
 /// ```kcl,legacySketch
 /// triangle = startSketchOn(XZ)
@@ -2613,6 +2679,9 @@ export fn line(
 ///
 /// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
+/// Legacy sketch functions cannot be used with constraints; strongly prefer
+/// [`solver::line`](/docs/kcl-std/functions/std-solver-line) with horizontal
+/// or vertical constraints inside a `sketch` block instead.
 ///
 /// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
@@ -2651,6 +2720,9 @@ export fn xLine(
 ///
 /// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
+/// Legacy sketch functions cannot be used with constraints; strongly prefer
+/// [`solver::line`](/docs/kcl-std/functions/std-solver-line) with horizontal
+/// or vertical constraints inside a `sketch` block instead.
 ///
 /// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
@@ -2684,6 +2756,9 @@ export fn yLine(
 ///
 /// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
+/// Legacy sketch functions cannot be used with constraints; strongly prefer
+/// [`solver::line`](/docs/kcl-std/functions/std-solver-line) with an angle
+/// constraint inside a `sketch` block instead.
 ///
 /// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
@@ -2725,6 +2800,9 @@ export fn angledLine(
 ///
 /// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
+/// Legacy sketch functions cannot be used with constraints; strongly prefer
+/// [`solver::line`](/docs/kcl-std/functions/std-solver-line) with angle and
+/// coincident constraints inside a `sketch` block instead.
 ///
 /// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
@@ -2760,6 +2838,9 @@ export fn angledLineThatIntersects(
 ///
 /// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
+/// Legacy sketch functions cannot be used with constraints; strongly prefer
+/// [`solver::coincident`](/docs/kcl-std/functions/std-solver-coincident)
+/// constraints inside a `sketch` block instead.
 ///
 /// If you want to perform some 3-dimensional operation on a sketch, like
 /// extrude or sweep, you must `close` it first. `close` must be called even
@@ -2796,6 +2877,9 @@ export fn close(
 ///
 /// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
+/// Legacy sketch functions cannot be used with constraints; strongly prefer
+/// [`solver::arc`](/docs/kcl-std/functions/std-solver-arc) inside a `sketch`
+/// block instead.
 ///
 /// The arc is constructed such that the current position of the sketch is
 /// placed along an imaginary circle of the specified radius, at angleStart
@@ -2858,6 +2942,9 @@ export fn arc(
 ///
 /// This is part of sketch v1 and is deprecated in favor of
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
+/// Legacy sketch functions cannot be used with constraints; strongly prefer
+/// [`solver::arc`](/docs/kcl-std/functions/std-solver-arc) with tangent
+/// constraints inside a `sketch` block instead.
 ///
 /// When using radius and angle, draw a curved line segment along part of an
 /// imaginary circle. The arc is constructed such that the last line segment is
@@ -2933,8 +3020,10 @@ export fn tangentialArc(
 /// shape.
 ///
 /// This is part of sketch v1 and is deprecated in favor of
-/// [sketch-solve](/docs/kcl-std/modules/std-solver). The sketch-solve version
-/// of bezier curve is still under development.
+/// [sketch-solve](/docs/kcl-std/modules/std-solver). Legacy sketch functions
+/// cannot be used with constraints; strongly prefer constraint-based sketch
+/// functions when possible. No constraint-based Bezier curve is available yet;
+/// first try approximating the shape with one or more constrained arcs.
 ///
 /// ```kcl,legacySketch
 /// // Example using relative control points.
@@ -2982,10 +3071,17 @@ export fn bezierCurve(
 
 /// Use a 2-dimensional sketch to cut a hole in another 2-dimensional sketch.
 ///
-/// This is part of sketch v1 and is deprecated in favor of
-/// [sketch-solve](/docs/kcl-std/modules/std-solver).
+/// This is part of sketch v1 and is deprecated. Legacy sketch functions cannot
+/// be used with constraints. Strongly prefer constraint-based sketch functions:
+/// in KCL 2, construct the outer
+/// boundary and hole as segments inside a
+/// [`sketch` block](/docs/kcl-lang/sketches), then select the
+/// required bounded face with
+/// [`region`](/docs/kcl-std/functions/std-sketch-region).
 ///
 /// ```kcl,legacySketch
+/// @settings(kclVersion = 1.0)
+///
 /// exampleSketch = startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [0, 5])
@@ -2999,6 +3095,8 @@ export fn bezierCurve(
 /// ```
 ///
 /// ```kcl,legacySketch
+/// @settings(kclVersion = 1.0)
+///
 /// fn squareHoleSketch() {
 ///   squareSketch = startSketchOn(-XZ)
 ///     |> startProfile(at = [-1, -1])
@@ -3025,8 +3123,10 @@ export fn subtract2d(
 /// Add a conic section to an existing sketch.
 ///
 /// This is part of sketch v1 and is soft deprecated in favor of
-/// [sketch-solve](/docs/kcl-std/modules/std-solver). The sketch-solve version
-/// of conic is still under development.
+/// [sketch-solve](/docs/kcl-std/modules/std-solver). Legacy sketch functions
+/// cannot be used with constraints; strongly prefer constraint-based sketch
+/// functions when possible. No constraint-based conic is available yet; first
+/// try approximating the shape with one or more constrained arcs.
 ///
 /// ```kcl,legacySketch
 /// @settings(experimentalFeatures = allow)
@@ -3067,8 +3167,10 @@ export fn conic(
 /// Add a parabolic segment to an existing sketch.
 ///
 /// This is part of sketch v1 and is soft deprecated in favor of
-/// [sketch-solve](/docs/kcl-std/modules/std-solver). The sketch-solve version
-/// of parabolic is still under development.
+/// [sketch-solve](/docs/kcl-std/modules/std-solver). Legacy sketch functions
+/// cannot be used with constraints; strongly prefer constraint-based sketch
+/// functions when possible. No constraint-based parabola is available yet;
+/// first try approximating the shape with one or more constrained arcs.
 ///
 /// ```kcl,no3d,legacySketch
 /// @settings(experimentalFeatures = allow)
@@ -3120,8 +3222,10 @@ export fn parabolicPoint(
 /// Add a hyperbolic section to an existing sketch.
 ///
 /// This is part of sketch v1 and is soft deprecated in favor of
-/// [sketch-solve](/docs/kcl-std/modules/std-solver). The sketch-solve version
-/// of hyperbolic is still under development.
+/// [sketch-solve](/docs/kcl-std/modules/std-solver). Legacy sketch functions
+/// cannot be used with constraints; strongly prefer constraint-based sketch
+/// functions when possible. No constraint-based hyperbola is available yet;
+/// first try approximating the shape with one or more constrained arcs.
 ///
 /// ```kcl,no3d,legacySketch
 /// @settings(experimentalFeatures = allow)
@@ -3176,8 +3280,10 @@ export fn hyperbolicPoint(
 /// Add an elliptic section to an existing sketch.
 ///
 /// This is part of sketch v1 and is soft deprecated in favor of
-/// [sketch-solve](/docs/kcl-std/modules/std-solver). The sketch-solve version
-/// of elliptic is still under development.
+/// [sketch-solve](/docs/kcl-std/modules/std-solver). Legacy sketch functions
+/// cannot be used with constraints; strongly prefer constraint-based sketch
+/// functions when possible. No constraint-based elliptic curve is available
+/// yet; first try approximating the shape with one or more constrained arcs.
 ///
 /// ```kcl,legacySketch
 /// @settings(experimentalFeatures = allow)
@@ -3348,6 +3454,14 @@ export fn faceOf(
 /// To make a fallback point move with a parametric sketch, consider creating a
 /// construction point in the sketch and constraining it into place. You can then
 /// refer to that point to create the region.
+///
+/// Operations such as `extrude`, `revolve`, and `sweep` consume the region
+/// passed to them. Each region can be used by only one consuming operation. To
+/// reuse the same profile, call `region(...)` again with the original sketch
+/// segments instead of cloning the sketch. For example, create
+/// `firstRegion = region(segments = [profile.circle])` and
+/// `secondRegion = region(segments = [profile.circle])`, then pass each region
+/// to a different consuming operation.
 ///
 /// ```kcl,sketchSolve
 /// @settings(kclVersion = 2.0)

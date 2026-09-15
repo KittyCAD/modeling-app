@@ -242,7 +242,8 @@ description: Artifact commands surgical-drill-guide.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -427,7 +428,8 @@ description: Artifact commands surgical-drill-guide.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -626,7 +628,8 @@ description: Artifact commands surgical-drill-guide.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -841,7 +844,8 @@ description: Artifact commands surgical-drill-guide.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -988,7 +992,8 @@ description: Artifact commands surgical-drill-guide.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -1184,7 +1189,8 @@ description: Artifact commands surgical-drill-guide.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -1412,12 +1418,13 @@ description: Artifact commands surgical-drill-guide.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "create_region_from_query_point",
+        "type": "create_region",
         "object_id": "[uuid]",
-        "query_point": {
-          "x": 9.108108108108107,
-          "y": 53.15127018922193
-        }
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -1718,7 +1725,8 @@ description: Artifact commands surgical-drill-guide.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -1865,7 +1873,8 @@ description: Artifact commands surgical-drill-guide.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -2061,7 +2070,8 @@ description: Artifact commands surgical-drill-guide.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -2289,12 +2299,13 @@ description: Artifact commands surgical-drill-guide.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "create_region_from_query_point",
+        "type": "create_region",
         "object_id": "[uuid]",
-        "query_point": {
-          "x": 9.708108108108107,
-          "y": 150.0
-        }
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {

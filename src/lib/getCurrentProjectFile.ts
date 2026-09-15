@@ -9,7 +9,10 @@ import * as fs from 'fs/promises'
 
 import { changeKclVersion } from '@src/lang/wasm'
 import { DEFAULT_KCL_VERSION, PROJECT_ENTRYPOINT } from '@src/lib/constants'
-import { isExtensionAnImportExtension } from '@src/lib/paths'
+import {
+  isExtensionARelevantExtension,
+  isExtensionAnImportExtension,
+} from '@src/lib/paths'
 import { err } from '@src/lib/trap'
 import { getInVariableCase } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -24,8 +27,8 @@ export default async function getCurrentProjectFile(
   // Extract the values into an array
   const allFileImportFormats: string[] = importFileExtensions(wasmInstance)
   const relevantExtensions: string[] = relevantFileExtensions(wasmInstance)
-  const shouldWrapExtension = (extension: string) => {
-    return isExtensionAnImportExtension(extension, allFileImportFormats)
+  const shouldWrapExtension = (filePath: string) => {
+    return isExtensionAnImportExtension(filePath, allFileImportFormats)
   }
 
   // Fix for "." path, which is the current directory.
@@ -86,7 +89,10 @@ export default async function getCurrentProjectFile(
   // Check if the extension on what we are trying to open is a relevant file type.
   const extension = path.extname(sourcePath).slice(1).toLowerCase()
 
-  if (!relevantExtensions.includes(extension) && extension !== 'toml') {
+  if (
+    !isExtensionARelevantExtension(sourcePath, relevantExtensions) &&
+    extension !== 'toml'
+  ) {
     return new Error(
       `File type (${extension}) cannot be opened with this app: '${sourcePath}', try opening one of the following file types: ${relevantExtensions.join(
         ', '
@@ -102,7 +108,7 @@ export default async function getCurrentProjectFile(
   // this import model.
   // TODO: once we have some sort of a load file into project it would make sense to stop creating these wrapper files
   // and let people save their own kcl file importing
-  if (shouldWrapExtension(extension)) {
+  if (shouldWrapExtension(sourcePath)) {
     const importFileName = path.basename(sourcePath)
     // Check if we have a file in the project for this import model.
     const kclWrapperFilename = `${importFileName}.kcl`

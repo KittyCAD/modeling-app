@@ -60,17 +60,17 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "XY",
         "objectId": 0,
+        "kind": "XY",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -114,7 +114,8 @@ description: Variables in memory after executing flush_batch_on_end.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "length": {
@@ -173,17 +174,17 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "XY",
         "objectId": 0,
+        "kind": "XY",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -231,7 +232,8 @@ description: Variables in memory after executing flush_batch_on_end.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "pipe": {
@@ -239,6 +241,8 @@ description: Variables in memory after executing flush_batch_on_end.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -339,17 +343,17 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "XY",
           "objectId": 0,
+          "kind": "XY",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -397,7 +401,8 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -475,17 +480,17 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "XY",
         "objectId": 0,
+        "kind": "XY",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -533,7 +538,8 @@ description: Variables in memory after executing flush_batch_on_end.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "sketch000": {
@@ -541,8 +547,8 @@ description: Variables in memory after executing flush_batch_on_end.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "XY",
       "objectId": 0,
+      "kind": "XY",
       "origin": {
         "x": 0.0,
         "y": 0.0,

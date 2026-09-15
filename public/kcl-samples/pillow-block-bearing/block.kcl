@@ -1,0 +1,73 @@
+// Pillow Block Bearing
+// The machined block for the pillow block bearing assembly. The block is dimensioned using the bolt pattern spacing, and each bolt hole includes a counterbore
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 2.0, experimentalFeatures = allow)
+
+// Import Parameters
+import * from "parameters.kcl"
+
+// Calculate the dimensions of the block using the specified bolt spacing. The size of the block can be defined by adding a multiple of the counterbore diameter to the bolt spacing
+blockLength = boltSpacingX + counterboreDiameter + boltDiameter
+blockWidth = boltSpacingY + counterboreDiameter + boltDiameter
+
+// Draw the base plate
+plateSketch = sketch(on = XY) {
+  line1 = line(start = [var -3.0625in, var -2.0625in], end = [var 3.0625in, var -2.0625in])
+  line2 = line(start = [var 3.0625in, var -2.0625in], end = [var 3.0625in, var 2.0625in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 3.0625in, var 2.0625in], end = [var -3.0625in, var 2.0625in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -3.0625in, var 2.0625in], end = [var -3.0625in, var -2.0625in])
+  coincident([line3.end, line4.start])
+  bearingBore = circle(start = [var 1.3125in, var 0in], center = [var 0in, var 0in])
+}
+region001 = region(segments = [plateSketch.line1, plateSketch.line2])
+plateBody = extrude(region001, length = stockThickness)
+  |> appearance(color = "#1e62eb")
+  |> fillet(
+       radius = boltDiameter * 1 / 3,
+       tags = [
+         getNextAdjacentEdge(region001.tags.line2),
+         getNextAdjacentEdge(region001.tags.line1),
+         getNextAdjacentEdge(region001.tags.line3),
+         getNextAdjacentEdge(region001.tags.line4)
+       ],
+     )
+
+// Define hole positions
+holePositions = [
+  [-boltSpacingX / 2, -boltSpacingY / 2],
+  [-boltSpacingX / 2, boltSpacingY / 2],
+  [boltSpacingX / 2, -boltSpacingY / 2],
+  [boltSpacingX / 2, boltSpacingY / 2]
+]
+
+// Create the counterbore and through-hole cutters explicitly so the physical
+// result does not depend on the implicit face-extrusion behavior of sketch-v1.
+counterboreSketch = sketch(on = offsetPlane(XY, offset = stockThickness)) {
+  bore = circle(start = [var -2.125in, var -1.5in], center = [var -2.5in, var -1.5in])
+}
+counterboreSeed = extrude(region(segments = [counterboreSketch.bore]), length = -counterboreDepth)
+counterboreCutters = patternLinear3d(
+  counterboreSeed,
+  instances = 2,
+  distance = boltSpacingY,
+  axis = Y,
+)
+  |> patternLinear3d(instances = 2, distance = boltSpacingX, axis = X)
+plateCounterbored = subtract(plateBody, tools = counterboreCutters)
+
+boltSketch = sketch(on = offsetPlane(XY, offset = stockThickness - counterboreDepth)) {
+  bore = circle(start = [var -2.3125in, var -1.5in], center = [var -2.5in, var -1.5in])
+}
+boltSeed = extrude(region(segments = [boltSketch.bore]), length = -(stockThickness - counterboreDepth))
+boltCutters = patternLinear3d(
+  boltSeed,
+  instances = 2,
+  distance = boltSpacingY,
+  axis = Y,
+)
+  |> patternLinear3d(instances = 2, distance = boltSpacingX, axis = X)
+block = subtract(plateCounterbored, tools = boltCutters)
+  |> appearance(color = "#1e62eb")

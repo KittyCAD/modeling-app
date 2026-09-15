@@ -1556,6 +1556,7 @@ description: Result of parsing subtract_regression11.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

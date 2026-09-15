@@ -17,15 +17,20 @@ import {
   findKeybindingConflict,
   formatKeybindingConflict,
   getKeybindingRows,
-  normalizeVisibleKeymapScopes,
-  serializeKeymapScopes,
+  normalizeVisibleKeymapWhen,
+  serializeKeymapWhen,
 } from '@src/components/Settings/keybindingRows'
 import Tooltip from '@src/components/Tooltip'
 import { useApp } from '@src/lib/boot'
 import type { Command } from '@src/lib/commandTypes'
 import { reportRejection } from '@src/lib/trap'
 import { platform } from '@src/lib/utils'
-import { commandKey, commandsValueSpec } from '@src/registry/contracts/commands'
+import {
+  type CommandScope,
+  commandKey,
+  commandScopesValueSpec,
+  commandsValueSpec,
+} from '@src/registry/contracts/commands'
 import {
   BASE_KEYMAP_SCOPE,
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
@@ -33,13 +38,11 @@ import {
   type KeymapArguments,
   type KeymapBinding,
   type KeymapItem,
-  type KeymapScope,
   type KeymapService,
   USER_KEYMAP_SOURCE,
   createUnbindBinding,
-  getKeymapItemScopes,
+  getKeymapItemWhen,
   keymapBindingCanCollideWithTyping,
-  keymapScopesValueSpec,
   keymapService,
   keymapValueSpec,
   normalizeEventKey,
@@ -79,7 +82,7 @@ export const AllKeybindingsFields = forwardRef(
     const keymap = registry.optional(keymapService)
     const contributedKeymap = registry.signal(keymapValueSpec).value
     const commands = registry.signal(commandsValueSpec).value
-    const keymapScopes = registry.signal(keymapScopesValueSpec).value
+    const commandScopes = registry.signal(commandScopesValueSpec).value
     const persistedKeymap = keymap?.persistedKeymap.value ?? {
       version: KEYMAP_SCHEMA_VERSION,
       bindings: [],
@@ -89,8 +92,8 @@ export const AllKeybindingsFields = forwardRef(
       [commands, contributedKeymap.items]
     )
     const scopeOptions = useMemo(
-      () => createScopeSearchOptions(keymapScopes),
-      [keymapScopes]
+      () => createScopeSearchOptions(commandScopes),
+      [commandScopes]
     )
     const rows = getKeybindingRows(
       contributedKeymap.items,
@@ -138,7 +141,7 @@ export const AllKeybindingsFields = forwardRef(
                   <th className="px-2 py-2 font-medium">Title</th>
                   <th className="px-2 py-2 font-medium">Keystrokes</th>
                   <th className="px-2 py-2 font-medium">Arguments</th>
-                  <th className="px-2 py-2 font-medium">Scopes</th>
+                  <th className="px-2 py-2 font-medium">When</th>
                   <th className="px-2 py-2 font-medium">Source</th>
                 </tr>
               </thead>
@@ -225,12 +228,12 @@ function KeybindingTableRow({
   const visibleBinding = {
     command: row.command,
     keystrokes: visibleKeystrokes,
-    scopes: row.scopes,
+    when: row.when,
   }
   const conflict = findKeybindingConflict(rows, {
     id: row.id,
     keystrokes: visibleKeystrokes,
-    scopes: row.scopes,
+    when: row.when,
   })
   const showsTypingCollisionWarning =
     !isUnbound && keymapBindingCanCollideWithTyping(visibleBinding)
@@ -240,14 +243,14 @@ function KeybindingTableRow({
       return
     }
 
-    const binding = createRowUserBinding(row, draftKeystrokes, row.scopes)
+    const binding = createRowUserBinding(row, draftKeystrokes, row.when)
     onSaveBinding(binding, row.userBindingIndex)
     setDraftKeystrokes(null)
   }
 
-  const saveScopes = (scopes: readonly string[]) => {
+  const saveWhen = (when: readonly string[]) => {
     onSaveBinding(
-      createRowUserBinding(row, row.keystrokes, scopes),
+      createRowUserBinding(row, row.keystrokes, when),
       row.userBindingIndex
     )
   }
@@ -335,12 +338,12 @@ function KeybindingTableRow({
         {formatArguments(row.arguments)}
       </td>
       <td className="px-2 py-3">
-        <ScopesField
-          value={getKeymapItemScopes(row)}
+        <WhenField
+          value={getKeymapItemWhen(row)}
           options={scopeOptions}
           readOnly={isUnbound}
           hasTypingCollision={showsTypingCollisionWarning}
-          onChange={saveScopes}
+          onChange={saveWhen}
         />
       </td>
       <td className="px-2 py-3">
@@ -391,17 +394,17 @@ function NewKeybindingRow({
   const [title, setTitle] = useState('')
   const [keystrokes, setKeystrokes] = useState<readonly string[]>([])
   const [argumentsText, setArgumentsText] = useState('')
-  const [scopes, setScopes] = useState<readonly string[]>([BASE_KEYMAP_SCOPE])
+  const [when, setWhen] = useState<readonly string[]>([BASE_KEYMAP_SCOPE])
   const [isListening, setIsListening] = useState(false)
   const [error, setError] = useState<{
     field: 'command' | 'keystrokes' | 'arguments'
     message: string
   } | null>(null)
-  const conflict = findKeybindingConflict(rows, { keystrokes, scopes })
+  const conflict = findKeybindingConflict(rows, { keystrokes, when })
   const showsTypingCollisionWarning = keymapBindingCanCollideWithTyping({
     command,
     keystrokes,
-    scopes,
+    when,
   })
 
   const save = () => {
@@ -426,7 +429,7 @@ function NewKeybindingRow({
       title: title.trim() || undefined,
       keystrokes,
       arguments: parsedArguments,
-      scopes: serializeKeymapScopes(scopes),
+      when: serializeKeymapWhen(when),
     })
   }
 
@@ -482,11 +485,11 @@ function NewKeybindingRow({
         )}
       </td>
       <td className="px-2 py-3">
-        <ScopesField
-          value={scopes}
+        <WhenField
+          value={when}
           options={scopeOptions}
           hasTypingCollision={showsTypingCollisionWarning}
-          onChange={setScopes}
+          onChange={setWhen}
         />
       </td>
       <td className="px-2 py-3">
@@ -625,7 +628,7 @@ function createCommandSearchOptions(
   return dedupeSearchOptions([...commandOptions, ...keymapCommandOptions])
 }
 
-function createScopeSearchOptions(scopes: readonly KeymapScope[]) {
+function createScopeSearchOptions(scopes: readonly CommandScope[]) {
   return dedupeSearchOptions(
     scopes
       .filter((scope) => scope.id !== BASE_KEYMAP_SCOPE)
@@ -642,7 +645,7 @@ function dedupeSearchOptions(options: readonly SearchOption[]) {
   ].toSorted((a, b) => a.title.localeCompare(b.title))
 }
 
-function ScopesField({
+function WhenField({
   value,
   options,
   readOnly = false,
@@ -664,35 +667,35 @@ function ScopesField({
       }),
     [options]
   )
-  const scopes = normalizeVisibleKeymapScopes(value)
+  const contexts = normalizeVisibleKeymapWhen(value)
   const filteredOptions = (
     query.trim() ? fuse.search(query).map((result) => result.item) : options
   )
-    .filter((option) => !scopes.includes(option.id))
+    .filter((option) => !contexts.includes(option.id))
     .slice(0, 8)
 
-  const addScope = (scope: string) => {
-    const nextScope = scope.trim()
-    if (!nextScope || scopes.includes(nextScope)) {
+  const addContext = (context: string) => {
+    const nextContext = context.trim()
+    if (!nextContext || contexts.includes(nextContext)) {
       setQuery('')
       return
     }
 
     onChange(
-      scopes.length === 1 && scopes[0] === BASE_KEYMAP_SCOPE
-        ? [nextScope]
-        : [...scopes, nextScope]
+      contexts.length === 1 && contexts[0] === BASE_KEYMAP_SCOPE
+        ? [nextContext]
+        : [...contexts, nextContext]
     )
     setQuery('')
   }
 
   return (
     <div className="flex min-w-48 flex-wrap items-center gap-1.5">
-      {scopes.map((scope) => {
+      {contexts.map((context) => {
         const isTypingCollision =
           hasTypingCollision &&
-          (scope === BASE_KEYMAP_SCOPE ||
-            scope === CODE_EDITOR_FOCUSED_KEYMAP_SCOPE)
+          (context === BASE_KEYMAP_SCOPE ||
+            context === CODE_EDITOR_FOCUSED_KEYMAP_SCOPE)
         const chipClassName = isTypingCollision
           ? 'inline-flex items-center gap-1 rounded border border-destroy-50 bg-destroy-10 px-1.5 py-0.5 text-xs text-destroy-80 dark:border-destroy-60 dark:bg-destroy-80/20 dark:text-destroy-30'
           : 'inline-flex items-center gap-1 rounded bg-primary/10 px-1.5 py-0.5 text-xs text-primary dark:bg-primary/20'
@@ -701,15 +704,15 @@ function ScopesField({
           : 'm-0 border-0 bg-transparent p-0 text-primary'
 
         return (
-          <span key={scope} className={`relative ${chipClassName}`}>
-            {formatScopeLabel(scope, options)}
-            {!readOnly && scope !== BASE_KEYMAP_SCOPE && (
+          <span key={context} className={`relative ${chipClassName}`}>
+            {formatScopeLabel(context, options)}
+            {!readOnly && context !== BASE_KEYMAP_SCOPE && (
               <button
                 type="button"
                 className={removeButtonClassName}
-                aria-label={`Remove ${scope} scope`}
+                aria-label={`Remove ${context} condition`}
                 onClick={() =>
-                  onChange(scopes.filter((existing) => existing !== scope))
+                  onChange(contexts.filter((existing) => existing !== context))
                 }
               >
                 <CustomIcon name="close" className="h-3 w-3" />
@@ -718,7 +721,7 @@ function ScopesField({
             {isTypingCollision && (
               <Tooltip position="top-right">
                 Keystrokes will interfere with typing in code editor. Use the
-                code-editor-not-focused scope to run this only outside the
+                code-editor-not-focused condition to run this only outside the
                 editor.
               </Tooltip>
             )}
@@ -726,17 +729,17 @@ function ScopesField({
         )
       })}
       {!readOnly && (
-        <Combobox value="" onChange={addScope}>
+        <Combobox value="" onChange={addContext}>
           <div className="relative">
             <Combobox.Input
               className="w-28 bg-transparent text-xs"
               displayValue={() => query}
-              placeholder="Add scope"
+              placeholder="Add context"
               onChange={(event) => setQuery(event.target.value)}
               onKeyDown={(event) => {
                 if (event.key === 'Enter') {
                   event.preventDefault()
-                  addScope(query)
+                  addContext(query)
                 }
               }}
             />

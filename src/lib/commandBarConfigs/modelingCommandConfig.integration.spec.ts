@@ -28,6 +28,10 @@ import {
   KCL_DEFAULT_SCALE_FACTOR,
   KCL_DEFAULT_TRANSLATE_X,
 } from '@src/lib/constants'
+import {
+  canSubmitSelectionArg,
+  type ResolvedSelectionType,
+} from '@src/lib/selections'
 import { isArray } from '@src/lib/utils'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -341,6 +345,32 @@ describe('Extrude surface arguments', () => {
   })
 })
 
+describe('Helix cylinder selection', () => {
+  it('accepts a region-backed cylinder', () => {
+    const commandConfig = modelingMachineCommandConfig.Helix
+    if (!commandConfig || isArray(commandConfig)) {
+      throw new Error('Helix should have a single command config')
+    }
+
+    const cylinderArg = commandConfig.args?.cylinder
+    if (!cylinderArg || cylinderArg.inputType !== 'selection') {
+      throw new Error('Helix should expose a cylinder selection argument')
+    }
+
+    expect(
+      canSubmitSelectionArg(
+        new Map<ResolvedSelectionType, number>([['pathRegion', 1]]),
+        {
+          inputType: 'selection',
+          selectionTypes: cylinderArg.selectionTypes,
+          multiple: cylinderArg.multiple,
+          required: true,
+        }
+      )
+    ).toBe(true)
+  })
+})
+
 describe('Sweep-like bodyType argument', () => {
   it('marks the legacy relativeTo argument as deprecated', () => {
     const commandConfig = modelingMachineCommandConfig.Sweep
@@ -498,6 +528,7 @@ describe('stdlib command arg derivation', () => {
 
   it('derives command status from KCL stdlib metadata', () => {
     expect(modelingStdLibCommandStatus('Helical Gear')).toBe('experimental')
+    expect(modelingStdLibCommandStatus('Delete')).toBeUndefined()
     expect(modelingStdLibCommandStatus('Extrude')).toBeUndefined()
     expect(stdLibCommandStatus('startSketchOn')).toBe('deprecated')
   })

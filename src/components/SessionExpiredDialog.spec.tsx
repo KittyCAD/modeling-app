@@ -1,4 +1,4 @@
-import { Registry, defineRegistryItem } from '@kittycad/registry'
+import { defineRegistryItem, Registry } from '@kittycad/registry'
 import { SessionExpiredDialogHostContent } from '@src/components/SessionExpiredDialog'
 import { SESSION_EXPIRED_SIGN_IN_ROUTE_STATE_KEY } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
@@ -8,9 +8,10 @@ import {
   sessionExpiredNotice,
 } from '@src/lib/sessionExpired'
 import { Themes } from '@src/lib/theme'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import {
-  authService,
   type AuthRegistryService,
+  authService,
   provideAuthSessionExpiredListener,
 } from '@src/registry/contracts/auth'
 import authRegistryItem from '@src/registry/extensions/auth'
@@ -219,6 +220,14 @@ describe('SessionExpiredDialog', () => {
     expect(
       await screen.findByRole('dialog', { name: /session expired/i })
     ).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        "Your account may be blocked if you've seen this multiple times."
+      )
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: /check your account standing/i })
+    ).toHaveAttribute('href', withSiteBaseURL('/account'))
 
     fireEvent.click(screen.getByRole('button', { name: /sign in again/i }))
 

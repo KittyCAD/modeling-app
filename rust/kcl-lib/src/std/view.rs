@@ -407,8 +407,8 @@ boss = extrude(bossRegion, length = 8mm)
             "A view's name must not start or end with whitespace. Use `string::trim()` to remove it."
         );
         assert_eq!(
-            execution_error(&format!(r#"v = view::named("KCL Default", {showing})"#)).await,
-            "`KCL Default` is reserved for the view of the scene generated on successful execution of the program. Please give this view a different name."
+            execution_error(&format!(r#"v = view::named("Default View", {showing})"#)).await,
+            "`Default View` is reserved for the view of the scene generated on successful execution of the program. Please give this view a different name."
         );
         assert_eq!(
             execution_error(&format!(

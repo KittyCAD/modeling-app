@@ -2,6 +2,7 @@ import {
   addPlaceHoldersForNewFileAndFolder,
   copyPasteSourceAndTarget,
   getUniqueCopyPath,
+  isPathWithinFileExplorerEntry,
   isRowFake,
   shouldDroppedEntryBeMoved,
 } from '@src/components/Explorer/utils'
@@ -18,6 +19,35 @@ beforeAll(async () => {
 })
 
 describe('Explorer utils.ts', () => {
+  describe('isPathWithinFileExplorerEntry', () => {
+    it('matches equal Windows paths with mixed separators', () => {
+      expect(
+        isPathWithinFileExplorerEntry(
+          'C:/Users/runner/projects/testProject/fileToDelete.kcl',
+          'C:\\Users\\runner\\projects\\testProject\\fileToDelete.kcl'
+        )
+      ).toBe(true)
+    })
+
+    it('matches a file inside a Windows folder with mixed separators', () => {
+      expect(
+        isPathWithinFileExplorerEntry(
+          'C:/Users/runner/projects/testProject/parts/bolt.kcl',
+          'C:\\Users\\runner\\projects\\testProject\\parts'
+        )
+      ).toBe(true)
+    })
+
+    it('does not match sibling paths with the same prefix', () => {
+      expect(
+        isPathWithinFileExplorerEntry(
+          '/projects/test/parts.kcl',
+          '/projects/test/part'
+        )
+      ).toBe(false)
+    })
+  })
+
   describe('isRowFake', () => {
     describe('when row is a file with fake placeholder name', () => {
       it('should be fake', () => {

@@ -1143,6 +1143,7 @@ description: Result of parsing plane_of_chamfer.kcl
         }
       ]
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

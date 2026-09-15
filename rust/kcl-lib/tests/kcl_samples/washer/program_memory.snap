@@ -85,10 +85,10 @@ description: Variables in memory after executing washer.kcl
           ],
           "radius": 0.219000000001,
           "tag": {
-            "commentStart": 720,
-            "end": 727,
+            "commentStart": 732,
+            "end": 739,
             "moduleId": 0,
-            "start": 720,
+            "start": 732,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -115,10 +115,10 @@ description: Variables in memory after executing washer.kcl
           ],
           "radius": 0.1014999999985,
           "tag": {
-            "commentStart": 903,
-            "end": 910,
+            "commentStart": 915,
+            "end": 922,
             "moduleId": 0,
-            "start": 903,
+            "start": 915,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -131,17 +131,17 @@ description: Variables in memory after executing washer.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -189,8 +189,8 @@ description: Variables in memory after executing washer.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "thicknessNom": {
@@ -207,6 +207,8 @@ description: Variables in memory after executing washer.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -214,10 +216,10 @@ description: Variables in memory after executing washer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 720,
-            "end": 727,
+            "commentStart": 732,
+            "end": 739,
             "moduleId": 0,
-            "start": 720,
+            "start": 732,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -228,10 +230,10 @@ description: Variables in memory after executing washer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 903,
-            "end": 910,
+            "commentStart": 915,
+            "end": 922,
             "moduleId": 0,
-            "start": 903,
+            "start": 915,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -259,10 +261,10 @@ description: Variables in memory after executing washer.kcl
             ],
             "radius": 0.219000000001,
             "tag": {
-              "commentStart": 720,
-              "end": 727,
+              "commentStart": 732,
+              "end": 739,
               "moduleId": 0,
-              "start": 720,
+              "start": 732,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -289,10 +291,10 @@ description: Variables in memory after executing washer.kcl
             ],
             "radius": 0.1014999999985,
             "tag": {
-              "commentStart": 903,
-              "end": 910,
+              "commentStart": 915,
+              "end": 922,
               "moduleId": 0,
-              "start": 903,
+              "start": 915,
               "type": "TagDeclarator",
               "value": "circle2"
             },
@@ -305,17 +307,17 @@ description: Variables in memory after executing washer.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -363,8 +365,8 @@ description: Variables in memory after executing washer.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -640,10 +642,10 @@ description: Variables in memory after executing washer.kcl
                   ],
                   "radius": 0.219000000001,
                   "tag": {
-                    "commentStart": 720,
-                    "end": 727,
+                    "commentStart": 732,
+                    "end": 739,
                     "moduleId": 0,
-                    "start": 720,
+                    "start": 732,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -687,10 +689,10 @@ description: Variables in memory after executing washer.kcl
                   ],
                   "radius": 0.1014999999985,
                   "tag": {
-                    "commentStart": 903,
-                    "end": 910,
+                    "commentStart": 915,
+                    "end": 922,
                     "moduleId": 0,
-                    "start": 903,
+                    "start": 915,
                     "type": "TagDeclarator",
                     "value": "circle2"
                   },
@@ -703,17 +705,17 @@ description: Variables in memory after executing washer.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,

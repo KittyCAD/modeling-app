@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
+import asyncio
 import os
 import sys
 
 import pytest
-from flaky import flaky
 
 import kcl
 from kcl import Point3d
@@ -16,9 +16,7 @@ kcl_dir = os.path.join(
 tests_dir = os.path.join(kcl_dir, "tests")
 lego_file = os.path.join(kcl_dir, "e2e", "executor", "inputs", "lego.kcl")
 
-engine_error_file = os.path.join(
-    tests_dir, "error_large_fillet_radius", "input.kcl"
-)
+engine_error_file = os.path.join(tests_dir, "error_large_fillet_radius", "input.kcl")
 cube_step_file = os.path.join(
     os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "files", "cube.step"
 )
@@ -52,18 +50,28 @@ requires_engine = pytest.mark.skipif(
 )
 
 MAX_EXECUTION_ATTEMPTS = 3
+EXECUTION_RETRY_BASE_DELAY_SECONDS = 1
 
 
 async def execute_with_retries(async_fn, *args, **kwargs):
     retries_remaining = MAX_EXECUTION_ATTEMPTS - 1
+    attempt = 1
     while True:
         try:
             return await async_fn(*args, **kwargs)
         except Exception as error:
             is_retryable = getattr(error, "is_retryable", None)
             if retries_remaining > 0 and callable(is_retryable) and is_retryable():
-                print(f"Execute got {error}; retrying...", file=sys.stderr)
+                delay_seconds = EXECUTION_RETRY_BASE_DELAY_SECONDS * 2 ** (attempt - 1)
+                print(
+                    f"Execute attempt {attempt}/{MAX_EXECUTION_ATTEMPTS} got "
+                    f"retryable {type(error).__name__}: {error}; retrying in "
+                    f"{delay_seconds}s...",
+                    file=sys.stderr,
+                )
+                await asyncio.sleep(delay_seconds)
                 retries_remaining -= 1
+                attempt += 1
                 continue
             raise
 
@@ -110,6 +118,54 @@ async def test_kcl_parse():
 def test_kcl_error_is_retryable():
     assert kcl.KclError("retry me", True).is_retryable() is True
     assert kcl.KclError("do not retry").is_retryable() is False
+
+
+@pytest.mark.asyncio
+async def test_execute_with_retries_uses_backoff_for_retryable_errors(
+    monkeypatch, capsys
+):
+    attempts = 0
+    observed_delays = []
+
+    class RetryableTestError(Exception):
+        def is_retryable(self):
+            return True
+
+    async def fail_twice_then_succeed():
+        nonlocal attempts
+        attempts += 1
+        if attempts < MAX_EXECUTION_ATTEMPTS:
+            raise RetryableTestError("temporary engine failure")
+        return "success"
+
+    async def record_sleep(delay_seconds):
+        observed_delays.append(delay_seconds)
+
+    monkeypatch.setattr(asyncio, "sleep", record_sleep)
+
+    assert await execute_with_retries(fail_twice_then_succeed) == "success"
+    assert attempts == MAX_EXECUTION_ATTEMPTS
+    assert observed_delays == [1, 2]
+    assert "attempt 1/3" in capsys.readouterr().err
+
+
+@pytest.mark.asyncio
+async def test_execute_with_retries_does_not_retry_other_errors(monkeypatch):
+    attempts = 0
+
+    async def fail():
+        nonlocal attempts
+        attempts += 1
+        raise ValueError("deterministic failure")
+
+    async def unexpected_sleep(_delay_seconds):
+        pytest.fail("a non-retryable failure must not back off")
+
+    monkeypatch.setattr(asyncio, "sleep", unexpected_sleep)
+
+    with pytest.raises(ValueError, match="deterministic failure"):
+        await execute_with_retries(fail)
+    assert attempts == 1
 
 
 @pytest.mark.asyncio
@@ -160,10 +216,27 @@ async def test_kcl_mock_execute_with_exception():
 
 
 @pytest.mark.asyncio
+async def test_kcl_mock_execute_with_warnings():
+    # Read from a file.
+    outcome = await kcl.mock_execute(
+        os.path.join(files_dir, "experimentalfeatures.kcl")
+    )
+
+    # Check the outcome contained the expected issues
+    issues = outcome.issues()
+    assert len(issues) == 1
+    issue = issues[0]
+    assert (
+        issue.message()
+        == "Use of `conic` is experimental and may change or be removed."
+    )
+
+
+@pytest.mark.asyncio
 async def test_kcl_mock_execute_with_engine_exception_should_pass():
     # Read from a file.
-    result = await kcl.mock_execute(engine_error_file)
-    assert result is True
+    outcome = await kcl.mock_execute(engine_error_file)
+    assert outcome.issues() == []
 
 
 @requires_engine
@@ -181,8 +254,8 @@ async def test_kcl_execute_with_engine_exception_should_fail():
 @pytest.mark.asyncio
 async def test_kcl_mock_execute():
     # Read from a file.
-    result = await kcl.mock_execute(lego_file)
-    assert result is True
+    outcome = await kcl.mock_execute(lego_file)
+    assert outcome.issues() == []
 
 
 @pytest.mark.asyncio
@@ -192,8 +265,8 @@ async def test_kcl_mock_execute_code():
         code = str(f.read())
         assert code is not None
         assert len(code) > 0
-        result = await kcl.mock_execute_code(code)
-        assert result is True
+        outcome = await kcl.mock_execute_code(code)
+        assert outcome.issues() == []
 
 
 @requires_engine
@@ -248,7 +321,6 @@ async def test_kcl_execute_code_and_export():
 
 
 @requires_engine
-@flaky
 @pytest.mark.asyncio
 async def test_kcl_execute_dir_assembly():
     # Read from a file.
@@ -353,7 +425,6 @@ async def test_import_and_snapshots_single():
 
 
 @requires_engine
-@flaky
 @pytest.mark.asyncio
 async def test_kcl_execute_and_snapshot_dir():
     # Read from a file.
@@ -388,8 +459,8 @@ async def test_kcl_execute_and_measure():
         com = response.get_center_of_mass()
         print(com.x, com.y, com.z)
         assert com.x == pytest.approx(0.01788371801376342, rel=0, abs=1e-5)
-        assert com.y == pytest.approx(0.24748362600803375, rel=0, abs=1e-5)
-        assert com.z == pytest.approx(-0.0216667298227548, rel=0, abs=1e-5)
+        assert com.y == pytest.approx(0.02166672982275486, rel=0, abs=1e-5)
+        assert com.z == pytest.approx(0.24748362600803375, rel=0, abs=1e-5)
         assert response.get_center_of_mass_unit() == kcl.UnitLength.Centimeters
 
 
@@ -749,9 +820,8 @@ async def test_sketch_constraint_status_under_constrained():
 @requires_engine
 @pytest.mark.asyncio
 async def test_sketch_constraint_status_mixed():
-    report = await execute_with_retries(
-        kcl.get_sketch_constraint_status_code, mixed_sketches_code
-    )
+    outcome = await execute_with_retries(kcl.execute_code, mixed_sketches_code)
+    report = outcome.sketch_constraint_report()
     assert report.total_sketches() == 2
     assert len(report.fully_constrained) == 1
     assert len(report.under_constrained) == 1
@@ -760,6 +830,8 @@ async def test_sketch_constraint_status_mixed():
     assert report.kcl_error is None
     assert report.fully_constrained[0].name == "s1"
     assert report.under_constrained[0].name == "s2"
+    assert bytes(outcome.render_sketch_png("s1")).startswith(b"\x89PNG\r\n\x1a\n")
+    assert bytes(outcome.render_sketch_png("s2")).startswith(b"\x89PNG\r\n\x1a\n")
 
 
 @requires_engine

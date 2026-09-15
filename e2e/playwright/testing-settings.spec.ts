@@ -1,15 +1,10 @@
-import { join } from 'path'
-import path from 'path'
-import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
-import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
-import * as fsp from 'fs/promises'
-
 import {
   TEST_SETTINGS,
   TEST_SETTINGS_CORRUPTED,
   TEST_SETTINGS_DEFAULT_THEME,
   TEST_SETTINGS_KEY,
 } from '@e2e/playwright/storageStates'
+import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import {
   createProject,
   executorInputPath,
@@ -20,8 +15,18 @@ import {
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { UnitLength } from '@kittycad/lib/dist/types/src'
 import type { Page } from '@playwright/test'
+import {
+  LEGACY_SKETCH_MODE_FEATURE_FLAG,
+  PROJECT_SETTINGS_FILE_NAME,
+} from '@src/lib/constants'
+import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
 import { Themes } from '@src/lib/theme'
 import { isArray, uuidv4 } from '@src/lib/utils'
+import * as fsp from 'fs/promises'
+import path, { join } from 'path'
+
+// Some of these sketches are KCL 1.0, so editing them needs the legacy sketch flag.
+test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
 
 const settingsSwitchTab = (page: Page) => async (tab: 'user' | 'proj') => {
   const projectSettingsTab = page.getByRole('radio', { name: 'Project' })
@@ -52,7 +57,7 @@ test.describe(
       'Stored settings are validated and fall back to defaults',
       { tag: ['@macos', '@windows'] },
       async ({ page, homePage, tronApp }) => {
-        if (!tronApp) throw new Error('tronApp is missing.')
+        if (!tronApp) throwTronAppMissing()
 
         // Override beforeEach test setup
         // with corrupted settings
@@ -297,7 +302,9 @@ test.describe(
         const errorHeading = page.getByRole('heading', {
           name: 'An unexpected error occurred',
         })
-        const projectDirLink = page.getByText('Loaded from')
+        const projectDirLink = page.getByTestId(
+          'project-directory-settings-link'
+        )
 
         // If the app loads without exploding we're in the clear
         await expect(errorHeading).not.toBeVisible()
@@ -309,7 +316,7 @@ test.describe(
       `Load desktop app with a settings file, but no project directory setting`,
       { tag: ['@macos', '@windows'] },
       async ({ page, tronApp }) => {
-        if (!tronApp) throw new Error('tronApp is missing.')
+        if (!tronApp) throwTronAppMissing()
 
         await tronApp.cleanProjectDir({
           modeling: {
@@ -323,7 +330,9 @@ test.describe(
         const errorHeading = page.getByRole('heading', {
           name: 'An unexpected error occurred',
         })
-        const projectDirLink = page.getByText('Loaded from')
+        const projectDirLink = page.getByTestId(
+          'project-directory-settings-link'
+        )
 
         // If the app loads without exploding we're in the clear
         await expect(errorHeading).not.toBeVisible()
@@ -339,7 +348,9 @@ test.describe(
 
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
-        const projectDirLink = page.getByText('Loaded from')
+        const projectDirLink = page.getByTestId(
+          'project-directory-settings-link'
+        )
 
         await test.step('Wait for project view', async () => {
           await expect(projectDirLink).toBeVisible()
@@ -682,7 +693,7 @@ test.describe(
       `Changing system theme preferences (via media query) should update UI and stream`,
       { tag: ['@macos', '@windows'] },
       async ({ page, homePage, tronApp }) => {
-        if (!tronApp) throw new Error('tronApp is missing.')
+        if (!tronApp) throwTronAppMissing()
 
         await tronApp.cleanProjectDir({
           // Override the settings so that the theme is set to `system`
@@ -740,7 +751,7 @@ test.describe(
       `Changing system theme preferences should not override fixed light theme`,
       { tag: ['@macos', '@windows'] },
       async ({ page, homePage, tronApp }) => {
-        if (!tronApp) throw new Error('tronApp is missing.')
+        if (!tronApp) throwTronAppMissing()
 
         await tronApp.cleanProjectDir({
           ...TEST_SETTINGS,

@@ -34,10 +34,19 @@ example returns 0.
 ## `ImportedGeometry`
 
 Using `import` you can import geometry defined using other CAD software. In KCL,
-these objects have type `ImportedGeometry` and can mostly be treated like any
-other solid (they can be rotated, scaled, etc.), although there is no access to
-their internal components. See the [modules and imports docs](modules) for more
-detail on importing geometry.
+these objects have type `ImportedGeometry`, which is distinct from `Solid`: there
+is no access to their internal components, and no conversion between the two
+types.
+
+```
+The input argument of `subtract` requires one or more `Solid`s (`[Solid; 1+]`),
+but found an array of `ImportedGeometry`
+```
+
+To model against imported geometry, either recreate the shape natively in KCL and
+operate on that, or leave the import in place as a reference and build a separate
+part around it. See the [foreign imports docs](foreign-imports) for supported
+formats and [known issues](known-issues) for the engine limitation behind this.
 
 
 ## Tags
@@ -64,7 +73,7 @@ sketch001 = sketch(on = XZ) {
   coincident([line3.end, line4.start])
   coincident([line4.end, line1.start])
 }
-region001 = region(point = [0.4203mm, -1.2375mm], sketch = sketch001)
+region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = 5, tagEnd = $capEnd001)
 fillet001 = fillet(extrude001, tags = getCommonEdge(faces = [region001.tags.line4, capEnd001]), radius = 1)
 ```

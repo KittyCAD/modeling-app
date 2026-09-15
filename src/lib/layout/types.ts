@@ -5,6 +5,7 @@ import type { MouseEventHandler, useMemo } from 'react'
 export enum AreaType {
   Zookeeper = 'ttc',
   Bodies = 'bodies',
+  NamedViews = 'namedViews',
   Code = 'codeEditor',
   FeatureTree = 'featureTree',
   Files = 'files',
@@ -29,6 +30,7 @@ export type AreaTypeComponentProps = {
 export type AreaTypeDefinition = {
   hide: () => boolean
   shortcut?: string
+  icon?: CustomIconName
   /** I decided this is where impure stuff like the Zookeeper button's custom styling should live */
   cssClassOverrides?: PaneChildCssOverrides
   useNotifications?: () => ReturnType<
