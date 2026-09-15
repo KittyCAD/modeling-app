@@ -10,6 +10,20 @@ import * as Layer from 'effect/Layer'
 
 export type FileKind = 'file' | 'directory'
 
+declare const ownedFileContentsBrand: unique symbol
+
+/**
+ * A private snapshot of caller-provided bytes that may safely cross an Effect
+ * scheduling boundary without later mutations changing the pending write.
+ */
+export type OwnedFileContents = Uint8Array<ArrayBuffer> & {
+  readonly [ownedFileContentsBrand]: true
+}
+
+export function ownFileContents(contents: Uint8Array): OwnedFileContents {
+  return new Uint8Array(contents) as OwnedFileContents
+}
+
 export interface FileStat {
   readonly kind: FileKind
   readonly device: number
@@ -100,12 +114,12 @@ export interface FileSystemService {
   /** Write a file only when its parent directory already exists. */
   readonly writeFile: (
     path: string,
-    contents: Uint8Array
+    contents: OwnedFileContents
   ) => Effect.Effect<void, FileSystemError>
-  /** Write a file after recursively creating any missing parent directories. */
-  readonly writeFileWithParents: (
+  /** Atomically create a file without replacing an existing entry. */
+  readonly createFile: (
     path: string,
-    contents: Uint8Array
+    contents: OwnedFileContents
   ) => Effect.Effect<void, FileSystemError>
   readonly makeDirectory: (path: string) => Effect.Effect<void, FileSystemError>
   readonly remove: (path: string) => Effect.Effect<void, FileSystemError>
@@ -248,31 +262,15 @@ export function makeFileSystem(backing: IZooDesignStudioFS): FileSystemService {
       backing.mkdir(path, { recursive: true })
     ).pipe(Effect.asVoid)
 
-  /**
-   * Take ownership of mutable caller bytes before passing them to a backing.
-   * The copy also normalizes SharedArrayBuffer-backed views to ArrayBuffer.
-   */
-  const snapshotBytes = (contents: Uint8Array) => new Uint8Array(contents)
-
-  const writeFile = (path: string, contents: Uint8Array) => {
-    const bytes = snapshotBytes(contents)
-
-    return tryBacking('write-file', path, () =>
-      backing.writeFile(path, bytes)
+  const writeFile = (path: string, contents: OwnedFileContents) =>
+    tryBacking('write-file', path, () =>
+      backing.writeFile(path, contents)
     ).pipe(Effect.asVoid)
-  }
 
-  const writeFileWithParents = (path: string, contents: Uint8Array) => {
-    const parent = backing.dirname(path)
-    const bytes = snapshotBytes(contents)
-
-    return makeDirectory(parent).pipe(
-      Effect.zipRight(
-        tryBacking('write-file', path, () => backing.writeFile(path, bytes))
-      ),
-      Effect.asVoid
-    )
-  }
+  const createFile = (path: string, contents: OwnedFileContents) =>
+    tryBacking('create-file', path, () =>
+      backing.writeFile(path, contents, { flag: 'wx' })
+    ).pipe(Effect.asVoid)
 
   const service: FileSystemService = {
     stat,
@@ -294,7 +292,7 @@ export function makeFileSystem(backing: IZooDesignStudioFS): FileSystemService {
         destination
       ).pipe(Effect.asVoid),
     writeFile,
-    writeFileWithParents,
+    createFile,
     remove: (path) =>
       tryBacking('remove', path, () =>
         backing.rm(path, { recursive: true })
@@ -343,17 +341,16 @@ export const copy = (
   )
 
 export const writeFile = (path: string, contents: Uint8Array) => {
-  const bytes = new Uint8Array(contents)
+  const bytes = ownFileContents(contents)
   return FileSystem.pipe(
     Effect.flatMap((fileSystem) => fileSystem.writeFile(path, bytes))
   )
 }
 
-/** Explicitly opt into recursively creating missing parent directories. */
-export const writeFileWithParents = (path: string, contents: Uint8Array) => {
-  const bytes = new Uint8Array(contents)
+export const createFile = (path: string, contents: Uint8Array) => {
+  const bytes = ownFileContents(contents)
   return FileSystem.pipe(
-    Effect.flatMap((fileSystem) => fileSystem.writeFileWithParents(path, bytes))
+    Effect.flatMap((fileSystem) => fileSystem.createFile(path, bytes))
   )
 }
 

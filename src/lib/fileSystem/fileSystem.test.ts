@@ -1,15 +1,17 @@
 import { tmpdir } from 'node:os'
 import {
   copy,
+  createFile,
+  FileAlreadyExists,
   FileNotFound,
   fileSystemLayer,
+  makeDirectory,
   makeFileSystem,
   readDirectory,
   readFile,
   rename,
   stat,
   writeFile,
-  writeFileWithParents,
 } from '@src/lib/fileSystem/fileSystem'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
@@ -36,7 +38,8 @@ describe('Effect filesystem capability', () => {
     const destination = nodeFileSystem.impl.join(root, 'nested', 'renamed.kcl')
 
     const program = Effect.gen(function* () {
-      yield* writeFileWithParents(
+      yield* makeDirectory(nodeFileSystem.impl.dirname(source))
+      yield* writeFile(
         source,
         new TextEncoder().encode('cube = startSketchOn(XY)')
       )
@@ -62,7 +65,8 @@ describe('Effect filesystem capability', () => {
   it('provides semantic stat and directory names', async () => {
     const source = nodeFileSystem.impl.join(root, 'main.kcl')
     const program = Effect.gen(function* () {
-      yield* writeFileWithParents(source, new TextEncoder().encode('1234'))
+      yield* makeDirectory(root)
+      yield* writeFile(source, new TextEncoder().encode('1234'))
       return {
         root: yield* stat(root),
         source: yield* stat(source),
@@ -162,7 +166,7 @@ describe('Effect filesystem capability', () => {
     expect(writtenContents).not.toBe(contents)
   })
 
-  it('only creates missing parent directories when explicitly requested', async () => {
+  it('requires parent directories to be created explicitly', async () => {
     const source = nodeFileSystem.impl.join(root, 'nested', 'main.kcl')
     const layer = fileSystemLayer(nodeFileSystem.impl)
 
@@ -175,16 +179,57 @@ describe('Effect filesystem capability', () => {
       )
     ).resolves.toBeInstanceOf(FileNotFound)
 
-    await expect(
-      Effect.runPromise(
-        writeFileWithParents(source, new TextEncoder().encode('cube')).pipe(
-          Effect.provide(layer)
-        )
+    await Effect.runPromise(
+      makeDirectory(nodeFileSystem.impl.dirname(source)).pipe(
+        Effect.zipRight(writeFile(source, new TextEncoder().encode('cube'))),
+        Effect.provide(layer)
       )
-    ).resolves.toBeUndefined()
+    )
     await expect(nodeFileSystem.impl.readFile(source, 'utf8')).resolves.toBe(
       'cube'
     )
+  })
+
+  it('creates files atomically without replacing an existing file', async () => {
+    const source = nodeFileSystem.impl.join(root, 'main.kcl')
+    const layer = fileSystemLayer(nodeFileSystem.impl)
+    await nodeFileSystem.impl.mkdir(root, { recursive: true })
+    await nodeFileSystem.impl.writeFile(
+      source,
+      new TextEncoder().encode('imported code')
+    )
+
+    await expect(
+      Effect.runPromise(
+        createFile(source, new TextEncoder().encode('default code')).pipe(
+          Effect.provide(layer),
+          Effect.flip
+        )
+      )
+    ).resolves.toBeInstanceOf(FileAlreadyExists)
+    await expect(nodeFileSystem.impl.readFile(source, 'utf8')).resolves.toBe(
+      'imported code'
+    )
+  })
+
+  it('snapshots mutable bytes when a create program is constructed', async () => {
+    let writtenContents: Uint8Array | undefined
+    const backing: IZooDesignStudioFS = {
+      ...nodeFileSystem.impl,
+      writeFile: async (_path, contents) => {
+        writtenContents = contents
+      },
+    }
+    const contents = new Uint8Array([1, 2, 3])
+    const create = createFile('/main.kcl', contents).pipe(
+      Effect.provide(fileSystemLayer(backing))
+    )
+
+    contents[0] = 9
+    await Effect.runPromise(create)
+
+    expect(writtenContents).toEqual(new Uint8Array([1, 2, 3]))
+    expect(writtenContents).not.toBe(contents)
   })
 
   it('forwards explicit copy collision policy to the backing', async () => {
