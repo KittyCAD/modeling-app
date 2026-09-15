@@ -541,10 +541,10 @@ description: Variables in memory after executing named_views_hide_imported.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 348,
-                    "end": 353,
+                    "commentStart": 366,
+                    "end": 371,
                     "moduleId": 0,
-                    "start": 348,
+                    "start": 366,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -565,10 +565,10 @@ description: Variables in memory after executing named_views_hide_imported.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 415,
-                    "end": 420,
+                    "commentStart": 433,
+                    "end": 438,
                     "moduleId": 0,
-                    "start": 415,
+                    "start": 433,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -589,10 +589,10 @@ description: Variables in memory after executing named_views_hide_imported.kcl
                     500.0
                   ],
                   "tag": {
-                    "commentStart": 484,
-                    "end": 489,
+                    "commentStart": 502,
+                    "end": 507,
                     "moduleId": 0,
-                    "start": 484,
+                    "start": 502,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -613,10 +613,10 @@ description: Variables in memory after executing named_views_hide_imported.kcl
                     500.0
                   ],
                   "tag": {
-                    "commentStart": 555,
-                    "end": 560,
+                    "commentStart": 573,
+                    "end": 578,
                     "moduleId": 0,
-                    "start": 555,
+                    "start": 573,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -719,10 +719,10 @@ description: Variables in memory after executing named_views_hide_imported.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 348,
-            "end": 353,
+            "commentStart": 366,
+            "end": 371,
             "moduleId": 0,
-            "start": 348,
+            "start": 366,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -733,10 +733,10 @@ description: Variables in memory after executing named_views_hide_imported.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 415,
-            "end": 420,
+            "commentStart": 433,
+            "end": 438,
             "moduleId": 0,
-            "start": 415,
+            "start": 433,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -747,10 +747,10 @@ description: Variables in memory after executing named_views_hide_imported.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 484,
-            "end": 489,
+            "commentStart": 502,
+            "end": 507,
             "moduleId": 0,
-            "start": 484,
+            "start": 502,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -761,10 +761,10 @@ description: Variables in memory after executing named_views_hide_imported.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 555,
-            "end": 560,
+            "commentStart": 573,
+            "end": 578,
             "moduleId": 0,
-            "start": 555,
+            "start": 573,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -786,10 +786,10 @@ description: Variables in memory after executing named_views_hide_imported.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 348,
-              "end": 353,
+              "commentStart": 366,
+              "end": 371,
               "moduleId": 0,
-              "start": 348,
+              "start": 366,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -810,10 +810,10 @@ description: Variables in memory after executing named_views_hide_imported.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 415,
-              "end": 420,
+              "commentStart": 433,
+              "end": 438,
               "moduleId": 0,
-              "start": 415,
+              "start": 433,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -834,10 +834,10 @@ description: Variables in memory after executing named_views_hide_imported.kcl
               500.0
             ],
             "tag": {
-              "commentStart": 484,
-              "end": 489,
+              "commentStart": 502,
+              "end": 507,
               "moduleId": 0,
-              "start": 484,
+              "start": 502,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -858,10 +858,10 @@ description: Variables in memory after executing named_views_hide_imported.kcl
               500.0
             ],
             "tag": {
-              "commentStart": 555,
-              "end": 560,
+              "commentStart": 573,
+              "end": 578,
               "moduleId": 0,
-              "start": 555,
+              "start": 573,
               "type": "TagDeclarator",
               "value": "line4"
             },

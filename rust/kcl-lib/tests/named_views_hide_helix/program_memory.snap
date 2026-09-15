@@ -537,10 +537,10 @@ description: Variables in memory after executing named_views_hide_helix.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 528,
-                    "end": 533,
+                    "commentStart": 546,
+                    "end": 551,
                     "moduleId": 0,
-                    "start": 528,
+                    "start": 546,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -561,10 +561,10 @@ description: Variables in memory after executing named_views_hide_helix.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 591,
-                    "end": 596,
+                    "commentStart": 609,
+                    "end": 614,
                     "moduleId": 0,
-                    "start": 591,
+                    "start": 609,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -585,10 +585,10 @@ description: Variables in memory after executing named_views_hide_helix.kcl
                     10.0
                   ],
                   "tag": {
-                    "commentStart": 655,
-                    "end": 660,
+                    "commentStart": 673,
+                    "end": 678,
                     "moduleId": 0,
-                    "start": 655,
+                    "start": 673,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -609,10 +609,10 @@ description: Variables in memory after executing named_views_hide_helix.kcl
                     10.0
                   ],
                   "tag": {
-                    "commentStart": 720,
-                    "end": 725,
+                    "commentStart": 738,
+                    "end": 743,
                     "moduleId": 0,
-                    "start": 720,
+                    "start": 738,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -715,10 +715,10 @@ description: Variables in memory after executing named_views_hide_helix.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 528,
-            "end": 533,
+            "commentStart": 546,
+            "end": 551,
             "moduleId": 0,
-            "start": 528,
+            "start": 546,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -729,10 +729,10 @@ description: Variables in memory after executing named_views_hide_helix.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 591,
-            "end": 596,
+            "commentStart": 609,
+            "end": 614,
             "moduleId": 0,
-            "start": 591,
+            "start": 609,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -743,10 +743,10 @@ description: Variables in memory after executing named_views_hide_helix.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 655,
-            "end": 660,
+            "commentStart": 673,
+            "end": 678,
             "moduleId": 0,
-            "start": 655,
+            "start": 673,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -757,10 +757,10 @@ description: Variables in memory after executing named_views_hide_helix.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 720,
-            "end": 725,
+            "commentStart": 738,
+            "end": 743,
             "moduleId": 0,
-            "start": 720,
+            "start": 738,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -782,10 +782,10 @@ description: Variables in memory after executing named_views_hide_helix.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 528,
-              "end": 533,
+              "commentStart": 546,
+              "end": 551,
               "moduleId": 0,
-              "start": 528,
+              "start": 546,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -806,10 +806,10 @@ description: Variables in memory after executing named_views_hide_helix.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 591,
-              "end": 596,
+              "commentStart": 609,
+              "end": 614,
               "moduleId": 0,
-              "start": 591,
+              "start": 609,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -830,10 +830,10 @@ description: Variables in memory after executing named_views_hide_helix.kcl
               10.0
             ],
             "tag": {
-              "commentStart": 655,
-              "end": 660,
+              "commentStart": 673,
+              "end": 678,
               "moduleId": 0,
-              "start": 655,
+              "start": 673,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -854,10 +854,10 @@ description: Variables in memory after executing named_views_hide_helix.kcl
               10.0
             ],
             "tag": {
-              "commentStart": 720,
-              "end": 725,
+              "commentStart": 738,
+              "end": 743,
               "moduleId": 0,
-              "start": 720,
+              "start": 738,
               "type": "TagDeclarator",
               "value": "line4"
             },

@@ -1,4 +1,4 @@
-@settings(experimentalFeatures = allow)
+@settings(kclVersion = 2.0, experimentalFeatures = allow)
 
 // This test verifies that a helix is engine-addressable by the id that hide()
 // sends. A helix's engine id and artifact id are the same UUID. The rendered

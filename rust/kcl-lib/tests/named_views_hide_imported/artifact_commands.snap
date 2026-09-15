@@ -188,7 +188,8 @@ description: Artifact commands named_views_hide_imported.kcl
         "query_point": {
           "x": 1750.0,
           "y": 250.0
-        }
+        },
+        "version": "V1"
       }
     },
     {

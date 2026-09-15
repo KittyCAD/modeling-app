@@ -2,7 +2,7 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing named_views_hide_imported.kcl
 ---
-@settings(experimentalFeatures = allow)
+@settings(kclVersion = 2.0, experimentalFeatures = allow)
 
 // This test verifies that imported geometry is engine-addressable by the id
 // that hide() sends. An import has a single engine id, which the operation

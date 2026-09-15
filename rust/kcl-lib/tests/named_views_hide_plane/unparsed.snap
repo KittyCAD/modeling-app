@@ -2,7 +2,7 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing named_views_hide_plane.kcl
 ---
-@settings(experimentalFeatures = allow)
+@settings(kclVersion = 2.0, experimentalFeatures = allow)
 
 // This test verifies that an offset plane is engine-addressable by the id that
 // hide() sends. A plane's engine id and artifact id are the same UUID. The
