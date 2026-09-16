@@ -2,7 +2,7 @@
 /// removing part of a solid.
 
 @no_std
-@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
 
 import Axis3d, BoundedEdge, Edge, Face, Plane, Point3d, Solid, TaggedEdge, TaggedFace from "std::types"
 
