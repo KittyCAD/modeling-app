@@ -13,14 +13,8 @@ import {
   seedCloudSyncState,
   zipProject,
 } from '@e2e/playwright/lib/cloudSyncTestUtils'
-import {
-  expectCloudFeatureEnabled,
-  mockClientErrorReports,
-  setup,
-} from '@e2e/playwright/test-utils'
+import { mockClientErrorReports, setup } from '@e2e/playwright/test-utils'
 import type { Page } from '@playwright/test'
-import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
-
 const CLOUD_SYNC_E2E_TIMEOUT = 20_000
 
 async function openHomeProject(page: Page, projectTitle: string) {
@@ -71,10 +65,9 @@ test(
       },
     })
 
-    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG], {
+    await setup(context, page, testInfo, [], {
       cloudSyncEnabled: true,
     })
-    await expectCloudFeatureEnabled(page)
     await expectCloudSyncHomeReady(page)
 
     await page.getByTestId('home-create-from-sample').click()
@@ -165,10 +158,9 @@ test(
       brokenArchiveProjectIds: ['remote-empty-broken'],
     })
 
-    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG], {
+    await setup(context, page, testInfo, [], {
       cloudSyncEnabled: true,
     })
-    await expectCloudFeatureEnabled(page)
     await expectCloudSyncHomeReady(page)
     await expect(
       page.getByTestId('project-library-empty').first()
@@ -307,7 +299,7 @@ test(
       createProject: () => personalCloudProject,
     })
 
-    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG], {
+    await setup(context, page, testInfo, [], {
       cloudSyncEnabled: true,
     })
     // Open the shared link directly. Visiting Home first interrupts its pending
@@ -460,10 +452,9 @@ test(
       )
 
     await mockClientErrorReports(context)
-    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG], {
+    await setup(context, page, testInfo, [], {
       cloudSyncEnabled: true,
     })
-    await expectCloudFeatureEnabled(page)
     await expectCloudSyncHomeReady(page)
 
     const cleanSyncedFiles = {
