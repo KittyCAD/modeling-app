@@ -3,7 +3,6 @@ import { DEFAULT_SKETCH_SOLVE_STREAM_DIMMING } from '@src/clientSideScene/Client
 import { ConnectionStream } from '@src/components/ConnectionStream'
 import { BodiesPane } from '@src/components/layout/areas/BodiesPane'
 import { DebugPane } from '@src/components/layout/areas/DebugPane'
-import { FeatureTreePane } from '@src/components/layout/areas/FeatureTreePane'
 import { KclEditorPane } from '@src/components/layout/areas/KclEditorPane'
 import { KclNamedViewsPane } from '@src/components/layout/areas/KclNamedViewsPane'
 import { LogsPane } from '@src/components/layout/areas/LoggingPanes'
@@ -98,10 +97,6 @@ export const useDefaultAreaLibrary = () => {
   return useMemo(
     () =>
       Object.freeze({
-        featureTree: {
-          hide: () => false,
-          Component: FeatureTreePane,
-        },
         bodies: {
           hide: () => false,
           Component: BodiesPane,
