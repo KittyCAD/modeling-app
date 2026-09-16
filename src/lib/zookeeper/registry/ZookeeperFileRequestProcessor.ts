@@ -75,7 +75,7 @@ export class ZookeeperFileRequestProcessor {
     }
     this.lastMessageId = snapshot.context.lastMessageId
 
-    if (snapshot.context.lastMessageType === 'delta') {
+    if (snapshot.context.lastMessageType !== 'tool_output') {
       return
     }
 
