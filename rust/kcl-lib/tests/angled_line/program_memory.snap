@@ -243,7 +243,6 @@ description: Variables in memory after executing angled_line.kcl
   },
   "seg01": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "seg01"
   }
 }

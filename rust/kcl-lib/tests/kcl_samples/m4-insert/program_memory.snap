@@ -37,7 +37,6 @@ description: Variables in memory after executing m4-insert.kcl
   },
   "bottomBridge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bottomBridge"
   },
   "bottomSectionHeight": {
@@ -465,7 +464,6 @@ description: Variables in memory after executing m4-insert.kcl
     }
   },
   "innerWall": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "innerWall"
   },
@@ -3495,16 +3493,13 @@ description: Variables in memory after executing m4-insert.kcl
   },
   "lowerBandWall": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "lowerBandWall"
   },
   "lowerNeckWall": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "lowerNeckWall"
   },
   "lowerRib": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "lowerRib"
   },
@@ -3519,11 +3514,9 @@ description: Variables in memory after executing m4-insert.kcl
   },
   "midWall": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "midWall"
   },
   "outerTopWall": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "outerTopWall"
   },
@@ -4127,11 +4120,9 @@ description: Variables in memory after executing m4-insert.kcl
   },
   "taperFlank": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "taperFlank"
   },
   "topBridge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "topBridge"
   },
@@ -4146,16 +4137,13 @@ description: Variables in memory after executing m4-insert.kcl
   },
   "topShoulder": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "topShoulder"
   },
   "upperNeckWall": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "upperNeckWall"
   },
   "upperRib": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "upperRib"
   }

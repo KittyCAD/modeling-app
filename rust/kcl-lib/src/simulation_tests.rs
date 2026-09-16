@@ -858,9 +858,9 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
             ctx.close().await;
 
             let mut snapshot_results = common_snapshots(test, program_memory, responses);
-            if let Some(_physical_properties) = physical_properties {
+            if let Some(physical_properties) = physical_properties {
                 snapshot_results.push(catch_unwind(AssertUnwindSafe(|| {
-                    // assert_physical_properties_snapshot(test, physical_properties)
+                    assert_physical_properties_snapshot(test, physical_properties)
                 })));
             } else {
                 let physical_properties_snap_path = test.output_dir.join("physical_properties.snap");
@@ -8307,5 +8307,26 @@ mod member_expression_order_v3 {
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
         super::execute(TEST_NAME, true).await
+    }
+}
+mod import_kcl_version_mismatch_v3 {
+    const TEST_NAME: &str = "import_kcl_version_mismatch_v3";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
     }
 }

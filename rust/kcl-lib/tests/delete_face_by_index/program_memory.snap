@@ -5,7 +5,6 @@ description: Variables in memory after executing delete_face_by_index.kcl
 {
   "a": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "a"
   },
   "cylinder": {
@@ -133,7 +132,6 @@ description: Variables in memory after executing delete_face_by_index.kcl
     }
   },
   "seg01": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "seg01"
   },

@@ -37,7 +37,6 @@ description: Variables in memory after executing cylinder.kcl
   },
   "circle1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "circle1"
   },
   "cylinder": {

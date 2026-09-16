@@ -6,12 +6,12 @@ description: Physical properties utility-sink.kcl
   "bounding_box": {
     "center": {
       "x": 599.99999999,
-      "y": 369.99466124508115,
+      "y": 279.6446612450811,
       "z": 510.0
     },
     "dimensions": {
       "x": 1285.2999999952,
-      "y": 824.0106775098377,
+      "y": 643.3106775098377,
       "z": 1020.0
     },
     "unit": "mm"

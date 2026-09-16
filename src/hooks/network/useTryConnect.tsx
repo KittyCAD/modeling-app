@@ -204,6 +204,7 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
  * a single safe location to connect to the engine.
  */
 export async function tryConnecting({
+  abnormalCloseRetries,
   isConnecting,
   numberOfConnectionAttempts,
   authToken,
@@ -219,6 +220,7 @@ export async function tryConnecting({
   kclManager,
   rustContext,
 }: {
+  abnormalCloseRetries: React.RefObject<number>
   isConnecting: React.RefObject<boolean>
   numberOfConnectionAttempts: React.RefObject<number>
   authToken: string
@@ -284,6 +286,7 @@ export async function tryConnecting({
             )
           }
 
+          abnormalCloseRetries.current = 0
           isConnecting.current = false
           setAppState({ isStreamAcceptingInput: true })
           numberOfConnectionAttempts.current = 0
@@ -294,7 +297,6 @@ export async function tryConnecting({
           })
           resolve('connected')
         } catch (e) {
-          isConnecting.current = false
           setAppState({ isStreamAcceptingInput: false })
           const terminalConnectionError =
             engineCommandManager.lastConnectionError?.terminal === true
@@ -306,12 +308,14 @@ export async function tryConnecting({
             metadata: { terminalConnectionError },
           })
           if (terminalConnectionError) {
+            isConnecting.current = false
             numberOfConnectionAttempts.current = 0
             setShowManualConnect(true)
             return reject(terminalConnectionError)
           }
           engineCommandManager.tearDown()
           if (numberOfConnectionAttempts.current >= NUMBER_OF_ENGINE_RETRIES) {
+            isConnecting.current = false
             numberOfConnectionAttempts.current = 0
             return reject(e)
           }
@@ -327,9 +331,13 @@ export const useTryConnect = (onConnected: () => void) => {
   const { kclManager } = useSingletons()
   const isConnecting = useRef(false)
   const numberOfConnectionAttempts = useRef(0)
+  const abnormalCloseRetries = useRef(0)
   type TryConnectingArgs = Omit<
     Parameters<typeof tryConnecting>[0],
-    'engineCommandManager' | 'kclManager' | 'rustContext'
+    | 'engineCommandManager'
+    | 'kclManager'
+    | 'rustContext'
+    | 'abnormalCloseRetries'
   >
 
   return {
@@ -339,6 +347,7 @@ export const useTryConnect = (onConnected: () => void) => {
         engineCommandManager: kclManager.engineCommandManager,
         kclManager,
         rustContext: kclManager.rustContext,
+        abnormalCloseRetries,
       })
       // Only reveal the new stream after KCL and the camera are restored,
       // including when connection setup needed more than one attempt.
@@ -347,5 +356,6 @@ export const useTryConnect = (onConnected: () => void) => {
     },
     isConnecting,
     numberOfConnectionAttempts,
+    abnormalCloseRetries,
   }
 }

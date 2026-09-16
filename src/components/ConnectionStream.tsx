@@ -32,6 +32,7 @@ import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import {
   LEGACY_SKETCH_MODE_FEATURE_FLAG,
   LEGACY_SKETCH_MODE_REMOVED_MESSAGE,
+  NUMBER_OF_ENGINE_RETRIES,
 } from '@src/lib/constants'
 import { EngineDebugger } from '@src/lib/debugger'
 import { EngineConnectionManagerEvents } from '@src/lib/engineConnection/utils'
@@ -99,15 +100,19 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const isNetworkOkay =
     overallState === NetworkHealthState.Ok ||
     overallState === NetworkHealthState.Weak
-  const { tryConnecting, isConnecting, numberOfConnectionAttempts } =
-    useTryConnect(() => {
-      if (!videoRef.current || !canvasRef.current) return
-      showLiveVideoOnNextFrame(videoRef.current, canvasRef.current, () => {
-        // A normal reconnect can also recover a previously idled session.
-        isIdle.current = false
-        setIsWakingFromIdle(false)
-      })
+  const {
+    tryConnecting,
+    isConnecting,
+    numberOfConnectionAttempts,
+    abnormalCloseRetries,
+  } = useTryConnect(() => {
+    if (!videoRef.current || !canvasRef.current) return
+    showLiveVideoOnNextFrame(videoRef.current, canvasRef.current, () => {
+      // A normal reconnect can also recover a previously idled session.
+      isIdle.current = false
+      setIsWakingFromIdle(false)
     })
+  })
   const safariObjectFitClass = useMemo(() => {
     // on safari we want to apply object-fit: fill to fix video resize bug
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
@@ -151,6 +156,8 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
             .length,
           hasConnection: Boolean(connection),
           connectionId: connection?.id,
+          websocketBufferedAmount: connection?.websocket?.bufferedAmount,
+          modelingApiCallId: connection?.apiCallId ?? null,
           connectionConnected: connection?.connected,
           peerConnectionState: connection?.peerConnection?.connectionState,
           iceConnectionState: connection?.peerConnection?.iceConnectionState,
@@ -469,6 +476,8 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         })
       },
       infiniteDetectionLoopCallback: (code: string | undefined) => {
+        // Also exhaust any retry already running when the close budget is spent.
+        numberOfConnectionAttempts.current = NUMBER_OF_ENGINE_RETRIES
         reportEngineDisconnect(EngineConnectionManagerEvents.WebsocketClosed, {
           websocketCloseCode: code,
         })
@@ -478,6 +487,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         setShowManualConnect(true)
       },
       engineCommandManager,
+      abnormalCloseRetries,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
@@ -486,6 +496,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       props.authToken,
       reportEngineDisconnect,
       settings,
+      abnormalCloseRetries,
     ]
   )
   useOnWebsocketClose(onWebSocketCloseParams)
@@ -732,6 +743,8 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           className="absolute inset-0 h-screen"
           showManualConnect={showManualConnect}
           callback={() => {
+            abnormalCloseRetries.current = 0
+            numberOfConnectionAttempts.current = 0
             setShowManualConnect(false)
             tryConnecting({
               authToken: props.authToken || '',

@@ -903,7 +903,6 @@ description: Variables in memory after executing sketch_block_on_plane_of.kcl
   },
   "side": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "side"
   }
 }

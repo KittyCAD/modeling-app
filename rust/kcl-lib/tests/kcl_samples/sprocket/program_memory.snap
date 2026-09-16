@@ -9391,7 +9391,6 @@ description: Variables in memory after executing sprocket.kcl
   },
   "bore": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bore"
   },
   "boreDiameter": {
@@ -11134,21 +11133,17 @@ description: Variables in memory after executing sprocket.kcl
   },
   "lighteningHole1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "lighteningHole1"
   },
   "lighteningHole2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "lighteningHole2"
   },
   "lighteningHole3": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "lighteningHole3"
   },
   "lighteningHole4": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "lighteningHole4"
   },
@@ -32582,561 +32577,449 @@ description: Variables in memory after executing sprocket.kcl
   },
   "segment000": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment000"
   },
   "segment001": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment001"
   },
   "segment002": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment002"
   },
   "segment003": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment003"
   },
   "segment004": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment004"
   },
   "segment005": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment005"
   },
   "segment006": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment006"
   },
   "segment007": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment007"
   },
   "segment008": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment008"
   },
   "segment009": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment009"
   },
   "segment010": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment010"
   },
   "segment011": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment011"
   },
   "segment012": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment012"
   },
   "segment013": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment013"
   },
   "segment014": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment014"
   },
   "segment015": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment015"
   },
   "segment016": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment016"
   },
   "segment017": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment017"
   },
   "segment018": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment018"
   },
   "segment019": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment019"
   },
   "segment020": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment020"
   },
   "segment021": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment021"
   },
   "segment022": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment022"
   },
   "segment023": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment023"
   },
   "segment024": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment024"
   },
   "segment025": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment025"
   },
   "segment026": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment026"
   },
   "segment027": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment027"
   },
   "segment028": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment028"
   },
   "segment029": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment029"
   },
   "segment030": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment030"
   },
   "segment031": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment031"
   },
   "segment032": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment032"
   },
   "segment033": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment033"
   },
   "segment034": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment034"
   },
   "segment035": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment035"
   },
   "segment036": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment036"
   },
   "segment037": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment037"
   },
   "segment038": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment038"
   },
   "segment039": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment039"
   },
   "segment040": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment040"
   },
   "segment041": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment041"
   },
   "segment042": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment042"
   },
   "segment043": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment043"
   },
   "segment044": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment044"
   },
   "segment045": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment045"
   },
   "segment046": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment046"
   },
   "segment047": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment047"
   },
   "segment048": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment048"
   },
   "segment049": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment049"
   },
   "segment050": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment050"
   },
   "segment051": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment051"
   },
   "segment052": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment052"
   },
   "segment053": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment053"
   },
   "segment054": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment054"
   },
   "segment055": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment055"
   },
   "segment056": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment056"
   },
   "segment057": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment057"
   },
   "segment058": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment058"
   },
   "segment059": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment059"
   },
   "segment060": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment060"
   },
   "segment061": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment061"
   },
   "segment062": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment062"
   },
   "segment063": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment063"
   },
   "segment064": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment064"
   },
   "segment065": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment065"
   },
   "segment066": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment066"
   },
   "segment067": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment067"
   },
   "segment068": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment068"
   },
   "segment069": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment069"
   },
   "segment070": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment070"
   },
   "segment071": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment071"
   },
   "segment072": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment072"
   },
   "segment073": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment073"
   },
   "segment074": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment074"
   },
   "segment075": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment075"
   },
   "segment076": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment076"
   },
   "segment077": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment077"
   },
   "segment078": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment078"
   },
   "segment079": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment079"
   },
   "segment080": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment080"
   },
   "segment081": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment081"
   },
   "segment082": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment082"
   },
   "segment083": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment083"
   },
   "segment084": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment084"
   },
   "segment085": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment085"
   },
   "segment086": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment086"
   },
   "segment087": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment087"
   },
   "segment088": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment088"
   },
   "segment089": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment089"
   },
   "segment090": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment090"
   },
   "segment091": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment091"
   },
   "segment092": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment092"
   },
   "segment093": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment093"
   },
   "segment094": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment094"
   },
   "segment095": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment095"
   },
   "segment096": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment096"
   },
   "segment097": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment097"
   },
   "segment098": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment098"
   },
   "segment099": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment099"
   },
   "segment100": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment100"
   },
   "segment101": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment101"
   },
   "segment102": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment102"
   },
   "segment103": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment103"
   },
   "segment104": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment104"
   },
   "segment105": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment105"
   },
   "segment106": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment106"
   },
   "segment107": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment107"
   },
   "segment108": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment108"
   },
   "segment109": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment109"
   },
   "segment110": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "segment110"
   },
   "segment111": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "segment111"
   },

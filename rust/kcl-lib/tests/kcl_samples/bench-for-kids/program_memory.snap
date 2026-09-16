@@ -796,7 +796,6 @@ description: Variables in memory after executing bench-for-kids.kcl
   },
   "arc1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc1"
   },
   "benchLength": {
@@ -836,7 +835,6 @@ description: Variables in memory after executing bench-for-kids.kcl
     }
   },
   "circle1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "circle1"
   },
@@ -1005,7 +1003,6 @@ description: Variables in memory after executing bench-for-kids.kcl
     }
   },
   "earCapEnd": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "earCapEnd"
   },
@@ -2096,7 +2093,6 @@ description: Variables in memory after executing bench-for-kids.kcl
   },
   "legCapStart": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "legCapStart"
   },
   "legChassisLength": {
@@ -2742,7 +2738,6 @@ description: Variables in memory after executing bench-for-kids.kcl
     "constrainable": false
   },
   "line1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line1"
   },
@@ -3739,7 +3734,6 @@ description: Variables in memory after executing bench-for-kids.kcl
     }
   },
   "tailCapStart": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "tailCapStart"
   },

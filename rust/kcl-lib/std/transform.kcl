@@ -822,7 +822,7 @@ export fn hide(
 /// This means deleting something twice is an error, as is hiding something after you delete it.
 /// ```kcl,sketchSolve
 /// // Basic example, showing deleting something.
-/// @settings(kclVersion = 2.0, experimentalFeatures = allow)
+/// @settings(kclVersion = 2.0)
 ///
 /// // Make a cylinder
 /// sketch001 = sketch(on = XY) {
@@ -834,7 +834,7 @@ export fn hide(
 /// ```
 /// ```kcl,legacySketch
 /// // Example showing how to delete bodies after splitting them.
-/// @settings(kclVersion = 2.0, experimentalFeatures = allow)
+/// @settings(kclVersion = 2.0)
 ///
 /// // Make a cylinder.
 /// sketch001 = startSketchOn(XY)
@@ -862,7 +862,7 @@ export fn hide(
 /// // Delete the left and right split parts.
 /// delete([result[2], result[0]])
 /// ```
-@(impl = std_rust, feature_tree = true, experimental = true)
+@(impl = std_rust, feature_tree = true)
 export fn delete(
   /// The object or objects to delete.
   @objects: [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry | [GdtAnnotation; 1+],
