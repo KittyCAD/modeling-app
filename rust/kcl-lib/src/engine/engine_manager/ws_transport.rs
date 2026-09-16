@@ -115,14 +115,14 @@ enum WebSocketWriteError {
 
 #[derive(Debug, thiserror::Error)]
 #[error(
-    "{source}; failed request: {request}; last successfully sent request: {last_successful}; last successfully sent modeling request: {last_modeling}"
+    "{source}; failed request: {request}; last request written to WebSocket: {last_written}; last modeling request written to WebSocket: {last_modeling_written}"
 )]
 struct RequestSendError {
     #[source]
     source: WebSocketWriteError,
     request: String,
-    last_successful: String,
-    last_modeling: String,
+    last_written: String,
+    last_modeling_written: String,
 }
 
 /// Requests to send to the engine, and a way to await a response.
@@ -156,10 +156,11 @@ fn request_description(request: &WebSocketRequest) -> String {
     }
 }
 
+/// Tracks completed WebSocket writes, not server acknowledgements or command execution.
 #[derive(Default)]
 struct SendHistory {
-    last_successful: Option<String>,
-    last_modeling: Option<String>,
+    last_written: Option<String>,
+    last_modeling_written: Option<String>,
 }
 
 impl SendHistory {
@@ -175,16 +176,16 @@ impl SendHistory {
                     request,
                     WebSocketRequest::ModelingCmdReq(_) | WebSocketRequest::ModelingCmdBatchReq(_)
                 ) {
-                    self.last_modeling = Some(description.clone());
+                    self.last_modeling_written = Some(description.clone());
                 }
-                self.last_successful = Some(description);
+                self.last_written = Some(description);
                 Ok(())
             }
             Err(source) => Err(RequestSendError {
                 source,
                 request: description,
-                last_successful: self.last_successful.clone().unwrap_or_else(|| "none".into()),
-                last_modeling: self.last_modeling.clone().unwrap_or_else(|| "none".into()),
+                last_written: self.last_written.clone().unwrap_or_else(|| "none".into()),
+                last_modeling_written: self.last_modeling_written.clone().unwrap_or_else(|| "none".into()),
             }),
         }
     }
@@ -640,7 +641,7 @@ mod tests {
     }
 
     #[test]
-    fn send_history_preserves_last_success_across_failures_and_pings() {
+    fn send_history_preserves_last_write_across_failures_and_pings() {
         let request: WebSocketRequest = serde_json::from_value(serde_json::json!({
             "type": "modeling_cmd_batch_req",
             "batch_id": Uuid::nil(),
@@ -660,8 +661,8 @@ mod tests {
                 .unwrap_err()
                 .to_string();
             assert!(error.contains("Trying to work with closed connection; failed request: debug"));
-            assert!(error.contains("last successfully sent request: ping"));
-            assert!(error.contains("last successfully sent modeling request: modeling_cmd_batch_req"));
+            assert!(error.contains("last request written to WebSocket: ping"));
+            assert!(error.contains("last modeling request written to WebSocket: modeling_cmd_batch_req"));
             assert!(error.contains("StartPath"));
         }
     }
@@ -677,9 +678,9 @@ mod tests {
             .unwrap_err()
             .to_string();
         assert!(error.contains("failed request: headers"));
-        assert!(error.contains("last successfully sent request: none"));
+        assert!(error.contains("last request written to WebSocket: none"));
         assert!(!error.contains("secret"));
         history.record(&request, Ok(())).unwrap();
-        assert_eq!(history.last_successful.as_deref(), Some("headers"));
+        assert_eq!(history.last_written.as_deref(), Some("headers"));
     }
 }
