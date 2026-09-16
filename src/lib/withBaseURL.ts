@@ -8,8 +8,16 @@ export function withSiteBaseURL(path: string): string {
   return env().VITE_ZOO_SITE_BASE_URL + path
 }
 
-export function withKittycadWebSocketURL(qs: string): string {
-  return mergeQueryString(env().VITE_KITTYCAD_WEBSOCKET_URL, qs)
+export function withKittycadWebSocketURL(
+  qs: string,
+  clientRelease: string | undefined
+): string {
+  const separator = qs === '' || qs.endsWith('?') ? '' : '&'
+  const releaseQuery = `client_release=${encodeURIComponent(clientRelease ?? 'unknown')}`
+  return mergeQueryString(
+    env().VITE_KITTYCAD_WEBSOCKET_URL,
+    `${qs || '?'}${separator}${releaseQuery}`
+  )
 }
 
 export function withZookeeperWebSocketURL(qs: string): string {

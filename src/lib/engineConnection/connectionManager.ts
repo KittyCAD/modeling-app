@@ -73,6 +73,7 @@ import {
 } from '@src/lib/utils'
 import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import { APP_VERSION } from '@src/routes/utils'
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 
 export type ConnectionSystemDeps = {
@@ -398,7 +399,8 @@ export class ConnectionManager extends EventTarget {
     additionalSettings +=
       '&show_grid=' + (this.settings.showScaleGrid ? 'true' : 'false')
     const url = withKittycadWebSocketURL(
-      `?video_res_width=${this.streamDimensions.width}&video_res_height=${this.streamDimensions.height}${additionalSettings}`
+      `?video_res_width=${this.streamDimensions.width}&video_res_height=${this.streamDimensions.height}${additionalSettings}`,
+      APP_VERSION
     )
     return url
   }

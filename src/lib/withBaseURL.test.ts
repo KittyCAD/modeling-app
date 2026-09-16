@@ -66,18 +66,21 @@ describe('withBaseURL', () => {
 
   describe('withKittycadWebSocketURL', () => {
     it('should return url', () => {
-      const expected = 'wss://api.dev.zoo.dev/ws/modeling/commands'
-      const actual = withKittycadWebSocketURL('')
+      const expected =
+        'wss://api.dev.zoo.dev/ws/modeling/commands?client_release=1.4.9'
+      const actual = withKittycadWebSocketURL('', '1.4.9')
       expect(actual).toBe(expected)
     })
-    it('should return url with /docs', () => {
-      const expected = 'wss://api.dev.zoo.dev/ws/modeling/commands?'
-      const actual = withKittycadWebSocketURL('?')
+    it('should append the client release to existing parameters', () => {
+      const expected =
+        'wss://api.dev.zoo.dev/ws/modeling/commands?video_res_width=256&client_release=1.4.9'
+      const actual = withKittycadWebSocketURL('?video_res_width=256', '1.4.9')
       expect(actual).toBe(expected)
     })
     it('should ensure url does not have ending slash', () => {
-      const expected = 'wss://api.dev.zoo.dev/ws/modeling/commands'
-      const actual = withKittycadWebSocketURL('')
+      const expected =
+        'wss://api.dev.zoo.dev/ws/modeling/commands?client_release=1.4.9'
+      const actual = withKittycadWebSocketURL('', '1.4.9')
       expect(actual).toBe(expected)
       const expectedEndsWith = expected[expected.length - 1]
       const actualEndsWith = actual[actual.length - 1]
