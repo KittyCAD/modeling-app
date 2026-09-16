@@ -98,6 +98,7 @@ pub async fn execute_export_and_render_locally(
         }
     };
     if glb_blob_files.len() != 1 {
+        ctx.close().await;
         return Err(ExecErrorWithState::new(
             ExecError::BadExport(format!("Expected 1 glb file, found {}", glb_blob_files.len())),
             exec_state,
@@ -115,6 +116,7 @@ pub async fn execute_export_and_render_locally(
     let image = glb_render::render(&glb.bytes)
         .map_err(|e| ExecErrorWithState::new(ExecError::BadExport(e), exec_state.clone(), None))?;
 
+    ctx.close().await;
     let snap_3d = Snapshot3d { image, glb };
     Ok((exec_state, env_ref, snap_3d))
 }
