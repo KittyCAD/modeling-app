@@ -99,13 +99,15 @@ pub(super) struct GlobalState {
     /// `deprecated_since` warnings. Runtime behavior still uses the version
     /// declared by the KCL program.
     pub deprecation_version_override: Option<String>,
-    /// The entry-point (root) module's declared kclVersion, when it is KCL 3.0
-    /// or later. `Some` makes this single version govern version-conditional
-    /// runtime behavior for the whole execution -- every module and every
-    /// function body. `None` (entry point on 1.0/2.0 or undeclared) preserves
-    /// the legacy per-module lookup and its caller-version quirk; see
-    /// [`ExecState::legacy_caller_kcl_version`]. Assigned unconditionally at
-    /// the start of every execution.
+    /// The entry-point (root) module's declared kclVersion, or `None` when it
+    /// declares none. When this is KCL 3.0 or later, this single version
+    /// governs version-conditional runtime behavior for the whole execution --
+    /// every module and every function body. Otherwise (1.0, 2.0, or
+    /// undeclared) the legacy per-module lookup and its caller-version quirk
+    /// apply, see [`ExecState::legacy_caller_kcl_version`], and no imported
+    /// file may declare KCL 3.0 or later, see
+    /// [`ExecState::check_imported_module_kcl_version`]. Assigned
+    /// unconditionally at the start of every execution.
     pub entry_point_kcl_version: Option<KclVersion>,
     /// Global artifacts that represent the entire program.
     pub artifacts: ArtifactState,
@@ -1361,9 +1363,10 @@ impl ExecState {
     /// all function bodies. Otherwise, falls back to the legacy per-module
     /// lookup; see [`Self::legacy_caller_kcl_version`].
     pub(crate) fn kcl_version(&self) -> KclVersion {
-        self.global
-            .entry_point_kcl_version
-            .unwrap_or_else(|| self.legacy_caller_kcl_version())
+        match self.global.entry_point_kcl_version {
+            Some(version) if version >= KclVersion::V3Preview => version,
+            _ => self.legacy_caller_kcl_version(),
+        }
     }
 
     /// The legacy kclVersion lookup: the current module-local settings.
@@ -1389,29 +1392,34 @@ impl ExecState {
     }
 
     /// Record the entry-point program's declared kclVersion for this
-    /// execution. Only 3.0-preview or later is recorded; older or undeclared
-    /// versions leave the field unset so that the legacy per-module lookup
-    /// applies. Must be assigned unconditionally at the start of every
-    /// execution since the state may be reused across executions whose
-    /// programs declare different versions.
+    /// execution, or `None` when it declares no kclVersion. Must be assigned
+    /// unconditionally at the start of every execution since the state may be
+    /// reused across executions whose programs declare different versions.
     pub(crate) fn set_entry_point_kcl_version(&mut self, program: &crate::Program) {
-        let declared = program.meta_settings().ok().flatten().map(|s| s.kcl_version);
-        self.global.entry_point_kcl_version = match declared {
-            Some(v) if v >= KclVersion::V3Preview => Some(v),
-            _ => None,
-        };
+        self.global.entry_point_kcl_version = declared_kcl_version(&program.ast)
+            .ok()
+            .flatten()
+            .map(|(version, _)| version);
     }
 
-    /// KCL 3.0: an imported file may not declare a kclVersion that differs
-    /// from the entry point's.
+    /// KCL 3.0: the entry point's declared kclVersion decides which kclVersion
+    /// an imported file may declare, so that KCL 3.0 semantics never apply to
+    /// only part of a program.
     ///
-    /// Only applies when the entry point declares 3.0-preview or later; see
-    /// [`Self::set_entry_point_kcl_version`]. A file that declares no
-    /// kclVersion is fine: it runs under the entry point's version, as it
-    /// always has. Only user files (local imports) are checked. Standard
-    /// library modules are exempt: they ship with the interpreter, always run
-    /// under the entry point's pinned version, and the user cannot edit them
-    /// to resolve a mismatch. Foreign imports carry no KCL settings.
+    /// - When the entry point declares 3.0-preview or later, that version
+    ///   governs the whole execution (see [`Self::kcl_version`]), and an
+    ///   imported file may not declare a different one.
+    /// - Otherwise (1.0, 2.0, or undeclared), the legacy per-module lookup
+    ///   applies, and an imported file may not declare 3.0-preview or later,
+    ///   which the legacy lookup would honor for that file only. Mixing 1.0
+    ///   and 2.0 remains allowed, as it always has been.
+    ///
+    /// A file that declares no kclVersion is always fine: it runs under the
+    /// version the lookup gives it, as it always has. Only user files (local
+    /// imports) are checked. Standard library modules are exempt: they ship
+    /// with the interpreter, always run under the entry point's pinned
+    /// version, and the user cannot edit them to resolve a mismatch. Foreign
+    /// imports carry no KCL settings.
     ///
     /// `import_range` is the import statement when the check runs at the
     /// import site, which is included in the error.
@@ -1421,16 +1429,21 @@ impl ExecState {
         program: &Node<Program>,
         import_range: Option<SourceRange>,
     ) -> Result<(), KclError> {
-        let Some(entry_point_version) = self.global.entry_point_kcl_version else {
-            return Ok(());
-        };
-        if !matches!(path, ModulePath::Local { .. }) {
+        if !path.is_local() {
+            // stdlib is exempt from the restriction, and `Main` is the version
+            // we're checking against.
             return Ok(());
         }
         let Some((declared, declared_range)) = declared_kcl_version(program)? else {
             return Ok(());
         };
-        if declared == entry_point_version {
+        let entry_point_version = self.global.entry_point_kcl_version;
+        let allowed = if self.entry_point_version_is_v3_or_higher() {
+            Some(declared) == entry_point_version
+        } else {
+            declared < KclVersion::V3Preview
+        };
+        if allowed {
             return Ok(());
         }
 
@@ -1447,12 +1460,21 @@ impl ExecState {
             }
             _ => "The entry point".to_owned(),
         };
+        let (entry_point_declares, fix) = match entry_point_version {
+            Some(version) => (
+                format!("declares kclVersion {}", version.as_str()),
+                "Update the kclVersion setting in one of these files to match the other.",
+            ),
+            None => (
+                "does not declare a kclVersion".to_owned(),
+                "Declare the same kclVersion in the entry point, or update the setting in the imported file.",
+            ),
+        };
         let mut source_ranges = vec![declared_range];
         source_ranges.extend(import_range);
         Err(KclError::new_semantic(KclErrorDetails::new(
             format!(
-                "Mixing KCL versions in a single program is not allowed. {entry_point} declares kclVersion {}, but the imported file `{path}` declares kclVersion {}. Update the kclVersion setting in one of these files to match the other.",
-                entry_point_version.as_str(),
+                "Mixing KCL versions in a single program is not allowed. {entry_point} {entry_point_declares}, but the imported file `{path}` declares kclVersion {}. {fix}",
                 declared.as_str(),
             ),
             source_ranges,

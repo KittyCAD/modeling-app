@@ -8334,3 +8334,24 @@ mod import_kcl_version_mismatch_v3 {
         super::execute(TEST_NAME, false).await
     }
 }
+mod import_kcl_version_mismatch_undeclared_entry_point {
+    const TEST_NAME: &str = "import_kcl_version_mismatch_undeclared_entry_point";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
