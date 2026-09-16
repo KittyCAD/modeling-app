@@ -88,6 +88,8 @@ layout: manual
   * [`sin`](/docs/kcl-std/functions/std-math-sin)
   * [`sqrt`](/docs/kcl-std/functions/std-math-sqrt)
   * [`tan`](/docs/kcl-std/functions/std-math-tan)
+* [**std::operation**](/docs/kcl-std/modules/std-operation)
+  * [`operation::facing`](/docs/kcl-std/functions/std-operation-facing) Experimental
 * [**std::runtime**](/docs/kcl-std/modules/std-runtime) Experimental
   * [`exit`](/docs/kcl-std/functions/std-runtime-exit) Experimental
 * [**std::sketch**](/docs/kcl-std/modules/std-sketch)
@@ -198,7 +200,7 @@ layout: manual
   * [`string::trimStart`](/docs/kcl-std/functions/std-string-trimStart)
   * [`string::uppercase`](/docs/kcl-std/functions/std-string-uppercase)
 * [**std::transform**](/docs/kcl-std/modules/std-transform)
-  * [`delete`](/docs/kcl-std/functions/std-transform-delete) Experimental
+  * [`delete`](/docs/kcl-std/functions/std-transform-delete)
   * [`hide`](/docs/kcl-std/functions/std-transform-hide)
   * [`mirror2d`](/docs/kcl-std/functions/std-transform-mirror2d)
   * [`mirror3d`](/docs/kcl-std/functions/std-transform-mirror3d)

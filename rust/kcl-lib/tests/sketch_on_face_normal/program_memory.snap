@@ -5,16 +5,13 @@ description: Variables in memory after executing sketch_on_face_normal.kcl
 {
   "a": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "a"
   },
   "b": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "b"
   },
   "c": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "c"
   },

@@ -30,6 +30,7 @@ import {
   createOnEngineOffline,
 } from '@src/lib/engineConnection/connectionManagerEvents'
 import type {
+  EngineConnectionError,
   IEventListenerTracked,
   ManagerTearDown,
   ModelTypes,
@@ -45,6 +46,7 @@ import {
   EngineConnectionStateType,
   REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE,
   validateStreamDimensions,
+  type EngineDisconnectEventDetail,
 } from '@src/lib/engineConnection/utils'
 import {
   isExportResponse,
@@ -71,6 +73,7 @@ import {
 } from '@src/lib/utils'
 import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 
 export type ConnectionSystemDeps = {
   settingsActor: SettingsActorType
@@ -103,6 +106,7 @@ export class ConnectionManager extends EventTarget {
   commandLogs: CommandLog[] = []
 
   connection: Connection | undefined
+  lastConnectionError: EngineConnectionError | undefined
 
   get apiCallId(): string | undefined {
     return this.connection?.apiCallId
@@ -162,6 +166,7 @@ export class ConnectionManager extends EventTarget {
     this.allEventListeners = new Map()
     this.id = uuidv4()
     this.callbackOnUnitTestingConnection = null
+    this.lastConnectionError = undefined
   }
 
   setInSequence(sequence: number) {
@@ -178,6 +183,7 @@ export class ConnectionManager extends EventTarget {
     token,
     setStreamIsReady,
     callbackOnUnitTestingConnection,
+    unitTestGeometryOnly,
     rustContext,
   }: {
     width: number
@@ -185,6 +191,7 @@ export class ConnectionManager extends EventTarget {
     token: string
     setStreamIsReady: (setStreamIsReady: boolean) => void
     callbackOnUnitTestingConnection?: (message: string) => void
+    unitTestGeometryOnly?: boolean
     rustContext?: RustContext
   }) {
     EngineDebugger.addLog({
@@ -210,6 +217,7 @@ export class ConnectionManager extends EventTarget {
       return Promise.reject(invalidStreamDimensions)
     }
 
+    this.lastConnectionError = undefined
     this.started = true
     this.rejectAllPendingCommands()
 
@@ -228,6 +236,7 @@ export class ConnectionManager extends EventTarget {
       tearDownManager: this.tearDown.bind(this),
       rejectPendingCommand: this.rejectPendingCommand.bind(this),
       callbackOnUnitTestingConnection,
+      unitTestGeometryOnly,
       handleMessage,
       getCloudProjectId: () =>
         this.systemDeps.settingsActor.getSnapshot().context.currentProject
@@ -770,7 +779,6 @@ export class ConnectionManager extends EventTarget {
     if (message.command.type === 'modeling_cmd_req') {
       const commandName = message.command.cmd.type
       if (commandName.includes('export')) {
-        // If the command name includes export of any type do not time it out within 60 seconds
         timeoutPendingCommand = false
       }
     }
@@ -1066,12 +1074,23 @@ export class ConnectionManager extends EventTarget {
       })
     }
 
+    if (options?.connectionError) {
+      this.lastConnectionError = options.connectionError
+    }
+
     // It was torn down from a websocket close.
     if (options?.websocketClosed) {
       this.dispatchEvent(
-        new CustomEvent(EngineConnectionManagerEvents.WebsocketClosed, {
-          detail: { code: options.code },
-        })
+        new CustomEvent<EngineDisconnectEventDetail>(
+          EngineConnectionManagerEvents.WebsocketClosed,
+          {
+            detail: {
+              code: options.code,
+              connectionError: options.connectionError,
+              reconnectRequested: options.reconnectRequested ?? false,
+            },
+          }
+        )
       )
     } else if (options?.peerConnectionClosed) {
       this.dispatchEvent(
@@ -1122,6 +1141,11 @@ export class ConnectionManager extends EventTarget {
 
     // Allow for restart!
     this.started = false
+
+    void reportClientError({
+      code: ClientErrorCode.EngineTeardown,
+      message: `Engine teardown called.`,
+    })
   }
 
   /**

@@ -3238,6 +3238,7 @@ description: Result of parsing sketch_block_arc_using_center_coincident.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

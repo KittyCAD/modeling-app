@@ -72,6 +72,9 @@ export const VISIBILITY_KINDS = [
   'compositeSolid',
   'path',
   'gdtAnnotation',
+  'helix',
+  'plane',
+  'importedGeometry',
 ] as const satisfies readonly Artifact['type'][]
 
 export type VisibilityKind = (typeof VISIBILITY_KINDS)[number]
@@ -103,14 +106,21 @@ function isIndependentlyHideable(artifact: VisibilityArtifact): boolean {
     case 'sweep':
     case 'compositeSolid':
     case 'path':
-      return !artifact.consumed
     case 'gdtAnnotation':
+    case 'helix':
+    case 'importedGeometry':
       return true
+    case 'plane':
+      return artifact.pathIds.length === 0
     default: {
       const _exhaustiveCheck: never = artifact
       return _exhaustiveCheck
     }
   }
+}
+
+function isConsumed(artifact: VisibilityArtifact): boolean {
+  return 'consumed' in artifact && artifact.consumed
 }
 
 /**
@@ -144,16 +154,25 @@ function sourceBodyForPattern(
 /**
  * Returns every object a view can address in the given execution.
  *
- * Kinds outside `VISIBILITY_KINDS` are excluded by decision. `setPlaneHidden`
- * owns the default planes. Helixes and imported geometry wait until `except` can
- * name them.
+ * Kinds outside `VISIBILITY_KINDS` are excluded by decision.
+ *
+ * - Default planes are absent from the artifact graph and remain under
+ *   `setPlaneHidden`.
+ * - `planeOf()` produces `planeOfFace`, which is not a visibility kind because
+ *   the engine creates it hidden.
+ * - A `plane` with `pathIds` supports a sketch and is excluded by
+ *   `isIndependentlyHideable` because the executor hid it.
  */
 export function getViewUniverse(
   artifactGraph: ArtifactGraph
 ): VisibilityUniverse {
   const universe: VisibilityUniverse = new Map(
     filterArtifacts(
-      { types: [...VISIBILITY_KINDS], predicate: isIndependentlyHideable },
+      {
+        types: [...VISIBILITY_KINDS],
+        predicate: (artifact) =>
+          !isConsumed(artifact) && isIndependentlyHideable(artifact),
+      },
       artifactGraph
     )
   )
@@ -217,7 +236,7 @@ function engineIdForSweep(
 /**
  * Returns the engine object id that addresses a universe entry.
  *
- * - `compositeSolid`, `path`, `gdtAnnotation`: the artifact id is also the
+ * - Every non-sweep, non-pattern universe artifact uses its artifact id as its
  *   engine object id.
  * - `pattern`: the key is the copy id the engine assigned.
  *
@@ -239,6 +258,9 @@ export function engineIdForArtifact({
     case 'compositeSolid':
     case 'path':
     case 'gdtAnnotation':
+    case 'helix':
+    case 'plane':
+    case 'importedGeometry':
       return artifact.id
     case 'pattern':
       return id

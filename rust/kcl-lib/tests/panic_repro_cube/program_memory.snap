@@ -23,7 +23,6 @@ description: Variables in memory after executing panic_repro_cube.kcl
   },
   "capStart001": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "capStart001"
   },
   "cube": {
@@ -460,11 +459,9 @@ description: Variables in memory after executing panic_repro_cube.kcl
   },
   "seg01": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "seg01"
   },
   "seg02": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "seg02"
   },
@@ -478,7 +475,6 @@ description: Variables in memory after executing panic_repro_cube.kcl
     }
   },
   "topFace": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "topFace"
   }

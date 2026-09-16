@@ -166,6 +166,7 @@ description: Result of parsing assembly_non_default_units.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

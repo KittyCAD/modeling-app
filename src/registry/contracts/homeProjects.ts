@@ -109,6 +109,8 @@ export interface HomeProjectMoveToLibraryTarget {
 }
 
 export interface HomeProjectActionsService {
+  /** Keep a remote thumbnail current only while its card is in view. */
+  watchRemoteThumbnail: (remoteProjectId: string) => (() => void) | undefined
   canOpen: (project: HomeProjectEntry) => boolean
   canDuplicate: (project: HomeProjectEntry) => boolean
   canRename: (project: HomeProjectEntry) => boolean

@@ -8,6 +8,8 @@ import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { EngineDebugger } from '@src/lib/debugger'
 import {
   ConnectingType,
+  type EngineConnectionError,
+  EngineConnectionErrorKind,
   EngineConnectionEvents,
   EngineConnectionStateType,
   type ManagerTearDown,
@@ -103,6 +105,9 @@ export const createOnWebSocketMessage = ({
   sdpAnswerReject,
   setApiCallId,
   getCloudProjectId,
+  getConnectionContext,
+  tearDownManager,
+  requestReconnect,
 }: {
   disconnectAll: () => void
   setPong: (pong: number) => void
@@ -119,6 +124,12 @@ export const createOnWebSocketMessage = ({
   sdpAnswerReject: (value: any) => void
   setApiCallId: (apiCallId: string) => void
   getCloudProjectId: () => string | undefined
+  getConnectionContext: () => {
+    connectionId: string
+    modelingApiCallId: string | null
+  }
+  tearDownManager: (options?: ManagerTearDown) => void
+  requestReconnect: () => void
 }) => {
   const onWebSocketMessage = (event: MessageEvent<any>) => {
     // In the EngineConnection, we're looking for messages to/from
@@ -138,12 +149,21 @@ export const createOnWebSocketMessage = ({
       const backendDisconnectError = message.errors.find(
         (error) => error.message === MODELING_BACKEND_DISCONNECTED_MESSAGE
       )
+
       if (backendDisconnectError) {
+        const connectionError: EngineConnectionError = {
+          kind: EngineConnectionErrorKind.BackendDisconnect,
+          message: backendDisconnectError.message,
+          terminal: true,
+        }
+        const connectionContext = getConnectionContext()
+        tearDownManager({ websocketClosed: true, connectionError })
         const cloudProjectId = getCloudProjectId()
         void reportClientError({
           code: ClientErrorCode.EngineBackendDisconnect,
           message: backendDisconnectError.message,
           extra: {
+            ...connectionContext,
             source: 'EngineWebSocket',
             errorCode: backendDisconnectError.error_code,
             requestId: message.request_id,
@@ -419,6 +439,9 @@ export const createOnWebSocketMessage = ({
           })
 
         break
+      case 'reconnect':
+        requestReconnect()
+        return
     }
   }
 
@@ -432,6 +455,7 @@ export const createOnWebSocketClose = ({
   onWebSocketMessage,
   tearDownManager,
   dispatchEvent,
+  getReconnectRequested,
 }: {
   websocket: WebSocket
   onWebSocketOpen: (event: Event) => void
@@ -439,6 +463,7 @@ export const createOnWebSocketClose = ({
   onWebSocketMessage: (event: MessageEvent<any>) => void
   tearDownManager: (options?: ManagerTearDown) => void
   dispatchEvent: (event: Event) => boolean
+  getReconnectRequested: () => boolean
 }) => {
   const onDataChannelClose = (event: CloseEvent) => {
     websocket.removeEventListener('open', onWebSocketOpen)
@@ -449,7 +474,11 @@ export const createOnWebSocketClose = ({
         detail: { name: event.code },
       })
     )
-    tearDownManager({ websocketClosed: true, code: event.code.toString() })
+    tearDownManager({
+      websocketClosed: true,
+      code: event.code.toString(),
+      reconnectRequested: getReconnectRequested(),
+    })
   }
   return onDataChannelClose
 }

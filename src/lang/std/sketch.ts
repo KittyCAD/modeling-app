@@ -3305,6 +3305,7 @@ export const updateStartProfileAtArgs: SketchLineHelperKw['updateArgs'] = ({
     console.error(nodeMeta)
     return {
       modifiedAst: {
+        type: 'Program',
         start: 0,
         end: 0,
         shebang: null,

@@ -1610,7 +1610,10 @@ part = bracket()
     beforeEach(async () => {
       if (instanceInThisFile) return
       const { instance, kclManager, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
+        await buildTheWorldAndConnectToEngine({ geometryOnly: true })
+      instance.set_kcl_runtime_flags(
+        JSON.stringify({ enable_z0006_lint: 'On' })
+      )
       instanceInThisFile = instance
       kclManagerInThisFile = kclManager
       engineCommandManagerInThisFile = engineCommandManager

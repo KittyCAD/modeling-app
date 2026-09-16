@@ -15,6 +15,7 @@ import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import type { Debugger } from '@src/lib/debugger'
+import { isPlaywright } from '@src/lib/isPlaywright'
 import { EngineDebugger } from '@src/lib/debugger'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { setKclRuntimeFlagsOnWasm } from '@src/lib/kclRuntimeFlags'
@@ -39,7 +40,6 @@ import {
   buildZookeeperHistoryExtension,
   type PreparedZookeeperPatchFileReplay,
 } from '@src/lib/zookeeper/editorPlugin'
-import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
 import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
 import {
@@ -157,10 +157,6 @@ export type AppLayoutSystem = LayoutService
 
 export type AppRegistrySystem = Registry
 
-export type AppDebug = {
-  zookeeperManagerActor?: ZookeeperManagerActor
-}
-
 /** All of the subsystems needed to run the ZDS app */
 export interface AppSubsystems {
   wasmPromise: Promise<ModuleType>
@@ -186,7 +182,6 @@ export class App implements AppSubsystems {
   public get currentProjectLibraryIdSignal(): Signal<string | undefined> {
     return this.projectSession.currentProjectLibraryId
   }
-  public debug: AppDebug = {}
   get project() {
     return this.projectSession.getProject()
   }
@@ -684,7 +679,8 @@ export class App implements AppSubsystems {
 
       const forceEnabled =
         platform !== undefined &&
-        featurePolicy.forceEnabledOnPlatform === platform
+        featurePolicy.forceEnabledOnPlatform === platform &&
+        !isPlaywright()
       if (!forceEnabled && settingValue.user !== undefined) {
         continue
       }

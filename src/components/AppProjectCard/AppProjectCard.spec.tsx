@@ -6,6 +6,11 @@ import type {
   HomeProjectEntry,
 } from '@src/registry/contracts/homeProjects'
 import {
+  ProjectCardList,
+  ProjectLibraryPreviewRow,
+} from '@src/routes/HomeProjectCards'
+import {
+  act,
   fireEvent,
   render,
   screen,
@@ -14,7 +19,7 @@ import {
 } from '@testing-library/react'
 import toast from 'react-hot-toast'
 import { BrowserRouter } from 'react-router-dom'
-import { beforeEach, describe, expect, test, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
 vi.mock('@src/lib/fs-zds', () => ({
   default: {
@@ -28,6 +33,40 @@ vi.mock('@src/lib/fs-zds', () => ({
 const now = Date.now()
 let createObjectURLMock: ReturnType<typeof vi.fn>
 let revokeObjectURLMock: ReturnType<typeof vi.fn>
+const intersectionObservers = new Map<
+  Element,
+  {
+    callback: IntersectionObserverCallback
+    observer: IntersectionObserver
+    disconnect: ReturnType<typeof vi.fn>
+  }
+>()
+
+function setCardInView(card: Element, isIntersecting: boolean) {
+  const observation = intersectionObservers.get(card)
+  expect(observation).toBeDefined()
+  if (!observation) {
+    return
+  }
+  const rect = card.getBoundingClientRect()
+  act(() => {
+    observation.callback(
+      [
+        {
+          target: card,
+          isIntersecting,
+          intersectionRatio: isIntersecting ? 1 : 0,
+          boundingClientRect: rect,
+          intersectionRect: rect,
+          rootBounds: null,
+          time: 0,
+        },
+      ],
+      observation.observer
+    )
+  })
+}
+
 const cloudProject = {
   id: 'remote:project-123',
   name: 'old-cloud-title',
@@ -56,6 +95,7 @@ function createProjectActions({
   rename?: HomeProjectActionsService['rename']
 } = {}): HomeProjectActionsService {
   return {
+    watchRemoteThumbnail: vi.fn(() => vi.fn()),
     canDuplicate: () => true,
     canOpen,
     canRename: () => true,
@@ -134,6 +174,174 @@ describe('ProjectCard', () => {
       createObjectURL: createObjectURLMock,
       revokeObjectURL: revokeObjectURLMock,
     })
+    intersectionObservers.clear()
+    vi.stubGlobal(
+      'IntersectionObserver',
+      vi.fn(function (callback: IntersectionObserverCallback) {
+        const disconnect = vi.fn()
+        const observer: IntersectionObserver = {
+          root: null,
+          rootMargin: '0px',
+          scrollMargin: '0px',
+          thresholds: [0],
+          observe: vi.fn((target: Element) => {
+            intersectionObservers.set(target, {
+              callback,
+              observer,
+              disconnect,
+            })
+          }),
+          unobserve: vi.fn(),
+          disconnect,
+          takeRecords: () => [],
+        }
+        return observer
+      })
+    )
+  })
+
+  afterEach(() => vi.unstubAllGlobals())
+
+  test.each(['grid', 'library preview'])(
+    'only loads thumbnails for in-view cards in the %s',
+    (view) => {
+      const stopWatching = vi.fn()
+      const projectActions = createProjectActions()
+      vi.mocked(projectActions.watchRemoteThumbnail).mockReturnValue(
+        stopWatching
+      )
+      const projects: HomeProjectEntry[] = ['first', 'second'].map((id) => ({
+        ...cloudProject,
+        id,
+        remoteProjectId: id,
+        source: 'remote',
+        thumbnail: { type: 'remote', url: `https://example.test/${id}.png` },
+      }))
+      const props = {
+        projects,
+        projectActions,
+        projectStatuses: new Map<string, ProjectStatus>(),
+        showCloudSyncUi: true,
+        onMoveToLibrary: vi.fn(),
+      }
+      const { unmount } = render(
+        <BrowserRouter>
+          {view === 'grid' ? (
+            <ProjectCardList {...props} />
+          ) : (
+            <ProjectLibraryPreviewRow
+              {...props}
+              query=""
+              library={{
+                id: 'cloud-personal',
+                title: 'Cloud',
+                type: 'cloud',
+                path: '/cloud',
+              }}
+            />
+          )}
+        </BrowserRouter>
+      )
+      const [firstCard, secondCard] = screen.getAllByRole('listitem')
+
+      expect(projectActions.watchRemoteThumbnail).not.toHaveBeenCalled()
+      expect(screen.queryAllByRole('presentation')).toHaveLength(0)
+      setCardInView(firstCard, false)
+      expect(projectActions.watchRemoteThumbnail).not.toHaveBeenCalled()
+
+      setCardInView(firstCard, true)
+      expect(
+        projectActions.watchRemoteThumbnail
+      ).toHaveBeenCalledExactlyOnceWith('first')
+      expect(within(firstCard).getByRole('presentation')).toHaveAttribute(
+        'src',
+        'https://example.test/first.png'
+      )
+      expect(
+        within(secondCard).queryByRole('presentation')
+      ).not.toBeInTheDocument()
+
+      setCardInView(firstCard, false)
+      expect(stopWatching).toHaveBeenCalledTimes(1)
+      expect(
+        within(firstCard).queryByRole('presentation')
+      ).not.toBeInTheDocument()
+      setCardInView(secondCard, true)
+      expect(projectActions.watchRemoteThumbnail).toHaveBeenLastCalledWith(
+        'second'
+      )
+      expect(within(secondCard).getByRole('presentation')).toHaveAttribute(
+        'src',
+        'https://example.test/second.png'
+      )
+
+      unmount()
+      expect(stopWatching).toHaveBeenCalledTimes(2)
+      for (const { disconnect } of intersectionObservers.values()) {
+        expect(disconnect).toHaveBeenCalledTimes(1)
+      }
+    }
+  )
+
+  test('loads local thumbnails without requesting their remote copy', async () => {
+    vi.mocked(fsZds.readFile).mockResolvedValue(new Uint8Array([1, 2, 3]))
+    const { projectActions } = renderProjectCard()
+    await waitFor(() => expect(fsZds.readFile).toHaveBeenCalledTimes(1))
+
+    const card = screen.getByRole('listitem')
+    setCardInView(card, true)
+    setCardInView(card, false)
+    expect(projectActions.watchRemoteThumbnail).not.toHaveBeenCalled()
+    expect(fsZds.readFile).toHaveBeenCalledTimes(1)
+    expect(createObjectURLMock).toHaveBeenCalledTimes(1)
+  })
+
+  test('requests a cold remote thumbnail and displays it when it arrives', () => {
+    const projectActions = createProjectActions()
+    const project = {
+      ...cloudProject,
+      source: 'remote',
+      thumbnail: undefined,
+    } satisfies HomeProjectEntry
+    const renderCard = (project: HomeProjectEntry) => (
+      <BrowserRouter>
+        <AppProjectCard project={project} projectActions={projectActions} />
+      </BrowserRouter>
+    )
+    const { rerender } = render(renderCard(project))
+    const card = screen.getByRole('listitem')
+    expect(projectActions.watchRemoteThumbnail).not.toHaveBeenCalled()
+    setCardInView(card, true)
+    expect(projectActions.watchRemoteThumbnail).toHaveBeenCalledExactlyOnceWith(
+      'project-123'
+    )
+    expect(screen.queryByRole('presentation')).not.toBeInTheDocument()
+
+    rerender(
+      renderCard({
+        ...project,
+        thumbnail: { type: 'remote', url: 'https://example.test/loaded.png' },
+      })
+    )
+    expect(screen.getByRole('presentation')).toHaveAttribute(
+      'src',
+      'https://example.test/loaded.png'
+    )
+    expect(projectActions.watchRemoteThumbnail).toHaveBeenCalledTimes(1)
+
+    setCardInView(card, false)
+    rerender(
+      renderCard({
+        ...project,
+        thumbnail: { type: 'remote', url: 'https://example.test/updated.png' },
+      })
+    )
+    expect(screen.queryByRole('presentation')).not.toBeInTheDocument()
+    setCardInView(card, true)
+    expect(screen.getByRole('presentation')).toHaveAttribute(
+      'src',
+      'https://example.test/updated.png'
+    )
   })
 
   test('duplicates a local project from its card action', async () => {

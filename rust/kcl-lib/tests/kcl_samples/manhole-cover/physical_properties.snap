@@ -7,12 +7,12 @@ description: Physical properties manhole-cover.kcl
     "center": {
       "x": 0.0,
       "y": 0.0,
-      "z": 0.0
+      "z": 1.269999999999996
     },
     "dimensions": {
       "x": 693.4200000000001,
       "y": 693.4200000000001,
-      "z": 100.0
+      "z": 46.989999999999995
     },
     "unit": "mm"
   },

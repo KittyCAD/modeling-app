@@ -439,7 +439,7 @@ pub trait CodeBlock {
 /// A KCL program top level, or function body.
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
-#[serde(rename_all = "camelCase")]
+#[serde(tag = "type", rename_all = "camelCase")]
 pub struct Program {
     pub body: Vec<BodyItem>,
     #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
@@ -3320,6 +3320,9 @@ impl Identifier {
     }
 }
 
+pub(crate) const ABSOLUTE_PATHS_NOT_SUPPORTED: &str =
+    "Absolute paths (names beginning with `::`) are not yet supported";
+
 /// A qualified name, e.g., `foo`, `bar::foo`, or `::bar::foo`.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
@@ -4124,8 +4127,6 @@ pub enum PrimitiveType {
     ImportedGeometry,
     /// `fn`, type of functions.
     Function(FunctionType),
-    /// An identifier used as a type (not really a primitive type, but whatever).
-    Named { id: Node<Identifier> },
 }
 
 impl PrimitiveType {
@@ -4154,7 +4155,6 @@ impl PrimitiveType {
             PrimitiveType::Boolean => "bools".to_owned(),
             PrimitiveType::ImportedGeometry => "imported geometries".to_owned(),
             PrimitiveType::Function(_) => "functions".to_owned(),
-            PrimitiveType::Named { id } => format!("`{}`s", id.name),
             PrimitiveType::TagDecl => "tag declarations".to_owned(),
         }
     }
@@ -4200,7 +4200,6 @@ impl fmt::Display for PrimitiveType {
                 }
                 Ok(())
             }
-            PrimitiveType::Named { id: n } => write!(f, "{}", n.name),
         }
     }
 }
@@ -4235,6 +4234,10 @@ impl FunctionType {
 pub enum Type {
     /// A primitive type.
     Primitive(PrimitiveType),
+    /// An unresolved type name, possibly qualified by a module path.
+    Named {
+        name: Node<Name>,
+    },
     // An array of a primitive type.
     Array {
         ty: Box<Type>,
@@ -4254,6 +4257,10 @@ impl Type {
     pub fn human_friendly_type(&self) -> String {
         match self {
             Type::Primitive(ty) => format!("a value with type `{ty}`"),
+            Type::Named { name } => {
+                let name_string = name.to_string();
+                format!("a value with type `{name_string}`")
+            }
             Type::Array {
                 ty,
                 len: ArrayLen::None | ArrayLen::Minimum(0),
@@ -4286,6 +4293,10 @@ impl Type {
     fn display_multiple(&self) -> String {
         match self {
             Type::Primitive(ty) => ty.display_multiple(),
+            Type::Named { name } => {
+                let name_string = name.to_string();
+                format!("`{name_string}`s")
+            }
             Type::Array { .. } => "arrays".to_owned(),
             Type::Union { tys } => tys
                 .iter()
@@ -4301,6 +4312,7 @@ impl fmt::Display for Type {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Type::Primitive(primitive_type) => primitive_type.fmt(f),
+            Type::Named { name } => name.write_to(f),
             Type::Array { ty, len } => {
                 write!(f, "[{ty}")?;
                 match len {
@@ -4374,7 +4386,7 @@ pub struct Parameter {
     /// optional. A pre-release version such as "3.0-preview" counts as the
     /// release it precedes. May be combined with `deprecated`,
     /// `deprecated_since` (which must not be earlier than `added_in`), or
-    /// `removed_since` (which must be later than `added_in`).
+    /// `removed_in` (which must be later than `added_in`).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub added_in: Option<VersionConstraint>,
     /// If true, this parameter is deprecated regardless of the KCL version. Use
@@ -4387,7 +4399,7 @@ pub struct Parameter {
     /// downstream code reparses it into a `VersionConstraint`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub deprecated_since: Option<VersionConstraint>,
-    /// If set, this parameter is removed as of the given KCL version (e.g.,
+    /// If set, this parameter is removed in the given KCL version (e.g.,
     /// "3.0"). On that version or later, passing the parameter is an error,
     /// exactly as if the function did not declare it, and the function body
     /// sees the parameter's default value. The parser requires a removed
@@ -4395,7 +4407,7 @@ pub struct Parameter {
     /// counts as the release it precedes. May be combined with `deprecated` or
     /// `deprecated_since`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub removed_since: Option<VersionConstraint>,
+    pub removed_in: Option<VersionConstraint>,
     /// The parameter's label or name.
     pub identifier: Node<Identifier>,
     /// The type of the parameter.
@@ -5211,7 +5223,7 @@ cylinder = startSketchOn(-XZ)
                         added_in: None,
                         deprecated: false,
                         deprecated_since: None,
-                        removed_since: None,
+                        removed_in: None,
                         identifier: Node::no_src(Identifier {
                             name: "foo".to_owned(),
                             digest: None,
@@ -5236,7 +5248,7 @@ cylinder = startSketchOn(-XZ)
                         added_in: None,
                         deprecated: false,
                         deprecated_since: None,
-                        removed_since: None,
+                        removed_in: None,
                         identifier: Node::no_src(Identifier {
                             name: "foo".to_owned(),
                             digest: None,
@@ -5262,7 +5274,7 @@ cylinder = startSketchOn(-XZ)
                             added_in: None,
                             deprecated: false,
                             deprecated_since: None,
-                            removed_since: None,
+                            removed_in: None,
                             identifier: Node::no_src(Identifier {
                                 name: "foo".to_owned(),
                                 digest: None,
@@ -5277,7 +5289,7 @@ cylinder = startSketchOn(-XZ)
                             added_in: None,
                             deprecated: false,
                             deprecated_since: None,
-                            removed_since: None,
+                            removed_in: None,
                             identifier: Node::no_src(Identifier {
                                 name: "bar".to_owned(),
                                 digest: None,

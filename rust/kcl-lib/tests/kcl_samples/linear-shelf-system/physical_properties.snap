@@ -6,12 +6,12 @@ description: Physical properties linear-shelf-system.kcl
   "bounding_box": {
     "center": {
       "x": 800.0,
-      "y": -175.0,
+      "y": -200.0,
       "z": 1000.0
     },
     "dimensions": {
       "x": 2000.0,
-      "y": 450.0,
+      "y": 400.0,
       "z": 2000.0
     },
     "unit": "mm"

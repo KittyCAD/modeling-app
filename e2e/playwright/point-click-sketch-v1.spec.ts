@@ -2469,7 +2469,7 @@ solid001 = extrude(sketch001, length = 5)`
         })
 
         await test.step('Edit arc degrees', async () => {
-          await page.getByRole('button', { name: 'ArcDegrees' }).click()
+          await page.getByRole('button', { name: 'Arc degrees' }).click()
           await cmdBar.expectState({
             stage: 'arguments',
             commandName: 'Pattern Circular 3D',
@@ -2504,7 +2504,7 @@ solid001 = extrude(sketch001, length = 5)`
         })
 
         await test.step('Edit rotate duplicates', async () => {
-          await page.getByRole('button', { name: 'RotateDuplicates' }).click()
+          await page.getByRole('button', { name: 'Rotate duplicates' }).click()
           await cmdBar.expectState({
             stage: 'arguments',
             commandName: 'Pattern Circular 3D',
@@ -2538,7 +2538,7 @@ solid001 = extrude(sketch001, length = 5)`
         })
 
         await test.step('Edit use original', async () => {
-          await page.getByRole('button', { name: 'UseOriginal' }).click()
+          await page.getByRole('button', { name: 'Use original' }).click()
           await cmdBar.expectState({
             stage: 'arguments',
             commandName: 'Pattern Circular 3D',
@@ -2884,7 +2884,7 @@ solid001 = extrude(sketch001, length = 5)`
         })
 
         await test.step('Edit use original parameter', async () => {
-          await page.getByRole('button', { name: 'UseOriginal' }).click()
+          await page.getByRole('button', { name: 'Use original' }).click()
           await cmdBar.expectState({
             stage: 'arguments',
             commandName: 'Pattern Linear 3D',
@@ -3272,7 +3272,7 @@ extrude001 = extrude(sketch001, length = 30)
         })
 
         await test.step('Edit frame position', async () => {
-          await page.getByRole('button', { name: 'FramePosition' }).click()
+          await page.getByRole('button', { name: 'Frame position' }).click()
           await cmdBar.expectState({
             stage: 'arguments',
             commandName: 'GDT Flatness',
@@ -3306,7 +3306,7 @@ extrude001 = extrude(sketch001, length = 30)
         })
 
         await test.step('Edit frame plane', async () => {
-          await page.getByRole('button', { name: 'FramePlane' }).click()
+          await page.getByRole('button', { name: 'Frame plane' }).click()
           await cmdBar.expectState({
             stage: 'arguments',
             commandName: 'GDT Flatness',
@@ -3338,7 +3338,7 @@ extrude001 = extrude(sketch001, length = 30)
         })
 
         await test.step('Edit font size', async () => {
-          await page.getByRole('button', { name: 'FontSize' }).click()
+          await page.getByRole('button', { name: 'Font size' }).click()
           await cmdBar.expectState({
             stage: 'arguments',
             commandName: 'GDT Flatness',
@@ -3640,7 +3640,7 @@ extrude001 = extrude(sketch001, length = 30)
         })
 
         await test.step('Edit frame position', async () => {
-          await page.getByRole('button', { name: 'FramePosition' }).click()
+          await page.getByRole('button', { name: 'Frame position' }).click()
           await cmdBar.expectState({
             stage: 'arguments',
             commandName: 'GDT Datum',
@@ -3672,7 +3672,7 @@ extrude001 = extrude(sketch001, length = 30)
         })
 
         await test.step('Edit frame plane', async () => {
-          await page.getByRole('button', { name: 'FramePlane' }).click()
+          await page.getByRole('button', { name: 'Frame plane' }).click()
           await cmdBar.expectState({
             stage: 'arguments',
             commandName: 'GDT Datum',
@@ -3702,7 +3702,7 @@ extrude001 = extrude(sketch001, length = 30)
         })
 
         await test.step('Edit font size', async () => {
-          await page.getByRole('button', { name: 'FontSize' }).click()
+          await page.getByRole('button', { name: 'Font size' }).click()
           await cmdBar.expectState({
             stage: 'arguments',
             commandName: 'GDT Datum',
@@ -3962,7 +3962,7 @@ hole001 = hole::hole(
         },
         commandName: 'Hole',
       })
-      await page.getByRole('button', { name: 'CutAt' }).click()
+      await page.getByRole('button', { name: 'Cut at' }).click()
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'cutAt',
@@ -3994,7 +3994,7 @@ hole001 = hole::hole(
           HoleBottom: 'flat',
         },
       })
-      await page.getByRole('button', { name: 'HoleType' }).click()
+      await page.getByRole('button', { name: 'Hole type' }).click()
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'holeType',

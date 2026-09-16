@@ -8,6 +8,7 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 import {
   FILE_EXT,
   LEGACY_SKETCH_MODE_FEATURE_FLAG,
+  OPFS_CLOUD_FEATURE_FLAG,
   PROJECT_SETTINGS_FILE_NAME,
 } from '@src/lib/constants'
 import type { PromisifiedZooDesignStudioFS } from '@src/lib/fs-zds/interface'
@@ -15,7 +16,9 @@ import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import * as nodeFsP from 'fs/promises'
 
 // Some of these sketches are KCL 1.0, so editing them needs the legacy sketch flag.
-test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
+test.use({
+  userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG],
+})
 
 const exists = async (
   fs: PromisifiedZooDesignStudioFS,
@@ -119,10 +122,13 @@ test.describe(
   'when file tree creation navigates within the same project',
   { tag: ['@web'] },
   () => {
+    test.use({ userFeatures: [OPFS_CLOUD_FEATURE_FLAG] })
+
     test('creates a KCL file inside a folder without leaving the explorer disabled', async ({
       page,
       folderSetupFn,
       fs,
+      homePage,
       scene,
     }) => {
       const { dir } = await folderSetupFn(async (dir) => {
@@ -139,6 +145,10 @@ test.describe(
       })
       const u = await getUtils(page)
       await page.setViewportSize({ width: 1200, height: 500 })
+
+      // Let the reload from folderSetupFn finish initializing before replacing
+      // the document; WebKit otherwise interrupts in-flight OPFS reads.
+      await homePage.projectsLoaded()
 
       const startingFilePath = await fs.join(
         dir,

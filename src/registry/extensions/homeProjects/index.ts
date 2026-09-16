@@ -454,6 +454,10 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
     )
 
   const serviceImpl: HomeProjectActionsService = {
+    watchRemoteThumbnail: (remoteProjectId) =>
+      ctx.services
+        .optional(cloudProjectRelationshipsService)
+        ?.watchRemoteThumbnail(remoteProjectId),
     canOpen: (project) =>
       Boolean(
         (project.readWriteAccess &&

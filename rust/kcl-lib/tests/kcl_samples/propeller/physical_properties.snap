@@ -5,12 +5,12 @@ description: Physical properties propeller.kcl
 {
   "bounding_box": {
     "center": {
-      "x": 436.8799999879214,
+      "x": 0.0,
       "y": 0.0,
       "z": 0.0
     },
     "dimensions": {
-      "x": 1310.6400000241597,
+      "x": 311.6616194867398,
       "y": 2299.3684210526317,
       "z": 256.4766229013642
     },

@@ -37,7 +37,6 @@ description: Variables in memory after executing c-shape-solid.kcl
   },
   "bottomBridge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bottomBridge"
   },
   "cRingInnerDiameter": {
@@ -1633,11 +1632,9 @@ description: Variables in memory after executing c-shape-solid.kcl
   },
   "innerArc": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "innerArc"
   },
   "outerArc": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "outerArc"
   },
@@ -1651,7 +1648,6 @@ description: Variables in memory after executing c-shape-solid.kcl
     }
   },
   "topBridge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "topBridge"
   }

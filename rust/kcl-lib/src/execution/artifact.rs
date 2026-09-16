@@ -367,6 +367,7 @@ fn merge_gdt_annotation(old: &mut GdtAnnotationArtifact, new: Artifact) -> Optio
         return Some(new);
     };
     old.code_ref = new.code_ref;
+    old.consumed = new.consumed;
     None
 }
 
@@ -490,6 +491,16 @@ pub(super) fn build_artifact_graph(
         }
         if let ModelingCmd::SketchModeDisable(_) = artifact_command.command {
             current_plane_id = None;
+        }
+
+        // Some artifacts, including GD&T annotations, are recorded directly
+        // during execution instead of being created from an artifact command.
+        // Apply deletion before those artifacts are merged into the graph.
+        if let ModelingCmd::RemoveSceneObjects(remove) = &artifact_command.command {
+            let updates = mark_deleted_artifacts_consumed(exec_artifacts, &remove.object_ids);
+            for artifact in updates {
+                merge_artifact_into_map(exec_artifacts, artifact);
+            }
         }
 
         let artifact_updates = artifacts_to_update(
@@ -979,10 +990,16 @@ fn remap_artifact_for_clone(
         Artifact::ImportedGeometry(source) => Artifact::ImportedGeometry(ImportedGeometryArtifact {
             id: remap_id_for_clone(source.id, entity_id_map),
             code_ref: clone_code_ref.clone(),
+            consumed: if source.id == source_root_id {
+                false
+            } else {
+                source.consumed
+            },
         }),
         Artifact::GdtAnnotation(source) => Artifact::GdtAnnotation(GdtAnnotationArtifact {
             id: remap_id_for_clone(source.id, entity_id_map),
             code_ref: clone_code_ref.clone(),
+            consumed: source.consumed,
         }),
         // A named view has no engine entity, so it can never appear in a
         // clone's id map, and `clone()` takes only a sketch, solid or imported
@@ -1203,6 +1220,16 @@ fn mark_artifact_consumed_by_id(
             new_helix.consumed = true;
             return_arr.push(Artifact::Helix(new_helix));
         }
+        Artifact::ImportedGeometry(imported_geometry) => {
+            let mut new_imported_geometry = imported_geometry.clone();
+            new_imported_geometry.consumed = true;
+            return_arr.push(Artifact::ImportedGeometry(new_imported_geometry));
+        }
+        Artifact::GdtAnnotation(annotation) => {
+            let mut new_annotation = annotation.clone();
+            new_annotation.consumed = true;
+            return_arr.push(Artifact::GdtAnnotation(new_annotation));
+        }
         _ => {}
     }
 }
@@ -1350,6 +1377,7 @@ fn artifacts_to_update(
             return Ok(vec![Artifact::ImportedGeometry(ImportedGeometryArtifact {
                 id,
                 code_ref,
+                consumed: false,
             })]);
         }
         ModelingCmd::MakePlane(_) => {

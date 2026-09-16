@@ -37,7 +37,6 @@ description: Variables in memory after executing surface_extrude_edge_symmetric.
   },
   "a": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line1"
   },
   "b": {
@@ -46,11 +45,9 @@ description: Variables in memory after executing surface_extrude_edge_symmetric.
   },
   "circle1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "circle1"
   },
   "circle2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "circle2"
   },
@@ -533,7 +530,6 @@ description: Variables in memory after executing surface_extrude_edge_symmetric.
     }
   },
   "line1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line1"
   },

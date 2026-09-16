@@ -247,13 +247,14 @@ export type AnnotationMbdBasicDimension = {
  */
 symbol: MbdSymbol | null, 
 /**
- * The explicitly defined dimension.  Only required if the measurement is not automatically calculated.
+ * The explicitly defined dimension.
+ * Only required if the measurement is not automatically calculated.
  */
 dimension: number | null, 
 /**
  * The tolerance of the dimension
  */
-tolerance: number, };
+tolerance?: number | null, };
 
 /**
  * Parameters for defining an MBD Geometric control frame
@@ -268,7 +269,8 @@ symbol: MbdSymbol,
  */
 diameter_symbol: MbdSymbol | null, 
 /**
- * Tolerance value - the total tolerance of the geometric control.  The unit is based on the drawing standard.
+ * Tolerance value - the total tolerance of the geometric control.
+ * The unit is based on the drawing standard.
  */
 tolerance: number, 
 /**
@@ -479,7 +481,7 @@ tolerance: LengthUnit, };
  * aka non-coplanar.
  *
  * Prefer one `tool` over multiple when calling this feature.
- * 
+ *
  * Failure cases:
  * * A common failure is unsupported coplanar faces try to be unioned.
  *
@@ -521,7 +523,7 @@ tolerance: LengthUnit, };
  *
  * Most successful unions come from solids who's faces do not overlap
  * aka non-coplanar.
- * 
+ *
  * Failure cases:
  * * A common failure is unsupported coincident faces try to be unioned.
  *
@@ -3279,7 +3281,11 @@ highlight_color: Color | null,
 /**
  * The default color to use for selection
  */
-selection_color: Color | null, };
+selection_color: Color | null, 
+/**
+ * The default color to use for the edges of 3D bodies.
+ */
+edge_3d_color: Color | null, };
 
 /**
  * Set the grid lines to auto scale. The grid will get larger the further you zoom out,
@@ -3478,7 +3484,11 @@ use_legacy?: boolean,
 /**
  * Which version of the edge cut algorithm to use.
  */
-version?: EdgeCutVersion, };
+version?: EdgeCutVersion, 
+/**
+ * If true, also cut edges that are tangent to the selected edges.
+ */
+tangent_chain?: boolean, };
 
 /**
  * Cut the list of given edges with the given cut parameters.
@@ -3522,7 +3532,11 @@ use_legacy?: boolean,
 /**
  * Which version of the edge cut algorithm to use.
  */
-version?: EdgeCutVersion, };
+version?: EdgeCutVersion, 
+/**
+ * If true, also cut edges that are tangent to the selected edges.
+ */
+tangent_chain?: boolean, };
 
 /**
  * Fillets the given edge with the specified radius.

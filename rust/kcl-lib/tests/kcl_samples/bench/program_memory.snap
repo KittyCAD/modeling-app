@@ -202,46 +202,37 @@ description: Variables in memory after executing bench.kcl
   },
   "arc12": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc12"
   },
   "arc13": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc13"
   },
   "arc16": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc16"
   },
   "arc19": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc19"
   },
   "arc2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc2"
   },
   "arc20": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc20"
   },
   "arc3": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc3"
   },
   "arc4": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc4"
   },
   "arc8": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc8"
   },
@@ -17878,71 +17869,57 @@ description: Variables in memory after executing bench.kcl
   },
   "line1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line1"
   },
   "line10": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line10"
   },
   "line11": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line11"
   },
   "line14": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line14"
   },
   "line15": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line15"
   },
   "line17": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line17"
   },
   "line18": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line18"
   },
   "line2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line2"
   },
   "line3": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line3"
   },
   "line4": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line4"
   },
   "line5": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line5"
   },
   "line6": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line6"
   },
   "line7": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line7"
   },
   "line9": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line9"
   },

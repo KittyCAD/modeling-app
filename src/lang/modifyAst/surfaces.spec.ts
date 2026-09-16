@@ -64,7 +64,9 @@ beforeEach(async () => {
     return
   }
 
-  worldInThisFile = await buildTheWorldAndConnectToEngine()
+  worldInThisFile = await buildTheWorldAndConnectToEngine({
+    geometryOnly: true,
+  })
   const { instance, kclManager, engineCommandManager, rustContext } =
     worldInThisFile
   instanceInThisFile = instance

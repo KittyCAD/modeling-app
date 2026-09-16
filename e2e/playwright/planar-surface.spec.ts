@@ -137,9 +137,27 @@ chamfer001 = chamfer(extrude001, tags = getCommonEdge(faces = [region001.tags.li
         })
         await moveToEdge()
         await page.keyboard.down('Shift')
-        await page.mouse.down()
-        await page.mouse.up()
-        await page.keyboard.up('Shift')
+        try {
+          await page.mouse.down()
+          await page.mouse.up()
+          // The engine pick is asynchronous. Keep Shift down until the app
+          // applies it, then release it before asserting the command UI.
+          await expect
+            .poll(() =>
+              page.evaluate(() => {
+                const selections =
+                  window.app.singletons.kclManager.modelingState?.context
+                    .selectionRanges
+                return selections
+                  ? selections.graphSelections.length +
+                      selections.otherSelections.length
+                  : 0
+              })
+            )
+            .toBe(index + 1)
+        } finally {
+          await page.keyboard.up('Shift')
+        }
         await expect(
           page.getByText(
             `${index + 1} ${index === 0 ? 'edge' : 'edges'} selected`,
@@ -223,10 +241,20 @@ chamfer001 = chamfer(extrude001, tags = getCommonEdge(faces = [region001.tags.li
         highlightedHeaderArg: 'Profiles',
         commandName: 'Planar Surface',
       })
+      await scene.moveCameraTo({ x: 0, y: 100, z: 0 })
+      await scene.expectState({
+        camera: { position: [0, 100, 0], target: [0, 0, 0] },
+      })
+      await toolbar.closePane(DefaultLayoutPaneID.Logs)
+      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+      await editor.closePane()
       const [clickRegion] = scene.makeMouseHelpers(0.5, 0.5, {
         format: 'ratio',
       })
       await clickRegion()
+      await expect(
+        page.getByText('1 region selected', { exact: false })
+      ).toBeVisible()
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'review',
@@ -236,6 +264,7 @@ chamfer001 = chamfer(extrude001, tags = getCommonEdge(faces = [region001.tags.li
       await editor.expectEditor.not.toContain('planarSurface(')
       await cmdBar.submit()
       await scene.settled()
+      await editor.openPane()
       await editor.expectEditor.toContain(declaration)
       await editor.expectEditor.toContain('region001 = region(')
       await editor.expectEditor.toContain('hide(sketch001)')

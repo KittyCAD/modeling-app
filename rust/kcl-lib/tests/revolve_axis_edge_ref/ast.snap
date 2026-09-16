@@ -949,6 +949,7 @@ description: Result of parsing revolve_axis_edge_ref.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

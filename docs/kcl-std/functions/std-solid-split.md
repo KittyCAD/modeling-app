@@ -27,7 +27,7 @@ split(
 | `merge` | [`bool`](/docs/kcl-std/types/std-types-bool) | Whether to merge the bodies into one after. Defaults to false. | No |
 | `keepTools` | [`bool`](/docs/kcl-std/types/std-types-bool) | If false, the tool bodies will be removed from the scene. If true, they'll be kept. Defaults to false. | No |
 | `tools` | [[`Solid`](/docs/kcl-std/types/std-types-Solid)] | The tools to split the target bodies along. | No |
-| `legacyMethod` | [`bool`](/docs/kcl-std/types/std-types-bool) | **Deprecated as of KCL 2.0.** **Removed as of KCL 3.0.** You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm. If true, revert to older engine SSI algorithm. Defaults to false. | No |
+| `legacyMethod` | [`bool`](/docs/kcl-std/types/std-types-bool) | **Deprecated as of KCL 2.0.** **Removed in KCL 3.0.** You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm. If true, revert to older engine SSI algorithm. Defaults to false. | No |
 
 ### Returns
 
@@ -91,7 +91,7 @@ appearance(
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the split function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-split0_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-split0_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-split0.png"
@@ -124,7 +124,7 @@ cubes = split([cube1], tools = [cube2], merge = true)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the split function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-split1_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-split1_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-split1.png"
@@ -161,7 +161,7 @@ final = split(
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the split function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-split2_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-split2_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-split2.png"
@@ -193,7 +193,7 @@ final = split([goldCube], tools = [roseCube], merge = true)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the split function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-split3_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-split3_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-split3.png"
@@ -244,7 +244,7 @@ left = appearance(result[0], color = "#AA78A6")
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the split function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-split4_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-split4_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-split4.png"

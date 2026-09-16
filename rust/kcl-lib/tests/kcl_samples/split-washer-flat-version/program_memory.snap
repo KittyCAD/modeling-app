@@ -70,7 +70,6 @@ description: Variables in memory after executing split-washer-flat-version.kcl
   },
   "bottomEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bottomEdge"
   },
   "clearance": {
@@ -84,16 +83,13 @@ description: Variables in memory after executing split-washer-flat-version.kcl
   },
   "innerCircle": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "innerCircle"
   },
   "leftEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "leftEdge"
   },
   "outerCircle": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "outerCircle"
   },
@@ -228,7 +224,6 @@ description: Variables in memory after executing split-washer-flat-version.kcl
     }
   },
   "rightEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "rightEdge"
   },
@@ -405,7 +400,6 @@ description: Variables in memory after executing split-washer-flat-version.kcl
     }
   },
   "topEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "topEdge"
   },

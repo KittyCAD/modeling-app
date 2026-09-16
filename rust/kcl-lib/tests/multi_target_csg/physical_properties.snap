@@ -6,13 +6,13 @@ description: Physical properties multi_target_csg.kcl
   "bounding_box": {
     "center": {
       "x": 0.0,
-      "y": -1.7859514699999997,
+      "y": -2.243085271794347,
       "z": 0.0
     },
     "dimensions": {
       "x": 11.429999999999998,
-      "y": 8.65190294,
-      "z": 100.0
+      "y": 7.737635336411305,
+      "z": 11.429999999999998
     },
     "unit": "mm"
   },

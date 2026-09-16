@@ -5,13 +5,13 @@ description: Physical properties dining-table.kcl
 {
   "bounding_box": {
     "center": {
-      "x": 375.0,
-      "y": 1025.0,
+      "x": 400.0,
+      "y": 1050.0,
       "z": 375.0
     },
     "dimensions": {
-      "x": 850.0,
-      "y": 2150.0,
+      "x": 800.0,
+      "y": 2100.0,
       "z": 750.0
     },
     "unit": "mm"

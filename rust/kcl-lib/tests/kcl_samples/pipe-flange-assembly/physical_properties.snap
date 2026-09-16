@@ -7,12 +7,12 @@ description: Physical properties pipe-flange-assembly.kcl
     "center": {
       "x": 0.0,
       "y": -30.47999999999999,
-      "z": 56.78799999999998
+      "z": 59.20739999999998
     },
     "dimensions": {
       "x": 182.88,
       "y": 243.83999999999995,
-      "z": 213.57599999999996
+      "z": 208.73719999999997
     },
     "unit": "mm"
   },

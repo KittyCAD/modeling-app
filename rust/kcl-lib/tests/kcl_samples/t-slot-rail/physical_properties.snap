@@ -5,12 +5,12 @@ description: Physical properties t-slot-rail.kcl
 {
   "bounding_box": {
     "center": {
-      "x": -8.25500000000001,
+      "x": -19.05,
       "y": 304.8,
       "z": 19.05
     },
     "dimensions": {
-      "x": 67.31000000000003,
+      "x": 45.72000000000005,
       "y": 609.6,
       "z": 45.720000000000034
     },

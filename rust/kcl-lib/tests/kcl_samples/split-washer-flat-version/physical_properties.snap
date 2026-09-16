@@ -5,14 +5,14 @@ description: Physical properties split-washer-flat-version.kcl
 {
   "bounding_box": {
     "center": {
-      "x": 0.0,
+      "x": -0.01568651687479594,
       "y": 0.0,
-      "z": 0.30000000000000004
+      "z": 0.5
     },
     "dimensions": {
-      "x": 100.0,
-      "y": 100.0,
-      "z": 1.6
+      "x": 9.56235235950049,
+      "y": 9.6,
+      "z": 1.2000000000000002
     },
     "unit": "mm"
   },

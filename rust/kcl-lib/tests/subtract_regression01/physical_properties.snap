@@ -5,14 +5,14 @@ description: Physical properties subtract_regression01.kcl
 {
   "bounding_box": {
     "center": {
-      "x": 0.0,
+      "x": -3.1220788819170693,
       "y": 1.7410128797943545,
       "z": 0.0
     },
     "dimensions": {
-      "x": 100.0,
+      "x": 48.16350786473102,
       "y": 39.961958208478435,
-      "z": 100.0
+      "z": 12.7
     },
     "unit": "mm"
   },

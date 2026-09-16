@@ -2044,12 +2044,7 @@ const prepareToEditGdtFlatness: PrepareToEditCallback = async ({
   }
 
   const facesArg = operation.labeledArgs?.['faces']
-  const faces: Selections = {
-    graphSelections: facesArg?.sourceRange
-      ? extractFaceSelections(artifactGraph, facesArg)
-      : [],
-    otherSelections: [],
-  }
+  const faces = retrieveFaceAndEdgeSelectionsForEdit(artifactGraph, facesArg)
 
   const tolerance = await extractKclArgument(
     code,
@@ -2285,12 +2280,7 @@ const prepareToEditGdtDatum: PrepareToEditCallback = async ({
   }
 
   const faceArg = operation.labeledArgs?.['face']
-  const faces: Selections = {
-    graphSelections: faceArg?.sourceRange
-      ? extractFaceSelections(artifactGraph, faceArg)
-      : [],
-    otherSelections: [],
-  }
+  const faces = retrieveFaceAndEdgeSelectionsForEdit(artifactGraph, faceArg)
 
   // Extract name argument as a plain string (strip quotes if present)
   const nameRaw = extractStringArgument(code, operation, 'name')

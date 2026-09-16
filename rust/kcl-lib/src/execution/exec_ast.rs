@@ -88,6 +88,7 @@ use crate::execution::types::CoercionMode;
 use crate::execution::types::NumericTypeExt;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
+use crate::execution::types::type_value_named_by_segment;
 use crate::front::ArcDirection;
 use crate::front::LineCtor;
 use crate::front::Object;
@@ -98,6 +99,7 @@ use crate::modules::ModuleExecutionOutcome;
 use crate::modules::ModuleId;
 use crate::modules::ModulePath;
 use crate::modules::ModuleRepr;
+use crate::parsing::ast::types::ABSOLUTE_PATHS_NOT_SUPPORTED;
 use crate::parsing::ast::types::Annotation;
 use crate::parsing::ast::types::ArrayExpression;
 use crate::parsing::ast::types::ArrayRangeExpression;
@@ -1030,6 +1032,12 @@ impl ExecutorContext {
     ) -> Result<ModuleExecutionOutcome, (KclError, Option<EnvironmentRef>, Option<ModuleArtifactState>)> {
         crate::log::log(format!("enter module {path} {}", exec_state.stack()));
 
+        // KCL 3.0: reject an imported file whose declared kclVersion is not
+        // allowed with the entry point's before any of it executes.
+        exec_state
+            .check_imported_module_kcl_version(path, program, None)
+            .map_err(|err| (err, None, None))?;
+
         // When executing only the new statements in incremental execution or
         // mock executing for sketch mode, we need the scene objects that were
         // created during the last execution, which are in the execution cache.
@@ -1192,7 +1200,7 @@ impl ExecutorContext {
                     if exec_state.sketch_mode() {
                         continue;
                     }
-                    self.exec_type_declaration(ty, body_type, exec_state)?;
+                    self.exec_type_declaration(ty, body_type, exec_state).await?;
                     last_expr = None;
                 }
                 BodyItem::ReturnStatement(return_statement) => {
@@ -1290,6 +1298,19 @@ impl ExecutorContext {
         let module_id = self
             .open_module(&import_stmt.path, attrs, &module_path, exec_state, source_range)
             .await?;
+
+        // KCL 3.0: check the imported file's declared kclVersion at the import
+        // site as well. Mock execution runs a whole-module import's body only
+        // when the module is referenced, so for an unreferenced one this is
+        // the only place the check can run. In engine execution, every
+        // imported module's body (and so this check) ran before the root body
+        // got here.
+        if let ImportPath::Kcl { .. } = &import_stmt.path
+            && let Some(ModuleRepr::Kcl(program, _)) =
+                exec_state.global.module_infos.get(&module_id).map(|info| &info.repr)
+        {
+            exec_state.check_imported_module_kcl_version(&module_path, program, Some(source_range))?;
+        }
 
         if let ModulePath::Local { value, .. } = &module_path {
             let name = import_stmt
@@ -1458,7 +1479,7 @@ impl ExecutorContext {
     }
 
     /// Execute a type declaration. Flat; shared by both executors.
-    pub(super) fn exec_type_declaration(
+    pub(super) async fn exec_type_declaration(
         &self,
         ty: &Node<TypeDeclaration>,
         body_type: BodyType,
@@ -1507,11 +1528,12 @@ impl ExecutorContext {
                             RuntimeType::from_parsed(
                                 alias.inner.clone(),
                                 exec_state,
+                                self,
                                 metadata.source_range,
                                 attrs.impl_ == annotations::Impl::KclConstrainable,
                                 false,
                             )
-                            .map_err(|e| KclError::new_semantic(e.into()))?,
+                            .await?,
                         ),
                         meta: vec![metadata],
                         experimental: attrs.experimental,
@@ -1961,7 +1983,8 @@ impl ExecutorContext {
                 .continue_(),
             Expr::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, self).await?,
             Expr::FunctionExpression(function_expression) => self
-                .create_function_closure(function_expression, annotations, metadata, statement_kind, exec_state)?
+                .create_function_closure(function_expression, annotations, metadata, statement_kind, exec_state)
+                .await?
                 .continue_(),
             Expr::CallExpressionKw(call_expression) => call_expression.execute(exec_state, self).await?,
             Expr::PipeExpression(pipe_expression) => pipe_expression.get_result(exec_state, self).await?,
@@ -2029,7 +2052,7 @@ impl ExecutorContext {
     /// Create the closure value for a function expression, including the
     /// recursive-closure placeholder fixup and binding a named `fn name() {}`
     /// in the current scope. Flat; shared by both executors.
-    pub(super) fn create_function_closure(
+    pub(super) async fn create_function_closure(
         &self,
         function_expression: &crate::parsing::ast::types::BoxNode<FunctionExpression>,
         annotations: &[Node<Annotation>],
@@ -2107,7 +2130,7 @@ impl ExecutorContext {
         // the declaration is written. Call sites consume the stored
         // resolutions and never look type names up themselves.
         if let KclValue::Function { value, .. } = &mut closure {
-            value.resolve_signature_types(exec_state)?;
+            value.resolve_signature_types(exec_state, self).await?;
         }
 
         // If the function expression has a name, i.e. `fn name() {}`,
@@ -2240,33 +2263,12 @@ fn type_used_as_value(exec_state: &ExecState, name: &Node<Identifier>) -> Option
 /// Returns `None` when the segment does not name an enum, including when it
 /// names a type alias, since only an enum can head a `::` path. The caller then
 /// resolves the segment as a module instead.
-///
-/// This is the only place that builds a `__ty_` memory key, so the deferred
-/// typed-key refactor has one site to change.
 fn enum_named_by_segment(
     exec_state: &ExecState,
     segment: &Node<Identifier>,
     within: Option<&(EnvironmentRef, Vec<String>)>,
 ) -> Option<Arc<EnumTypeDef>> {
-    let key = format!("{}{}", memory::TYPE_PREFIX, segment.name);
-    let value = match within {
-        // Inside another module the enum must be exported to be reachable, and
-        // exports record the prefixed key rather than the bare name.
-        Some((env, exports)) => {
-            if !exports.contains(&key) {
-                return None;
-            }
-
-            exec_state
-                .stack()
-                .memory
-                .get_from_owned(&key, *env, segment.as_source_range(), 0)
-                .ok()?
-        }
-        None => exec_state.stack().get(&key, segment.as_source_range()).ok()?,
-    };
-
-    match value {
+    match type_value_named_by_segment(exec_state, segment, within)? {
         KclValue::Type {
             value: TypeDef::Enum(def),
             ..
@@ -2391,7 +2393,9 @@ impl Node<AscribedExpression> {
             .execute_expr(&self.expr, exec_state, &metadata, &[], StatementKind::Expression)
             .await?;
         let result = control_continue!(result);
-        apply_ascription(&result, &self.ty, exec_state, self.into()).map(KclValue::continue_)
+        apply_ascription(&result, &self.ty, exec_state, ctx, self.into())
+            .await
+            .map(KclValue::continue_)
     }
 }
 
@@ -3217,14 +3221,14 @@ impl Node<SketchVar> {
     }
 }
 
-pub(super) fn apply_ascription(
+pub(super) async fn apply_ascription(
     value: &KclValue,
     ty: &Node<Type>,
     exec_state: &mut ExecState,
+    ctx: &ExecutorContext,
     source_range: SourceRange,
 ) -> Result<KclValue, KclError> {
-    let ty = RuntimeType::from_parsed(ty.inner.clone(), exec_state, value.into(), false, false)
-        .map_err(|e| KclError::new_semantic(e.into()))?;
+    let ty = RuntimeType::from_parsed(ty.inner.clone(), exec_state, ctx, value.into(), false, false).await?;
 
     if matches!(&ty, &RuntimeType::Primitive(PrimitiveType::Number(..))) {
         exec_state.clear_units_warnings(&source_range);
@@ -3305,7 +3309,7 @@ impl Node<Name> {
     async fn get_result_inner(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         if self.abs_path {
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                "Absolute paths (names beginning with `::` are not yet supported)".to_owned(),
+                ABSOLUTE_PATHS_NOT_SUPPORTED.to_owned(),
                 self.as_source_ranges(),
             )));
         }

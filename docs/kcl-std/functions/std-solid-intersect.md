@@ -31,7 +31,7 @@ subsequent operations.
 |----------|------|-------------|----------|
 | `solids` | [[`Solid`](/docs/kcl-std/types/std-types-Solid); 2+] | The solids to intersect. Every input solid is consumed by this operation. | Yes |
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters. | No |
-| `legacyMethod` | [`bool`](/docs/kcl-std/types/std-types-bool) | **Deprecated as of KCL 2.0.** **Removed as of KCL 3.0.** You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm. If true, revert to older engine SSI algorithm. Defaults to false. | No |
+| `legacyMethod` | [`bool`](/docs/kcl-std/types/std-types-bool) | **Deprecated as of KCL 2.0.** **Removed in KCL 3.0.** You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm. If true, revert to older engine SSI algorithm. Defaults to false. | No |
 
 ### Returns
 
@@ -65,7 +65,7 @@ intersectedPart = intersect([part001, part002])
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the intersect function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-intersect0_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-intersect0_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-intersect0.png"
@@ -103,7 +103,7 @@ intersectedPart = part001 & part002
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the intersect function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-intersect1_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-intersect1_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-intersect1.png"

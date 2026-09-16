@@ -18,6 +18,7 @@ const cloudLibrary = {
 } satisfies ProjectLibrary
 
 const projectActions = {
+  watchRemoteThumbnail: vi.fn(() => vi.fn()),
   canOpen: vi.fn(() => false),
   canDuplicate: vi.fn(() => false),
   canRename: vi.fn(() => false),

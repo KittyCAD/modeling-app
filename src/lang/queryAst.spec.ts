@@ -72,7 +72,7 @@ beforeEach(async () => {
   }
 
   const { instance, kclManager, engineCommandManager, rustContext } =
-    await buildTheWorldAndConnectToEngine()
+    await buildTheWorldAndConnectToEngine({ geometryOnly: true })
   instanceInThisFile = instance
   kclManagerInThisFile = kclManager
   engineCommandManagerInThisFile = engineCommandManager
@@ -871,6 +871,7 @@ describe('Testing findOperationArtifact', () => {
     return {
       type: 'gdtAnnotation',
       id,
+      consumed: false,
       codeRef: {
         range: sourceRange,
         nodePath: defaultNodePath(),

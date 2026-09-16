@@ -135,51 +135,41 @@ description: Variables in memory after executing cold-plate.kcl
   },
   "arc1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc1"
   },
   "arc11": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc11"
   },
   "arc16": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc16"
   },
   "arc2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc2"
   },
   "arc20": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc20"
   },
   "arc24": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc24"
   },
   "arc3": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc3"
   },
   "arc4": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc4"
   },
   "arc6": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc6"
   },
   "arc7": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc7"
   },
@@ -13857,7 +13847,6 @@ description: Variables in memory after executing cold-plate.kcl
   },
   "innerCircle": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "innerCircle"
   },
   "leftFirstGrooveCenter": {
@@ -14184,116 +14173,93 @@ description: Variables in memory after executing cold-plate.kcl
   },
   "line1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line1"
   },
   "line10": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line10"
   },
   "line12": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line12"
   },
   "line13": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line13"
   },
   "line14": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line14"
   },
   "line15": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line15"
   },
   "line16": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line16"
   },
   "line17": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line17"
   },
   "line18": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line18"
   },
   "line19": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line19"
   },
   "line2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line2"
   },
   "line21": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line21"
   },
   "line22": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line22"
   },
   "line23": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line23"
   },
   "line25": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line25"
   },
   "line26": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line26"
   },
   "line3": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line3"
   },
   "line4": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line4"
   },
   "line5": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line5"
   },
   "line6": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line6"
   },
   "line7": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line7"
   },
   "line8": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line8"
   },
   "line9": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line9"
   },
@@ -14344,7 +14310,6 @@ description: Variables in memory after executing cold-plate.kcl
     ]
   },
   "outerCircle": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "outerCircle"
   },
