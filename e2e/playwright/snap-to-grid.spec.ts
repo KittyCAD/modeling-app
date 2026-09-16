@@ -1,6 +1,9 @@
 import type { Page } from '@playwright/test'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { LEGACY_SKETCH_MODE_FEATURE_FLAG } from '@src/lib/constants'
+import {
+  LEGACY_SKETCH_MODE_FEATURE_FLAG,
+  OPFS_CLOUD_FEATURE_FLAG,
+} from '@src/lib/constants'
 
 const waitForSettingsIdle = (page: Page) =>
   page.waitForFunction(() =>
@@ -77,6 +80,7 @@ test.describe(
   'Modern sketch snap to grid',
   { tag: ['@desktop', '@web'] },
   () => {
+    test.use({ userFeatures: [OPFS_CLOUD_FEATURE_FLAG] })
     test('snaps solver sketch points to the visible grid with feedback', async ({
       page,
       homePage,
@@ -219,6 +223,7 @@ test.describe(
 )
 
 test.describe('Sketch grid settings', { tag: ['@desktop', '@web'] }, () => {
+  test.use({ userFeatures: [OPFS_CLOUD_FEATURE_FLAG] })
   test('shows, updates, and persists the modern sketch grid', async ({
     page,
     homePage,

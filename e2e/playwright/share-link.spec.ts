@@ -1,9 +1,7 @@
-import {
-  closeOnboardingModalIfPresent,
-  waitForWebKitBillingToSettle,
-} from '@e2e/playwright/test-utils'
+import { waitForWebKitBillingToSettle } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
+import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 
 async function navigateAndClickOpenInDesktopApp(
   page: Page,
@@ -24,12 +22,12 @@ function getToastError(page: Page) {
 }
 
 test.describe('Share link tests', () => {
+  test.use({ userFeatures: [OPFS_CLOUD_FEATURE_FLAG] })
   test(
     `Open in desktop app with 2000-long code works non-Windows`,
     { tag: ['@web', '@macos', '@linux'] },
     async ({ page }) => {
       test.skip(process.platform === 'win32')
-      await closeOnboardingModalIfPresent(page)
 
       const codeLength = 2000
       await navigateAndClickOpenInDesktopApp(page, codeLength)
@@ -42,7 +40,6 @@ test.describe('Share link tests', () => {
     { tag: ['@web', '@windows'] },
     async ({ page }) => {
       test.skip(process.platform !== 'win32')
-      await closeOnboardingModalIfPresent(page)
 
       const codeLength = 1000
       await navigateAndClickOpenInDesktopApp(page, codeLength)
@@ -55,7 +52,6 @@ test.describe('Share link tests', () => {
     { tag: ['@web', '@windows'] },
     async ({ page }) => {
       test.skip(process.platform !== 'win32')
-      await closeOnboardingModalIfPresent(page)
 
       const codeLength = 2000
       await navigateAndClickOpenInDesktopApp(page, codeLength)
@@ -67,7 +63,6 @@ test.describe('Share link tests', () => {
     'should prefill demo project name on web',
     { tag: ['@web'] },
     async ({ page }) => {
-      await closeOnboardingModalIfPresent(page)
       await waitForWebKitBillingToSettle(page)
 
       const code = 'Zm9vYmFyID0gMQ==' // KCL: foobar = 1
