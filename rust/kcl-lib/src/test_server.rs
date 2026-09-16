@@ -185,25 +185,25 @@ pub async fn kcl_doc_execute_and_snapshot(
     let ctx = new_context(true, current_file, graphics.geometry_only()).await?;
     let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
 
-    let result = match graphics {
+    let result: Result<TestGraphicsArtifact, ExecError> = match graphics {
         TestGraphicsParams::EngineRender => execute_locally_and_render_on_engine(&ctx, program, None)
             .await
             .map(|(_, _, image)| TestGraphicsArtifact::Image(image))
-            .map_err(|err| err.error)?,
+            .map_err(|err| err.error),
         TestGraphicsParams::ExportAndRender => execute_export_and_render_locally(&ctx, program, None)
             .await
             .map(|(_, _, snap_3d)| TestGraphicsArtifact::ImageAndGlb {
                 image: snap_3d.image,
                 glb: snap_3d.glb,
             })
-            .map_err(|err| err.error)?,
-        TestGraphicsParams::None => {
-            _ = do_execute(&ctx, program, None).await.map_err(|err| err.error)?;
-            TestGraphicsArtifact::None
-        }
+            .map_err(|err| err.error),
+        TestGraphicsParams::None => do_execute(&ctx, program, None)
+            .await
+            .map_err(|err| err.error)
+            .map(|_| TestGraphicsArtifact::None),
     };
     ctx.close().await;
-    Ok(result)
+    result
 }
 
 /// Executes a kcl program and takes a snapshot of the result.
