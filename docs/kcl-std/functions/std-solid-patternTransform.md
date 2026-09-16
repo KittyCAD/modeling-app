@@ -91,7 +91,7 @@ sketch001 = startSketchOn(XZ)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the patternTransform function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-patternTransform0_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-patternTransform0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-patternTransform0.png"
@@ -120,7 +120,7 @@ sketch001 = startSketchOn(XZ)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the patternTransform function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-patternTransform1_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-patternTransform1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-patternTransform1.png"
@@ -175,7 +175,7 @@ myCubes = cube(length = width, center = [100, 0])
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the patternTransform function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-patternTransform2_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-patternTransform2_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-patternTransform2.png"
@@ -225,7 +225,7 @@ myCubes = cube(length = width, center = [100, 100])
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the patternTransform function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-patternTransform3_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-patternTransform3_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-patternTransform3.png"
@@ -267,7 +267,7 @@ vase = layer()
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the patternTransform function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-patternTransform4_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-patternTransform4_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-patternTransform4.png"
@@ -302,7 +302,7 @@ startSketchOn(XY)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the patternTransform function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-patternTransform5_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-patternTransform5_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-patternTransform5.png"
@@ -342,7 +342,7 @@ startSketchOn(XY)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the patternTransform function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-patternTransform6_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-patternTransform6_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-patternTransform6.png"

@@ -53,7 +53,7 @@ solid = extrude(region(segments = [profile.line1, profile.line2]), length = 2)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the solver::angle function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solver-angle0_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solver-angle0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solver-angle0.png"

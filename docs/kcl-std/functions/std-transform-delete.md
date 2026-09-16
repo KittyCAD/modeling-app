@@ -37,7 +37,18 @@ delete(cylinder)
 ```
 
 
-![Rendered example of delete 0](/kcl-test-outputs/serial_test_example_fn_std-transform-delete0.png)
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the delete function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-delete0_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-transform-delete0.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
 
 ```kcl
 // Example showing how to delete bodies after splitting them.
@@ -75,7 +86,7 @@ delete([result[2], result[0]])
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the delete function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-delete1_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-delete1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-transform-delete1.png"

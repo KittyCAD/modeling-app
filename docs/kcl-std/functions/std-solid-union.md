@@ -60,7 +60,7 @@ unionedPart = union([part001, part002])
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the union function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-union0_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-union0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-union0.png"
@@ -98,7 +98,7 @@ unionedPart = part001 + part002
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the union function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-union1_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-union1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-union1.png"
@@ -138,7 +138,7 @@ unionedPart = part001 | part002
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the union function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-union2_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-union2_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-union2.png"

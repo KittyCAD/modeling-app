@@ -85,7 +85,7 @@ scaled = sweep(pipeRegion, path = sweepPath)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the scale function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-scale0_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-scale0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-transform-scale0.png"
@@ -109,7 +109,7 @@ cube
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the scale function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-scale1_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-scale1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-transform-scale1.png"
@@ -149,7 +149,7 @@ scale(parts, z = 0.5)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the scale function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-scale2_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-scale2_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-transform-scale2.png"
@@ -180,7 +180,7 @@ button2 = startSketchOn(XY)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the scale function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-scale3_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-scale3_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-transform-scale3.png"
@@ -229,7 +229,7 @@ resized = scale(
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the scale function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-scale4_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-scale4_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-transform-scale4.png"

@@ -56,7 +56,7 @@ solid = extrude(region(segments = [profile.circle1, profile.edge1]), length = 2)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the solver::circle function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solver-circle0_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solver-circle0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solver-circle0.png"
