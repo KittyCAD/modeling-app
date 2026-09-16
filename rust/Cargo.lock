@@ -2848,6 +2848,7 @@ dependencies = [
  "regex",
  "reqwest",
  "rgba_simple",
+ "rmp-serde",
  "schemars 0.8.22",
  "serde",
  "serde_json",
