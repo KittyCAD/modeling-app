@@ -84,10 +84,9 @@ pyo3 = { workspace = true, optional = true }
 pyo3-stub-gen = { workspace = true, optional = true }
 rayon = { workspace = true }
 regex = "1.12.3"
-reqwest = { version = "0.12", default-features = false, features = [
+reqwest = { version = "0.13.2", default-features = false, features = [
   "stream",
-  "rustls-tls",
-  "rustls-tls-native-roots",
+  "rustls",
 ] }
 rgba_simple = "0.10.0"
 schemars = { version = "0.8.17", features = [
