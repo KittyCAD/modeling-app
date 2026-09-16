@@ -6,6 +6,35 @@ use tower_lsp::LanguageServer;
 
 // Create a fake kcl lsp server for testing.
 pub async fn kcl_lsp_server(execute: bool) -> Result<crate::lsp::kcl::Backend> {
+    let zoo_client =
+        kcl_lib::lsp_support::engine::new_zoo_client(if execute { None } else { Some("bad_token".to_string()) }, None)?;
+
+    let executor_ctx = if execute {
+        Some(crate::execution::ExecutorContext::new(&zoo_client, Default::default()).await?)
+    } else {
+        None
+    };
+    assert!(!execute || executor_ctx.is_some());
+
+    build_kcl_lsp_server(zoo_client, executor_ctx).await
+}
+
+/// Create a kcl lsp server that executes against a mock engine, so tests can
+/// reach execution-time diagnostics without an engine connection.
+///
+/// Only the in-crate tests use this. The benchmark, which is the other consumer
+/// of this module, builds its server with `kcl_lsp_server`.
+#[cfg(test)]
+pub async fn kcl_lsp_server_mock_execution() -> Result<crate::lsp::kcl::Backend> {
+    let zoo_client = kcl_lib::lsp_support::engine::new_zoo_client(Some("bad_token".to_string()), None)?;
+    let executor_ctx = crate::execution::ExecutorContext::new_mock(None).await;
+    build_kcl_lsp_server(zoo_client, Some(executor_ctx)).await
+}
+
+async fn build_kcl_lsp_server(
+    zoo_client: kittycad::Client,
+    executor_ctx: Option<crate::execution::ExecutorContext>,
+) -> Result<crate::lsp::kcl::Backend> {
     let kcl_std = crate::docs::kcl_doc::walk_stdlib();
     let stdlib_completions = crate::lsp::kcl::get_completions_from_stdlib(&kcl_std)?;
     let sketch_block_stdlib_completions = crate::lsp::kcl::get_completions_from_stdlib_for_sketch_block(&kcl_std)?;
@@ -15,17 +44,7 @@ pub async fn kcl_lsp_server(execute: bool) -> Result<crate::lsp::kcl::Backend> {
     let sketch_block_stdlib_args = crate::lsp::kcl::get_arg_maps_from_stdlib_for_sketch_block(&kcl_std);
     let kcl_keywords = crate::lsp::kcl::get_keywords();
 
-    let zoo_client =
-        kcl_lib::lsp_support::engine::new_zoo_client(if execute { None } else { Some("bad_token".to_string()) }, None)?;
-
-    let executor_ctx = if execute {
-        Some(crate::execution::ExecutorContext::new(&zoo_client, Default::default()).await?)
-    } else {
-        None
-    };
-
     let can_execute = executor_ctx.is_some();
-    assert!(!execute || can_execute);
 
     // Create the backend.
     let (service, _) = tower_lsp::LspService::build(|client| crate::lsp::kcl::Backend {

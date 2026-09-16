@@ -56,7 +56,7 @@ example = extrude(exampleSketch, length = 5)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the appearance function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-appearance0_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-appearance0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-appearance0.png"
@@ -79,7 +79,7 @@ sketch001 = startSketchOn(XY)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the appearance function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-appearance1_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-appearance1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-appearance1.png"
@@ -124,7 +124,7 @@ appearance(
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the appearance function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-appearance2_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-appearance2_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-appearance2.png"
@@ -154,7 +154,7 @@ shell(firstSketch, faces = [END], thickness = 0.25)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the appearance function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-appearance3_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-appearance3_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-appearance3.png"
@@ -184,7 +184,7 @@ shell(firstSketch, faces = [END], thickness = 0.25)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the appearance function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-appearance4_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-appearance4_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-appearance4.png"
@@ -214,7 +214,7 @@ example = extrude(exampleSketch, length = 1)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the appearance function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-appearance5_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-appearance5_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-appearance5.png"
@@ -244,7 +244,7 @@ example = extrude(exampleSketch, length = 1)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the appearance function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-appearance6_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-appearance6_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-appearance6.png"
@@ -278,7 +278,7 @@ example = extrude(exampleSketch, length = 1)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the appearance function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-appearance7_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-appearance7_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-appearance7.png"
@@ -316,7 +316,7 @@ sweep(pipeRegion, path = sweepPath)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the appearance function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-appearance8_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-appearance8_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-appearance8.png"
@@ -340,7 +340,7 @@ cube
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the appearance function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-appearance9_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-appearance9_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-appearance9.png"
@@ -357,6 +357,17 @@ offsetPlane(XZ, offset = 4mm)
 ```
 
 
-![Rendered example of appearance 10](/kcl-test-outputs/serial_test_example_fn_std-solid-appearance10.png)
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the appearance function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-appearance10_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solid-appearance10.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
 
 

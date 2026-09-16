@@ -64,7 +64,7 @@ bigCube
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the hole::hole function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-hole-hole0_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-hole-hole0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-hole-hole0.png"
@@ -104,7 +104,7 @@ bigCube
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the hole::hole function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-hole-hole1_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-hole-hole1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-hole-hole1.png"
@@ -146,7 +146,7 @@ drilledBlock = hole::hole(
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the hole::hole function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-hole-hole2_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-hole-hole2_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-hole-hole2.png"
