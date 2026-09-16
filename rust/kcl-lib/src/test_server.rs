@@ -45,6 +45,7 @@ pub struct Snapshot3d {
 /// Execute the kcl and ask the engine to render an image
 /// 2d kcl files can't be exported for local render
 /// Fails if geometry_only = true
+/// CTX should be closed by caller.
 pub async fn execute_locally_and_render_on_engine(
     ctx: &ExecutorContext,
     program: Program,
@@ -70,6 +71,7 @@ pub async fn execute_locally_and_render_on_engine(
 
 /// Execute the kcl then export the resulting glb and CPU render an image locally
 /// cheaper than engine render since we can use the engine in geometry-only mode.
+/// CTX should be closed by caller.
 pub async fn execute_export_and_render_locally(
     ctx: &ExecutorContext,
     program: Program,
@@ -88,8 +90,6 @@ pub async fn execute_export_and_render_locally(
     {
         Ok(f) => f,
         Err(err) => {
-            // Close the context to avoid any resource leaks.
-            ctx.close().await;
             return Err(ExecErrorWithState::new(
                 ExecError::BadExport(format!("Export failed: {err:?}")),
                 exec_state.clone(),
@@ -98,7 +98,6 @@ pub async fn execute_export_and_render_locally(
         }
     };
     if glb_blob_files.len() != 1 {
-        ctx.close().await;
         return Err(ExecErrorWithState::new(
             ExecError::BadExport(format!("Expected 1 glb file, found {}", glb_blob_files.len())),
             exec_state,
@@ -116,7 +115,6 @@ pub async fn execute_export_and_render_locally(
     let image = glb_render::render(&glb.bytes)
         .map_err(|e| ExecErrorWithState::new(ExecError::BadExport(e), exec_state.clone(), None))?;
 
-    ctx.close().await;
     let snap_3d = Snapshot3d { image, glb };
     Ok((exec_state, env_ref, snap_3d))
 }
