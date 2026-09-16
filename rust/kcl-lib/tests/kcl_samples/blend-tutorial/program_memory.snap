@@ -743,7 +743,6 @@ description: Variables in memory after executing blend-tutorial.kcl
   },
   "line1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line1"
   },
   "sketch001": {

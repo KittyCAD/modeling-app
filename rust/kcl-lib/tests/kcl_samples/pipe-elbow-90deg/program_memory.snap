@@ -2997,11 +2997,9 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
   },
   "elbowInnerCircle": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "elbowInnerCircle"
   },
   "elbowOuterCircle": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "elbowOuterCircle"
   },
@@ -3829,7 +3827,6 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
   },
   "flangeInnerCircle": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "flangeInnerCircle"
   },
   "flangeInsideDiameter": {
@@ -3842,7 +3839,6 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
     }
   },
   "flangeOuterCircle": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "flangeOuterCircle"
   },

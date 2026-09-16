@@ -37,7 +37,6 @@ description: Variables in memory after executing herringbone-gear.kcl
   },
   "bore": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bore"
   },
   "boreBody": {
@@ -816,7 +815,6 @@ description: Variables in memory after executing herringbone-gear.kcl
     }
   },
   "seg01": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "seg01"
   }

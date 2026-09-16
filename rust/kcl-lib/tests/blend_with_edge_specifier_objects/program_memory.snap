@@ -801,31 +801,25 @@ description: Variables in memory after executing blend_with_edge_specifier_objec
   },
   "rectangleSegmentA001": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "rectangleSegmentA001"
   },
   "rectangleSegmentA002": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "rectangleSegmentA002"
   },
   "seg01": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "seg01"
   },
   "seg02": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "seg02"
   },
   "seg03": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "seg03"
   },
   "seg04": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "seg04"
   },

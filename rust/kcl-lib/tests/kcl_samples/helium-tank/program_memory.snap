@@ -301,51 +301,41 @@ description: Variables in memory after executing helium-tank.kcl
   },
   "arc1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc1"
   },
   "arc13": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc13"
   },
   "arc15": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc15"
   },
   "arc2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc2"
   },
   "arc3": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc3"
   },
   "arc4": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc4"
   },
   "arc5": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc5"
   },
   "arc6": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc6"
   },
   "arc7": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc7"
   },
   "arc9": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc9"
   },
@@ -10377,111 +10367,89 @@ description: Variables in memory after executing helium-tank.kcl
   },
   "capEnd001": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "capEnd001"
   },
   "circle1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "circle1"
   },
   "innerArc10": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "innerArc10"
   },
   "innerArc2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "innerArc2"
   },
   "innerArc3": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "innerArc3"
   },
   "innerArc5": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "innerArc5"
   },
   "innerCircle": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "innerCircle"
   },
   "innerLine1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "innerLine1"
   },
   "innerLine11": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "innerLine11"
   },
   "innerLine4": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "innerLine4"
   },
   "innerLine6": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "innerLine6"
   },
   "innerLine8": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "innerLine8"
   },
   "line1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line1"
   },
   "line10": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line10"
   },
   "line11": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line11"
   },
   "line12": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line12"
   },
   "line14": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line14"
   },
   "line16": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line16"
   },
   "line17": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line17"
   },
   "line18": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line18"
   },
   "line2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line2"
   },
   "line8": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line8"
   },
@@ -12241,51 +12209,41 @@ description: Variables in memory after executing helium-tank.kcl
   },
   "outerArc10": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "outerArc10"
   },
   "outerArc2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "outerArc2"
   },
   "outerArc3": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "outerArc3"
   },
   "outerArc5": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "outerArc5"
   },
   "outerCircle": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "outerCircle"
   },
   "outerLine1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "outerLine1"
   },
   "outerLine11": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "outerLine11"
   },
   "outerLine4": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "outerLine4"
   },
   "outerLine6": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "outerLine6"
   },
   "outerLine8": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "outerLine8"
   },

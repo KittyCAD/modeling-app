@@ -2799,7 +2799,6 @@ description: Variables in memory after executing flange.kcl
   },
   "bottomHole": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bottomHole"
   },
   "bottomThickness": {
@@ -2830,7 +2829,6 @@ description: Variables in memory after executing flange.kcl
     }
   },
   "circle1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "circle1"
   },
@@ -4076,7 +4074,6 @@ description: Variables in memory after executing flange.kcl
   },
   "leftHole": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "leftHole"
   },
   "mountingHoleDia": {
@@ -4125,7 +4122,6 @@ description: Variables in memory after executing flange.kcl
     }
   },
   "outerCircle": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "outerCircle"
   },
@@ -4688,7 +4684,6 @@ description: Variables in memory after executing flange.kcl
   },
   "rightHole": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "rightHole"
   },
   "topBossProfile": {
@@ -5113,7 +5108,6 @@ description: Variables in memory after executing flange.kcl
     }
   },
   "topHole": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "topHole"
   },
