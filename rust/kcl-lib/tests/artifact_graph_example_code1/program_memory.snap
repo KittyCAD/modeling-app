@@ -372,11 +372,9 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
   },
   "seg01": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "seg01"
   },
   "seg02": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "seg02"
   },

@@ -37,16 +37,13 @@ description: Variables in memory after executing surface_extrude_edge_specifier_
   },
   "capEnd": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "capEnd"
   },
   "circle1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "circle1"
   },
   "circle2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "circle2"
   },
@@ -716,7 +713,6 @@ description: Variables in memory after executing surface_extrude_edge_specifier_
     }
   },
   "line1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line1"
   },

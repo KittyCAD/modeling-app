@@ -135,7 +135,6 @@ description: Variables in memory after executing camshaft.kcl
   },
   "baseArc": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "baseArc"
   },
   "baseCircle": {
@@ -148,7 +147,6 @@ description: Variables in memory after executing camshaft.kcl
     }
   },
   "bore": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "bore"
   },
@@ -2525,7 +2523,6 @@ description: Variables in memory after executing camshaft.kcl
   },
   "leftFlank": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "leftFlank"
   },
   "length": {
@@ -2548,21 +2545,17 @@ description: Variables in memory after executing camshaft.kcl
   },
   "noseArc": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "noseArc"
   },
   "rightFlank": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "rightFlank"
   },
   "seg01": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "seg01"
   },
   "shaft": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "shaft"
   },

@@ -16,6 +16,7 @@ describe('useOnWebsocketClose', () => {
         await buildTheWorldAndNoEngineConnection(true)
       const { unmount } = renderHook(() =>
         useOnWebsocketClose({
+          abnormalCloseRetries: { current: 0 },
           callback,
           infiniteDetectionLoopCallback: infiniteLoopCallback,
           engineCommandManager,
@@ -34,6 +35,7 @@ describe('useOnWebsocketClose', () => {
       const spyRemove = vi.spyOn(engineCommandManager, 'removeEventListener')
       const { unmount } = renderHook(() =>
         useOnWebsocketClose({
+          abnormalCloseRetries: { current: 0 },
           callback,
           infiniteDetectionLoopCallback: infiniteLoopCallback,
           engineCommandManager,
@@ -50,6 +52,7 @@ describe('useOnWebsocketClose', () => {
         await buildTheWorldAndNoEngineConnection(true)
       const { unmount } = renderHook(() =>
         useOnWebsocketClose({
+          abnormalCloseRetries: { current: 0 },
           callback,
           infiniteDetectionLoopCallback: infiniteLoopCallback,
           engineCommandManager,
@@ -71,6 +74,7 @@ describe('useOnWebsocketClose', () => {
           await buildTheWorldAndNoEngineConnection(true)
         const { unmount } = renderHook(() =>
           useOnWebsocketClose({
+            abnormalCloseRetries: { current: 0 },
             callback,
             infiniteDetectionLoopCallback: infiniteLoopCallback,
             engineCommandManager,
@@ -94,6 +98,7 @@ describe('useOnWebsocketClose', () => {
         await buildTheWorldAndNoEngineConnection(true)
       const { unmount } = renderHook(() =>
         useOnWebsocketClose({
+          abnormalCloseRetries: { current: 0 },
           callback,
           infiniteDetectionLoopCallback: infiniteLoopCallback,
           engineCommandManager,
@@ -105,13 +110,15 @@ describe('useOnWebsocketClose', () => {
       unmount()
     })
 
-    test('should call infinite detection loop callback on close event', async () => {
+    test('requires manual recovery after three abnormal closes', async () => {
+      const abnormalCloseRetries = { current: 0 }
       const callback = vi.fn(() => 1)
       const infiniteLoopCallback = vi.fn(() => 1)
       const { engineCommandManager } =
         await buildTheWorldAndNoEngineConnection(true)
-      const { unmount } = renderHook(() =>
+      const { rerender, unmount } = renderHook(() =>
         useOnWebsocketClose({
+          abnormalCloseRetries,
           callback,
           infiniteDetectionLoopCallback: infiniteLoopCallback,
           engineCommandManager,
@@ -125,11 +132,21 @@ describe('useOnWebsocketClose', () => {
           },
         }
       )
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        engineCommandManager.dispatchEvent(infiniteEvent)
+        expect(callback).toHaveBeenCalledTimes(attempt)
+        expect(infiniteLoopCallback).not.toHaveBeenCalled()
+        rerender()
+      }
       engineCommandManager.dispatchEvent(infiniteEvent)
-      unmount()
-      expect(callback).toHaveBeenCalledTimes(0)
+      expect(callback).toHaveBeenCalledTimes(3)
       expect(infiniteLoopCallback).toHaveBeenCalledTimes(1)
       expect(infiniteLoopCallback).toHaveBeenCalledWith('1006')
+      abnormalCloseRetries.current = 0
+      engineCommandManager.dispatchEvent(infiniteEvent)
+      expect(callback).toHaveBeenCalledTimes(4)
+      expect(infiniteLoopCallback).toHaveBeenCalledTimes(1)
+      unmount()
     })
     test.each([false, true])(
       'routes terminal errors without reconnecting (reconnectRequested=%s)',
@@ -141,6 +158,7 @@ describe('useOnWebsocketClose', () => {
           await buildTheWorldAndNoEngineConnection(true)
         const { unmount } = renderHook(() =>
           useOnWebsocketClose({
+            abnormalCloseRetries: { current: 0 },
             callback,
             infiniteDetectionLoopCallback: infiniteLoopCallback,
             terminalErrorCallback,

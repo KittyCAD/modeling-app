@@ -37,51 +37,41 @@ description: Variables in memory after executing crab_mirror_region.kcl
   },
   "belly": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "belly"
   },
   "bodyAfterClaw": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "bodyAfterClaw"
   },
   "bodyToEye": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bodyToEye"
   },
   "bodyToLeg1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "bodyToLeg1"
   },
   "bodyToLeg2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bodyToLeg2"
   },
   "bodyToLeg3": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "bodyToLeg3"
   },
   "clawNotch": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "clawNotch"
   },
   "clawOuterLower": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "clawOuterLower"
   },
   "clawReturn": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "clawReturn"
   },
   "clawUpperArm": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "clawUpperArm"
   },
@@ -6558,76 +6548,61 @@ description: Variables in memory after executing crab_mirror_region.kcl
   },
   "eyeBulb": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "eyeBulb"
   },
   "eyeStalkInner": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "eyeStalkInner"
   },
   "eyeStalkOuter": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "eyeStalkOuter"
   },
   "eyeToClaw": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "eyeToClaw"
   },
   "leg1Lower": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "leg1Lower"
   },
   "leg1Tip": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "leg1Tip"
   },
   "leg1Upper": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "leg1Upper"
   },
   "leg2Lower": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "leg2Lower"
   },
   "leg2Tip": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "leg2Tip"
   },
   "leg2Upper": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "leg2Upper"
   },
   "leg3Lower": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "leg3Lower"
   },
   "leg3Tip": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "leg3Tip"
   },
   "leg3Upper": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "leg3Upper"
   },
   "lowerPincer": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "lowerPincer"
   },
   "upperPincer": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "upperPincer"
   }

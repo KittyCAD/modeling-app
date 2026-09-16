@@ -737,6 +737,10 @@ async fn physical_properties(ctx: &ExecutorContext) -> Option<serde_json::Value>
 }
 
 async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
+    crate::set_kcl_runtime_flags(crate::KclRuntimeFlags {
+        enable_z0006_lint: crate::RuntimeFlag::On,
+        ..Default::default()
+    });
     let input = test.read();
     let ast = crate::Program::parse_no_errs(&input).unwrap();
     let program_to_lint = ast.clone();
@@ -858,9 +862,9 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
             ctx.close().await;
 
             let mut snapshot_results = common_snapshots(test, program_memory, responses);
-            if let Some(_physical_properties) = physical_properties {
+            if let Some(physical_properties) = physical_properties {
                 snapshot_results.push(catch_unwind(AssertUnwindSafe(|| {
-                    // assert_physical_properties_snapshot(test, physical_properties)
+                    assert_physical_properties_snapshot(test, physical_properties)
                 })));
             } else {
                 let physical_properties_snap_path = test.output_dir.join("physical_properties.snap");

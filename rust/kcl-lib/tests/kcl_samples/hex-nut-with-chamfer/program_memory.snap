@@ -306,7 +306,6 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
   },
   "chamferEndFace": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "chamferEndFace"
   },
   "chamferLength": {
@@ -489,7 +488,6 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
     }
   },
   "chamferStartFace": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "chamferStartFace"
   },
@@ -694,7 +692,6 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
     }
   },
   "circle1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "circle1"
   },
@@ -2093,31 +2090,25 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
   },
   "line1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line1"
   },
   "line2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line2"
   },
   "line3": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line3"
   },
   "line4": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line4"
   },
   "line5": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line5"
   },
   "line6": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line6"
   },

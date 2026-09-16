@@ -20,6 +20,9 @@ line(
 
 This is part of sketch v1 and is deprecated in favor of
 [sketch-solve](/docs/kcl-std/modules/std-solver).
+Legacy sketch functions cannot be used with constraints; strongly prefer
+[`solver::line`](/docs/kcl-std/functions/std-solver-line) inside a `sketch`
+block instead.
 
 ### Arguments
 

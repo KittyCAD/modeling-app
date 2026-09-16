@@ -24,6 +24,9 @@ arc(
 
 This is part of sketch v1 and is deprecated in favor of
 [sketch-solve](/docs/kcl-std/modules/std-solver).
+Legacy sketch functions cannot be used with constraints; strongly prefer
+[`solver::arc`](/docs/kcl-std/functions/std-solver-arc) inside a `sketch`
+block instead.
 
 The arc is constructed such that the current position of the sketch is
 placed along an imaginary circle of the specified radius, at angleStart

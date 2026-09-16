@@ -261,16 +261,13 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
   },
   "thing": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "thing"
   },
   "thing2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "thing2"
   },
   "thing3": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "thing3"
   }

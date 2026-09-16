@@ -4992,7 +4992,6 @@ description: Variables in memory after executing ceiling-fan.kcl
   },
   "bottomEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bottomEdge"
   },
   "ceilingFan": {
@@ -8042,66 +8041,53 @@ description: Variables in memory after executing ceiling-fan.kcl
   },
   "innerArc": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "innerArc"
   },
   "outerEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "outerEdge"
   },
   "rootNeckLeft": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "rootNeckLeft"
   },
   "rootNeckRight": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "rootNeckRight"
   },
   "rootSeamLeft": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "rootSeamLeft"
   },
   "rootSeamRight": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "rootSeamRight"
   },
   "spanLeft": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "spanLeft"
   },
   "spanRight": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "spanRight"
   },
   "tipArcLeft": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "tipArcLeft"
   },
   "tipArcRight": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "tipArcRight"
   },
   "tipFlatLeft": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "tipFlatLeft"
   },
   "tipFlatRight": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "tipFlatRight"
   },
   "topEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "topEdge"
   },

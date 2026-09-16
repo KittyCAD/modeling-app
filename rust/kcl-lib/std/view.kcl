@@ -8,7 +8,7 @@
 @no_std
 @settings(defaultLengthUnit = mm, kclVersion = 2.0, experimentalFeatures = allow)
 
-import GdtAnnotation, Point3d, Sketch, Solid from "std::types"
+import GdtAnnotation, Helix, Plane, Point3d, Sketch, Solid from "std::types"
 
 /// A standard camera orientation for a named view.
 ///
@@ -218,6 +218,44 @@ export fn directed(
 /// Duplicates in `except` are dropped, so listing an object twice does the same
 /// as listing it once.
 ///
+/// ## Plane support
+///
+/// A named view can control only an independently visible plane.
+///
+/// Supported planes:
+///
+/// - A plane returned by `offsetPlane()` that has not been used as the support
+///   plane for a sketch.
+///
+/// Unsupported planes:
+///
+/// - The default planes:
+///   - `XY`.
+///   - `-XY`.
+///   - `XZ`.
+///   - `-XZ`.
+///   - `YZ`.
+///   - `-YZ`.
+/// - A plane returned by `offsetPlane()` after it has been used as the support
+///   plane for a sketch. The executor hides that plane as sketch support.
+/// - A plane returned by `planeOf()`, whether it remains unused or is used as
+///   sketch support. The engine creates it as hidden construction geometry.
+/// - An object coerced to `Plane`. It describes a plane but does not have the
+///   internal properties of a plane object that can be used by a named view.
+///
+/// Unsupported planes are handled in two ways:
+///
+/// - Passing a default plane or an object coerced to `Plane` causes
+///   `view::named()` to return an error.
+/// - Passing a `planeOf()` result or an offset plane used as sketch support
+///   still creates the named view. That plane is omitted when the view is
+///   activated, so listing it in `except` has no effect and does not reveal the
+///   construction geometry that the executor hid.
+///
+/// Passing a `planeOf()` result to `offsetPlane()` creates a new plane. That new
+/// result is supported if it is not subsequently used as sketch support; the
+/// original `planeOf()` result remains unsupported.
+///
 /// ```kcl,norun
 /// @settings(kclVersion = 2.0, experimentalFeatures = allow)
 ///
@@ -297,5 +335,5 @@ export fn named(
   baseline: Visibility,
   /// The objects the baseline does not apply to: the hidden ones under a
   /// `Show` baseline, and the only visible ones under `Hide`.
-  except?: [Solid | Sketch | GdtAnnotation; 1+],
+  except?: [Solid | Sketch | GdtAnnotation | Helix | Plane | ImportedGeometry; 1+],
 ): NamedView {}

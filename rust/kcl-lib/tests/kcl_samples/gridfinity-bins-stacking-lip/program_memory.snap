@@ -232,26 +232,21 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
   },
   "arc1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc1"
   },
   "arc2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc2"
   },
   "arc4": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc4"
   },
   "arc6": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc6"
   },
   "arc8": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc8"
   },
@@ -22085,41 +22080,33 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
   },
   "line1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line1"
   },
   "line2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line2"
   },
   "line3": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line3"
   },
   "line4": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line4"
   },
   "line5": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line5"
   },
   "line6": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line6"
   },
   "line7": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line7"
   },
   "line8": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line8"
   },
@@ -33826,7 +33813,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
     }
   },
   "magPocket": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "magPocket"
   },

@@ -345,11 +345,9 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
   },
   "innerEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "innerEdge"
   },
   "outerEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "outerEdge"
   },
@@ -363,7 +361,6 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
     }
   },
   "seg01": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "seg01"
   },

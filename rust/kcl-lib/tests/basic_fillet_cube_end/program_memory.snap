@@ -243,11 +243,9 @@ description: Variables in memory after executing basic_fillet_cube_end.kcl
   },
   "thing": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "thing"
   },
   "thing2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "thing2"
   }

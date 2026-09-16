@@ -359,7 +359,6 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
   },
   "beveledFace": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "beveledFace"
   },
   "body": {
@@ -631,7 +630,6 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
     }
   },
   "bottom": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "bottom"
   },
@@ -1229,26 +1227,21 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
   },
   "left": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "left"
   },
   "line1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line1"
   },
   "line2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line2"
   },
   "line3": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line3"
   },
   "line4": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line4"
   },
@@ -3236,7 +3229,6 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
   },
   "right": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "right"
   },
   "rounded": {
@@ -3531,16 +3523,13 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
   },
   "roundedFace": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "roundedFace"
   },
   "top": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "top"
   },
   "topCap": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "topCap"
   }

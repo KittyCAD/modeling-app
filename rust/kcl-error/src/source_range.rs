@@ -5,11 +5,51 @@ use serde::Deserialize;
 use serde::Serialize;
 
 /// Identifier of a source file.  Uses a u32 to keep the size small.
-#[derive(
-    Debug, Default, Ord, PartialOrd, Eq, PartialEq, Clone, Copy, Hash, Deserialize, Serialize, ts_rs::TS, JsonSchema,
-)]
+#[derive(Debug, Default, Ord, PartialOrd, Eq, PartialEq, Clone, Copy, Hash, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 pub struct ModuleId(u32);
+
+impl<'de> Deserialize<'de> for ModuleId {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        struct ModuleIdVisitor;
+
+        impl serde::de::Visitor<'_> for ModuleIdVisitor {
+            type Value = ModuleId;
+
+            fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+                formatter.write_str("a u32 module ID or its decimal string representation")
+            }
+
+            fn visit_u64<E: serde::de::Error>(self, value: u64) -> Result<ModuleId, E> {
+                u32::try_from(value)
+                    .map(ModuleId)
+                    .map_err(|_| E::invalid_value(serde::de::Unexpected::Unsigned(value), &self))
+            }
+
+            fn visit_i64<E: serde::de::Error>(self, value: i64) -> Result<ModuleId, E> {
+                u32::try_from(value)
+                    .map(ModuleId)
+                    .map_err(|_| E::invalid_value(serde::de::Unexpected::Signed(value), &self))
+            }
+
+            fn visit_str<E: serde::de::Error>(self, value: &str) -> Result<ModuleId, E> {
+                value
+                    .parse::<u32>()
+                    .map(ModuleId)
+                    .map_err(|_| E::invalid_value(serde::de::Unexpected::Str(value), &self))
+            }
+        }
+
+        // Untagged enums buffer JSON map keys as strings, bypassing serde_json's
+        // usual conversion of numeric keys. Accept those strings without changing
+        // how module IDs are serialized as values or in binary formats.
+        if deserializer.is_human_readable() {
+            deserializer.deserialize_any(ModuleIdVisitor)
+        } else {
+            deserializer.deserialize_u32(ModuleIdVisitor)
+        }
+    }
+}
 
 impl ModuleId {
     pub fn from_usize(id: usize) -> Self {

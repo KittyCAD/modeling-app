@@ -525,7 +525,6 @@ description: Variables in memory after executing color-cube.kcl
   },
   "bottomEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bottomEdge"
   },
   "extrudeLength": {
@@ -2362,7 +2361,6 @@ description: Variables in memory after executing color-cube.kcl
   },
   "leftEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "leftEdge"
   },
   "metalConstant": {
@@ -3352,7 +3350,6 @@ description: Variables in memory after executing color-cube.kcl
   },
   "rightEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "rightEdge"
   },
   "roughnessConstant": {
@@ -3862,7 +3859,6 @@ description: Variables in memory after executing color-cube.kcl
     }
   },
   "topEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "topEdge"
   },

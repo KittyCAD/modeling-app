@@ -18,6 +18,7 @@ import {
   isOutOfViewInScrollContainer,
   runningOnWindows,
 } from '@e2e/playwright/test-utils'
+import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
@@ -1341,7 +1342,7 @@ test(
     tag: '@desktop',
   },
   async ({ page, tronApp, homePage, folderSetupFn }, testInfo) => {
-    if (!tronApp) throw new Error('tronApp is missing.')
+    if (!tronApp) throwTronAppMissing()
 
     await folderSetupFn(async (dir) => {
       await Promise.all([
