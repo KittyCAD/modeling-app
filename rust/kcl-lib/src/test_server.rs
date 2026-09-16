@@ -45,6 +45,7 @@ pub struct Snapshot3d {
 /// Execute the kcl and ask the engine to render an image
 /// 2d kcl files can't be exported for local render
 /// Fails if geometry_only = true
+/// CTX should be closed by caller.
 pub async fn execute_locally_and_render_on_engine(
     ctx: &ExecutorContext,
     program: Program,
@@ -70,6 +71,7 @@ pub async fn execute_locally_and_render_on_engine(
 
 /// Execute the kcl then export the resulting glb and CPU render an image locally
 /// cheaper than engine render since we can use the engine in geometry-only mode.
+/// CTX should be closed by caller.
 pub async fn execute_export_and_render_locally(
     ctx: &ExecutorContext,
     program: Program,
@@ -88,8 +90,6 @@ pub async fn execute_export_and_render_locally(
     {
         Ok(f) => f,
         Err(err) => {
-            // Close the context to avoid any resource leaks.
-            ctx.close().await;
             return Err(ExecErrorWithState::new(
                 ExecError::BadExport(format!("Export failed: {err:?}")),
                 exec_state.clone(),
@@ -185,25 +185,25 @@ pub async fn kcl_doc_execute_and_snapshot(
     let ctx = new_context(true, current_file, graphics.geometry_only()).await?;
     let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
 
-    let result = match graphics {
+    let result: Result<TestGraphicsArtifact, ExecError> = match graphics {
         TestGraphicsParams::EngineRender => execute_locally_and_render_on_engine(&ctx, program, None)
             .await
             .map(|(_, _, image)| TestGraphicsArtifact::Image(image))
-            .map_err(|err| err.error)?,
+            .map_err(|err| err.error),
         TestGraphicsParams::ExportAndRender => execute_export_and_render_locally(&ctx, program, None)
             .await
             .map(|(_, _, snap_3d)| TestGraphicsArtifact::ImageAndGlb {
                 image: snap_3d.image,
                 glb: snap_3d.glb,
             })
-            .map_err(|err| err.error)?,
-        TestGraphicsParams::None => {
-            _ = do_execute(&ctx, program, None).await.map_err(|err| err.error)?;
-            TestGraphicsArtifact::None
-        }
+            .map_err(|err| err.error),
+        TestGraphicsParams::None => do_execute(&ctx, program, None)
+            .await
+            .map_err(|err| err.error)
+            .map(|_| TestGraphicsArtifact::None),
     };
     ctx.close().await;
-    Ok(result)
+    result
 }
 
 /// Executes a kcl program and takes a snapshot of the result.
