@@ -327,7 +327,7 @@ export async function tryConnecting({
   })
   return connection
 }
-export const useTryConnect = () => {
+export const useTryConnect = (onConnected: () => void) => {
   const { kclManager } = useSingletons()
   const isConnecting = useRef(false)
   const numberOfConnectionAttempts = useRef(0)
@@ -341,14 +341,19 @@ export const useTryConnect = () => {
   >
 
   return {
-    tryConnecting: (args: TryConnectingArgs) =>
-      tryConnecting({
+    tryConnecting: async (args: TryConnectingArgs) => {
+      const result = await tryConnecting({
         ...args,
         engineCommandManager: kclManager.engineCommandManager,
         kclManager,
         rustContext: kclManager.rustContext,
         abnormalCloseRetries,
-      }),
+      })
+      // Only reveal the new stream after KCL and the camera are restored,
+      // including when connection setup needed more than one attempt.
+      if (result === 'connected') onConnected()
+      return result
+    },
     isConnecting,
     numberOfConnectionAttempts,
     abnormalCloseRetries,

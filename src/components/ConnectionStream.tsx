@@ -1,6 +1,7 @@
 import { useAppState } from '@src/AppState'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
 import Loading from '@src/components/Loading'
+import { Spinner } from '@src/components/Spinner'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
 import { useOnOfflineToExitSketchMode } from '@src/hooks/network/useOnOfflineToExitSketchMode'
 import { useOnPageExit } from '@src/hooks/network/useOnPageExit'
@@ -43,12 +44,13 @@ import {
 } from '@src/lib/selections'
 import { getResolvedTheme, Themes } from '@src/lib/theme'
 import { err, reportRejection } from '@src/lib/trap'
+import { showFreezeFrame, showLiveVideoOnNextFrame } from '@src/lib/videoStream'
 import type {
   EngineSceneExtensionContext,
   EngineSceneStreamLayer,
 } from '@src/registry/contracts/engineScene'
 import type { MouseEventHandler } from 'react'
-import { use, useCallback, useMemo, useRef, useState } from 'react'
+import { use, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 
 const TIME_TO_CONNECT = 30_000
@@ -80,6 +82,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const engineCommandManager = kclManager.engineCommandManager
   const sceneInfra = kclManager.sceneInfra
   const [showManualConnect, setShowManualConnect] = useState(false)
+  const [isWakingFromIdle, setIsWakingFromIdle] = useState(false)
   const isIdle = useRef(false)
   const [isSceneReady, setIsSceneReady] = useState(false)
   const settingsValues = settings.useSettings()
@@ -102,12 +105,36 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
     isConnecting,
     numberOfConnectionAttempts,
     abnormalCloseRetries,
-  } = useTryConnect()
+  } = useTryConnect(() => {
+    if (!videoRef.current || !canvasRef.current) return
+    showLiveVideoOnNextFrame(videoRef.current, canvasRef.current, () => {
+      // A normal reconnect can also recover a previously idled session.
+      isIdle.current = false
+      setIsWakingFromIdle(false)
+    })
+  })
   const safariObjectFitClass = useMemo(() => {
     // on safari we want to apply object-fit: fill to fix video resize bug
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
     return isSafari ? ' object-fill' : ''
   }, [])
+
+  useEffect(() => {
+    const preserveFrame = () => {
+      if (!videoRef.current || !canvasRef.current) return
+      showFreezeFrame(videoRef.current, canvasRef.current)
+    }
+    engineCommandManager.addEventListener(
+      EngineConnectionManagerEvents.BeforeTeardown,
+      preserveFrame
+    )
+    return () => {
+      engineCommandManager.removeEventListener(
+        EngineConnectionManagerEvents.BeforeTeardown,
+        preserveFrame
+      )
+    }
+  }, [engineCommandManager])
 
   const reportEngineDisconnect = useCallback(
     (eventType: EngineDisconnectEvent, extra?: Record<string, unknown>) => {
@@ -377,11 +404,15 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
     if (!props.authToken) return
     if (engineCommandManager.lastConnectionError?.terminal) return
     if (engineCommandManager.started) return
+    // Offline input must not dismiss recovery or claim an idle wake is underway.
+    // Leave reconnecting to the online handler until the browser is back online.
+    if (!navigator.onLine) return
 
     // Do not try to restart the engine on any mouse move.
     // It needs to have been in an idle state first!
     if (!isIdle.current) return
     isIdle.current = false
+    setIsWakingFromIdle(true)
     setShowManualConnect(false)
     tryConnecting({
       authToken: props.authToken || '',
@@ -397,6 +428,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       settingsActor: settings.actor,
     }).catch((e) => {
       console.warn(e)
+      setIsWakingFromIdle(false)
       setShowManualConnect(true)
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -407,6 +439,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       startCallback: onPageIdleStartCb,
       idleCallback: () => {
         isIdle.current = true
+        setIsWakingFromIdle(false)
       },
     }),
     [onPageIdleStartCb]
@@ -569,6 +602,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const onWindowOnlineOfflineParams = useMemo(
     () => ({
       close: () => {
+        setIsWakingFromIdle(false)
         setShowManualConnect(true)
         EngineDebugger.addLog({
           label: 'ConnectionStream.tsx',
@@ -661,7 +695,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       <canvas
         key={id + 'canvas'}
         ref={canvasRef}
-        className="cursor-pointer"
+        className="absolute inset-0 hidden h-full w-full cursor-pointer"
         id="freeze-frame"
       >
         No canvas support
@@ -689,6 +723,18 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         guard={viewControlContextMenuGuard}
         menuTargetElement={videoWrapperRef}
       />
+      {isWakingFromIdle && !showManualConnect && (
+        <div className="pointer-events-none absolute inset-x-0 bottom-8 z-10 flex justify-center">
+          <div
+            role="status"
+            aria-live="polite"
+            className="body-bg flex items-center gap-2 rounded-full border border-chalkboard-20 px-4 py-2 text-sm shadow-sm dark:border-chalkboard-80"
+          >
+            <Spinner className="h-4 w-4" aria-hidden="true" />
+            Reconnecting...
+          </div>
+        </div>
+      )}
       {(!isSceneReady || showManualConnect) && (
         <Loading
           isRetrying={false}

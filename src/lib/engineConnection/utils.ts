@@ -317,6 +317,9 @@ export enum EngineConnectionManagerEvents {
   // engineConnection is available but scene setup may not have run
   EngineAvailable = 'engine-available',
 
+  // Before teardown closes transports or notifies reconnect handlers.
+  BeforeTeardown = 'before-teardown',
+
   // request a restart of engineConnection
   EngineRestartRequest = 'engine-restart-request',
 

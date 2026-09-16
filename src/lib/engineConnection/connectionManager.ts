@@ -1050,6 +1050,11 @@ export class ConnectionManager extends EventTarget {
   }
 
   tearDown(options?: ManagerTearDown) {
+    if (this.connection) {
+      this.dispatchEvent(
+        new CustomEvent(EngineConnectionManagerEvents.BeforeTeardown)
+      )
+    }
     EngineDebugger.addLog({
       label: 'connectionManager',
       message: `invoked tearDown()`,
