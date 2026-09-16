@@ -536,7 +536,6 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
   },
   "capStart001": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "capStart001"
   },
   "headSketch": {

@@ -32429,6 +32429,7 @@ description: Result of parsing stylized-firetruck.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

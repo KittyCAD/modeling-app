@@ -332,6 +332,89 @@ describe('systemIOMachine - XState', () => {
         )
         actor.stop()
       })
+      it('ignores navigation and success for a stale project write', async () => {
+        const wasmInstance = deferred<ModuleType>()
+        const onFileSystemSuccess = vi.fn()
+        const onSuccess = vi.fn()
+        const getPathSpy = vi.spyOn(fsZds, 'getPath').mockResolvedValue('/')
+        const app = {
+          project: {
+            path: '/projects-a/shared-project',
+            name: 'shared-project',
+            executingPath: '/projects-a/shared-project/main.kcl',
+          },
+        } as unknown as App
+
+        const actor = createActor(
+          systemIOMachineImpl.provide({
+            actors: {
+              [SystemIOMachineActors.checkReadWrite]: fromPromise(
+                async (): Promise<{ value: boolean; error: unknown }> => ({
+                  value: true,
+                  error: undefined,
+                })
+              ),
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => [] as Project[]),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: wasmInstance.promise,
+              app,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.setProjectDirectoryPath,
+            data: { requestedProjectDirectoryPath: '/projects-a' },
+          })
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.idle)
+          )
+          const requestedFileNameBefore =
+            actor.getSnapshot().context.requestedFileName
+
+          actor.send({
+            type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
+            data: {
+              files: [],
+              requestedProjectName: 'shared-project',
+              requestedProjectPath: '/projects-a/shared-project',
+              requestedFileNameWithExtension: 'main.kcl',
+              onFileSystemSuccess,
+              onSuccess,
+            },
+          })
+          await waitFor(actor, (state) =>
+            state.matches(
+              SystemIOMachineStates.bulkCreateAndDeletingKCLFilesAndNavigateToFile
+            )
+          )
+
+          app.project = {
+            path: '/projects-b/shared-project',
+            name: 'shared-project',
+            executingPath: '/projects-b/shared-project/other.kcl',
+          } as unknown as NonNullable<App['project']>
+          wasmInstance.resolve(instanceInThisFile)
+
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.idle)
+          )
+
+          expect(onFileSystemSuccess).toHaveBeenCalledOnce()
+          expect(onSuccess).not.toHaveBeenCalled()
+          expect(actor.getSnapshot().context.requestedFileName).toBe(
+            requestedFileNameBefore
+          )
+        } finally {
+          actor.stop()
+          getPathSpy.mockRestore()
+        }
+      })
       it.each([undefined, []])(
         'skips project lookup when filesToDelete is %j',
         async (filesToDelete) => {

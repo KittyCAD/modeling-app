@@ -18,7 +18,7 @@ description: Physical properties artificial-heart.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 138485.21358110773
+    "value": 138485.21358110776
   },
   "weight": {
     "material_density": 1000.0,

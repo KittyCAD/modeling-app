@@ -909,6 +909,7 @@ description: Result of parsing inconsistent_sketch_converge.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

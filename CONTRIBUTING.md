@@ -57,16 +57,6 @@ npm run build:wasm
 npm run build:wasm:windows
 ```
 
-Or if you have the `gh` cli installed and want to download the latest main wasm bundle. Note that on Windows, you need to associate .ps1 files with PowerShell, which can be done via the right click menu, selecting `C:\Program Files\PowerShell\7\pwsh.exe`, and you can install tools like `gh` via `npm run install:tools:windows`.
-
-```
-# macOS/Linux
-npm run fetch:wasm
-
-# Windows
-npm run fetch:wasm:windows
-```
-
 That will build the Wasm binary and put in the `public` dir (though gitignored).
 
 Finally, to build the desktop app locally, pointing to our production zoo.dev infrastructure, accessible to everyone, run:
@@ -76,6 +66,13 @@ npm run tronb:package:prod
 ```
 
 This will use electron-builder to generate runnable artifacts in the `out` directory (eg. `Zoo Design Studio.app` on macOS and `Zoo Design Studio.exe` on Windows). The regular sign-in flow should work as expected.
+
+## Shipping releases
+
+Create a new issue using the **Release** issue template: https://github.com/KittyCAD/modeling-app/issues/new?template=release.md
+
+Follow the embedded instructions to facilitate changelog discussions and release testing.
+
 
 ## Developing locally
 
@@ -348,9 +345,3 @@ Before you submit a contribution PR to this repo, please ensure that:
   - `npm run tsc`
   - `npm run test`
   - Here they are all together: `npm run fmt && npm run tsc && npm run test`
-
-## Shipping releases
-
-Create a new issue using the **Release** issue template: https://github.com/KittyCAD/modeling-app/issues/new?template=release.md
-
-Follow the embedded instructions to facilitate changelog discussions and release testing.

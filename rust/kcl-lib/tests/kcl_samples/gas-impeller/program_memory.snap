@@ -69,7 +69,6 @@ description: Variables in memory after executing gas-impeller.kcl
   },
   "baseFloor": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "baseFloor"
   },
   "bladeCutter": {
@@ -318,16 +317,13 @@ description: Variables in memory after executing gas-impeller.kcl
   },
   "bladeCutterBottomEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bladeCutterBottomEdge"
   },
   "bladeCutterInnerEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bladeCutterInnerEdge"
   },
   "bladeCutterOuterEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "bladeCutterOuterEdge"
   },
@@ -1294,7 +1290,6 @@ description: Variables in memory after executing gas-impeller.kcl
   },
   "bladeCutterTopEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bladeCutterTopEdge"
   },
   "bladeEnvelope": {
@@ -1623,7 +1618,6 @@ description: Variables in memory after executing gas-impeller.kcl
   },
   "bladeEnvelopeOuterWall": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bladeEnvelopeOuterWall"
   },
   "bladeEnvelopeRegion": {
@@ -1868,11 +1862,9 @@ description: Variables in memory after executing gas-impeller.kcl
   },
   "bladeEnvelopeTipArc": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bladeEnvelopeTipArc"
   },
   "bladeEnvelopeTopEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "bladeEnvelopeTopEdge"
   },
@@ -7732,16 +7724,13 @@ description: Variables in memory after executing gas-impeller.kcl
   },
   "hubShoulderBlendArc": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "hubShoulderBlendArc"
   },
   "hubShoulderRadiusGuide": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "hubShoulderRadiusGuide"
   },
   "hubTopLand": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "hubTopLand"
   },
@@ -8197,11 +8186,9 @@ description: Variables in memory after executing gas-impeller.kcl
   },
   "outerEnvelopeArc": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "outerEnvelopeArc"
   },
   "outerLipDrop": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "outerLipDrop"
   },
@@ -8215,7 +8202,6 @@ description: Variables in memory after executing gas-impeller.kcl
     }
   },
   "shaftWall": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "shaftWall"
   }

@@ -19,7 +19,9 @@ circle(
 ): Sketch
 ```
 
-This is part of sketch v1 and is deprecated. In KCL 2, create a
+This is part of sketch v1 and is deprecated. Legacy sketch functions cannot
+be used with constraints. Strongly prefer constraint-based sketch functions:
+in KCL 2, create a
 [`solver::circle`](/docs/kcl-std/functions/std-solver-circle) inside a
 [`sketch` block](/docs/kcl-lang/sketches), then select the
 closed profile with [`region`](/docs/kcl-std/functions/std-sketch-region).

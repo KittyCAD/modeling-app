@@ -133,11 +133,9 @@ description: Variables in memory after executing tube-manifold.kcl
   },
   "baseLine": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "baseLine"
   },
   "beadArc": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "beadArc"
   },
@@ -1617,7 +1615,6 @@ description: Variables in memory after executing tube-manifold.kcl
     }
   },
   "bodyCutCircle": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "bodyCutCircle"
   },
@@ -4842,16 +4839,13 @@ description: Variables in memory after executing tube-manifold.kcl
   },
   "centerAxis": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "centerAxis"
   },
   "frontOuterRun": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "frontOuterRun"
   },
   "frontWall": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "frontWall"
   },
@@ -4981,26 +4975,21 @@ description: Variables in memory after executing tube-manifold.kcl
   },
   "innerEndArc": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "innerEndArc"
   },
   "lowerWall": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "lowerWall"
   },
   "mainInnerRun": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "mainInnerRun"
   },
   "mainOuterRun": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "mainOuterRun"
   },
   "outerEndArc": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "outerEndArc"
   },
@@ -5325,7 +5314,6 @@ description: Variables in memory after executing tube-manifold.kcl
     }
   },
   "portBore": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "portBore"
   },
@@ -9215,16 +9203,13 @@ description: Variables in memory after executing tube-manifold.kcl
   },
   "topCap": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "topCap"
   },
   "upperWall": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "upperWall"
   },
   "wallRun": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "wallRun"
   },

@@ -15435,106 +15435,85 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
   },
   "bore1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bore1"
   },
   "bore2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "bore2"
   },
   "bore3": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bore3"
   },
   "bore4": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "bore4"
   },
   "bottomEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bottomEdge"
   },
   "centerArc11": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "centerArc11"
   },
   "centerArc15": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "centerArc15"
   },
   "centerArc3": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "centerArc3"
   },
   "centerArc7": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "centerArc7"
   },
   "centerLine1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "centerLine1"
   },
   "centerLine10": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "centerLine10"
   },
   "centerLine12": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "centerLine12"
   },
   "centerLine13": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "centerLine13"
   },
   "centerLine14": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "centerLine14"
   },
   "centerLine16": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "centerLine16"
   },
   "centerLine2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "centerLine2"
   },
   "centerLine4": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "centerLine4"
   },
   "centerLine5": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "centerLine5"
   },
   "centerLine6": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "centerLine6"
   },
   "centerLine8": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "centerLine8"
   },
   "centerLine9": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "centerLine9"
   },
@@ -16936,31 +16915,25 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
   },
   "leftEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "leftEdge"
   },
   "line1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line1"
   },
   "line2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line2"
   },
   "line3": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line3"
   },
   "line4": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line4"
   },
   "line5": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line5"
   },
@@ -42900,7 +42873,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
   },
   "rightEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "rightEdge"
   },
   "secondStep": {
@@ -44643,7 +44615,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
     }
   },
   "topEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "topEdge"
   }

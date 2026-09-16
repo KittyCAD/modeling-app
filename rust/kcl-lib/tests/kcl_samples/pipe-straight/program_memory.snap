@@ -2686,7 +2686,6 @@ description: Variables in memory after executing pipe-straight.kcl
   },
   "circle1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "circle1"
   },
   "flangeBody": {
@@ -3035,7 +3034,6 @@ description: Variables in memory after executing pipe-straight.kcl
   },
   "flangeInnerCircle": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "flangeInnerCircle"
   },
   "flangeInsideDiameter": {
@@ -3048,7 +3046,6 @@ description: Variables in memory after executing pipe-straight.kcl
     }
   },
   "flangeOuterCircle": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "flangeOuterCircle"
   },
@@ -3916,7 +3913,6 @@ description: Variables in memory after executing pipe-straight.kcl
   },
   "pipeInnerCircle": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "pipeInnerCircle"
   },
   "pipeInsideDiameter": {
@@ -3938,7 +3934,6 @@ description: Variables in memory after executing pipe-straight.kcl
     }
   },
   "pipeOuterCircle": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "pipeOuterCircle"
   },

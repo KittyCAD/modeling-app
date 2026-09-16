@@ -86,11 +86,9 @@ description: Variables in memory after executing involute_circular_units.kcl
   },
   "seg01": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "seg01"
   },
   "seg02": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "seg02"
   },

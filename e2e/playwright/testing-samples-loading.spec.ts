@@ -133,6 +133,8 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
       await expect(
         page.getByTestId('file-tree-item').getByText(sampleOne.folderName)
       ).toBeVisible()
+      // The folder can appear before navigation closes the command bar.
+      await expect(page).toHaveURL(/ball-bearing(?:%2F|%5C)main\.kcl$/)
     })
 
     await test.step('Load a KCL sample with the command palette', async () => {
@@ -144,6 +146,7 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
       await expect(
         page.getByTestId('file-tree-item').getByText(sampleOne.folderName1)
       ).toBeVisible()
+      await expect(page).toHaveURL(/ball-bearing-1(?:%2F|%5C)main\.kcl$/)
     })
   })
 })
@@ -154,6 +157,11 @@ test.describe('Query parameter command', { tag: '@web' }, () => {
     cmdBar,
   }) => {
     await page.goto('/?cmd=set-layout&groupId=application&layoutId=ttc')
+
+    // The root route awaits Wasm before mounting the query-command consumer.
+    await page.evaluate(async () => {
+      await window.app.wasmPromise
+    })
 
     await expect
       .poll(() =>
@@ -181,6 +189,10 @@ test.describe('Query parameter command', { tag: '@web' }, () => {
     const sampleSlug = 'socket-head-cap-screw'
     const queryString = `?cmd=add-kcl-file-to-project&groupId=application&projectName=browser&source=kcl-samples&sample=${sampleSlug}/main.kcl`
     await page.goto(page.url() + queryString)
+
+    await page.evaluate(async () => {
+      await window.app.wasmPromise
+    })
 
     await toolbar.openPane(DefaultLayoutPaneID.Code)
     await editor.expectEditor.toContain(sampleTitle, { timeout: 30_000 })

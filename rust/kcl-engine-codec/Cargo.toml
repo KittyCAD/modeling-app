@@ -1,7 +1,7 @@
 [package]
 name = "kcl-engine-codec"
 description = "Serialization and deserialization for the KCL engine protocol"
-version = "0.2.182"
+version = "0.2.184"
 edition = "2024"
 license = "MIT"
 repository = "https://github.com/KittyCAD/modeling-app"

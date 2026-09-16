@@ -45,7 +45,8 @@ expression: actual
             "commentStart": 14,
             "end": 26,
             "moduleId": 0,
-            "start": 14
+            "start": 14,
+            "type": "Program"
           },
           "commentStart": 6,
           "end": 26,
@@ -102,5 +103,6 @@ expression: actual
   "commentStart": 0,
   "end": 26,
   "moduleId": 0,
-  "start": 0
+  "start": 0,
+  "type": "Program"
 }

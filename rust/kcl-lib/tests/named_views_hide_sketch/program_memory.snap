@@ -69,7 +69,6 @@ description: Variables in memory after executing named_views_hide_sketch.kcl
   },
   "circle1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "circle1"
   },
   "sketchHidden": {

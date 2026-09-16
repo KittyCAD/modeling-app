@@ -281,6 +281,7 @@ describe('Testing addSketchTo', () => {
   it('should add a sketch to a program', () => {
     const result = addSketchTo(
       {
+        type: 'Program',
         body: [],
         shebang: null,
         start: 0,

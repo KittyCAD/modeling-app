@@ -46,7 +46,8 @@ description: Result of parsing argument_error.kcl
               "commentStart": 0,
               "end": 0,
               "moduleId": 0,
-              "start": 0
+              "start": 0,
+              "type": "Program"
             },
             "commentStart": 0,
             "end": 0,
@@ -209,6 +210,7 @@ description: Result of parsing argument_error.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

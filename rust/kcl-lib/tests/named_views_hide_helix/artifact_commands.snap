@@ -208,7 +208,8 @@ description: Artifact commands named_views_hide_helix.kcl
         "query_point": {
           "x": 30.0,
           "y": 5.0
-        }
+        },
+        "version": "V1"
       }
     },
     {

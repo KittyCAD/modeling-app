@@ -503,6 +503,7 @@ function PaneButton({
   const isActiveIndex = parentActiveIndices.indexOf(childIndex) >= 0
   const resolvedAreaType =
     pane.type === LayoutType.Simple ? areaLibrary[pane.areaType] : undefined
+  const icon = resolvedAreaType?.icon ?? pane.icon
   useHotkeys(
     resolvedAreaType?.shortcut || '',
     () => {
@@ -530,7 +531,11 @@ function PaneButton({
         style={{ [buttonBorderWidthProp]: '2px' }}
         data-testid={`${pane.id}-pane-button`}
       >
-        <CustomIcon name={pane.icon} className="w-5 h-5" aria-hidden />
+        <CustomIcon
+          name={icon}
+          className={`w-5 h-5 ${icon === 'loading' ? 'animate-spin' : ''}`}
+          aria-hidden
+        />
         <span className="sr-only">{pane.label}</span>
       </Switch>
       <Tooltip

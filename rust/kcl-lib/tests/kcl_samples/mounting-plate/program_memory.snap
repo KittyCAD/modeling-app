@@ -37,11 +37,9 @@ description: Variables in memory after executing mounting-plate.kcl
   },
   "bottomEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bottomEdge"
   },
   "centerHole": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "centerHole"
   },
@@ -83,16 +81,13 @@ description: Variables in memory after executing mounting-plate.kcl
   },
   "leftEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "leftEdge"
   },
   "lowerLeft": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "lowerLeft"
   },
   "lowerRight": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "lowerRight"
   },
@@ -3016,21 +3011,17 @@ description: Variables in memory after executing mounting-plate.kcl
   },
   "rightEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "rightEdge"
   },
   "topEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "topEdge"
   },
   "upperLeft": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "upperLeft"
   },
   "upperRight": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "upperRight"
   }
