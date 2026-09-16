@@ -36,6 +36,7 @@ use crate::execution::NamedViewValue;
 use crate::execution::SketchConstraint;
 use crate::modules::ModulePath;
 use crate::modules::ModuleRepr;
+use crate::test_server::TestGraphicsParams;
 use crate::tooling::render_artifacts::RENDERED_MODEL_NAME;
 use crate::util::RetryConfig;
 use crate::util::execute_with_retries;
@@ -650,7 +651,13 @@ async fn unparse_test(test: &Test) {
 }
 
 async fn execute(test_name: &str, render_to_png: bool) {
-    execute_test(&Test::new(test_name), render_to_png).await
+    let graphics = match render_to_png {
+        true => TestGraphicsParams::EngineRender {
+            reason: "legacy".to_string(),
+        },
+        false => TestGraphicsParams::None,
+    };
+    execute_test(&Test::new(test_name), graphics).await
 }
 
 async fn execute_test(test: &Test, render_to_png: bool) {
@@ -769,7 +776,7 @@ async fn physical_properties(ctx: &ExecutorContext) -> Option<serde_json::Value>
     }))
 }
 
-async fn execute_once(test: &Test, render_to_png: bool, kcl_version: Option<&str>) {
+async fn execute_once(test: &Test, kcl_version: Option<&str>) {
     crate::set_kcl_runtime_flags(crate::KclRuntimeFlags {
         enable_z0006_lint: crate::RuntimeFlag::On,
         ..Default::default()
@@ -802,11 +809,12 @@ async fn execute_once(test: &Test, render_to_png: bool, kcl_version: Option<&str
             Some(test.entry_point.clone()),
             test.expected_deprecation_warnings
                 .map(|_| KCL_SAMPLE_DEPRECATION_VERSION),
+            graphics.clone(),
         )
     })
     .await;
     match exec_res {
-        Ok((exec_state, ctx, env_ref, image)) => {
+        Ok((exec_state, ctx, env_ref, graphics_result)) => {
             if let Some(expected_deprecation_warnings) = test.expected_deprecation_warnings {
                 let deprecation_warnings = exec_state
                     .issues()
@@ -838,13 +846,9 @@ async fn execute_once(test: &Test, render_to_png: bool, kcl_version: Option<&str
                 )
             }
             // rendering to png means the model was exported with mesh and readable brep data.
-            if render_to_png
-                && let Err(err) =
-                    twenty_twenty::try_assert_image(test.output_dir.join(RENDERED_MODEL_NAME), &image, 0.99)
-            {
-                panic!(
-                    "Image assertion failed: {err}; input KCL file: {}",
-                    test.entry_point.display()
+            if let Some(image) = graphics_result.image() {
+                twenty_twenty::try_assert_image(test.output_dir.join(RENDERED_MODEL_NAME), &image, 0.99).expect(
+                    &format!("Image assertion failed; input KCL file: {}", test.entry_point.display()),
                 );
             }
 
