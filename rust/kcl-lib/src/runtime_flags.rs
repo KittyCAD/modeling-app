@@ -72,7 +72,7 @@ pub fn kcl_runtime_flags() -> KclRuntimeFlags {
 }
 
 pub(crate) fn z0006_refactor_metadata_enabled() -> bool {
-    kcl_runtime_flags().enable_z0006_lint != RuntimeFlag::Off
+    kcl_runtime_flags().enable_z0006_lint == RuntimeFlag::On
 }
 
 pub(crate) trait RuntimeFlagResolve {
