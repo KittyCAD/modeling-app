@@ -111,8 +111,6 @@
     "fmt:check": "biome check --formatter-enabled=true --linter-enabled=false --assist-enabled=false --files-ignore-unknown=true eslint.config.mjs ./src *.ts *.js ./e2e ./packages ./rust/kcl-language-server",
     "organize-imports": "biome check --write --formatter-enabled=false --linter-enabled=false --assist-enabled=true --files-ignore-unknown=true eslint.config.mjs ./src *.ts *.js ./e2e ./packages ./rust/kcl-language-server",
     "check": "biome check ./src ./e2e ./packages/registry/src ./packages/codemirror-lsp-client/src ./rust/kcl-language-server/client/src",
-    "fetch:wasm": "./scripts/get-latest-wasm-bundle.sh",
-    "fetch:wasm:windows": "powershell -ExecutionPolicy Bypass -File ./scripts/get-latest-wasm-bundle.ps1",
     "remove-importmeta": "sed -i 's/import.meta.url/window.location.origin/g' \"./rust/kcl-wasm-lib/pkg/kcl_wasm_lib.js\"; sed -i '' 's/import.meta.url/window.location.origin/g' \"./rust/kcl-wasm-lib/pkg/kcl_wasm_lib.js\" || echo \"sed for both mac and linux\"",
     "lint-fix": "node --require ./scripts/register-typescript-eslint-typescript.cjs ./node_modules/eslint/bin/eslint.js --fix src e2e packages/registry/src packages/codemirror-lsp-client/src rust/kcl-language-server/client/src",
     "lint": "node --require ./scripts/register-typescript-eslint-typescript.cjs ./node_modules/eslint/bin/eslint.js --max-warnings 0 src e2e packages/registry/src packages/codemirror-lsp-client/src rust/kcl-language-server/client/src",
