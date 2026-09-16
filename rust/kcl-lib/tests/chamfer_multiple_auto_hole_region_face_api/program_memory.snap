@@ -1655,7 +1655,6 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
   },
   "topCap": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "topCap"
   }
 }

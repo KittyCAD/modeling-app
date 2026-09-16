@@ -3795,7 +3795,6 @@ description: Variables in memory after executing countersunk-plate.kcl
   },
   "topFace": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "topFace"
   },
   "transitionTangentAngle": {

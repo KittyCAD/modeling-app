@@ -718,6 +718,60 @@ description: Operations executed named_views_hide_imported.kcl
         ]
       },
       "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "view::named",
+      "unlabeledArg": {
+        "value": {
+          "type": "String",
+          "value": "Anchor only"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "baseline": {
+          "value": {
+            "type": "Enum",
+            "enum_name": "Visibility",
+            "variant": "Show"
+          },
+          "sourceRange": []
+        },
+        "camera": {
+          "value": {
+            "type": "CameraView"
+          },
+          "sourceRange": []
+        },
+        "except": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "ImportedGeometry",
+                "artifact_id": "[uuid]"
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
     }
   ],
   "std::math": [

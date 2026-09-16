@@ -1093,9 +1093,6 @@ impl ExecState {
     }
 
     /// Record metadata from a deprecated edge stdlib call for the Z0006 refactor.
-    ///
-    /// This is intentionally collected unconditionally when artifact graph support is enabled.
-    /// The temporary feature flag only controls whether the lint/action is shown in the app.
     pub(crate) fn record_edge_refactor_meta(&mut self, meta: EdgeRefactorMeta) {
         self.mod_local
             .artifacts
@@ -1112,6 +1109,9 @@ impl ExecState {
         edge_id: Uuid,
         argument_source_range: SourceRange,
     ) -> Option<PendingEdgeRefactorMeta> {
+        if !crate::runtime_flags::z0006_refactor_metadata_enabled() {
+            return None;
+        }
         if let Some(pending) = self
             .mod_local
             .artifacts
@@ -1185,9 +1185,6 @@ impl ExecState {
     }
 
     /// Record metadata from a fillet/chamfer call that used `tags` directly.
-    ///
-    /// This is intentionally collected unconditionally when artifact graph support is enabled.
-    /// The temporary feature flag only controls whether the lint/action is shown in the app.
     pub(crate) fn record_direct_tag_fillet_meta(&mut self, meta: DirectTagFilletMeta) {
         self.mod_local
             .artifacts

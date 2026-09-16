@@ -69,7 +69,6 @@ description: Variables in memory after executing thermal-block-insert.kcl
   },
   "baseLine": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "baseLine"
   },
   "blockHalfThickness": {
@@ -83,26 +82,21 @@ description: Variables in memory after executing thermal-block-insert.kcl
   },
   "fall1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "fall1"
   },
   "fall2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "fall2"
   },
   "fall3": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "fall3"
   },
   "fall4": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "fall4"
   },
   "fall5": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "fall5"
   },
@@ -2281,26 +2275,21 @@ description: Variables in memory after executing thermal-block-insert.kcl
   },
   "flat1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "flat1"
   },
   "flat2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "flat2"
   },
   "flat3": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "flat3"
   },
   "flat4": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "flat4"
   },
   "flat5": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "flat5"
   },
@@ -10585,61 +10574,49 @@ description: Variables in memory after executing thermal-block-insert.kcl
   },
   "leftWall": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "leftWall"
   },
   "peak1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "peak1"
   },
   "peak2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "peak2"
   },
   "peak3": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "peak3"
   },
   "peak4": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "peak4"
   },
   "peak5": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "peak5"
   },
   "rightWall": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "rightWall"
   },
   "rise1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "rise1"
   },
   "rise2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "rise2"
   },
   "rise3": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "rise3"
   },
   "rise4": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "rise4"
   },
   "rise5": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "rise5"
   },
@@ -10653,7 +10630,6 @@ description: Variables in memory after executing thermal-block-insert.kcl
     }
   },
   "tail": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "tail"
   },
@@ -15323,7 +15299,6 @@ description: Variables in memory after executing thermal-block-insert.kcl
     }
   },
   "topLine": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "topLine"
   }
