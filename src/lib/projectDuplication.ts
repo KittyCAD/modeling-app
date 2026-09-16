@@ -2,6 +2,7 @@ import {
   DUPLICATE_PROJECT_TEMPORARY_PREFIX,
   PROJECT_SETTINGS_FILE_NAME,
 } from '@src/lib/constants'
+import { ensureDirectory } from '@src/lib/fileSystem/ensureDirectory'
 import fsZds from '@src/lib/fs-zds'
 import {
   getProjectDirectoryNameFromTitle,
@@ -63,6 +64,7 @@ async function writeProjectRelativeFile(
   contents: string
 ) {
   const filePath = fsZds.join(projectPath, relativePath)
+  await ensureDirectory(fileOperations, fsZds.dirname(filePath))
   await fileOperations.writeFile(filePath, contents)
 }
 

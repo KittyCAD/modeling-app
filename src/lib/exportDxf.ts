@@ -11,6 +11,7 @@ import {
   getPlaneFromArtifact,
 } from '@src/lang/std/artifactGraph'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { ensureDirectory } from '@src/lib/fileSystem/ensureDirectory'
 import fsZds from '@src/lib/fs-zds'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import { getOperationVariableName } from '@src/lib/operations'
@@ -309,6 +310,7 @@ export async function exportSketchToDxf(
           'downloads-during-playwright'
         )
         try {
+          await ensureDirectory(fileOperations, downloadDir)
           await fileOperations.writeFile(
             fsZds.join(downloadDir, fileName),
             decodedData

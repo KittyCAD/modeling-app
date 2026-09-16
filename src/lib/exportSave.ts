@@ -1,5 +1,6 @@
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import { EXPORT_TOAST_MESSAGES } from '@src/lib/constants'
+import { ensureDirectory } from '@src/lib/fileSystem/ensureDirectory'
 import fsZds from '@src/lib/fs-zds'
 import type ModelingAppFile from '@src/lib/modelingAppFile'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
@@ -28,6 +29,7 @@ const save_ = async (
           testSettingsPath,
           'downloads-during-playwright'
         )
+        await ensureDirectory(fileOperations, downloadDir)
         await fileOperations.writeFile(
           fsZds.join(downloadDir, file.name),
           new Uint8Array(file.contents)

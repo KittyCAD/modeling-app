@@ -70,6 +70,8 @@ beforeAll(async () => {
 // Mock dependencies
 const createMockDependencies = (): Parameters<typeof exportSketchToDxf>[1] => ({
   fileOperations: {
+    createDirectory: vi.fn().mockResolvedValue(undefined),
+    stat: vi.fn(),
     writeFile: mockElectron.writeFile,
   } as unknown as FileOperationsRegistryService,
   engineCommandManager: {
@@ -425,6 +427,27 @@ describe('DXF Export', () => {
         'DXF export completed.',
         { id: 'toast-id' }
       )
+
+      mockElectron.process.env.NODE_ENV = 'test'
+      try {
+        mockElectron.getAppTestProperty.mockResolvedValue('/test-settings')
+        mockElectron.path.join.mockImplementation((...parts: string[]) =>
+          parts.join(mockElectron.path.sep)
+        )
+
+        const testResult = await exportSketchToDxf(mockOperation, mockDeps)
+
+        expect(testResult).toBe(true)
+        expect(mockDeps.fileOperations.createDirectory).toHaveBeenCalledWith(
+          '/test-settings/downloads-during-playwright'
+        )
+        expect(mockElectron.writeFile).toHaveBeenCalledWith(
+          '/test-settings/downloads-during-playwright/sketch.dxf',
+          expect.any(Uint8Array)
+        )
+      } finally {
+        mockElectron.process.env.NODE_ENV = 'development'
+      }
     })
 
     it('should return error when plane artifact is not found', async () => {

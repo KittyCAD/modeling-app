@@ -23,6 +23,7 @@ import {
   FileAlreadyExists,
   FileNotFound,
 } from '@src/lib/fileSystem/fileOperations'
+import { ensureDirectory } from '@src/lib/fileSystem/ensureDirectory'
 import fsZds from '@src/lib/fs-zds'
 import {
   getProjectDirectoryFromKCLFilePath,
@@ -365,8 +366,13 @@ const sharedBulkWriteImportedProjectFilesWorkflow = async ({
       )
     }
 
+    await ensureDirectory(fileOperations(input.context), projectRoot)
     for (const file of input.files) {
       const targetPath = fsZds.join(projectRoot, file.requestedFileName)
+      await ensureDirectory(
+        fileOperations(input.context),
+        fsZds.dirname(targetPath)
+      )
       await fileOperations(input.context).writeFile(
         targetPath,
         file.requestedData

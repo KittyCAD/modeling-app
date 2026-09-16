@@ -6,6 +6,7 @@ import type { KclManager } from '@src/lang/KclManager'
 import { isCodeTheSame } from '@src/lib/codeEditor'
 import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import { isPathNotFoundError } from '@src/lib/desktop'
+import { ensureDirectory } from '@src/lib/fileSystem/ensureDirectory'
 import fsZds from '@src/lib/fs-zds'
 import { isErr } from '@src/lib/trap'
 import {
@@ -825,6 +826,7 @@ async function writeZookeeperReplayFile(
     return
   }
 
+  await ensureDirectory(fileOperations, fsZds.dirname(absolutePath))
   await fileOperations.writeFile(absolutePath, textEncoder.encode(content))
 }
 

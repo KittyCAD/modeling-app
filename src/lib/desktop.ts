@@ -29,6 +29,7 @@ import {
   FileNotFound,
   type FileStat,
 } from '@src/lib/fileSystem/fileOperations'
+import { ensureDirectory } from '@src/lib/fileSystem/ensureDirectory'
 import fsZds from '@src/lib/fs-zds'
 import {
   appendGitignoreForDirectoryWithFs,
@@ -333,6 +334,7 @@ export async function createNewProjectDirectory(
 
   const kclFileName = initialFileName || PROJECT_ENTRYPOINT
   const projectFile = fsZds.join(projectDir, kclFileName)
+  await ensureDirectory(fileOperations, fsZds.dirname(projectFile))
   // When initialCode is present, we're loading existing code.  If it's not
   // present, we're creating a new project, and we want to incorporate the
   // user's settings.
@@ -771,6 +773,7 @@ export async function overwriteProjectTomlWithNewSettings(
   tomlStr: string
 ): Promise<void> {
   const projectSettingsFilePath = await getProjectSettingsFilePath(projectPath)
+  await ensureDirectory(fileOperations, projectPath)
   if (err(tomlStr)) {
     return Promise.reject(tomlStr)
   }
@@ -797,6 +800,7 @@ export async function writeProjectTitleToProjectToml(
   title: string
 ): Promise<void> {
   const projectSettingsFilePath = await getProjectSettingsFilePath(projectPath)
+  await ensureDirectory(fileOperations, projectPath)
   let projectToml = ''
   try {
     projectToml = textDecoder.decode(
@@ -1106,6 +1110,7 @@ export const writeAppSettingsFile = async (
   if (err(tomlStr)) {
     return Promise.reject(tomlStr)
   }
+  await ensureDirectory(fileOperations, fsZds.dirname(appSettingsFilePath))
   return fileOperations.writeFile(appSettingsFilePath, tomlStr)
 }
 
@@ -1142,6 +1147,7 @@ export const writeEnvironmentConfigurationToken = async (
   )
   environmentConfiguration.token = token
   const requestedConfiguration = JSON.stringify(environmentConfiguration)
+  await ensureDirectory(fileOperations, fsZds.dirname(path))
   const result = await fileOperations.writeFile(path, requestedConfiguration)
   console.log(`wrote ${environmentName}.json to disk`)
   return result
@@ -1160,6 +1166,7 @@ export const writeEnvironmentConfigurationKittycadWebSocketUrl = async (
   )
   environmentConfiguration.kittycadWebSocketUrl = kittycadWebSocketUrl
   const requestedConfiguration = JSON.stringify(environmentConfiguration)
+  await ensureDirectory(fileOperations, fsZds.dirname(path))
   const result = await fileOperations.writeFile(path, requestedConfiguration)
   console.log(`wrote ${environmentName}.json to disk`)
   return result
@@ -1224,6 +1231,7 @@ export const writeEnvironmentConfigurationZookeeperWebSocketUrl = async (
   )
   environmentConfiguration.zookeeperWebSocketUrl = zookeeperWebSocketUrl
   const requestedConfiguration = JSON.stringify(environmentConfiguration)
+  await ensureDirectory(fileOperations, fsZds.dirname(path))
   const result = await fileOperations.writeFile(path, requestedConfiguration)
   console.log(`wrote ${environmentName}.json to disk`)
   return result
@@ -1280,6 +1288,7 @@ export const writeEnvironmentFile = async (
   if (err(environment)) {
     return Promise.reject(environment)
   }
+  await ensureDirectory(fileOperations, fsZds.dirname(environmentFilePath))
   const result = await fileOperations.writeFile(
     environmentFilePath,
     environment
@@ -1329,6 +1338,7 @@ export const writeTelemetryFile = async (
   if (err(content)) {
     return Promise.reject(content)
   }
+  await ensureDirectory(fileOperations, fsZds.dirname(telemetryFilePath))
   return fileOperations.writeFile(telemetryFilePath, content)
 }
 
@@ -1340,6 +1350,7 @@ export const writeRawTelemetryFile = async (
   if (err(content)) {
     return Promise.reject(content)
   }
+  await ensureDirectory(fileOperations, fsZds.dirname(rawTelemetryFilePath))
   return fileOperations.writeFile(rawTelemetryFilePath, content)
 }
 

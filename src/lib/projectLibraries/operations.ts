@@ -8,6 +8,7 @@ import {
   isPathNotFoundError,
 } from '@src/lib/desktop'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
+import { ensureDirectory } from '@src/lib/fileSystem/ensureDirectory'
 import fsZds from '@src/lib/fs-zds'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { ProjectLibraryInitialProject } from '@src/lib/projectLibraries'
@@ -188,6 +189,7 @@ async function createProjectFromFilesInLocalDirectory({
         )
       }
 
+      await ensureDirectory(fileOperations, fsZds.dirname(targetPath))
       await fileOperations.writeFile(targetPath, file.requestedData)
     }
 

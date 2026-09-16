@@ -2,6 +2,7 @@ import type { IElectronAPI } from '@root/interface'
 import type { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { KclManager } from '@src/lang/KclManager'
 import { EXPORT_TOAST_MESSAGES } from '@src/lib/constants'
+import { ensureDirectory } from '@src/lib/fileSystem/ensureDirectory'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import type { PluginIpcChannel } from '@src/registry/pluginIpc'
 import type { SlicerLaunchResult } from '@src/registry/plugins/slicer/types'
@@ -121,6 +122,7 @@ export async function exportCurrentPartToSlicer(
       getExportFileName(kclManager.currentFileName, outputFileExtension)
     )
 
+    await ensureDirectory(fileOperations, exportDir)
     await fileOperations.writeFile(exportPath, new Uint8Array(file.contents))
 
     const result = await electron.pluginIpc.invoke<SlicerLaunchResult>(

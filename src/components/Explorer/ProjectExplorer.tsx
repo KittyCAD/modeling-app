@@ -23,6 +23,7 @@ import { useApp, useSingletons } from '@src/lib/boot'
 import type { Command } from '@src/lib/commandTypes'
 import { FILE_EXT } from '@src/lib/constants'
 import { getNextFileName, sortFilesAndDirectories } from '@src/lib/desktopFS'
+import { ensureDirectory } from '@src/lib/fileSystem/ensureDirectory'
 import fsZds from '@src/lib/fs-zds'
 import {
   desktopSafePathJoin,
@@ -792,11 +793,17 @@ export const ProjectExplorer = ({
       if (supportedFiles.length > 0) {
         setFileTreeMutationPending(true)
         const targetPath = getDropTargetPath(target, project.path)
+        const createdDirs = new Set<string>()
         for (const { file, relativePath } of supportedFiles) {
           try {
             const destinationDirPath = relativePath
               ? joinOSPaths(targetPath, relativePath)
               : targetPath
+
+            if (relativePath && !createdDirs.has(destinationDirPath)) {
+              await ensureDirectory(fileOperations, destinationDirPath)
+              createdDirs.add(destinationDirPath)
+            }
 
             const { path: destinationPath } = await getNextFileName({
               fileOperations,
