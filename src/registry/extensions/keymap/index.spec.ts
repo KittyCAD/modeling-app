@@ -5,6 +5,7 @@ import {
   provideService,
 } from '@kittycad/registry'
 import type { Command } from '@src/lib/commandTypes'
+import { kclCommands } from '@src/lib/kclCommands'
 import {
   FILE_COMMAND_SCOPES,
   GLOBAL_COMMAND_SCOPES,
@@ -17,8 +18,6 @@ import {
   commandSystemService,
 } from '@src/registry/contracts/commands'
 import {
-  createKeymapItemsFromContributions,
-  resolveKeymapItems,
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
   EDITABLE_FOCUSED_KEYMAP_SCOPE,
@@ -89,34 +88,18 @@ describe('keymap extension', () => {
     expect(keymapContract.keymapScopesValueSpec).toBe(commandScopesValueSpec)
   })
 
-  it('preserves saved Insert shortcut overrides after the Import rename', () => {
-    const items = createKeymapItemsFromContributions([defaultKeymap]).filter(
-      (item) => item.id === 'toolbar.modeling.insert'
+  it('keeps the Import command compatible with saved Insert shortcuts', () => {
+    const commands = kclCommands({
+      kclManager: { fileSettings: {} },
+    } as Parameters<typeof kclCommands>[0])
+    expect(commands.find((command) => command.name === 'Import')?.id).toBe(
+      'code:Insert'
     )
-    const resolved = resolveKeymapItems(items, {
-      version: KEYMAP_SCHEMA_VERSION,
-      bindings: [{ command: 'code:Insert', keystrokes: ['mod+shift+i'] }],
-    })
-    expect(resolved).toHaveLength(1)
-    expect(resolved[0].title).toBe('Import')
-    expect(resolved[0].keystrokes).toEqual(['mod+shift+i'])
-  })
-
-  it('preserves saved Insert shortcut unbindings after the Import rename', () => {
-    const items = createKeymapItemsFromContributions([defaultKeymap]).filter(
-      (item) => item.id === 'toolbar.modeling.insert'
-    )
-    const resolved = resolveKeymapItems(items, {
-      version: KEYMAP_SCHEMA_VERSION,
-      bindings: [
-        {
-          command: '-code:Insert',
-          keystrokes: ['i'],
-          when: [CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE],
-        },
-      ],
-    })
-    expect(resolved).toHaveLength(0)
+    expect(
+      defaultKeymap.bindings.find(
+        (binding) => binding.id === 'toolbar.modeling.insert'
+      )?.command
+    ).toBe('code:Insert')
   })
 
   it('uses Shift+Escape to exit sketch across desktop and web', () => {

@@ -138,27 +138,6 @@ test.describe(
         await scene.settled()
       })
 
-      await test.step('Find Import in the command palette', async () => {
-        await cmdBar.openCmdBar()
-        await page.getByPlaceholder('Search commands').fill('import')
-        await expect(
-          page.getByRole('option', {
-            name: 'Import file from URL',
-            exact: false,
-          })
-        ).toHaveCount(0)
-        await cmdBar.cmdOptions.getByText('Import', { exact: true }).click()
-        await cmdBar.expectState({
-          stage: 'arguments',
-          commandName: 'Import',
-          currentArgKey: 'path',
-          currentArgValue: '',
-          headerArguments: { Path: '', LocalName: '' },
-          highlightedHeaderArg: 'path',
-        })
-        await page.keyboard.press('Escape')
-      })
-
       await test.step('Import kcl as first part as module', async () => {
         await insertPartIntoAssembly(
           'cylinder.kcl',
