@@ -581,9 +581,7 @@ mod tests {
 
 clonedCube = clone(cube)
 "#;
-        let ctx = crate::test_server::new_context_engine_graphics(true, None)
-            .await
-            .unwrap();
+        let ctx = crate::test_server::new_context(true, None).await.unwrap();
         let program = crate::Program::parse_no_errs(code).unwrap();
 
         // Execute the program.
@@ -632,9 +630,7 @@ clonedCube = clone(cube)
 
 clonedCube = clone(cube)
 "#;
-        let ctx = crate::test_server::new_context_engine_graphics(true, None)
-            .await
-            .unwrap();
+        let ctx = crate::test_server::new_context(true, None).await.unwrap();
         let program = crate::Program::parse_no_errs(code).unwrap();
 
         // Execute the program.
@@ -714,9 +710,7 @@ loftProfileB = startSketchOn(offsetPlane(XZ, offset = -15))
 surfaceLoft = loft([loftProfileA, loftProfileB], bodyType = SURFACE)
 surfaceLoftClone = clone(surfaceLoft)
 "#;
-        let ctx = crate::test_server::new_context_engine_graphics(true, None)
-            .await
-            .unwrap();
+        let ctx = crate::test_server::new_context(true, None).await.unwrap();
         let program = crate::Program::parse_no_errs(code).unwrap();
 
         let result = ctx.run_with_caching(program).await.unwrap();
@@ -768,9 +762,7 @@ source = extrude(
 )
 cloned = clone(source)
 "#;
-        let ctx = crate::test_server::new_context_engine_graphics(true, None)
-            .await
-            .unwrap();
+        let ctx = crate::test_server::new_context(true, None).await.unwrap();
         let program = crate::Program::parse_no_errs(code).unwrap();
 
         let result = ctx.run_with_caching(program).await.unwrap();
@@ -819,9 +811,7 @@ base = extrude(profile, length = 1)
 source = extrude(c, length = 4, method = NEW)
 cloned = clone(source)
 "#;
-        let ctx = crate::test_server::new_context_engine_graphics(true, None)
-            .await
-            .unwrap();
+        let ctx = crate::test_server::new_context(true, None).await.unwrap();
         let program = crate::Program::parse_no_errs(code).unwrap();
 
         let result = ctx.run_with_caching(program).await.unwrap();
@@ -888,9 +878,7 @@ surfaceB = extrude(region(segments = [sketchA.line1, sketchA.line2]), length = -
 bridge = blend([surfaceA.sketch.tags.line7, surfaceB.sketch.tags.line3])
 bridgeClone = clone(bridge)
 "#;
-        let ctx = crate::test_server::new_context_engine_graphics(true, None)
-            .await
-            .unwrap();
+        let ctx = crate::test_server::new_context(true, None).await.unwrap();
         let program = crate::Program::parse_no_errs(code).unwrap();
 
         let result = ctx.run_with_caching(program).await.unwrap();
@@ -948,9 +936,7 @@ pieces = split([target], tools = [cutter], keepTools = true)
 joined = joinSurfaces(pieces)
 joinedClone = clone(joined)
 "#;
-        let ctx = crate::test_server::new_context_engine_graphics(true, None)
-            .await
-            .unwrap();
+        let ctx = crate::test_server::new_context(true, None).await.unwrap();
         let program = crate::Program::parse_no_errs(code).unwrap();
 
         let result = ctx.run_with_caching(program).await.unwrap();
@@ -986,9 +972,7 @@ lofted = loft([
 ])
 clonedLoft = clone(lofted)
 "#;
-        let ctx = crate::test_server::new_context_engine_graphics(true, None)
-            .await
-            .unwrap();
+        let ctx = crate::test_server::new_context(true, None).await.unwrap();
         let program = crate::Program::parse_no_errs(code).unwrap();
 
         let result = ctx.run_with_caching(program).await.unwrap();
@@ -1061,9 +1045,7 @@ right = startSketchOn(XY)
 composite = union([left, right])
 clonedComposite = clone(composite)
 "#;
-        let ctx = crate::test_server::new_context_engine_graphics(true, None)
-            .await
-            .unwrap();
+        let ctx = crate::test_server::new_context(true, None).await.unwrap();
         let program = crate::Program::parse_no_errs(code).unwrap();
 
         let result = ctx.run_with_caching(program).await.unwrap();
@@ -1126,9 +1108,7 @@ clonedCopy = clone(patternCopy)
         std::fs::write(tmpdir.path().join("composite.kcl"), module_code).unwrap();
         std::fs::write(&main_path, code).unwrap();
 
-        let ctx = crate::test_server::new_context_engine_graphics(true, Some(main_path))
-            .await
-            .unwrap();
+        let ctx = crate::test_server::new_context(true, Some(main_path)).await.unwrap();
         let program = crate::Program::parse_no_errs(code).unwrap();
 
         let result = ctx.run_with_caching(program).await.unwrap();
@@ -1168,9 +1148,7 @@ clonedCopy = clone(patternCopy)
 
 clonedCube = clone(cube)
 "#;
-        let ctx = crate::test_server::new_context_engine_graphics(true, None)
-            .await
-            .unwrap();
+        let ctx = crate::test_server::new_context(true, None).await.unwrap();
         let program = crate::Program::parse_no_errs(code).unwrap();
 
         // Execute the program.
@@ -1217,9 +1195,7 @@ clonedCube = clone(cube)
 
 clonedCube = clone(cube)
 "#;
-        let ctx = crate::test_server::new_context_engine_graphics(true, None)
-            .await
-            .unwrap();
+        let ctx = crate::test_server::new_context(true, None).await.unwrap();
         let program = crate::Program::parse_no_errs(code).unwrap();
 
         // Execute the program.
@@ -1295,9 +1271,7 @@ patternCopy = patterned[1]
 clonedCopy = clone(patternCopy)
 "#;
         let program = crate::Program::parse_no_errs(code).unwrap();
-        let ctx = crate::test_server::new_context_engine_graphics(true, None)
-            .await
-            .unwrap();
+        let ctx = crate::test_server::new_context(true, None).await.unwrap();
 
         let result = ctx.run_with_caching(program).await.unwrap();
         let source = result.variables.get("source").unwrap();
@@ -1368,9 +1342,7 @@ clonedCube = clone(cube)
     |> translate(
         x = 25.0,
     )"#;
-        let ctx = crate::test_server::new_context_engine_graphics(true, None)
-            .await
-            .unwrap();
+        let ctx = crate::test_server::new_context(true, None).await.unwrap();
         let program = crate::Program::parse_no_errs(code).unwrap();
 
         // Execute the program.
@@ -1463,9 +1435,7 @@ clonedCube = clone(cube)
 
 clonedCube = clone(cube)
 "#;
-        let ctx = crate::test_server::new_context_engine_graphics(true, None)
-            .await
-            .unwrap();
+        let ctx = crate::test_server::new_context(true, None).await.unwrap();
         let program = crate::Program::parse_no_errs(code).unwrap();
 
         // Execute the program.
@@ -1558,9 +1528,7 @@ cube = baseCube
 
 clonedCube = clone(cube)
 "#;
-        let ctx = crate::test_server::new_context_engine_graphics(true, None)
-            .await
-            .unwrap();
+        let ctx = crate::test_server::new_context(true, None).await.unwrap();
         let program = crate::Program::parse_no_errs(code).unwrap();
 
         // Execute the program.

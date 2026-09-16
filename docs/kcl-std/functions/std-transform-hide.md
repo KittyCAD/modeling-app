@@ -40,7 +40,18 @@ hide(cylinder)
 ```
 
 
-![Rendered example of hide 0](/kcl-test-outputs/serial_test_example_fn_std-transform-hide0.png)
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the hide function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-hide0_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-transform-hide0.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
 
 ```kcl
 // Hide an imported model, leaving a local sketch.
@@ -54,7 +65,18 @@ cube
 ```
 
 
-![Rendered example of hide 1](/kcl-test-outputs/serial_test_example_fn_std-transform-hide1.png)
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the hide function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-hide1_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-transform-hide1.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
 
 ```kcl
 // Hide a helix, leave its cylinder
@@ -70,7 +92,7 @@ hide(helix001)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the hide function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-hide2_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-hide2_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-transform-hide2.png"
@@ -110,7 +132,7 @@ hide(label)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the hide function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-hide3_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-hide3_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-transform-hide3.png"

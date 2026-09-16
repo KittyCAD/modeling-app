@@ -80,7 +80,7 @@ example = startSketchOn(XZ)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the extrude function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude0_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude0.png"
@@ -109,7 +109,7 @@ example = extrude(exampleSketch, length = 10)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the extrude function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude1_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude1.png"
@@ -138,7 +138,7 @@ example = extrude(exampleSketch, length = 20, symmetric = true)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the extrude function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude2_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude2_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude2.png"
@@ -167,7 +167,7 @@ example = extrude(exampleSketch, length = 10, bidirectionalLength = 50)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the extrude function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude3_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude3_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude3.png"
@@ -188,7 +188,7 @@ example = startSketchOn(XZ)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the extrude function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude4_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude4_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude4.png"
@@ -212,7 +212,7 @@ startSketchOn(XY)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the extrude function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude5_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude5_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude5.png"
@@ -248,7 +248,7 @@ translate(cylinder, x = 1)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the extrude function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude6_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude6_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude6.png"
@@ -307,7 +307,7 @@ cylinder4 = circle(sketch006, center = [2.5, 0.5], radius = 0.25)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the extrude function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude7_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude7_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude7.png"
@@ -334,7 +334,7 @@ extrude(openProfile, length = 2, bodyType = SURFACE)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the extrude function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude8_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude8_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude8.png"
@@ -404,7 +404,7 @@ extrude(
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the extrude function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude9_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude9_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude9.png"
@@ -439,7 +439,7 @@ box = extrude(
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the extrude function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude10_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude10_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude10.png"
@@ -478,7 +478,7 @@ extrude(endSweep, length = 2, method = NEW)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the extrude function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude11_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude11_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude11.png"
@@ -533,7 +533,7 @@ zeroDraft = extrude(region003, length = 2)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the extrude function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude12_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude12_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude12.png"
@@ -557,7 +557,7 @@ extrude(closedProfile, length = 5, bodyType = SURFACE)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the extrude function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude13_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude13_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude13.png"
@@ -591,7 +591,7 @@ solid = extrude(region(segments = [profile.edge1, profile.edge2]), length = 5)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the extrude function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude14_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude14_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude14.png"
@@ -635,7 +635,7 @@ extrude(
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the extrude function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude15_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude15_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude15.png"
@@ -712,7 +712,7 @@ extrude003 = extrude(
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the extrude function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude16_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude16_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude16.png"
@@ -757,7 +757,7 @@ extrude002 = extrude(
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the extrude function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude17_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude17_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude17.png"

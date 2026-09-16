@@ -55,7 +55,7 @@ gear::spur(
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the gear::spur function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-gear-spur0_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-gear-spur0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-gear-spur0.png"

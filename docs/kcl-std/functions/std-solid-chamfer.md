@@ -79,7 +79,7 @@ mountingPlate = extrude(mountingPlateSketch, length = thickness)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the chamfer function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-chamfer0_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-chamfer0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-chamfer0.png"
@@ -122,7 +122,7 @@ sketch001 = startSketchOn(part001, face = chamfer1)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the chamfer function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-chamfer1_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-chamfer1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-chamfer1.png"
@@ -155,7 +155,7 @@ part001 = cube(pos = [0, 0], scale = 20)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the chamfer function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-chamfer2_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-chamfer2_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-chamfer2.png"
@@ -199,7 +199,7 @@ chamfered = chamfer(blockWithTab, length = 0.5mm, tags = [getNextAdjacentEdge(ta
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the chamfer function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-chamfer3_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-chamfer3_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-chamfer3.png"
@@ -261,7 +261,7 @@ rightShaft = chamfer(rightShaftBase, length = 1mm, tags = [rightTopEdge])
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the chamfer function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-chamfer4_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-chamfer4_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-chamfer4.png"
