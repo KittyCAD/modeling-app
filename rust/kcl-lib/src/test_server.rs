@@ -35,6 +35,7 @@ pub async fn execute(code: &str, current_file: Option<PathBuf>) -> Result<(), Ex
     res
 }
 
+#[cfg(test)]
 pub struct Snapshot3d {
     /// Bytes of the snapshot.
     pub image: image::DynamicImage,
@@ -70,6 +71,7 @@ pub async fn execute_locally_and_render_on_engine(
 
 /// Execute the kcl then export the resulting glb and CPU render an image locally
 /// cheaper than engine render since we can use the engine in geometry-only mode.
+#[cfg(test)]
 pub async fn execute_export_and_render_locally(
     ctx: &ExecutorContext,
     program: Program,
@@ -134,12 +136,14 @@ impl From<RawFile> for Glb {
     }
 }
 
+#[cfg(test)]
 pub enum TestGraphicsArtifact {
     Image(image::DynamicImage),
     ImageAndGlb { image: image::DynamicImage, glb: Glb },
     None,
 }
 
+#[cfg(test)]
 impl TestGraphicsArtifact {
     pub fn image(self) -> Option<image::DynamicImage> {
         match self {
@@ -150,6 +154,7 @@ impl TestGraphicsArtifact {
     }
 }
 
+#[cfg(test)]
 enum TestGraphicsParams {
     /// use the 3d engine scene to render an image
     EngineRender,
@@ -159,6 +164,7 @@ enum TestGraphicsParams {
     None,
 }
 
+#[cfg(test)]
 impl TestGraphicsParams {
     fn geometry_only(&self) -> bool {
         matches!(self, Self::ExportAndRender | Self::None)
@@ -175,6 +181,7 @@ impl TestGraphicsParams {
     }
 }
 
+#[cfg(test)]
 pub async fn kcl_doc_execute_and_snapshot(
     code: &str,
     current_file: Option<PathBuf>,
