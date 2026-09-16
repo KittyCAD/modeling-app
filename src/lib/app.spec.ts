@@ -4,6 +4,7 @@ import { signal } from '@preact/signals-core'
 import { File, type KclManager } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
 import {
+  IS_PLAYWRIGHT_KEY,
   KCL_CEK_EXECUTOR_FEATURE_FLAG,
   KCL_NEW_LEXER_PARSER_FEATURE_FLAG,
   OPFS_CLOUD_FEATURE_FLAG,
@@ -202,6 +203,7 @@ function expectedRuntimeFlags(
   useCekExecutor: 'On' | 'Off'
 ) {
   return JSON.stringify({
+    enable_z0006_lint: 'Off',
     use_cek_executor: useCekExecutor,
     use_new_lexer_parser: useNewLexerParser,
   })
@@ -599,6 +601,65 @@ describe('project system', () => {
         })
     } finally {
       app.dispose()
+    }
+  })
+
+  it('lets Playwright keep cloud sync off while Personal Cloud stays available', async () => {
+    localStorage.setItem(IS_PLAYWRIGHT_KEY, 'true')
+    const userFeatures = createUserFeaturesForTest(
+      new Set([OPFS_CLOUD_FEATURE_FLAG])
+    )
+    const app = createAppForTest({
+      userFeatures,
+    })
+
+    try {
+      await expect
+        .poll(() => ({
+          active: getPluginToggle(app, 'cloud-sync').active.value,
+          current: getCloudSyncPluginSetting(app)?.current,
+          user: getCloudSyncPluginSetting(app)?.user,
+          hasPersonalCloudLibrarySetting: hasPersonalCloudLibrarySetting(app),
+        }))
+        .toEqual({
+          active: true,
+          current: true,
+          user: true,
+          hasPersonalCloudLibrarySetting: true,
+        })
+
+      app.settings.actor.send({
+        type: 'set.plugins.cloud-sync',
+        data: {
+          level: 'user',
+          value: false,
+        },
+        doNotPersist: true,
+      } as never)
+
+      await expect
+        .poll(() => ({
+          current: getCloudSyncPluginSetting(app)?.current,
+          user: getCloudSyncPluginSetting(app)?.user,
+          active: getPluginToggle(app, 'cloud-sync').active.value,
+          hasPersonalCloudLibrarySetting: hasPersonalCloudLibrarySetting(app),
+          canCreateInPersonalCloud: app
+            .getCreateProjectLibraryTargets()
+            .some(
+              (target) =>
+                target.library.id === PERSONAL_CLOUD_PROJECT_LIBRARY_ID
+            ),
+        }))
+        .toEqual({
+          current: false,
+          user: false,
+          active: false,
+          hasPersonalCloudLibrarySetting: true,
+          canCreateInPersonalCloud: true,
+        })
+    } finally {
+      app.dispose()
+      localStorage.removeItem(IS_PLAYWRIGHT_KEY)
     }
   })
 

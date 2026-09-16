@@ -71,7 +71,6 @@ description: Variables in memory after executing translate_after_fillet.kcl
   },
   "filletEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "filletEdge"
   }
 }

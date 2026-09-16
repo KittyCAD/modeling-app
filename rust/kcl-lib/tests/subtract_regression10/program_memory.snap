@@ -5286,21 +5286,17 @@ description: Variables in memory after executing subtract_regression10.kcl
   },
   "seg01": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "seg01"
   },
   "seg02": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "seg02"
   },
   "seg03": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "seg03"
   },
   "seg04": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "seg04"
   },

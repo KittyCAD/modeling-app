@@ -319,6 +319,7 @@ jobs:
 
       - name: Track teardown (web)
         if: always()
+        shell: bash
         run: .github/ci-cd-scripts/track-step.sh
         env:
           TAB_API_URL: ${{ vars.TAB_API_URL }}
@@ -456,6 +457,7 @@ jobs:
 
       - name: Track teardown (desktop)
         if: always()
+        shell: bash
         run: .github/ci-cd-scripts/track-step.sh
         env:
           TAB_API_URL: ${{ vars.TAB_API_URL }}

@@ -224,7 +224,6 @@ description: Variables in memory after executing ssi_pattern.kcl
   },
   "seg01": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "seg01"
   },
   "sketch001": {
