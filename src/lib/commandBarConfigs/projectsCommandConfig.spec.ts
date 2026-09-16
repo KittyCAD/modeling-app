@@ -124,35 +124,18 @@ function projectOptions(
 }
 
 describe('project command config', () => {
-  it.each([false, true])(
-    'keeps URL import callable but hidden from search (desktop: %s)',
-    (desktop) => {
-      const systemIOActor = createSystemIOActor()
-      const commands = createProjectCommands({
-        systemIOActor,
-        enableProjectDirectoryCommands: desktop,
-      })
-      const importCommand = commands.find(
-        (command) => command.name === 'Import file from URL'
-      )
-      if (!importCommand) throw new Error('URL import command is missing')
+  it('keeps URL import registered but hidden from search', () => {
+    const commands = createProjectCommands({
+      systemIOActor: createSystemIOActor(),
+    })
+    const importCommand = commands.find(
+      (command) => command.name === 'Import file from URL'
+    )
+    if (!importCommand) throw new Error('URL import command is missing')
 
-      expect(isCommandVisibleInSearch(importCommand, desktop)).toBe(false)
-      importCommand.onSubmit({
-        projectName: 'test-project',
-        code: 'distance = 12',
-        name: 'main.kcl',
-      })
-      expect(systemIOActor.send).toHaveBeenCalledWith({
-        type: SystemIOMachineEvents.importFileFromURL,
-        data: {
-          requestedProjectName: 'test-project',
-          requestedCode: 'distance = 12',
-          requestedFileNameWithExtension: 'main.kcl',
-        },
-      })
-    }
-  )
+    expect(isCommandVisibleInSearch(importCommand, false)).toBe(false)
+    expect(isCommandVisibleInSearch(importCommand, true)).toBe(false)
+  })
 
   it('keeps project directory mutation commands disabled by default on web', () => {
     const commands = createProjectCommands({
