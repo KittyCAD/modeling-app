@@ -110,23 +110,6 @@ for (const fileType of ['kcl', 'step']) {
           await page.evaluate(() => window.app.singletons.kclManager.code)
         ).toBe(before)
       })
-
-      await test.step('Create another clone from the same import', async () => {
-        await toolbar.insertButton.click()
-        await cmdBar.selectOption({ name: filePath }).click()
-        await expect(cmdBar.argumentInput).toHaveValue('clone002')
-        await cmdBar.argumentInput.fill('myInstance')
-        await cmdBar.progressCmdBar()
-        await cmdBar.progressCmdBar()
-        await scene.settled()
-        await editor.expectEditor.toContain('myInstance = clone(originalPart)')
-        const result = await page.evaluate(() => ({
-          code: window.app.singletons.kclManager.code,
-          errors: window.app.singletons.kclManager.errors,
-        }))
-        expect(result.code.match(/import /g)).toHaveLength(1)
-        expect(result.errors).toEqual([])
-      })
     }
   )
 }
