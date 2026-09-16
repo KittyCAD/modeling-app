@@ -1,23 +1,49 @@
 import {
   defineRegistryItemFactory,
   defineRuntimeRegistryItem,
+  provide,
 } from '@kittycad/registry'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
-import { layoutService } from '@src/lib/layout/registry/contract'
+import {
+  layoutAreaLibraryValueSpec,
+  layoutService,
+} from '@src/lib/layout/registry/contract'
+import { AreaType, type AreaTypeComponentProps } from '@src/lib/layout/types'
 import { getOpenPanes, togglePaneLayoutNode } from '@src/lib/layout/utils'
 import {
   FILE_COMMAND_SCOPES,
   provideCommand,
 } from '@src/registry/contracts/commands'
 import { provideKeymapItem } from '@src/registry/contracts/keymap'
+import { createElement, lazy, Suspense } from 'react'
 
 const TOGGLE_FEATURE_TREE_COMMAND_ID = 'feature-tree.toggle'
+
+const FeatureTreePane = lazy(async () => {
+  const { FeatureTreePane } = await import(
+    '@src/components/layout/areas/FeatureTreePane'
+  )
+  return { default: FeatureTreePane }
+})
+
+const FeatureTreeArea = (props: AreaTypeComponentProps) =>
+  createElement(
+    Suspense,
+    { fallback: null },
+    createElement(FeatureTreePane, props)
+  )
 
 export default defineRegistryItemFactory(
   (ctx) => ({
     item: defineRuntimeRegistryItem({
       id: 'feature-tree',
       provides: [
+        provide(layoutAreaLibraryValueSpec, {
+          [AreaType.FeatureTree]: {
+            hide: () => false,
+            Component: FeatureTreeArea,
+          },
+        }),
         provideCommand({
           id: TOGGLE_FEATURE_TREE_COMMAND_ID,
           name: 'Toggle Feature Tree',
