@@ -862,7 +862,11 @@ async fn run_example_with_retries(text: &str) -> Result<()> {
 }
 
 async fn run_example(program: &crate::Program) -> Result<(), ExecErrorWithState> {
-    let ctx = ExecutorContext::new_with_default_client()
+    let version = program
+        .language_version()
+        .map_err(crate::KclErrorWithOutputs::no_outputs)
+        .map_err(crate::ExecError::from)?;
+    let ctx = ExecutorContext::new_with_client(Default::default(), None, None, version)
         .await
         .map_err(ConnectionError::CouldNotMakeClient)?;
     let mut exec_state = crate::execution::ExecState::new(&ctx);
