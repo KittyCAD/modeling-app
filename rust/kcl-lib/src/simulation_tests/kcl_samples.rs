@@ -96,7 +96,13 @@ async fn unparse_test(test: &Test) {
 #[kcl_directory_test_macro::test_all_dirs("../public/kcl-samples", exclude = ["walkie-talkie"])]
 async fn kcl_test_execute(dir_name: &str, dir_path: &Path) {
     let t = test(dir_name, dir_path.join("main.kcl"));
-    super::execute_test(&t, true).await;
+    super::execute_test(
+        &t,
+        crate::test_server::TestGraphicsParams::EngineRender {
+            reason: "old".to_string(),
+        },
+    )
+    .await;
 }
 
 /// The current engine times out on the walkie-talkie's exact 143-tool speaker
@@ -107,7 +113,13 @@ async fn kcl_test_execute(dir_name: &str, dir_path: &Path) {
 async fn kcl_test_execute_walkie_talkie() {
     let dir_path = INPUTS_DIR.join("walkie-talkie");
     let t = test("walkie-talkie", dir_path.join("main.kcl"));
-    super::execute_test(&t, true).await;
+    super::execute_test(
+        &t,
+        crate::test_server::TestGraphicsParams::EngineRender {
+            reason: "old".to_string(),
+        },
+    )
+    .await;
 }
 
 #[test]
