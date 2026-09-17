@@ -114,8 +114,10 @@ variableBelowShouldNotBeIncluded = 3
     )
     const defaultTy = {
       type: 'Default',
-      angle: 'degrees',
-      len: 'mm',
+      value: {
+        angle: 'degrees',
+        len: 'mm',
+      },
     }
     expect(variables).toEqual([
       {
