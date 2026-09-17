@@ -1137,6 +1137,8 @@ impl ExecutorContext {
                 replay: settings.replay.clone(),
                 show_grid: if settings.show_grid { Some(true) } else { None },
                 pool: None,
+                geometry_only: None,
+                kcl_version: None,
                 pr,
                 unlocked_framerate: None,
                 webrtc: Some(false),
