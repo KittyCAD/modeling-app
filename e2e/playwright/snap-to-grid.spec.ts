@@ -78,7 +78,9 @@ test.describe('Snap to Grid', { tag: '@desktop' }, () => {
 
 test.describe(
   'Modern sketch snap to grid',
-  { tag: ['@desktop', '@web'] },
+  {
+    tag: ['@desktop', '@web'],
+  },
   () => {
     test.use({ userFeatures: [OPFS_CLOUD_FEATURE_FLAG] })
     for (const grid of [
@@ -91,6 +93,7 @@ test.describe(
         toolbar,
         scene,
         editor,
+        fs,
       }) => {
         await page.setBodyDimensions({ width: 1200, height: 500 })
         await homePage.goToModelingScene()
@@ -264,15 +267,34 @@ test.describe(
         if (!pointBox) throw new Error('Expected a draggable line endpoint')
         const x = pointBox.x + pointBox.width / 2
         const y = pointBox.y + pointBox.height / 2
+        const checkpointBeforeDrag = await page.evaluate(
+          () => window.app.singletons.kclManager.currentSketchCheckpointId
+        )
         await page.mouse.move(x, y)
         await page.mouse.down()
         await page.mouse.move(x + 43, y - 31, { steps: 8 })
         await page.mouse.up()
+        // Preview coordinates appear before the release creates a checkpoint.
+        await expect
+          .poll(() =>
+            page.evaluate(
+              () => window.app.singletons.kclManager.currentSketchCheckpointId
+            )
+          )
+          .not.toBe(checkpointBeforeDrag)
         await expect.poll(getSnappedLineValues).not.toEqual(snappedLineValues)
         const draggedLineValues = await getSnappedLineValues()
         expectOnGrid(draggedLineValues)
         await toolbar.exitSketchBtn.click()
         await expect(toolbar.startSketchBtn).toBeEnabled()
+        const savedSource = await page.evaluate(() => ({
+          path: window.app.singletons.kclManager.path,
+          code: window.app.singletons.kclManager.code,
+        }))
+        // Autosave is debounced; verify persistence before destroying the page.
+        await expect
+          .poll(() => fs.readFile(savedSource.path, { encoding: 'utf-8' }))
+          .toBe(savedSource.code)
         await page.reload()
         await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 30_000 })
         await scene.settled()

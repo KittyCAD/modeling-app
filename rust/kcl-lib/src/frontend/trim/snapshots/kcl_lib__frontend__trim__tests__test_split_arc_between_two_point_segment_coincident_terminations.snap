@@ -3,29 +3,128 @@ source: kcl-lib/src/frontend/trim/tests.rs
 expression: result_normalized
 ---
 sketch012 = sketch(on = XY) {
-  arc1 = arc(start = [var -20.19mm, var 40.27mm], end = [var 4.32mm, var -10.51mm], center = [var 28.89mm, var 32.66mm])
-  line1 = line(start = [var 4.32mm, var -10.51mm], end = [var 12.07mm, var -10.3mm])
+  arc1 = arc(
+    start = [
+      var -20.19225246057748mm,
+      var 40.27012949716788mm
+    ],
+    end = [
+      var 4.320713820804109mm,
+      var -10.508680999701875mm
+    ],
+    center = [
+      var 28.89021910576838mm,
+      var 32.65810429611081mm
+    ],
+  )
+  line1 = line(
+    start = [
+      var 4.320713820804109mm,
+      var -10.508680999701875mm
+    ],
+    end = [
+      var 12.071177906212325mm,
+      var -10.298178840230019mm
+    ],
+  )
   coincident([line1.start, arc1.end])
-  arc2 = arc(start = [var -6.97mm, var 42.96mm], end = [var -3.63mm, var 7.92mm], center = [var 40.14mm, var 29.77mm])
-  line2 = line(start = [var -6.97mm, var 42.96mm], end = [var -20.19mm, var 40.27mm])
+  arc2 = arc(
+    start = [
+      var -6.970007901659519mm,
+      var 42.960002212331446mm
+    ],
+    end = [
+      var -3.6308463352350433mm,
+      var 7.919525578757576mm
+    ],
+    center = [
+      var 40.140000560071556mm,
+      var 29.769994122737486mm
+    ],
+  )
+  line2 = line(
+    start = [
+      var -6.970007901659519mm,
+      var 42.960002212331446mm
+    ],
+    end = [
+      var -20.19225246057748mm,
+      var 40.27012949716788mm
+    ],
+  )
   coincident([line2.start, arc2.start])
   coincident([line2.end, arc1.start])
-  line3 = line(start = [var -10.84mm, var 42.17mm], end = [var -17.05mm, var 13.78mm])
+  line3 = line(
+    start = [
+      var -10.840529274453855mm,
+      var 42.172601118081154mm
+    ],
+    end = [
+      var -17.0509560541503mm,
+      var 13.778475919250512mm
+    ],
+  )
   coincident([line3.start, line2])
   coincident([line3.end, arc1])
-  line4 = line(start = [var -8.41mm, var 42.67mm], end = [var -14.8mm, var 9.03mm])
+  line4 = line(
+    start = [
+      var -8.409424930423059mm,
+      var 42.66717382195036mm
+    ],
+    end = [
+      var -14.798451109002539mm,
+      var 9.029053583319447mm
+    ],
+  )
   coincident([line4.start, line2])
   coincident([line4.end, arc1])
-  line5 = line(start = [var -3.63mm, var 7.92mm], end = [var -4.91mm, var 0mm])
+  line5 = line(
+    start = [
+      var -3.6308463352350433mm,
+      var 7.919525578757576mm
+    ],
+    end = [var -4.91mm, var 0mm],
+  )
   horizontal([line5.end, ORIGIN])
   line6 = line(start = [var -4.91mm, var 0mm], end = [var -9.25mm, var 0mm])
   coincident([line5.end, line6.start])
   horizontal([line6.end, ORIGIN])
-  line7 = line(start = [var -0.48mm, var -7.4mm], end = [var 7.49mm, var -6.66mm])
+  line7 = line(
+    start = [
+      var -0.47764566851852064mm,
+      var -7.3988609074823835mm
+    ],
+    end = [
+      var 7.489033422583455mm,
+      var -6.661171143695715mm
+    ],
+  )
   coincident([line7.start, arc1])
-  line8 = line(start = [var 9.38mm, var -8.27mm], end = [var 8.68mm, var -10.39mm])
+  line8 = line(
+    start = [
+      var 9.379421662148994mm,
+      var -8.270813170454447mm
+    ],
+    end = [
+      var 8.68000766376918mm,
+      var -10.390282829269195mm
+    ],
+  )
   coincident([line8.end, line1])
-  arc3 = arc(start = [var 7.49mm, var -6.66mm], end = [var 12.07mm, var -10.3mm], center = [var 40.14mm, var 29.77mm])
+  arc3 = arc(
+    start = [
+      var 7.489033422583455mm,
+      var -6.661171143695715mm
+    ],
+    end = [
+      var 12.071177906212325mm,
+      var -10.298178840230019mm
+    ],
+    center = [
+      var 40.14012728179636mm,
+      var 29.769901908734123mm
+    ],
+  )
   coincident([arc2.end, line5.start])
   coincident([arc3.start, line7.end])
   coincident([arc3.end, line1.end])
