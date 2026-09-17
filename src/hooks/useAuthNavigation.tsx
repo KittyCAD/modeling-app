@@ -1,6 +1,3 @@
-import { useEffect } from 'react'
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-
 import { useApp } from '@src/lib/boot'
 import {
   ALLOW_MOBILE_QUERY_PARAM,
@@ -9,14 +6,18 @@ import {
 import { isDesktop } from '@src/lib/isDesktop'
 import { isMobile } from '@src/lib/isMobile'
 import { PATHS } from '@src/lib/paths'
+import { appNavigationService } from '@src/registry/contracts/appNavigation'
 import { generateSignInUrl } from '@src/routes/utils'
+import { useEffect } from 'react'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 /**
  * A simple hook that listens to the auth state of the app and navigates
  * accordingly.
  */
 export function useAuthNavigation() {
-  const { auth } = useApp()
+  const app = useApp()
+  const { auth } = app
   const navigate = useNavigate()
   const location = useLocation()
   const authState = auth.useAuthState()
@@ -34,7 +35,7 @@ export function useAuthNavigation() {
       authState.matches('loggedIn') &&
       location.pathname.includes(PATHS.SIGN_IN)
     ) {
-      void navigate(PATHS.INDEX)
+      void app.registry.get(appNavigationService).showHome()
     } else if (
       authState.matches('loggedOut') &&
       !location.pathname.includes(PATHS.SIGN_IN)
