@@ -6,6 +6,7 @@ import {
   createLiteral,
   createLocalName,
   createVariableDeclaration,
+  findUniqueName,
 } from '@src/lang/create'
 import {
   createPathToNodeForLastVariable,
@@ -17,12 +18,15 @@ import {
 import { getPlaneExprFromSelection } from '@src/lang/modifyAst/faces'
 import { getAxisExpression } from '@src/lang/modifyAst/geometry'
 import {
+  getBodyIndex,
+  getNodeFromPath,
   getVariableExprsFromSelection,
   valueOrVariable,
 } from '@src/lang/queryAst'
 import type {
   ArtifactGraph,
   Expr,
+  ExpressionStatement,
   PathToNode,
   Program,
   VariableMap,
@@ -477,6 +481,100 @@ export function addAppearance({
 
 type ObjectTransformName = 'hide' | 'delete'
 
+type VariableExprsOptions = NonNullable<
+  Parameters<typeof getVariableExprsFromSelection>[5]
+>
+
+function getObjectTransformVariableExprsFromSelection(
+  selection: Selections,
+  artifactGraph: ArtifactGraph,
+  ast: Node<Program>,
+  wasmInstance: ModuleType,
+  options: VariableExprsOptions = {}
+): Error | { exprs: Expr[]; pathIfPipe?: PathToNode } {
+  const vars = getVariableExprsFromSelection(
+    selection,
+    artifactGraph,
+    ast,
+    wasmInstance,
+    undefined,
+    options
+  )
+  if (err(vars)) {
+    return vars
+  }
+
+  if (selection.graphSelections.length < 2) {
+    return vars
+  }
+
+  const pipeBodyIndexes = new Set<number>()
+
+  for (const graphSelection of selection.graphSelections) {
+    const singleSelectionVars = getVariableExprsFromSelection(
+      {
+        graphSelections: [graphSelection],
+        otherSelections: [],
+      },
+      artifactGraph,
+      ast,
+      wasmInstance,
+      undefined,
+      options
+    )
+    if (err(singleSelectionVars)) {
+      return singleSelectionVars
+    }
+
+    if (singleSelectionVars.pathIfPipe) {
+      const expression = getNodeFromPath<ExpressionStatement>(
+        ast,
+        singleSelectionVars.pathIfPipe,
+        wasmInstance,
+        'ExpressionStatement'
+      )
+      if (!err(expression) && expression.node.type === 'ExpressionStatement') {
+        const bodyIndex = getBodyIndex(expression.shallowPath)
+        if (err(bodyIndex)) {
+          return bodyIndex
+        }
+        pipeBodyIndexes.add(bodyIndex)
+      }
+    }
+  }
+
+  if (pipeBodyIndexes.size <= 1) {
+    return vars
+  }
+
+  const materializedPipeExprs: Expr[] = []
+  for (const bodyIndex of pipeBodyIndexes) {
+    const statement = ast.body[bodyIndex]
+    if (!statement || statement.type !== 'ExpressionStatement') {
+      return new Error('Expected a variable-less object transform source pipe')
+    }
+
+    const variableName = findUniqueName(
+      ast,
+      KCL_DEFAULT_CONSTANT_PREFIXES.SOLID
+    )
+    const declaration = createVariableDeclaration(
+      variableName,
+      statement.expression
+    )
+    declaration.preComments = statement.preComments
+    ast.body[bodyIndex] = declaration
+    materializedPipeExprs.push(createLocalName(variableName))
+  }
+
+  return {
+    exprs: [
+      ...vars.exprs.filter((expr) => expr.type !== 'PipeSubstitution'),
+      ...materializedPipeExprs,
+    ],
+  }
+}
+
 function addObjectTransform({
   ast,
   artifactGraph,
@@ -500,12 +598,11 @@ function addObjectTransform({
   const artifact = objects.graphSelections[0].artifact
   const lastChildLookup =
     artifact?.type !== 'helix' && artifact?.type !== 'sketchBlock'
-  const vars = getVariableExprsFromSelection(
+  const vars = getObjectTransformVariableExprsFromSelection(
     objects,
     artifactGraph,
     modifiedAst,
     wasmInstance,
-    undefined,
     {
       lastChildLookup,
     }
@@ -522,6 +619,7 @@ function addObjectTransform({
   const pathToNode = setCallInAst({
     ast: modifiedAst,
     call,
+    pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl,
     wasmInstance,
   })
