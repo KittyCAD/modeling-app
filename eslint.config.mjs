@@ -202,6 +202,10 @@ export default defineConfig([
     ignores: [
       'src/lib/fileSystem/**/*.{ts,tsx}',
       'src/lib/fs-zds/**/*.{ts,tsx}',
+      // These infrastructure boundaries intentionally receive the raw adapter.
+      'src/lib/cloudSync/conflictInspection.ts',
+      'src/lib/cloudSync/index.ts',
+      'src/registry/extensions/fileOperations/index.ts',
       'src/**/*.{test,spec}.{ts,tsx}',
     ],
     rules: {

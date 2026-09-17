@@ -1,17 +1,28 @@
-const FS_ZDS_MODULE = '@src/lib/fs-zds'
-const FILE_OPERATION_METHODS = new Set([
-  'access',
-  'cp',
-  'mkdir',
-  'readFile',
-  'readdir',
-  'rename',
-  'rm',
-  'stat',
-  'writeFile',
+const FS_ZDS_MODULES = new Set([
+  '@src/lib/fs-zds',
+  '@src/lib/fs-zds/index',
+  '@src/lib/fs-zds/index.ts',
 ])
 
-const memberName = (node) => {
+/**
+ * Members that describe paths or locate application directories without
+ * reading or mutating their contents.
+ *
+ * Keeping this as an allowlist makes additions to the raw adapter unavailable
+ * to application code until they are deliberately classified here.
+ */
+const PATH_ONLY_MEMBERS = new Set([
+  'basename',
+  'dirname',
+  'extname',
+  'getPath',
+  'join',
+  'relative',
+  'resolve',
+  'sep',
+])
+
+const propertyName = (node) => {
   if (!node.computed && node.property.type === 'Identifier') {
     return node.property.name
   }
@@ -30,43 +41,91 @@ const rule = {
     },
     messages: {
       directFileSystemIo:
-        'Use FileOperations. Direct fsZds.{{method}} calls bypass filesystem coordination.',
+        'Use FileOperations. Access to fsZds.{{method}} bypasses filesystem coordination.',
+      dynamicFileSystemAccess:
+        'Use FileOperations. Dynamic fsZds property access cannot be verified as a path-only operation.',
+      escapedFileSystem:
+        'Use FileOperations. Do not pass, alias, or destructure the raw fsZds adapter.',
     },
     schema: [],
   },
   create(context) {
-    const importedNames = new Set()
+    const sourceCode = context.sourceCode
+
+    /**
+     * Resolve the nearest lexical binding so a local value that shadows an
+     * fsZds import is not mistaken for the imported adapter.
+     */
+    const isFsZdsReference = (node) => {
+      if (node.type !== 'Identifier') {
+        return false
+      }
+
+      for (
+        let scope = sourceCode.getScope(node);
+        scope !== null;
+        scope = scope.upper
+      ) {
+        const variable = scope.set.get(node.name)
+        if (!variable) {
+          continue
+        }
+
+        return variable.defs.some(
+          (definition) =>
+            definition.type === 'ImportBinding' &&
+            (definition.node.type === 'ImportDefaultSpecifier' ||
+              (definition.node.type === 'ImportSpecifier' &&
+                definition.node.imported.type === 'Identifier' &&
+                definition.node.imported.name === 'default')) &&
+            FS_ZDS_MODULES.has(definition.parent.source.value)
+        )
+      }
+
+      return false
+    }
 
     return {
-      ImportDeclaration(node) {
-        if (node.source.value !== FS_ZDS_MODULE) {
+      Identifier(node) {
+        if (!isFsZdsReference(node)) {
           return
         }
-        for (const specifier of node.specifiers) {
-          if (specifier.type === 'ImportDefaultSpecifier') {
-            importedNames.add(specifier.local.name)
-          }
-        }
-      },
-      CallExpression(node) {
-        const callee = node.callee
+
         if (
-          callee.type !== 'MemberExpression' ||
-          callee.object.type !== 'Identifier' ||
-          !importedNames.has(callee.object.name)
+          node.parent.type === 'ImportDefaultSpecifier' ||
+          node.parent.type === 'ImportSpecifier'
         ) {
           return
         }
 
-        const method = memberName(callee)
-        if (typeof method !== 'string' || !FILE_OPERATION_METHODS.has(method)) {
+        if (
+          node.parent.type === 'MemberExpression' &&
+          node.parent.object === node
+        ) {
+          const member = propertyName(node.parent)
+          if (typeof member !== 'string') {
+            context.report({
+              node: node.parent,
+              messageId: 'dynamicFileSystemAccess',
+            })
+            return
+          }
+
+          if (PATH_ONLY_MEMBERS.has(member)) {
+            return
+          }
+
+          context.report({
+            node: node.parent,
+            messageId: 'directFileSystemIo',
+            data: { method: member },
+          })
           return
         }
 
         context.report({
-          node: callee,
-          messageId: 'directFileSystemIo',
-          data: { method },
+          node,
+          messageId: 'escapedFileSystem',
         })
       },
     }
