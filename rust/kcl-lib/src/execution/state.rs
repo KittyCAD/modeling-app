@@ -122,6 +122,8 @@ pub(super) struct GlobalState {
     /// the entire execution, including while executing the body of the sketch
     /// block being edited.
     pub sketch_mode: bool,
+    /// True when the engine being used for execution is CPU only with no graphical environment
+    pub geometry_only: bool,
 }
 
 impl GlobalState {
@@ -688,6 +690,10 @@ impl ExecState {
         &mut self,
     ) -> IndexMap<Uuid, kittycad_modeling_cmds::websocket::WebSocketResponse> {
         std::mem::take(&mut self.global.root_module_artifacts.responses)
+    }
+
+    pub(crate) fn geometry_only(&self) -> bool {
+        self.global.geometry_only
     }
 
     pub(crate) fn stack(&self) -> &Stack {
@@ -1528,6 +1534,7 @@ impl GlobalState {
             segment_ids_edited,
             drag_anchors: Vec::new(),
             sketch_mode: false,
+            geometry_only: settings.geometry_only,
         };
 
         let root_id = ModuleId::default();

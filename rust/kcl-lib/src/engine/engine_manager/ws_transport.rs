@@ -47,16 +47,21 @@ impl TcpRead {
             }
             Err(e) => return Err(anyhow!("Error reading from engine's WebSocket: {e}").into()),
         };
-        let msg: WebSocketResponse = match msg {
+        match msg {
             WsMsg::Text(text) => kcl_engine_codec::deserialize_response_json(&text)
                 .map_err(anyhow::Error::from)
-                .map_err(WebSocketReadError::from)?,
+                .map_err(WebSocketReadError::from),
             WsMsg::Binary(bin) => kcl_engine_codec::deserialize_response_msgpack(&bin)
                 .map_err(anyhow::Error::from)
-                .map_err(WebSocketReadError::from)?,
-            other => return Err(anyhow!("Unexpected WebSocket message from engine API: {other}").into()),
-        };
-        Ok(msg)
+                .map_err(WebSocketReadError::from),
+            WsMsg::Close(close_frame) => {
+                let err_msg = close_frame
+                    .map(|frame| frame.reason.to_string())
+                    .unwrap_or("WebSocket closed without specifying a reason.".to_string());
+                Err(anyhow!(err_msg).into())
+            }
+            other => Err(anyhow!("Unexpected WebSocket message from engine API: {other}").into()),
+        }
     }
 }
 
@@ -249,12 +254,11 @@ impl WebSocketTransport {
                         }
                     }
                     Err(e) => {
-                        match &e {
-                            WebSocketReadError::Read(e) => crate::logln!("could not read from WS: {:?}", e),
-                            WebSocketReadError::Deser(e) => {
-                                crate::logln!("could not deserialize msg from WS: {:?}", e)
-                            }
-                        }
+                        let msg = match &e {
+                            WebSocketReadError::Read(e) => e.to_string(),
+                            WebSocketReadError::Deser(e) => e.to_string(),
+                        };
+                        pending_errors_for_read.write().await.push(msg);
                         *socket_health_tcp_read.write().await = SocketHealth::Inactive;
                         return Err(e);
                     }
@@ -389,7 +393,7 @@ impl EngineTransport for WebSocketTransport {
             if let Some(session) = session_data.as_ref() {
                 format!(" (API call ID: {})", session.api_call_id)
             } else {
-                String::new()
+                " (No API call ID: session data empty)".to_string()
             }
         };
 
@@ -408,25 +412,33 @@ impl EngineTransport for WebSocketTransport {
             })?;
 
         // Wait for the request to be sent.
-        rx.await
-            .map_err(|e| {
-                KclError::new_engine_hangup(
-                    KclErrorDetails::new(
-                        format!("could not send request to the engine actor: {e}{api_call_id_msg}"),
-                        vec![source_range],
-                    ),
-                    None,
-                )
-            })?
-            .map_err(|e| {
-                KclError::new_engine_hangup(
-                    KclErrorDetails::new(
-                        format!("could not send request to the engine: {e}{api_call_id_msg}"),
-                        vec![source_range],
-                    ),
-                    None,
-                )
-            })?;
+        let send_result = rx.await.map_err(|e| {
+            KclError::new_engine_hangup(
+                KclErrorDetails::new(
+                    format!("could not send request to the engine actor: {e}{api_call_id_msg}"),
+                    vec![source_range],
+                ),
+                None,
+            )
+        })?;
+
+        if let Err(send_error) = send_result {
+            let pending_errors = self.pending_errors.read().await;
+            if !pending_errors.is_empty() {
+                return Err(KclError::new_engine(KclErrorDetails::new(
+                    format!("{}{}", pending_errors.join(", "), api_call_id_msg),
+                    vec![source_range],
+                )));
+            }
+
+            return Err(KclError::new_engine_hangup(
+                KclErrorDetails::new(
+                    format!("could not send request to the engine: {send_error}{api_call_id_msg}"),
+                    vec![source_range],
+                ),
+                None,
+            ));
+        }
 
         Ok(())
     }
@@ -500,6 +512,8 @@ impl EngineTransport for WebSocketTransport {
             if *guard == SocketHealth::Inactive {
                 return Ok(());
             }
+            drop(guard);
+            tokio::task::yield_now().await;
         }
     }
 }

@@ -345,6 +345,9 @@ impl EngineManager {
         id_generator: &mut IdGenerator,
         grid_scale_unit: GridScaleBehavior,
     ) -> Result<(), crate::errors::KclError> {
+        if settings.geometry_only {
+            return Ok(());
+        }
         // Set the edge visibility.
         self.set_edge_visibility(batch_context, settings.highlight_edges, source_range, id_generator)
             .await?;
