@@ -74,7 +74,7 @@ jobs:
           fi
   linux-x86_64:
     name: kcl-python-bindings (linux-x86_64)
-    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-kcl-python-manylinux-x86-64-v1
     # The hourly schedule exists to observe flaky tests. It runs the test job
     # and nothing else.
     if: github.event_name != 'schedule'
