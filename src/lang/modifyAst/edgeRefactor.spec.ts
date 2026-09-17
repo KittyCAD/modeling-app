@@ -1610,7 +1610,7 @@ part = bracket()
     beforeEach(async () => {
       if (instanceInThisFile) return
       const { instance, kclManager, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine({ geometryOnly: true })
+        await buildTheWorldAndConnectToEngine({ webrtc: false })
       instance.set_kcl_runtime_flags(
         JSON.stringify({ enable_z0006_lint: 'On' })
       )

@@ -112,7 +112,8 @@ export class Connection extends EventTarget {
     tearDownManager,
     rejectPendingCommand,
     callbackOnUnitTestingConnection,
-    unitTestGeometryOnly,
+    unitTestWebrtc,
+    unitTestPool,
     handleMessage,
     getCloudProjectId,
   }: {
@@ -122,7 +123,8 @@ export class Connection extends EventTarget {
     tearDownManager: (options?: ManagerTearDown) => void
     rejectPendingCommand: ({ cmdId }: { cmdId: string }) => void
     callbackOnUnitTestingConnection?: (message: string) => void
-    unitTestGeometryOnly?: boolean
+    unitTestWebrtc?: boolean
+    unitTestPool?: 'cpu'
     handleMessage: (event: MessageEvent<any>) => void
     getCloudProjectId: () => string | undefined
   }) {
@@ -160,7 +162,8 @@ export class Connection extends EventTarget {
     if (callbackOnUnitTestingConnection) {
       this.connectUnitTesting(
         callbackOnUnitTestingConnection,
-        unitTestGeometryOnly
+        unitTestWebrtc,
+        unitTestPool
       )
       this.isUsingUnitTestingConnection = true
     }
@@ -168,12 +171,14 @@ export class Connection extends EventTarget {
 
   connectUnitTesting(
     callback: (message: string) => void,
-    geometryOnly = false
+    webrtc = true,
+    pool?: 'cpu'
   ) {
+    const webrtcQuery = webrtc ? '' : '&webrtc=false'
     // The API derives the engine's geometry_only setting from the CPU pool.
-    const geometryOnlyQuery = geometryOnly ? '&webrtc=false&pool=cpu' : ''
+    const poolQuery = pool ? `&pool=${pool}` : ''
     const url = withKittycadWebSocketURL(
-      `?video_res_width=${256}&video_res_height=${256}&post_effect=ssao${geometryOnlyQuery}`
+      `?video_res_width=${256}&video_res_height=${256}&post_effect=ssao${webrtcQuery}${poolQuery}`
     )
     this.websocket = new WebSocket(url, [])
     this.websocket.binaryType = 'arraybuffer'
@@ -215,10 +220,10 @@ export class Connection extends EventTarget {
         case 'pong':
           break
 
-        // Geometry-only sessions do not establish WebRTC, so the session data
-        // response is the successful connection handshake for these tests.
+        // Sessions without WebRTC use the session data response as the
+        // successful connection handshake.
         case 'modeling_session_data':
-          if (geometryOnly) {
+          if (!webrtc) {
             callback('auth success')
           }
           break

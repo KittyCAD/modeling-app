@@ -78,7 +78,7 @@ beforeEach(async () => {
     rustContext,
     commandBarActor,
     machineManager,
-  } = await buildTheWorldAndConnectToEngine({ geometryOnly: true })
+  } = await buildTheWorldAndConnectToEngine({ webrtc: false })
   instanceInThisFile = instance
   kclManagerInThisFile = kclManager
   engineCommandManagerInThisFile = engineCommandManager
