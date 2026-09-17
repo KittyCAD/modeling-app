@@ -1456,8 +1456,10 @@ export function setCallInAst({
       if (!sourceStatement) {
         return new Error('Could not find source statement')
       }
-      const name = findUniqueName(ast, variableIfNewPipe)
-      const declaration = createVariableDeclaration(name, pipeExpression)
+      const declaration = createVariableDeclaration(
+        variableIfNewPipe,
+        pipeExpression
+      )
       declaration.preComments = sourceStatement.preComments
       ast.body[bodyIndex] = declaration
       pathToNode = [

@@ -32,7 +32,7 @@ describe('clone variable-less pipe', () => {
       ast,
       artifactGraph,
       objects: createSelectionFromArtifacts([sweep], artifactGraph),
-      variableName: 'clone001',
+      variableName: 'duplicate',
       wasmInstance: instance,
     })
     if (err(result)) {
@@ -40,7 +40,7 @@ describe('clone variable-less pipe', () => {
     }
 
     const output = recast(result.modifiedAst, instance)
-    expect(output).toContain(`clone001 = startSketchOn(XY)
+    expect(output).toContain(`duplicate = startSketchOn(XY)
   |> circle(center = [0, 0], radius = 1)
   |> extrude(length = 1)
   |> clone()`)
