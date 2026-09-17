@@ -42,15 +42,23 @@ function navigationHarness(overrides: Partial<AppNavigationDependencies> = {}) {
         file: { ...resolution.file, children: [] },
       },
     })),
+    projectOpened: vi.fn(),
+    showHome: vi.fn(async () => undefined),
     ...overrides,
   }
 
   const projectOpen = createOpenProjectIntentContribution(dependencies)
+  let navigation: ReturnType<typeof createAppNavigationService>
+  navigation = createAppNavigationService([projectOpen.contribution], {
+    supersedeProjectOpen: projectOpen.supersedeProjectOpen,
+    showHome: () =>
+      dependencies.showHome((request) =>
+        navigation.dispatch(openProjectIntent, request)
+      ),
+  })
   return {
     dependencies,
-    navigation: createAppNavigationService([projectOpen.contribution], {
-      supersedeProjectOpen: projectOpen.supersedeProjectOpen,
-    }),
+    navigation,
   }
 }
 
@@ -127,10 +135,12 @@ describe('appNavigation', () => {
       navigation.dispatch(openProjectIntent, { target: '/projects/bracket' })
     ).resolves.toEqual({ kind: 'redirect', to: '/file/canonical' })
     expect(dependencies.openResolvedProject).not.toHaveBeenCalled()
+    expect(dependencies.projectOpened).not.toHaveBeenCalled()
   })
 
-  test('opens a resolved project through the lifecycle operation', async () => {
+  test('opens a project before projecting its location', async () => {
     const { dependencies, navigation } = navigationHarness()
+    const request = { target: '/projects/bracket' }
 
     await expect(
       navigation.dispatch(openProjectIntent, { target: '/projects/bracket' })
@@ -139,6 +149,21 @@ describe('appNavigation', () => {
       resolvedProject,
       expect.any(Function)
     )
+    expect(dependencies.projectOpened).toHaveBeenCalledWith(
+      expect.objectContaining({ kind: 'opened' }),
+      request
+    )
+    expect(dependencies.openResolvedProject).toHaveBeenCalledBefore(
+      vi.mocked(dependencies.projectOpened)
+    )
+  })
+
+  test('delegates showing Home with the same project-open command', async () => {
+    const { dependencies, navigation } = navigationHarness()
+
+    await navigation.showHome()
+
+    expect(dependencies.showHome).toHaveBeenCalledWith(navigation.openProject)
   })
 
   test('a newer project open aborts the in-flight open', async () => {

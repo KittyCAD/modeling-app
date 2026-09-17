@@ -1,18 +1,17 @@
 /**
  * Route initialization, as plain functions.
  *
- * These used to be the bodies of the React Router loaders in `routeLoaders.ts`.
+ * These used to be the bodies of the React Router route loaders.
  * They were never really data loaders: nothing calls `useLoaderData`, so their
  * return values were computed and discarded, and the actual work was mutating
  * the `App` singleton and the XState actors. The only load-bearing thing they
  * got from React Router was `redirect()`.
  *
  * So they say what they want instead of performing it — a `redirect` outcome
- * rather than a `Response` — and the adapters in `routeLoaders.ts` translate.
- * This is a transitional characterization seam: it leaves the URL-to-state
- * work callable without a router while loaders remain, and the final inversion
- * replaces it with typed application transitions plus URL projection after
- * state changes.
+ * rather than a `Response`. This transitional characterization seam leaves the
+ * URL-to-state work callable without React or React Router until the final
+ * inversion replaces it with typed application transitions and later URL
+ * projection.
  */
 
 import type { App } from '@src/lib/app'
