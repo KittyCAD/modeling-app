@@ -2,12 +2,12 @@ import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type {
   OpArg,
-  OpKclValue,
   Operation,
+  OpKclValue,
 } from '@rust/kcl-lib/bindings/Operation'
 import type { CustomIconName } from '@src/components/CustomIcon'
-import type { KclManager } from '@src/lang/KclManager'
 import { toUtf16 } from '@src/lang/errors'
+import type { KclManager } from '@src/lang/KclManager'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
   deleteTermFromUnlabeledArgumentArray,
@@ -26,13 +26,14 @@ import {
   retrieveNonDefaultPlaneSelectionFromOpArg,
 } from '@src/lang/modifyAst/faces'
 import {
-  SWEEP_CONSTANTS,
-  SWEEP_MODULE,
-  type SweepRelativeTo,
   retrieveAxisOrEdgeSelectionsFromOpArg,
   retrieveBodyTypeFromOpArg,
   retrieveTagDeclaratorFromOpArg,
+  SWEEP_CONSTANTS,
+  SWEEP_MODULE,
+  type SweepRelativeTo,
 } from '@src/lang/modifyAst/sweeps'
+import type { StdLibCallOp } from '@src/lang/queryAst'
 import {
   artifactToEntityRef,
   findOperationArtifact,
@@ -40,7 +41,6 @@ import {
   getVariableNameFromNodePath,
   retrieveSelectionsFromOpArg,
 } from '@src/lang/queryAst'
-import type { StdLibCallOp } from '@src/lang/queryAst'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
   getArtifactOfTypes,
@@ -1774,17 +1774,14 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     }
   }
 
-  // angle kcl arg
-  // Default to '360' if not present
-  const angle = await stringToKclExpression(
-    'angle' in operation.labeledArgs && operation.labeledArgs.angle
-      ? code.slice(...operation.labeledArgs.angle.sourceRange.map(boundToUtf16))
-      : '360deg',
+  const angle = await extractOptionalKclArgument(
+    code,
+    operation,
+    'angle',
     rustContext
   )
-  if (err(angle) || 'errors' in angle) {
-    const reason = 'Error in angle argument retrieval'
-    return { reason }
+  if (angle && 'error' in angle) {
+    return { reason: angle.error }
   }
 
   const toleranceResult = await extractOptionalKclArgument(

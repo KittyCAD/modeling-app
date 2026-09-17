@@ -57,6 +57,14 @@ jobs:
       - name: Download all artifacts
         uses: actions/download-artifact@v8
 
+      # StdLibCommands is a runtime import, while the regular frontend bindings
+      # are type-only. Unit tests do not wait for build-wasm, so seed the ignored
+      # bindings directory from the committed drift snapshots.
+      - name: Copy expected ts-rs bindings
+        run: |
+          mkdir -p rust/kcl-lib/bindings
+          cp -R rust/kcl-lib/expected-bindings/ts-rs/. rust/kcl-lib/bindings/
+
       - name: npm run test:unit
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
         run: |-
