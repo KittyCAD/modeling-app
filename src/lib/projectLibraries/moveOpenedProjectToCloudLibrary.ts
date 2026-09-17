@@ -2,14 +2,13 @@ import type { App } from '@src/lib/app'
 import { writeProjectTitleToProjectToml } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
-import { PATHS } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import { CLOUD_PROJECT_LIBRARY_TYPE } from '@src/lib/projectLibraries'
+import { appNavigationService } from '@src/registry/contracts/appNavigation'
 import {
   homeProjectActionsService,
   homeProjectEntriesValueSpec,
 } from '@src/registry/contracts/homeProjects'
-import type { NavigateFunction } from 'react-router-dom'
 
 /**
  * Releases the open project, relocates it, then routes directly to the moved
@@ -21,12 +20,10 @@ import type { NavigateFunction } from 'react-router-dom'
 export async function moveOpenedProjectToCloudLibrary({
   app,
   project,
-  navigate,
   title,
 }: {
   app: App
   project: Project
-  navigate: NavigateFunction
   title: string
 }): Promise<{ defaultFile: string; projectPath: string } | Error> {
   const actions = app.registry.optional(homeProjectActionsService)
@@ -60,7 +57,7 @@ export async function moveOpenedProjectToCloudLibrary({
       cloudLibraryTarget.library.id
     )
     if (!moved?.defaultFile) {
-      await navigate(PATHS.HOME)
+      await app.registry.get(appNavigationService).showHome()
       return new Error(
         'Moving the open project did not return its new file path.'
       )
@@ -68,7 +65,9 @@ export async function moveOpenedProjectToCloudLibrary({
 
     const projectPath =
       moved.localProjectPath ?? fsZds.dirname(moved.defaultFile)
-    await navigate(`${PATHS.FILE}/${encodeURIComponent(moved.defaultFile)}`)
+    await app.registry
+      .get(appNavigationService)
+      .openProject({ target: moved.defaultFile })
     return {
       defaultFile: moved.defaultFile,
       projectPath,
@@ -76,7 +75,7 @@ export async function moveOpenedProjectToCloudLibrary({
   } catch (error) {
     // The old route no longer has an active project session. Fall back to Home
     // only when relocation fails; successful publication never renders it.
-    await navigate(PATHS.HOME)
+    await app.registry.get(appNavigationService).showHome()
     return error instanceof Error
       ? error
       : new Error('Moving the open project to Personal Cloud failed.')

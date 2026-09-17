@@ -42,6 +42,7 @@ import { xStateValueToString } from '@src/lib/xStateValueToString'
 
 import { useFolders, useLastOperation } from '@src/machines/systemIO/hooks'
 import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
+import { appNavigationService } from '@src/registry/contracts/appNavigation'
 import {
   filterStatusBarItemsForScopes,
   statusBarGlobalItemsValueSpec,
@@ -128,7 +129,7 @@ export function OpenedProject() {
         return
       }
       if (presence.type === 'missing') {
-        void navigate(PATHS.HOME)
+        void app.registry.get(appNavigationService).showHome()
       }
     })
 
@@ -137,6 +138,7 @@ export function OpenedProject() {
     }
   }, [
     app.fileOperations,
+    app.registry,
     lastOperation,
     navigate,
     projectPath,

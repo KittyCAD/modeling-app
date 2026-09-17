@@ -20,7 +20,7 @@ import { SystemIOMachineEvents } from '@src/machines/systemIO/events'
 import { SystemIOMachineStates } from '@src/machines/systemIO/states'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { projectSession } from '@src/registry/contracts/projectSession'
-import { routerService } from '@src/registry/contracts/router'
+import { appUrlService } from '@src/registry/contracts/appUrl'
 import { waitFor } from 'xstate'
 
 /**
@@ -143,20 +143,20 @@ export function createAppNavigationDependencies(
       const openedFilePath = outcome.data.file?.path
       if (openedFilePath && !request.requestUrl) {
         void app.registry
-          .get(routerService)
+          .get(appUrlService)
           .navigate(`${PATHS.FILE}/${encodeURIComponent(openedFilePath)}`)
       }
     },
     showHome: async (openProject) => {
       if (!window.electron && !(await webHomeRouteEnabled(app))) {
-        const router = app.registry.get(routerService)
+        const appUrl = app.registry.get(appUrlService)
         const { initIndexRoute } = await import('@src/lib/routeInit')
         const result = await initIndexRoute(app, {
           requestUrl: new URL(PATHS.INDEX, window.location.href).href,
         })
         if (result.kind === 'redirect') {
           const requestUrl = new URL(result.to, window.location.href).href
-          const intent = router.readInitialUrl({
+          const intent = appUrl.readInitialUrl({
             requestUrl,
             usesHashRouter: false,
           })
@@ -171,7 +171,7 @@ export function createAppNavigationDependencies(
       }
 
       loadHomeProjects(app)
-      void app.registry.get(routerService).navigate(PATHS.HOME)
+      void app.registry.get(appUrlService).navigate(PATHS.HOME)
     },
   }
 }
