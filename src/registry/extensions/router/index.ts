@@ -6,18 +6,20 @@ import {
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import {
+  type AppOverlayContribution,
+  appOverlayContributionsValueSpec,
+  type RouterRegistryService,
+  type RouterRuntimeValues,
+  routerService,
+} from '@src/registry/contracts/router'
+import {
   createPath,
   type Location,
   type NavigateFunction,
   type NavigateOptions,
   type To,
 } from 'react-router-dom'
-
-import {
-  type RouterRegistryService,
-  type RouterRuntimeValues,
-  routerService,
-} from '@src/registry/contracts/router'
+import { parseInitialUrl } from './initialUrl'
 
 const initialLocation: Location = {
   pathname: '/',
@@ -102,7 +104,11 @@ const createUnseededNavigate =
     }
   }
 
-export const createRouterRegistryService = (): RouterRegistryService => {
+export const createRouterRegistryService = ({
+  getOverlayContributions = () => [],
+}: {
+  getOverlayContributions?: () => readonly AppOverlayContribution[]
+} = {}): RouterRegistryService => {
   const location = signal<Location>(readBrowserLocation())
   const isReady = signal(false)
   const syncBrowserLocation = () => {
@@ -135,6 +141,14 @@ export const createRouterRegistryService = (): RouterRegistryService => {
     location,
     isReady,
     navigate,
+    readInitialUrl: ({
+      requestUrl = window.location.href,
+      usesHashRouter = Boolean(window.electron),
+    } = {}) =>
+      parseInitialUrl(requestUrl, {
+        overlays: getOverlayContributions(),
+        usesHashRouter,
+      }),
     getLocation: () => location.value,
     setLocation: (nextLocation) => {
       location.value = nextLocation
@@ -159,8 +173,11 @@ export const createRouterRegistryService = (): RouterRegistryService => {
   return serviceImpl
 }
 
-export const routerExtension = defineRegistryItemFactory(() => {
-  const serviceImpl = createRouterRegistryService()
+export const routerExtension = defineRegistryItemFactory((ctx) => {
+  const serviceImpl = createRouterRegistryService({
+    getOverlayContributions: () =>
+      ctx.valueSpecs.get(appOverlayContributionsValueSpec),
+  })
 
   return {
     item: defineRuntimeRegistryItem({

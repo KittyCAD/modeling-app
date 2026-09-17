@@ -1,8 +1,8 @@
 import { Registry } from '@kittycad/registry'
 import { routerService } from '@src/registry/contracts/router'
-import routerRegistryItem, { createRouterRegistryService } from '.'
 import type { Location } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import routerRegistryItem, { createRouterRegistryService } from '.'
 
 const testLocation = (pathname: string): Location => ({
   pathname,
@@ -118,6 +118,15 @@ describe('router extension', () => {
     disposeSecondNavigate()
 
     expect(router.isReady.value).toBe(false)
+    expect(
+      router.readInitialUrl({
+        requestUrl: 'https://app.zoo.dev/home',
+        usesHashRouter: false,
+      })
+    ).toMatchObject({
+      type: 'launch',
+      destination: { type: 'home' },
+    })
     void router.navigate('/after-dispose')
     expect(router.location.value.pathname).toBe('/after-dispose')
   })
