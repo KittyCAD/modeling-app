@@ -5,6 +5,7 @@ import {
   DIRECTORY_PROJECT_LIBRARY_TYPE,
 } from '@src/lib/projectLibraries'
 import { moveOpenedProjectToCloudLibrary } from '@src/lib/projectLibraries/moveOpenedProjectToCloudLibrary'
+import { appNavigationService } from '@src/registry/contracts/appNavigation'
 import type {
   HomeProjectActionsService,
   HomeProjectEntry,
@@ -50,6 +51,8 @@ test('moves an open directory project before navigating directly to its new file
   const closeProject = vi.fn()
   const clearProjectSettings = vi.fn()
   const fileOperations = {} as App['fileOperations']
+  const openProject = vi.fn().mockResolvedValue(undefined)
+  const showHome = vi.fn().mockResolvedValue(undefined)
   const app = {
     closeProject,
     fileOperations,
@@ -57,17 +60,21 @@ test('moves an open directory project before navigating directly to its new file
     registry: {
       optional: (service: unknown) =>
         service === homeProjectActionsService ? actions : undefined,
-      get: (valueSpec: unknown) =>
-        valueSpec === homeProjectEntriesValueSpec ? [homeProject] : [],
+      get: (valueSpec: unknown) => {
+        if (valueSpec === homeProjectEntriesValueSpec) {
+          return [homeProject]
+        }
+        if (valueSpec === appNavigationService) {
+          return { openProject, showHome }
+        }
+        return []
+      },
     },
   } as unknown as App
-  const navigate = vi.fn().mockResolvedValue(undefined)
-
   await expect(
     moveOpenedProjectToCloudLibrary({
       app,
       project,
-      navigate,
       title: 'Published example',
     })
   ).resolves.toEqual({
@@ -83,7 +90,9 @@ test('moves an open directory project before navigating directly to its new file
     'Published example'
   )
   expect(moveToLibrary).toHaveBeenCalledWith(homeProject, 'personal-cloud')
-  expect(navigate).toHaveBeenCalledOnce()
-  expect(navigate).toHaveBeenCalledWith('/file/%2Fcloud%2Fexample%2Fmain.kcl')
-  expect(moveToLibrary).toHaveBeenCalledBefore(navigate)
+  expect(openProject).toHaveBeenCalledOnce()
+  expect(openProject).toHaveBeenCalledWith({
+    target: '/cloud/example/main.kcl',
+  })
+  expect(moveToLibrary).toHaveBeenCalledBefore(openProject)
 })

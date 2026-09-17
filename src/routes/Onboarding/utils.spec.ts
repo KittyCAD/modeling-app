@@ -1,11 +1,11 @@
 import type { CreateProjectLibraryTarget } from '@src/lib/commandBarConfigs/projectsCommandConfig'
+import type { OnboardingPath, OnboardingStatus } from '@src/lib/onboardingPaths'
+import type { Project } from '@src/lib/project'
 import {
   DEFAULT_PROJECT_LIBRARY_ID,
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
   type ProjectLibrary,
 } from '@src/lib/projectLibraries'
-import type { Project } from '@src/lib/project'
-import type { OnboardingPath, OnboardingStatus } from '@src/lib/onboardingPaths'
 import {
   acceptOnboarding,
   consumeRememberedOnboardingWorkflowPanes,
@@ -70,8 +70,12 @@ function createOnboardingDeps(
   targets: CreateProjectLibraryTarget[],
   navigate = vi.fn()
 ): OnboardingUtilDeps {
+  const openProject = vi.fn().mockResolvedValue({ kind: 'opened' })
   return {
-    app: { getCreateProjectLibraryTargets: () => targets },
+    app: {
+      getCreateProjectLibraryTargets: () => targets,
+      registry: { get: () => ({ openProject }) },
+    } as unknown as OnboardingUtilDeps['app'],
     onboardingStatus: 'dismissed',
     navigate,
   }

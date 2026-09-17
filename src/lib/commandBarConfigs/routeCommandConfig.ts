@@ -1,13 +1,15 @@
-import type { Location, NavigateFunction } from 'react-router-dom'
-
 import type { Command } from '@src/lib/commandTypes'
 import { PATHS, webSafeJoin } from '@src/lib/paths'
+import type { Location, NavigateFunction } from 'react-router-dom'
 
 export function createRouteCommands(
   navigate: NavigateFunction,
   location: Location,
   filePath: string,
-  scopes: Command['scopes']
+  scopes: Command['scopes'],
+  showHome: () => void = () => {
+    void navigate(PATHS.HOME)
+  }
 ) {
   const RouteTelemetryCommand: Command = {
     scopes,
@@ -35,7 +37,7 @@ export function createRouteCommands(
     icon: 'settings',
     needsReview: false,
     onSubmit: (_data) => {
-      void navigate(PATHS.HOME)
+      showHome()
     },
   }
 

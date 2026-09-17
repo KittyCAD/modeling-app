@@ -21,8 +21,6 @@ import {
   getEXTNoPeriod,
   getStringAfterLastSeparator,
   joinOSPaths,
-  PATHS,
-  safeEncodeForRouterPaths,
 } from '@src/lib/paths'
 import { getProjectDirectoryOptions } from '@src/lib/projectDisplayName'
 import { reportRejection, trap } from '@src/lib/trap'
@@ -34,12 +32,12 @@ import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapsh
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { appNavigationService } from '@src/registry/contracts/appNavigation'
 import {
   FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
   GLOBAL_COMMAND_SCOPES,
   HOME_COMMAND_SCOPE,
 } from '@src/registry/contracts/commands'
-import { appUrlService } from '@src/registry/contracts/appUrl'
 import toast from 'react-hot-toast'
 import type { ActorRefFrom } from 'xstate'
 
@@ -400,10 +398,8 @@ export function createApplicationCommands({
             }
 
             void app.registry
-              .get(appUrlService)
-              .navigate(
-                `${PATHS.FILE}/${safeEncodeForRouterPaths(project.default_file)}`
-              )
+              .get(appNavigationService)
+              .openProject({ target: project.default_file })
           })
           .catch((error: unknown) => {
             trap(

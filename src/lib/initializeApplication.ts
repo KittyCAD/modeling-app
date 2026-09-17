@@ -47,7 +47,7 @@ function effectRequestUrl(requestUrl: string, usesHashRouter: boolean) {
  * Restore application state from the URL once, before React is mounted.
  *
  * Redirects are canonicalisation results from the application commands. They
- * are written back through the router capability and reparsed here; React
+ * are written back through the app URL capability and reparsed here; React
  * Router is not involved in executing any of these effects.
  */
 export async function initializeApplication(
@@ -63,7 +63,11 @@ export async function initializeApplication(
   const appUrl = app.registry.get(appUrlService)
   let currentRequestUrl = requestUrl
 
-  for (let redirectCount = 0; redirectCount < MAX_INITIAL_REDIRECTS; redirectCount += 1) {
+  for (
+    let redirectCount = 0;
+    redirectCount < MAX_INITIAL_REDIRECTS;
+    redirectCount += 1
+  ) {
     const intent = appUrl.readInitialUrl({
       requestUrl: currentRequestUrl,
       usesHashRouter,
@@ -100,10 +104,7 @@ export async function initializeApplication(
       return
     }
 
-    const path = applicationPathFromRedirect(
-      result.to,
-      currentRequestUrl
-    )
+    const path = applicationPathFromRedirect(result.to, currentRequestUrl)
     void appUrl.navigate(path, { replace: true })
     currentRequestUrl = requestUrlFromApplicationPath(
       path,

@@ -37,7 +37,6 @@ import {
   useState,
 } from 'react'
 import toast from 'react-hot-toast'
-import { useNavigate } from 'react-router-dom'
 
 type PublishButtonProps = {
   app: App
@@ -74,7 +73,6 @@ function PublishPopoverContent({
   useSignals()
   const { auth } = app
   const { kclManager } = app.singletons
-  const navigate = useNavigate()
   const ast = kclManager.astSignal.value
   const kclEmpty = kclManager.isAstBodyEmpty(ast)
   const hasKclErrors = kclManager.hasErrors()
@@ -196,7 +194,6 @@ function PublishPopoverContent({
         const moved = await moveOpenedProjectToCloudLibrary({
           app,
           project,
-          navigate,
           title: publicationTitle,
         })
         if (err(moved)) {
@@ -295,7 +292,6 @@ function PublishPopoverContent({
       fetchPublicationDetails,
       fetchedProjectStatus,
       kclManager,
-      navigate,
       project,
       token,
       willMoveProjectToCloud,
