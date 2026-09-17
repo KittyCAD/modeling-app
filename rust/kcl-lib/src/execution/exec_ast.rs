@@ -98,6 +98,7 @@ use crate::front::ObjectKind;
 use crate::front::PointCtor;
 use crate::modules::ModuleExecutionOutcome;
 use crate::modules::ModuleId;
+use crate::modules::ModuleItems;
 use crate::modules::ModulePath;
 use crate::modules::ModuleRepr;
 use crate::parsing::ast::types::ABSOLUTE_PATHS_NOT_SUPPORTED;
@@ -1139,6 +1140,12 @@ impl ExecutorContext {
                 environment: env_ref,
                 exports: local_state.module_exports,
                 artifacts: module_artifacts,
+                not_yet_added: local_state
+                    .not_yet_added
+                    .into_iter()
+                    .filter(|(_, record)| record.exported)
+                    .map(|(key, record)| (key, record.item))
+                    .collect(),
             })
     }
 
@@ -1195,6 +1202,15 @@ impl ExecutorContext {
                     if exec_state.sketch_mode() && sketch_mode_should_skip(&variable_declaration.declaration.init) {
                         continue;
                     }
+                    if skip_if_not_yet_added(
+                        &variable_declaration.outer_attrs,
+                        || variable_declaration.declaration.id.name.clone(),
+                        matches!(variable_declaration.visibility, ItemVisibility::Export),
+                        variable_declaration.as_source_range(),
+                        exec_state,
+                    )? {
+                        continue;
+                    }
 
                     let var_name = variable_declaration.declaration.id.name.to_string();
                     let source_range = SourceRange::from(&variable_declaration.declaration.init);
@@ -1231,6 +1247,15 @@ impl ExecutorContext {
                 }
                 BodyItem::TypeDeclaration(ty) => {
                     if exec_state.sketch_mode() {
+                        continue;
+                    }
+                    if skip_if_not_yet_added(
+                        &ty.outer_attrs,
+                        || format!("{}{}", memory::TYPE_PREFIX, ty.name.name),
+                        matches!(ty.visibility, ItemVisibility::Export),
+                        ty.as_source_range(),
+                        exec_state,
+                    )? {
                         continue;
                     }
                     self.exec_type_declaration(ty, body_type, exec_state).await?;
@@ -1360,7 +1385,11 @@ impl ExecutorContext {
 
         match &import_stmt.selector {
             ImportSelector::List { items } => {
-                let (env_ref, module_exports) = self.exec_module_for_items(module_id, exec_state, source_range).await?;
+                let ModuleItems {
+                    environment: env_ref,
+                    exports: module_exports,
+                    not_yet_added,
+                } = self.exec_module_for_items(module_id, exec_state, source_range).await?;
                 for import_item in items {
                     // Extract the item from the module.
                     let mem = &exec_state.stack().memory;
@@ -1371,12 +1400,17 @@ impl ExecutorContext {
                     let mut mod_value = mem.get_from_owned(&mod_name, env_ref, import_item.into(), 0);
 
                     if value.is_err() && ty.is_err() && mod_value.is_err() {
-                        return Err(KclError::new_undefined_value(
+                        let err = KclError::new_undefined_value(
                             KclErrorDetails::new(
                                 format!("{} is not defined in module", import_item.name.name),
                                 vec![SourceRange::from(&import_item.name)],
                             ),
                             None,
+                        );
+                        return Err(exec_state.with_not_yet_added_hint_from(
+                            &not_yet_added,
+                            &[&import_item.name.name, &ty_name],
+                            err,
                         ));
                     }
 
@@ -1475,7 +1509,11 @@ impl ExecutorContext {
                 }
             }
             ImportSelector::Glob(_) => {
-                let (env_ref, module_exports) = self.exec_module_for_items(module_id, exec_state, source_range).await?;
+                let ModuleItems {
+                    environment: env_ref,
+                    exports: module_exports,
+                    not_yet_added,
+                } = self.exec_module_for_items(module_id, exec_state, source_range).await?;
                 for name in module_exports.iter() {
                     let item = exec_state
                         .stack()
@@ -1494,6 +1532,10 @@ impl ExecutorContext {
                         exec_state.mod_local.module_exports.push(name.clone());
                     }
                 }
+                // The module's skipped declarations come along with its names,
+                // so that a use of one here can explain what is missing.
+                exec_state
+                    .import_not_yet_added(&not_yet_added, matches!(import_stmt.visibility, ItemVisibility::Export));
             }
             ImportSelector::None { .. } => {
                 let name = import_stmt.module_name().unwrap();
@@ -1860,20 +1902,21 @@ impl ExecutorContext {
         module_id: ModuleId,
         exec_state: &mut ExecState,
         source_range: SourceRange,
-    ) -> Result<(EnvironmentRef, Vec<String>), KclError> {
+    ) -> Result<ModuleItems, KclError> {
         let path = exec_state.global.module_infos[&module_id].path.clone();
         let mut repr = exec_state.global.module_infos[&module_id].take_repr();
         // DON'T EARLY RETURN! We need to restore the module repr
 
         let result = match &mut repr {
             ModuleRepr::Root => Err(exec_state.circular_import_error(&path, source_range)),
-            ModuleRepr::Kcl(_, Some(outcome)) => Ok((outcome.environment, outcome.exports.clone())),
+            ModuleRepr::Kcl(_, Some(outcome)) => Ok(outcome.items()),
             ModuleRepr::Kcl(program, cache) => self
                 .exec_module_from_ast(program, module_id, &path, exec_state, source_range, PreserveMem::Normal)
                 .await
                 .map(|outcome| {
-                    *cache = Some(outcome.clone());
-                    (outcome.environment, outcome.exports)
+                    let items = outcome.items();
+                    *cache = Some(outcome);
+                    items
                 }),
             ModuleRepr::Foreign(geom, _) => Err(KclError::new_semantic(KclErrorDetails::new(
                 "Cannot import items from foreign modules".to_owned(),
@@ -2203,6 +2246,33 @@ impl ExecutorContext {
     }
 }
 
+/// Whether to skip a declaration because the program's KCL version predates
+/// the declaration's `added_in` version. A skipped declaration is not
+/// evaluated, bound, or exported, exactly as if it were not in the file. The
+/// skip is recorded in the current module's scope under the memory key `key`
+/// would produce, so that a later failed lookup of that name can explain why;
+/// see [`ExecState::with_not_yet_added_hint`]. Shared by both executors.
+///
+/// Declarations without attributes take the early return, and `key` is only
+/// computed for a declaration that is skipped, so the common case does no
+/// extra work.
+pub(super) fn skip_if_not_yet_added(
+    annotations: &[Node<Annotation>],
+    key: impl FnOnce() -> String,
+    exported: bool,
+    source_range: SourceRange,
+    exec_state: &mut ExecState,
+) -> Result<bool, KclError> {
+    let Some(added_in) = annotations::added_in_version(annotations, source_range)? else {
+        return Ok(false);
+    };
+    if annotations::version_ge(exec_state.entry_point_kcl_version().as_str(), &added_in) {
+        return Ok(false);
+    }
+    exec_state.record_not_yet_added(key(), added_in, exported);
+    Ok(true)
+}
+
 /// The head of a `Color::Red` path is looked up both as a module and as an enum,
 /// so one scope must not bind a module and an enum under the same name. Reporting
 /// the clash where the second name is introduced keeps every `X::y` use site
@@ -2317,7 +2387,7 @@ enum EnumPathHead {
 fn enum_named_by_segment(
     exec_state: &ExecState,
     segment: &Node<Identifier>,
-    within: Option<&(EnvironmentRef, Vec<String>)>,
+    within: Option<&ModuleItems>,
 ) -> Option<EnumPathHead> {
     match type_value_named_by_segment(exec_state, segment, within)? {
         KclValue::Type {
@@ -3190,7 +3260,11 @@ impl Node<SketchBlock> {
         let module_id = ctx
             .open_module(&ImportPath::Std { path }, &[], &resolved_path, exec_state, source_range)
             .await?;
-        let (env_ref, exports) = ctx.exec_module_for_items(module_id, exec_state, source_range).await?;
+        let ModuleItems {
+            environment: env_ref,
+            exports,
+            ..
+        } = ctx.exec_module_for_items(module_id, exec_state, source_range).await?;
 
         for name in exports {
             let value = exec_state
@@ -3389,10 +3463,13 @@ impl Node<Name> {
 
             // No value and no module of this name exists. If a type does, report
             // that instead: "is not defined" would point away from the mistake.
-            return Err(type_used_as_value(exec_state, &self.name).unwrap_or(not_defined));
+            // Failing that, a declaration of this name may have been skipped
+            // because the program's KCL version predates it.
+            return Err(type_used_as_value(exec_state, &self.name)
+                .unwrap_or_else(|| exec_state.with_not_yet_added_hint(&[&self.name.name], not_defined)));
         }
 
-        let mut mem_spec: Option<(EnvironmentRef, Vec<String>)> = None;
+        let mut mem_spec: Option<ModuleItems> = None;
         for (index, p) in self.path.iter().enumerate() {
             // Only the last segment can name an enum, because what follows an
             // enum is a variant rather than something to traverse into.
@@ -3414,9 +3491,9 @@ impl Node<Name> {
                 None => false,
             };
 
-            let value = match mem_spec {
-                Some((env, exports)) => {
-                    if !exports.contains(&p.name) {
+            let value = match &mem_spec {
+                Some(items) => {
+                    if !items.exports.contains(&p.name) {
                         if non_enum_type {
                             return Err(non_enum_type_in_path(p));
                         }
@@ -3429,7 +3506,7 @@ impl Node<Name> {
                     exec_state
                         .stack()
                         .memory
-                        .get_from_owned(&p.name, env, p.as_source_range(), 0)?
+                        .get_from_owned(&p.name, items.environment, p.as_source_range(), 0)?
                 }
                 None => match exec_state
                     .stack()
@@ -3460,7 +3537,11 @@ impl Node<Name> {
             );
         }
 
-        let (env, exports) = mem_spec.unwrap();
+        let ModuleItems {
+            environment: env,
+            exports,
+            not_yet_added,
+        } = mem_spec.unwrap();
 
         let item_exported = exports.contains(&self.name.name);
         let item_value = exec_state
@@ -3485,9 +3566,12 @@ impl Node<Name> {
             return mod_value;
         }
 
-        // Neither item or module is defined.
+        // Neither item or module is defined. The module may have skipped a
+        // declaration of this name because the program's KCL version
+        // predates it.
         if item_value.is_err() && mod_value.is_err() {
-            return item_value;
+            return item_value
+                .map_err(|err| exec_state.with_not_yet_added_hint_from(&not_yet_added, &[&self.name.name], err));
         }
 
         // Either item or module is defined, but not exported.
