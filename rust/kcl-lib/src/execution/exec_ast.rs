@@ -1527,9 +1527,8 @@ impl ExecutorContext {
                     let type_def = match alias.inner.clone() {
                         Type::Named { name } => {
                             match resolve_named_type_def(&name, exec_state, self, metadata.source_range, false).await? {
-                                TypeDef::Enum(def) => TypeDef::Enum(def),
-                                TypeDef::RustRepr(ty, _) => TypeDef::Alias(RuntimeType::Primitive(ty)),
-                                TypeDef::Alias(ty) => TypeDef::Alias(ty),
+                                def @ TypeDef::Enum(_) => def,
+                                def => TypeDef::Alias(def.into_runtime_type()),
                             }
                         }
                         alias => TypeDef::Alias(

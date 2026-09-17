@@ -415,11 +415,9 @@ impl RuntimeType {
         suppress_warnings: bool,
     ) -> Result<Self, KclError> {
         Ok(
-            match resolve_named_type_def(name, exec_state, ctx, source_range, suppress_warnings).await? {
-                TypeDef::RustRepr(ty, _) => RuntimeType::Primitive(ty),
-                TypeDef::Alias(ty) => ty,
-                TypeDef::Enum(def) => RuntimeType::Enum(def.id().clone()),
-            },
+            resolve_named_type_def(name, exec_state, ctx, source_range, suppress_warnings)
+                .await?
+                .into_runtime_type(),
         )
     }
 
