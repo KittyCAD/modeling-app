@@ -7658,6 +7658,22 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
             let number = readable_solver_feedback(Number { value, units }, UnitLength::Millimeters);
             assert_eq!(number, Number { value: expected, units });
         }
+
+        let grid_point = Number {
+            value: 2.3333 / 17.0,
+            units: NumericSuffix::Mm,
+        };
+        let authored = to_source_number(grid_point).unwrap();
+        for (offset, should_commit) in [(3e-9, false), (0.001, true)] {
+            let solved = Number {
+                value: grid_point.value + offset,
+                ..grid_point
+            };
+            assert_eq!(
+                var_solution_needs_commit(&authored, solved, UnitLength::Millimeters),
+                should_commit
+            );
+        }
     }
 
     #[tokio::test]
