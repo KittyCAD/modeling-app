@@ -1,6 +1,10 @@
 import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
 
-import { viewRows } from '@src/components/layout/areas/KclNamedViewsPane'
+import {
+  canManageNamedView,
+  namedViewDetail,
+  viewRows,
+} from '@src/components/layout/areas/KclNamedViewsPane'
 import type { KclNamedView } from '@src/lang/std/kclNamedViews'
 import { KCL_DEFAULT_VIEW_NAME } from '@src/lang/std/kclNamedViews'
 import { describe, expect, it } from 'vitest'
@@ -15,10 +19,12 @@ function view({
   name,
   id = `view-${name}`,
   modulePath,
+  moduleId = 0,
 }: {
   name: string
   id?: string
   modulePath?: ModulePath
+  moduleId?: number
 }): KclNamedView {
   return {
     artifact: {
@@ -35,7 +41,7 @@ function view({
       hideIds: [],
       codeRef: CODE_REF,
     },
-    moduleId: 0,
+    moduleId,
     modulePath,
   }
 }
@@ -122,5 +128,21 @@ describe('viewRows', () => {
     const rows = viewRows([view({ name: 'Front', id: 'view-1' })])
 
     expect(rows.map((row) => row.key)).toEqual(['kcl-default', 'view-1'])
+  })
+
+  it('summarizes the camera beside each declared view', () => {
+    const namedView = view({ name: 'Front' })
+    namedView.artifact.camera.distance = 200
+    namedView.artifact.camera.projection = 'perspective'
+
+    expect(namedViewDetail(namedView)).toBe('Front 200mm Perspective')
+    expect(viewRows([namedView])[1].detail).toBe('Front 200mm Perspective')
+  })
+
+  it('only lets the root module manage a declared view', () => {
+    expect(canManageNamedView(view({ name: 'Root' }))).toBe(true)
+    expect(canManageNamedView(view({ name: 'Import', moduleId: 1 }))).toBe(
+      false
+    )
   })
 })

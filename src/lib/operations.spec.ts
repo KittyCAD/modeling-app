@@ -26,7 +26,6 @@ import {
   getHideOpByArtifactId,
   getHideOpForArtifact,
   getOperationCalculatedDisplay,
-  getOperationIcon,
   getOperationLabel,
   getOperationVariableName,
   groupNestedOperations,
@@ -1500,19 +1499,6 @@ clone001 = clone(extrude001)`
       expect(
         getOperationCalculatedDisplay({ type: 'Uuid', value: 'abc' })
       ).toBe('Uuid')
-    })
-  })
-
-  describe('view::named in the feature tree', () => {
-    const namedView = stdlib('view::named')
-
-    it('labels the operation and gives it its own icon', () => {
-      expect(getOperationLabel(namedView)).toBe('Named View')
-      expect(getOperationIcon(namedView)).toBe('namedView')
-    })
-
-    it('keeps the operation in the feature tree', () => {
-      expect(filterOperations([namedView])).toEqual([namedView])
     })
   })
 
