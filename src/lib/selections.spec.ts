@@ -1858,6 +1858,44 @@ describe('pattern copy selection highlighting', () => {
   })
 })
 
+describe('imported geometry code selection', () => {
+  const codeRef = {
+    range: [10, 20, 0] as SourceRange,
+    pathToNode: [],
+    nodePath: { steps: [] },
+  }
+  const importedGeometry: Artifact = {
+    type: 'importedGeometry',
+    id: 'imported-geometry-id',
+    codeRef,
+  }
+  const artifactGraph: ArtifactGraph = new Map([
+    [importedGeometry.id, importedGeometry],
+  ])
+
+  test('preserves the artifact when the editor mirrors a feature-tree cursor', () => {
+    const result = codeToIdSelections(
+      [
+        {
+          codeRef: {
+            range: [codeRef.range[1], codeRef.range[1], 0],
+            pathToNode: [],
+          },
+        },
+      ],
+      artifactGraph,
+      buildArtifactIndex(artifactGraph)
+    )
+
+    expect(result).toEqual([
+      {
+        id: importedGeometry.id,
+        range: [codeRef.range[1], codeRef.range[1], 0],
+      },
+    ])
+  })
+})
+
 describe('getSelectionTypeDisplayText', () => {
   test('coalesces face-like selections under face', () => {
     const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
