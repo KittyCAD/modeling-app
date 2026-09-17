@@ -634,7 +634,8 @@ description: Operations executed named_views_hide_gdt.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",

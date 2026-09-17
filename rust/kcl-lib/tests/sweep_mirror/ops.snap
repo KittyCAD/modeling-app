@@ -1707,7 +1707,8 @@ description: Operations executed sweep_mirror.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "GroupBegin",

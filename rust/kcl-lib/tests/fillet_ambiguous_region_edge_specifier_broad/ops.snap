@@ -678,7 +678,8 @@ description: Operations executed fillet_ambiguous_region_edge_specifier_broad.kc
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",

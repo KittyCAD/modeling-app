@@ -1702,7 +1702,8 @@ description: Operations executed christmas_tree_mirror3d_union.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",

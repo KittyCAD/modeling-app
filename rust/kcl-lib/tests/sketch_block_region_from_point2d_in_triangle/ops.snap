@@ -579,7 +579,8 @@ description: Operations executed sketch_block_region_from_point2d_in_triangle.kc
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     }
   ],
   "std::math": [

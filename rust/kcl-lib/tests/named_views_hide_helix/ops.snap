@@ -919,7 +919,8 @@ description: Operations executed named_views_hide_helix.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",

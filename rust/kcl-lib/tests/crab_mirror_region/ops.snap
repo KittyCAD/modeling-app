@@ -3480,7 +3480,8 @@ description: Operations executed crab_mirror_region.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",
