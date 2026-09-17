@@ -17,9 +17,10 @@ export const onboardingOverlayContribution = defineAppOverlayContribution({
     if (step && !isOnboardingPath(step)) {
       return undefined
     }
+    const parsedStep = step as OnboardingPath | ''
 
     return {
-      ...(step ? { step } : {}),
+      ...(parsedStep ? { step: parsedStep } : {}),
     } satisfies OnboardingOverlayState
   },
   format: (state: OnboardingOverlayState) => ({
