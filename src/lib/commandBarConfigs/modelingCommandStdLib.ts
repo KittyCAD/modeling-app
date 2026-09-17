@@ -297,6 +297,12 @@ export function stdLibCommandSummary(
 }
 
 export const modelingCommandStdLibDriftConfig = {
+  'Named View': {
+    stdLibName: 'view::named',
+    flowArgOrder: ['name', 'orientation', 'projection', 'baseline'],
+    uiOnlyArgs: ['orientation', 'target', 'distance', 'projection'],
+    omittedStdLibArgs: ['camera'],
+  },
   Extrude: {
     stdLibName: 'extrude',
     editFlow: true,
