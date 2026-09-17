@@ -49,9 +49,11 @@ description: Operations executed elliptic_curve_inches_regression.kcl
             "type": "Number",
             "value": 180.0,
             "ty": {
-              "degrees": null,
               "type": "Known",
-              "type": "Angle"
+              "value": {
+                "type": "Angle",
+                "value": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -61,9 +63,11 @@ description: Operations executed elliptic_curve_inches_regression.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
-              "degrees": null,
               "type": "Known",
-              "type": "Angle"
+              "value": {
+                "type": "Angle",
+                "value": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -77,8 +81,10 @@ description: Operations executed elliptic_curve_inches_regression.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -86,8 +92,10 @@ description: Operations executed elliptic_curve_inches_regression.kcl
                 "value": 60.855171,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -103,8 +111,10 @@ description: Operations executed elliptic_curve_inches_regression.kcl
                 "value": 90.658755,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -112,8 +122,10 @@ description: Operations executed elliptic_curve_inches_regression.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -126,8 +138,10 @@ description: Operations executed elliptic_curve_inches_regression.kcl
             "value": 16.805477,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -190,7 +204,9 @@ description: Operations executed elliptic_curve_inches_regression.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -218,7 +234,9 @@ description: Operations executed elliptic_curve_inches_regression.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",

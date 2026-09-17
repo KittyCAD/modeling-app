@@ -89,3 +89,99 @@ fn module_ids_preserve_numeric_values_and_reject_invalid_ids() {
         serde_json::from_str::<ModuleId>(json).expect_err(json);
     }
 }
+
+fn numeric_types() -> Vec<kcl_api::NumericType> {
+    use kcl_api::NumericType;
+    use kcl_api::UnitAngle;
+    use kcl_api::UnitLength;
+    use kcl_api::UnitType;
+
+    let mut types = vec![
+        NumericType::Known(UnitType::Count),
+        NumericType::Known(UnitType::GenericLength),
+        NumericType::Known(UnitType::GenericAngle),
+        NumericType::Unknown,
+        NumericType::Any,
+    ];
+    for len in [
+        UnitLength::Millimeters,
+        UnitLength::Centimeters,
+        UnitLength::Meters,
+        UnitLength::Inches,
+        UnitLength::Feet,
+        UnitLength::Yards,
+    ] {
+        types.push(NumericType::Known(UnitType::Length(len)));
+        for angle in [UnitAngle::Degrees, UnitAngle::Radians] {
+            types.push(NumericType::Default { len, angle });
+        }
+    }
+    for angle in [UnitAngle::Degrees, UnitAngle::Radians] {
+        types.push(NumericType::Known(UnitType::Angle(angle)));
+    }
+    types
+}
+
+#[test]
+fn numeric_types_round_trip_without_overlapping_discriminators() {
+    use kcl_api::NumericType;
+    use kcl_api::UnitLength;
+    use kcl_api::UnitType;
+
+    for ty in numeric_types() {
+        let json = serde_json::to_string(&ty).unwrap();
+        assert_eq!(serde_json::from_str::<NumericType>(&json).unwrap(), ty, "{json}");
+        // JavaScript parses and returns these types through the WASM API. Going
+        // through Value also verifies that object-key deduplication loses no data.
+        let value = serde_json::to_value(ty).unwrap();
+        assert_eq!(serde_json::from_value::<NumericType>(value).unwrap(), ty);
+        if let NumericType::Known(unit) = ty {
+            let json = serde_json::to_string(&unit).unwrap();
+            assert_eq!(serde_json::from_str::<UnitType>(&json).unwrap(), unit);
+        }
+    }
+    assert_eq!(
+        serde_json::to_string(&NumericType::Known(UnitType::Length(UnitLength::Millimeters))).unwrap(),
+        r#"{"type":"Known","value":{"type":"Length","value":"mm"}}"#,
+    );
+}
+
+#[test]
+fn numeric_values_round_trip_inside_untagged_response() {
+    use kcl_api::OpArg;
+    use kcl_api::OpKclValue;
+
+    #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+    struct Outputs {
+        operations: IndexMap<ModuleId, Vec<Operation>>,
+        variables: IndexMap<String, KclValueView>,
+    }
+
+    for ty in numeric_types() {
+        let values = vec![
+            OpKclValue::Number { value: 12.5, ty },
+            OpKclValue::SketchVar { value: -2.0, ty },
+        ];
+        let operations = vec![Operation::StdLibCall {
+            name: "line".to_owned(),
+            unlabeled_arg: None,
+            labeled_args: IndexMap::from([(
+                "end".to_owned(),
+                OpArg::new(OpKclValue::Array { value: values }, Default::default()),
+            )]),
+            node_path: Default::default(),
+            source_range: Default::default(),
+            stdlib_entry_source_range: None,
+            is_error: false,
+        }];
+        let outputs = Outputs {
+            operations: IndexMap::from([(ModuleId::default(), operations)]),
+            variables: IndexMap::from([("length".to_owned(), KclValueView::Number { value: 12.5, ty })]),
+        };
+        for result in [Ok(outputs.clone()), Err(outputs)] {
+            let response = Response::Success { result };
+            let json = serde_json::to_string(&response).unwrap();
+            assert_eq!(serde_json::from_str::<Response<Outputs>>(&json).unwrap(), response);
+        }
+    }
+}

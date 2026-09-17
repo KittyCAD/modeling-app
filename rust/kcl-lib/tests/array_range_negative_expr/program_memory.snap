@@ -11,8 +11,10 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         "value": -5.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -20,8 +22,10 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         "value": -4.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -29,8 +33,10 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         "value": -3.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -38,8 +44,10 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         "value": -2.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -47,8 +55,10 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         "value": -1.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -56,8 +66,10 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         "value": 0.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -65,8 +77,10 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         "value": 1.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -74,8 +88,10 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         "value": 2.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -83,8 +99,10 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         "value": 3.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -92,8 +110,10 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         "value": 4.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -101,8 +121,10 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         "value": 5.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       }
     ]
