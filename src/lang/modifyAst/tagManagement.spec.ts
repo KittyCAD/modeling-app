@@ -276,7 +276,7 @@ plate = extrude(plateRegion, length = 5mm, tagEnd = $topCap)`
       expect(newCode).toContain('tagEnd = $capEnd001')
       expect(tags).toBeTruthy() // Tags should be non-empty strings
     }, 5_000)
-    it('should resolve an auto-hole edge selection to region face tags', async () => {
+    it('should resolve an auto-hole edge selection to body-qualified sketch face tags', async () => {
       const { ast, artifactGraph } = await executeCode(
         regionWithAutoHole,
         instanceInThisFile,
@@ -323,7 +323,8 @@ plate = extrude(plateRegion, length = 5mm, tagEnd = $topCap)`
 
       expect(result.exprs).toHaveLength(2)
       const tagExpressions = JSON.stringify(result.exprs)
-      expect(tagExpressions).toContain('plateRegion')
+      expect(tagExpressions).toContain('plate')
+      expect(tagExpressions).toContain('sketch')
       expect(tagExpressions).toContain('hole')
       expect(tagExpressions).toContain('capStart001')
     }, 5_000)
