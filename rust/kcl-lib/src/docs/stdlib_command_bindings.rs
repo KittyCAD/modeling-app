@@ -6,9 +6,19 @@ use ts_rs::TS;
 use super::kcl_doc;
 use super::kcl_doc::ArgKind;
 use super::kcl_doc::DocData;
+use super::kcl_doc::ModData;
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export, export_to = "StdLibCommandTypes.ts")]
+struct StdLibLiteralValueShape {
+    // The literal exactly as it appears in KCL source, including units and
+    // string delimiters.
+    source: String,
+}
 
 // Export the stdlib signature metadata needed by command-bar type adapters.
-#[derive(Serialize, TS)]
+#[derive(Debug, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(export, export_to = "StdLibCommandTypes.ts")]
 struct StdLibCommandShape {
@@ -18,6 +28,9 @@ struct StdLibCommandShape {
     module_name: String,
     return_type: Option<String>,
     added_in: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    summary: Option<String>,
     deprecated: bool,
     deprecated_since: Option<String>,
     experimental: bool,
@@ -25,7 +38,7 @@ struct StdLibCommandShape {
     args: Vec<StdLibCommandArgShape>,
 }
 
-#[derive(Serialize, TS)]
+#[derive(Debug, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(export, export_to = "StdLibCommandTypes.ts")]
 struct StdLibCommandArgShape {
@@ -34,6 +47,9 @@ struct StdLibCommandArgShape {
     docs: Option<String>,
     required: bool,
     special: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    default_value: Option<StdLibLiteralValueShape>,
     experimental: bool,
     added_in: Option<String>,
     deprecated: bool,
@@ -41,9 +57,14 @@ struct StdLibCommandArgShape {
     removed_in: Option<String>,
 }
 
-#[test]
-fn export_bindings_stdlib_commands() {
-    let commands = kcl_doc::walk_stdlib()
+fn literal_value(source: &Option<String>) -> Option<StdLibLiteralValueShape> {
+    source
+        .as_ref()
+        .map(|source| StdLibLiteralValueShape { source: source.clone() })
+}
+
+fn stdlib_commands(stdlib: &ModData) -> BTreeMap<String, StdLibCommandShape> {
+    stdlib
         .all_docs()
         .filter_map(|doc| {
             let DocData::Fn(func) = doc else {
@@ -58,6 +79,7 @@ fn export_bindings_stdlib_commands() {
                     module_name: func.module_name.clone(),
                     return_type: func.return_type.clone(),
                     added_in: func.properties.added_in.as_ref().map(ToString::to_string),
+                    summary: func.summary.clone(),
                     deprecated: func.properties.deprecated,
                     deprecated_since: func.properties.deprecated_since.as_ref().map(ToString::to_string),
                     experimental: func.properties.experimental,
@@ -71,6 +93,7 @@ fn export_bindings_stdlib_commands() {
                             docs: arg.docs.clone(),
                             required: arg.kind.required(),
                             special: matches!(arg.kind, ArgKind::Special),
+                            default_value: literal_value(&arg.default_value),
                             experimental: arg.experimental,
                             added_in: arg.added_in.as_ref().map(ToString::to_string),
                             deprecated: arg.deprecated,
@@ -81,7 +104,12 @@ fn export_bindings_stdlib_commands() {
                 },
             ))
         })
-        .collect::<BTreeMap<_, _>>();
+        .collect()
+}
+
+#[test]
+fn export_bindings_stdlib_commands() {
+    let commands = stdlib_commands(&kcl_doc::walk_stdlib());
 
     let ts_config = ts_rs::Config::from_env();
     StdLibCommandShape::export_all(&ts_config).unwrap();
@@ -102,4 +130,18 @@ fn export_bindings_stdlib_commands() {
         ),
     )
     .unwrap();
+}
+
+#[test]
+fn stdlib_commands_preserve_source_backed_ui_metadata() {
+    let commands = stdlib_commands(&kcl_doc::walk_stdlib());
+
+    let extrude = &commands["extrude"];
+    assert!(extrude.summary.as_deref().is_some_and(|summary| !summary.is_empty()));
+
+    let loft_degree = commands["loft"].args.iter().find(|arg| arg.name == "vDegree").unwrap();
+    assert_eq!(
+        loft_degree.default_value,
+        Some(StdLibLiteralValueShape { source: "2".to_owned() })
+    );
 }
