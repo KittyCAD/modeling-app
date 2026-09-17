@@ -49,7 +49,7 @@ startSketchOn(XY)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the deleteFace function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-deleteFace0_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-deleteFace0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-deleteFace0.png"
@@ -73,7 +73,7 @@ startSketchOn(XY)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the deleteFace function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-deleteFace1_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-deleteFace1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-deleteFace1.png"
@@ -133,7 +133,7 @@ deleteFace(cubeSolid, faceIndices = [0, 1])
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the deleteFace function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-deleteFace2_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-deleteFace2_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-deleteFace2.png"
@@ -168,7 +168,7 @@ openBox = deleteFace(box, faces = [top])
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the deleteFace function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-deleteFace3_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-deleteFace3_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-deleteFace3.png"

@@ -52,7 +52,7 @@ loft([squareSketch, circleSketch])
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the offsetPlane function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-offsetPlane0_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-offsetPlane0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-offsetPlane0.png"
@@ -83,7 +83,7 @@ loft([squareSketch, circleSketch])
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the offsetPlane function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-offsetPlane1_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-offsetPlane1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-offsetPlane1.png"
@@ -114,7 +114,7 @@ loft([squareSketch, circleSketch])
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the offsetPlane function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-offsetPlane2_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-offsetPlane2_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-offsetPlane2.png"
@@ -145,7 +145,7 @@ loft([squareSketch, circleSketch])
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the offsetPlane function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-offsetPlane3_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-offsetPlane3_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-offsetPlane3.png"

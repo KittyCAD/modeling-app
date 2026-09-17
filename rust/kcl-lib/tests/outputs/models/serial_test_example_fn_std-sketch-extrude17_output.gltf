@@ -1,0 +1,1163 @@
+{
+  "accessors": [
+    {
+      "bufferView": 0,
+      "byteOffset": 0,
+      "count": 24,
+      "componentType": 5126,
+      "type": "VEC3",
+      "min": [
+        0.0014145600143820047,
+        0,
+        0.00031999999191612005
+      ],
+      "max": [
+        0.0018400000408291817,
+        0.004999999888241291,
+        0.001615609973669052
+      ]
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 12,
+      "count": 24,
+      "componentType": 5126,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 0,
+      "count": 96,
+      "componentType": 5126,
+      "type": "VEC3",
+      "min": [
+        -0.0030951800290495157,
+        0,
+        -0.000019049999536946416
+      ],
+      "max": [
+        0.0014145600143820047,
+        0.004999999888241291,
+        0.0019174234475940464
+      ]
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 12,
+      "count": 96,
+      "componentType": 5126,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 0,
+      "count": 6,
+      "componentType": 5126,
+      "type": "VEC3",
+      "min": [
+        -0.0030951800290495157,
+        0,
+        -0.0028894799761474133
+      ],
+      "max": [
+        -0.0000013200000239521614,
+        0.004999999888241291,
+        -0.000019049999536946416
+      ]
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 12,
+      "count": 6,
+      "componentType": 5126,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 3,
+      "byteOffset": 0,
+      "count": 48,
+      "componentType": 5126,
+      "type": "VEC3",
+      "min": [
+        -0.0000013200000239521614,
+        0,
+        -0.0028894799761474133
+      ],
+      "max": [
+        0.001851439825259149,
+        0.004999999888241291,
+        0.00031999999191612005
+      ]
+    },
+    {
+      "bufferView": 3,
+      "byteOffset": 12,
+      "count": 48,
+      "componentType": 5126,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 4,
+      "byteOffset": 0,
+      "count": 6,
+      "componentType": 5126,
+      "type": "VEC3",
+      "min": [
+        -0.00765212019905448,
+        0.004999999888241291,
+        -0.007801120169460773
+      ],
+      "max": [
+        -0.0000013200000239521614,
+        0.004999999888241291,
+        -0.000019049999536946416
+      ]
+    },
+    {
+      "bufferView": 4,
+      "byteOffset": 12,
+      "count": 6,
+      "componentType": 5126,
+      "type": "VEC3"
+    }
+  ],
+  "asset": {
+    "generator": "zoo.dev",
+    "version": "2.0"
+  },
+  "buffers": [
+    {
+      "byteLength": 4320,
+      "uri": "data:application/octet-stream;base64,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"
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 576,
+      "byteOffset": 0,
+      "byteStride": 24,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 2304,
+      "byteOffset": 576,
+      "byteStride": 24,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 144,
+      "byteOffset": 2880,
+      "byteStride": 24,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 1152,
+      "byteOffset": 3024,
+      "byteStride": 24,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 144,
+      "byteOffset": 4176,
+      "byteStride": 24,
+      "target": 34962
+    }
+  ],
+  "scene": 0,
+  "extensions": {
+    "KITTYCAD_boundary_representation": {
+      "solids": [
+        {
+          "shells": [
+            [
+              0,
+              1
+            ]
+          ],
+          "mesh": 0,
+          "extras": {
+            "KITTYCAD": {
+              "material": 0
+            }
+          }
+        },
+        {
+          "shells": [
+            [
+              1,
+              1
+            ]
+          ],
+          "mesh": 1,
+          "extras": {
+            "KITTYCAD": {
+              "material": 1
+            }
+          }
+        }
+      ],
+      "shells": [
+        {
+          "faces": [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              1
+            ],
+            [
+              3,
+              1
+            ]
+          ]
+        },
+        {
+          "faces": [
+            [
+              4,
+              1
+            ]
+          ]
+        }
+      ],
+      "faces": [
+        {
+          "surface": [
+            0,
+            1
+          ],
+          "loops": [
+            [
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "surface": [
+            1,
+            1
+          ],
+          "loops": [
+            [
+              1,
+              1
+            ]
+          ]
+        },
+        {
+          "surface": [
+            2,
+            -1
+          ],
+          "loops": [
+            [
+              2,
+              1
+            ]
+          ]
+        },
+        {
+          "surface": [
+            3,
+            1
+          ],
+          "loops": [
+            [
+              3,
+              1
+            ]
+          ]
+        },
+        {
+          "surface": [
+            4,
+            1
+          ],
+          "loops": [
+            [
+              4,
+              1
+            ]
+          ]
+        }
+      ],
+      "loops": [
+        {
+          "edges": [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              -1
+            ],
+            [
+              2,
+              1
+            ],
+            [
+              3,
+              -1
+            ]
+          ]
+        },
+        {
+          "edges": [
+            [
+              2,
+              -1
+            ],
+            [
+              4,
+              -1
+            ],
+            [
+              5,
+              1
+            ],
+            [
+              6,
+              -1
+            ]
+          ]
+        },
+        {
+          "edges": [
+            [
+              5,
+              -1
+            ],
+            [
+              7,
+              -1
+            ],
+            [
+              8,
+              1
+            ],
+            [
+              9,
+              -1
+            ]
+          ]
+        },
+        {
+          "edges": [
+            [
+              8,
+              -1
+            ],
+            [
+              10,
+              -1
+            ],
+            [
+              0,
+              -1
+            ],
+            [
+              11,
+              -1
+            ]
+          ]
+        },
+        {
+          "edges": [
+            [
+              12,
+              1
+            ],
+            [
+              13,
+              1
+            ],
+            [
+              14,
+              1
+            ],
+            [
+              15,
+              1
+            ]
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "curve": [
+            0,
+            1
+          ],
+          "start": 0,
+          "end": 1,
+          "t": [
+            0,
+            0.005
+          ]
+        },
+        {
+          "curve": [
+            1,
+            1
+          ],
+          "start": 2,
+          "end": 1,
+          "t": [
+            6.283183909474525,
+            6.715898116282135
+          ]
+        },
+        {
+          "curve": [
+            2,
+            1
+          ],
+          "start": 2,
+          "end": 3,
+          "t": [
+            0,
+            0.005
+          ]
+        },
+        {
+          "curve": [
+            3,
+            1
+          ],
+          "start": 0,
+          "end": 3,
+          "t": [
+            0.0000000039040839807268796,
+            0.43271421071169386
+          ]
+        },
+        {
+          "curve": [
+            4,
+            1
+          ],
+          "start": 4,
+          "end": 2,
+          "t": [
+            6.283184203482452,
+            7.82625148647324
+          ]
+        },
+        {
+          "curve": [
+            5,
+            1
+          ],
+          "start": 4,
+          "end": 5,
+          "t": [
+            0,
+            0.005
+          ]
+        },
+        {
+          "curve": [
+            6,
+            1
+          ],
+          "start": 3,
+          "end": 5,
+          "t": [
+            0.0000006872474536923967,
+            1.5430679702382435
+          ]
+        },
+        {
+          "curve": [
+            7,
+            1
+          ],
+          "start": 6,
+          "end": 4,
+          "t": [
+            0,
+            0.004220348099920194
+          ]
+        },
+        {
+          "curve": [
+            8,
+            1
+          ],
+          "start": 6,
+          "end": 7,
+          "t": [
+            0,
+            0.005
+          ]
+        },
+        {
+          "curve": [
+            9,
+            1
+          ],
+          "start": 5,
+          "end": 7,
+          "t": [
+            0,
+            0.004220348099920194
+          ]
+        },
+        {
+          "curve": [
+            10,
+            1
+          ],
+          "start": 1,
+          "end": 6,
+          "t": [
+            0,
+            1.2435772359346795
+          ]
+        },
+        {
+          "curve": [
+            11,
+            1
+          ],
+          "start": 7,
+          "end": 0,
+          "t": [
+            6.28318491033963,
+            7.526762150178394
+          ]
+        },
+        {
+          "curve": [
+            12,
+            1
+          ],
+          "start": 8,
+          "end": 9,
+          "t": [
+            0,
+            0.004220348099920194
+          ]
+        },
+        {
+          "curve": [
+            13,
+            1
+          ],
+          "start": 9,
+          "end": 10,
+          "t": [
+            0,
+            0.0066999932576981
+          ]
+        },
+        {
+          "curve": [
+            14,
+            1
+          ],
+          "start": 10,
+          "end": 11,
+          "t": [
+            0,
+            0.004220348099920195
+          ]
+        },
+        {
+          "curve": [
+            15,
+            1
+          ],
+          "start": 11,
+          "end": 8,
+          "t": [
+            0,
+            0.0066999932576981
+          ]
+        }
+      ],
+      "vertices": [
+        [
+          0.00184,
+          0,
+          0.00032
+        ],
+        [
+          0.00184,
+          0.005,
+          0.00032
+        ],
+        [
+          0.00141456,
+          0.005,
+          0.00161561
+        ],
+        [
+          0.00141456,
+          0,
+          0.00161561
+        ],
+        [
+          -0.00309518,
+          0.005,
+          -0.00001905
+        ],
+        [
+          -0.00309518,
+          0,
+          -0.00001905
+        ],
+        [
+          -0.00000132,
+          0.005,
+          -0.00288948
+        ],
+        [
+          -0.00000132,
+          0,
+          -0.00288948
+        ],
+        [
+          -0.00000132,
+          0.005,
+          -0.00288948
+        ],
+        [
+          -0.00309518,
+          0.005,
+          -0.00001905
+        ],
+        [
+          -0.00765212,
+          0.005,
+          -0.00493069
+        ],
+        [
+          -0.00455826,
+          0.005,
+          -0.00780112
+        ]
+      ],
+      "surfaces": [
+        {
+          "type": "cylinder",
+          "cylinder": {
+            "xAxis": [
+              0.9949117180506392,
+              0,
+              0.10075054980259636
+            ],
+            "yAxis": [
+              -0.10075054980259636,
+              0,
+              0.9949117180506392
+            ],
+            "origin": [
+              -0.00132,
+              0.0025,
+              -0
+            ],
+            "radius": 0.00317616
+          }
+        },
+        {
+          "type": "cylinder",
+          "cylinder": {
+            "xAxis": [
+              0.411219831542965,
+              0,
+              0.9115362034202348
+            ],
+            "yAxis": [
+              -0.9115362034202348,
+              0,
+              0.411219831542965
+            ],
+            "origin": [
+              -0,
+              0.0025,
+              -0.00152
+            ],
+            "radius": 0.00343991
+          }
+        },
+        {
+          "type": "plane",
+          "plane": {
+            "xAxis": [
+              0.7330814974086647,
+              0,
+              -0.6801408075958023
+            ],
+            "yAxis": [
+              -0,
+              1,
+              0
+            ],
+            "origin": [
+              -0.00154825,
+              0.0025,
+              -0.00145426
+            ]
+          }
+        },
+        {
+          "type": "cylinder",
+          "cylinder": {
+            "xAxis": [
+              0.415180559977735,
+              0,
+              -0.9097390299512133
+            ],
+            "yAxis": [
+              0.9097390299512133,
+              0,
+              0.415180559977735
+            ],
+            "origin": [
+              -0.00132,
+              0.0025,
+              0
+            ],
+            "radius": 0.00317616
+          }
+        },
+        {
+          "type": "plane",
+          "plane": {
+            "xAxis": [
+              1,
+              0,
+              0
+            ],
+            "yAxis": [
+              -0,
+              0,
+              1
+            ],
+            "origin": [
+              -0.00382672,
+              0.005,
+              -0.00391008
+            ]
+          }
+        }
+      ],
+      "curves3D": [
+        {
+          "type": "line",
+          "line": {
+            "origin": [
+              0.0018400000000000005,
+              0,
+              0.0003200000000000001
+            ],
+            "direction": [
+              0,
+              1,
+              0
+            ]
+          }
+        },
+        {
+          "type": "circle",
+          "circle": {
+            "xAxis": [
+              0.860963967276098,
+              0,
+              0.5086659483906919
+            ],
+            "yAxis": [
+              0.5086659483906919,
+              0,
+              -0.860963967276098
+            ],
+            "origin": [
+              -0.00132,
+              0.005,
+              0
+            ],
+            "radius": 0.00317616
+          }
+        },
+        {
+          "type": "line",
+          "line": {
+            "origin": [
+              0.0014145600000000005,
+              0.005,
+              0.00161561
+            ],
+            "direction": [
+              0,
+              -1,
+              0
+            ]
+          }
+        },
+        {
+          "type": "circle",
+          "circle": {
+            "xAxis": [
+              0.9949117180506392,
+              0,
+              0.10075054980259636
+            ],
+            "yAxis": [
+              -0.10075054980259636,
+              0,
+              0.9949117180506392
+            ],
+            "origin": [
+              -0.00132,
+              0,
+              0
+            ],
+            "radius": 0.00317616
+          }
+        },
+        {
+          "type": "circle",
+          "circle": {
+            "xAxis": [
+              -0.8997843326101588,
+              0,
+              0.4363349112657516
+            ],
+            "yAxis": [
+              0.4363349112657516,
+              -0,
+              0.8997843326101588
+            ],
+            "origin": [
+              0,
+              0.005,
+              -0.00152
+            ],
+            "radius": 0.00343991
+          }
+        },
+        {
+          "type": "line",
+          "line": {
+            "origin": [
+              -0.0030951800000000003,
+              0.005,
+              -0.00001904999999999984
+            ],
+            "direction": [
+              0,
+              -1,
+              0
+            ]
+          }
+        },
+        {
+          "type": "circle",
+          "circle": {
+            "xAxis": [
+              0.411219831542965,
+              0,
+              0.9115362034202348
+            ],
+            "yAxis": [
+              -0.9115362034202348,
+              0,
+              0.411219831542965
+            ],
+            "origin": [
+              0,
+              0,
+              -0.00152
+            ],
+            "radius": 0.00343991
+          }
+        },
+        {
+          "type": "line",
+          "line": {
+            "origin": [
+              -0.00000132,
+              0.005,
+              -0.00288948
+            ],
+            "direction": [
+              -0.7330817095534143,
+              0,
+              0.6801405789380925
+            ]
+          }
+        },
+        {
+          "type": "line",
+          "line": {
+            "origin": [
+              -0.000001319999999999967,
+              0.005,
+              -0.0028894800000000003
+            ],
+            "direction": [
+              0,
+              -1,
+              0
+            ]
+          }
+        },
+        {
+          "type": "line",
+          "line": {
+            "origin": [
+              -0.00309518,
+              0,
+              -0.00001905
+            ],
+            "direction": [
+              0.7330817095534143,
+              0,
+              -0.6801405789380925
+            ]
+          }
+        },
+        {
+          "type": "circle",
+          "circle": {
+            "xAxis": [
+              0.9949117180506392,
+              0,
+              0.10075054980259636
+            ],
+            "yAxis": [
+              0.10075054980259636,
+              0,
+              -0.9949117180506392
+            ],
+            "origin": [
+              -0.00132,
+              0.005,
+              0
+            ],
+            "radius": 0.00317616
+          }
+        },
+        {
+          "type": "circle",
+          "circle": {
+            "xAxis": [
+              0.415180559977735,
+              0,
+              -0.9097390299512133
+            ],
+            "yAxis": [
+              0.9097390299512133,
+              0,
+              0.415180559977735
+            ],
+            "origin": [
+              -0.00132,
+              0,
+              0
+            ],
+            "radius": 0.00317616
+          }
+        },
+        {
+          "type": "line",
+          "line": {
+            "origin": [
+              -0.00000132,
+              0.005,
+              -0.00288948
+            ],
+            "direction": [
+              -0.7330817095534143,
+              0,
+              0.6801405789380925
+            ]
+          }
+        },
+        {
+          "type": "line",
+          "line": {
+            "origin": [
+              -0.00309518,
+              0.005,
+              -0.00001905
+            ],
+            "direction": [
+              -0.680140982942663,
+              0,
+              -0.7330813347247277
+            ]
+          }
+        },
+        {
+          "type": "line",
+          "line": {
+            "origin": [
+              -0.00765212,
+              0.005,
+              -0.00493069
+            ],
+            "direction": [
+              0.7330817095534142,
+              0,
+              -0.6801405789380925
+            ]
+          }
+        },
+        {
+          "type": "line",
+          "line": {
+            "origin": [
+              -0.00455826,
+              0.005,
+              -0.00780112
+            ],
+            "direction": [
+              0.6801409829426629,
+              0,
+              0.7330813347247277
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "extensionsUsed": [
+    "KITTYCAD_boundary_representation"
+  ],
+  "materials": [
+    {
+      "alphaMode": "OPAQUE",
+      "doubleSided": false,
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.9,
+          0.9,
+          0.9,
+          1
+        ],
+        "metallicFactor": 1,
+        "roughnessFactor": 1
+      },
+      "emissiveFactor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "alphaMode": "OPAQUE",
+      "doubleSided": false,
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.9,
+          0.9,
+          0.9,
+          1
+        ],
+        "metallicFactor": 1,
+        "roughnessFactor": 1
+      },
+      "emissiveFactor": [
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "meshes": [
+    {
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1
+          },
+          "material": 0
+        },
+        {
+          "attributes": {
+            "POSITION": 2,
+            "NORMAL": 3
+          },
+          "material": 0
+        },
+        {
+          "attributes": {
+            "POSITION": 4,
+            "NORMAL": 5
+          },
+          "material": 0
+        },
+        {
+          "attributes": {
+            "POSITION": 6,
+            "NORMAL": 7
+          },
+          "material": 0
+        }
+      ]
+    },
+    {
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 8,
+            "NORMAL": 9
+          },
+          "material": 1
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "children": [
+        1
+      ]
+    },
+    {
+      "children": [
+        2,
+        3
+      ]
+    },
+    {
+      "extensions": {
+        "KITTYCAD_boundary_representation": {
+          "solid": 0
+        }
+      },
+      "mesh": 0
+    },
+    {
+      "extensions": {
+        "KITTYCAD_boundary_representation": {
+          "solid": 1
+        }
+      },
+      "mesh": 1
+    }
+  ],
+  "scenes": [
+    {
+      "nodes": [
+        0
+      ]
+    }
+  ]
+}

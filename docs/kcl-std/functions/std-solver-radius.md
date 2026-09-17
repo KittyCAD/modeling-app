@@ -43,7 +43,7 @@ solid = extrude(region(segments = [profile.base, profile.arch]), length = 2)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the solver::radius function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solver-radius0_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solver-radius0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solver-radius0.png"

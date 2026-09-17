@@ -58,7 +58,7 @@ gearBody = gear::helical(
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the gear::helical function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-gear-helical0_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-gear-helical0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-gear-helical0.png"
@@ -111,7 +111,7 @@ gearWithKeyhole = subtract(gearBody, tools = keyholeSolid)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the gear::helical function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-gear-helical1_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-gear-helical1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-gear-helical1.png"

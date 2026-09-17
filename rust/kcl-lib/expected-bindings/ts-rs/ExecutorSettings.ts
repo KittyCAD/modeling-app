@@ -56,8 +56,4 @@ default_backface_color?: string | null,
 /**
  * If given, sets a custom engine pool.
  */
-pool?: string | null, 
-/**
- * asks the engine for geometry only mode - no video stream
- */
-geometry_only: boolean, };
+pool?: string | null, };

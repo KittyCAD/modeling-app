@@ -58,7 +58,7 @@ blend([edge001, edge002])
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the blend function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-blend0_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-blend0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-blend0.png"
@@ -92,7 +92,7 @@ blend([
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the blend function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-blend1_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-blend1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-blend1.png"
@@ -141,7 +141,7 @@ myBlend = blend([
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the blend function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-blend2_output.glb"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-blend2_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-blend2.png"
