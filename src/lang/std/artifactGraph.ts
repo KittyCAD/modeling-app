@@ -150,8 +150,8 @@ function getMappedRegionSegments(
 function getSweepFromMappedRegionSegment(
   segment: SegmentArtifact,
   artifactGraph: ArtifactGraph
-): SweepArtifact | Error {
-  let mappedSweep: SweepArtifact | null = null
+): Extract<Artifact, { type: 'sweep' }> | Error {
+  let mappedSweep: Extract<Artifact, { type: 'sweep' }> | null = null
 
   for (const mappedSegment of getMappedRegionSegments(segment, artifactGraph)) {
     const path = artifactGraph.get(mappedSegment.pathId)
@@ -339,7 +339,7 @@ export function getEdgeCutConsumedCodeRef(
 export function getSweepFromSuspectedSweepSurface(
   id: ArtifactId,
   artifactGraph: ArtifactGraph
-): SweepArtifact | Error {
+): Extract<Artifact, { type: 'sweep' }> | Error {
   const artifact = getArtifactOfTypes(
     { key: id, types: ['wall', 'cap', 'edgeCut', 'primitiveFace'] },
     artifactGraph
@@ -421,8 +421,8 @@ export function getCommonFacesForEdge(
 export function getSweepArtifactFromSelection(
   selection: Selection,
   artifactGraph: ArtifactGraph
-): SweepArtifact | Error {
-  let sweepArtifact: Artifact | null = null
+): Extract<Artifact, { type: 'sweep' }> | Error {
+  let sweepArtifact: Extract<Artifact, { type: 'sweep' }> | null = null
   if (selection.artifact?.type === 'sweepEdge') {
     const _artifact = getArtifactOfTypes(
       { key: selection.artifact.sweepId, types: ['sweep'] },
@@ -498,6 +498,64 @@ export function getSweepArtifactFromSelection(
   if (!sweepArtifact) return new Error('No sweep artifact found')
 
   return sweepArtifact
+}
+
+/**
+ * Returns the engine object id of a swept body.
+ *
+ * Original extrude, revolve, and sweep bodies are addressed by the path they
+ * consumed. Mirrored copies retain that source path id but are addressed by
+ * their own artifact id, so the path's backlink determines which id is valid.
+ */
+export function getEngineEntityIdForSweep(
+  sweep: Extract<Artifact, { type: 'sweep' }>,
+  artifactGraph: ArtifactGraph
+): ArtifactId {
+  switch (sweep.subType) {
+    case 'extrusion':
+    case 'extrusionTwist':
+    case 'revolve':
+    case 'revolveAboutEdge':
+    case 'sweep': {
+      const basePath = artifactGraph.get(sweep.pathId)
+      const pathPointsBack =
+        basePath?.type === 'path' && basePath.sweepId === sweep.id
+      return pathPointsBack ? sweep.pathId : sweep.id
+    }
+    case 'loft':
+    case 'blend':
+      return sweep.id
+    default: {
+      const _exhaustiveCheck: never = sweep.subType
+      return _exhaustiveCheck
+    }
+  }
+}
+
+/**
+ * Converts an engine-level body lookup into its semantic artifact.
+ *
+ * The engine returns the consumed path id when an original swept body is
+ * selected. Keep that id on the Selection as `engineEntityId`, but use the
+ * linked Sweep for code selection and UI semantics.
+ */
+export function resolveEngineSelectionArtifact(
+  artifact: Artifact,
+  artifactGraph: ArtifactGraph
+): Artifact {
+  if (artifact.type !== 'path' || !artifact.sweepId) {
+    return artifact
+  }
+
+  const sweep = artifactGraph.get(artifact.sweepId)
+  if (
+    sweep?.type !== 'sweep' ||
+    getEngineEntityIdForSweep(sweep, artifactGraph) !== artifact.id
+  ) {
+    return artifact
+  }
+
+  return sweep
 }
 
 export function getCodeRefsByArtifactId(
@@ -1011,6 +1069,16 @@ export function coerceSelectionsToBody(
   const bodySelections: Selection[] = []
   const seenBodyIds = new Set<string>()
 
+  const addBodySelection = (selection: Selection) => {
+    const bodyId = selection.engineEntityId ?? selection.artifact?.id
+    if (!bodyId || seenBodyIds.has(bodyId)) {
+      return
+    }
+
+    seenBodyIds.add(bodyId)
+    bodySelections.push(selection)
+  }
+
   for (const selection of selections.graphSelections) {
     if (!selection.artifact) {
       // Handle selections without artifacts (e.g., imported modules)
@@ -1029,10 +1097,19 @@ export function coerceSelectionsToBody(
       selection.artifact.type === 'pattern' ||
       selection.artifact.type === 'path'
     ) {
-      const bodyId = selection.engineEntityId ?? selection.artifact.id
-      if (!seenBodyIds.has(bodyId)) {
-        seenBodyIds.add(bodyId)
-        bodySelections.push(selection)
+      const artifact = resolveEngineSelectionArtifact(
+        selection.artifact,
+        artifactGraph
+      )
+      if (artifact.type === 'sweep') {
+        addBodySelection({
+          ...selection,
+          artifact,
+          codeRef: artifact.codeRef,
+          engineEntityId: getEngineEntityIdForSweep(artifact, artifactGraph),
+        })
+      } else {
+        addBodySelection(selection)
       }
     } else {
       // Get the parent body (sweep) from faces, edges, or edgeCuts
@@ -1044,34 +1121,11 @@ export function coerceSelectionsToBody(
         )
       }
 
-      // Prefer the path over the sweep for the final selection
-      const maybePath = getArtifactOfTypes(
-        { key: maybeSweep.pathId, types: ['path'] },
-        artifactGraph
-      )
-      if (!err(maybePath)) {
-        // Successfully got the path from the sweep
-        if (!seenBodyIds.has(maybePath.id)) {
-          seenBodyIds.add(maybePath.id)
-          bodySelections.push({
-            artifact: maybePath,
-            codeRef: maybePath.codeRef,
-          })
-        }
-      } else {
-        // Couldn't get path, use the sweep itself
-        const sweepWithType = getArtifactOfTypes(
-          { key: maybeSweep.id, types: ['sweep'] },
-          artifactGraph
-        )
-        if (!err(sweepWithType) && !seenBodyIds.has(sweepWithType.id)) {
-          seenBodyIds.add(sweepWithType.id)
-          bodySelections.push({
-            artifact: sweepWithType,
-            codeRef: maybeSweep.codeRef,
-          })
-        }
-      }
+      addBodySelection({
+        artifact: maybeSweep,
+        codeRef: maybeSweep.codeRef,
+        engineEntityId: getEngineEntityIdForSweep(maybeSweep, artifactGraph),
+      })
     }
   }
 
