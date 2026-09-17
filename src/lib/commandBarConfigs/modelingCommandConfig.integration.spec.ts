@@ -1268,6 +1268,7 @@ function consumedObjectParameterKeys(add: AddCodemodFunction) {
 
 describe('stdlib command arg derivation', () => {
   const commandsUsingCanonicalSummary = [
+    'Named View',
     'Sweep',
     'Loft',
     'Offset plane',
@@ -1620,6 +1621,7 @@ describe('modeling command stdlib drift', () => {
         "Join Surfaces (joinSurfaces): tolerance",
         "Loft (loft): vDegree, bezApproximateRational, baseCurveIndex, tolerance, tagStart, tagEnd, bodyType",
         "Mirror 3D (mirror3d): across",
+        "Named View (view::named): baseline, except",
         "Offset plane (offsetPlane): offset",
         "Pattern Circular 3D (patternCircular3d): instances, axis, center, arcDegrees, rotateDuplicates, useOriginal",
         "Pattern Linear 3D (patternLinear3d): instances, distance, axis, useOriginal",
