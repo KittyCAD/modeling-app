@@ -59,8 +59,9 @@ describe('project session extension', () => {
 
     const session = registry.get(projectSession)
     const editor = { code: 'part = 1' }
+    const openEditor = vi.fn(async () => editor)
     const openedProject = {
-      openEditor: vi.fn(async () => editor),
+      openEditor,
     } as unknown as ZDSProject
     const openProject = vi.fn(async () => openedProject)
     const closeProject = vi.fn()
@@ -79,7 +80,7 @@ describe('project session extension', () => {
     })
 
     expect(openProject).toHaveBeenCalledWith(project, assertCurrent)
-    expect(openedProject.openEditor).toHaveBeenCalledWith(
+    expect(openEditor).toHaveBeenCalledWith(
       '/projects/bracket/part.kcl',
       providedEditor,
       undefined,
