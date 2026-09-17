@@ -41,15 +41,13 @@ describe('initializeApplication', () => {
 
     const app = fakeApp()
     await initializeApplication(app, {
-      requestUrl:
-        'https://app.zoo.dev/file/%2Fprojects%2Fbracket%2Fmain.kcl',
+      requestUrl: 'https://app.zoo.dev/file/%2Fprojects%2Fbracket%2Fmain.kcl',
       usesHashRouter: false,
     })
 
     expect(mocks.initFileRoute).toHaveBeenCalledWith(app, {
       id: '/projects/bracket/main.kcl',
-      requestUrl:
-        'https://app.zoo.dev/file/%2Fprojects%2Fbracket%2Fmain.kcl',
+      requestUrl: 'https://app.zoo.dev/file/%2Fprojects%2Fbracket%2Fmain.kcl',
     })
   })
 
