@@ -25,6 +25,7 @@ const mocks = vi.hoisted(() => ({
   exists: vi.fn(),
   stat: vi.fn(),
   loadAndValidateSettings: vi.fn(),
+  beginFileRouteLoad: vi.fn(() => () => undefined),
   openFile: vi.fn(),
 }))
 
@@ -63,7 +64,7 @@ const originalElectron = window.electron
 
 function fakeApp(): App {
   return {
-    beginFileRouteLoad: () => () => undefined,
+    beginFileRouteLoad: mocks.beginFileRouteLoad,
     fileOperations: {},
     registry: {
       get: () => ({ exists: mocks.exists, stat: mocks.stat }),
@@ -135,6 +136,7 @@ describe('initFileRoute', () => {
     // The one genuinely routing-shaped case left here: a legacy URL shape with
     // no meaning as application state, so it never reaches `openFile`.
     expect(result).toEqual({ kind: 'redirect', to: PATHS.HOME })
+    expect(mocks.beginFileRouteLoad).toHaveBeenCalledWith(expect.anything())
     expect(mocks.openFile).not.toHaveBeenCalled()
   })
 
