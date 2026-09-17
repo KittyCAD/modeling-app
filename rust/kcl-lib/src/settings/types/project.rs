@@ -128,6 +128,9 @@ pub struct ProjectModelingSettings {
     /// The default unit to use in modeling dimensions.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub base_unit: Option<UnitLength>,
+    /// The KittyCAD Language version for this project.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub kcl_version: Option<String>,
     /// Highlight edges of 3D objects?
     #[serde(default, skip_serializing_if = "is_default")]
     pub highlight_edges: DefaultTrue,
@@ -317,6 +320,7 @@ mod tests {
                 },
                 modeling: ProjectModelingSettings {
                     base_unit: Some(UnitLength::Yards),
+                    kcl_version: None,
                     highlight_edges: Default::default(),
                     enable_ssao: true.into(),
                     fixed_size_grid: None,
@@ -352,6 +356,28 @@ mod tests {
         assert!(serialized.contains("text_wrapping = false"));
         let reparsed = toml::from_str::<ProjectConfiguration>(&serialized).unwrap();
         assert_eq!(reparsed, conf);
+    }
+
+    #[test]
+    fn test_project_settings_kcl_version_round_trip() {
+        let conf = ProjectConfiguration {
+            settings: PerProjectSettings {
+                modeling: ProjectModelingSettings {
+                    kcl_version: Some("2.0".to_owned()),
+                    ..Default::default()
+                },
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+
+        let serialized = toml::to_string(&conf).unwrap();
+        assert!(serialized.contains("[settings.modeling]"));
+        assert!(serialized.contains("kcl_version = \"2.0\""));
+
+        let parsed = ProjectConfiguration::parse_and_validate(&serialized).unwrap();
+        assert_eq!(parsed, conf);
+        assert_eq!(parsed.settings.modeling.kcl_version.as_deref(), Some("2.0"));
     }
 
     #[test]
