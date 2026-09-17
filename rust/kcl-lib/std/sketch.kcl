@@ -5,7 +5,7 @@
 /// This module contains functions for creating and manipulating sketches, and making them into solids.
 
 @no_std
-@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
 
 import Axis2d, Axis3d, BoundedEdge, Edge, Face, Helix, Plane, Point2d, Point3d, Segment, Sketch, Solid, TaggedEdge, TaggedFace from "std::types"
 
