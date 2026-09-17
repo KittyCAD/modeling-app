@@ -18,6 +18,14 @@ export enum AreaType {
 export type AreaTypeId = string
 export type AreaLibrary = Record<AreaTypeId, AreaTypeDefinition>
 
+/**
+ * Registry-owned pane toggle bindings, by pane ID. An entry replaces the legacy
+ * area shortcut; an empty list means the command is unbound.
+ */
+export type PaneShortcuts = Readonly<
+  Record<string, readonly string[] | undefined>
+>
+
 export type AreaTypeComponentProps = {
   areaConfig: Omit<AreaTypeDefinition, 'Component'>
   layout: Layout
