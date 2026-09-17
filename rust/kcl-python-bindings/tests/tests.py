@@ -993,8 +993,9 @@ body = extrude(region(point = [0mm, 0mm], sketch = s), length = 10mm)
         assert bbox is not None
         request = kcl.PhysicalPropertiesRequest()
         request.set_volume(kcl.UnitVolume.CubicMillimeters)
+        # Allow the engine's approximation of the circular cross-section.
         assert (await session.measure(request)).get_volume() == pytest.approx(
-            250 * 3.141592653589793
+            250 * 3.141592653589793, rel=0.002
         )
     assert session.closed
     assert outcome.sketch_constraint_report().total_sketches() == 1
