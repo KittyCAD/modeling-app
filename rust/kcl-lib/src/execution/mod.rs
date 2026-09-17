@@ -977,6 +977,8 @@ pub struct ExecutorSettings {
     /// If given, sets a custom engine pool.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pool: Option<String>,
+    /// asks the engine for geometry only mode - no video stream
+    pub geometry_only: bool,
 }
 
 fn is_false(b: &bool) -> bool {
@@ -997,6 +999,7 @@ impl Default for ExecutorSettings {
             heartbeats: None,
             default_backface_color: None,
             pool: None,
+            geometry_only: false,
         }
     }
 }
@@ -1022,6 +1025,7 @@ impl From<crate::settings::types::Settings> for ExecutorSettings {
             heartbeats: None,
             default_backface_color: modeling_settings.backface_color.map(|color| color.0),
             pool: None,
+            geometry_only: false,
         }
     }
 }
@@ -1046,6 +1050,7 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
             heartbeats: None,
             default_backface_color: modeling.backface_color.map(|color| color.0),
             pool: None,
+            geometry_only: false,
         }
     }
 }
@@ -1064,6 +1069,7 @@ impl From<crate::settings::types::project::ProjectModelingSettings> for Executor
             heartbeats: None,
             default_backface_color: None,
             pool: None,
+            geometry_only: false,
         }
     }
 }
@@ -1143,8 +1149,12 @@ impl ExecutorContext {
                 },
                 replay: settings.replay.clone(),
                 show_grid: if settings.show_grid { Some(true) } else { None },
-                pool: None,
-                geometry_only: None,
+                pool: if settings.geometry_only {
+                    Some("cpu".to_string())
+                } else {
+                    settings.pool.clone()
+                },
+                geometry_only: Some(settings.geometry_only),
                 kcl_version: None,
                 pr,
                 unlocked_framerate: None,
@@ -1273,6 +1283,7 @@ impl ExecutorContext {
                 heartbeats: None,
                 default_backface_color: None,
                 pool: None,
+                geometry_only: false,
             },
             None,
             engine_addr,
@@ -4471,7 +4482,9 @@ w = f() + f()
 )
 "#;
 
-        let ctx = crate::test_server::new_context(true, None).await.unwrap();
+        let ctx = crate::test_server::new_context_engine_graphics(true, None)
+            .await
+            .unwrap();
         let old_program = crate::Program::parse_no_errs(code).unwrap();
 
         // Execute the program.
@@ -4524,7 +4537,9 @@ w = f() + f()
 )
 "#;
 
-        let mut ctx = crate::test_server::new_context(true, None).await.unwrap();
+        let mut ctx = crate::test_server::new_context_engine_graphics(true, None)
+            .await
+            .unwrap();
         let old_program = crate::Program::parse_no_errs(code).unwrap();
 
         // Execute the program.

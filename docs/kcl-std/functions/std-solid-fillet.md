@@ -76,7 +76,7 @@ mountingPlate = extrude(mountingPlateSketch, length = thickness)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the fillet function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-fillet0_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-fillet0_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-fillet0.png"
@@ -117,7 +117,7 @@ mountingPlate = extrude(mountingPlateSketch, length = thickness)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the fillet function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-fillet1_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-fillet1_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-fillet1.png"
@@ -161,7 +161,7 @@ filletedBlock = fillet(blockWithTab, radius = 0.5mm, tags = [getNextAdjacentEdge
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the fillet function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-fillet2_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-fillet2_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-fillet2.png"
@@ -238,7 +238,7 @@ revolve001 = revolve(profile001, angle = 360deg, axis = X)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the fillet function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-fillet3_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-fillet3_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-fillet3.png"
@@ -318,7 +318,7 @@ fillet001 = fillet(
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the fillet function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-fillet4_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-fillet4_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-fillet4.png"
