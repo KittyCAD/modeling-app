@@ -299,6 +299,7 @@ async fn new_context_with_heartbeats(
         skip_artifact_graph: false,
         heartbeats,
         default_backface_color: Some("#00D5FF".to_owned()),
+        pool: None,
     };
     if let Some(current_file) = current_file {
         settings.with_current_file(crate::TypedPath(current_file));
