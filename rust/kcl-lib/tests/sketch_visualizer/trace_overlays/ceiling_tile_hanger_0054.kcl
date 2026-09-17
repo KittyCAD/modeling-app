@@ -1,0 +1,36 @@
+// Ceiling Tile Hanger
+// Parametric reproduction of McMaster-Carr part 12295A44 from the attached reference drawing.
+
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
+
+clipWidth = 1in
+hookWidth = 0.25in
+mainDepth = 1in
+overallHeight = 1.41in
+slotWidth = 0.24in
+
+// Narrow hook plate, viewed from the side.
+hookOuterSketch = sketch(on = XZ) {
+  topEdge = line(start = [var -0.50in, var 0.51in], end = [var 0.50in, var 0.51in])
+  rightEdge = line(start = [var 0.50in, var 0.51in], end = [var 0.50in, var -0.40in])
+  rightRound = arc(start = [var 0.50in, var -0.40in], end = [var 0in, var -0.90in], center = [var 0in, var -0.40in])
+  leftRound = arc(start = [var 0in, var -0.90in], end = [var -0.50in, var -0.40in], center = [var 0in, var -0.40in])
+  leftEdge = line(start = [var -0.50in, var -0.40in], end = [var -0.50in, var 0.51in])
+
+  coincident([topEdge.end, rightEdge.start])
+  coincident([rightEdge.end, rightRound.start])
+  coincident([rightRound.end, leftRound.start])
+  coincident([rightRound.center, leftRound.center])
+  coincident([leftRound.end, leftEdge.start])
+  coincident([leftEdge.end, topEdge.start])
+  fixed([topEdge.start, [-0.50in, 0.51in]])
+  fixed([rightRound.center, [0in, -0.40in]])
+  horizontal(topEdge)
+  vertical(rightEdge)
+  vertical(leftEdge)
+  vertical([rightRound.end, rightRound.center])
+  horizontalDistance([topEdge.start, topEdge.end]) == mainDepth
+  distance([rightEdge.start, rightEdge.end]) == 0.91in
+  radius(rightRound) == 0.50in
+  radius(leftRound) == 0.50in
+}

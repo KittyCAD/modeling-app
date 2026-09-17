@@ -1,0 +1,134 @@
+// Case Cover
+// Dimensioned ABS cover reproduced from drawing 25-02-09.
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
+
+mainDiameter = 6.875in
+mainRadius = mainDiameter / 2
+overallLength = 9.000in
+lugOuterRadius = 1.125in
+lugCenterOffset = overallLength / 2 - lugOuterRadius
+lugBlendRadius = 0.750in
+lugThroughDiameter = 0.875in
+lugCounterboreDiameter = 1.375in
+lugCounterboreDepth = 0.250in
+flangeThickness = 0.625in
+shellBaseInset = 0.375in
+shellOuterBaseRadius = mainRadius - shellBaseInset
+overallHeight = 2.250in
+centralHoleDiameter = 2.500in
+centralHoleRadius = centralHoleDiameter / 2
+wallThickness = 0.375in
+outerCrownRadius = 1.375in
+innerCrownRadius = 1.000in
+draftAngle = 16deg
+crownCenterHeight = overallHeight - outerCrownRadius
+outerTangentHeight = crownCenterHeight + outerCrownRadius * sin(draftAngle)
+outerTangentRadius = shellOuterBaseRadius - (outerTangentHeight - flangeThickness) * tan(draftAngle)
+crownCenterRadius = outerTangentRadius - outerCrownRadius * cos(draftAngle)
+innerTangentHeight = crownCenterHeight + innerCrownRadius * sin(draftAngle)
+innerTangentRadius = crownCenterRadius + innerCrownRadius * cos(draftAngle)
+cavityOpeningRadius = innerTangentRadius + (innerTangentHeight - flangeThickness) * tan(draftAngle)
+
+flangeSketch = sketch(on = XY) {
+  mainRight = arc(
+    start = [var 1.9057in, var 2.8609in],
+    end = [var 1.9057in, var -2.8609in],
+    center = [var 0in, var 0in],
+    direction = CW,
+  )
+  mainLeft = arc(
+    start = [var -1.9057in, var 2.8609in],
+    end = [var -1.9057in, var -2.8609in],
+    center = [var 0in, var 0in],
+  )
+  topLug = arc(
+    start = [var 0.8940in, var 2.6920in],
+    end = [var -0.8940in, var 2.6920in],
+    center = [var 0in, var 3.375in],
+  )
+  bottomLug = arc(
+    start = [var 0.8940in, var -2.6920in],
+    end = [var -0.8940in, var -2.6920in],
+    center = [var 0in, var -3.375in],
+    direction = CW,
+  )
+  topRightBlend = arc(
+    start = [var 1.9057in, var 2.8609in],
+    end = [var 0.8940in, var 2.6920in],
+    center = [var 1.4899in, var 2.2367in],
+  )
+  topLeftBlend = arc(
+    start = [var -1.9057in, var 2.8609in],
+    end = [var -0.8940in, var 2.6920in],
+    center = [var -1.4899in, var 2.2367in],
+    direction = CW,
+  )
+  bottomRightBlend = arc(
+    start = [var 1.9057in, var -2.8609in],
+    end = [var 0.8940in, var -2.6920in],
+    center = [var 1.4899in, var -2.2367in],
+    direction = CW,
+  )
+  bottomLeftBlend = arc(
+    start = [var -1.9057in, var -2.8609in],
+    end = [var -0.8940in, var -2.6920in],
+    center = [var -1.4899in, var -2.2367in],
+  )
+  topChord = line(
+    start = [var -1.9057in, var 2.8609in],
+    end = [var 1.9057in, var 2.8609in],
+  )
+  bottomChord = line(
+    start = [var 1.9057in, var -2.8609in],
+    end = [var -1.9057in, var -2.8609in],
+  )
+
+  coincident([mainRight.center, ORIGIN])
+  coincident([mainLeft.center, mainRight.center])
+  radius(mainRight) == mainRadius
+  equalRadius([mainRight, mainLeft])
+
+  horizontalDistance([ORIGIN, topLug.center]) == 0in
+  verticalDistance([ORIGIN, topLug.center]) == lugCenterOffset
+  horizontalDistance([ORIGIN, bottomLug.center]) == 0in
+  verticalDistance([ORIGIN, bottomLug.center]) == -lugCenterOffset
+  radius(topLug) == lugOuterRadius
+  equalRadius([topLug, bottomLug])
+
+  radius(topRightBlend) == lugBlendRadius
+  equalRadius([
+    topRightBlend,
+    topLeftBlend,
+    bottomRightBlend,
+    bottomLeftBlend
+  ])
+
+  coincident([mainRight.start, topRightBlend.start])
+  coincident([topRightBlend.end, topLug.start])
+  coincident([topLug.end, topLeftBlend.end])
+  coincident([topLeftBlend.start, mainLeft.start])
+  coincident([mainLeft.end, bottomLeftBlend.start])
+  coincident([bottomLeftBlend.end, bottomLug.end])
+  coincident([bottomLug.start, bottomRightBlend.end])
+  coincident([bottomRightBlend.start, mainRight.end])
+  coincident([topChord.start, mainLeft.start])
+  coincident([topChord.end, mainRight.start])
+  coincident([bottomChord.start, mainRight.end])
+  coincident([bottomChord.end, mainLeft.end])
+  horizontal(topChord)
+  horizontal(bottomChord)
+
+  tangent([mainRight, topRightBlend])
+  tangent([topRightBlend, topLug])
+  tangent([topLug, topLeftBlend])
+  tangent([topLeftBlend, mainLeft])
+  tangent([mainLeft, bottomLeftBlend])
+  tangent([bottomLeftBlend, bottomLug])
+  tangent([bottomLug, bottomRightBlend])
+  tangent([bottomRightBlend, mainRight])
+}
+topEarRegion = region(
+  segments = [flangeSketch.topRightBlend, flangeSketch.topChord],
+  intersectionIndex = -1,
+  direction = CCW,
+)
