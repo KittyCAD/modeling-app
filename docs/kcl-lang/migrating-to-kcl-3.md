@@ -4,10 +4,13 @@ excerpt: "How to update a KCL program written for KCL 2.0 so that it runs under 
 layout: manual
 ---
 
-KCL 3.0 changes a few language rules and removes some standard library
-parameters. This page lists every change and shows how to update a program
-written for KCL 2.0. Each section has a "before" example that runs under
-KCL 2.0 and an "after" example that runs under KCL 3.0.
+KCL 3.0 is a major improvement to the language that includes greatly improved
+fillets and the ability to define named views.
+
+In addition to the new features, KCL 3.0 changes a few language rules and
+simplifies some standard library parameters. This page lists every change and
+shows how to update a program written for KCL 2.0. Each section has a "before"
+example that runs under KCL 2.0 and an "after" example that runs under KCL 3.0.
 
 KCL 3.0 is available as a preview. To use it, declare the version as the
 string `"3.0-preview"`, with the quotes, in the
@@ -46,7 +49,7 @@ and partly under KCL 3.0, so migrate a project as a unit.
 | `sweep` no longer accepts `relativeTo` | The profile stays in place unless you say otherwise | Pass `translateProfileToPath = true` to move the profile to the path |
 | `legacyMethod` is removed | Passing it to `fillet`, `chamfer`, `union`, `intersect`, `subtract`, or `split` is an error | Remove the argument |
 | `patternLinear2d` requires a region | Passing a sketch block's sketch is an error | Pass a `region(...)` instead |
-| `defaultAngleUnit` is removed | The setting is an error | Write units on angles, like `90deg` |
+| `defaultAngleUnit` is removed | The setting is an error | Write units on angles, like `90deg` or `0.5rad` |
 | All files must declare the same version | An imported file declaring a different version is an error | Declare `"3.0-preview"` in every file |
 
 ## `return` exits the function immediately
@@ -543,20 +546,22 @@ Mixing KCL versions in a single program is not allowed. The entry point declares
 
 ## Recommended: replace deprecated sketch functions with sketch blocks
 
-This step is not required. The pipeline-style sketch functions deprecated in
-KCL 2.0, such as `startSketchOn`, `startProfile`, and `close`, and the segment
-functions used in those pipelines, such as `line`, `xLine`, `angledLine`,
-`arc`, `tangentialArc`, `circle`, `rectangle`, and `polygon`, still work in
-KCL 3.0 and report a deprecation warning. The functions of the same name used
-inside a sketch block, such as `line` and `arc`, are not deprecated. While you
-are updating a file, consider rewriting these profiles as
-[sketch blocks](/docs/kcl-lang/sketches) and selecting the profile to extrude
-with [`region`](/docs/kcl-std/functions/std-sketch-region).
+This step is not required, but strongly recommended. The pipeline-style sketch
+functions from KCL 1.0 have been deprecated since KCL 2.0. The functions such as
+`startSketchOn`, `startProfile`, and `close`, and the segment functions used in
+those pipelines, such as `line`, `xLine`, `angledLine`, `arc`, `tangentialArc`,
+`circle`, `rectangle`, and `polygon`, still work in KCL 3.0 and report a
+deprecation warning. The functions of the same name used inside a sketch block,
+such as `line` and `arc`, are not deprecated. While you are updating a file,
+consider rewriting these profiles as [sketch blocks](/docs/kcl-lang/sketches)
+and selecting the profile to extrude with
+[`region`](/docs/kcl-std/functions/std-sketch-region) so that you can take
+advantage of geometric sketch constraints.
 
-KCL 2.0:
+KCL 1.0:
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 1.0)
 
 bracket = startSketchOn(XY)
   |> startProfile(at = [0mm, 0mm])
