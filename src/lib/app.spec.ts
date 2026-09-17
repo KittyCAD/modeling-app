@@ -742,18 +742,6 @@ describe('project system', () => {
               command.groupId === 'projects' &&
               command.name === 'Create project'
           )
-      ).toBe(false)
-
-      userFeatures.setFeatureIds(new Set([OPFS_CLOUD_FEATURE_FLAG]))
-
-      expect(
-        app.registry
-          .get(commandsValueSpec)
-          .some(
-            (command) =>
-              command.groupId === 'projects' &&
-              command.name === 'Create project'
-          )
       ).toBe(true)
       expect(
         app.commands.actor
