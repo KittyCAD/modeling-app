@@ -21,6 +21,7 @@ import type {
   Direction,
   Layout,
   PaneChild,
+  PaneShortcuts,
   PaneLayout as PaneLayoutType,
   Side,
   SplitLayout as SplitLayoutType,
@@ -51,6 +52,7 @@ import type {
 } from '@src/lib/layout/utils'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { isArray } from '@src/lib/utils'
+import { keymapKeystrokesDisplay } from '@src/registry/contracts/keymap'
 import {
   Fragment,
   createContext,
@@ -70,6 +72,7 @@ type WithoutRootLayout<T> = Omit<T, 'rootLayout'>
 interface LayoutState {
   areaLibrary: AreaLibrary
   actionLibrary: ActionLibrary
+  paneShortcuts: PaneShortcuts
   updateSplitSizes: (props: WithoutRootLayout<IUpdateNodeSizes>) => void
   replaceLayoutNode: (props: WithoutRootLayout<IReplaceLayoutChildNode>) => void
   togglePane: (props: WithoutRootLayout<ITogglePane>) => void
@@ -89,10 +92,12 @@ const missingActionDefinition = {
 
 const nullAreaLibrary: AreaLibrary = {}
 const nullActionLibrary: ActionLibrary = {}
+const nullPaneShortcuts: PaneShortcuts = {}
 
 const LayoutStateContext = createContext<LayoutState>({
   areaLibrary: nullAreaLibrary,
   actionLibrary: nullActionLibrary,
+  paneShortcuts: nullPaneShortcuts,
   updateSplitSizes: () => {},
   replaceLayoutNode: () => {},
   togglePane: () => {},
@@ -105,6 +110,7 @@ export const useLayoutState = () => useContext(LayoutStateContext)
 interface LayoutRootNodeProps {
   areaLibrary?: LayoutState['areaLibrary']
   actionLibrary?: LayoutState['actionLibrary']
+  paneShortcuts?: LayoutState['paneShortcuts']
   layout: Layout
   getLayout: () => Layout | undefined
   setLayout: (layout: Layout) => void
@@ -121,6 +127,7 @@ export const LayoutRootNode = memo(
   function LayoutRootNode({
     areaLibrary,
     actionLibrary,
+    paneShortcuts,
     layout,
     getLayout,
     setLayout,
@@ -165,6 +172,7 @@ export const LayoutRootNode = memo(
       () => ({
         areaLibrary: areaLibrary || nullAreaLibrary,
         actionLibrary: actionLibrary || nullActionLibrary,
+        paneShortcuts: paneShortcuts || nullPaneShortcuts,
         updateSplitSizes,
         replaceLayoutNode,
         togglePane,
@@ -177,6 +185,7 @@ export const LayoutRootNode = memo(
         enableContextMenus,
         areaLibrary,
         actionLibrary,
+        paneShortcuts,
         togglePane,
         showDebugPanel,
       ]
@@ -192,6 +201,7 @@ export const LayoutRootNode = memo(
     isEqual(oldProps.layout, newProps.layout) &&
     oldProps.areaLibrary === newProps.areaLibrary &&
     oldProps.actionLibrary === newProps.actionLibrary &&
+    oldProps.paneShortcuts === newProps.paneShortcuts &&
     oldProps.enableContextMenus === newProps.enableContextMenus &&
     oldProps.showDebugPanel === newProps.showDebugPanel &&
     isEqual(oldProps.notifications, newProps.notifications) &&
@@ -498,12 +508,19 @@ function PaneButton({
   onChange: (checked: boolean) => void
 }) {
   const platform = usePlatform()
-  const { areaLibrary } = useLayoutState()
+  const { areaLibrary, paneShortcuts } = useLayoutState()
   const buttonBorderWidthProp = `border${sideToReactCss(getOppositeSide(side))}Width`
   const isActiveIndex = parentActiveIndices.indexOf(childIndex) >= 0
   const resolvedAreaType =
     pane.type === LayoutType.Simple ? areaLibrary[pane.areaType] : undefined
   const icon = resolvedAreaType?.icon ?? pane.icon
+  const registryShortcut = paneShortcuts[pane.id]
+  const shortcutLabel =
+    registryShortcut !== undefined
+      ? keymapKeystrokesDisplay(registryShortcut, platform)
+      : resolvedAreaType?.shortcut
+        ? hotkeyDisplay(resolvedAreaType.shortcut, platform)
+        : undefined
   useHotkeys(
     resolvedAreaType?.shortcut || '',
     () => {
@@ -511,7 +528,7 @@ function PaneButton({
     },
     {
       scopes: ['modeling'],
-      enabled: !!resolvedAreaType?.shortcut,
+      enabled: registryShortcut === undefined && !!resolvedAreaType?.shortcut,
     }
   )
   return (
@@ -545,10 +562,8 @@ function PaneButton({
         hoverOnly
       >
         <span className="flex-1">{pane.label}</span>
-        {resolvedAreaType?.shortcut ? (
-          <kbd className="hotkey text-xs capitalize">
-            {hotkeyDisplay(resolvedAreaType.shortcut, platform)}
-          </kbd>
+        {shortcutLabel ? (
+          <kbd className="hotkey text-xs capitalize">{shortcutLabel}</kbd>
         ) : null}
       </Tooltip>
       <NotificationBadge pane={pane} />

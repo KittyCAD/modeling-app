@@ -34,6 +34,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { defaultLayout, LayoutRootNode } from '@src/lib/layout'
 import { useDefaultActionLibrary } from '@src/lib/layout/defaultActionLibrary'
 import { useDefaultAreaLibrary } from '@src/lib/layout/defaultAreaLibrary'
+import { layoutPaneShortcutsValueSpec } from '@src/lib/layout/registry/contract'
 import { lspService } from '@src/lang/lsp/registry/contract'
 import { PATHS } from '@src/lib/paths'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
@@ -343,6 +344,7 @@ export function OpenedProject() {
             setLayout={layout.set}
             areaLibrary={defaultAreaLibrary}
             actionLibrary={defaultActionLibrary}
+            paneShortcuts={registry.signal(layoutPaneShortcutsValueSpec).value}
             showDebugPanel={settingsValues.debug.showPanel.current}
             notifications={notifications}
             artifactGraph={kclManager.artifactGraph}
