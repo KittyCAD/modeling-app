@@ -81,7 +81,7 @@ describe('LSP signature help', () => {
     vi.restoreAllMocks()
   })
 
-  it('still opens signature help when pasting a program', async () => {
+  it('does not request signature help when pasting or repasting a program', async () => {
     const code = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 sketch001 = sketch(on = XY) {
@@ -94,16 +94,17 @@ profile001 = region(segments = [sketch001.a, sketch001.b])
 
 extrude(profile001, length = 6)
   |> translate(x = 10)`
-    view.dispatch({
-      changes: { from: 0, to: view.state.doc.length, insert: code },
-      selection: { anchor: code.length },
-      annotations: Transaction.userEvent.of('input.paste'),
-    })
+    for (let paste = 0; paste < 2; paste++) {
+      view.dispatch({
+        changes: { from: 0, to: view.state.doc.length, insert: code },
+        selection: { anchor: code.length },
+        annotations: Transaction.userEvent.of('input.paste'),
+      })
 
-    await vi.waitFor(() => {
-      expect(tooltip()?.textContent).toContain('Move a solid')
-    })
-    expect(request).toHaveBeenCalledOnce()
+      await Promise.resolve()
+      expect(request).not.toHaveBeenCalled()
+      expect(tooltip()).toBeNull()
+    }
   })
 
   it('still opens signature help when typing a trigger character', async () => {

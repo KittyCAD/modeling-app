@@ -63,16 +63,15 @@ export default function lspSignatureHelpExt(
     EditorView.updateListener.of(async (update) => {
       if (!(plugin && update.docChanged)) return
 
-      // Make sure this is a valid user typing event.
+      // Only typing should open signature help; 'input' also includes pasting.
       let isRelevant = false
       for (const tr of update.transactions) {
-        if (tr.isUserEvent('input')) {
+        if (tr.isUserEvent('input.type')) {
           isRelevant = true
         }
       }
 
       if (!isRelevant) {
-        // We only want signature help on user events.
         return
       }
 
