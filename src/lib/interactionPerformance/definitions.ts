@@ -1,13 +1,12 @@
 import type { InteractionDefinition } from '@src/lib/interactionPerformance/types'
 
-export const COMMAND_PALETTE_OPEN_INTERACTION = 'zds.commandPalette.open'
-export const COMMAND_PALETTE_CLOSE_INTERACTION = 'zds.commandPalette.close'
-
 // These endpoints describe the rendered outcome, including the normal UI
 // transition. Unknown controls are still recorded, without claiming completion.
-export const interactionDefinitions: readonly InteractionDefinition[] = [
-  {
-    id: COMMAND_PALETTE_OPEN_INTERACTION,
+export const interactions = {
+  commandPaletteOpen: {
+    id: 'zds.commandPalette.open',
+    testId: 'command-bar-open-button',
+    budgetMs: 150,
     outcome:
       'Command search is visible and enabled; its opening transition ended',
     isReady(document) {
@@ -28,8 +27,10 @@ export const interactionDefinitions: readonly InteractionDefinition[] = [
       )
     },
   },
-  {
-    id: COMMAND_PALETTE_CLOSE_INTERACTION,
+  commandPaletteClose: {
+    id: 'zds.commandPalette.close',
+    testId: 'command-bar-close-button',
+    budgetMs: 150,
     outcome: 'Command palette is no longer rendered',
     isReady(document) {
       const panel = document.querySelector(
@@ -38,4 +39,7 @@ export const interactionDefinitions: readonly InteractionDefinition[] = [
       return !panel || !panel.checkVisibility({ checkVisibilityCSS: true })
     },
   },
-]
+} satisfies Record<string, InteractionDefinition>
+
+export const interactionDefinitions: readonly InteractionDefinition[] =
+  Object.values(interactions)

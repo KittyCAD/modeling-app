@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test'
 
 // The existing app fixtures select their platform when modules are imported.
-process.env.TARGET = 'web'
+process.env.TARGET = 'desktop'
 
 export default defineConfig({
   testDir: './e2e/performance',
@@ -15,6 +15,7 @@ export default defineConfig({
   timeout: 120_000,
   reporter: [
     ['list'],
+    ['./e2e/performance/reporter.ts'],
     [
       'json',
       { outputFile: './test-results/interaction-performance/playwright.json' },
@@ -29,9 +30,8 @@ export default defineConfig({
   ],
   use: {
     ...devices['Desktop Chrome'],
-    // Use the Chromium revision supplied by the locked Playwright package.
+    // The existing desktop fixture launches the locked Electron runtime.
     browserName: 'chromium',
-    baseURL: 'http://localhost:3000',
     viewport: { width: 1200, height: 800 },
     actionTimeout: 15_000,
     trace: 'off',
@@ -40,11 +40,5 @@ export default defineConfig({
     contextOptions: {
       permissions: ['clipboard-write', 'clipboard-read'],
     },
-  },
-  webServer: {
-    command: 'npm run start:prod -- --port 3000 --strictPort --host localhost',
-    url: 'http://localhost:3000',
-    reuseExistingServer: false,
-    timeout: 30_000,
   },
 })

@@ -42,12 +42,9 @@ export class InteractionRecorder {
   private active = false
   private sequence = 0
   private droppedSamples = 0
+  private droppedPointerEvents = 0
   private visibilityInterrupted = false
   private readonly definitions: Map<string, InteractionDefinition>
-  readonly eventTimingSupported =
-    typeof PerformanceObserver !== 'undefined' &&
-    PerformanceObserver.supportedEntryTypes.includes('event')
-
   constructor(
     private readonly document: Document,
     definitions: readonly InteractionDefinition[]
@@ -67,6 +64,7 @@ export class InteractionRecorder {
     this.samplesByInteraction.clear()
     this.sequence = 0
     this.droppedSamples = 0
+    this.droppedPointerEvents = 0
     this.visibilityInterrupted = this.document.visibilityState !== 'visible'
     this.active = true
     for (const event of INPUT_EVENTS) {
@@ -76,14 +74,10 @@ export class InteractionRecorder {
     this.document.addEventListener('pointerup', this.capturePointer, true)
     this.document.addEventListener('pointercancel', this.capturePointer, true)
     this.document.addEventListener('visibilitychange', this.onVisibilityChange)
-    if (this.eventTimingSupported) {
-      this.observer = new PerformanceObserver((list) =>
-        this.consume(list.getEntries())
-      )
-      // Fast events may be filtered and delivery can lag outcome completion.
-      // Keep missing entries null; they do not prove a zero-duration gesture.
-      this.observer.observe({ type: 'event', durationThreshold: 16 })
-    }
+    this.observer = new PerformanceObserver((list) =>
+      this.consume(list.getEntries())
+    )
+    this.observer.observe({ type: 'event', durationThreshold: 16 })
   }
 
   snapshot(): InteractionSnapshot {
@@ -93,12 +87,16 @@ export class InteractionRecorder {
         ...sample,
         eventTiming: sample.eventTiming ? { ...sample.eventTiming } : null,
       })),
-      registered: [...this.definitions.values()].map(({ id, outcome }) => ({
-        id,
-        outcome,
-      })),
-      eventTimingSupported: this.eventTimingSupported,
+      registered: [...this.definitions.values()].map(
+        ({ id, testId, budgetMs, outcome }) => ({
+          id,
+          testId,
+          budgetMs,
+          outcome,
+        })
+      ),
       droppedSamples: this.droppedSamples,
+      droppedPointerEvents: this.droppedPointerEvents,
       visibilityInterrupted: this.visibilityInterrupted,
     }
   }
@@ -139,13 +137,18 @@ export class InteractionRecorder {
     if (event.type === 'pointercancel') {
       this.pointerTimestamps.delete(event.pointerId)
     } else if (event.type === 'pointerdown') {
+      // Refresh insertion order when a pointer ID is reused without a click.
+      this.pointerTimestamps.delete(event.pointerId)
       this.pointerTimestamps.set(event.pointerId, [event.timeStamp])
     } else {
       this.pointerTimestamps.get(event.pointerId)?.push(event.timeStamp)
     }
     if (this.pointerTimestamps.size > MAX_SAMPLES) {
-      const oldest = this.pointerTimestamps.keys().next().value
-      if (oldest !== undefined) this.pointerTimestamps.delete(oldest)
+      const oldest = this.pointerTimestamps.entries().next().value
+      if (oldest !== undefined) {
+        this.droppedPointerEvents += oldest[1].length
+        this.pointerTimestamps.delete(oldest[0])
+      }
     }
   }
 
@@ -211,8 +214,7 @@ export class InteractionRecorder {
             this.definitions.get(sample.id)?.isReady(this.document)
         )
       )
-      // A task after rAF observes the result after a rendering opportunity. This
-      // is an upper-bound observation, not an exact compositor presentation time.
+      // Observe the ready outcome in a task after this rendering opportunity.
       this.task = window.setTimeout(() => this.observeOutcomes(ready), 0)
     })
   }
@@ -233,6 +235,7 @@ export class InteractionRecorder {
         sample.status = 'timeout'
       }
     }
+    // Pending outcomes repeat the next-frame/next-task cycle until ready or timed out.
     if (this.samples.some((sample) => sample.status === 'pending'))
       this.scheduleObservation()
   }
@@ -283,8 +286,7 @@ export class InteractionRecorder {
         const oldest = this.interactionByTimestamp.keys().next().value
         if (oldest !== undefined) this.interactionByTimestamp.delete(oldest)
       }
-      // Pointer events may arrive before their click. Bound both maps even when
-      // interactions never produce a click or the observer delivers late entries.
+      // Drag gestures can emit pointer events without a click to consume them.
       if (this.timings.size > MAX_SAMPLES) {
         const oldest = this.timings.keys().next().value
         if (oldest !== undefined) {

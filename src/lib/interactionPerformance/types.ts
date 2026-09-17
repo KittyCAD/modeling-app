@@ -18,14 +18,16 @@ export interface InteractionSample {
 
 export interface InteractionDescription {
   id: string
+  testId: string
+  budgetMs: number
   outcome: string
 }
 
 export interface InteractionSnapshot {
   samples: InteractionSample[]
   registered: InteractionDescription[]
-  eventTimingSupported: boolean
   droppedSamples: number
+  droppedPointerEvents: number
   visibilityInterrupted: boolean
 }
 

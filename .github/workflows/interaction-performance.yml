@@ -40,10 +40,10 @@ jobs:
           name: prepared-ts-rs-bindings
           path: rust/kcl-lib/bindings
 
-      - name: Build production application
+      - name: Build production Electron application
         run: |
           cp rust/kcl-wasm-lib/pkg/kcl_wasm_lib_bg.wasm public/
-          npm exec -- vite build
+          npm run tronb:vite:prod
         env:
           VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
           VITE_ZOO_BASE_DOMAIN: dev.zoo.dev
@@ -51,7 +51,8 @@ jobs:
       - uses: actions/upload-artifact@v7
         with:
           name: interaction-performance-build
-          path: build/
+          path: .vite/
+          include-hidden-files: true
           retention-days: 7
 
   measure:
@@ -74,7 +75,7 @@ jobs:
       - uses: actions/download-artifact@v8
         with:
           name: interaction-performance-build
-          path: build
+          path: .vite
 
       - uses: actions/download-artifact@v8
         with:
@@ -86,14 +87,15 @@ jobs:
           name: prepared-ts-rs-bindings
           path: rust/kcl-lib/bindings
 
-      - name: Install pinned Chromium
-        run: npm exec -- playwright install --with-deps chromium
+      - name: Install Electron runtime libraries
+        run: npm exec -- playwright install-deps chromium
 
       - name: Collect interaction measurements
-        run: npm exec -- playwright test --config=playwright.performance.config.ts
+        run: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npm exec -- playwright test --config=playwright.performance.config.ts
         env:
           NODE_ENV: production
-          TARGET: web
+          TARGET: desktop
+          VITE_ZOO_BASE_DOMAIN: dev.zoo.dev
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
 
       - name: Preserve measurements and failures

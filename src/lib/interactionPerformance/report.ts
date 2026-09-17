@@ -8,6 +8,7 @@ export const INTERACTION_BUDGET_MS = 150
 export interface InteractionCoverage {
   id: string
   outcome: string
+  budgetMs: number
   expected: number | null
   exercised: number
   measured: number
@@ -19,7 +20,6 @@ export interface InteractionCoverage {
 }
 
 export interface InteractionReport {
-  budgetMs: number
   errors: string[]
   coverage: InteractionCoverage[]
   unattributed: number
@@ -34,24 +34,35 @@ export interface InteractionReport {
 /** Validate collection independently from the report-only latency budget. */
 export function reportInteractions(
   snapshot: InteractionSnapshot,
-  expected: Readonly<Record<string, number>>,
-  budgetMs = INTERACTION_BUDGET_MS
+  expected: Readonly<Record<string, number>>
 ): InteractionReport {
   const errors: string[] = []
   const violations: InteractionReport['violations'] = []
-  const registered = new Set(snapshot.registered.map(({ id }) => id))
+  const registered = new Map(
+    snapshot.registered.map((definition) => [definition.id, definition])
+  )
   const sequences = new Set<number>()
   const finiteDuration = (value: number | null) =>
     value !== null && Number.isFinite(value) && value >= 0
 
-  if (!Number.isFinite(budgetMs) || budgetMs <= 0) {
-    errors.push('The latency budget must be a positive finite duration.')
-  }
-  if (!snapshot.eventTimingSupported) {
-    errors.push('This browser does not support Event Timing.')
+  for (const { id, budgetMs } of snapshot.registered) {
+    if (
+      !Number.isFinite(budgetMs) ||
+      budgetMs <= 0 ||
+      budgetMs > INTERACTION_BUDGET_MS
+    ) {
+      errors.push(
+        `Interaction ${id} needs a positive budget no greater than ${INTERACTION_BUDGET_MS} ms.`
+      )
+    }
   }
   if (snapshot.droppedSamples !== 0) {
     errors.push(`Capture dropped ${snapshot.droppedSamples} samples.`)
+  }
+  if (snapshot.droppedPointerEvents !== 0) {
+    errors.push(
+      `Capture dropped ${snapshot.droppedPointerEvents} pointer events.`
+    )
   }
   if (snapshot.visibilityInterrupted) {
     errors.push('The document was hidden during capture.')
@@ -78,13 +89,15 @@ export function reportInteractions(
       errors.push(`Sample ${sample.sequence} has invalid Event Timing data.`)
     }
     if (sample.id === null) continue
-    if (!registered.has(sample.id)) {
+    const definition = registered.get(sample.id)
+    if (!definition) {
       errors.push(`Sample ${sample.sequence} has an unregistered identity.`)
     }
     if (
       sample.eventTiming !== null &&
       finiteDuration(sample.eventTiming.durationMs) &&
-      sample.eventTiming.durationMs >= budgetMs
+      definition &&
+      sample.eventTiming.durationMs >= definition.budgetMs
     ) {
       violations.push({
         sequence: sample.sequence,
@@ -97,7 +110,11 @@ export function reportInteractions(
       errors.push(
         `Sample ${sample.sequence} (${sample.id}) has no completed outcome.`
       )
-    } else if (sample.outcomeMs !== null && sample.outcomeMs >= budgetMs) {
+    } else if (
+      sample.outcomeMs !== null &&
+      definition &&
+      sample.outcomeMs >= definition.budgetMs
+    ) {
       violations.push({
         sequence: sample.sequence,
         id: sample.id,
@@ -120,7 +137,7 @@ export function reportInteractions(
     }
   }
 
-  const coverage = snapshot.registered.map(({ id, outcome }) => {
+  const coverage = snapshot.registered.map(({ id, outcome, budgetMs }) => {
     const samples = snapshot.samples.filter((sample) => sample.id === id)
     const durations = samples
       .filter(
@@ -141,6 +158,7 @@ export function reportInteractions(
     return {
       id,
       outcome,
+      budgetMs,
       expected: expected[id] ?? null,
       exercised: samples.length,
       measured: durations.length,
@@ -155,7 +173,6 @@ export function reportInteractions(
   })
 
   return {
-    budgetMs,
     errors,
     coverage,
     unattributed: snapshot.samples.filter((sample) => sample.id === null)
