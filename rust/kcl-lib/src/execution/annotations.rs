@@ -407,6 +407,31 @@ fn version_property(p: &ObjectProperty, key: &str, source_range: SourceRange) ->
     })
 }
 
+/// The `added_in` version an item's attributes declare, if any.
+///
+/// This reads only that one attribute so that a declaration can be skipped
+/// before anything else about it is examined; [`get_fn_attrs`] validates the
+/// remaining attributes when the item does execute.
+pub(super) fn added_in_version(
+    annotations: &[Node<Annotation>],
+    source_range: SourceRange,
+) -> Result<Option<VersionConstraint>, KclError> {
+    for attr in annotations {
+        if attr.name.is_some() {
+            continue;
+        }
+        let Some(properties) = &attr.properties else {
+            continue;
+        };
+        for p in properties {
+            if &*p.key.name == ADDED_IN {
+                return Ok(Some(version_property(p, ADDED_IN, source_range)?));
+            }
+        }
+    }
+    Ok(None)
+}
+
 pub(super) fn get_fn_attrs(
     annotations: &[Node<Annotation>],
     source_range: SourceRange,
@@ -625,6 +650,46 @@ mod tests {
                 .unwrap_err()
                 .message(),
             "`deprecated_since` (KCL 2.0) must not be earlier than `added_in` (KCL 3.0)"
+        );
+    }
+
+    #[test]
+    fn added_in_version_reads_only_that_attribute() {
+        // Other attributes, even invalid ones, are left for get_fn_attrs.
+        let attrs = outer_attrs("@(added_in = \"2.0\", bogus = true)\nx = 1");
+        assert_eq!(
+            added_in_version(&attrs, SourceRange::default()).unwrap(),
+            Some(vc("2.0"))
+        );
+        assert_eq!(
+            get_fn_attrs(&attrs, SourceRange::default()).unwrap_err().message(),
+            "Invalid attribute, expected one of: impl, added_in, deprecated, deprecated_since, doc_category, experimental, feature_tree, found `bogus`"
+        );
+
+        assert_eq!(
+            added_in_version(&outer_attrs("@(experimental = true)\nx = 1"), SourceRange::default()).unwrap(),
+            None
+        );
+        assert_eq!(
+            added_in_version(&outer_attrs("x = 1"), SourceRange::default()).unwrap(),
+            None
+        );
+
+        // Named annotations such as @settings are not item attributes.
+        assert_eq!(
+            added_in_version(
+                &outer_attrs("@settings(kclVersion = 2.0)\nx = 1"),
+                SourceRange::default()
+            )
+            .unwrap(),
+            None
+        );
+
+        assert_eq!(
+            added_in_version(&outer_attrs("@(added_in = \"x\")\nx = 1"), SourceRange::default())
+                .unwrap_err()
+                .message(),
+            "Invalid version string for added_in: `x`; expected a dotted integer version, e.g., \"2.0\""
         );
     }
 }

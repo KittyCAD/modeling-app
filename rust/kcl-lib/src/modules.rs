@@ -1,6 +1,7 @@
 use std::fmt;
 
 use anyhow::Result;
+use indexmap::IndexMap;
 pub use kcl_error::ModuleId;
 use serde::Deserialize;
 use serde::Serialize;
@@ -11,6 +12,7 @@ use crate::errors::KclErrorDetails;
 use crate::exec::KclValue;
 use crate::execution::EnvironmentRef;
 use crate::execution::ModuleArtifactState;
+use crate::execution::NotYetAdded;
 use crate::execution::PreImportedGeometry;
 use crate::execution::typed_path::TypedPath;
 use crate::fs::FileSystemHandle;
@@ -150,6 +152,33 @@ pub struct ModuleExecutionOutcome {
     pub environment: EnvironmentRef,
     pub exports: Vec<String>,
     pub artifacts: ModuleArtifactState,
+    /// The module's exported declarations that were skipped because the
+    /// program's KCL version predates their `added_in`; see
+    /// [`crate::execution::NotYetAdded`].
+    pub not_yet_added: IndexMap<String, NotYetAdded>,
+}
+
+impl ModuleExecutionOutcome {
+    /// What the module offers to code that imports from it or reaches into it
+    /// by path.
+    pub(crate) fn items(&self) -> ModuleItems {
+        ModuleItems {
+            environment: self.environment,
+            exports: self.exports.clone(),
+            not_yet_added: self.not_yet_added.clone(),
+        }
+    }
+}
+
+/// A module's environment, exported names, and exported declarations skipped
+/// as not yet added, for code that imports from the module or reaches into it
+/// by path.
+#[derive(Debug, Clone)]
+pub(crate) struct ModuleItems {
+    pub environment: EnvironmentRef,
+    pub exports: Vec<String>,
+    /// See [`ModuleExecutionOutcome::not_yet_added`].
+    pub not_yet_added: IndexMap<String, NotYetAdded>,
 }
 
 #[allow(clippy::large_enum_variant)]

@@ -124,6 +124,47 @@ pub(super) struct GlobalState {
     pub sketch_mode: bool,
     /// True when the engine being used for execution is CPU only with no graphical environment
     pub geometry_only: bool,
+    /// The standard library's exported declarations that this execution
+    /// skipped because the program's KCL version predates their `added_in`,
+    /// keyed by the memory key each would have been bound under.
+    ///
+    /// Written once by `eval_prelude` from the prelude's execution outcome
+    /// and read-only afterward. Root environments chain to the prelude
+    /// without an import statement, so these records need a home of their
+    /// own; every other module's records reach an importer through its
+    /// execution outcome instead. Preserved by the mock memory cache like
+    /// `module_infos`, so that a run reusing cached memory, which skips the
+    /// prelude, still has them. See [`ExecState::with_not_yet_added_hint`].
+    pub std_not_yet_added: IndexMap<String, NotYetAdded>,
+}
+
+/// A declaration that an execution skipped because the program's KCL version
+/// predates the declaration's `added_in` version. The declaration is then
+/// absent exactly as if it were not in the file, and this record lets a
+/// failed lookup of its name explain the version mismatch instead of
+/// reporting a plain unknown name.
+///
+/// Records flow the way names do: a module keeps the ones in its scope in
+/// [`ModuleState::not_yet_added`], exports the exported ones through its
+/// execution outcome, and a glob import merges an imported module's exported
+/// records into the importing scope.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+pub struct NotYetAdded {
+    /// The KCL version the declaration is available from.
+    pub added_in: annotations::VersionConstraint,
+    /// Whether the declaration belongs to the standard library, so that
+    /// guidance on fixing the error can tell a std item from a user one.
+    pub is_std: bool,
+}
+
+/// A [`NotYetAdded`] record in a module's scope, and whether the module
+/// exports it: its own `export`ed declaration, or a record brought in by an
+/// `export import *`. Only exported records travel in the module's execution
+/// outcome, mirroring which names do.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) struct ScopedNotYetAdded {
+    pub item: NotYetAdded,
+    pub exported: bool,
 }
 
 impl GlobalState {
@@ -321,6 +362,13 @@ pub(super) struct ModuleState {
     pub stdlib_entry_source_range: Option<SourceRange>,
     /// Identifiers that have been exported from the current module.
     pub module_exports: Vec<String>,
+    /// Declarations skipped because the program's KCL version predates their
+    /// `added_in` that are in scope in this module: its own, plus those
+    /// brought in by glob imports. Keyed by the memory key each would have
+    /// been bound under. The exported ones travel in the module's execution
+    /// outcome, which is how a module pre-executed on a cloned state still
+    /// gets to explain its missing names to the module that imports it.
+    pub not_yet_added: IndexMap<String, ScopedNotYetAdded>,
     /// Settings specified from annotations.
     pub settings: MetaSettings,
     /// True if executing in sketch mode. Only a single sketch block will be
@@ -636,6 +684,103 @@ impl ExecState {
             .deprecation_version_override
             .as_deref()
             .unwrap_or(self.mod_local.settings.kcl_version.as_str())
+    }
+
+    /// The KCL version the entry-point program declares, or the default
+    /// version when it declares none.
+    ///
+    /// Declarations gated by `added_in` compare against this rather than
+    /// [`Self::kcl_version`]: standard library modules declare no version of
+    /// their own, so under the legacy per-module lookup their bodies would
+    /// observe the default version and hide every gated declaration from
+    /// every program.
+    pub(crate) fn entry_point_kcl_version(&self) -> KclVersion {
+        self.global.entry_point_kcl_version.unwrap_or_default()
+    }
+
+    /// Record that the declaration that would have been bound as `key` in the
+    /// current module was skipped because this program's KCL version predates
+    /// `added_in`. `exported` says whether the declaration was `export`ed. See
+    /// [`NotYetAdded`].
+    pub(crate) fn record_not_yet_added(
+        &mut self,
+        key: String,
+        added_in: annotations::VersionConstraint,
+        exported: bool,
+    ) {
+        let item = NotYetAdded {
+            added_in,
+            is_std: matches!(self.mod_local.path, ModulePath::Std { .. }),
+        };
+        self.mod_local
+            .not_yet_added
+            .insert(key, ScopedNotYetAdded { item, exported });
+    }
+
+    /// Bring the exported not-yet-added records of a glob-imported module into
+    /// the current module's scope, as `import *` does for its names. They are
+    /// re-exported when the import is an `export import *`. A record the
+    /// current module already has is left alone.
+    pub(crate) fn import_not_yet_added(&mut self, records: &IndexMap<String, NotYetAdded>, exported: bool) {
+        for (key, item) in records {
+            self.mod_local
+                .not_yet_added
+                .entry(key.clone())
+                .or_insert_with(|| ScopedNotYetAdded {
+                    item: item.clone(),
+                    exported,
+                });
+        }
+    }
+
+    /// The not-yet-added record for `key` in the current scope: the current
+    /// module's own and glob-imported records, then the standard library's,
+    /// which every root environment can reach through the prelude.
+    pub(crate) fn not_yet_added_in_scope(&self, key: &str) -> Option<&NotYetAdded> {
+        self.mod_local
+            .not_yet_added
+            .get(key)
+            .map(|scoped| &scoped.item)
+            .or_else(|| self.global.std_not_yet_added.get(key))
+    }
+
+    /// If one of `keys` names a declaration in the current scope that this
+    /// execution skipped because the program's KCL version predates its
+    /// `added_in`, extend the message of `err` with both versions, mirroring
+    /// the message for a parameter that is not yet available. Otherwise
+    /// return `err` unchanged. Only failed lookups call this, so successful
+    /// ones pay nothing for it.
+    pub(crate) fn with_not_yet_added_hint(&self, keys: &[&str], err: KclError) -> KclError {
+        match keys.iter().find_map(|key| self.not_yet_added_in_scope(key)) {
+            Some(item) => self.not_yet_added_hint(item, err),
+            None => err,
+        }
+    }
+
+    /// Like [`Self::with_not_yet_added_hint`], but for a name looked up in
+    /// another module, whose exported `records` are consulted instead of the
+    /// current scope.
+    pub(crate) fn with_not_yet_added_hint_from(
+        &self,
+        records: &IndexMap<String, NotYetAdded>,
+        keys: &[&str],
+        err: KclError,
+    ) -> KclError {
+        match keys.iter().find_map(|key| records.get(*key)) {
+            Some(item) => self.not_yet_added_hint(item, err),
+            None => err,
+        }
+    }
+
+    fn not_yet_added_hint(&self, item: &NotYetAdded, mut err: KclError) -> KclError {
+        let details = err.details_mut();
+        details.message = format!(
+            "{}; it was added in KCL {}, but this program uses KCL {}",
+            details.message,
+            item.added_in,
+            self.entry_point_kcl_version().as_str()
+        );
+        err
     }
 
     #[cfg(test)]
@@ -1535,6 +1680,7 @@ impl GlobalState {
             drag_anchors: Vec::new(),
             sketch_mode: false,
             geometry_only: settings.geometry_only,
+            std_not_yet_added: Default::default(),
         };
 
         let root_id = ModuleId::default();
@@ -1708,6 +1854,7 @@ impl ModuleState {
             sketch_block: Default::default(),
             stdlib_entry_source_range: Default::default(),
             module_exports: Default::default(),
+            not_yet_added: Default::default(),
             explicit_length_units: false,
             path,
             settings: Default::default(),

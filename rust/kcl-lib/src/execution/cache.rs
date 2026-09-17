@@ -20,6 +20,7 @@ use crate::execution::KclValueView;
 use crate::execution::annotations;
 use crate::execution::memory::Stack;
 use crate::execution::state::ModuleInfoMap;
+use crate::execution::state::NotYetAdded;
 use crate::execution::state::{self as exec_state};
 use crate::front::Object;
 use crate::front::ObjectId;
@@ -155,6 +156,7 @@ impl GlobalState {
             id_to_source: self.exec_state.id_to_source.clone(),
             constraint_state: self.main.exec_state.constraint_state.clone(),
             scene_objects: self.exec_state.root_module_artifacts.scene_objects.clone(),
+            std_not_yet_added: self.exec_state.std_not_yet_added.clone(),
         })
     }
 }
@@ -185,6 +187,9 @@ pub(crate) struct SketchModeState {
     pub constraint_state: IndexMap<ObjectId, IndexMap<ConstraintKey, ConstraintState>>,
     /// The scene objects.
     pub scene_objects: Vec<Object>,
+    /// See `GlobalState::std_not_yet_added`. Restored so that a run that reuses
+    /// this memory, and therefore skips the prelude, still has it.
+    pub std_not_yet_added: IndexMap<String, NotYetAdded>,
 }
 
 /// Read a named value from the previous sketch-mode execution.
@@ -204,6 +209,7 @@ impl SketchModeState {
             id_to_source: Default::default(),
             constraint_state: Default::default(),
             scene_objects: Vec::new(),
+            std_not_yet_added: Default::default(),
         }
     }
 }
