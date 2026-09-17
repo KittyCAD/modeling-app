@@ -3575,10 +3575,6 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     supportsAppearance: true,
     supportsTransform: true,
   },
-  'view::named': {
-    label: 'Named View',
-    icon: 'namedView',
-  },
 }
 
 /**

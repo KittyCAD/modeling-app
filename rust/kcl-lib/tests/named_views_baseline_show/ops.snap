@@ -1351,62 +1351,6 @@ description: Operations executed named_views_baseline_show.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "view::named",
-      "unlabeledArg": {
-        "value": {
-          "type": "String",
-          "value": "Plate in context"
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "baseline": {
-          "value": {
-            "type": "Enum",
-            "enum_name": "Visibility",
-            "variant": "Show"
-          },
-          "sourceRange": []
-        },
-        "camera": {
-          "value": {
-            "type": "CameraView"
-          },
-          "sourceRange": []
-        },
-        "except": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Solid",
-                "value": {
-                  "artifactId": "[uuid]"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 6
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
     }
   ],
   "std::math": [

@@ -43,6 +43,7 @@ import {
   type ModelingCodemod,
   type ModelingCodemodResult,
 } from '@src/lang/modifyAst/modelingCodemod'
+import { addNamedView } from '@src/lang/modifyAst/namedViews'
 import {
   addPatternCircular3D,
   addPatternLinear3D,
@@ -269,6 +270,7 @@ const withGdtDefaults = <
   )
 
 export const modelingCommandCodemods = {
+  'Named View': withArtifactGraph('Named View', addNamedView),
   Extrude: withArtifactGraph('Extrude', addExtrude),
   Sweep: withArtifactGraph('Sweep', addSweep),
   Loft: withArtifactGraph('Loft', addLoft),
