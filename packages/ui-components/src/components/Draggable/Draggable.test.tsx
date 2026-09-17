@@ -73,6 +73,64 @@ describe('Draggable', () => {
     expect(draggable.style.left).toBe('160px')
   })
 
+  test('keeps a dragged element inside an offset container when it resizes', () => {
+    let notifyResize: ((entries: ResizeObserverEntry[]) => void) | undefined
+    vi.spyOn(window, 'ResizeObserver').mockImplementation(
+      class {
+        constructor(callback: ResizeObserverCallback) {
+          notifyResize = (entries) => callback(entries, this)
+        }
+        observe = vi.fn()
+        unobserve = vi.fn()
+        disconnect = vi.fn()
+      }
+    )
+    const container = document.createElement('div')
+    const containerRef = { current: container }
+    const containerBounds = vi
+      .spyOn(container, 'getBoundingClientRect')
+      .mockReturnValue(
+        createRect({ top: 100, left: 400, width: 800, height: 600 })
+      )
+    mockComputedStyle({ position: 'fixed' })
+
+    render(
+      <Draggable containerRef={containerRef} data-testid="draggable">
+        Drag me
+      </Draggable>
+    )
+    const draggable = screen.getByTestId('draggable')
+    vi.spyOn(draggable, 'getBoundingClientRect').mockImplementation(() =>
+      createRect({
+        top: Number.parseFloat(draggable.style.top) || 160,
+        left: Number.parseFloat(draggable.style.left) || 600,
+        width: 100,
+        height: 100,
+      })
+    )
+    fireEvent.mouseDown(draggable, { clientX: 610, clientY: 170 })
+    fireEvent.mouseMove(document, { clientX: 710, clientY: 270 })
+    fireEvent.mouseUp(document)
+    expect(draggable.style.top).toBe('260px')
+    expect(draggable.style.left).toBe('700px')
+
+    containerBounds.mockReturnValue(
+      createRect({ top: 100, left: 400, width: 320, height: 220 })
+    )
+    notifyResize?.([
+      {
+        target: container,
+        contentRect: createRect({ width: 320, height: 220 }),
+        borderBoxSize: [],
+        contentBoxSize: [],
+        devicePixelContentBoxSize: [],
+      },
+    ])
+
+    expect(draggable.style.top).toBe('220px')
+    expect(draggable.style.left).toBe('620px')
+  })
+
   test('accounts for margins without jumping on first drag', () => {
     mockComputedStyle({
       marginBlockStart: '8px',

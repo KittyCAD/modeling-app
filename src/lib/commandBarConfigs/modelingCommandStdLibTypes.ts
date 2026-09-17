@@ -23,12 +23,13 @@ type DriftConfig = typeof modelingCommandStdLibDriftConfig
 type ConfiguredArgNames<
   Name extends ModelingStdLibCommandName,
   Key extends 'omittedStdLibArgs' | 'deprecatedStdLibArgs',
-> = DriftConfig[Name] extends Record<
-  Key,
-  readonly (infer ArgName extends string)[]
->
-  ? ArgName
-  : never
+> =
+  DriftConfig[Name] extends Record<
+    Key,
+    readonly (infer ArgName extends string)[]
+  >
+    ? ArgName
+    : never
 
 type ConfiguredStdLibName<Name extends ModelingStdLibCommandName> =
   DriftConfig[Name]['stdLibName'] & StdLibCommandName
@@ -124,7 +125,6 @@ export type RevolveCommandArgs = Override<
     axisOrEdge: 'Axis' | 'Edge'
     axis: string | undefined
     edge: Selections | undefined
-    angle: KclCommandValue
     bodyType?: KclPreludeBodyType
   }
 >
