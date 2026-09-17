@@ -25,6 +25,11 @@ export interface AppNavigationDependencies {
     resolution: ResolvedProjectOpen,
     throwIfSuperseded: () => void
   ) => Promise<Extract<OpenProjectOutcome, { kind: 'opened' }>>
+  projectOpened: (
+    outcome: Extract<OpenProjectOutcome, { kind: 'opened' }>,
+    request: OpenProjectRequest
+  ) => void
+  showHome: (openProject: AppNavigationService['openProject']) => Promise<void>
 }
 
 /**
@@ -77,10 +82,12 @@ export function createOpenProjectIntentContribution(
         return resolution
       }
 
-      return dependencies.openResolvedProject(
+      const outcome = await dependencies.openResolvedProject(
         resolution,
         projectOpen.throwIfSuperseded
       )
+      dependencies.projectOpened(outcome, request)
+      return outcome
     } finally {
       projectOpen.finish()
     }
@@ -97,6 +104,7 @@ export function createOpenProjectIntentContribution(
       signal?.throwIfAborted()
     },
   }
+
 }
 
 /**
@@ -110,8 +118,10 @@ export function createAppNavigationService(
   contributions: readonly AppNavigationIntentContribution[],
   {
     supersedeProjectOpen,
+    showHome,
   }: {
     supersedeProjectOpen: AppNavigationService['supersedeProjectOpen']
+    showHome?: AppNavigationService['showHome']
   }
 ): AppNavigationService {
   const contributionsById = new Map<string, AppNavigationIntentContribution>()
@@ -145,6 +155,7 @@ export function createAppNavigationService(
 
   return {
     dispatch,
+    showHome: showHome ?? (async () => undefined),
     supersedeProjectOpen,
   }
 }

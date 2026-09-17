@@ -4,18 +4,23 @@ import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
 import type { AppNavigationDependencies } from '@src/lib/appNavigation'
 import { getProjectInfo, isPathNotFoundError } from '@src/lib/desktop'
-import { getParentAbsolutePath } from '@src/lib/paths'
+import { getParentAbsolutePath, PATHS } from '@src/lib/paths'
 import {
   resolveProjectOpenRequest,
   type ResolvedProjectOpen,
 } from '@src/lib/projectOpen'
 import { getProjectLibraryOwnership } from '@src/lib/projectLibraryOwnership'
 import { isRequestedFileLoaded } from '@src/lib/routeLoaderNavigation'
+import {
+  loadHomeProjects,
+  webHomeRouteEnabled,
+} from '@src/lib/routeLoaderUtils'
 import { loadRouteSettings } from '@src/lib/routeSettings'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/events'
 import { SystemIOMachineStates } from '@src/machines/systemIO/states'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { projectSession } from '@src/registry/contracts/projectSession'
+import { routerService } from '@src/registry/contracts/router'
 import { waitFor } from 'xstate'
 
 /**
@@ -134,5 +139,39 @@ export function createAppNavigationDependencies(
       ),
     openResolvedProject: (resolution, throwIfSuperseded) =>
       openResolvedProject(app, resolution, throwIfSuperseded),
+    projectOpened: (outcome, request) => {
+      const openedFilePath = outcome.data.file?.path
+      if (openedFilePath && !request.requestUrl) {
+        void app.registry
+          .get(routerService)
+          .navigate(`${PATHS.FILE}/${encodeURIComponent(openedFilePath)}`)
+      }
+    },
+    showHome: async (openProject) => {
+      if (!window.electron && !(await webHomeRouteEnabled(app))) {
+        const router = app.registry.get(routerService)
+        const { initIndexRoute } = await import('@src/lib/routeInit')
+        const result = await initIndexRoute(app, {
+          requestUrl: new URL(PATHS.INDEX, window.location.href).href,
+        })
+        if (result.kind === 'redirect') {
+          const requestUrl = new URL(result.to, window.location.href).href
+          const intent = router.readInitialUrl({
+            requestUrl,
+            usesHashRouter: false,
+          })
+          if (
+            intent.type === 'launch' &&
+            intent.destination.type === 'project'
+          ) {
+            await openProject({ target: intent.destination.target })
+          }
+        }
+        return
+      }
+
+      loadHomeProjects(app)
+      void app.registry.get(routerService).navigate(PATHS.HOME)
+    },
   }
 }
