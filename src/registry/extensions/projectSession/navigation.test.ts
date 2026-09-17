@@ -192,6 +192,8 @@ function navigationHarness(
         file: { ...resolution.file, children: [] },
       },
     })),
+    projectOpened: vi.fn(),
+    showHome: vi.fn(async () => undefined),
     ...overrides,
   }
 
@@ -227,6 +229,10 @@ describe('project.open navigation contribution', () => {
     expect(dependencies.openResolvedProject).toHaveBeenCalledWith(
       resolvedProject,
       expect.any(Function)
+    )
+    expect(dependencies.projectOpened).toHaveBeenCalledWith(
+      expect.objectContaining({ kind: 'opened' }),
+      { target: '/projects/bracket' }
     )
   })
 

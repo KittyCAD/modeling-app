@@ -1,5 +1,4 @@
 import { useSignals } from '@preact/signals-react/runtime'
-import RootLayout from '@src/Root'
 import { CommandBar } from '@src/components/CommandBar/CommandBar'
 import { ErrorPage } from '@src/components/ErrorPage'
 import Loading from '@src/components/Loading'
@@ -9,12 +8,12 @@ import ModelingPageProvider from '@src/components/ModelingPageProvider'
 import { OpenedProject } from '@src/components/OpenedProject'
 import { NetworkContext } from '@src/hooks/useNetworkContext'
 import { useNetworkStatus } from '@src/hooks/useNetworkStatus'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useSingletons } from '@src/lib/boot'
 import { isDesktop } from '@src/lib/isDesktop'
 import { TestLayout } from '@src/lib/layout/TestLayout'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { PATHS } from '@src/lib/paths'
-import { baseLoader, fileLoader, homeLoader } from '@src/lib/routeLoaders'
+import RootLayout from '@src/Root'
 import Home from '@src/routes/Home'
 import { OnboardingRootRoute, onboardingRoutes } from '@src/routes/Onboarding'
 import { Settings } from '@src/routes/Settings'
@@ -23,10 +22,10 @@ import { Telemetry } from '@src/routes/Telemetry'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import { Suspense, useMemo } from 'react'
 import {
-  Outlet,
-  RouterProvider,
   createBrowserRouter,
   createHashRouter,
+  Outlet,
+  RouterProvider,
 } from 'react-router-dom'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
@@ -37,7 +36,6 @@ const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
  */
 export const Router = () => {
   useSignals()
-  const app = useApp()
   const { kclManager } = useSingletons()
   const networkStatus = useNetworkStatus(kclManager.engineCommandManager)
   const router = useMemo(
@@ -52,12 +50,8 @@ export const Router = () => {
             {
               path: PATHS.INDEX,
               errorElement: <ErrorPage />,
-              loader: baseLoader({ app }),
             },
             {
-              loader: fileLoader({
-                app,
-              }),
               id: PATHS.FILE,
               path: PATHS.FILE + '/:id',
               errorElement: <ErrorPage />,
@@ -115,7 +109,6 @@ export const Router = () => {
                 </>
               ),
               id: PATHS.HOME,
-              loader: homeLoader({ app }),
               children: [
                 {
                   index: true,
@@ -148,7 +141,6 @@ export const Router = () => {
                 </>
               ),
               id: PATHS.LIBRARY,
-              loader: homeLoader({ app }),
               children: [
                 {
                   index: true,
@@ -196,7 +188,7 @@ export const Router = () => {
           ],
         },
       ]),
-    [app]
+    []
   )
 
   return (

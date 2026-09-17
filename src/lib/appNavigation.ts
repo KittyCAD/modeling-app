@@ -3,7 +3,6 @@ import type {
   AppNavigationIntentContribution,
   AppNavigationService,
 } from '@src/registry/contracts/appNavigation'
-
 /**
  * Build appNavigation from the contributions available before startup.
  *
@@ -15,8 +14,10 @@ export function createAppNavigationService(
   contributions: readonly AppNavigationIntentContribution[],
   {
     supersedeProjectOpen,
+    showHome,
   }: {
     supersedeProjectOpen: AppNavigationService['supersedeProjectOpen']
+    showHome?: AppNavigationService['showHome']
   }
 ): AppNavigationService {
   const contributionsById = new Map<string, AppNavigationIntentContribution>()
@@ -50,6 +51,7 @@ export function createAppNavigationService(
 
   return {
     dispatch,
+    showHome: showHome ?? (async () => undefined),
     supersedeProjectOpen,
   }
 }

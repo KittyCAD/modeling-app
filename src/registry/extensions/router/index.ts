@@ -87,19 +87,21 @@ const createUnseededNavigate =
 
     const path =
       typeof toOrDelta === 'string' ? toOrDelta : createPath(toOrDelta)
+    const browserPath =
+      window.electron && path.startsWith('/') ? `#${path}` : path
 
     try {
       if (options?.replace) {
-        window.history.replaceState(options.state ?? null, '', path)
+        window.history.replaceState(options.state ?? null, '', browserPath)
       } else {
-        window.history.pushState(options?.state ?? null, '', path)
+        window.history.pushState(options?.state ?? null, '', browserPath)
       }
       syncLocation()
     } catch {
       if (options?.replace) {
-        window.location.replace(path)
+        window.location.replace(browserPath)
       } else {
-        window.location.assign(path)
+        window.location.assign(browserPath)
       }
     }
   }

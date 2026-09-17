@@ -87,6 +87,7 @@ import {
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
 import {
+  openProjectIntent,
   type ProjectSessionService,
   projectSession,
 } from '@src/registry/contracts/projectSession'
@@ -619,6 +620,10 @@ export class App implements AppSubsystems {
           ),
           ...createProjectCommands({
             systemIOActor: this.systemIOActor,
+            openProject: (target) =>
+              this.registry
+                .get(appNavigationService)
+                .dispatch(openProjectIntent, { target }),
             enableProjectDirectoryCommands: true,
             getCurrentProjectDirectoryName: () =>
               this.settings.actor.getSnapshot().context.currentProject?.name,
@@ -827,9 +832,10 @@ export class App implements AppSubsystems {
     })
     kclManager.fileOperations = this.fileOperations
 
-    const openProjectNavigation = createOpenProjectIntentContribution(
+    const projectNavigationDependencies =
       createProjectNavigationDependencies(this)
-    )
+    const openProjectNavigation =
+      createOpenProjectIntentContribution(projectNavigationDependencies)
     const preloadedNavigationIntents = [
       ...this.registry.get(appNavigationIntentContributionsValueSpec),
       openProjectNavigation.contribution,
@@ -855,12 +861,21 @@ export class App implements AppSubsystems {
           // Transitional strangler adapter: appNavigation consumes narrow
           // operations, but App still assembles them until their implementations
           // are owned and composed by registry capabilities.
-          provideService(
-            appNavigationService,
-            createAppNavigationService(preloadedNavigationIntents, {
-              supersedeProjectOpen: openProjectNavigation.supersedeProjectOpen,
-            })
-          ),
+          provideService(appNavigationService, (() => {
+            let navigation: ReturnType<typeof createAppNavigationService>
+            navigation = createAppNavigationService(
+              preloadedNavigationIntents,
+              {
+                supersedeProjectOpen:
+                  openProjectNavigation.supersedeProjectOpen,
+                showHome: () =>
+                  projectNavigationDependencies.showHome((request) =>
+                    navigation.dispatch(openProjectIntent, request)
+                  ),
+              }
+            )
+            return navigation
+          })()),
         ],
       }),
     ])

@@ -50,6 +50,13 @@ export interface ProjectNavigationDependencies {
     resolution: ResolvedProjectOpen,
     throwIfSuperseded: () => void
   ) => Promise<Extract<OpenProjectOutcome, { kind: 'opened' }>>
+  projectOpened: (
+    outcome: Extract<OpenProjectOutcome, { kind: 'opened' }>,
+    request: OpenProjectRequest
+  ) => void
+  showHome: (
+    openProject: (request: OpenProjectRequest) => Promise<OpenProjectOutcome>
+  ) => Promise<void>
 }
 
 export interface ResolvedProjectOpen {
@@ -272,10 +279,12 @@ export function createOpenProjectIntentContribution(
         return resolution
       }
 
-      return dependencies.openResolvedProject(
+      const outcome = await dependencies.openResolvedProject(
         resolution,
         projectOpen.throwIfSuperseded
       )
+      dependencies.projectOpened(outcome, request)
+      return outcome
     } finally {
       projectOpen.finish()
     }

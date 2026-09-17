@@ -3,11 +3,16 @@
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
 import { getProjectInfo, isPathNotFoundError } from '@src/lib/desktop'
-import { getParentAbsolutePath } from '@src/lib/paths'
+import { getParentAbsolutePath, PATHS } from '@src/lib/paths'
 import { getProjectLibraryOwnership } from '@src/lib/projectLibraryOwnership'
 import { isRequestedFileLoaded } from '@src/lib/routeLoaderNavigation'
+import {
+  loadHomeProjects,
+  webHomeRouteEnabled,
+} from '@src/lib/routeLoaderUtils'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/events'
 import { SystemIOMachineStates } from '@src/machines/systemIO/states'
+import { appUrlService } from '@src/registry/contracts/appUrl'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { projectSession } from '@src/registry/contracts/projectSession'
 import { settingsService } from '@src/registry/contracts/settings'
@@ -134,5 +139,41 @@ export function createProjectNavigationDependencies(
       ),
     openResolvedProject: (resolution, throwIfSuperseded) =>
       openResolvedProject(app, resolution, throwIfSuperseded),
+    projectOpened: (outcome, request) => {
+      const openedFilePath = outcome.data.file?.path
+      if (openedFilePath && !request.requestUrl) {
+        void app.registry
+          .get(appUrlService)
+          .navigate(`${PATHS.FILE}/${encodeURIComponent(openedFilePath)}`)
+      }
+    },
+    showHome: async (openProject) => {
+      if (!window.electron && !(await webHomeRouteEnabled(app))) {
+        const appUrl = app.registry.get(appUrlService)
+        const { initIndexRoute } = await import(
+          '@src/registry/extensions/router/legacyRouteInit'
+        )
+        const result = await initIndexRoute(app, {
+          requestUrl: new URL(PATHS.INDEX, window.location.href).href,
+        })
+        if (result.kind === 'redirect') {
+          const requestUrl = new URL(result.to, window.location.href).href
+          const intent = appUrl.readInitialUrl({
+            requestUrl,
+            usesHashRouter: false,
+          })
+          if (
+            intent.type === 'launch' &&
+            intent.destination.type === 'project'
+          ) {
+            await openProject({ target: intent.destination.target })
+          }
+        }
+        return
+      }
+
+      loadHomeProjects(app)
+      void app.registry.get(appUrlService).navigate(PATHS.HOME)
+    },
   }
 }

@@ -16,20 +16,22 @@ import { initializeClientErrorReporting } from '@src/lib/clientErrors'
 import { createApplicationCommands } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 import { initializeElectronLifecycleClientReporting } from '@src/lib/electronLifecycleClientReporting'
 import { initializeWindowExceptionHandler } from '@src/lib/exceptions'
+import { initializeApplication } from '@src/lib/initializeApplication'
 import monkeyPatchForBrowserTranslation from '@src/lib/monkeyPatchBrowserTranslate'
 import { markOnce } from '@src/lib/performance'
 import { reportRejection } from '@src/lib/trap'
 import reportWebVitals from '@src/reportWebVitals'
 
 // Here's the entry-point for the whole app 🚀
-launchApp(app)
+void launchApp(app)
 
 /** The initialization sequence for this app */
-function launchApp(app: App) {
+async function launchApp(app: App) {
   initSingletonBehavior(app)
   if (window.electron) {
     initElectronBehavior(window.electron, app)
   }
+  await initializeApplication(app).catch(reportRejection)
   mountAppToReact(app)
 }
 
