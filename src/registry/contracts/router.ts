@@ -33,7 +33,8 @@ export interface ParseAppOverlayInput {
  */
 export interface AppOverlayContribution {
   id: string
-  parse: (input: ParseAppOverlayInput) => unknown | undefined
+  /** Returning `undefined` means this contribution did not match. */
+  parse: (input: ParseAppOverlayInput) => unknown
   format: (state: unknown) => AppOverlayUrlParts
 }
 
