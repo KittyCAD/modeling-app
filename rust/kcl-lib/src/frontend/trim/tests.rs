@@ -27,51 +27,29 @@ async fn assert_trim_result_default_sketch(snapshot_name: &str, base_kcl_code: &
 }
 
 fn assert_no_zero_length_line_or_arc_constructors(kcl_code: &str) {
-    use crate::walk::Node;
-    use crate::walk::Visitable;
+    for line in kcl_code.lines() {
+        let Some(start_index) = line.find("start = [var ") else {
+            continue;
+        };
+        let Some(end_index) = line.find("end = [var ") else {
+            continue;
+        };
 
-    let program = crate::parsing::top_level_parse(kcl_code).unwrap();
-    let mut nodes = vec![Node::from(&program)];
-    while let Some(node) = nodes.pop() {
-        nodes.extend(node.children());
-        let Node::CallExpressionKw(call) = node else {
+        let start = &line[start_index + "start = ".len()..];
+        let end = &line[end_index + "end = ".len()..];
+        let Some(start_end) = start.find(']') else {
             continue;
         };
-        if !matches!(call.callee.name.name.as_str(), "line" | "arc") {
+        let Some(end_end) = end.find(']') else {
             continue;
-        }
-        let coordinate_source = |name| {
-            call.arguments
-                .iter()
-                .find(|arg| arg.label.as_ref().is_some_and(|label| label.name == name))
-                .map(|arg| {
-                    kcl_code[arg.arg.start()..arg.arg.end()]
-                        .chars()
-                        .filter(|c| !c.is_whitespace() && *c != ',')
-                        .collect::<String>()
-                })
         };
-        let start = coordinate_source("start").expect("segment should have a start");
-        let end = coordinate_source("end").expect("segment should have an end");
-        assert_ne!(start, end, "trim produced zero-length geometry:\n{kcl_code}");
+
+        assert_ne!(
+            &start[..=start_end],
+            &end[..=end_end],
+            "trim produced zero-length geometry: {line}\n{kcl_code}"
+        );
     }
-}
-
-#[test]
-#[should_panic(expected = "trim produced zero-length geometry")]
-fn degenerate_geometry_check_catches_wrapped_coordinates() {
-    assert_no_zero_length_line_or_arc_constructors(
-        r#"sketch(on = XY) {
-  arc(
-    start = [var 1.234567891234567mm, var -2mm],
-    end = [
-      var 1.234567891234567mm,
-      var -2mm,
-    ],
-    center = [var 0mm, var 0mm],
-  )
-}"#,
-    );
 }
 
 async fn assert_trim_does_not_create_degenerate_geometry(base_kcl_code: &str, trim_points: &[Coords2d]) {

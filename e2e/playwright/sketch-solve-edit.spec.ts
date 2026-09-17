@@ -456,9 +456,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await lineEnd()
       await waitForCodeChange(page, previousCode)
 
-      await editor.expectEditor.toContain('line(start = [', {
-        shouldNormalise: true,
-      })
+      await editor.expectEditor.toContain('line(start = [')
     })
 
     await test.step('Equip the circle tool with its keybinding and draw a circle', async () => {
@@ -479,9 +477,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await circleRadius()
       await waitForCodeChange(page, previousCode)
 
-      await editor.expectEditor.toContain('circle(start = [', {
-        shouldNormalise: true,
-      })
+      await editor.expectEditor.toContain('circle(start = [')
     })
 
     await test.step('Equip the center arc tool with its keybinding and draw an arc', async () => {
@@ -508,9 +504,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await arcEnd()
       await waitForCodeChange(page, previousCode)
 
-      await editor.expectEditor.toContain('arc(start = [', {
-        shouldNormalise: true,
-      })
+      await editor.expectEditor.toContain('arc(start = [')
     })
 
     await test.step('Pick hovered tools with P and unequip over empty space', async () => {

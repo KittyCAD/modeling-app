@@ -3,56 +3,11 @@ source: kcl-lib/src/frontend/trim/tests.rs
 expression: result_normalized
 ---
 sketch(on = YZ) {
-  arc2 = arc(
-    start = [
-      var 2.540818913376982mm,
-      var -5.649892852458372mm
-    ],
-    end = [
-      var 1.979145149984241mm,
-      var 6.8301045475447095mm
-    ],
-    center = [
-      var -7.279983061937981mm,
-      var 0.1607509425433946mm
-    ],
-  )
-  arc1 = arc(
-    start = [
-      var 5.6900186133002295mm,
-      var 4.5592914085381695mm
-    ],
-    end = [
-      var 3.312794720898945mm,
-      var 4.403956281945789mm
-    ],
-    center = [
-      var 5.099925005092585mm,
-      var -4.678004901106931mm
-    ],
-  )
+  arc2 = arc(start = [var 2.54mm, var -5.65mm], end = [var 1.98mm, var 6.83mm], center = [var -7.28mm, var 0.16mm])
+  arc1 = arc(start = [var 5.69mm, var 4.56mm], end = [var 3.31mm, var 4.4mm], center = [var 5.1mm, var -4.68mm])
   line1 = line(start = [var -4.28mm, var 4.29mm], end = [var 1.34mm, var -4.76mm])
-  line4 = line(
-    start = [
-      var -1.0290668069279298mm,
-      var 2.258872316000021mm
-    ],
-    end = [var -2.01mm, var -6.62mm],
-  )
-  arc3 = arc(
-    start = [
-      var -1.0290668069279967mm,
-      var 2.258872315999893mm
-    ],
-    end = [
-      var -4.0106109361836335mm,
-      var -3.040069946952876mm
-    ],
-    center = [
-      var 5.099984311101258mm,
-      var -4.67802788376086mm
-    ],
-  )
+  line4 = line(start = [var -1.03mm, var 2.26mm], end = [var -2.01mm, var -6.62mm])
+  arc3 = arc(start = [var -1.03mm, var 2.26mm], end = [var -4.01mm, var -3.04mm], center = [var 5.1mm, var -4.68mm])
   coincident([arc1.end, arc2])
   coincident([arc3.start, line4.start])
 }

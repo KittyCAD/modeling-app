@@ -1,33 +1,12 @@
 ---
 source: kcl-lib/src/frontend/trim/tests.rs
-expression: result_normalized
+expression: "result_normalized"
 ---
 sketch(on = YZ) {
   line1 = line(start = [var -5.33mm, var 3.69mm], end = [var -5.93mm, var -2.59mm])
-  line2 = line(
-    start = [
-      var -0.8984479395639501mm,
-      var 0.6320074743588717mm
-    ],
-    end = [var 4.01mm, var 0.68mm],
-  )
-  line3 = line(
-    start = [
-      var 4.024622586342393mm,
-      var -3.4376629191929937mm
-    ],
-    end = [
-      var 3.9995833768763682mm,
-      var 3.613280732781141mm
-    ],
-  )
-  line4 = line(
-    start = [
-      var -0.8984479395670542mm,
-      var 0.6320074739548567mm
-    ],
-    end = [var -1.28mm, var -3.04mm],
-  )
+  line2 = line(start = [var -0.9mm, var 0.63mm], end = [var 4.01mm, var 0.68mm])
+  line3 = line(start = [var 4.02mm, var -3.44mm], end = [var 4mm, var 3.61mm])
+  line4 = line(start = [var -0.9mm, var 0.63mm], end = [var -1.28mm, var -3.04mm])
   coincident([line2.end, line3])
   coincident([line2.start, line4.start])
 }

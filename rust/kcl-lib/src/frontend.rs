@@ -95,7 +95,6 @@ use crate::parsing::ast::types::CallExpressionKw;
 use crate::parsing::ast::types::NodePathExt;
 use crate::pretty::NumericSuffix;
 use crate::std::constraints::LinesAtAngleKind;
-use crate::std::solver::SOLVER_CONVERGENCE_TOLERANCE;
 use crate::walk::NodeMut;
 use crate::walk::Visitable;
 use crate::walk::traverse::MutateBodyItem;
@@ -1037,9 +1036,10 @@ impl SketchApi for FrontendState {
                                     } else {
                                         line_ctor.end = ctor.position;
                                     }
-                                } else if let SegmentCtor::Line(line_ctor) = &line.ctor {
+                                } else if let SegmentCtor::Line(mut line_ctor) =
+                                    line.ctor.clone().with_exact_coordinates()
+                                {
                                     // Line owner is not in final_edits yet -> create it
-                                    let mut line_ctor = line_ctor.clone();
                                     if line.start == segment_id {
                                         line_ctor.start = ctor.position;
                                     } else {
@@ -1072,8 +1072,8 @@ impl SketchApi for FrontendState {
                                     } else {
                                         arc_ctor.center = ctor.position;
                                     }
-                                } else if let SegmentCtor::Arc(arc_ctor) = &arc.ctor {
-                                    let mut arc_ctor = arc_ctor.clone();
+                                } else if let SegmentCtor::Arc(mut arc_ctor) = arc.ctor.clone().with_exact_coordinates()
+                                {
                                     if arc.start == segment_id {
                                         arc_ctor.start = ctor.position;
                                     } else if arc.end == segment_id {
@@ -1103,8 +1103,9 @@ impl SketchApi for FrontendState {
                                     } else {
                                         circle_ctor.center = ctor.position;
                                     }
-                                } else if let SegmentCtor::Circle(circle_ctor) = &circle.ctor {
-                                    let mut circle_ctor = circle_ctor.clone();
+                                } else if let SegmentCtor::Circle(mut circle_ctor) =
+                                    circle.ctor.clone().with_exact_coordinates()
+                                {
                                     if circle.start == segment_id {
                                         circle_ctor.start = ctor.position;
                                     } else {
@@ -1135,8 +1136,9 @@ impl SketchApi for FrontendState {
                                         ))));
                                     };
                                     spline_ctor.points[control_index] = ctor.position;
-                                } else if let SegmentCtor::ControlPointSpline(spline_ctor) = &spline.ctor {
-                                    let mut spline_ctor = spline_ctor.clone();
+                                } else if let SegmentCtor::ControlPointSpline(mut spline_ctor) =
+                                    spline.ctor.clone().with_exact_coordinates()
+                                {
                                     spline_ctor.points[control_index] = ctor.position;
                                     final_edits.insert(owner_id, SegmentCtor::ControlPointSpline(spline_ctor));
                                 } else {
@@ -4752,9 +4754,7 @@ impl FrontendState {
             mutate_ast_node_by_source_ref(
                 &mut settled_ast,
                 &source_ref,
-                AstMutateCommand::EditVarInitialValue {
-                    value: readable_solver_feedback(new_value, default_length_unit),
-                },
+                AstMutateCommand::EditVarInitialValue { value: new_value },
             )
             .map_err(|_| commit_failure())?;
         }
@@ -6887,25 +6887,7 @@ fn var_solution_needs_commit(
     let current = literal_value_in_default_length_units(current_literal, default_length_unit);
     let solved = number_value_in_default_length_units(solved_value, default_length_unit);
 
-    (current - solved).abs() > SOLVER_FEEDBACK_COORDINATE_TOLERANCE
-}
-
-// Sketch contact checks use SOLVER_CONVERGENCE_TOLERANCE in the module's default
-// length unit. Bound source writeback to the same positional accuracy, splitting
-// the budget over both coordinates of a point. This is a serialization bound,
-// not an estimate of the solver's coordinate error from its constraint residual.
-const SOLVER_FEEDBACK_COORDINATE_TOLERANCE: f64 = SOLVER_CONVERGENCE_TOLERANCE / std::f64::consts::SQRT_2;
-
-fn readable_solver_feedback(number: Number, default_length_unit: UnitLength) -> Number {
-    let rounded = number.round(2);
-    let displacement = (number_value_in_default_length_units(rounded, default_length_unit)
-        - number_value_in_default_length_units(number, default_length_unit))
-    .abs();
-    if displacement <= SOLVER_FEEDBACK_COORDINATE_TOLERANCE {
-        rounded
-    } else {
-        number
-    }
+    (current - solved).abs() > 1e-9
 }
 
 fn preserve_var_solution_literal_style(
@@ -6987,10 +6969,10 @@ fn to_source_expr(expr: &Expr) -> anyhow::Result<ast::Expr> {
             pre_comments: Default::default(),
             comment_start: Default::default(),
         }))),
-        Expr::Var(number) => Ok(ast::Expr::SketchVar(BoxNode::new(ast::Node {
+        Expr::Var(number) | Expr::VarExact(number) => Ok(ast::Expr::SketchVar(BoxNode::new(ast::Node {
             inner: ast::SketchVar {
                 initial: Some(BoxNode::new(ast::Node {
-                    inner: to_source_number(*number)?,
+                    inner: to_source_number_with_precision(*number, matches!(expr, Expr::VarExact(_)))?,
                     start: Default::default(),
                     end: Default::default(),
                     module_id: Default::default(),
@@ -7014,10 +6996,18 @@ fn to_source_expr(expr: &Expr) -> anyhow::Result<ast::Expr> {
 }
 
 fn to_source_number(number: Number) -> anyhow::Result<ast::NumericLiteral> {
+    to_source_number_with_precision(number, false)
+}
+
+fn to_source_number_with_precision(number: Number, preserve_precision: bool) -> anyhow::Result<ast::NumericLiteral> {
     Ok(ast::NumericLiteral {
         value: number.value,
         suffix: number.units,
-        raw: format_number_literal_full_precision(number.value, number.units)?,
+        raw: if preserve_precision {
+            format_number_literal_full_precision(number.value, number.units)?
+        } else {
+            format_number_literal(number.value, number.units, None)?
+        },
         digest: None,
     })
 }
@@ -7581,6 +7571,16 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
 
     #[tokio::test]
     async fn test_grid_precision_survives_create_edit_and_reload() {
+        let point = |x, y| Point2d {
+            x: Expr::VarExact(Number {
+                value: x,
+                units: NumericSuffix::Mm,
+            }),
+            y: Expr::VarExact(Number {
+                value: y,
+                units: NumericSuffix::Mm,
+            }),
+        };
         let mock_ctx = ExecutorContext::new_mock(None).await;
         for step in [0.125, 2.3333 / 17.0, 0.0000125, 1e-12] {
             let mut frontend = FrontendState::new();
@@ -7592,27 +7592,30 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
                     &mock_ctx,
                     Version(0),
                     sketch_id,
-                    SegmentCtor::Point(PointCtor {
-                        position: point_expr_mm(step, -step),
+                    SegmentCtor::Line(LineCtor {
+                        start: point(step, -step),
+                        end: point(1.0 + step, 2.0 + step),
+                        construction: None,
                     }),
                     None,
                 )
                 .await
                 .unwrap();
-            let point_id = frontend
+            let (point_id, other_id) = frontend
                 .scene_graph
                 .objects
                 .iter()
-                .find(|object| {
-                    matches!(
-                        &object.kind,
-                        ObjectKind::Segment {
-                            segment: Segment::Point(_)
-                        }
-                    )
+                .find_map(|object| {
+                    if let ObjectKind::Segment {
+                        segment: Segment::Line(line),
+                    } = &object.kind
+                    {
+                        Some((line.start, line.end))
+                    } else {
+                        None
+                    }
                 })
-                .unwrap()
-                .id;
+                .unwrap();
             let position = point_position(&frontend.scene_graph, point_id);
             assert_eq!(position.x.value, step);
             assert_eq!(position.y.value, -step);
@@ -7630,7 +7633,7 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
                     vec![ExistingSegmentCtor {
                         id: point_id,
                         ctor: SegmentCtor::Point(PointCtor {
-                            position: point_expr_mm(-step, step),
+                            position: point(-step, step),
                         }),
                     }],
                 )
@@ -7641,101 +7644,9 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
             let position = point_position(&frontend.scene_graph, point_id);
             assert_eq!(position.x.value, -step);
             assert_eq!(position.y.value, step);
-        }
-        mock_ctx.close().await;
-    }
-
-    #[test]
-    fn test_solver_feedback_rounding_respects_length_units() {
-        for (value, units, expected) in [
-            (0.500000003, NumericSuffix::Mm, 0.5),
-            (0.0500000003, NumericSuffix::Cm, 0.05),
-            (0.500000003, NumericSuffix::Cm, 0.500000003),
-            (0.500000003, NumericSuffix::Inch, 0.500000003),
-            (0.125, NumericSuffix::Mm, 0.125),
-            (2.3333 / 17.0, NumericSuffix::Mm, 2.3333 / 17.0),
-        ] {
-            let number = readable_solver_feedback(Number { value, units }, UnitLength::Millimeters);
-            assert_eq!(number, Number { value: expected, units });
-        }
-
-        let grid_point = Number {
-            value: 2.3333 / 17.0,
-            units: NumericSuffix::Mm,
-        };
-        let authored = to_source_number(grid_point).unwrap();
-        for (offset, should_commit) in [(3e-9, false), (0.001, true)] {
-            let solved = Number {
-                value: grid_point.value + offset,
-                ..grid_point
-            };
-            assert_eq!(
-                var_solution_needs_commit(&authored, solved, UnitLength::Millimeters),
-                should_commit
-            );
-        }
-    }
-
-    #[tokio::test]
-    async fn test_readable_solver_feedback_preserves_geometry_on_reload() {
-        let mock_ctx = ExecutorContext::new_mock(None).await;
-        for (source, expected_source) in [
-            (
-                "s = sketch(on = XY) {\n  l = line(start = [var 1, var 2], end = [var 3, var 4])\n  vertical(l)\n}\n",
-                "l = line(start = [var 2, var 2], end = [var 2, var 4])",
-            ),
-            (
-                "s = sketch(on = XY) {\n  p = point(at = [var 1mm, var 2mm])\n  fixed([p, [0.5mm, 0mm]])\n}\n",
-                "p = point(at = [var 0.5mm, var 0mm])",
-            ),
-            (
-                "@settings(defaultLengthUnit = cm)\ns = sketch(on = XY) {\n  p = point(at = [var 10mm, var 2cm])\n  fixed([p, [5mm, 0cm]])\n}\n",
-                "p = point(at = [var 5mm, var 0cm])",
-            ),
-            (
-                "s = sketch(on = XY) {\n  a = arc(start = [var 1, var 2], end = [var 3, var 4], center = [var 0, var 0])\n  diameter(a) == 10mm\n}\n",
-                "diameter(a) == 10mm",
-            ),
-        ] {
-            let mut frontend = FrontendState::new();
-            frontend.program = Program::parse(source).unwrap().0.unwrap();
-            let before = mock_ctx
-                .run_mock(&frontend.program, &MockConfig::default())
-                .await
-                .unwrap();
-            let saved = frontend.commit_var_solutions_to_program(&before, "testing").unwrap();
-            assert!(saved.text.contains(expected_source), "{}", saved.text);
-            let after = mock_ctx
-                .run_mock(&frontend.program, &MockConfig::default())
-                .await
-                .unwrap();
-            assert!(after.issues.is_empty(), "{:?}", after.issues);
-
-            // Compare solved geometry, not just the rewritten initial guesses.
-            assert_eq!(before.scene_objects.len(), after.scene_objects.len());
-            let default_unit = frontend.default_length_unit();
-            let mut points_checked = 0;
-            for (original, reopened) in before.scene_objects.iter().zip(&after.scene_objects) {
-                if let ObjectKind::Segment {
-                    segment: Segment::Point(original),
-                } = &original.kind
-                {
-                    let ObjectKind::Segment {
-                        segment: Segment::Point(reopened),
-                    } = &reopened.kind
-                    else {
-                        panic!("reopening changed a point's object kind");
-                    };
-                    points_checked += 1;
-                    let dx = number_value_in_default_length_units(original.position.x, default_unit)
-                        - number_value_in_default_length_units(reopened.position.x, default_unit);
-                    let dy = number_value_in_default_length_units(original.position.y, default_unit)
-                        - number_value_in_default_length_units(reopened.position.y, default_unit);
-                    let drift = libm::hypot(dx, dy);
-                    assert!(drift <= SOLVER_CONVERGENCE_TOLERANCE, "{}: drift {}", saved.text, drift);
-                }
-            }
-            assert!(points_checked > 0);
+            let untouched = point_position(&frontend.scene_graph, other_id);
+            assert_eq!(untouched.x.value, 1.0 + step);
+            assert_eq!(untouched.y.value, 2.0 + step);
         }
         mock_ctx.close().await;
     }
@@ -11409,7 +11320,16 @@ sketch(on = XY) {
             )
             .await
             .unwrap();
-        insta::assert_snapshot!("test_edit_angle_constraint_label_position", src_delta.text.as_str());
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.46mm])
+  angle([line1, line2], labelPosition = [10mm, 11mm]) == 60deg
+}
+"
+        );
 
         let constraint_object = scene_delta.new_graph.objects.get(constraint_id.0).unwrap();
         let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
@@ -11467,9 +11387,15 @@ sketch(on = XY) {
             )
             .await
             .unwrap();
-        insta::assert_snapshot!(
-            "test_edit_angle_constraint_label_position_with_call_on_right",
-            src_delta.text.as_str()
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.46mm])
+  60deg == angleDimension(lines = [line1, line2], sector = 1, labelPosition = [10mm, 11mm])
+}
+"
         );
 
         let constraint_object = scene_delta.new_graph.objects.get(constraint_id.0).unwrap();
