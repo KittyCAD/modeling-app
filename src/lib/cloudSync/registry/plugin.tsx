@@ -79,7 +79,6 @@ import {
 import { getResolvedTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
 import {
   type AppHeaderItemProps,
   appHeaderItemsValueSpec,
@@ -108,7 +107,6 @@ import {
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
 import { systemIOService } from '@src/registry/contracts/systemIO'
-import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { useEffect, useState } from 'react'
@@ -1349,7 +1347,6 @@ const cloudSyncCloudProjectRelationships = defineRegistryItemFactory((ctx) => {
 export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
   const fileOperations = () => ctx.services.get(fileOperationsService)
   const systemIO = ctx.services.signal(systemIOService)
-  const userFeatures = ctx.services.signal(userFeaturesService)
   const getWasmPromise = () =>
     ctx.valueSpecs.get(wasmPromiseValueSpec) ??
     new Error('Missing WASM promise registry value.')
@@ -1627,15 +1624,7 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
           id: 'cloud-sync.personal-cloud-library-default-policy',
           priority: 10,
           getDefaultLibraries: ({ isDesktop }) =>
-            !isDesktop &&
-            userFeatures.value &&
-            userFeaturesContextHas(
-              userFeatures.value.context.value,
-              OPFS_CLOUD_FEATURE_FLAG,
-              false
-            )
-              ? [getDefaultCloudProjectLibrarySetting()]
-              : undefined,
+            !isDesktop ? [getDefaultCloudProjectLibrarySetting()] : undefined,
         }),
         provide(projectLibraryTypesValueSpec, cloudLibraryType, {
           key: 'cloud-sync.project-library-type',
@@ -1666,15 +1655,10 @@ export const cloudSyncPlugin = createZdsPlugin({
     description: 'Whether the Cloud sync plugin is enabled.',
     hideOnLevel: 'project',
     hideOnPlatform: 'web',
-    // Cloud sync is feature-gated; keep the toggle out of every settings
-    // surface (settings panel, command bar, plugins list) for users without
-    // the flag instead of special-casing the plugin id per surface.
-    hideWithoutFeature: OPFS_CLOUD_FEATURE_FLAG,
     featurePolicy: {
       feature: OPFS_CLOUD_FEATURE_FLAG,
       defaultEnabled: true,
       forceEnabledOnPlatform: 'web',
-      disableWithoutFeature: true,
     },
     userToml: {
       sectionKey: 'plugins',

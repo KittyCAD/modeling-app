@@ -1037,45 +1037,6 @@ describe('cloud sync project library', () => {
     }
   })
 
-  test('keeps the cloud project library default gated by feature flag and platform', () => {
-    const registry = new Registry()
-    const userFeaturesExtension = defineRegistryItem({
-      id: 'test-user-features-service',
-      providesServices: [
-        provideService(
-          userFeaturesService,
-          createUserFeaturesService(new Set())
-        ),
-      ],
-    })
-    registry.configure([userFeaturesExtension, cloudSyncProjectLibraryType])
-
-    try {
-      const defaultPolicies = registry.get(
-        projectLibrarySettingDefaultPoliciesValueSpec
-      )
-      const personalCloudPolicy = defaultPolicies.find(
-        (policy) =>
-          policy.id === 'cloud-sync.personal-cloud-library-default-policy'
-      )
-
-      expect(
-        personalCloudPolicy?.getDefaultLibraries({
-          initialDefaultDir: '/projects',
-          isDesktop: false,
-        })
-      ).toBeUndefined()
-      expect(
-        personalCloudPolicy?.getDefaultLibraries({
-          initialDefaultDir: '/projects',
-          isDesktop: true,
-        })
-      ).toBeUndefined()
-    } finally {
-      registry[Symbol.dispose]()
-    }
-  })
-
   test('does not synthesize a personal cloud library row when toggled', () => {
     const registry = new Registry()
     registry.configure([cloudSyncProjectLibraryType, cloudSyncPlugin])

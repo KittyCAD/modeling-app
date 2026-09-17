@@ -33,6 +33,7 @@ async function expectProjectFileRoute(page: Page) {
 }
 
 async function expectCloudSyncHomeReady(page: Page) {
+  await page.goto('/home')
   await expect(
     page.getByRole('heading', { name: /^(Project Libraries|Personal Cloud)$/ })
   ).toBeVisible({ timeout: CLOUD_SYNC_E2E_TIMEOUT })

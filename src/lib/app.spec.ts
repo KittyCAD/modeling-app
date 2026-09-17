@@ -319,11 +319,7 @@ describe('project system', () => {
     try {
       await waitForSettingsIdle(app)
 
-      const library = app.settings
-        .get()
-        .app.libraries.current.find(
-          (entry) => entry.type === DIRECTORY_PROJECT_LIBRARY_TYPE
-        )
+      const library = app.settings.get().app.libraries.current[0]
       expect(library).toBeDefined()
       if (!library) {
         return
@@ -340,7 +336,7 @@ describe('project system', () => {
       expect(openedProject.projectIORefSignal.value).toEqual(
         expect.objectContaining({
           libraryPath: library.path,
-          libraryType: DIRECTORY_PROJECT_LIBRARY_TYPE,
+          libraryType: library.type,
         })
       )
     } finally {
@@ -527,17 +523,6 @@ describe('project system', () => {
       expect(getCloudSyncPluginSetting(app)?.current).toBe(false)
       expect(getCloudSyncPluginSetting(app)?.user).toBeUndefined()
       expect(getPluginToggle(app, 'cloud-sync').active.value).toBe(false)
-      expect(hasPersonalCloudLibrarySetting(app)).toBe(false)
-      expect(hasDefaultDirectoryLibrarySetting(app)).toBe(true)
-      expect(app.getCreateProjectLibraryTargets()).not.toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            library: expect.objectContaining({
-              id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
-            }),
-          }),
-        ])
-      )
     } finally {
       app.dispose()
     }
