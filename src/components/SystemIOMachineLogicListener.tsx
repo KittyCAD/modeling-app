@@ -1,4 +1,5 @@
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
+import { lspService } from '@src/lang/lsp/registry/contract'
 import { useApp, useSingletons } from '@src/lib/boot'
 import {
   ASK_TO_OPEN_QUERY_PARAM,
@@ -8,15 +9,15 @@ import {
 import fsZds from '@src/lib/fs-zds'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import {
-  PATHS,
   getProjectDirectoryFromKCLFilePath,
   joinOSPaths,
   joinRouterPaths,
+  PATHS,
   safeEncodeForRouterPaths,
   webSafePathSplit,
 } from '@src/lib/paths'
-import { lspService } from '@src/lang/lsp/registry/contract'
 import { getDefaultDirectoryProjectLibraryPath } from '@src/lib/projectLibraries'
+import { reportRejection } from '@src/lib/trap'
 import {
   useHasListedProjects,
   useLastOperation,
@@ -29,9 +30,11 @@ import {
   SystemIOMachineEvents,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
+import { appNavigationService } from '@src/registry/contracts/appNavigation'
+import { appUrlService } from '@src/registry/contracts/appUrl'
 import { shouldNavigateToRequestedPath } from '@src/routes/Onboarding/navigation'
 import { useEffect } from 'react'
-import { useLocation, useNavigate, useNavigation } from 'react-router-dom'
+import { useLocation, useNavigation } from 'react-router-dom'
 
 export function SystemIOMachineLogicListener() {
   const { settings, systemIOActor, registry } = useApp()
@@ -43,7 +46,6 @@ export function SystemIOMachineLogicListener() {
   const hasListedProjects = useHasListedProjects()
   const lastOperation = useLastOperation()
 
-  const navigate = useNavigate()
   const navigation = useNavigation()
   const settingsValues = settings.useSettings()
   const lsp = registry.get(lspService)
@@ -126,9 +128,22 @@ export function SystemIOMachineLogicListener() {
       url.searchParams.delete(PROJECT_ID_QUERY_PARAM)
     }
     const search = url.searchParams.toString()
-    void navigate(requestedPath + (search ? `?${search}` : ''), {
-      replace: requestedPath.includes(String(PATHS.ONBOARDING)),
-    })
+    const target = requestedFilePathWithExtension ?? requestedProjectDirectory
+    if (!target) {
+      return
+    }
+
+    void registry
+      .get(appNavigationService)
+      .openProject({ target })
+      .then(() =>
+        registry
+          .get(appUrlService)
+          .navigate(requestedPath + (search ? `?${search}` : ''), {
+            replace: requestedPath.includes(String(PATHS.ONBOARDING)),
+          })
+      )
+      .catch(reportRejection)
   }
 
   /**

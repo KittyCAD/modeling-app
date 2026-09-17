@@ -1,5 +1,5 @@
-import { base64ToString } from '@src/lib/base64'
 import type { App } from '@src/lib/app'
+import { base64ToString } from '@src/lib/base64'
 import { useApp } from '@src/lib/boot'
 import type { ProjectsCommandSchema } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import {
@@ -9,10 +9,10 @@ import {
   CODE_QUERY_PARAM,
   CREATE_FILE_URL_PARAM,
   FILE_NAME_QUERY_PARAM,
+  LEGACY_SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
   POOL_QUERY_PARAM,
   PROJECT_ENTRYPOINT,
   PROJECT_ID_QUERY_PARAM,
-  LEGACY_SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
   SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
 } from '@src/lib/constants'
 import {
@@ -25,13 +25,14 @@ import { downloadKclSample } from '@src/lib/kclSamples'
 import { PATHS, safeEncodeForRouterPaths } from '@src/lib/paths'
 import { PERSONAL_CLOUD_PROJECT_LIBRARY_ID } from '@src/lib/projectLibraries'
 import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
-import { DEFAULT_WEB_PROJECT_NAME } from '@src/lib/routeLoaders'
+import { DEFAULT_WEB_PROJECT_NAME } from '@src/lib/routeInit'
 import { err } from '@src/lib/trap'
 import {
   SystemIOMachineEvents,
   SystemIOMachineStates,
   waitForIdleState,
 } from '@src/machines/systemIO/utils'
+import { appNavigationService } from '@src/registry/contracts/appNavigation'
 import { useEffect } from 'react'
 import toast from 'react-hot-toast'
 import { useNavigate, useSearchParams } from 'react-router-dom'
@@ -204,11 +205,9 @@ export function useQueryParamEffects() {
         return
       }
 
-      void navigate(
-        `${PATHS.FILE}/${safeEncodeForRouterPaths(
-          importedProject.default_file
-        )}`
-      )
+      await app.registry
+        .get(appNavigationService)
+        .openProject({ target: importedProject.default_file })
     })().catch((error) => {
       if (cancelled) {
         return
@@ -252,13 +251,18 @@ export function useQueryParamEffects() {
             return
           }
 
-          void navigate(
-            {
-              pathname: `${PATHS.FILE}/${safeEncodeForRouterPaths(defaultFile)}`,
-              search: searchParams.toString(),
-            },
-            { replace: true }
-          )
+          void app.registry
+            .get(appNavigationService)
+            .openProject({ target: defaultFile })
+            .then(() =>
+              navigate(
+                {
+                  pathname: `${PATHS.FILE}/${safeEncodeForRouterPaths(defaultFile)}`,
+                  search: searchParams.toString(),
+                },
+                { replace: true }
+              )
+            )
         })
         .catch((error) => {
           pendingWebLayoutProjectCreation = undefined
@@ -335,11 +339,9 @@ export function useQueryParamEffects() {
           return
         }
 
-        void navigate(
-          `${PATHS.FILE}/${safeEncodeForRouterPaths(
-            importedProject.default_file
-          )}`
-        )
+        await app.registry
+          .get(appNavigationService)
+          .openProject({ target: importedProject.default_file })
       })().catch((error) => {
         if (cancelled) {
           return
