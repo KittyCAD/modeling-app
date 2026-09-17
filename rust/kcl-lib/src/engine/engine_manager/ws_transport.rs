@@ -99,6 +99,32 @@ impl From<anyhow::Error> for WebSocketReadError {
     }
 }
 
+#[derive(Debug, thiserror::Error)]
+enum WebSocketWriteError {
+    #[error("could not serialize json: {0}")]
+    Json(#[source] serde_json::Error),
+    #[error("could not serialize msgpack: {0}")]
+    MsgPack(#[source] rmp_serde::encode::Error),
+    #[error("could not send {encoding} over websocket: {source}")]
+    Send {
+        encoding: &'static str,
+        #[source]
+        source: Box<tokio_tungstenite::tungstenite::Error>,
+    },
+}
+
+#[derive(Debug, thiserror::Error)]
+#[error(
+    "{source}; failed request: {request}; last request written to WebSocket: {last_written}; last modeling request written to WebSocket: {last_modeling_written}"
+)]
+struct RequestSendError {
+    #[source]
+    source: WebSocketWriteError,
+    request: String,
+    last_written: String,
+    last_modeling_written: String,
+}
+
 /// Requests to send to the engine, and a way to await a response.
 struct ToEngineReq {
     /// The request to send
@@ -106,7 +132,63 @@ struct ToEngineReq {
     /// If this resolves to Ok, the request was sent.
     /// If this resolves to Err, the request could not be sent.
     /// If this has not yet resolved, the request has not been sent yet.
-    request_sent: oneshot::Sender<anyhow::Result<()>>,
+    request_sent: oneshot::Sender<Result<(), RequestSendError>>,
+}
+
+/// Identify requests without including authentication headers or imported file contents.
+fn request_description(request: &WebSocketRequest) -> String {
+    fn command(req: &ModelingCmdReq) -> String {
+        kcmc::ModelingCmdEndpoint::from(&req.cmd).to_string()
+    }
+    match request {
+        WebSocketRequest::ModelingCmdReq(req) => format!("modeling_cmd_req: {}", command(req)),
+        WebSocketRequest::ModelingCmdBatchReq(batch) => format!(
+            "modeling_cmd_batch_req : [{}]",
+            batch.requests.iter().map(command).collect::<Vec<_>>().join(", ")
+        ),
+        WebSocketRequest::Ping {} => "ping".into(),
+        WebSocketRequest::Headers { .. } => "headers".into(),
+        WebSocketRequest::TrickleIce { .. } => "trickle_ice".into(),
+        WebSocketRequest::SdpOffer { .. } => "sdp_offer".into(),
+        WebSocketRequest::MetricsResponse { .. } => "metrics_response".into(),
+        WebSocketRequest::Debug {} => "debug".into(),
+        _ => "other WebSocket request".into(),
+    }
+}
+
+/// Tracks completed WebSocket writes, not server acknowledgements or command execution.
+#[derive(Default)]
+struct SendHistory {
+    last_written: Option<String>,
+    last_modeling_written: Option<String>,
+}
+
+impl SendHistory {
+    fn record(
+        &mut self,
+        request: &WebSocketRequest,
+        result: Result<(), WebSocketWriteError>,
+    ) -> Result<(), RequestSendError> {
+        let description = request_description(request);
+        match result {
+            Ok(()) => {
+                if matches!(
+                    request,
+                    WebSocketRequest::ModelingCmdReq(_) | WebSocketRequest::ModelingCmdBatchReq(_)
+                ) {
+                    self.last_modeling_written = Some(description.clone());
+                }
+                self.last_written = Some(description);
+                Ok(())
+            }
+            Err(source) => Err(RequestSendError {
+                source,
+                request: description,
+                last_written: self.last_written.clone().unwrap_or_else(|| "none".into()),
+                last_modeling_written: self.last_modeling_written.clone().unwrap_or_else(|| "none".into()),
+            }),
+        }
+    }
 }
 
 impl WebSocketTransport {
@@ -275,26 +357,33 @@ impl WebSocketTransport {
     }
 
     async fn inner_send_to_engine_binary(
-        request: WebSocketRequest,
+        request: &WebSocketRequest,
         tcp_write: &mut WebSocketTcpWrite,
-    ) -> anyhow::Result<()> {
-        let msg = kcl_engine_codec::serialize_request_msgpack(&request)
-            .map_err(|e| anyhow!("could not serialize msgpack: {e}"))?;
+    ) -> Result<(), WebSocketWriteError> {
+        let msg = kcl_engine_codec::serialize_request_msgpack(request).map_err(WebSocketWriteError::MsgPack)?;
         tcp_write
             .send(WsMsg::Binary(msg.into()))
             .await
-            .map_err(|e| anyhow!("could not send MsgPack over websocket: {e}"))?;
+            .map_err(|source| WebSocketWriteError::Send {
+                encoding: "MsgPack",
+                source: Box::new(source),
+            })?;
         Ok(())
     }
 
     /// Send the given `request` to the engine via the WebSocket connection `tcp_write`.
-    async fn inner_send_to_engine(request: WebSocketRequest, tcp_write: &mut WebSocketTcpWrite) -> anyhow::Result<()> {
-        let msg =
-            kcl_engine_codec::serialize_request_json(&request).map_err(|e| anyhow!("could not serialize json: {e}"))?;
+    async fn inner_send_to_engine(
+        request: &WebSocketRequest,
+        tcp_write: &mut WebSocketTcpWrite,
+    ) -> Result<(), WebSocketWriteError> {
+        let msg = kcl_engine_codec::serialize_request_json(request).map_err(WebSocketWriteError::Json)?;
         tcp_write
             .send(WsMsg::Text(msg.into()))
             .await
-            .map_err(|e| anyhow!("could not send json over websocket: {e}"))?;
+            .map_err(|source| WebSocketWriteError::Send {
+                encoding: "json",
+                source: Box::new(source),
+            })?;
         Ok(())
     }
 
@@ -309,6 +398,7 @@ impl WebSocketTransport {
         let period_seconds = if heartbeats == 0 { 5 * 60 } else { heartbeats };
         let period = Duration::from_secs(period_seconds);
         let mut heartbeats_stream = tokio::time::interval(period);
+        let mut history = SendHistory::default();
 
         loop {
             tokio::select! {
@@ -324,13 +414,13 @@ impl WebSocketTransport {
                                     cmd_id: _,
                                 })
                             ) {
-                                Self::inner_send_to_engine_binary(req, &mut tcp_write).await
+                                Self::inner_send_to_engine_binary(&req, &mut tcp_write).await
                             } else {
-                                Self::inner_send_to_engine(req, &mut tcp_write).await
+                                Self::inner_send_to_engine(&req, &mut tcp_write).await
                             };
 
                             // Let the caller know we’ve sent the request (ok or error).
-                            let _ = request_sent.send(res);
+                            let _ = request_sent.send(history.record(&req, res));
                         }
                         None => {
                             // The engine_req_rx channel has closed, so no more requests.
@@ -349,9 +439,9 @@ impl WebSocketTransport {
                 // Send heartbeats periodically.
                 _ = heartbeats_stream.tick(), if send_heartbeats => {
                     // Send a heartbeat.
-                    let res = Self::inner_send_to_engine(WebSocketRequest::Ping {}, &mut tcp_write).await;
+                    let res = Self::inner_send_to_engine(&WebSocketRequest::Ping {}, &mut tcp_write).await;
                     // We don't really care if a heartbeat fails, we'll just try again soon.
-                    let _ = res;
+                    let _ = history.record(&WebSocketRequest::Ping {}, res);
                 }
             }
         }
@@ -382,51 +472,47 @@ impl EngineTransport for WebSocketTransport {
     ) -> Result<(), KclError> {
         let (tx, rx) = oneshot::channel();
 
-        let api_call_id_msg = {
-            // Get the API call ID from session data if available. Drop it as
-            // soon as we're done.
-            let session_data = self.session_data.read().await;
-            if let Some(session) = session_data.as_ref() {
-                format!(" (API call ID: {})", session.api_call_id)
-            } else {
-                String::new()
-            }
-        };
-
-        // Send the request to the engine, via the actor.
-        self.engine_req_tx
+        // Capture session data (API call ID, etc) after the send attempt: it may arrive while sending.
+        let result = match self
+            .engine_req_tx
             .send(ToEngineReq {
                 req: cmd.clone(),
                 request_sent: tx,
             })
             .await
-            .map_err(|e| {
-                KclError::new_engine(KclErrorDetails::new(
-                    format!("Failed to send modeling command: {e}{api_call_id_msg}"),
+        {
+            Err(e) => Err(format!(
+                "could not send request to the engine actor: {e}; failed request: {}",
+                request_description(&cmd)
+            )),
+            Ok(()) => match rx.await {
+                Err(e) => Err(format!(
+                    "engine actor did not acknowledge request: {e}; failed request: {}",
+                    request_description(&cmd)
+                )),
+                Ok(result) => result.map_err(|error| error.to_string()),
+            },
+        };
+        if let Err(error) = result {
+            let api_call_id = self
+                .session_data
+                .read()
+                .await
+                .as_ref()
+                .map(|session| session.api_call_id.to_string());
+            return Err(KclError::new_engine_hangup(
+                KclErrorDetails::new(
+                    format!(
+                        "could not send request to the engine: {error} (API call ID: {})",
+                        api_call_id
+                            .as_deref()
+                            .unwrap_or("unavailable: session data not received")
+                    ),
                     vec![source_range],
-                ))
-            })?;
-
-        // Wait for the request to be sent.
-        rx.await
-            .map_err(|e| {
-                KclError::new_engine_hangup(
-                    KclErrorDetails::new(
-                        format!("could not send request to the engine actor: {e}{api_call_id_msg}"),
-                        vec![source_range],
-                    ),
-                    None,
-                )
-            })?
-            .map_err(|e| {
-                KclError::new_engine_hangup(
-                    KclErrorDetails::new(
-                        format!("could not send request to the engine: {e}{api_call_id_msg}"),
-                        vec![source_range],
-                    ),
-                    None,
-                )
-            })?;
+                ),
+                api_call_id,
+            ));
+        }
 
         Ok(())
     }
@@ -501,5 +587,100 @@ impl EngineTransport for WebSocketTransport {
                 return Ok(());
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn closed_connection() -> WebSocketWriteError {
+        WebSocketWriteError::Send {
+            encoding: "json",
+            source: Box::new(tokio_tungstenite::tungstenite::Error::AlreadyClosed),
+        }
+    }
+
+    #[tokio::test]
+    async fn send_failure_uses_session_data_received_during_send() {
+        let (engine_req_tx, mut engine_req_rx) = mpsc::channel::<ToEngineReq>(1);
+        let (shutdown_tx, _) = mpsc::channel(1);
+        let session_data = Arc::new(RwLock::new(None));
+        let transport = WebSocketTransport {
+            _tcp_read_handle: Arc::new(TcpReadHandle {
+                handle: Arc::new(tokio::spawn(async { Ok(()) })),
+            }),
+            engine_req_tx,
+            shutdown_tx,
+            responses: ResponseInformation::new(Arc::new(RwLock::new(Default::default()))),
+            pending_errors: Arc::new(RwLock::new(Vec::new())),
+            session_data: session_data.clone(),
+            socket_health: Arc::new(RwLock::new(SocketHealth::Active)),
+        };
+        let actor = tokio::spawn(async move {
+            let request = engine_req_rx.recv().await.unwrap();
+            *session_data.write().await = Some(ModelingSessionData {
+                api_call_id: "test-session-id".into(),
+            });
+            request
+                .request_sent
+                .send(SendHistory::default().record(&request.req, Err(closed_connection())))
+                .unwrap();
+        });
+        let error = transport
+            .inner_fire_modeling_cmd(
+                Uuid::nil(),
+                SourceRange::default(),
+                WebSocketRequest::Debug {},
+                HashMap::new(),
+            )
+            .await
+            .unwrap_err();
+        assert!(error.to_string().contains("API call ID: test-session-id"));
+        actor.await.unwrap();
+    }
+
+    #[test]
+    fn send_history_preserves_last_write_across_failures_and_pings() {
+        let request: WebSocketRequest = serde_json::from_value(serde_json::json!({
+            "type": "modeling_cmd_batch_req",
+            "batch_id": Uuid::nil(),
+            "requests": [{
+                "cmd_id": Uuid::nil(),
+                "cmd": { "type": "start_path" }
+            }],
+            "responses": false
+        }))
+        .unwrap();
+        let mut history = SendHistory::default();
+        history.record(&request, Ok(())).unwrap();
+        history.record(&WebSocketRequest::Ping {}, Ok(())).unwrap();
+        for _ in 0..2 {
+            let error = history
+                .record(&WebSocketRequest::Debug {}, Err(closed_connection()))
+                .unwrap_err()
+                .to_string();
+            assert!(error.contains("Trying to work with closed connection; failed request: debug"));
+            assert!(error.contains("last request written to WebSocket: ping"));
+            assert!(error.contains("last modeling request written to WebSocket: modeling_cmd_batch_req"));
+            assert!(error.contains("StartPath"));
+        }
+    }
+
+    #[test]
+    fn send_history_handles_first_failure_and_redacts_headers() {
+        let mut history = SendHistory::default();
+        let request = WebSocketRequest::Headers {
+            headers: HashMap::from([("Authorization".into(), "secret".into())]),
+        };
+        let error = history
+            .record(&request, Err(closed_connection()))
+            .unwrap_err()
+            .to_string();
+        assert!(error.contains("failed request: headers"));
+        assert!(error.contains("last request written to WebSocket: none"));
+        assert!(!error.contains("secret"));
+        history.record(&request, Ok(())).unwrap();
+        assert_eq!(history.last_written.as_deref(), Some("headers"));
     }
 }
