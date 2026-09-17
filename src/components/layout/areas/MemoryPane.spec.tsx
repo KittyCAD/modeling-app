@@ -29,7 +29,7 @@ beforeEach(async () => {
   rustContextInThisFile = rustContext
 })
 afterAll(() => {
-  engineCommandManagerInThisFile.tearDown()
+  engineCommandManagerInThisFile?.tearDown()
 })
 
 describe('processMemory', () => {

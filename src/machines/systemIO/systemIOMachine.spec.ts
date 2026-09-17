@@ -338,6 +338,7 @@ describe('systemIOMachine - XState', () => {
         const onSuccess = vi.fn()
         const getPathSpy = vi.spyOn(fsZds, 'getPath').mockResolvedValue('/')
         const app = {
+          registry: appInstanceInThisFile.registry,
           project: {
             path: '/projects-a/shared-project',
             name: 'shared-project',
