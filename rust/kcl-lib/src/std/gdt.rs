@@ -214,6 +214,7 @@ fn add_gdt_annotation_artifact(exec_state: &mut ExecState, args: &Args, annotati
     exec_state.add_artifact(Artifact::GdtAnnotation(GdtAnnotationArtifact {
         id: ArtifactId::new(annotation_id),
         code_ref: CodeRef::placeholder(args.source_range),
+        consumed: false,
     }));
 }
 

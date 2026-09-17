@@ -737,6 +737,10 @@ async fn physical_properties(ctx: &ExecutorContext) -> Option<serde_json::Value>
 }
 
 async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
+    crate::set_kcl_runtime_flags(crate::KclRuntimeFlags {
+        enable_z0006_lint: crate::RuntimeFlag::On,
+        ..Default::default()
+    });
     let input = test.read();
     let ast = crate::Program::parse_no_errs(&input).unwrap();
     let program_to_lint = ast.clone();
@@ -8311,6 +8315,27 @@ mod member_expression_order_v3 {
 }
 mod import_kcl_version_mismatch_v3 {
     const TEST_NAME: &str = "import_kcl_version_mismatch_v3";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod import_kcl_version_mismatch_undeclared_entry_point {
+    const TEST_NAME: &str = "import_kcl_version_mismatch_undeclared_entry_point";
 
     /// Test parsing KCL.
     #[test]

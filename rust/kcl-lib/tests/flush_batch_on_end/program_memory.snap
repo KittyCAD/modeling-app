@@ -5,11 +5,9 @@ description: Variables in memory after executing flush_batch_on_end.kcl
 {
   "arc000": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc000"
   },
   "arc001": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc001"
   },
@@ -18,8 +16,10 @@ description: Variables in memory after executing flush_batch_on_end.kcl
     "value": 0.364,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "innerProfile": {
@@ -123,8 +123,10 @@ description: Variables in memory after executing flush_batch_on_end.kcl
     "value": 1.5,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "outerDiameter": {
@@ -132,8 +134,10 @@ description: Variables in memory after executing flush_batch_on_end.kcl
     "value": 0.546875,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "outerProfile": {

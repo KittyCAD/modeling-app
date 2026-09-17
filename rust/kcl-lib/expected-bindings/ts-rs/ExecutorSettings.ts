@@ -52,4 +52,8 @@ heartbeats?: bigint | null,
  * If given, sets the default backface colour.
  * If not, defaults to whatever the engine's default is.
  */
-default_backface_color?: string | null, };
+default_backface_color?: string | null, 
+/**
+ * If given, sets a custom engine pool.
+ */
+pool?: string | null, };

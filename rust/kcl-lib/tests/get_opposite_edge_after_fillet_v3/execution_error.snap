@@ -4,7 +4,8 @@ description: Error from executing get_opposite_edge_after_fillet_v3.kcl
 ---
 KCL Engine error
 
-  × engine: Entity found but it was of the wrong type
+  × engine: command Solid3dGetOppositeEdge resulted in errors:
+  │  Entity found but it was of the wrong type
     ╭─[17:34]
  16 │   |> fillet(radius = 1, tags = [seg01])
  17 │   |> chamfer(length = 1, tags = [getOppositeEdge(seg01)])
@@ -13,7 +14,8 @@ KCL Engine error
     ╰────
   ╰─▶ KCL Engine error
       
-        × engine: Entity found but it was of the wrong type
+        × engine: command Solid3dGetOppositeEdge resulted in errors:
+        │  Entity found but it was of the wrong type
           ╭─[17:34]
        16 │   |> fillet(radius = 1, tags = [seg01])
        17 │   |> chamfer(length = 1, tags = [getOppositeEdge(seg01)])

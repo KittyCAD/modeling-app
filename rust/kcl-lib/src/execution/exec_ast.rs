@@ -88,6 +88,8 @@ use crate::execution::types::CoercionMode;
 use crate::execution::types::NumericTypeExt;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
+use crate::execution::types::resolve_named_type_def;
+use crate::execution::types::type_value_named_by_segment;
 use crate::front::ArcDirection;
 use crate::front::LineCtor;
 use crate::front::Object;
@@ -98,6 +100,7 @@ use crate::modules::ModuleExecutionOutcome;
 use crate::modules::ModuleId;
 use crate::modules::ModulePath;
 use crate::modules::ModuleRepr;
+use crate::parsing::ast::types::ABSOLUTE_PATHS_NOT_SUPPORTED;
 use crate::parsing::ast::types::Annotation;
 use crate::parsing::ast::types::ArrayExpression;
 use crate::parsing::ast::types::ArrayRangeExpression;
@@ -1030,8 +1033,8 @@ impl ExecutorContext {
     ) -> Result<ModuleExecutionOutcome, (KclError, Option<EnvironmentRef>, Option<ModuleArtifactState>)> {
         crate::log::log(format!("enter module {path} {}", exec_state.stack()));
 
-        // KCL 3.0: reject an imported file whose declared kclVersion differs
-        // from the entry point's before any of it executes.
+        // KCL 3.0: reject an imported file whose declared kclVersion is not
+        // allowed with the entry point's before any of it executes.
         exec_state
             .check_imported_module_kcl_version(path, program, None)
             .map_err(|err| (err, None, None))?;
@@ -1198,7 +1201,7 @@ impl ExecutorContext {
                     if exec_state.sketch_mode() {
                         continue;
                     }
-                    self.exec_type_declaration(ty, body_type, exec_state)?;
+                    self.exec_type_declaration(ty, body_type, exec_state).await?;
                     last_expr = None;
                 }
                 BodyItem::ReturnStatement(return_statement) => {
@@ -1477,7 +1480,7 @@ impl ExecutorContext {
     }
 
     /// Execute a type declaration. Flat; shared by both executors.
-    pub(super) fn exec_type_declaration(
+    pub(super) async fn exec_type_declaration(
         &self,
         ty: &Node<TypeDeclaration>,
         body_type: BodyType,
@@ -1521,17 +1524,30 @@ impl ExecutorContext {
             annotations::Impl::Primitive => {}
             annotations::Impl::Kcl | annotations::Impl::KclConstrainable => match &ty.definition {
                 TypeDeclarationDefinition::Alias { ty: alias } => {
-                    let value = KclValue::Type {
-                        value: TypeDef::Alias(
+                    let type_def = match alias.inner.clone() {
+                        Type::Named { name } => {
+                            match resolve_named_type_def(&name, exec_state, self, metadata.source_range, false).await? {
+                                def @ TypeDef::Enum(_) => def,
+                                def => TypeDef::Alias(def.into_runtime_type()),
+                            }
+                        }
+                        alias => TypeDef::Alias(
                             RuntimeType::from_parsed(
-                                alias.inner.clone(),
+                                alias,
                                 exec_state,
+                                self,
                                 metadata.source_range,
                                 attrs.impl_ == annotations::Impl::KclConstrainable,
                                 false,
                             )
-                            .map_err(|e| KclError::new_semantic(e.into()))?,
+                            .await?,
                         ),
+                    };
+                    if matches!(&type_def, TypeDef::Enum(_)) {
+                        reject_enum_clashing_with_module(exec_state, &ty.name.name, metadata.source_range)?;
+                    }
+                    let value = KclValue::Type {
+                        value: type_def,
                         meta: vec![metadata],
                         experimental: attrs.experimental,
                     };
@@ -1980,7 +1996,8 @@ impl ExecutorContext {
                 .continue_(),
             Expr::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, self).await?,
             Expr::FunctionExpression(function_expression) => self
-                .create_function_closure(function_expression, annotations, metadata, statement_kind, exec_state)?
+                .create_function_closure(function_expression, annotations, metadata, statement_kind, exec_state)
+                .await?
                 .continue_(),
             Expr::CallExpressionKw(call_expression) => call_expression.execute(exec_state, self).await?,
             Expr::PipeExpression(pipe_expression) => pipe_expression.get_result(exec_state, self).await?,
@@ -2048,7 +2065,7 @@ impl ExecutorContext {
     /// Create the closure value for a function expression, including the
     /// recursive-closure placeholder fixup and binding a named `fn name() {}`
     /// in the current scope. Flat; shared by both executors.
-    pub(super) fn create_function_closure(
+    pub(super) async fn create_function_closure(
         &self,
         function_expression: &crate::parsing::ast::types::BoxNode<FunctionExpression>,
         annotations: &[Node<Annotation>],
@@ -2126,7 +2143,7 @@ impl ExecutorContext {
         // the declaration is written. Call sites consume the stored
         // resolutions and never look type names up themselves.
         if let KclValue::Function { value, .. } = &mut closure {
-            value.resolve_signature_types(exec_state)?;
+            value.resolve_signature_types(exec_state, self).await?;
         }
 
         // If the function expression has a name, i.e. `fn name() {}`,
@@ -2159,8 +2176,9 @@ impl ExecutorContext {
 /// the clash where the second name is introduced keeps every `X::y` use site
 /// unambiguous, so no check is needed at the use site.
 ///
-/// Type aliases and bare types are exempt, since neither can head a `::` path.
-/// They may continue to share a name with a module.
+/// Type aliases that resolve to enums participate in this rule because they can
+/// head a `::` path. Other aliases and bare types may continue to share a name
+/// with a module.
 fn module_enum_clash(name: &str, source_range: SourceRange) -> KclError {
     KclError::new_semantic(KclErrorDetails::new(
         format!(
@@ -2176,11 +2194,8 @@ fn reject_enum_clashing_with_module(
     name: &str,
     source_range: SourceRange,
 ) -> Result<(), KclError> {
-    if exec_state
-        .stack()
-        .get(&format!("{}{}", memory::MODULE_PREFIX, name), source_range)
-        .is_err()
-    {
+    let key = format!("{}{}", memory::MODULE_PREFIX, name);
+    if !exec_state.stack().cur_frame_contains(&key)? {
         return Ok(());
     }
 
@@ -2194,12 +2209,15 @@ fn reject_module_clashing_with_enum(
     name: &str,
     source_range: SourceRange,
 ) -> Result<(), KclError> {
+    let key = format!("{}{}", memory::TYPE_PREFIX, name);
+    if !exec_state.stack().cur_frame_contains(&key)? {
+        return Ok(());
+    }
+
     let Ok(KclValue::Type {
         value: TypeDef::Enum(_),
         ..
-    }) = exec_state
-        .stack()
-        .get(&format!("{}{}", memory::TYPE_PREFIX, name), source_range)
+    }) = exec_state.stack().get(&key, source_range)
     else {
         return Ok(());
     };
@@ -2253,45 +2271,40 @@ fn type_used_as_value(exec_state: &ExecState, name: &Node<Identifier>) -> Option
     )))
 }
 
-/// Looks up the enum named by a `::` path segment: `Color` in both `Color::Red`
-/// and `colors::Color::Red`.
+enum EnumPathHead {
+    Enum(Arc<EnumTypeDef>),
+    NonEnumType,
+}
+
+/// Classifies the type named by a `::` path segment: `Color` in both
+/// `Color::Red` and `colors::Color::Red`.
 ///
-/// Returns `None` when the segment does not name an enum, including when it
-/// names a type alias, since only an enum can head a `::` path. The caller then
-/// resolves the segment as a module instead.
-///
-/// This is the only place that builds a `__ty_` memory key, so the deferred
-/// typed-key refactor has one site to change.
+/// A non-enum type is retained until module lookup has also failed because a
+/// type alias and a module may share a name. The module remains the valid path
+/// head in that case.
 fn enum_named_by_segment(
     exec_state: &ExecState,
     segment: &Node<Identifier>,
     within: Option<&(EnvironmentRef, Vec<String>)>,
-) -> Option<Arc<EnumTypeDef>> {
-    let key = format!("{}{}", memory::TYPE_PREFIX, segment.name);
-    let value = match within {
-        // Inside another module the enum must be exported to be reachable, and
-        // exports record the prefixed key rather than the bare name.
-        Some((env, exports)) => {
-            if !exports.contains(&key) {
-                return None;
-            }
-
-            exec_state
-                .stack()
-                .memory
-                .get_from_owned(&key, *env, segment.as_source_range(), 0)
-                .ok()?
-        }
-        None => exec_state.stack().get(&key, segment.as_source_range()).ok()?,
-    };
-
-    match value {
+) -> Option<EnumPathHead> {
+    match type_value_named_by_segment(exec_state, segment, within)? {
         KclValue::Type {
             value: TypeDef::Enum(def),
             ..
-        } => Some(def),
+        } => Some(EnumPathHead::Enum(def)),
+        KclValue::Type { .. } => Some(EnumPathHead::NonEnumType),
         _ => None,
     }
+}
+
+fn non_enum_type_in_path(segment: &Node<Identifier>) -> KclError {
+    KclError::new_semantic(KclErrorDetails::new(
+        format!(
+            "`{}` is a type that does not resolve to an enum, so it cannot be used as the head of a `::` path.",
+            segment.name
+        ),
+        segment.as_source_ranges(),
+    ))
 }
 
 /// `Red` in `Color::Red`.
@@ -2410,7 +2423,9 @@ impl Node<AscribedExpression> {
             .execute_expr(&self.expr, exec_state, &metadata, &[], StatementKind::Expression)
             .await?;
         let result = control_continue!(result);
-        apply_ascription(&result, &self.ty, exec_state, self.into()).map(KclValue::continue_)
+        apply_ascription(&result, &self.ty, exec_state, ctx, self.into())
+            .await
+            .map(KclValue::continue_)
     }
 }
 
@@ -3236,14 +3251,14 @@ impl Node<SketchVar> {
     }
 }
 
-pub(super) fn apply_ascription(
+pub(super) async fn apply_ascription(
     value: &KclValue,
     ty: &Node<Type>,
     exec_state: &mut ExecState,
+    ctx: &ExecutorContext,
     source_range: SourceRange,
 ) -> Result<KclValue, KclError> {
-    let ty = RuntimeType::from_parsed(ty.inner.clone(), exec_state, value.into(), false, false)
-        .map_err(|e| KclError::new_semantic(e.into()))?;
+    let ty = RuntimeType::from_parsed(ty.inner.clone(), exec_state, ctx, value.into(), false, false).await?;
 
     if matches!(&ty, &RuntimeType::Primitive(PrimitiveType::Number(..))) {
         exec_state.clear_units_warnings(&source_range);
@@ -3324,7 +3339,7 @@ impl Node<Name> {
     async fn get_result_inner(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         if self.abs_path {
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                "Absolute paths (names beginning with `::` are not yet supported)".to_owned(),
+                ABSOLUTE_PATHS_NOT_SUPPORTED.to_owned(),
                 self.as_source_ranges(),
             )));
         }
@@ -3349,23 +3364,30 @@ impl Node<Name> {
         for (index, p) in self.path.iter().enumerate() {
             // Only the last segment can name an enum, because what follows an
             // enum is a variant rather than something to traverse into.
-            if let Some(def) = enum_named_by_segment(exec_state, p, mem_spec.as_ref()) {
-                if let Some(next) = self.path.get(index + 1) {
-                    return Err(KclError::new_semantic(KclErrorDetails::new(
-                        format!(
-                            "`{}` is an enum, so only a variant name can follow it. There is nothing to reach through `{}::{}`.",
-                            p.name, p.name, next.name
-                        ),
-                        p.as_source_ranges(),
-                    )));
-                }
+            let non_enum_type = match enum_named_by_segment(exec_state, p, mem_spec.as_ref()) {
+                Some(EnumPathHead::Enum(def)) => {
+                    if let Some(next) = self.path.get(index + 1) {
+                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                            format!(
+                                "`{}` is an enum, so only a variant name can follow it. There is nothing to reach through `{}::{}`.",
+                                p.name, p.name, next.name
+                            ),
+                            p.as_source_ranges(),
+                        )));
+                    }
 
-                return enum_variant_value(def, &self.name, exec_state);
-            }
+                    return enum_variant_value(def, &self.name, exec_state);
+                }
+                Some(EnumPathHead::NonEnumType) => true,
+                None => false,
+            };
 
             let value = match mem_spec {
                 Some((env, exports)) => {
                     if !exports.contains(&p.name) {
+                        if non_enum_type {
+                            return Err(non_enum_type_in_path(p));
+                        }
                         return Err(KclError::new_semantic(KclErrorDetails::new(
                             format!("Item {} not found in module's exported items", p.name),
                             p.as_source_ranges(),
@@ -3377,9 +3399,14 @@ impl Node<Name> {
                         .memory
                         .get_from_owned(&p.name, env, p.as_source_range(), 0)?
                 }
-                None => exec_state
+                None => match exec_state
                     .stack()
-                    .get(&format!("{}{}", memory::MODULE_PREFIX, p.name), self.into())?,
+                    .get(&format!("{}{}", memory::MODULE_PREFIX, p.name), self.into())
+                {
+                    Ok(value) => value,
+                    Err(_) if non_enum_type => return Err(non_enum_type_in_path(p)),
+                    Err(err) => return Err(err),
+                },
             };
 
             let module_id = match value {

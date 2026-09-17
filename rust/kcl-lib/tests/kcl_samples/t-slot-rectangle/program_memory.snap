@@ -7,18 +7,22 @@ description: Variables in memory after executing t-slot-rectangle.kcl
     "type": "Number",
     "value": 2.0,
     "ty": {
-      "ft": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "ft"
+      }
     }
   },
   "frameWidth": {
     "type": "Number",
     "value": 1.5,
     "ty": {
-      "ft": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "ft"
+      }
     }
   },
   "railHeight": {
@@ -26,8 +30,10 @@ description: Variables in memory after executing t-slot-rectangle.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "railTslot": {

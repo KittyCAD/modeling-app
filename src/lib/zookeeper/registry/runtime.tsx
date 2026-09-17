@@ -21,12 +21,17 @@ import type {
   ZookeeperSessionController,
   ZookeeperSessionControllerDependencies,
 } from '@src/lib/zookeeper/registry/controller'
+import { makeZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import { zookeeperPromptRunningSignal } from '@src/lib/zookeeper/zookeeperPromptState'
 import {
   type AuthRegistryService,
   authService,
 } from '@src/registry/contracts/auth'
 import { billingService } from '@src/registry/contracts/billing'
+import {
+  type FileOperationsRegistryService,
+  fileOperationsService,
+} from '@src/registry/contracts/fileOperations'
 import {
   layoutAreaLibraryValueSpec,
   layoutService,
@@ -57,6 +62,7 @@ type ZookeeperRuntime = ReturnType<typeof createZookeeperRuntime>
 type ZookeeperRuntimeServices = {
   auth: ReadonlySignal<AuthRegistryService | undefined>
   billing: ReadonlySignal<BillingRegistryService | undefined>
+  fileOperations: ReadonlySignal<FileOperationsRegistryService | undefined>
   projectSession: ReadonlySignal<ProjectSessionService | undefined>
   settings: ReadonlySignal<SettingsRegistryService | undefined>
   systemIO: ReadonlySignal<SystemIORegistryService | undefined>
@@ -208,6 +214,7 @@ export function createZookeeperRuntime(
 
     const auth = services.auth.value
     const billing = services.billing.value
+    const fileOperations = services.fileOperations.value
     const settings = services.settings.value
     const systemIO = services.systemIO.value
     const project = currentZdsProject.value
@@ -273,6 +280,7 @@ export function createZookeeperRuntime(
       !isLoggedIn ||
       !apiToken.trim() ||
       !billing ||
+      !fileOperations ||
       !systemIO
     ) {
       return
@@ -295,6 +303,8 @@ export function createZookeeperRuntime(
         const controller = createZookeeperSessionController({
           apiToken: next.apiToken,
           billing,
+          conversationStore: makeZookeeperConversationStore(fileOperations),
+          fileOperations,
           kclManager: next.kclManager,
           project: next.project,
           projectId: next.projectId,
@@ -404,6 +414,7 @@ export const zookeeperRuntimeRegistryItem = defineRegistryItemFactory((ctx) => {
   const runtime = createZookeeperRuntime({
     auth: ctx.services.signal(authService),
     billing: ctx.services.signal(billingService),
+    fileOperations: ctx.services.signal(fileOperationsService),
     projectSession: ctx.services.signal(projectSession),
     settings: ctx.services.signal(settingsService),
     systemIO: ctx.services.signal(systemIOService),

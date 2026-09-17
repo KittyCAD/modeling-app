@@ -54,8 +54,10 @@ description: Operations executed named_views_hide_imported.kcl
                 "value": 2000.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -63,8 +65,10 @@ description: Operations executed named_views_hide_imported.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -80,8 +84,10 @@ description: Operations executed named_views_hide_imported.kcl
                 "value": 1500.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -89,8 +95,10 @@ description: Operations executed named_views_hide_imported.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -141,8 +149,10 @@ description: Operations executed named_views_hide_imported.kcl
                 "value": 2000.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -150,8 +160,10 @@ description: Operations executed named_views_hide_imported.kcl
                 "value": 500.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -167,8 +179,10 @@ description: Operations executed named_views_hide_imported.kcl
                 "value": 2000.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -176,8 +190,10 @@ description: Operations executed named_views_hide_imported.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -228,8 +244,10 @@ description: Operations executed named_views_hide_imported.kcl
                 "value": 1500.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -237,8 +255,10 @@ description: Operations executed named_views_hide_imported.kcl
                 "value": 500.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -254,8 +274,10 @@ description: Operations executed named_views_hide_imported.kcl
                 "value": 2000.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -263,8 +285,10 @@ description: Operations executed named_views_hide_imported.kcl
                 "value": 500.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -315,8 +339,10 @@ description: Operations executed named_views_hide_imported.kcl
                 "value": 1500.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -324,8 +350,10 @@ description: Operations executed named_views_hide_imported.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -341,8 +369,10 @@ description: Operations executed named_views_hide_imported.kcl
                 "value": 1500.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -350,8 +380,10 @@ description: Operations executed named_views_hide_imported.kcl
                 "value": 500.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -581,8 +613,10 @@ description: Operations executed named_views_hide_imported.kcl
                 "value": 1750.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -590,8 +624,10 @@ description: Operations executed named_views_hide_imported.kcl
                 "value": 250.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -672,8 +708,10 @@ description: Operations executed named_views_hide_imported.kcl
             "value": 500.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -718,6 +756,60 @@ description: Operations executed named_views_hide_imported.kcl
         ]
       },
       "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "view::named",
+      "unlabeledArg": {
+        "value": {
+          "type": "String",
+          "value": "Anchor only"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "baseline": {
+          "value": {
+            "type": "Enum",
+            "enum_name": "Visibility",
+            "variant": "Show"
+          },
+          "sourceRange": []
+        },
+        "camera": {
+          "value": {
+            "type": "CameraView"
+          },
+          "sourceRange": []
+        },
+        "except": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "ImportedGeometry",
+                "artifact_id": "[uuid]"
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
     }
   ],
   "std::math": [
@@ -756,7 +848,9 @@ description: Operations executed named_views_hide_imported.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -784,7 +878,9 @@ description: Operations executed named_views_hide_imported.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
