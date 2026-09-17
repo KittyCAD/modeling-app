@@ -190,7 +190,13 @@ pub async fn kcl_doc_execute_and_snapshot(
 ) -> Result<TestGraphicsArtifact, ExecError> {
     let graphics = TestGraphicsParams::from_kcl_sample_spec(no_3d, no_run);
     let ctx = new_context(true, current_file, graphics.geometry_only()).await?;
-    let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
+    let program = match Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs) {
+        Ok(program) => program,
+        Err(e) => {
+            ctx.close().await;
+            return Err(e.into());
+        }
+    };
 
     let result: Result<TestGraphicsArtifact, ExecError> = match graphics {
         TestGraphicsParams::EngineRender => execute_locally_and_render_on_engine(&ctx, program, None)
