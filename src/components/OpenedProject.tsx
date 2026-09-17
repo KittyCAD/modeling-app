@@ -19,6 +19,7 @@ import { useEngineConnectionSubscriptions } from '@src/hooks/useEngineConnection
 import { useHotKeyListener } from '@src/hooks/useHotKeyListener'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
+import { lspService } from '@src/lang/lsp/registry/contract'
 import {
   autoUpdateDownloadProgressSignal,
   autoUpdateReadySignal,
@@ -34,7 +35,6 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { defaultLayout, LayoutRootNode } from '@src/lib/layout'
 import { useDefaultActionLibrary } from '@src/lib/layout/defaultActionLibrary'
 import { useDefaultAreaLibrary } from '@src/lib/layout/defaultAreaLibrary'
-import { lspService } from '@src/lang/lsp/registry/contract'
 import { PATHS } from '@src/lib/paths'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
@@ -60,15 +60,16 @@ import toast from 'react-hot-toast'
 import ModalContainer from 'react-modal-promise'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
-if (window.electron) {
-  maybeWriteToDisk(window.electron)
-    .then(() => {})
-    .catch(reportRejection)
-}
-
 export function OpenedProject() {
   useSignals()
   const app = useApp()
+  useEffect(() => {
+    if (window.electron) {
+      maybeWriteToDisk(app.fileOperations, window.electron).catch(
+        reportRejection
+      )
+    }
+  }, [app.fileOperations])
   const { auth, billing, settings, layout, project, systemIOActor, registry } =
     app
   const { kclManager } = useSingletons()
@@ -122,6 +123,7 @@ export function OpenedProject() {
 
     let cancelled = false
     void checkOpenedProjectPresence({
+      fileOperations: app.fileOperations,
       projectPath,
       projects,
     }).then((presence) => {
@@ -140,7 +142,14 @@ export function OpenedProject() {
     return () => {
       cancelled = true
     }
-  }, [lastOperation, navigate, projectPath, projects, systemIOState])
+  }, [
+    app.fileOperations,
+    lastOperation,
+    navigate,
+    projectPath,
+    projects,
+    systemIOState,
+  ])
 
   // ZOOKEEPER BEHAVIOR EXCEPTION
   // Only fires on state changes, to deal with Zookeeper control.

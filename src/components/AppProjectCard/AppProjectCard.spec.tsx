@@ -1,6 +1,5 @@
 import AppProjectCard from '@src/components/AppProjectCard/AppProjectCard'
 import type { ProjectStatus } from '@src/hooks/useProjectStatus'
-import fsZds from '@src/lib/fs-zds'
 import type {
   HomeProjectActionsService,
   HomeProjectEntry,
@@ -21,14 +20,10 @@ import toast from 'react-hot-toast'
 import { BrowserRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
-vi.mock('@src/lib/fs-zds', () => ({
-  default: {
-    join: (...parts: string[]) =>
-      parts.reduce((left, right) => (left ? `${left}/${right}` : right), ''),
-    stat: vi.fn().mockResolvedValue({}),
-    readFile: vi.fn().mockResolvedValue(new Uint8Array()),
-  },
-}))
+const fileOperations = {
+  stat: vi.fn().mockResolvedValue({}),
+  readFile: vi.fn().mockResolvedValue(new Uint8Array()),
+}
 
 const now = Date.now()
 let createObjectURLMock: ReturnType<typeof vi.fn>
@@ -139,6 +134,7 @@ function renderProjectCard({
         density={density}
         project={project}
         projectActions={projectActions}
+        fileOperations={fileOperations}
         projectStatus={projectStatus}
         showCloudSyncUi={showCloudSyncUi}
       />
@@ -166,7 +162,7 @@ function submitRenameProject() {
 describe('ProjectCard', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.mocked(fsZds.readFile).mockResolvedValue(new Uint8Array())
+    fileOperations.readFile.mockResolvedValue(new Uint8Array())
     createObjectURLMock = vi.fn(() => 'blob:thumbnail')
     revokeObjectURLMock = vi.fn()
     vi.stubGlobal('URL', {
@@ -220,6 +216,7 @@ describe('ProjectCard', () => {
       const props = {
         projects,
         projectActions,
+        fileOperations,
         projectStatuses: new Map<string, ProjectStatus>(),
         showCloudSyncUi: true,
         onMoveToLibrary: vi.fn(),
@@ -284,15 +281,17 @@ describe('ProjectCard', () => {
   )
 
   test('loads local thumbnails without requesting their remote copy', async () => {
-    vi.mocked(fsZds.readFile).mockResolvedValue(new Uint8Array([1, 2, 3]))
+    fileOperations.readFile.mockResolvedValue(new Uint8Array([1, 2, 3]))
     const { projectActions } = renderProjectCard()
-    await waitFor(() => expect(fsZds.readFile).toHaveBeenCalledTimes(1))
+    await waitFor(() =>
+      expect(fileOperations.readFile).toHaveBeenCalledTimes(1)
+    )
 
     const card = screen.getByRole('listitem')
     setCardInView(card, true)
     setCardInView(card, false)
     expect(projectActions.watchRemoteThumbnail).not.toHaveBeenCalled()
-    expect(fsZds.readFile).toHaveBeenCalledTimes(1)
+    expect(fileOperations.readFile).toHaveBeenCalledTimes(1)
     expect(createObjectURLMock).toHaveBeenCalledTimes(1)
   })
 
@@ -305,7 +304,11 @@ describe('ProjectCard', () => {
     } satisfies HomeProjectEntry
     const renderCard = (project: HomeProjectEntry) => (
       <BrowserRouter>
-        <AppProjectCard project={project} projectActions={projectActions} />
+        <AppProjectCard
+          project={project}
+          projectActions={projectActions}
+          fileOperations={fileOperations}
+        />
       </BrowserRouter>
     )
     const { rerender } = render(renderCard(project))
@@ -697,6 +700,7 @@ describe('ProjectCard', () => {
         <AppProjectCard
           project={cloudProject}
           projectActions={createProjectActions()}
+          fileOperations={fileOperations}
           onMoveToLibrary={onMoveToLibrary}
         />
       </BrowserRouter>
@@ -784,18 +788,21 @@ describe('ProjectCard', () => {
   })
 
   test('keeps local thumbnail object URLs stable when the project object changes', async () => {
-    vi.mocked(fsZds.readFile).mockResolvedValue(new Uint8Array([1, 2, 3]))
+    fileOperations.readFile.mockResolvedValue(new Uint8Array([1, 2, 3]))
     const projectActions = createProjectActions()
     const { rerender } = render(
       <BrowserRouter>
         <AppProjectCard
           project={cloudProject}
           projectActions={projectActions}
+          fileOperations={fileOperations}
         />
       </BrowserRouter>
     )
 
-    await waitFor(() => expect(fsZds.readFile).toHaveBeenCalledTimes(1))
+    await waitFor(() =>
+      expect(fileOperations.readFile).toHaveBeenCalledTimes(1)
+    )
     expect(createObjectURLMock).toHaveBeenCalledTimes(1)
 
     rerender(
@@ -810,11 +817,12 @@ describe('ProjectCard', () => {
             },
           }}
           projectActions={projectActions}
+          fileOperations={fileOperations}
         />
       </BrowserRouter>
     )
 
-    expect(fsZds.readFile).toHaveBeenCalledTimes(1)
+    expect(fileOperations.readFile).toHaveBeenCalledTimes(1)
     expect(createObjectURLMock).toHaveBeenCalledTimes(1)
     expect(revokeObjectURLMock).not.toHaveBeenCalled()
   })
