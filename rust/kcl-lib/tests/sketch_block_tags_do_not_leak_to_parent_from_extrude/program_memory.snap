@@ -496,17 +496,21 @@ description: Variables in memory after executing sketch_block_tags_do_not_leak_t
                       {
                         "n": 0.5,
                         "ty": {
-                          "angle": "degrees",
-                          "len": "mm",
-                          "type": "Default"
+                          "type": "Default",
+                          "value": {
+                            "angle": "degrees",
+                            "len": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.5,
                         "ty": {
-                          "angle": "degrees",
-                          "len": "mm",
-                          "type": "Default"
+                          "type": "Default",
+                          "value": {
+                            "angle": "degrees",
+                            "len": "mm"
+                          }
                         }
                       }
                     ],
@@ -516,17 +520,21 @@ description: Variables in memory after executing sketch_block_tags_do_not_leak_t
                       {
                         "n": 0.5,
                         "ty": {
-                          "angle": "degrees",
-                          "len": "mm",
-                          "type": "Default"
+                          "type": "Default",
+                          "value": {
+                            "angle": "degrees",
+                            "len": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.5,
                         "ty": {
-                          "angle": "degrees",
-                          "len": "mm",
-                          "type": "Default"
+                          "type": "Default",
+                          "value": {
+                            "angle": "degrees",
+                            "len": "mm"
+                          }
                         }
                       }
                     ],
@@ -616,17 +624,21 @@ description: Variables in memory after executing sketch_block_tags_do_not_leak_t
                       {
                         "n": -0.5,
                         "ty": {
-                          "angle": "degrees",
-                          "len": "mm",
-                          "type": "Default"
+                          "type": "Default",
+                          "value": {
+                            "angle": "degrees",
+                            "len": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.5,
                         "ty": {
-                          "angle": "degrees",
-                          "len": "mm",
-                          "type": "Default"
+                          "type": "Default",
+                          "value": {
+                            "angle": "degrees",
+                            "len": "mm"
+                          }
                         }
                       }
                     ],
@@ -636,17 +648,21 @@ description: Variables in memory after executing sketch_block_tags_do_not_leak_t
                       {
                         "n": 0.5,
                         "ty": {
-                          "angle": "degrees",
-                          "len": "mm",
-                          "type": "Default"
+                          "type": "Default",
+                          "value": {
+                            "angle": "degrees",
+                            "len": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.5,
                         "ty": {
-                          "angle": "degrees",
-                          "len": "mm",
-                          "type": "Default"
+                          "type": "Default",
+                          "value": {
+                            "angle": "degrees",
+                            "len": "mm"
+                          }
                         }
                       }
                     ],
@@ -736,17 +752,21 @@ description: Variables in memory after executing sketch_block_tags_do_not_leak_t
                       {
                         "n": -0.5,
                         "ty": {
-                          "angle": "degrees",
-                          "len": "mm",
-                          "type": "Default"
+                          "type": "Default",
+                          "value": {
+                            "angle": "degrees",
+                            "len": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.5,
                         "ty": {
-                          "angle": "degrees",
-                          "len": "mm",
-                          "type": "Default"
+                          "type": "Default",
+                          "value": {
+                            "angle": "degrees",
+                            "len": "mm"
+                          }
                         }
                       }
                     ],
@@ -756,17 +776,21 @@ description: Variables in memory after executing sketch_block_tags_do_not_leak_t
                       {
                         "n": -0.5,
                         "ty": {
-                          "angle": "degrees",
-                          "len": "mm",
-                          "type": "Default"
+                          "type": "Default",
+                          "value": {
+                            "angle": "degrees",
+                            "len": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.5,
                         "ty": {
-                          "angle": "degrees",
-                          "len": "mm",
-                          "type": "Default"
+                          "type": "Default",
+                          "value": {
+                            "angle": "degrees",
+                            "len": "mm"
+                          }
                         }
                       }
                     ],
@@ -856,17 +880,21 @@ description: Variables in memory after executing sketch_block_tags_do_not_leak_t
                       {
                         "n": 0.5,
                         "ty": {
-                          "angle": "degrees",
-                          "len": "mm",
-                          "type": "Default"
+                          "type": "Default",
+                          "value": {
+                            "angle": "degrees",
+                            "len": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.5,
                         "ty": {
-                          "angle": "degrees",
-                          "len": "mm",
-                          "type": "Default"
+                          "type": "Default",
+                          "value": {
+                            "angle": "degrees",
+                            "len": "mm"
+                          }
                         }
                       }
                     ],
@@ -876,17 +904,21 @@ description: Variables in memory after executing sketch_block_tags_do_not_leak_t
                       {
                         "n": -0.5,
                         "ty": {
-                          "angle": "degrees",
-                          "len": "mm",
-                          "type": "Default"
+                          "type": "Default",
+                          "value": {
+                            "angle": "degrees",
+                            "len": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.5,
                         "ty": {
-                          "angle": "degrees",
-                          "len": "mm",
-                          "type": "Default"
+                          "type": "Default",
+                          "value": {
+                            "angle": "degrees",
+                            "len": "mm"
+                          }
                         }
                       }
                     ],
@@ -1124,8 +1156,10 @@ description: Variables in memory after executing sketch_block_tags_do_not_leak_t
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   }
 }

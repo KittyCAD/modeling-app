@@ -213,8 +213,10 @@ description: Variables in memory after executing subtract_regression10.kcl
     "value": 92.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "boreHoles": {
@@ -1367,8 +1369,10 @@ description: Variables in memory after executing subtract_regression10.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -1376,8 +1380,10 @@ description: Variables in memory after executing subtract_regression10.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -1385,8 +1391,10 @@ description: Variables in memory after executing subtract_regression10.kcl
             "value": 232.09247866942073,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -1399,8 +1407,10 @@ description: Variables in memory after executing subtract_regression10.kcl
             "value": -0.9778288277170034,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -1408,8 +1418,10 @@ description: Variables in memory after executing subtract_regression10.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -1417,8 +1429,10 @@ description: Variables in memory after executing subtract_regression10.kcl
             "value": -0.2094057871349092,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -1431,8 +1445,10 @@ description: Variables in memory after executing subtract_regression10.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -1440,8 +1456,10 @@ description: Variables in memory after executing subtract_regression10.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -1449,8 +1467,10 @@ description: Variables in memory after executing subtract_regression10.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -2898,9 +2918,11 @@ description: Variables in memory after executing subtract_regression10.kcl
     "type": "Number",
     "value": 40.0,
     "ty": {
-      "degrees": null,
       "type": "Known",
-      "type": "Angle"
+      "value": {
+        "type": "Angle",
+        "value": "degrees"
+      }
     }
   },
   "crankRadius": {
@@ -2908,8 +2930,10 @@ description: Variables in memory after executing subtract_regression10.kcl
     "value": 36.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "cutDivots": {
@@ -3465,8 +3489,10 @@ description: Variables in memory after executing subtract_regression10.kcl
     "value": 35.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "pistonBore": {
@@ -5079,8 +5105,10 @@ description: Variables in memory after executing subtract_regression10.kcl
     "value": 75.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "pistonSkirt": {
@@ -5280,8 +5308,10 @@ description: Variables in memory after executing subtract_regression10.kcl
     "value": 201.2,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "seg01": {
@@ -5305,8 +5335,10 @@ description: Variables in memory after executing subtract_regression10.kcl
     "value": 110.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "wristPin": {
@@ -5437,8 +5469,10 @@ description: Variables in memory after executing subtract_regression10.kcl
             "n": 1.875,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -5451,8 +5485,10 @@ description: Variables in memory after executing subtract_regression10.kcl
             "n": 1.875,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",

@@ -11,12 +11,12 @@ import {
 } from '@src/lib/constants'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
-import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import {
   DIRECTORY_PROJECT_LIBRARY_TYPE,
-  PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
   getDefaultCloudProjectLibrarySetting,
+  PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
 } from '@src/lib/projectLibraries'
+import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import { getChangedSettingsAtLevel } from '@src/lib/settings/settingsUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { notifyActiveWasmInstance } from '@src/lib/wasmLifecycle'
@@ -203,6 +203,7 @@ function expectedRuntimeFlags(
   useCekExecutor: 'On' | 'Off'
 ) {
   return JSON.stringify({
+    enable_z0006_lint: 'Off',
     use_cek_executor: useCekExecutor,
     use_new_lexer_parser: useNewLexerParser,
   })
@@ -1184,11 +1185,11 @@ describe('project system', () => {
   })
 
   it('can open, close project', async () => {
-    // Stub out File read and write implementations
+    const app = createAppForTest()
+
+    // Override the application wiring for this focused project-session test.
     File.ioImplementations.read = () => Promise.resolve('')
     File.ioImplementations.write = () => Promise.resolve()
-
-    const app = createAppForTest()
 
     try {
       const project = await app.openProject(mockProject)

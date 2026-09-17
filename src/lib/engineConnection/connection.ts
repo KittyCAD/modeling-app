@@ -25,8 +25,6 @@ import {
   EngineConnectionEvents,
   EngineConnectionStateType,
   PING_INTERVAL_MS,
-  PONG_TIMEOUT_REASON,
-  PONG_TIMEOUT_MS,
   WebSocketCloseCode,
   WebSocketStatusCodes,
 } from '@src/lib/engineConnection/utils'
@@ -56,8 +54,10 @@ export class Connection extends EventTarget {
   readonly url: string
   // Authorization bearer token for headers on websocket
   private readonly _token: string | undefined
-  private _lastPingSentAt: number | undefined
-  private _lastPongReceivedAt: number | undefined
+  private _pingPongSpan: {
+    ping: number | undefined
+    pong: number | undefined
+  }
   private _pingIntervalId: ReturnType<typeof setInterval> | undefined
   timeoutToForceConnectId: ReturnType<typeof setTimeout> | undefined
 
@@ -141,8 +141,7 @@ export class Connection extends EventTarget {
     this.rejectPendingCommand = rejectPendingCommand
     this.handleMessage = handleMessage
     this.getCloudProjectId = getCloudProjectId
-    this._lastPingSentAt = undefined
-    this._lastPongReceivedAt = undefined
+    this._pingPongSpan = { ping: undefined, pong: undefined }
     this.deferredConnection = null
     this.deferredPeerConnection = null
     this.deferredMediaStreamAndWebrtcStatsCollector = null
@@ -259,35 +258,15 @@ export class Connection extends EventTarget {
     }
 
     this._pingIntervalId = setInterval(() => {
-      const now = Date.now()
-      const lastPingSentAt = this._lastPingSentAt
-      const lastPongReceivedAt = this._lastPongReceivedAt
-      const isWaitingForPong =
-        lastPingSentAt !== undefined &&
-        (lastPongReceivedAt === undefined ||
-          lastPongReceivedAt < lastPingSentAt)
-
-      if (isWaitingForPong) {
-        const elapsedMs = now - lastPingSentAt
-        if (elapsedMs >= PONG_TIMEOUT_MS) {
-          EngineDebugger.addLog({
-            label: 'connection',
-            message: PONG_TIMEOUT_REASON,
-            metadata: {
-              id: this.id,
-              apiCallId: this.apiCallId,
-              lastPingSentAt,
-              lastPongReceivedAt,
-              elapsedMs,
-            },
-          })
-          this.tearDownManager({ pingPongTimeout: true })
-        }
+      if (this._pingPongSpan.ping) {
         return
       }
 
       this.send({ type: 'ping' })
-      this._lastPingSentAt = now
+      this._pingPongSpan = {
+        ping: Date.now(),
+        pong: undefined,
+      }
     }, PING_INTERVAL_MS)
   }
 
@@ -654,8 +633,9 @@ export class Connection extends EventTarget {
       setPong: this.setPong.bind(this),
       dispatchEvent: this.dispatchEvent.bind(this),
       ping: () => {
-        return this._lastPingSentAt
+        return this._pingPongSpan.ping
       },
+      setPing: this.setPing.bind(this),
       createPeerConnection: this.createPeerConnection.bind(this),
       send: this.send.bind(this),
       setSdpAnswer: this.setSdpAnswer.bind(this),
@@ -767,7 +747,11 @@ export class Connection extends EventTarget {
   }
 
   setPong(pong: number) {
-    this._lastPongReceivedAt = pong
+    this._pingPongSpan.pong = pong
+  }
+
+  setPing(ping: number | undefined) {
+    this._pingPongSpan.ping = ping
   }
 
   setSdpAnswer(answer: RTCSessionDescriptionInit) {
