@@ -1,5 +1,6 @@
 import { arch, cpus, platform, release, totalmem } from 'node:os'
-import { expect, test } from '@e2e/playwright/zoo-test'
+import { expect, test } from '@e2e/performance/fixtures'
+import { playwrightProjectLibraries } from '@e2e/playwright/storageStates'
 import type { Page, TestInfo } from '@playwright/test'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { reportInteractions } from '@src/lib/interactionPerformance/report'
@@ -91,8 +92,35 @@ async function finishCapture(
 
 test.beforeEach(async ({ page, homePage, cmdBar }) => {
   await homePage.waitForAuthentication()
+  await page.waitForFunction(() =>
+    window.app.settings.actor.getSnapshot().matches('idle')
+  )
+  await page.evaluate((libraries) => {
+    // Set the benchmark's empty local library through the app-owned settings
+    // service after startup policy has settled, before measuring any input.
+    window.app.settings.send({
+      type: 'set.plugins.cloud-sync',
+      data: { level: 'user', value: false },
+    })
+    window.app.settings.send({
+      type: 'set.app.libraries',
+      data: { level: 'user', value: libraries },
+    })
+  }, playwrightProjectLibraries())
+  await page.waitForFunction(() =>
+    window.app.settings.actor.getSnapshot().matches('idle')
+  )
   await homePage.expectIsCurrentPage()
   await homePage.projectsLoaded()
+  // Settings changes create timed toasts. Let their dismissal finish unscored.
+  await expect(
+    page.getByText('Set cloud-sync to "false" as a user default.', {
+      exact: true,
+    })
+  ).not.toBeAttached()
+  await expect(
+    page.getByText('Updated project libraries.', { exact: true })
+  ).not.toBeAttached()
   // The shared functional fixture requests reduced motion. Score normal motion.
   await page.emulateMedia({ reducedMotion: 'no-preference' })
   await page.setViewportSize({ width: 1200, height: 800 })

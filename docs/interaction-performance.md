@@ -34,15 +34,26 @@ input is usable and its transition has finished, and closing it until the palett
 is absent. The browser scenario uses real app buttons and the existing typed
 Playwright app fixtures. The profile uses a production-optimized web build with
 the existing development/test backend at `https://api.dev.zoo.dev`. It measures
-local UI interactions and does not launch a modeling engine. Authentication and
-application startup still use the real test backend and existing app setup, and
-can fail independently of interaction latency. These results do not measure
-production backend or network performance.
+local UI interactions and does not launch a modeling engine. Before creating test
+pages, each worker fetches the real account from the test API once. Fresh contexts
+reuse those exact response bytes from memory for authenticated `GET /user` calls.
+The auth machine still runs; the benchmark does not exercise browser auth
+transport or measure backend/network performance. Other startup requests still
+use the test backend and can fail independently of interaction latency.
+
+This bootstrap keeps remote auth variation outside the Home route's five-second
+feature-gate deadline, which can otherwise send setup into demo modeling. A
+failed bootstrap fails the run. The fixture attaches no credentials or account
+response bodies. Failures include a bounded startup-state attachment with
+route category and auth/feature state, without their contexts or account data.
 
 The scenarios fix the feature set to `OPFS_CLOUD_FEATURE_FLAG`, which selects the
 Projects home route instead of the release web app's demo modeling route. The
-existing fixture keeps cloud synchronization disabled. This gives each scenario
-the same initial UI and avoids starting an engine session during setup.
+profile then uses the app's settings service to disable cloud synchronization and
+select an empty local project library after startup settings settle. It waits for
+those settings, the Home UI, and dismissal of the setup toasts before capture.
+This gives each scenario the same initial UI and avoids starting an engine
+session during setup.
 
 Unattributed clicks remain in the raw snapshot with their target element tag.
 Labels, input values, document text, and DOM paths are not collected. Registered
@@ -73,7 +84,8 @@ The test process needs the existing `VITE_ZOO_API_TOKEN` for the development API
 Provide it to the test process through the usual local credential setup; do not
 include it in the production build or commit it. The CI job passes the existing
 repository secret only to the test step. The unchanged shared app fixture supplies
-the development session cookie before navigating.
+the development session cookie before navigating. The performance context fixture
+checks the outgoing credential before serving its in-memory account response.
 
 The config serves the production build at `http://localhost:3000`, an origin
 allowed by the test API's CORS policy. It requires that exact port and refuses to
