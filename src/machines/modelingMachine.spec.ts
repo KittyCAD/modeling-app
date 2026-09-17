@@ -38,7 +38,7 @@ import {
   buildTheWorldAndNoEngineConnection,
 } from '@src/unitTestUtils'
 import toast from 'react-hot-toast'
-import { afterAll, beforeEach, describe, expect, it } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { vi } from 'vitest'
 import { type ActorRefFrom, createActor, fromPromise } from 'xstate'
 const GLOBAL_TIMEOUT_FOR_MODELING_MACHINE = 5000
@@ -50,45 +50,44 @@ let rustContextInThisFile: RustContext = null!
 let commandBarActorInThisFile: CommandBarActorType = null!
 let machineManagerInThisFile: MachineManager = null!
 
-const TESTS_WITHOUT_ENGINE_WORLD = [
-  'routes a cursor inside a sketch block segment to sketch solve edit',
-  'shows default planes again when canceling sketch plane selection on a blank scene',
-  'hides default planes when canceling sketch plane selection with geometry present',
-]
+type TestWorld = Pick<
+  Awaited<ReturnType<typeof buildTheWorldAndNoEngineConnection>>,
+  | 'instance'
+  | 'kclManager'
+  | 'engineCommandManager'
+  | 'rustContext'
+  | 'commandBarActor'
+  | 'machineManager'
+>
+let worldWithoutEngine: TestWorld
+
+function setTestWorld(world: TestWorld) {
+  instanceInThisFile = world.instance
+  kclManagerInThisFile = world.kclManager
+  engineCommandManagerInThisFile = world.engineCommandManager
+  rustContextInThisFile = world.rustContext
+  commandBarActorInThisFile = world.commandBarActor
+  machineManagerInThisFile = world.machineManager
+}
 
 /**
- * Every it test could build the world and connect to the engine but this is too resource intensive and will
- * spam engine connections.
- *
- * Reuse the world for this file. This is not the same as global singleton imports!
+ * Keep engine sessions scoped to the describe blocks that need them. A single
+ * session for this whole file can expire before the shuffled tests finish.
  */
-beforeEach(async () => {
-  const currentTestName = expect.getState().currentTestName ?? ''
-  if (TESTS_WITHOUT_ENGINE_WORLD.some((name) => currentTestName.includes(name)))
-    return
+function useEngineWorld() {
+  beforeAll(async () => {
+    setTestWorld(await buildTheWorldAndConnectToEngine({ webrtc: false }))
+  })
 
-  if (instanceInThisFile) {
-    return
-  }
+  afterAll(() => {
+    engineCommandManagerInThisFile.tearDown()
+    setTestWorld(worldWithoutEngine)
+  })
+}
 
-  const {
-    instance,
-    engineCommandManager,
-    kclManager,
-    rustContext,
-    commandBarActor,
-    machineManager,
-  } = await buildTheWorldAndConnectToEngine({ webrtc: false })
-  instanceInThisFile = instance
-  kclManagerInThisFile = kclManager
-  engineCommandManagerInThisFile = engineCommandManager
-  rustContextInThisFile = rustContext
-  commandBarActorInThisFile = commandBarActor
-  machineManagerInThisFile = machineManager
-})
-
-afterAll(() => {
-  engineCommandManagerInThisFile?.tearDown()
+beforeAll(async () => {
+  worldWithoutEngine = await buildTheWorldAndNoEngineConnection()
+  setTestWorld(worldWithoutEngine)
 })
 
 describe('modelingMachine.test.ts', () => {
@@ -939,6 +938,8 @@ p3 = [342.51, 216.38],
     }
     // test: all of these pass.
     describe('Deleting segment with three dot menu', () => {
+      useEngineWorld()
+
       let namedConstantConstraintCases = Object.values(cases).flatMap(
         (caseGroup) => caseGroup.deleteSegment
       )
@@ -1063,6 +1064,8 @@ p3 = [342.51, 216.38],
     })
     // test: all of these pass
     describe('Adding segment overlay constraints', () => {
+      useEngineWorld()
+
       let namedConstantConstraintCases = Object.values(cases).flatMap(
         (caseGroup) => caseGroup.namedConstantConstraint
       )
@@ -1203,6 +1206,8 @@ p3 = [342.51, 216.38],
     })
     // test: all tests pass
     describe('removing individual constraints with segment overlay events', () => {
+      useEngineWorld()
+
       const removeIndividualConstraintsCases = Object.values(cases).flatMap(
         (caseGroup) => caseGroup.removeIndividualConstraintsCases
       )
@@ -1331,6 +1336,8 @@ p3 = [342.51, 216.38],
       )
     })
     describe('Removing segment overlay constraints', () => {
+      useEngineWorld()
+
       const removeAllConstraintsCases = Object.values(cases).flatMap(
         (caseGroup) => caseGroup.removeAllConstraintsCases
       )
