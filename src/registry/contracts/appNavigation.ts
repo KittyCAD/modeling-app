@@ -27,6 +27,7 @@ export type OpenProjectOutcome =
  */
 export interface AppNavigationService {
   openProject: (request: OpenProjectRequest) => Promise<OpenProjectOutcome>
+  showHome: () => Promise<void>
   supersedeProjectOpen: (signal?: AbortSignal) => void
 }
 
