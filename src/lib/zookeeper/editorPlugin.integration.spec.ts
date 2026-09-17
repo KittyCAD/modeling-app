@@ -1,6 +1,7 @@
 import { isolateHistory } from '@codemirror/commands'
 import { File, KclManager, type ZDSProject } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
+import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
 import {
@@ -9,8 +10,8 @@ import {
   type ZookeeperEditPatch,
   zookeeperEditPatchHistoryEvent,
 } from '@src/lib/zookeeper/editorPlugin'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import { createTestWasmRegistryItem } from '@src/unitTestUtils'
-import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import { applyPatch, createTwoFilesPatch, parsePatch } from 'diff'
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 
@@ -1392,7 +1393,9 @@ async function createProjectHarness(files: Record<string, string>) {
     registryOverrides: [createTestWasmRegistryItem()],
   })
   apps.push(app)
-  const openedProject = await app.openProject(project)
+  const { project: openedProject } = await app.registry
+    .get(projectSession)
+    .openProject({ project })
   const kclManager = await openedProject.openEditor(
     fsZds.join(projectPath, 'main.kcl')
   )

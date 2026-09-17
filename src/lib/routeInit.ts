@@ -17,6 +17,7 @@ import type { App } from '@src/lib/app'
 import { getRouterSearchFromRequestUrl, PATHS } from '@src/lib/paths'
 import { loadHomeProjects } from '@src/lib/routeLoaderUtils'
 import type { FileLoaderData, HomeLoaderData } from '@src/lib/types'
+import { appNavigationService } from '@src/registry/contracts/appNavigation'
 
 /**
  * What a route wants to happen, said rather than done.
@@ -56,10 +57,10 @@ export async function initIndexRoute(
 /**
  * Initialization for `/file/:id`.
  *
- * Almost all of this is `app.openFile`: resolving the id to a project and a
- * file, deciding whether the URL names something that has to be corrected, and
- * opening it. What stays here is the one genuinely routing-shaped thing — a
- * legacy URL shape that has no meaning as application state.
+ * Almost all of this is the `OpenProject` application intent: resolving the
+ * legacy route id to a project and optional initial editor, deciding whether
+ * the URL needs correction, and opening the project session. What stays here
+ * is the one genuinely routing-shaped compatibility case.
  */
 export async function initFileRoute(
   app: App,
@@ -76,16 +77,16 @@ export async function initFileRoute(
   // Must basically remain for all eternity, until the last person
   // who's ever used ZDS on web before this point has died.
   if (id?.startsWith('/browser')) {
-    // This request still supersedes any file route already loading even though
-    // the legacy URL never reaches `openFile`, where normal loads are begun.
-    app.beginFileRouteLoad(requestSignal)()
+    // This request still supersedes any project already opening even though
+    // the legacy URL never reaches the normal application intent.
+    app.registry.get(appNavigationService).supersedeProjectOpen(requestSignal)
     // Pop us back home, which will cause a default project to be
     // created.
     return { kind: 'redirect', to: PATHS.HOME }
   }
 
-  const outcome = await app.openFile({
-    id,
+  const outcome = await app.registry.get(appNavigationService).openProject({
+    target: id,
     requestUrl,
     signal: requestSignal,
   })
