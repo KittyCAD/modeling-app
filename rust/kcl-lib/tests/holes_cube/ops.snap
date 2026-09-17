@@ -12,8 +12,10 @@ description: Operations executed holes_cube.kcl
         "value": 20.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -83,8 +85,10 @@ description: Operations executed holes_cube.kcl
             "value": 20.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -136,8 +140,10 @@ description: Operations executed holes_cube.kcl
             "value": 5.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -182,8 +188,10 @@ description: Operations executed holes_cube.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -291,8 +299,10 @@ description: Operations executed holes_cube.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -300,8 +310,10 @@ description: Operations executed holes_cube.kcl
                 "value": 5.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -325,8 +337,10 @@ description: Operations executed holes_cube.kcl
                 "value": 20.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "diameter": {
@@ -334,8 +348,10 @@ description: Operations executed holes_cube.kcl
                 "value": 8.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             }
@@ -350,9 +366,11 @@ description: Operations executed holes_cube.kcl
                 "type": "Number",
                 "value": 110.0,
                 "ty": {
-                  "degrees": null,
                   "type": "Known",
-                  "type": "Angle"
+                  "value": {
+                    "type": "Angle",
+                    "value": "degrees"
+                  }
                 }
               }
             }
@@ -367,9 +385,11 @@ description: Operations executed holes_cube.kcl
                 "type": "Number",
                 "value": 100.0,
                 "ty": {
-                  "degrees": null,
                   "type": "Known",
-                  "type": "Angle"
+                  "value": {
+                    "type": "Angle",
+                    "value": "degrees"
+                  }
                 }
               },
               "diameter": {
@@ -377,8 +397,10 @@ description: Operations executed holes_cube.kcl
                 "value": 14.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "feature": {
@@ -386,8 +408,10 @@ description: Operations executed holes_cube.kcl
                 "value": 2.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "headClearance": {
@@ -395,8 +419,10 @@ description: Operations executed holes_cube.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             }
@@ -443,8 +469,10 @@ description: Operations executed holes_cube.kcl
                 "value": 10.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -452,8 +480,10 @@ description: Operations executed holes_cube.kcl
                 "value": 5.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -476,8 +506,10 @@ description: Operations executed holes_cube.kcl
                 "value": 18.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "diameter": {
@@ -485,8 +517,10 @@ description: Operations executed holes_cube.kcl
                 "value": 6.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             }
@@ -501,9 +535,11 @@ description: Operations executed holes_cube.kcl
                 "type": "Number",
                 "value": 110.0,
                 "ty": {
-                  "degrees": null,
                   "type": "Known",
-                  "type": "Angle"
+                  "value": {
+                    "type": "Angle",
+                    "value": "degrees"
+                  }
                 }
               }
             }
@@ -519,8 +555,10 @@ description: Operations executed holes_cube.kcl
                 "value": 3.5,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "diameter": {
@@ -528,8 +566,10 @@ description: Operations executed holes_cube.kcl
                 "value": 12.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "feature": {
@@ -537,8 +577,10 @@ description: Operations executed holes_cube.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             }
@@ -585,8 +627,10 @@ description: Operations executed holes_cube.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -594,8 +638,10 @@ description: Operations executed holes_cube.kcl
                 "value": 10.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -619,8 +665,10 @@ description: Operations executed holes_cube.kcl
                 "value": 2.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "diameter": {
@@ -628,8 +676,10 @@ description: Operations executed holes_cube.kcl
                 "value": 4.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             }
@@ -644,9 +694,11 @@ description: Operations executed holes_cube.kcl
                 "type": "Number",
                 "value": 60.0,
                 "ty": {
-                  "degrees": null,
                   "type": "Known",
-                  "type": "Angle"
+                  "value": {
+                    "type": "Angle",
+                    "value": "degrees"
+                  }
                 }
               }
             }
@@ -662,8 +714,10 @@ description: Operations executed holes_cube.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             }
@@ -714,7 +768,9 @@ description: Operations executed holes_cube.kcl
             "value": 90.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -725,7 +781,9 @@ description: Operations executed holes_cube.kcl
             "value": 50.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -758,8 +816,10 @@ description: Operations executed holes_cube.kcl
         "value": 0.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -787,8 +847,10 @@ description: Operations executed holes_cube.kcl
         "value": 1.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -816,8 +878,10 @@ description: Operations executed holes_cube.kcl
         "value": 2.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -874,7 +938,9 @@ description: Operations executed holes_cube.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -902,7 +968,9 @@ description: Operations executed holes_cube.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",

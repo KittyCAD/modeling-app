@@ -974,6 +974,9 @@ pub struct ExecutorSettings {
     /// If not, defaults to whatever the engine's default is.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub default_backface_color: Option<String>,
+    /// If given, sets a custom engine pool.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pool: Option<String>,
 }
 
 fn is_false(b: &bool) -> bool {
@@ -993,6 +996,7 @@ impl Default for ExecutorSettings {
             skip_artifact_graph: false,
             heartbeats: None,
             default_backface_color: None,
+            pool: None,
         }
     }
 }
@@ -1017,6 +1021,7 @@ impl From<crate::settings::types::Settings> for ExecutorSettings {
             skip_artifact_graph: false,
             heartbeats: None,
             default_backface_color: modeling_settings.backface_color.map(|color| color.0),
+            pool: None,
         }
     }
 }
@@ -1040,6 +1045,7 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
             skip_artifact_graph: false,
             heartbeats: None,
             default_backface_color: modeling.backface_color.map(|color| color.0),
+            pool: None,
         }
     }
 }
@@ -1057,6 +1063,7 @@ impl From<crate::settings::types::project::ProjectModelingSettings> for Executor
             skip_artifact_graph: false,
             heartbeats: None,
             default_backface_color: None,
+            pool: None,
         }
     }
 }
@@ -1265,6 +1272,7 @@ impl ExecutorContext {
                 skip_artifact_graph: false,
                 heartbeats: None,
                 default_backface_color: None,
+                pool: None,
             },
             None,
             engine_addr,

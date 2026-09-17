@@ -362,12 +362,20 @@ export function addClone({
     []
   )
 
-  // 3. If edit, we assign the new function call declaration to the existing node,
-  // otherwise just push to the end
-  const declaration = createVariableDeclaration(variableName, call)
-  modifiedAst.body.push(declaration)
-  const toFirstKwarg = false
-  const pathToNode = createPathToNodeForLastVariable(modifiedAst, toFirstKwarg)
+  let pathToNode: PathToNode | Error
+  if (!mNodeToEdit && !vars.pathIfPipe) {
+    modifiedAst.body.push(createVariableDeclaration(variableName, call))
+    pathToNode = createPathToNodeForLastVariable(modifiedAst, false)
+  } else {
+    pathToNode = setCallInAst({
+      ast: modifiedAst,
+      call,
+      pathToEdit: mNodeToEdit,
+      pathIfNewPipe: vars.pathIfPipe,
+      variableIfNewPipe: variableName,
+      wasmInstance,
+    })
+  }
   if (err(pathToNode)) {
     return pathToNode
   }

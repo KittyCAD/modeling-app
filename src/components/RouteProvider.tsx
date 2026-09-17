@@ -3,9 +3,8 @@ import { SessionExpiredDialogHost } from '@src/components/SessionExpiredDialog'
 import { useAuthNavigation } from '@src/hooks/useAuthNavigation'
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { getAppSettingsFilePath, isPathNotFoundError } from '@src/lib/desktop'
-import fsZds from '@src/lib/fs-zds'
-import { PATHS, getStringAfterLastSeparator } from '@src/lib/paths'
+import { getAppSettingsFilePath } from '@src/lib/desktop'
+import { getStringAfterLastSeparator, PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import { trap } from '@src/lib/trap'
 import type { ReactNode } from 'react'
@@ -17,7 +16,7 @@ export const RouteProviderContext = createContext({})
 export function RouteProvider({ children }: { children: ReactNode }) {
   useSignals()
   const app = useApp()
-  const { settings, project } = app
+  const { fileOperations, settings, project } = app
   const { kclManager } = useSingletons()
   const settingsActor = settings.actor
   useAuthNavigation()
@@ -120,10 +119,7 @@ export function RouteProvider({ children }: { children: ReactNode }) {
       // wish to change the behavior in case anything else uses it.
       // Go home.
       if (loadedProject?.path) {
-        try {
-          await fsZds.stat(loadedProject.path)
-        } catch (error) {
-          if (!isPathNotFoundError(error)) return Promise.reject(error)
+        if (!(await fileOperations.exists(loadedProject.path))) {
           if (
             app.project !== project ||
             app.project?.projectIORefSignal.value.path !== loadedProject.path

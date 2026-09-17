@@ -8,8 +8,10 @@ description: Variables in memory after executing non_english_identifiers.kcl
     "value": 20.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "comprimentoRosca": {
@@ -17,8 +19,10 @@ description: Variables in memory after executing non_english_identifiers.kcl
     "value": 80.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "comprimentoTotal": {
@@ -26,8 +30,10 @@ description: Variables in memory after executing non_english_identifiers.kcl
     "value": 100.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "亞當": {
@@ -35,8 +41,10 @@ description: Variables in memory after executing non_english_identifiers.kcl
     "value": 100.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   }
 }
