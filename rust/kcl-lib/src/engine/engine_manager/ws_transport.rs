@@ -47,16 +47,21 @@ impl TcpRead {
             }
             Err(e) => return Err(anyhow!("Error reading from engine's WebSocket: {e}").into()),
         };
-        let msg: WebSocketResponse = match msg {
+        match msg {
             WsMsg::Text(text) => kcl_engine_codec::deserialize_response_json(&text)
                 .map_err(anyhow::Error::from)
-                .map_err(WebSocketReadError::from)?,
+                .map_err(WebSocketReadError::from),
             WsMsg::Binary(bin) => kcl_engine_codec::deserialize_response_msgpack(&bin)
                 .map_err(anyhow::Error::from)
-                .map_err(WebSocketReadError::from)?,
-            other => return Err(anyhow!("Unexpected WebSocket message from engine API: {other}").into()),
-        };
-        Ok(msg)
+                .map_err(WebSocketReadError::from),
+            WsMsg::Close(close_frame) => {
+                let err_msg = close_frame
+                    .map(|frame| frame.reason.to_string())
+                    .unwrap_or("WebSocket closed without specifying a reason.".to_string());
+                Err(anyhow!(err_msg).into())
+            }
+            other => Err(anyhow!("Unexpected WebSocket message from engine API: {other}").into()),
+        }
     }
 }
 
@@ -249,12 +254,23 @@ impl WebSocketTransport {
                         }
                     }
                     Err(e) => {
-                        match &e {
-                            WebSocketReadError::Read(e) => crate::logln!("could not read from WS: {:?}", e),
-                            WebSocketReadError::Deser(e) => {
-                                crate::logln!("could not deserialize msg from WS: {:?}", e)
-                            }
-                        }
+                        let msg = match &e {
+                            WebSocketReadError::Read(e) => e.to_string(),
+                            WebSocketReadError::Deser(e) => e.to_string(),
+                        };
+                        response_information_for_read
+                            .add(
+                                Uuid::new_v4(), // TODO: not good but we don't have an ID! it failed! badly!
+                                WebSocketResponse::Failure(FailureWebSocketResponse {
+                                    success: false,
+                                    request_id: None,
+                                    errors: vec![kcmc::websocket::ApiError {
+                                        error_code: kcmc::websocket::ErrorCode::BadRequest,
+                                        message: msg,
+                                    }], // API error not applicable here
+                                }),
+                            )
+                            .await;
                         *socket_health_tcp_read.write().await = SocketHealth::Inactive;
                         return Err(e);
                     }
