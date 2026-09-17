@@ -25,8 +25,8 @@ const mocks = vi.hoisted(() => ({
   exists: vi.fn(),
   stat: vi.fn(),
   loadAndValidateSettings: vi.fn(),
-  beginFileRouteLoad: vi.fn(() => () => undefined),
-  openFile: vi.fn(),
+  supersedeProjectOpen: vi.fn(),
+  openProject: vi.fn(),
 }))
 
 vi.mock('@src/lib/routeLoaderUtils', () => ({
@@ -64,14 +64,17 @@ const originalElectron = window.electron
 
 function fakeApp(): App {
   return {
-    beginFileRouteLoad: mocks.beginFileRouteLoad,
     fileOperations: {},
     registry: {
-      get: () => ({ exists: mocks.exists, stat: mocks.stat }),
+      get: () => ({
+        exists: mocks.exists,
+        stat: mocks.stat,
+        supersedeProjectOpen: mocks.supersedeProjectOpen,
+        openProject: mocks.openProject,
+      }),
     },
     singletons: { kclManager: { wasmInstancePromise: Promise.resolve({}) } },
     settings: { actor: { getSnapshot: () => ({ matches: () => true }) } },
-    openFile: mocks.openFile,
     project: undefined,
   } as unknown as App
 }
@@ -169,15 +172,15 @@ describe('initFileRoute', () => {
       requestUrl: 'http://localhost/file/%2Fbrowser%2Fwhatever.kcl',
     })
     // The one genuinely routing-shaped case left here: a legacy URL shape with
-    // no meaning as application state, so it never reaches `openFile`.
+    // no meaning as application state, so it never reaches `OpenProject`.
     expect(result).toEqual({ kind: 'redirect', to: PATHS.HOME })
-    expect(mocks.beginFileRouteLoad).toHaveBeenCalledWith(expect.anything())
-    expect(mocks.openFile).not.toHaveBeenCalled()
+    expect(mocks.supersedeProjectOpen).toHaveBeenCalledWith(expect.anything())
+    expect(mocks.openProject).not.toHaveBeenCalled()
   })
 
-  test('hands everything else to app.openFile and passes its redirect through', async () => {
+  test('hands everything else to OpenProject and passes its redirect through', async () => {
     setDesktop(false)
-    mocks.openFile.mockResolvedValue({
+    mocks.openProject.mockResolvedValue({
       kind: 'redirect',
       to: '/file/elsewhere',
     })
@@ -187,8 +190,8 @@ describe('initFileRoute', () => {
       requestUrl: 'http://localhost/file/%2Flibrary%2Fproj',
     })
 
-    expect(mocks.openFile).toHaveBeenCalledWith({
-      id: '/library/proj',
+    expect(mocks.openProject).toHaveBeenCalledWith({
+      target: '/library/proj',
       requestUrl: 'http://localhost/file/%2Flibrary%2Fproj',
       signal: expect.anything(),
     })
@@ -198,7 +201,7 @@ describe('initFileRoute', () => {
   test('passes an opened file back as loader data', async () => {
     setDesktop(false)
     const data = { code: 'x = 1' }
-    mocks.openFile.mockResolvedValue({ kind: 'opened', data })
+    mocks.openProject.mockResolvedValue({ kind: 'opened', data })
 
     const result = await initFileRoute(fakeApp(), {
       id: '/library/proj/main.kcl',

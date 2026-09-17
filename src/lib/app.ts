@@ -10,15 +10,15 @@ import { effect, type Signal, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import { File, KclManager, ZDSProject } from '@src/lang/KclManager'
 import { lspService } from '@src/lang/lsp/registry/contract'
-import { openProjectFile } from '@src/lib/openFile'
+import { createAppNavigationService } from '@src/lib/appNavigation'
 import { type BillingRegistryService, billingService } from '@src/lib/billing'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import type { Debugger } from '@src/lib/debugger'
-import { isPlaywright } from '@src/lib/isPlaywright'
 import { EngineDebugger } from '@src/lib/debugger'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { isPlaywright } from '@src/lib/isPlaywright'
 import { setKclRuntimeFlagsOnWasm } from '@src/lib/kclRuntimeFlags'
 import { layoutService } from '@src/lib/layout/registry/contract'
 import type { LayoutService } from '@src/lib/layout/types'
@@ -51,6 +51,7 @@ import {
   UserFeaturesTransition,
   userFeaturesContextHas,
 } from '@src/machines/userFeaturesMachine'
+import { appNavigationService } from '@src/registry/contracts/appNavigation'
 import {
   type AuthRegistryService,
   authService,
@@ -235,6 +236,7 @@ export class App implements AppSubsystems {
   private lastSettings: SaveSettingsPayload
   private activeWasmInstance: ModuleType | undefined
   private unsubscribeFromActiveWasmInstance: (() => void) | undefined
+  private unbindProjectSessionRuntime: (() => void) | undefined
 
   constructor(subsystems: AppSubsystems) {
     this.wasmPromise = subsystems.wasmPromise
@@ -273,6 +275,11 @@ export class App implements AppSubsystems {
     this.syncUserFeaturesFromAuth(this.auth.actor.getSnapshot())
 
     this.singletons = this.buildSingletons()
+    this.unbindProjectSessionRuntime = this.projectSession.bindRuntime({
+      openProject: (project, assertCurrent) =>
+        this.openProjectRuntime(project, assertCurrent),
+      closeProject: this.closeProjectRuntime,
+    })
     this.lastSettings = getAllCurrentSettings(
       getOnlySettingsFromContext(this.settings.actor.getSnapshot().context)
     )
@@ -362,20 +369,7 @@ export class App implements AppSubsystems {
     )
   }
 
-  private fileRouteLoadGeneration = 0
-
-  beginFileRouteLoad(signal: AbortSignal) {
-    const generation = ++this.fileRouteLoadGeneration
-    return () => {
-      if (signal.aborted || generation !== this.fileRouteLoadGeneration) {
-        // React Router models cancelled loaders as rejected AbortErrors.
-        // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-        throw new DOMException('Superseded file route load', 'AbortError')
-      }
-    }
-  }
-
-  async openProject(
+  private async openProjectRuntime(
     projectIORef: Project,
     assertCurrent: () => void = () => {}
   ) {
@@ -481,9 +475,13 @@ export class App implements AppSubsystems {
   private hasStoppedSubsystems = false
 
   private stopSubsystems() {
-    if (this.hasStoppedSubsystems) return
+    if (this.hasStoppedSubsystems) {
+      return
+    }
     this.hasStoppedSubsystems = true
     this.closeProject()
+    this.unbindProjectSessionRuntime?.()
+    this.unbindProjectSessionRuntime = undefined
     this.unsubscribeFromActiveWasmInstance?.()
     this.unsubscribeFromActiveWasmInstance = undefined
     this.systemIOActor.stop()
@@ -505,18 +503,11 @@ export class App implements AppSubsystems {
     await this.registry.disposeAsync()
   }
 
-  /**
-   * Open a project and one of its files.
-   *
-   * The counterpart to `closeProject`. This exists so that opening a file is an
-   * application command rather than a side effect of a route transition — until
-   * it did, a URL navigation was the only thing in the app that could open one.
-   */
-  async openFile(input: Parameters<typeof openProjectFile>[1]) {
-    return openProjectFile(this, input)
+  closeProject() {
+    this.projectSession.closeProject()
   }
 
-  closeProject() {
+  private closeProjectRuntime = () => {
     this.disposeProjectHistoryExtensions?.()
     this.disposeProjectHistoryExtensions = undefined
     this.unsubscribeFromSettings?.unsubscribe()
@@ -822,6 +813,10 @@ export class App implements AppSubsystems {
           provideService(systemIOService, {
             actor: this.systemIOActor,
           }),
+          provideService(
+            appNavigationService,
+            createAppNavigationService(this)
+          ),
         ],
       }),
     ])
