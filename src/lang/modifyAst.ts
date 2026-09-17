@@ -1343,7 +1343,8 @@ export function pathsReferToSamePipe(
 export function replaceCallInPlace(
   existingCall: CallExpressionKw,
   replacementCall: CallExpressionKw,
-  labeledSelectionArgNames: readonly string[] = []
+  labeledSelectionArgNames: readonly string[] = [],
+  replaceUnlabeled = false
 ) {
   // Until selection edits can roll back, reconstructed selections are
   // display-only. Drop them, then restore the originals at their old positions.
@@ -1361,7 +1362,9 @@ export function replaceCallInPlace(
   }
 
   Object.assign(existingCall, replacementCall, {
-    unlabeled: structuredClone(existingCall.unlabeled),
+    unlabeled: structuredClone(
+      replaceUnlabeled ? replacementCall.unlabeled : existingCall.unlabeled
+    ),
     arguments: mergedArguments,
   })
 }
@@ -1373,6 +1376,7 @@ export function setCallInAst({
   pathIfNewPipe,
   variableIfNewDecl,
   labeledSelectionArgNames,
+  replaceUnlabeled,
   wasmInstance,
 }: {
   ast: Node<Program>
@@ -1381,6 +1385,8 @@ export function setCallInAst({
   pathIfNewPipe?: PathToNode
   variableIfNewDecl?: string
   labeledSelectionArgNames?: readonly string[]
+  /** Replace the edited call's unlabeled argument instead of preserving it. */
+  replaceUnlabeled?: boolean
   wasmInstance: ModuleType
 }): Error | PathToNode {
   let pathToNode: PathToNode | undefined
@@ -1402,7 +1408,12 @@ export function setCallInAst({
       return result
     }
 
-    replaceCallInPlace(result.node, call, labeledSelectionArgNames)
+    replaceCallInPlace(
+      result.node,
+      call,
+      labeledSelectionArgNames,
+      replaceUnlabeled
+    )
     pathToNode = pathToEdit
   } else if (pathIfNewPipe) {
     const pipe = getNodeFromPath<PipeExpression>(

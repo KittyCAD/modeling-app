@@ -1735,7 +1735,9 @@ export function retrieveSelectionsFromOpArg(
   opArg: OpArg,
   artifactGraph: ArtifactGraph
 ): Error | Selections {
-  const error = new Error("Couldn't retrieve sketches from operation")
+  const emptySelectionError = new Error(
+    "Couldn't retrieve sketches from operation"
+  )
   let artifactIds: string[] = []
   if (
     opArg.value.type === 'Solid' ||
@@ -1768,9 +1770,28 @@ export function retrieveSelectionsFromOpArg(
   } else if (opArg.value.type === 'TagIdentifier' && opArg.value.artifact_id) {
     artifactIds = [opArg.value.artifact_id]
   } else {
-    return error
+    return emptySelectionError
   }
 
+  return retrieveSelections(artifactIds, artifactGraph, emptySelectionError)
+}
+
+export function retrieveSelectionsFromArtifactIds(
+  artifactIds: string[],
+  artifactGraph: ArtifactGraph
+): Error | Selections {
+  return retrieveSelections(
+    artifactIds,
+    artifactGraph,
+    new Error("Couldn't retrieve artifacts for selection")
+  )
+}
+
+function retrieveSelections(
+  artifactIds: string[],
+  artifactGraph: ArtifactGraph,
+  emptySelectionError: Error
+): Error | Selections {
   const graphSelections: Selection[] = []
   for (const artifactId of artifactIds) {
     let artifact =
@@ -1812,7 +1833,7 @@ export function retrieveSelectionsFromOpArg(
   }
 
   if (graphSelections.length === 0) {
-    return error
+    return emptySelectionError
   }
 
   return { graphSelections, otherSelections: [] }

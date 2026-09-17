@@ -37,10 +37,11 @@ function viewEnum(type: string, value: string) {
 
 function insertKclVariableIfNeeded(
   value: KclCommandValue | undefined,
-  ast: Node<Program>
+  ast: Node<Program>,
+  nodeToEdit?: PathToNode
 ) {
   if (value && 'variableName' in value && value.variableName) {
-    insertVariableAndOffsetPathToNode(value, ast)
+    insertVariableAndOffsetPathToNode(value, ast, nodeToEdit)
   }
 }
 
@@ -54,6 +55,7 @@ export function addNamedView({
   projection,
   baseline,
   except,
+  nodeToEdit,
   wasmInstance,
 }: {
   ast: Node<Program>
@@ -65,9 +67,11 @@ export function addNamedView({
   projection: NamedViewProjection
   baseline: NamedViewVisibility
   except?: Selections
+  nodeToEdit?: PathToNode
   wasmInstance: ModuleType
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   const modifiedAst = structuredClone(ast)
+  const pathToEdit = structuredClone(nodeToEdit)
   const namedCall = modelingStdLibCall('Named View')
 
   const exceptVars = except
@@ -112,12 +116,14 @@ export function addNamedView({
     namedCall.path.map(createIdentifier)
   )
 
-  insertKclVariableIfNeeded(target, modifiedAst)
-  insertKclVariableIfNeeded(distance, modifiedAst)
+  insertKclVariableIfNeeded(target, modifiedAst, pathToEdit)
+  insertKclVariableIfNeeded(distance, modifiedAst, pathToEdit)
 
   const pathToNode = setCallInAst({
     ast: modifiedAst,
     call,
+    pathToEdit,
+    replaceUnlabeled: true,
     variableIfNewDecl: 'view',
     wasmInstance,
   })
