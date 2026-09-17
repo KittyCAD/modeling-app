@@ -183,6 +183,7 @@ function AppProjectCard({
   useHotkeys('esc', () => setIsEditing(false))
   const [isEditing, setIsEditing] = useState(false)
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
   const [isReviewingDuplicates, setIsReviewingDuplicates] = useState(false)
   const [isSeparatingProjectCopies, setIsSeparatingProjectCopies] =
     useState(false)
@@ -415,9 +416,15 @@ function AppProjectCard({
       {isConfirmingDelete && (
         <DeleteConfirmationDialog
           title="Delete Project"
+          confirmDisabled={isDeleting}
           onConfirm={toSync(async () => {
-            await projectActions.delete(project)
-            setIsConfirmingDelete(false)
+            setIsDeleting(true)
+            try {
+              await projectActions.delete(project)
+              setIsConfirmingDelete(false)
+            } finally {
+              setIsDeleting(false)
+            }
           }, reportRejection)}
           onDismiss={() => setIsConfirmingDelete(false)}
         >

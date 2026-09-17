@@ -730,6 +730,28 @@ describe('ProjectCard', () => {
     ).toBeInTheDocument()
   })
 
+  test('does not dispatch duplicate deletes while confirmation is pending', async () => {
+    let resolveDelete: () => void = () => undefined
+    const pendingDelete = new Promise<void>((resolve) => {
+      resolveDelete = resolve
+    })
+    const projectActions = createProjectActions()
+    vi.mocked(projectActions.delete).mockReturnValue(pendingDelete)
+    renderProjectCard({ projectActions })
+
+    fireEvent.contextMenu(screen.getByTestId('project-link'))
+    fireEvent.click(screen.getByTestId('project-card-context-delete'))
+    fireEvent.click(screen.getByTestId('delete-confirmation'))
+    fireEvent.click(screen.getByTestId('delete-confirmation'))
+
+    expect(projectActions.delete).toHaveBeenCalledTimes(1)
+
+    resolveDelete()
+    await waitFor(() =>
+      expect(screen.queryByText('Delete Project')).not.toBeInTheDocument()
+    )
+  })
+
   test('selects the project title when opening rename from the context menu', async () => {
     renderProjectCard()
 
