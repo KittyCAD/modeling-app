@@ -190,6 +190,11 @@ function createAppForTest(
   })
 }
 
+async function openProject(app: App, project: Project) {
+  return (await app.registry.get(projectSession).openProject({ project }))
+    .project
+}
+
 function createRuntimeFlagsWasmInstance() {
   return {
     set_kcl_runtime_flags: vi.fn(),
@@ -354,7 +359,7 @@ describe('project system', () => {
       }
 
       const projectPath = fsZds.join(library.path, 'bracket')
-      const openedProject = await app.openProject({
+      const openedProject = await openProject(app, {
         ...mockProject,
         name: 'bracket',
         path: projectPath,
@@ -870,7 +875,7 @@ describe('project system', () => {
           },
         ],
       }
-      const openedProject = await app.openProject(project)
+      const openedProject = await openProject(app, project)
       const kclManager = await openedProject.openEditor(mainPath)
       await Promise.resolve()
 
@@ -949,7 +954,7 @@ describe('project system', () => {
           },
         ],
       }
-      const openedProject = await app.openProject(project)
+      const openedProject = await openProject(app, project)
       const kclManager = await openedProject.openEditor(mainPath)
       const calls: string[] = []
 
@@ -1034,7 +1039,7 @@ describe('project system', () => {
           { name: 'alternate.kcl', path: alternatePath, children: null },
         ],
       }
-      const openedProject = await app.openProject(project)
+      const openedProject = await openProject(app, project)
       const kclManager = await openedProject.openEditor(
         mainPath,
         undefined,
@@ -1051,9 +1056,11 @@ describe('project system', () => {
         path === alternatePath ? alternateRead : originalRead(path)
 
       const firstController = new AbortController()
-      const assertFirstLoadCurrent = app.beginFileRouteLoad(
-        firstController.signal
-      )
+      const assertFirstLoadCurrent = () => {
+        if (firstController.signal.aborted) {
+          throw new DOMException('Superseded project open', 'AbortError')
+        }
+      }
       const staleOpen = openedProject.openEditor(
         alternatePath,
         kclManager,
@@ -1063,7 +1070,7 @@ describe('project system', () => {
       )
       await Promise.resolve()
 
-      app.beginFileRouteLoad(new AbortController().signal)
+      firstController.abort()
       resolveAlternateRead('alternate = true\n')
 
       await expect(staleOpen).rejects.toMatchObject({ name: 'AbortError' })
@@ -1121,7 +1128,7 @@ describe('project system', () => {
         'fixedSizeGrid',
         !app.settings.get().modeling.fixedSizeGrid.default
       )
-      await app.openProject(mockProject)
+      await openProject(app, mockProject)
       await Promise.resolve()
 
       expect(updateSketchGrid).not.toHaveBeenCalled()
@@ -1193,7 +1200,7 @@ describe('project system', () => {
     File.ioImplementations.write = () => Promise.resolve()
 
     try {
-      const project = await app.openProject(mockProject)
+      const project = await openProject(app, mockProject)
 
       expect(app.project).toBeDefined()
       expect(app.project?.executingPath).toBeNull()

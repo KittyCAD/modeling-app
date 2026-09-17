@@ -1,11 +1,12 @@
 import type { App } from '@src/lib/app'
-import { openProjectFile } from '@src/lib/openFile'
+import { createAppNavigationService } from '@src/lib/appNavigation'
 import type * as PathsModule from '@src/lib/paths'
 import { PATHS } from '@src/lib/paths'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
 /**
- * `openProjectFile` owns resolution as well as opening, so these pin both: the
+ * `appNavigation.openProject` owns resolution and delegates lifecycle, so these
+ * pin both: the
  * exact redirect strings it produces when given a `requestUrl` (the Playwright
  * suite asserts URLs literally), and the fact that without one it resolves to
  * the project default and just opens it.
@@ -19,6 +20,7 @@ const mocks = vi.hoisted(() => ({
   loadRouteSettings: vi.fn(),
   waitFor: vi.fn(async () => undefined),
   openEditor: vi.fn(async () => ({ code: 'x = 1' })),
+  openProject: vi.fn(),
   send: vi.fn(),
 }))
 
@@ -48,17 +50,19 @@ vi.mock('@src/lib/paths', async () => {
 
 const originalElectron = window.electron
 
-function fakeApp(): App {
+function fakeApp(
+  wasmInstancePromise: Promise<unknown> = Promise.resolve({})
+): App {
   return {
-    beginFileRouteLoad: () => () => undefined,
-    registry: { get: () => ({ stat: mocks.stat }) },
-    singletons: { kclManager: { wasmInstancePromise: Promise.resolve({}) } },
+    registry: {
+      get: () => ({
+        stat: mocks.stat,
+        openProject: mocks.openProject,
+      }),
+    },
+    singletons: { kclManager: { wasmInstancePromise } },
     settings: { actor: { send: mocks.send } },
     project: undefined,
-    openProject: async () => ({
-      openEditor: mocks.openEditor,
-      projectIORefSignal: { value: { libraryPath: '/library' } },
-    }),
     systemIOActor: {
       getSnapshot: () => ({
         context: {
@@ -73,7 +77,17 @@ function fakeApp(): App {
   } as unknown as App
 }
 
+function appNavigation() {
+  return createAppNavigationService(fakeApp())
+}
+
 beforeEach(() => {
+  mocks.openProject.mockImplementation(async () => ({
+    project: {
+      projectIORefSignal: { value: { libraryPath: '/library' } },
+    },
+    editor: await mocks.openEditor(),
+  }))
   mocks.loadRouteSettings.mockResolvedValue({
     settings: { app: { libraries: undefined } },
     configuration: {},
@@ -86,7 +100,7 @@ afterEach(() => {
   window.electron = originalElectron
 })
 
-describe('openProjectFile, asked through a URL', () => {
+describe('OpenProject, asked through a URL', () => {
   test('a project root redirects to its default file, preserving the rest of the URL', async () => {
     mocks.parseProjectRoute.mockReturnValue({
       projectName: 'proj',
@@ -98,8 +112,8 @@ describe('openProjectFile, asked through a URL', () => {
       default_file: '/library/proj/main.kcl',
     })
 
-    const result = await openProjectFile(fakeApp(), {
-      id: '/library/proj',
+    const result = await appNavigation().openProject({
+      target: '/library/proj',
       requestUrl: `http://localhost${PATHS.FILE}/%2Flibrary%2Fproj?pool=alpha`,
     })
 
@@ -123,8 +137,8 @@ describe('openProjectFile, asked through a URL', () => {
     })
     mocks.stat.mockResolvedValue({})
 
-    const result = await openProjectFile(fakeApp(), {
-      id: '/library/proj/nope.kcl',
+    const result = await appNavigation().openProject({
+      target: '/library/proj/nope.kcl',
       requestUrl: `http://localhost${PATHS.FILE}/%2Flibrary%2Fproj%2Fnope.kcl?pool=alpha`,
     })
 
@@ -145,8 +159,8 @@ describe('openProjectFile, asked through a URL', () => {
 
     // Settings is reachable on a project root, so the shape that would
     // otherwise redirect has to fall through and open instead.
-    const result = await openProjectFile(fakeApp(), {
-      id: '/library/proj',
+    const result = await appNavigation().openProject({
+      target: '/library/proj',
       requestUrl: `http://localhost${PATHS.FILE}/%2Flibrary%2Fproj/settings`,
     })
 
@@ -157,15 +171,29 @@ describe('openProjectFile, asked through a URL', () => {
     mocks.parseProjectRoute.mockReturnValue(undefined)
 
     await expect(
-      openProjectFile(fakeApp(), {
-        id: '/library/proj/main.kcl',
+      appNavigation().openProject({
+        target: '/library/proj/main.kcl',
         requestUrl: 'http://localhost/file/x',
       })
     ).rejects.toThrow('bug: projectPathData undefined')
   })
 })
 
-describe('openProjectFile, asked directly', () => {
+describe('OpenProject, asked directly', () => {
+  test('a newer intent supersedes an in-flight project open', async () => {
+    let resolveWasm: (wasm: unknown) => void = () => undefined
+    const wasmInstancePromise = new Promise((resolve) => {
+      resolveWasm = resolve
+    })
+    const navigation = createAppNavigationService(fakeApp(wasmInstancePromise))
+
+    const firstOpen = navigation.openProject({ target: '/library/proj' })
+    navigation.supersedeProjectOpen()
+    resolveWasm({})
+
+    await expect(firstOpen).rejects.toMatchObject({ name: 'AbortError' })
+  })
+
   test('opens the project default rather than returning a redirect', async () => {
     mocks.parseProjectRoute.mockReturnValue({
       projectName: 'proj',
@@ -180,18 +208,20 @@ describe('openProjectFile, asked directly', () => {
     // With no URL there is nothing to correct, so the case that would have
     // redirected resolves to the default file and opens it. This is what lets
     // callers that are not a route open a file at all.
-    const result = await openProjectFile(fakeApp(), { id: '/library/proj' })
+    const result = await appNavigation().openProject({
+      target: '/library/proj',
+    })
 
     expect(result).toMatchObject({
       kind: 'opened',
       data: { file: { path: '/library/proj/main.kcl', name: 'main.kcl' } },
     })
-    expect(mocks.openEditor).toHaveBeenCalledWith(
-      '/library/proj/main.kcl',
-      expect.anything(),
-      undefined,
-      true,
-      expect.any(Function)
+    expect(mocks.openProject).toHaveBeenCalledWith(
+      expect.objectContaining({
+        initialEditor: expect.objectContaining({
+          path: '/library/proj/main.kcl',
+        }),
+      })
     )
   })
 
@@ -207,17 +237,17 @@ describe('openProjectFile, asked directly', () => {
     })
     mocks.stat.mockResolvedValue({})
 
-    const result = await openProjectFile(fakeApp(), {
-      id: '/library/proj/part.kcl',
+    const result = await appNavigation().openProject({
+      target: '/library/proj/part.kcl',
     })
 
     expect(result).toMatchObject({ kind: 'opened' })
-    expect(mocks.openEditor).toHaveBeenCalledWith(
-      '/library/proj/part.kcl',
-      expect.anything(),
-      undefined,
-      true,
-      expect.any(Function)
+    expect(mocks.openProject).toHaveBeenCalledWith(
+      expect.objectContaining({
+        initialEditor: expect.objectContaining({
+          path: '/library/proj/part.kcl',
+        }),
+      })
     )
   })
 })
