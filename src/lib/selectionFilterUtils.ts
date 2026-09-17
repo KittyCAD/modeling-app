@@ -6,6 +6,7 @@
 import type { EntityType, ModelingCmdReq } from '@kittycad/lib'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { KclManager } from '@src/lang/KclManager'
+import type { CommandSelectionType } from '@src/lib/commandTypes'
 import type { handleSelectionBatch } from '@src/lib/selections'
 import { uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -20,6 +21,19 @@ export const defaultSelectionFilter: EntityType[] = [
   'object',
   'path',
 ]
+
+export function onlyAcceptsBodySelectionTypes(
+  selectionTypes: CommandSelectionType[]
+) {
+  return selectionTypes.every(
+    (type) =>
+      type === 'sweep' ||
+      type === 'compositeSolid' ||
+      type === 'path' ||
+      type === 'pathRegion' ||
+      type === 'helix'
+  )
+}
 
 /** TODO: This function is not synchronous but is currently treated as such */
 export function setSelectionFilterToDefault({

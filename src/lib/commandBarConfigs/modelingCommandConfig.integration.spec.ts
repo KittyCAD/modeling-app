@@ -325,16 +325,32 @@ describe('Extrude surface arguments', () => {
   })
 })
 
-describe('Helix cylinder selection', () => {
-  it('accepts a region-backed cylinder', () => {
-    const commandConfig = modelingMachineCommandConfig.Helix
-    if (!commandConfig || isArray(commandConfig)) {
-      throw new Error('Helix should have a single command config')
+describe('Object selection arguments', () => {
+  it('shares path regions across simple and mixed object selection flows', () => {
+    const helixConfig = modelingMachineCommandConfig.Helix
+    const unionConfig = modelingMachineCommandConfig['Boolean Union']
+    if (
+      !helixConfig ||
+      isArray(helixConfig) ||
+      !unionConfig ||
+      isArray(unionConfig)
+    ) {
+      throw new Error('Object commands should have single command configs')
     }
 
-    const cylinderArg = commandConfig.args?.cylinder
-    if (!cylinderArg || cylinderArg.inputType !== 'selection') {
-      throw new Error('Helix should expose a cylinder selection argument')
+    const cylinderArg = helixConfig.args?.cylinder
+    const solidsArg = unionConfig.args?.solids
+    if (
+      !cylinderArg ||
+      cylinderArg.inputType !== 'selection' ||
+      !solidsArg ||
+      solidsArg.inputType !== 'selectionMixed'
+    ) {
+      throw new Error('Object commands should expose selection arguments')
+    }
+
+    for (const arg of [cylinderArg, solidsArg]) {
+      expect(arg.selectionTypes).toContain('pathRegion')
     }
 
     expect(
