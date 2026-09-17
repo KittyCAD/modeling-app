@@ -120,7 +120,7 @@ extrude(profile001, length = 6)
     expect(request).toHaveBeenCalledOnce()
   })
 
-  it('keeps help open when a body selection selects and scrolls to code', async () => {
+  it('closes help when a body selection selects and scrolls to code', async () => {
     await plugin.showSignatureHelpTooltip(view, 9)
     expect(tooltip()).not.toBeNull()
 
@@ -129,16 +129,16 @@ extrude(profile001, length = 6)
       effects: EditorView.scrollIntoView(0, { y: 'center' }),
     })
 
-    expect(tooltip()).not.toBeNull()
+    expect(tooltip()).toBeNull()
   })
 
-  it('keeps help open when focus leaves the editor', async () => {
+  it('closes help when focus leaves the editor', async () => {
     await plugin.showSignatureHelpTooltip(view, 9)
     expect(tooltip()).not.toBeNull()
 
     view.contentDOM.blur()
 
-    expect(tooltip()).not.toBeNull()
+    expect(tooltip()).toBeNull()
   })
 
   it.each(['keydown', 'mousedown'])(

@@ -11,6 +11,9 @@ export const setSignatureHelpTooltip = StateEffect.define<Tooltip | null>()
 const signatureHelpTooltip = StateField.define<Tooltip | null>({
   create: () => null,
   update(tooltip, transaction) {
+    // Selecting a body can change the code selection without editor input,
+    // so close the tooltip when a transaction sets the selection.
+    if (transaction.selection) tooltip = null
     if (tooltip && transaction.docChanged) {
       tooltip = {
         ...tooltip,
@@ -35,6 +38,15 @@ export default function lspSignatureHelpExt(
 ): Extension {
   return [
     signatureHelpTooltip,
+    EditorView.domEventHandlers({
+      // Focus can leave the editor without changing its code selection,
+      // so close the tooltip on blur as well.
+      blur: (_event, view) => {
+        if (view.state.field(signatureHelpTooltip) !== null) {
+          view.dispatch({ effects: setSignatureHelpTooltip.of(null) })
+        }
+      },
+    }),
     EditorView.baseTheme({
       // Keep long documentation scrollable within CodeMirror's constrained height.
       '.cm-signature-tooltip': { overflowY: 'auto' },
