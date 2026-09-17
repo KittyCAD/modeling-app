@@ -514,7 +514,7 @@ x = width
 
 ```kcl,norun
 // dimensions.kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 1.0)
 
 export width = 10mm
 ```
