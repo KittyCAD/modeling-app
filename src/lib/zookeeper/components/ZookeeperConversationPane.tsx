@@ -8,14 +8,7 @@ import { ZookeeperConversation } from '@src/lib/zookeeper/components/ZookeeperCo
 import { ZookeeperConversationWelcome } from '@src/lib/zookeeper/components/ZookeeperConversationWelcome'
 import type { ZookeeperSessionController } from '@src/lib/zookeeper/registry/controller'
 import type { MlCopilotModeId } from '@src/lib/zookeeper/zookeeperManagerMachine'
-import {
-  hasBeenInterruptedOnLast,
-  ZookeeperManagerStates,
-  ZookeeperManagerTransitions,
-} from '@src/lib/zookeeper/zookeeperManagerMachine'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
-import { S } from '@src/machines/utils'
-import { useSelector } from '@xstate/react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
@@ -30,58 +23,7 @@ export const ZookeeperConversationPane = (props: {
   const [defaultPrompt, setDefaultPrompt] = useState('')
   const [searchParams, setSearchParams] = useSearchParams()
   const controller = props.controller
-  const actor = controller.actor
-
-  let conversation = useSelector(actor, (snapshot) => {
-    return snapshot.context.conversation
-  })
-  const abruptlyClosed = useSelector(actor, (snapshot) => {
-    return snapshot.context.abruptlyClosed
-  })
-  const setupFailed = useSelector(actor, (snapshot) => {
-    return snapshot.context.setupFailed
-  })
-  const closeReason = useSelector(actor, (snapshot) => {
-    return snapshot.context.closeReason
-  })
-  const accessDeniedCode = useSelector(actor, (snapshot) => {
-    return snapshot.context.accessDeniedCode
-  })
-  const conversationId = useSelector(actor, (snapshot) => {
-    return snapshot.context.conversationId
-  })
-  const isSettingUp = useSelector(actor, (snapshot) => {
-    return snapshot.matches(ZookeeperManagerStates.Setup)
-  })
-  const isAwaitingConnection = useSelector(actor, (snapshot) => {
-    return snapshot.matches(S.Await)
-  })
-  const isPromptRunning = useSelector(actor, (snapshot) => {
-    return snapshot.context.awaitingResponse
-  })
-  const interruptedTurnAwaitingResume = useSelector(
-    actor,
-    (snapshot) =>
-      snapshot.matches(ZookeeperManagerStates.WaitForContinueCheck) &&
-      hasBeenInterruptedOnLast(snapshot.context.conversation?.exchanges ?? [])
-  )
-  const modeOptions = useSelector(actor, (snapshot) => {
-    return snapshot.context.modeOptions
-  })
-  const attachmentsLoadedForCurrentPrompt = useSelector(
-    actor,
-    (snapshot) => snapshot.context.attachmentsLoadedForCurrentPrompt
-  )
-  const attachmentFetches = useSelector(actor, (snapshot) => {
-    return snapshot.context.attachmentFetches
-  })
-  const defaultMode = useSelector(actor, (snapshot) => {
-    return snapshot.context.defaultMode
-  })
-
-  if (isAwaitingConnection && !abruptlyClosed) {
-    conversation = undefined
-  }
+  const view = controller.view.value
 
   const checkBillingWhenFocused = useRef(false)
   const checkBillingAccess = useCallback(() => {
@@ -92,7 +34,7 @@ export const ZookeeperConversationPane = (props: {
   }, [])
 
   useEffect(() => {
-    if (!setupFailed || accessDeniedCode === undefined) {
+    if (!view.connectionFailed || view.accessDeniedCode === undefined) {
       checkBillingWhenFocused.current = false
       return
     }
@@ -116,7 +58,7 @@ export const ZookeeperConversationPane = (props: {
       window.removeEventListener('focus', checkAfterBilling)
       document.removeEventListener('visibilitychange', checkAfterBilling)
     }
-  }, [accessDeniedCode, checkBillingAccess, setupFailed])
+  }, [checkBillingAccess, view.accessDeniedCode, view.connectionFailed])
 
   useEffect(() => {
     const promptParam =
@@ -133,28 +75,19 @@ export const ZookeeperConversationPane = (props: {
     setSearchParams(nextSearchParams, { replace: true })
   }, [searchParams, setSearchParams])
 
-  const showManualConnect = controller.showManualConnect.value
-  const isClearingChat = controller.isClearingChat.value
-  const isResumingInterruptedTurn = controller.isResumingInterruptedTurn.value
-  const needsReconnect = abruptlyClosed || showManualConnect
-  const isLoadingAttachments =
-    !attachmentsLoadedForCurrentPrompt && conversation !== undefined
   const initialMlCopilotMode =
-    props.zookeeperMode.project ?? props.zookeeperMode.user ?? defaultMode
+    props.zookeeperMode.project ?? props.zookeeperMode.user ?? view.defaultMode
 
   return (
     <ZookeeperConversation
-      isLoading={conversation === undefined}
-      isLoadingAttachments={isLoadingAttachments}
+      isLoading={view.isLoading}
+      isLoadingAttachments={view.isLoadingAttachments}
       contexts={[{ type: 'selections', data: props.selectionRanges }]}
-      conversation={conversation}
-      attachmentFetches={attachmentFetches}
-      onFetchAttachment={(attachmentRef) => {
-        actor.send({
-          type: ZookeeperManagerTransitions.AttachmentFetch,
-          attachmentRef,
-        })
-      }}
+      conversation={view.conversation}
+      attachmentFetches={view.attachmentFetches}
+      onFetchAttachment={(attachmentRef) =>
+        controller.fetchAttachment(attachmentRef)
+      }
       welcomeMessage={<ZookeeperConversationWelcome />}
       onProcess={(prompt, mode, attachments) => {
         controller.sendOrQueue(prompt, mode, attachments)
@@ -165,42 +98,29 @@ export const ZookeeperConversationPane = (props: {
       onReconnect={() => controller.reconnect()}
       onCheckBilling={checkBillingAccess}
       onOpenBilling={onOpenBilling}
-      connectionError={
-        showManualConnect ? 'No internet connection.' : closeReason
-      }
-      connectionFailed={setupFailed}
-      accessDeniedCode={accessDeniedCode}
-      showManualConnect={showManualConnect}
-      canClearChat={setupFailed && conversationId !== undefined}
-      isClearingChat={isClearingChat}
-      loadingMessage={
-        isSettingUp
-          ? 'Connecting to Zookeeper...'
-          : needsReconnect
-            ? 'Reconnecting...'
-            : undefined
-      }
+      connectionError={view.connectionError}
+      connectionFailed={view.connectionFailed}
+      accessDeniedCode={view.accessDeniedCode}
+      showManualConnect={view.showManualConnect}
+      canClearChat={view.canClearChat}
+      isClearingChat={view.isClearingChat}
+      loadingMessage={view.loadingMessage}
       onCancel={() => controller.cancel()}
-      disabled={
-        needsReconnect ||
-        isClearingChat ||
-        interruptedTurnAwaitingResume ||
-        isResumingInterruptedTurn
-      }
-      needsReconnect={needsReconnect}
-      hasPromptCompleted={!isPromptRunning && !interruptedTurnAwaitingResume}
-      isProcessing={isPromptRunning}
-      interruptedTurnAwaitingResume={interruptedTurnAwaitingResume}
-      isResumingInterruptedTurn={isResumingInterruptedTurn}
+      disabled={view.disabled}
+      needsReconnect={view.needsReconnect}
+      hasPromptCompleted={view.hasPromptCompleted}
+      isProcessing={view.isProcessing}
+      interruptedTurnAwaitingResume={view.interruptedTurnAwaitingResume}
+      isResumingInterruptedTurn={view.isResumingInterruptedTurn}
       onResumeInterruptedTurn={() => controller.resumeInterruptedTurn()}
-      queue={[...controller.queue.value]}
+      queue={[...view.queue]}
       onRemoveFromQueue={(id) => controller.removeQueued(id)}
       onSteer={(id) => controller.steer(id)}
       userAvatarSrc={props.userAvatarSrc}
       defaultPrompt={defaultPrompt}
       initialMlCopilotMode={initialMlCopilotMode}
       onMlCopilotModeChange={props.onMlCopilotModeChange}
-      modeOptions={modeOptions}
+      modeOptions={view.modeOptions}
       modeScopeKey={controller.projectPath}
     />
   )

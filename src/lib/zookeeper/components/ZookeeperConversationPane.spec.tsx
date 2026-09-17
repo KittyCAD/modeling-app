@@ -21,15 +21,13 @@ import type {
   ZookeeperConversationProps,
 } from '@src/lib/zookeeper/components/ZookeeperConversation'
 import { ZookeeperConversationPane } from '@src/lib/zookeeper/components/ZookeeperConversationPane'
-import type { ZookeeperSessionController } from '@src/lib/zookeeper/registry/controller'
+import type {
+  ZookeeperSessionController,
+  ZookeeperSessionView,
+} from '@src/lib/zookeeper/registry/controller'
 import type {
   Conversation,
   MlCopilotModeOption,
-  ZookeeperAttachmentFetchState,
-} from '@src/lib/zookeeper/zookeeperManagerMachine'
-import {
-  ZookeeperManagerStates,
-  ZookeeperManagerTransitions,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 
 const completedConversation: Conversation = {
@@ -64,99 +62,37 @@ const interruptedConversation: Conversation = {
   ],
 }
 
-type FakeSnapshot = {
-  value: string
-  context: {
-    abruptlyClosed: boolean
-    attachmentFetches: Record<string, ZookeeperAttachmentFetchState>
-    attachmentsLoadedForCurrentPrompt: boolean
-    awaitingResponse: boolean
-    accessDeniedCode?: 'payment_method_failed'
-    closeReason?: string
-    conversation?: Conversation
-    conversationId?: string
-    defaultMode?: string
-    modeOptions?: MlCopilotModeOption[]
-    setupFailed: boolean
-  }
-  matches: (state: unknown) => boolean
-}
+const defaultView = (): ZookeeperSessionView => ({
+  attachmentFetches: {},
+  canClearChat: false,
+  connectionFailed: false,
+  disabled: false,
+  hasPromptCompleted: true,
+  interruptedTurnAwaitingResume: false,
+  isClearingChat: false,
+  isLoading: true,
+  isLoadingAttachments: false,
+  isProcessing: false,
+  isResumingInterruptedTurn: false,
+  needsReconnect: false,
+  queue: [],
+  showManualConnect: false,
+})
 
-const createFakeActor = (
-  context: Partial<FakeSnapshot['context']> = {},
-  value: string = ZookeeperManagerStates.Ready
+const createFakeController = (
+  viewOverrides: Partial<ZookeeperSessionView> = {}
 ) => {
-  let snapshot: FakeSnapshot
-  const listeners = new Set<(next: FakeSnapshot) => void>()
-
-  const makeSnapshot = (
-    nextContext: Partial<FakeSnapshot['context']>,
-    nextValue: string
-  ): FakeSnapshot => ({
-    value: nextValue,
-    context: {
-      abruptlyClosed: false,
-      attachmentFetches: {},
-      attachmentsLoadedForCurrentPrompt: true,
-      awaitingResponse: false,
-      setupFailed: false,
-      ...nextContext,
-    },
-    matches: (state) => state === nextValue,
+  const view = signal<ZookeeperSessionView>({
+    ...defaultView(),
+    ...viewOverrides,
   })
-
-  snapshot = makeSnapshot(context, value)
-
-  const setSnapshot = (
-    nextContext: Partial<FakeSnapshot['context']>,
-    nextValue = snapshot.value
-  ) => {
-    snapshot = makeSnapshot({ ...snapshot.context, ...nextContext }, nextValue)
-    for (const listener of listeners) {
-      listener(snapshot)
-    }
-  }
-
-  return {
-    actor: {
-      getSnapshot: () => snapshot,
-      subscribe: (listener: (next: FakeSnapshot) => void) => {
-        listeners.add(listener)
-        return {
-          unsubscribe: () => listeners.delete(listener),
-        }
-      },
-      send: vi.fn(),
-    },
-    setSnapshot,
-  }
-}
-
-const createFakeController = ({
-  actorContext,
-  actorValue,
-  isClearingChat = false,
-  isResumingInterruptedTurn = false,
-  queue = [],
-  showManualConnect = false,
-}: {
-  actorContext?: Partial<FakeSnapshot['context']>
-  actorValue?: string
-  isClearingChat?: boolean
-  isResumingInterruptedTurn?: boolean
-  queue?: QueuedMessage[]
-  showManualConnect?: boolean
-} = {}) => {
-  const actor = createFakeActor(actorContext, actorValue)
-  const queueSignal = signal<QueuedMessage[]>(queue)
-  const clearingSignal = signal(isClearingChat)
-  const resumingSignal = signal(isResumingInterruptedTurn)
-  const manualConnectSignal = signal(showManualConnect)
   const methods = {
     cancel: vi.fn(),
     checkBillingAccess: vi.fn(),
     clearConversation: vi.fn(async () => undefined),
-    dispose: vi.fn(),
+    dispose: vi.fn(async () => undefined),
+    fetchAttachment: vi.fn(),
+    getConversationExport: vi.fn(() => ({ fileName: '', markdown: '' })),
     reconnect: vi.fn(),
     removeQueued: vi.fn(),
     resumeInterruptedTurn: vi.fn(),
@@ -165,23 +101,15 @@ const createFakeController = ({
     updateAuthToken: vi.fn(),
   }
   const controller = {
-    actor: actor.actor,
-    isClearingChat: clearingSignal,
-    isResumingInterruptedTurn: resumingSignal,
     projectPath: '/projects/cube',
-    queue: queueSignal,
-    showManualConnect: manualConnectSignal,
+    view,
     ...methods,
-  } as unknown as ZookeeperSessionController
+  } satisfies ZookeeperSessionController
 
   return {
-    ...actor,
     ...methods,
-    clearingSignal,
     controller,
-    manualConnectSignal,
-    queueSignal,
-    resumingSignal,
+    view,
   }
 }
 
@@ -218,7 +146,7 @@ beforeEach(() => {
 })
 
 describe('ZookeeperConversationPane', () => {
-  test('maps actor state, controller signals, and visual context to the conversation', () => {
+  test('maps the controller view and visual context to the conversation', () => {
     const attachmentFetches = {
       'prompt:0:0': { status: 'loading' as const },
     }
@@ -238,20 +166,22 @@ describe('ZookeeperConversationPane', () => {
       } as MlCopilotModeOption,
     ]
     const fake = createFakeController({
-      actorContext: {
-        attachmentFetches,
-        attachmentsLoadedForCurrentPrompt: false,
-        accessDeniedCode: 'payment_method_failed',
-        awaitingResponse: true,
-        closeReason: 'Connection lost.',
-        conversation: completedConversation,
-        conversationId: 'conversation-id',
-        defaultMode: 'server-mode',
-        modeOptions,
-        setupFailed: true,
-      },
-      actorValue: ZookeeperManagerStates.Setup,
+      accessDeniedCode: 'payment_method_failed',
+      attachmentFetches,
+      canClearChat: true,
+      connectionError: 'No internet connection.',
+      connectionFailed: true,
+      conversation: completedConversation,
+      defaultMode: 'server-mode',
+      disabled: true,
+      hasPromptCompleted: false,
       isClearingChat: true,
+      isLoading: false,
+      isLoadingAttachments: true,
+      isProcessing: true,
+      loadingMessage: 'Connecting to Zookeeper...',
+      modeOptions,
+      needsReconnect: true,
       queue: [queuedMessage],
       showManualConnect: true,
     })
@@ -302,12 +232,10 @@ describe('ZookeeperConversationPane', () => {
     expect(props.userAvatarSrc).toBe('avatar.png')
   })
 
-  test('stays reactive to actor state and controller signals', () => {
+  test('stays reactive to controller view changes', () => {
     const fake = createFakeController({
-      actorContext: {
-        conversation: completedConversation,
-        conversationId: 'conversation-id',
-      },
+      conversation: completedConversation,
+      isLoading: false,
     })
 
     render(
@@ -319,18 +247,21 @@ describe('ZookeeperConversationPane', () => {
     expect(latestConversationProps().needsReconnect).toBe(false)
 
     act(() => {
-      fake.manualConnectSignal.value = true
-      fake.queueSignal.value = [
-        {
-          id: 'queued-message',
-          text: 'shell the part',
-          attachments: [],
-        },
-      ]
-      fake.setSnapshot({
-        awaitingResponse: true,
+      fake.view.value = {
+        ...fake.view.value,
         conversation: undefined,
-      })
+        isLoading: true,
+        isProcessing: true,
+        needsReconnect: true,
+        queue: [
+          {
+            id: 'queued-message',
+            text: 'shell the part',
+            attachments: [],
+          },
+        ],
+        showManualConnect: true,
+      }
     })
 
     const props = latestConversationProps()
@@ -348,7 +279,8 @@ describe('ZookeeperConversationPane', () => {
 
   test('delegates conversation actions to the session controller', () => {
     const fake = createFakeController({
-      actorContext: { conversation: completedConversation },
+      conversation: completedConversation,
+      isLoading: false,
     })
     const onMlCopilotModeChange = vi.fn()
     render(
@@ -382,10 +314,7 @@ describe('ZookeeperConversationPane', () => {
     expect(fake.sendOrQueue).toHaveBeenCalledWith('make a cylinder', 'edit', [
       attachment,
     ])
-    expect(fake.actor.send).toHaveBeenCalledWith({
-      type: ZookeeperManagerTransitions.AttachmentFetch,
-      attachmentRef,
-    })
+    expect(fake.fetchAttachment).toHaveBeenCalledWith(attachmentRef)
     expect(fake.clearConversation).toHaveBeenCalledOnce()
     expect(fake.reconnect).toHaveBeenCalledOnce()
     expect(fake.checkBillingAccess).toHaveBeenCalledOnce()
@@ -398,10 +327,8 @@ describe('ZookeeperConversationPane', () => {
 
   test('checks billing access after returning from the billing page', () => {
     const fake = createFakeController({
-      actorContext: {
-        accessDeniedCode: 'payment_method_failed',
-        setupFailed: true,
-      },
+      accessDeniedCode: 'payment_method_failed',
+      connectionFailed: true,
     })
     render(
       <MemoryRouter>
@@ -420,11 +347,11 @@ describe('ZookeeperConversationPane', () => {
 
   test('requires an explicit resume for an interrupted turn', () => {
     const fake = createFakeController({
-      actorContext: {
-        awaitingResponse: false,
-        conversation: interruptedConversation,
-      },
-      actorValue: ZookeeperManagerStates.WaitForContinueCheck,
+      conversation: interruptedConversation,
+      disabled: true,
+      hasPromptCompleted: false,
+      interruptedTurnAwaitingResume: true,
+      isLoading: false,
       isResumingInterruptedTurn: true,
     })
     render(
@@ -445,10 +372,9 @@ describe('ZookeeperConversationPane', () => {
 
   test('consumes the URL prompt and falls back through user and server modes', async () => {
     const fake = createFakeController({
-      actorContext: {
-        conversation: completedConversation,
-        defaultMode: 'server-mode',
-      },
+      conversation: completedConversation,
+      defaultMode: 'server-mode',
+      isLoading: false,
     })
     render(
       <MemoryRouter

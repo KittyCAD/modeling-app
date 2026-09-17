@@ -1,4 +1,4 @@
-import { signal } from '@preact/signals-core'
+import { effect, signal } from '@preact/signals-core'
 import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import type * as ZookeeperManagerMachineModule from '@src/lib/zookeeper/zookeeperManagerMachine'
 import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
@@ -78,6 +78,7 @@ import {
   createZookeeperSessionController,
   type ZookeeperSessionController,
   type ZookeeperSessionControllerDependencies,
+  type ZookeeperSessionView,
 } from '@src/lib/zookeeper/registry/controller'
 import {
   ZookeeperManagerStates,
@@ -90,6 +91,7 @@ type TestState =
   | 'await'
   | 'ready'
   | 'ready-await'
+  | 'setup'
   | 'wait-for-continue-check'
 
 type ActorSnapshot = ReturnType<ZookeeperManagerActor['getSnapshot']>
@@ -101,12 +103,18 @@ function createSnapshot(
 ): ActorSnapshot {
   return {
     context: {
+      accessDeniedCode: undefined,
       abruptlyClosed: false,
+      attachmentFetches: {},
+      attachmentsLoadedForCurrentPrompt: true,
       awaitingResponse: false,
+      closeReason: undefined,
       conversation: undefined,
       conversationId: undefined,
+      defaultMode: undefined,
       lastMessageId: undefined,
       lastMessageType: undefined,
+      modeOptions: undefined,
       setupFailed: false,
       ...context,
     },
@@ -119,6 +127,9 @@ function createSnapshot(
       }
       if (expected === ZookeeperManagerStates.Ready) {
         return state === 'ready' || state === 'ready-await'
+      }
+      if (expected === ZookeeperManagerStates.Setup) {
+        return state === 'setup'
       }
       if (expected === ZookeeperManagerStates.WaitForContinueCheck) {
         return state === 'wait-for-continue-check'
@@ -327,7 +338,6 @@ describe('Zookeeper session controller', () => {
         apiToken: 'rotated-token',
       },
     ])
-    expect(controller.actor).toBe(actor)
     expect(conversationStore.saveProjectConversationId).toHaveBeenCalledWith({
       projectId,
       conversationId: 'conversation-id',
@@ -337,6 +347,124 @@ describe('Zookeeper session controller', () => {
       { type: BillingTransition.UsageEnded },
       { type: BillingTransition.Update, apiToken: 'rotated-token' },
     ])
+  })
+
+  it('publishes actor and controller state through a reactive view', () => {
+    const conversation = { exchanges: [] }
+    const attachmentFetches = {
+      'prompt:0:0': { status: 'loading' as const },
+    }
+    const modeOptions = [
+      {
+        id: 'edit',
+        label: 'Edit',
+        description: 'Edit the model',
+        icon: 'sparkles' as const,
+        disabled: false,
+      },
+    ]
+    const { actor, controller } = createHarness({
+      actorState: 'setup',
+      actorContext: {
+        abruptlyClosed: true,
+        accessDeniedCode: 'payment_method_failed',
+        attachmentFetches,
+        attachmentsLoadedForCurrentPrompt: false,
+        awaitingResponse: true,
+        closeReason: 'Connection lost.',
+        conversation,
+        conversationId: 'conversation-id',
+        defaultMode: 'edit',
+        modeOptions,
+        setupFailed: true,
+      },
+    })
+
+    const publishedViews: ZookeeperSessionView[] = []
+    const stopViewEffect = effect(() => {
+      publishedViews.push(controller.view.value)
+    })
+    const initialView = controller.view.value
+    expect(initialView).toMatchObject({
+      accessDeniedCode: 'payment_method_failed',
+      attachmentFetches,
+      canClearChat: true,
+      connectionError: 'Connection lost.',
+      connectionFailed: true,
+      conversation,
+      defaultMode: 'edit',
+      disabled: true,
+      hasPromptCompleted: false,
+      interruptedTurnAwaitingResume: false,
+      isClearingChat: false,
+      isLoading: false,
+      isLoadingAttachments: true,
+      isProcessing: true,
+      isResumingInterruptedTurn: false,
+      loadingMessage: 'Connecting to Zookeeper...',
+      modeOptions,
+      needsReconnect: true,
+      queue: [],
+      showManualConnect: false,
+    })
+
+    actor.emit('await', { conversation })
+    expect(publishedViews).toHaveLength(2)
+    expect(controller.view.value).not.toBe(initialView)
+    expect(controller.view.value).toMatchObject({
+      conversation: undefined,
+      disabled: false,
+      hasPromptCompleted: true,
+      isLoading: true,
+      loadingMessage: undefined,
+      needsReconnect: false,
+    })
+
+    const awaitingView = controller.view.value
+    window.dispatchEvent(new Event('offline'))
+    expect(publishedViews).toHaveLength(3)
+    expect(controller.view.value).not.toBe(awaitingView)
+    expect(controller.view.value).toMatchObject({
+      connectionError: 'No internet connection.',
+      disabled: true,
+      loadingMessage: 'Reconnecting...',
+      needsReconnect: true,
+      showManualConnect: true,
+    })
+    stopViewEffect()
+  })
+
+  it('keeps actor commands behind the session controller', () => {
+    const { actor, controller } = createHarness({
+      actorState: 'await',
+      actorContext: {
+        conversation: interruptedConversation,
+        conversationId: 'conversation-id',
+      },
+    })
+    const attachmentRef = {
+      prompt_id: '00000000-0000-4000-8000-000000000001',
+      seq: 3,
+      index: 1,
+      content_hash:
+        'sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
+    }
+
+    controller.fetchAttachment(attachmentRef)
+
+    expect(controller.view.value.conversation).toBeUndefined()
+    expect(
+      sentEvents(actor, ZookeeperManagerTransitions.AttachmentFetch)
+    ).toEqual([
+      {
+        type: ZookeeperManagerTransitions.AttachmentFetch,
+        attachmentRef,
+      },
+    ])
+    expect(controller.getConversationExport()).toEqual({
+      fileName: 'conversation-id.md',
+      markdown: expect.stringContaining('finish the bracket'),
+    })
   })
 
   it.each([
@@ -384,7 +512,7 @@ describe('Zookeeper session controller', () => {
     const attachment = new File(['notes'], 'notes.txt')
 
     controller.sendOrQueue('add two holes', undefined, [attachment])
-    expect(controller.queue.value).toHaveLength(1)
+    expect(controller.view.value.queue).toHaveLength(1)
 
     actor.emit('ready-await', { awaitingResponse: false })
 
@@ -393,7 +521,7 @@ describe('Zookeeper session controller', () => {
         sentEvents(actor, ZookeeperManagerTransitions.MessageSend)
       ).toHaveLength(1)
     })
-    expect(controller.queue.value).toHaveLength(0)
+    expect(controller.view.value.queue).toHaveLength(0)
     expect(projectFilesMocks.collect).toHaveBeenCalledWith({
       fileNames: kclManager.execState.filenames,
       projectContext: project,
@@ -418,7 +546,7 @@ describe('Zookeeper session controller', () => {
     executingEditor.value = undefined
     controller.sendOrQueue('add a mounting hole', undefined, [])
 
-    expect(controller.queue.value).toHaveLength(1)
+    expect(controller.view.value.queue).toHaveLength(1)
     expect(projectFilesMocks.collect).not.toHaveBeenCalled()
 
     executingEditor.value = kclManager
@@ -428,7 +556,7 @@ describe('Zookeeper session controller', () => {
         sentEvents(actor, ZookeeperManagerTransitions.MessageSend)
       ).toHaveLength(1)
     })
-    expect(controller.queue.value).toHaveLength(0)
+    expect(controller.view.value.queue).toHaveLength(0)
   })
 
   it('does not submit a queued prompt removed during project collection', async () => {
@@ -439,7 +567,7 @@ describe('Zookeeper session controller', () => {
     })
 
     controller.sendOrQueue('remove this prompt', undefined, [])
-    const queuedMessage = controller.queue.value[0]
+    const queuedMessage = controller.view.value.queue[0]
     if (!queuedMessage) {
       throw new Error('Expected the prompt to be queued')
     }
@@ -450,7 +578,7 @@ describe('Zookeeper session controller', () => {
     collectedFiles.resolve([])
     await flushPromises()
 
-    expect(controller.queue.value).toHaveLength(0)
+    expect(controller.view.value.queue).toHaveLength(0)
     expect(
       sentEvents(actor, ZookeeperManagerTransitions.MessageSend)
     ).toHaveLength(0)
@@ -461,7 +589,7 @@ describe('Zookeeper session controller', () => {
 
     controller.sendOrQueue('wait for request await', undefined, [])
 
-    expect(controller.queue.value).toHaveLength(1)
+    expect(controller.view.value.queue).toHaveLength(1)
     expect(projectFilesMocks.collect).not.toHaveBeenCalled()
 
     actor.emit('ready-await')
@@ -471,7 +599,7 @@ describe('Zookeeper session controller', () => {
         sentEvents(actor, ZookeeperManagerTransitions.MessageSend)
       ).toHaveLength(1)
     })
-    expect(controller.queue.value).toHaveLength(0)
+    expect(controller.view.value.queue).toHaveLength(0)
   })
 
   it('keeps rapid prompts in submission order', async () => {
@@ -488,7 +616,7 @@ describe('Zookeeper session controller', () => {
     controller.sendOrQueue('second prompt', undefined, [])
 
     expect(projectFilesMocks.collect).toHaveBeenCalledOnce()
-    expect(controller.queue.value.map(({ text }) => text)).toEqual([
+    expect(controller.view.value.queue.map(({ text }) => text)).toEqual([
       'first prompt',
       'second prompt',
     ])
@@ -658,11 +786,11 @@ describe('Zookeeper session controller', () => {
 
     online = false
     window.dispatchEvent(new Event('offline'))
-    expect(controller.showManualConnect.value).toBe(true)
+    expect(controller.view.value.showManualConnect).toBe(true)
 
     controller.reconnect()
 
-    expect(controller.showManualConnect.value).toBe(false)
+    expect(controller.view.value.showManualConnect).toBe(false)
     expect(
       sentEvents(actor, ZookeeperManagerTransitions.CacheSetupAndConnect)
     ).toHaveLength(2)
@@ -682,7 +810,7 @@ describe('Zookeeper session controller', () => {
 
     const clearPromise = controller.clearConversation()
 
-    expect(controller.isClearingChat.value).toBe(true)
+    expect(controller.view.value.isClearingChat).toBe(true)
     expect(
       sentEvents(actor, ZookeeperManagerTransitions.ConversationClose)
     ).toHaveLength(0)
@@ -701,8 +829,8 @@ describe('Zookeeper session controller', () => {
     actor.emit('await')
     await flushPromises()
 
-    expect(controller.queue.value).toHaveLength(0)
-    expect(controller.isClearingChat.value).toBe(false)
+    expect(controller.view.value.queue).toHaveLength(0)
+    expect(controller.view.value.isClearingChat).toBe(false)
     expect(workerMocks.processors[0].reset).toHaveBeenCalledOnce()
     expect(workerMocks.histories[0].reset).toHaveBeenCalledOnce()
     expect(
@@ -728,7 +856,7 @@ describe('Zookeeper session controller', () => {
       conversationId: 'old-conversation',
     })
 
-    expect(controller.isClearingChat.value).toBe(true)
+    expect(controller.view.value.isClearingChat).toBe(true)
     expect(conversationStore.saveProjectConversationId).not.toHaveBeenCalled()
 
     deletion.resolve(undefined)
@@ -764,7 +892,7 @@ describe('Zookeeper session controller', () => {
     actor.emit('await')
     await flushPromises()
 
-    expect(controller.queue.value).toHaveLength(0)
+    expect(controller.view.value.queue).toHaveLength(0)
     expect(
       sentEvents(actor, ZookeeperManagerTransitions.MessageSend)
     ).toHaveLength(0)
@@ -908,13 +1036,16 @@ describe('Zookeeper session controller', () => {
     })
 
     expect(projectFilesMocks.collect).not.toHaveBeenCalled()
-    expect(controller.isResumingInterruptedTurn.value).toBe(false)
+    expect(controller.view.value.interruptedTurnAwaitingResume).toBe(true)
+    expect(controller.view.value.disabled).toBe(true)
+    expect(controller.view.value.hasPromptCompleted).toBe(false)
+    expect(controller.view.value.isResumingInterruptedTurn).toBe(false)
 
     controller.resumeInterruptedTurn()
     controller.resumeInterruptedTurn()
 
     expect(projectFilesMocks.collect).toHaveBeenCalledOnce()
-    expect(controller.isResumingInterruptedTurn.value).toBe(true)
+    expect(controller.view.value.isResumingInterruptedTurn).toBe(true)
 
     collectedFiles.resolve([])
     await flushPromises()
@@ -926,7 +1057,7 @@ describe('Zookeeper session controller', () => {
         projectName: 'bracket',
       }),
     ])
-    expect(controller.isResumingInterruptedTurn.value).toBe(false)
+    expect(controller.view.value.isResumingInterruptedTurn).toBe(false)
   })
 
   it('invalidates a pending resume after leaving the continue state', async () => {
@@ -937,7 +1068,7 @@ describe('Zookeeper session controller', () => {
       conversation: interruptedConversation,
     })
     controller.resumeInterruptedTurn()
-    expect(controller.isResumingInterruptedTurn.value).toBe(true)
+    expect(controller.view.value.isResumingInterruptedTurn).toBe(true)
 
     actor.emit('ready', { conversation: interruptedConversation })
     actor.emit('wait-for-continue-check', {
@@ -946,7 +1077,7 @@ describe('Zookeeper session controller', () => {
     collectedFiles.resolve([])
     await flushPromises()
 
-    expect(controller.isResumingInterruptedTurn.value).toBe(false)
+    expect(controller.view.value.isResumingInterruptedTurn).toBe(false)
     expect(
       sentEvents(actor, ZookeeperManagerStates.ContinueCheck)
     ).toHaveLength(0)
