@@ -1,3 +1,4 @@
+import { posix } from 'path'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { EnvironmentConfiguration } from '@src/lib/constants'
 import {
@@ -15,6 +16,7 @@ import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import { FileAlreadyExists } from '@src/lib/fileSystem/fileOperations'
 import { webSafeJoin, webSafePathSplit } from '@src/lib/paths'
 import type { DeepPartial } from '@src/lib/types'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import { buildTheWorldNode } from '@src/unitTestUtils'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -176,6 +178,9 @@ describe('desktop utilities', () => {
     mockElectron.path.join.mockImplementation((...parts: string[]) =>
       webSafeJoin(parts)
     )
+    mockElectron.path.resolve.mockImplementation((...parts: string[]) =>
+      posix.resolve(...parts)
+    )
     mockElectron.path.basename.mockImplementation((path: string) =>
       // The tests is hard coded to / so webSafe is defaulted to /
       webSafePathSplit(path).pop()
@@ -249,6 +254,22 @@ describe('desktop utilities', () => {
   })
 
   describe('listProjects', () => {
+    it('prefers the configured nested entrypoint over main.kcl', async () => {
+      const projectPath = '/test/projects/valid-project'
+      mockElectron.readFile.mockResolvedValue(
+        'default_file = "design/entry.kcl"\n'
+      )
+      await expect(
+        getDefaultKclFileForDir(
+          testFileOperations,
+          projectPath,
+          { name: 'valid-project', path: projectPath, children: [] },
+          {} as ModuleType
+        )
+      ).resolves.toBe(`${projectPath}/design/entry.kcl`)
+      expect(mockElectron.writeFile).not.toHaveBeenCalled()
+    })
+
     it('preserves main.kcl created after discovery observed an empty project', async () => {
       const { instance } = await buildTheWorldNode()
       const projectPath = '/test/projects/project-without-kcl-files'

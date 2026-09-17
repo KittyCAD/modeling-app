@@ -4,6 +4,7 @@ import { ActionButton } from '@src/components/ActionButton'
 import { Announcements } from '@src/components/Announcements'
 import { AppHeader } from '@src/components/AppHeader'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { ImportProjectDialog } from '@src/components/ImportProjectDialog'
 import Loading from '@src/components/Loading'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
 import { useProjectSearch } from '@src/components/ProjectSearchBar'
@@ -26,6 +27,7 @@ import {
 import { BillingTransition } from '@src/lib/billing'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
+import type { Command } from '@src/lib/commandTypes'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { removeDragPreviewElement, setDragPreview } from '@src/lib/dragPreview'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
@@ -95,6 +97,7 @@ import {
 import type { HTMLProps } from 'react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
+import toast from 'react-hot-toast'
 import {
   useLocation,
   useNavigate,
@@ -312,6 +315,8 @@ const Home = () => {
   const location = useLocation()
   const readWriteProjectDir = useCanReadWriteProjectDirectory()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
+  const [projectImport, setProjectImport] = useState<{ file?: File }>()
+  const openProjectImport = useCallback(() => setProjectImport({}), [])
   const apiToken = auth.useToken()
   const networkMachineStatus = useNetworkMachineStatus()
   const billingContext = billing.useContext()
@@ -408,6 +413,25 @@ const Home = () => {
     projectActions: homeProjectActions,
     onMoveToLibrary: moveProjectToLibrary,
   })
+
+  useEffect(() => {
+    const importCommand: Command = {
+      name: 'Import project',
+      groupId: 'projects',
+      description: 'Create a project from a Zoo Design Studio ZIP',
+      icon: 'importFile',
+      scopes: [HOME_COMMAND_SCOPE],
+      needsReview: false,
+      onSubmit: openProjectImport,
+    }
+    commands.send({ type: 'Add commands', data: { commands: [importCommand] } })
+    return () => {
+      commands.send({
+        type: 'Remove commands',
+        data: { commands: [importCommand] },
+      })
+    }
+  }, [commands, openProjectImport])
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: projectLibraryWatchKey tracks library identity and paths without rebinding on icon/title-only renders.
   useEffect(() => {
@@ -572,7 +596,35 @@ const Home = () => {
     e.preventDefault()
   })
   return (
-    <div className="relative flex flex-col items-stretch h-screen w-screen overflow-hidden">
+    <div
+      className="relative flex flex-col items-stretch h-screen w-screen overflow-hidden"
+      onDragOver={(event) => {
+        if (!event.dataTransfer.types.includes('Files')) return
+        event.preventDefault()
+        event.dataTransfer.dropEffect = 'copy'
+      }}
+      onDrop={(event) => {
+        if (!event.dataTransfer.types.includes('Files')) return
+        event.preventDefault()
+        if (projectImport) return
+        const files = event.dataTransfer.files
+        if (
+          files.length !== 1 ||
+          !files[0].name.toLowerCase().endsWith('.zip')
+        ) {
+          toast.error('Drop one project ZIP file to import it.')
+          return
+        }
+        setProjectImport({ file: files[0] })
+      }}
+    >
+      {projectImport && (
+        <ImportProjectDialog
+          initialFile={projectImport.file}
+          initialLibraryId={selectedProjectLibraryId}
+          onDismiss={() => setProjectImport(undefined)}
+        />
+      )}
       <AppHeader nativeFileMenuCreated={nativeFileMenuCreated} />
       <div className="overflow-hidden self-stretch w-full flex-1 home-layout max-w-4xl lg:max-w-5xl xl:max-w-7xl px-4 mx-auto mt-8 lg:mt-24 lg:px-0">
         <HomeHeader
@@ -673,6 +725,20 @@ const Home = () => {
                 data-testid="home-new-file"
               >
                 Create project
+              </ActionButton>
+            </li>
+            <li className="contents">
+              <ActionButton
+                Element="button"
+                onClick={openProjectImport}
+                className={sidebarButtonClasses}
+                iconStart={{
+                  icon: 'importFile',
+                  bgClassName: '!bg-transparent rounded-sm',
+                }}
+                data-testid="home-import-project"
+              >
+                Import project...
               </ActionButton>
             </li>
             <li className="contents">

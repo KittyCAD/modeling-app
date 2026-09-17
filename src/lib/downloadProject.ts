@@ -11,6 +11,7 @@ import {
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { webSafePathSplit } from '@src/lib/paths'
 import { sanitizeProjectName } from '@src/lib/projectName'
+import { getProjectDefaultFileFromProjectTomlContents } from '@src/lib/projectTomlMetadata'
 import { err, isErr } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import type { RequestedProjectFile } from '@src/machines/systemIO/utils'
@@ -176,7 +177,7 @@ async function parseDownloadedProject({
     }
   | Error
 > {
-  const zipResult = await parseZipArchive({
+  const zipResult = await parseProjectZipArchive({
     archive,
     contentDisposition,
   })
@@ -192,33 +193,63 @@ async function parseDownloadedProject({
   return zipResult
 }
 
-async function parseZipArchive({
+export async function parseProjectZipArchive({
   archive,
-  contentDisposition,
+  contentDisposition = null,
+  fileName,
 }: {
   archive: ArrayBuffer
-  contentDisposition: string | null
+  contentDisposition?: string | null
+  fileName?: string
 }): Promise<
   | {
       projectName: string
       files: RequestedProjectFile[]
-      entrypointFilePath?: string
+      entrypointFilePath: string
     }
   | Error
 > {
   const zip = await JSZip.loadAsync(archive)
   const entries = Object.values(zip.files).filter((entry) => {
-    return !entry.dir && !entry.name.startsWith('__MACOSX/')
+    return (
+      !entry.dir &&
+      !entry.name.startsWith('__MACOSX/') &&
+      webSafePathSplit(entry.name).at(-1) !== '.DS_Store'
+    )
   })
 
   if (entries.length === 0) {
-    return new Error('The shared project download did not contain any files.')
+    return new Error('The project ZIP did not contain any files.')
+  }
+
+  const paths = new Set<string>()
+  for (const entry of entries) {
+    // JSZip sanitizes traversal segments. Validate the original name before
+    // accepting an archive so a rewritten path cannot overwrite another file.
+    const originalPath = (entry.unsafeOriginalName ?? entry.name).replaceAll(
+      '\\',
+      '/'
+    )
+    const path = normalizeArchivePath(entry.name)
+    if (
+      originalPath.startsWith('/') ||
+      /^[a-z]:/i.test(originalPath) ||
+      originalPath.includes('\0') ||
+      webSafePathSplit(originalPath).includes('..') ||
+      paths.has(path)
+    ) {
+      return new Error(
+        `The project ZIP contains an invalid file path: "${originalPath}".`
+      )
+    }
+    paths.add(path)
   }
 
   const rootDirectory = getCommonArchiveRoot(entries.map((entry) => entry.name))
   const projectName = sanitizeProjectName(
     rootDirectory ||
       getFilenameStemFromContentDisposition(contentDisposition) ||
+      (fileName && stripFileExtension(fileName)) ||
       DEFAULT_IMPORTED_PROJECT_NAME,
     DEFAULT_IMPORTED_PROJECT_NAME
   )
@@ -304,11 +335,13 @@ function getRequiredProjectEntrypoint(files: RequestedProjectFile[]) {
   })
 
   const configuredEntrypoint = projectSettingsFile
-    ? getProjectTomlDefaultFile(projectSettingsFile.requestedData)
+    ? getProjectDefaultFileFromProjectTomlContents(
+        new TextDecoder().decode(projectSettingsFile.requestedData)
+      )
     : undefined
 
   if (
-    configuredEntrypoint &&
+    configuredEntrypoint?.endsWith('.kcl') &&
     files.some((file) => file.requestedFileName === configuredEntrypoint)
   ) {
     return configuredEntrypoint
@@ -328,22 +361,7 @@ function getRequiredProjectEntrypoint(files: RequestedProjectFile[]) {
     return firstKclFile.requestedFileName
   }
 
-  return new Error(
-    'The shared project did not include an openable KCL entry file.'
-  )
-}
-
-function getProjectTomlDefaultFile(fileData: Uint8Array<ArrayBuffer>) {
-  const toml = new TextDecoder().decode(fileData)
-  const matchedDefaultFile = toml.match(
-    /^\s*default_file\s*=\s*["']([^"']+)["']/m
-  )?.[1]
-
-  if (!matchedDefaultFile) {
-    return undefined
-  }
-
-  return normalizeArchivePath(matchedDefaultFile)
+  return new Error('The project did not include an openable KCL entry file.')
 }
 
 function coerceJsonFiles(
