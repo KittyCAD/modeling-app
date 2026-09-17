@@ -1,8 +1,4 @@
-import {
-  joinRouterPaths,
-  PATHS,
-  webSafePathSplit,
-} from '@src/lib/paths'
+import { joinRouterPaths, PATHS, webSafePathSplit } from '@src/lib/paths'
 import type {
   AppDestination,
   AppDestinationKind,
@@ -54,17 +50,14 @@ function parseDestination(pathname: string):
   }
 
   const [head, encodedId, ...remainder] = segments
-  const overlayPath =
-    remainder.length > 0 ? joinRouterPaths(...remainder) : ''
+  const overlayPath = remainder.length > 0 ? joinRouterPaths(...remainder) : ''
 
   if (head === PATHS.HOME.slice(1)) {
     return {
       destination: { type: 'home' },
       overlayDestination: 'home',
       overlayPath:
-        encodedId === undefined
-          ? ''
-          : joinRouterPaths(encodedId, ...remainder),
+        encodedId === undefined ? '' : joinRouterPaths(encodedId, ...remainder),
     }
   }
 
