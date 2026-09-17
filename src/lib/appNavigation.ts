@@ -1,10 +1,10 @@
 /**
- * Opening a project and a file, as an application command.
+ * Resolve an OpenProject application intent.
  *
  * This used to be the body of the `/file/:id` route loader, which made a URL
- * navigation the only thing in the app able to open a file: everything else
- * "opened a file" by calling `navigate('/file/<encoded>')` and letting the
- * loader do the work. That is the wrong way round once application state is
+ * navigation the only thing in the app able to enter a project: everything
+ * else did so by calling `navigate('/file/<encoded>')` and letting the loader
+ * do the work. That is the wrong way round once application state is
  * authoritative, so the whole of it moves out here — resolution included.
  *
  * `requestUrl` is what makes this usable from both sides. Pass it and you may
@@ -43,30 +43,22 @@ import {
   isRequestedFileLoaded,
 } from '@src/lib/routeLoaderNavigation'
 import { loadRouteSettings } from '@src/lib/routeSettings'
-import type { IndexLoaderData } from '@src/lib/types'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/events'
 import { SystemIOMachineStates } from '@src/machines/systemIO/states'
+import type {
+  AppNavigationService,
+  OpenProjectOutcome,
+  OpenProjectRequest,
+} from '@src/registry/contracts/appNavigation'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import { waitFor } from 'xstate'
 
-export type OpenFileOutcome =
-  | { kind: 'opened'; data: IndexLoaderData }
-  /** Only ever returned when a `requestUrl` was supplied. */
-  | { kind: 'redirect'; to: string }
-
-export async function openProjectFile(
+async function openProjectFromRequest(
   app: App,
-  {
-    id,
-    requestUrl,
-    signal = new AbortController().signal,
-  }: {
-    id: string | undefined
-    requestUrl?: string
-    signal?: AbortSignal
-  }
-): Promise<OpenFileOutcome> {
-  const assertCurrent = app.beginFileRouteLoad(signal)
+  { target, requestUrl }: OpenProjectRequest,
+  assertCurrent: () => void
+): Promise<OpenProjectOutcome> {
   const {
     settings: { actor: settingsActor },
   } = app
@@ -81,17 +73,17 @@ export async function openProjectFile(
   const appSettings = await loadRouteSettings(app, wasmInstance)
   assertCurrent()
   const currentProjectPath = app.project?.projectIORefSignal.value.path
-  const targetLibraryPath = id
+  const targetLibraryPath = target
     ? (
         await getProjectLibraryOwnership(
           appSettings.settings.app.libraries?.current ?? [],
-          id
+          target
         )
       )?.libraryPath
     : undefined
   assertCurrent()
-  const projectPathData = id
-    ? parseProjectRoute(appSettings.configuration, id, {
+  const projectPathData = target
+    ? parseProjectRoute(appSettings.configuration, target, {
         activeProjectPath: currentProjectPath,
         candidateProjectDirectories: targetLibraryPath
           ? [targetLibraryPath]
@@ -141,19 +133,19 @@ export async function openProjectFile(
     // Asked for the project rather than a file in it: its default file is what
     // was meant.
     const wantsProjectDefault =
-      Boolean(projectPath) && !currentFileName && fileExists && Boolean(id)
+      Boolean(projectPath) && !currentFileName && fileExists && Boolean(target)
     // Nothing usable was named, so fall back to the project default.
     const targetUnusable =
       !fileExists || !currentFileName || !currentFilePath || !projectName
 
     if (wantsProjectDefault) {
-      if (requestUrl && id) {
+      if (requestUrl && target) {
         // Substituted into the whole request URL rather than rebuilt, so the
         // origin, any child route and the query string all survive untouched.
         return {
           kind: 'redirect',
           to: requestUrl.replace(
-            safeEncodeForRouterPaths(id),
+            safeEncodeForRouterPaths(target),
             safeEncodeForRouterPaths(fallbackFile)
           ),
         }
@@ -166,8 +158,8 @@ export async function openProjectFile(
           requestUrl,
           Boolean(window.electron)
         )
-        const onboardingChildRoute = id
-          ? getOnboardingChildRoute(requestUrl, id)
+        const onboardingChildRoute = target
+          ? getOnboardingChildRoute(requestUrl, target)
           : ''
         return {
           kind: 'redirect',
@@ -216,19 +208,27 @@ export async function openProjectFile(
   await waitFor(settingsActor, (state) => state.matches('idle'))
   assertCurrent()
 
-  const projectRef = await app.openProject(project, assertCurrent)
-  const editor = await projectRef.openEditor(
-    currentFilePath || PROJECT_ENTRYPOINT,
-    app.singletons.kclManager,
-    // If persistCode in localStorage is present, it'll persist that code
-    // through *anything*. INTENDED FOR TESTS.
-    window.electron?.process.env.NODE_ENV === 'test'
-      ? kclManager.localStoragePersistCode()
-      : undefined,
-    true,
-    assertCurrent
-  )
+  const { project: projectRef, editor } = await app.registry
+    .get(projectSession)
+    .openProject({
+      project,
+      initialEditor: {
+        path: currentFilePath || PROJECT_ENTRYPOINT,
+        providedEditor: app.singletons.kclManager,
+        // If persistCode in localStorage is present, it'll persist that code
+        // through *anything*. INTENDED FOR TESTS.
+        providedCode:
+          window.electron?.process.env.NODE_ENV === 'test'
+            ? kclManager.localStoragePersistCode()
+            : undefined,
+        isExecuting: true,
+      },
+      assertCurrent,
+    })
   assertCurrent()
+  if (!editor) {
+    return Promise.reject(new Error('Project opened without an initial editor'))
+  }
 
   const requestedFileName =
     app.systemIOActor.getSnapshot().context.requestedFileName
@@ -273,6 +273,29 @@ export async function openProjectFile(
         path: currentFilePath || '',
         children: [],
       },
+    },
+  }
+}
+
+/** Build the application-intent coordinator around one App runtime. */
+export function createAppNavigationService(app: App): AppNavigationService {
+  let projectOpenGeneration = 0
+
+  const beginProjectOpen = (signal = new AbortController().signal) => {
+    const generation = ++projectOpenGeneration
+    return () => {
+      if (signal.aborted || generation !== projectOpenGeneration) {
+        // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+        throw new DOMException('Superseded project open', 'AbortError')
+      }
+    }
+  }
+
+  return {
+    openProject: (request) =>
+      openProjectFromRequest(app, request, beginProjectOpen(request.signal)),
+    supersedeProjectOpen: (signal) => {
+      beginProjectOpen(signal)()
     },
   }
 }
