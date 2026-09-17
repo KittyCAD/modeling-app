@@ -11,7 +11,7 @@ sketch(on = YZ) {
     ],
     end = [var 3mm, var 2mm],
   )
-  line3 = line(start = [var 3.000000001mm, var 2mm], end = [var 5mm, var 5mm])
+  line3 = line(start = [var 3mm, var 2mm], end = [var 5mm, var 5mm])
   coincident([line2.end, line3.start])
   arc1 = arc(start = [var 1mm, var 5mm], end = [var 1mm, var -1mm], center = [var 5mm, var 2mm])
   coincident([line2.start, arc1])

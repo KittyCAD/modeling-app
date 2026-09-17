@@ -4,10 +4,7 @@ expression: src_delta.text.as_str()
 ---
 sketch(on = XY) {
   line1 = line(
-    start = [
-      var -0.00000000010508649580065262,
-      var -0.0000000001401159488588941
-    ],
+    start = [var 0, var 0],
     end = [
       var 4.14466094031757,
       var 5.319805153353355

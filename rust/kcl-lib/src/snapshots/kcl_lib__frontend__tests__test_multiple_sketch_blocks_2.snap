@@ -41,10 +41,7 @@ sketch(on = XY) {
       var -1.612759046000744mm,
       var -1.0287770097689193mm
     ],
-    end = [
-      var 1.0000000000000009mm,
-      var 2.000000000000002mm
-    ],
+    end = [var 1mm, var 2mm],
   )
   coincident([line2.end, line3.start])
   coincident([line3.end, line1.start])
@@ -56,10 +53,7 @@ sketch(on = XY) {
 // Line segment with length x.
 sketch2 = sketch(on = XY) {
   line1 = line(
-    start = [
-      var 2.9999999989589887mm,
-      var 3.999999997101296mm
-    ],
+    start = [var 3mm, var 4mm],
     end = [
       var 2.324011185923613mm,
       var 2.117703756609144mm

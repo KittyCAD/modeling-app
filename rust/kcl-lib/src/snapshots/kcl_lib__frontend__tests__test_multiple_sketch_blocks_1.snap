@@ -41,10 +41,7 @@ sketch(on = XY) {
       var -1.612759046000744mm,
       var -1.0287770097689193mm
     ],
-    end = [
-      var 1.0000000000000009mm,
-      var 2.000000000000002mm
-    ],
+    end = [var 1mm, var 2mm],
   )
   coincident([line2.end, line3.start])
   coincident([line3.end, line1.start])
