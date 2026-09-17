@@ -10,7 +10,7 @@ const OPEN = interactions.commandPaletteOpen.id
 const CLOSE = interactions.commandPaletteClose.id
 const POLL_INTERVAL_MS = 10
 const INJECTED_HANDLER_MS = 250
-const MIN_INJECTED_PROCESSING_MS = INJECTED_HANDLER_MS - 50
+const MIN_INJECTED_DURATION_MS = INJECTED_HANDLER_MS - 50
 
 async function waitForSample(page: Page, id: string, count: number) {
   await page.waitForFunction(
@@ -25,19 +25,19 @@ async function waitForSample(page: Page, id: string, count: number) {
   )
 }
 
-async function waitForInjectedHandler(page: Page) {
-  // The injected 250 ms handler must produce an entry. Wait for delivery, not
-  // an assumed frame count; leave margin for browser timestamp precision.
+async function waitForInjectedDuration(page: Page) {
+  // Wait for the injected delay to reach Event Timing. The longest event in the
+  // gesture can include the stall as presentation delay instead of processing.
   await page.waitForFunction(
-    (minimumProcessingMs) =>
+    (minimumDurationMs) =>
       window.app.interactionPerformance
         .snapshot()
         .samples.some(
           (sample) =>
             sample.eventTiming !== null &&
-            sample.eventTiming.processingMs >= minimumProcessingMs
+            sample.eventTiming.durationMs >= minimumDurationMs
         ),
-    MIN_INJECTED_PROCESSING_MS,
+    MIN_INJECTED_DURATION_MS,
     { timeout: 10_000, polling: POLL_INTERVAL_MS }
   )
 }
@@ -188,7 +188,7 @@ test('harness detects a delayed real command-palette click', async ({
   try {
     await cmdBar.cmdBarOpenBtn.click()
     await waitForSample(page, OPEN, 1)
-    await waitForInjectedHandler(page)
+    await waitForInjectedDuration(page)
     await expect(page.getByTestId('cmd-bar-search')).toBeEditable()
   } finally {
     report = await finishCapture(
@@ -207,13 +207,13 @@ test('harness detects a delayed real command-palette click', async ({
   expect(outcomeViolation?.durationMs).toBeGreaterThanOrEqual(
     INJECTED_HANDLER_MS
   )
-  expect(
-    await page.evaluate(
-      () =>
-        window.app.interactionPerformance.snapshot().samples[0]?.eventTiming
-          ?.processingMs
-    )
-  ).toBeGreaterThanOrEqual(MIN_INJECTED_PROCESSING_MS)
+  const responsivenessViolation = report.violations.find(
+    (violation) => violation.metric === 'responsiveness'
+  )
+  expect(responsivenessViolation?.id).toBe(OPEN)
+  expect(responsivenessViolation?.durationMs).toBeGreaterThanOrEqual(
+    MIN_INJECTED_DURATION_MS
+  )
 })
 
 test('harness detects a delayed pointerdown before the command-palette click', async ({
@@ -251,7 +251,7 @@ test('harness detects a delayed pointerdown before the command-palette click', a
     )
     await page.mouse.up()
     await waitForSample(page, OPEN, 1)
-    await waitForInjectedHandler(page)
+    await waitForInjectedDuration(page)
     await expect(page.getByTestId('cmd-bar-search')).toBeEditable()
   } finally {
     report = await finishCapture(
@@ -268,15 +268,8 @@ test('harness detects a delayed pointerdown before the command-palette click', a
   )
   expect(responsivenessViolation?.id).toBe(OPEN)
   expect(responsivenessViolation?.durationMs).toBeGreaterThanOrEqual(
-    interactions.commandPaletteOpen.budgetMs
+    MIN_INJECTED_DURATION_MS
   )
-  expect(
-    await page.evaluate(
-      () =>
-        window.app.interactionPerformance.snapshot().samples[0]?.eventTiming
-          ?.processingMs
-    )
-  ).toBeGreaterThanOrEqual(MIN_INJECTED_PROCESSING_MS)
 })
 
 test('harness rejects a missing measurement', async ({
