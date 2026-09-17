@@ -192,6 +192,9 @@ export async function initFileRoute(
   // Must basically remain for all eternity, until the last person
   // who's ever used ZDS on web before this point has died.
   if (id?.startsWith('/browser')) {
+    // This request still supersedes any file route already loading even though
+    // the legacy URL never reaches `openFile`, where normal loads are begun.
+    app.beginFileRouteLoad(requestSignal)()
     // Pop us back home, which will cause a default project to be
     // created.
     return { kind: 'redirect', to: PATHS.HOME }
