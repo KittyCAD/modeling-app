@@ -74,12 +74,17 @@ jobs:
           fi
   linux-x86_64:
     name: kcl-python-bindings (linux-x86_64)
-    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-kcl-python-manylinux-x86-64-v1
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
     # The hourly schedule exists to observe flaky tests. It runs the test job
     # and nothing else.
     if: github.event_name != 'schedule'
     steps:
       - uses: actions/checkout@v7.0.1
+      - name: sccache cache on the Namespace volume
+        # See the macos job.
+        uses: namespacelabs/nscloud-cache-action@v1
+        with:
+          path: .sccache
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         env:
@@ -89,11 +94,11 @@ jobs:
           # are not packaged. Generating it costs build time for output that is
           # then discarded.
           CARGO_PROFILE_RELEASE_DEBUG: '0'
-          # maturin-action's manylinux build runs in Docker. Mount the Namespace
-          # cache volume directly because the workspace cache mount is not
-          # visible inside that container.
+          # maturin-action mounts GITHUB_WORKSPACE at the same path inside the
+          # container, so this resolves on both sides. The SCCACHE_ prefix is
+          # on its list of variables forwarded into the container.
           RUSTC_WRAPPER: sccache
-          SCCACHE_DIR: /cache/sccache/kcl-python-bindings-linux-x86_64
+          SCCACHE_DIR: ${{ github.workspace }}/.sccache
           SCCACHE_CACHE_SIZE: 20G
         with:
           working-directory: rust/kcl-python-bindings
@@ -101,31 +106,25 @@ jobs:
           # --strip is a backstop. Without it a debug .so exceeds PyPI's 100MB
           # limit.
           args: --release --out dist --strip -i python3.11 python3.12 python3.13 python3.14
-          # Pass the Namespace cache volume into the manylinux container.
-          docker-options: --volume /cache:/cache
-          # Off so maturin-action does not use the GitHub cache. The container
-          # has no sccache in this mode, so before-script installs one.
+          # Off so the volume above is used instead of the GitHub cache. That
+          # also means the container has no sccache, so before-script installs
+          # one.
           sccache: 'false'
           manylinux: auto
           before-script-linux: |
             curl -fsSL https://github.com/mozilla/sccache/releases/download/v0.10.0/sccache-v0.10.0-x86_64-unknown-linux-musl.tar.gz \
               | tar -xz -C /tmp
             install -m 0755 /tmp/sccache-v0.10.0-x86_64-unknown-linux-musl/sccache /usr/local/bin/sccache
-            mkdir -p "$SCCACHE_DIR"
             sccache --version
-            # maturin-action has no after-script input. This prints statistics
-            # and stops the server when the generated build script exits.
-            trap 'sccache --stop-server || true' EXIT
-      - name: Inspect sccache cache
-        # The container runs as root, so use sudo to inspect its cache entries.
-        # This confirms that the container wrote to the Namespace volume.
+      - name: sccache cache contents
+        # sccache ran inside the container and its server exited with
+        # it. Measuring the directory answers whether the container wrote to
+        # the mounted volume path.
         if: always()
         shell: bash
         run: |
-          cache_dir=/cache/sccache/kcl-python-bindings-linux-x86_64
-          sudo stat -c 'owner=%U:%G (%u:%g) mode=%a path=%n' "$cache_dir" 2>&1 || true
-          sudo du -sh "$cache_dir" 2>&1 || true
-          echo "objects: $(sudo find "$cache_dir" -type f 2>/dev/null | wc -l)"
+          du -sh .sccache 2>&1 || true
+          echo "objects: $(find .sccache -type f 2>/dev/null | wc -l)"
       - name: Upload wheels
         uses: actions/upload-artifact@v7
         with:
