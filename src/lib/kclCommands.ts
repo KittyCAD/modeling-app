@@ -194,7 +194,8 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       // Keep the persisted shortcut identity stable across the display rename.
       id: 'code:Insert',
       name: 'Import',
-      description: 'Import from a file in the current project directory',
+      description:
+        'Import from a file in the current project directory (formerly Insert)',
       icon: 'import',
       groupId: 'code',
       hide: 'web',
