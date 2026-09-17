@@ -1,0 +1,108 @@
+name: Interaction performance
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: interaction-performance-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-wasm:
+    uses: ./.github/workflows/build-wasm.yml
+
+  build-app:
+    needs: build-wasm
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: prepared-wasm
+          path: rust/kcl-wasm-lib/pkg
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: prepared-ts-rs-bindings
+          path: rust/kcl-lib/bindings
+
+      - name: Build production application
+        run: |
+          cp rust/kcl-wasm-lib/pkg/kcl_wasm_lib_bg.wasm public/
+          npm exec -- vite build
+        env:
+          VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
+          VITE_ZOO_BASE_DOMAIN: dev.zoo.dev
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: interaction-performance-build
+          path: build/
+          retention-days: 7
+
+  measure:
+    name: Interaction measurements (report only)
+    needs: build-app
+    # Keep compilation in a separate job, and score one browser at a time.
+    # This existing runner profile must be calibrated before enforcing latency.
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: interaction-performance-build
+          path: build
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: prepared-wasm
+          path: rust/kcl-wasm-lib/pkg
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: prepared-ts-rs-bindings
+          path: rust/kcl-lib/bindings
+
+      - name: Install pinned Chromium
+        run: npm exec -- playwright install --with-deps chromium
+
+      - name: Collect interaction measurements
+        run: npm exec -- playwright test --config=playwright.performance.config.ts
+        env:
+          NODE_ENV: production
+          TARGET: web
+          VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
+
+      - name: Preserve measurements and failures
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: interaction-performance-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            test-results/interaction-performance/
+            playwright-report/interaction-performance/
+          if-no-files-found: error
+          retention-days: 30

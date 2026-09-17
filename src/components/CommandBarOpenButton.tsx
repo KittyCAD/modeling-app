@@ -6,6 +6,7 @@ import {
 import { CustomIcon } from '@src/components/CustomIcon'
 import usePlatform from '@src/hooks/usePlatform'
 import type { App } from '@src/lib/app'
+import { COMMAND_PALETTE_OPEN_INTERACTION } from '@src/lib/interactionPerformance/definitions'
 import {
   findKeymapItemForCommand,
   keymapKeystrokesDisplay,
@@ -45,6 +46,7 @@ export const CommandBarOpenButton = memo(function CommandBarOpenButton({
       onPointerDown={(event) => event.preventDefault()}
       onClick={() => commands.send({ type: 'Open' })}
       data-testid="command-bar-open-button"
+      data-interaction-id={COMMAND_PALETTE_OPEN_INTERACTION}
       data-onboarding-id="command-bar-open-button"
     >
       <CustomIcon name="command" className="w-5 h-5" />

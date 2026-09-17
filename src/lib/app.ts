@@ -71,6 +71,7 @@ import {
   homeProjectActionsService,
   homeProjectEntriesValueSpec,
 } from '@src/registry/contracts/homeProjects'
+import { interactionPerformanceService } from '@src/registry/contracts/interactionPerformance'
 import { keymapService } from '@src/registry/contracts/keymap'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import {
@@ -180,6 +181,11 @@ export class App implements AppSubsystems {
   public get fileOperations(): FileOperationsRegistryService {
     return this.registry.get(fileOperationsService)
   }
+
+  get interactionPerformance() {
+    return this.registry.get(interactionPerformanceService)
+  }
+
   private get projectSession(): ProjectSessionService {
     return this.registry.get(projectSession)
   }
