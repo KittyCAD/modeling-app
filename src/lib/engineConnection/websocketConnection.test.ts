@@ -67,11 +67,20 @@ const dispatchConnectionError = ({
   retryable?: boolean
   cloudProjectId?: string
 }) => {
+  const legacyErrorCode =
+    code === 'backend_disconnected' ? 'internal_api' : 'auth_token_invalid'
+
   createMessageHandler(cloudProjectId)(
     new MessageEvent('message', {
       data: JSON.stringify({
         success: false,
         request_id: 'request-123',
+        errors: [
+          {
+            error_code: legacyErrorCode,
+            message: 'connection denied',
+          },
+        ],
         connection_error: {
           code,
           detail: 'connection denied',

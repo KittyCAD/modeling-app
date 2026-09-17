@@ -1,4 +1,5 @@
 import type {
+  ApiError,
   ClientMetrics,
   RtcSessionDescription,
   WebSocketRequest,
@@ -39,6 +40,7 @@ type ModelingConnectionErrorCode =
 type ConnectionErrorWebSocketResponse = {
   success: false
   request_id?: string | null
+  errors: ApiError[]
   connection_error: {
     code: ModelingConnectionErrorCode
     detail: string
