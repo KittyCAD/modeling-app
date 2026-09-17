@@ -58,7 +58,11 @@ async def execute_with_retries(async_fn, *args, **kwargs):
     attempt = 1
     while True:
         try:
-            return await async_fn(*args, **kwargs)
+            result = await async_fn(*args, **kwargs)
+            if isinstance(result, kcl.Session) and result.outcome.is_retryable():
+                await result.close()
+                result.outcome.raise_for_error()
+            return result
         except Exception as error:
             is_retryable = getattr(error, "is_retryable", None)
             if retries_remaining > 0 and callable(is_retryable) and is_retryable():
@@ -81,9 +85,10 @@ async def execute_with_retries(async_fn, *args, **kwargs):
 async def test_kcl_execute_with_exception():
     # Read from a file.
     try:
-        await execute_with_retries(
+        async with await execute_with_retries(
             kcl.execute, os.path.join(files_dir, "parse_file_error")
-        )
+        ) as session:
+            session.outcome.raise_for_error()
     except Exception as e:
         assert e is not None
         assert len(str(e)) > 0
@@ -94,7 +99,8 @@ async def test_kcl_execute_with_exception():
 @pytest.mark.asyncio
 async def test_kcl_execute():
     # Read from a file.
-    await execute_with_retries(kcl.execute, lego_file)
+    async with await execute_with_retries(kcl.execute, lego_file) as session:
+        session.outcome.raise_for_error()
 
 
 @pytest.mark.asyncio
@@ -244,7 +250,10 @@ async def test_kcl_mock_execute_with_engine_exception_should_pass():
 async def test_kcl_execute_with_engine_exception_should_fail():
     # Read from a file.
     try:
-        await execute_with_retries(kcl.execute, engine_error_file)
+        async with await execute_with_retries(
+            kcl.execute, engine_error_file
+        ) as session:
+            session.outcome.raise_for_error()
     except Exception as e:
         assert e is not None
         assert len(str(e)) > 0
@@ -277,7 +286,8 @@ async def test_kcl_execute_code():
         code = str(f.read())
         assert code is not None
         assert len(code) > 0
-        await execute_with_retries(kcl.execute_code, code)
+        async with await execute_with_retries(kcl.execute_code, code) as session:
+            session.outcome.raise_for_error()
 
 
 @requires_engine
@@ -288,12 +298,11 @@ async def test_kcl_execute_code_and_snapshot():
         code = str(f.read())
         assert code is not None
         assert len(code) > 0
-        image_bytes = await execute_with_retries(
-            kcl.execute_code_and_snapshot,
-            code,
-            kcl.ImageFormat.Jpeg,
-            highlight_edges=False,
-        )
+        async with await execute_with_retries(
+            kcl.execute_code, code, highlight_edges=False
+        ) as session:
+            session.outcome.raise_for_error()
+            image_bytes = await session.snapshot(kcl.ImageFormat.Jpeg)
         assert image_bytes is not None
         assert len(image_bytes) > 0
 
@@ -306,9 +315,9 @@ async def test_kcl_execute_code_and_export():
         code = str(f.read())
         assert code is not None
         assert len(code) > 0
-        files = await execute_with_retries(
-            kcl.execute_code_and_export, code, kcl.FileExportFormat.Step
-        )
+        async with await execute_with_retries(kcl.execute_code, code) as session:
+            session.outcome.raise_for_error()
+            files = await session.export(kcl.FileExportFormat.Step)
         assert files is not None
         assert len(files) > 0
         assert files[0] is not None
@@ -324,20 +333,19 @@ async def test_kcl_execute_code_and_export():
 @pytest.mark.asyncio
 async def test_kcl_execute_dir_assembly():
     # Read from a file.
-    await execute_with_retries(kcl.execute, axial_fan)
+    async with await execute_with_retries(kcl.execute, axial_fan) as session:
+        session.outcome.raise_for_error()
 
 
 @requires_engine
 @pytest.mark.asyncio
 async def test_kcl_execute_and_snapshot():
     # Read from a file.
-    image_bytes = await execute_with_retries(
-        kcl.execute_and_snapshot,
-        lego_file,
-        kcl.ImageFormat.Jpeg,
-        zoom=False,
-        highlight_edges=False,
-    )
+    async with await execute_with_retries(
+        kcl.execute, lego_file, highlight_edges=False
+    ) as session:
+        session.outcome.raise_for_error()
+        image_bytes = await session.snapshot(kcl.ImageFormat.Jpeg, zoom=False)
     assert image_bytes is not None
     assert len(image_bytes) > 0
 
@@ -358,13 +366,11 @@ async def test_kcl_execute_and_snapshot_options():
         kcl.SnapshotOptions(camera=None, padding=0),
     ]
     # Read from a file.
-    images = await execute_with_retries(
-        kcl.execute_and_snapshot_views,
-        lego_file,
-        kcl.ImageFormat.Jpeg,
-        views,
-        highlight_edges=False,
-    )
+    async with await execute_with_retries(
+        kcl.execute, lego_file, highlight_edges=False
+    ) as session:
+        session.outcome.raise_for_error()
+        images = await session.snapshot_views(kcl.ImageFormat.Jpeg, views)
     assert images is not None
     assert len(images) == len(views)
     image_bytes = images[0]
@@ -428,9 +434,9 @@ async def test_import_and_snapshots_single():
 @pytest.mark.asyncio
 async def test_kcl_execute_and_snapshot_dir():
     # Read from a file.
-    image_bytes = await execute_with_retries(
-        kcl.execute_and_snapshot, axial_fan, kcl.ImageFormat.Jpeg
-    )
+    async with await execute_with_retries(kcl.execute, axial_fan) as session:
+        session.outcome.raise_for_error()
+        image_bytes = await session.snapshot(kcl.ImageFormat.Jpeg)
     assert image_bytes is not None
     assert len(image_bytes) > 0
 
@@ -448,9 +454,9 @@ async def test_kcl_execute_and_measure():
         request = kcl.PhysicalPropertiesRequest()
         request.set_volume(kcl.UnitVolume.CubicMillimeters)
         request.set_center_of_mass(kcl.UnitLength.Centimeters)
-        response = await execute_with_retries(
-            kcl.execute_code_and_measure, code, request
-        )
+        async with await execute_with_retries(kcl.execute_code, code) as session:
+            session.outcome.raise_for_error()
+            response = await session.measure(request)
         assert response is not None
 
         # Check the response is as expected.
@@ -469,9 +475,9 @@ async def test_kcl_execute_and_measure():
 async def test_kcl_execute_code_and_measure_bounding_box_cm():
     request = kcl.PhysicalPropertiesRequest()
     request.set_bounding_box(kcl.UnitLength.Centimeters)
-    response = await execute_with_retries(
-        kcl.execute_code_and_measure, box_code, request
-    )
+    async with await execute_with_retries(kcl.execute_code, box_code) as session:
+        session.outcome.raise_for_error()
+        response = await session.measure(request)
     assert response is not None
 
     bounding_box = response.get_bounding_box()
@@ -492,9 +498,9 @@ async def test_kcl_execute_code_and_measure_bounding_box_cm():
 async def test_kcl_execute_code_and_measure_bounding_box_mm():
     request = kcl.PhysicalPropertiesRequest()
     request.set_bounding_box(kcl.UnitLength.Millimeters)
-    response = await execute_with_retries(
-        kcl.execute_code_and_measure, box_code, request
-    )
+    async with await execute_with_retries(kcl.execute_code, box_code) as session:
+        session.outcome.raise_for_error()
+        response = await session.measure(request)
     assert response is not None
 
     bounding_box = response.get_bounding_box()
@@ -513,7 +519,9 @@ async def test_kcl_execute_code_and_measure_bounding_box_mm():
 @requires_engine
 @pytest.mark.asyncio
 async def test_kcl_execute_code_and_bounding_box():
-    response = await execute_with_retries(kcl.execute_code_and_bounding_box, box_code)
+    async with await execute_with_retries(kcl.execute_code, box_code) as session:
+        session.outcome.raise_for_error()
+        response = await session.bounding_box()
     assert response is not None
 
     center = response.get_center()
@@ -532,7 +540,9 @@ async def test_kcl_execute_code_and_bounding_box():
 @pytest.mark.asyncio
 async def test_kcl_execute_and_bounding_box():
     box_file = os.path.join(files_dir, "box_with_linter_errors.kcl")
-    response = await execute_with_retries(kcl.execute_and_bounding_box, box_file, [])
+    async with await execute_with_retries(kcl.execute, box_file) as session:
+        session.outcome.raise_for_error()
+        response = await session.bounding_box([])
     assert response is not None
 
     center = response.get_center()
@@ -551,9 +561,9 @@ async def test_kcl_execute_and_bounding_box():
 @pytest.mark.asyncio
 async def test_kcl_execute_and_export():
     # Read from a file.
-    files = await execute_with_retries(
-        kcl.execute_and_export, lego_file, kcl.FileExportFormat.Step
-    )
+    async with await execute_with_retries(kcl.execute, lego_file) as session:
+        session.outcome.raise_for_error()
+        files = await session.export(kcl.FileExportFormat.Step)
     assert files is not None
     assert len(files) > 0
     assert files[0] is not None
@@ -654,9 +664,9 @@ async def test_kcl_execute_code_and_export_with_bad_units():
         assert code is not None
         assert len(code) > 0
         try:
-            await execute_with_retries(
-                kcl.execute_code_and_export, code, kcl.FileExportFormat.Step
-            )
+            async with await execute_with_retries(kcl.execute_code, code) as session:
+                session.outcome.raise_for_error()
+                await session.export(kcl.FileExportFormat.Step)
         except Exception as e:
             assert e is not None
             assert len(str(e)) > 0
@@ -790,9 +800,10 @@ errorSolid = extrude(sketches = errorRegion, length = 10)
 @requires_engine
 @pytest.mark.asyncio
 async def test_sketch_constraint_status_fully_constrained():
-    report = await execute_with_retries(
-        kcl.get_sketch_constraint_status_code, fully_constrained_sketch_code
-    )
+    async with await execute_with_retries(
+        kcl.execute_code, fully_constrained_sketch_code
+    ) as session:
+        report = session.outcome.sketch_constraint_report()
     assert len(report.fully_constrained) == 1
     assert len(report.under_constrained) == 0
     assert len(report.over_constrained) == 0
@@ -806,9 +817,10 @@ async def test_sketch_constraint_status_fully_constrained():
 @requires_engine
 @pytest.mark.asyncio
 async def test_sketch_constraint_status_under_constrained():
-    report = await execute_with_retries(
-        kcl.get_sketch_constraint_status_code, under_constrained_sketch_code
-    )
+    async with await execute_with_retries(
+        kcl.execute_code, under_constrained_sketch_code
+    ) as session:
+        report = session.outcome.sketch_constraint_report()
     assert len(report.fully_constrained) == 0
     assert len(report.under_constrained) == 1
     assert len(report.over_constrained) == 0
@@ -820,7 +832,11 @@ async def test_sketch_constraint_status_under_constrained():
 @requires_engine
 @pytest.mark.asyncio
 async def test_sketch_constraint_status_mixed():
-    outcome = await execute_with_retries(kcl.execute_code, mixed_sketches_code)
+    async with await execute_with_retries(
+        kcl.execute_code, mixed_sketches_code
+    ) as session:
+        session.outcome.raise_for_error()
+        outcome = session.outcome
     report = outcome.sketch_constraint_report()
     assert report.total_sketches() == 2
     assert len(report.fully_constrained) == 1
@@ -841,9 +857,10 @@ async def test_sketch_constraint_status_reports_names():
     # over-constrained sketch. Every entry carries the name of the variable its
     # sketch was assigned to, so a caller can say which sketch needs
     # correcting.
-    report = await execute_with_retries(
-        kcl.get_sketch_constraint_status_code, named_sketches_all_statuses_code
-    )
+    async with await execute_with_retries(
+        kcl.execute_code, named_sketches_all_statuses_code
+    ) as session:
+        report = session.outcome.sketch_constraint_report()
     assert report.total_sketches() == 3
     assert len(report.errors) == 0
     assert len(report.fully_constrained) == 1
@@ -857,9 +874,10 @@ async def test_sketch_constraint_status_reports_names():
 @requires_engine
 @pytest.mark.asyncio
 async def test_sketch_constraint_status_includes_execution_warnings():
-    report = await execute_with_retries(
-        kcl.get_sketch_constraint_status_code, warning_sketch_code
-    )
+    async with await execute_with_retries(
+        kcl.execute_code, warning_sketch_code
+    ) as session:
+        report = session.outcome.sketch_constraint_report()
     assert report.total_sketches() == 1
     assert len(report.fully_constrained) == 0
     assert len(report.under_constrained) == 1
@@ -877,9 +895,10 @@ async def test_sketch_constraint_status_includes_execution_warnings():
 @requires_engine
 @pytest.mark.asyncio
 async def test_sketch_constraint_status_includes_non_fatal_execution_errors():
-    report = await execute_with_retries(
-        kcl.get_sketch_constraint_status_code, error_sketch_code
-    )
+    async with await execute_with_retries(
+        kcl.execute_code, error_sketch_code
+    ) as session:
+        report = session.outcome.sketch_constraint_report()
     assert report.total_sketches() == 1
     assert len(report.fully_constrained) == 0
     assert len(report.under_constrained) == 1
@@ -895,7 +914,10 @@ async def test_sketch_constraint_status_includes_non_fatal_execution_errors():
 
 @pytest.mark.asyncio
 async def test_sketch_constraint_status_parse_error_returns_report():
-    report = await kcl.get_sketch_constraint_status_code(parse_error_sketch_code)
+    async with await execute_with_retries(
+        kcl.execute_code, parse_error_sketch_code
+    ) as session:
+        report = session.outcome.sketch_constraint_report()
     assert report.total_sketches() == 0
     assert len(report.fully_constrained) == 0
     assert len(report.under_constrained) == 0
@@ -914,9 +936,11 @@ async def test_sketch_constraint_status_parse_error_returns_report():
 @requires_engine
 @pytest.mark.asyncio
 async def test_exec_outcome_report_renders_csg_no_overlap_warning():
-    outcome = await execute_with_retries(
+    async with await execute_with_retries(
         kcl.execute, os.path.join(files_dir, "warning.kcl")
-    )
+    ) as session:
+        session.outcome.raise_for_error()
+        outcome = session.outcome
     issues = outcome.issues()
     assert len(issues) >= 1
     warning = next((i for i in issues if i.is_warning()), None)
@@ -930,9 +954,10 @@ async def test_exec_outcome_report_renders_csg_no_overlap_warning():
 @requires_engine
 @pytest.mark.asyncio
 async def test_sketch_constraint_status_execution_error_returns_partial_report():
-    report = await execute_with_retries(
-        kcl.get_sketch_constraint_status_code, execution_error_after_sketch_code
-    )
+    async with await execute_with_retries(
+        kcl.execute_code, execution_error_after_sketch_code
+    ) as session:
+        report = session.outcome.sketch_constraint_report()
     assert report.total_sketches() == 1
     assert len(report.fully_constrained) == 1
     assert len(report.under_constrained) == 0
@@ -942,3 +967,62 @@ async def test_sketch_constraint_status_execution_error_returns_partial_report()
     assert report.kcl_error is not None
     assert report.kcl_error.phase == "execution"
     assert "missing_sketch" in report.kcl_error.text
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_session_reuses_model_for_all_operations(tmp_path):
+    # Deleting the source after execution proves later operations do not rerun it.
+    source = tmp_path / "main.kcl"
+    source.write_text("""@settings(kclVersion = 2.0, defaultLengthUnit = mm)
+s = sketch(on = XY) {
+  c = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+body = extrude(region(point = [0mm, 0mm], sketch = s), length = 10mm)
+""")
+    async with await kcl.execute(str(source)) as session:
+        outcome = session.outcome
+        outcome.raise_for_error()
+        source.unlink()
+        assert not session.closed
+        assert outcome.sketch_constraint_report().total_sketches() == 1
+        assert bytes(await session.snapshot(kcl.ImageFormat.Png)).startswith(b"\x89PNG")
+        assert (await session.export(kcl.FileExportFormat.Step))[0].contents
+        assert (await session.export(kcl.FileExportFormat.Stl))[0].contents
+        bbox = await session.bounding_box()
+        assert bbox is not None
+        request = kcl.PhysicalPropertiesRequest()
+        request.set_volume(kcl.UnitVolume.CubicMillimeters)
+        assert (await session.measure(request)).get_volume() == pytest.approx(
+            250 * 3.141592653589793
+        )
+    assert session.closed
+    assert outcome.sketch_constraint_report().total_sketches() == 1
+    await session.close()
+    with pytest.raises(RuntimeError, match="closed"):
+        await session.snapshot(kcl.ImageFormat.Png)
+
+
+@pytest.mark.asyncio
+async def test_session_parse_failure_is_inspectable_after_close():
+    async with await kcl.execute_code("s = sketch(") as session:
+        outcome = session.outcome
+        assert not outcome.is_complete
+        assert outcome.error.phase == "parse"
+        assert not outcome.is_retryable()
+        with pytest.raises(kcl.KclError):
+            outcome.raise_for_error()
+    assert outcome.sketch_constraint_report().is_complete is False
+    assert session.closed
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_session_closes_on_python_exception():
+    with pytest.raises(ValueError, match="client failure"):
+        async with await kcl.execute_code(
+            "@settings(kclVersion = 2.0)\na = 1"
+        ) as session:
+            session.outcome.raise_for_error()
+            raise ValueError("client failure")
+    assert session.closed

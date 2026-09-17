@@ -47,6 +47,7 @@ __all__ = [
     "PlyStorage",
     "Point3d",
     "RawFile",
+    "Session",
     "SketchConstraintReport",
     "SketchConstraintStatus",
     "SldprtImportOptions",
@@ -67,21 +68,9 @@ __all__ = [
     "UnitVolume",
     "default_units",
     "execute",
-    "execute_and_bounding_box",
-    "execute_and_export",
-    "execute_and_measure",
-    "execute_and_snapshot",
-    "execute_and_snapshot_views",
     "execute_code",
-    "execute_code_and_bounding_box",
-    "execute_code_and_export",
-    "execute_code_and_measure",
-    "execute_code_and_snapshot",
-    "execute_code_and_snapshot_views",
     "format",
     "format_dir",
-    "get_sketch_constraint_status",
-    "get_sketch_constraint_status_code",
     "import_and_snapshot",
     "import_and_snapshot_views",
     "lint",
@@ -188,6 +177,24 @@ class ExecOutcome:
     r"""
     Returned from execution functions.
     """
+    @property
+    def is_complete(self) -> builtins.bool:
+        r"""
+        Whether execution finished without an aborting KCL error.
+        """
+    @property
+    def error(self) -> typing.Optional[KclErrorInfo]:
+        r"""
+        Parse or execution error, including its rendered source context.
+        """
+    def is_retryable(self) -> builtins.bool:
+        r"""
+        Whether the aborting error permits an explicit retry of execution.
+        """
+    def raise_for_error(self) -> None:
+        r"""
+        Raise the captured KCL error when the caller requires a complete model.
+        """
     def issues(self) -> builtins.list[CompilationIssue]: ...
     def report(self, issue: CompilationIssue) -> builtins.str:
         r"""
@@ -599,6 +606,41 @@ class RawFile:
     def contents(self) -> builtins.list[builtins.int]: ...
     @property
     def name(self) -> builtins.str: ...
+
+@typing.final
+class Session:
+    r"""
+    An executed KCL model. Use ``async with`` or await ``close()`` when finished.
+    KCL failures are retained in ``outcome``; inspect it before using partial geometry.
+    Engine operations are serialized and never re-execute KCL automatically.
+    """
+    @property
+    def outcome(self) -> ExecOutcome:
+        r"""
+        Saved diagnostics and partial sketch results, available after close().
+        """
+    @property
+    def closed(self) -> builtins.bool: ...
+    async def close(self) -> None:
+        r"""
+        Close the connection. Repeated calls are safe. Cleanup continues if cancelled.
+        """
+    async def __aenter__(self) -> Session: ...
+    async def __aexit__(self, _exc_type: typing.Optional[typing.Any], _exc_value: typing.Optional[typing.Any], _traceback: typing.Optional[typing.Any]) -> None: ...
+    async def snapshot(self, image_format: ImageFormat, *, zoom: builtins.bool = ...) -> builtins.list[builtins.int]:
+        r"""
+        Take a snapshot of the current (possibly partial) model.
+        """
+    async def snapshot_views(self, image_format: ImageFormat, snapshot_options: typing.Sequence[SnapshotOptions], *, zoom: builtins.bool = ...) -> builtins.list[builtins.list[builtins.int]]:
+        r"""
+        Take several views without re-executing KCL.
+        """
+    async def measure(self, request: PhysicalPropertiesRequest) -> PhysicalPropertiesResponse: ...
+    async def bounding_box(self, entity_ids: typing.Optional[typing.Sequence[builtins.str]] = None, output_unit: typing.Optional[UnitLength] = None) -> BoundingBoxResponse: ...
+    async def export(self, export_format: FileExportFormat) -> builtins.list[RawFile]:
+        r"""
+        Export the current (possibly partial) model using the program's length units.
+        """
 
 @typing.final
 class SketchConstraintReport:
@@ -1305,63 +1347,14 @@ async def default_units(path: builtins.str) -> zooDefaultUnits:
     Get the default length and angle units from a kcl file.
     """
 
-async def execute(path: builtins.str) -> zooExecOutcome:
+async def execute(path: builtins.str, *, highlight_edges: typing.Optional[builtins.bool] = None) -> Session:
     r"""
     Execute the kcl code from a file path.
     """
 
-async def execute_and_bounding_box(path: builtins.str, entity_ids: typing.Optional[typing.Sequence[builtins.str]] = None, output_unit: typing.Optional[UnitLength] = None) -> zooBoundingBoxResponse:
-    r"""
-    Execute a kcl file and return the model's bounding box.
-    """
-
-async def execute_and_export(path: builtins.str, export_format: zooFileExportFormat) -> builtins.list[RawFile]:
-    r"""
-    Execute a kcl file and export it to a specific file format.
-    """
-
-async def execute_and_measure(path: builtins.str, request: zooPhysicalPropertiesRequest) -> zooPhysicalPropertiesResponse:
-    r"""
-    Execute a kcl file and measure physical properties of the resulting model.
-    """
-
-async def execute_and_snapshot(path: builtins.str, image_format: zooImageFormat, *, zoom: typing.Optional[builtins.bool] = None, highlight_edges: typing.Optional[builtins.bool] = None) -> builtins.list[builtins.int]:
-    r"""
-    Execute a kcl file and snapshot it in a specific format.
-    """
-
-async def execute_and_snapshot_views(path: builtins.str, image_format: zooImageFormat, snapshot_options: typing.Sequence[SnapshotOptions], *, zoom: typing.Optional[builtins.bool] = None, highlight_edges: typing.Optional[builtins.bool] = None) -> builtins.list[builtins.list[builtins.int]]: ...
-
-async def execute_code(code: builtins.str) -> zooExecOutcome:
+async def execute_code(code: builtins.str, *, highlight_edges: typing.Optional[builtins.bool] = None) -> Session:
     r"""
     Execute the kcl code.
-    """
-
-async def execute_code_and_bounding_box(code: builtins.str, entity_ids: typing.Optional[typing.Sequence[builtins.str]] = None, output_unit: typing.Optional[UnitLength] = None) -> zooBoundingBoxResponse:
-    r"""
-    Execute the kcl code and return the model's bounding box.
-    """
-
-async def execute_code_and_export(code: builtins.str, export_format: zooFileExportFormat) -> builtins.list[RawFile]:
-    r"""
-    Execute the kcl code and export it to a specific file format.
-    """
-
-async def execute_code_and_measure(code: builtins.str, request: zooPhysicalPropertiesRequest) -> zooPhysicalPropertiesResponse:
-    r"""
-    Execute the kcl code and measure physical properties of the resulting model.
-    """
-
-async def execute_code_and_snapshot(code: builtins.str, image_format: zooImageFormat, *, zoom: typing.Optional[builtins.bool] = None, highlight_edges: typing.Optional[builtins.bool] = None) -> builtins.list[builtins.int]:
-    r"""
-    Execute the kcl code and snapshot it in a specific format.
-    """
-
-async def execute_code_and_snapshot_views(code: builtins.str, image_format: zooImageFormat, snapshot_options: typing.Sequence[SnapshotOptions], *, zoom: typing.Optional[builtins.bool] = None, highlight_edges: typing.Optional[builtins.bool] = None) -> builtins.list[builtins.list[builtins.int]]:
-    r"""
-    Execute the kcl code and snapshot it in a specific format.
-    Returns one image for each camera angle you provide.
-    If you don't provide any camera angles, a default head-on camera angle will be used.
     """
 
 def format(code: builtins.str) -> builtins.str:
@@ -1372,16 +1365,6 @@ def format(code: builtins.str) -> builtins.str:
 async def format_dir(dir: builtins.str) -> None:
     r"""
     Format a whole directory of kcl code.
-    """
-
-async def get_sketch_constraint_status(path: builtins.str) -> zooSketchConstraintReport:
-    r"""
-    Execute a kcl file and return a report of sketch constraint status.
-    """
-
-async def get_sketch_constraint_status_code(code: builtins.str) -> zooSketchConstraintReport:
-    r"""
-    Execute kcl code and return a report of sketch constraint status.
     """
 
 async def import_and_snapshot(filepaths: typing.Sequence[builtins.str], format: zooInputFormat3d, image_format: zooImageFormat, *, zoom: typing.Optional[builtins.bool] = None, highlight_edges: typing.Optional[builtins.bool] = None) -> builtins.list[builtins.int]: ...

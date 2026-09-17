@@ -51,3 +51,60 @@ If you do not use a `ZOO_API_TOKEN` from the production environment of `zoo.dev`
 3. Push the tag (the result of `make tag` gives instructions for this)
 4. Everything else is triggered from the tag push. Just make sure all the tests
    pass on the `main` branch before making and pushing a new tag.
+
+## Execute once, use the model repeatedly
+
+`execute(path)` and `execute_code(code)` return a `Session`. Each call runs KCL
+once. Keep the session open to take snapshots, export files, measure physical
+properties, or query the bounding box of that model:
+
+```python
+async with await kcl.execute("main.kcl", highlight_edges=False) as session:
+    outcome = session.outcome
+    constraints = outcome.sketch_constraint_report()
+    if outcome.error is not None:
+        print(outcome.error.text)
+    else:
+        png = await session.snapshot(kcl.ImageFormat.Png)
+        step_files = await session.export(kcl.FileExportFormat.Step)
+        request = kcl.PhysicalPropertiesRequest()
+        request.set_volume(kcl.UnitVolume.CubicMillimeters)
+        properties = await session.measure(request)
+        bounds = await session.bounding_box()
+```
+
+`await session.close()` is also supported. Closing is idempotent; engine methods
+raise `RuntimeError` after closing. `outcome` and its reports remain usable.
+Use `async with` to close on Python exceptions as well. Garbage collection only
+provides best-effort cleanup; do not rely on it to release an idle engine.
+
+Parse and execution failures are returned in `session.outcome.error`, with
+`phase` and rendered `text`. `is_complete` is false and constraint reports retain
+any sketches evaluated before failure. Parse failures create no engine
+connection. File access and connection setup failures still raise exceptions.
+Use `outcome.raise_for_error()` when your application requires complete execution.
+Warnings and non-fatal compilation issues remain available through `issues()`.
+`is_complete` describes whether execution aborted, not whether every sketch is
+fully constrained or every diagnostic is a warning.
+
+Engine methods operate on the current scene, including partial geometry after a
+KCL failure. Check the outcome before treating exported geometry as a complete
+model. Operations are serialized per session. Cancelling an engine operation
+invalidates and closes its session, since the command may already be in flight.
+Closing interrupts outstanding operations. There is no automatic reconnection
+or re-execution; callers can explicitly retry when `outcome.is_retryable()` or a
+raised `KclError.is_retryable()` indicates a transient failure. Close the previous
+session before retrying. Snapshots retain their camera changes in the session.
+
+### Migrating existing callers
+
+The combined `execute[_code]_and_*` and `get_sketch_constraint_status[_code]`
+functions have been removed. Replace them with one execution and the corresponding
+`session.snapshot`, `snapshot_views`, `measure`, `bounding_box`, or `export` call.
+Set `highlight_edges` on execution. Constraint reports and sketch PNG rendering
+are methods on `session.outcome` and need no further engine calls.
+
+Previous callers of `execute()` that only inspected an `ExecOutcome` must now
+close the session and read `session.outcome`. `mock_execute[_code]` still returns
+an `ExecOutcome` and raises on failure: it owns no live engine resources.
+The CAD import snapshot helpers are unchanged.

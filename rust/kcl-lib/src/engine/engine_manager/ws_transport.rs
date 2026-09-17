@@ -500,6 +500,8 @@ impl EngineTransport for WebSocketTransport {
             if *guard == SocketHealth::Inactive {
                 return Ok(());
             }
+            drop(guard);
+            tokio::task::yield_now().await;
         }
     }
 }
