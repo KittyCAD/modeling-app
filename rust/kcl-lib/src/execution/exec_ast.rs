@@ -935,6 +935,11 @@ impl ExecutorContext {
     ) -> Result<bool, KclError> {
         let mut no_prelude = false;
         for annotation in annotations {
+            // The attribute that customizes diagnostics is `@warnings` before
+            // KCL 3.0 and `@diagnostics` in KCL 3.0 and later. Look it up per
+            // annotation since a preceding `@settings` may have changed the
+            // version.
+            let diagnostics_attr = annotations::diagnostics_attr_name(exec_state.kcl_version());
             if annotation.name() == Some(annotations::SETTINGS) {
                 if matches!(body_type, BodyType::Root) {
                     let (updated_len, updated_angle) =
@@ -973,16 +978,17 @@ impl ExecutorContext {
                         "The standard library can only be skipped at the top level scope of a file",
                     ));
                 }
-            } else if annotation.name() == Some(annotations::WARNINGS) {
+            } else if annotation.name() == Some(diagnostics_attr) {
                 // TODO we should support setting warnings for the whole project, not just one file
                 if matches!(body_type, BodyType::Root) {
-                    let props = annotations::expect_properties(annotations::WARNINGS, annotation)?;
+                    let props = annotations::expect_properties(diagnostics_attr, annotation)?;
                     for p in props {
                         match &*p.inner.key.name {
                             annotations::WARN_ALLOW => {
                                 let allowed = annotations::many_of(
                                     &p.inner.value,
                                     &annotations::WARN_VALUES,
+                                    diagnostics_attr,
                                     annotation.as_source_range(),
                                 )?;
                                 exec_state.mod_local.allowed_warnings = allowed;
@@ -991,6 +997,7 @@ impl ExecutorContext {
                                 let denied = annotations::many_of(
                                     &p.inner.value,
                                     &annotations::WARN_VALUES,
+                                    diagnostics_attr,
                                     annotation.as_source_range(),
                                 )?;
                                 exec_state.mod_local.denied_warnings = denied;
@@ -998,7 +1005,7 @@ impl ExecutorContext {
                             name => {
                                 return Err(KclError::new_semantic(KclErrorDetails::new(
                                     format!(
-                                        "Unexpected warnings key: `{name}`; expected one of `{}`, `{}`",
+                                        "Unexpected {diagnostics_attr} key: `{name}`; expected one of `{}`, `{}`",
                                         annotations::WARN_ALLOW,
                                         annotations::WARN_DENY,
                                     ),
@@ -1008,11 +1015,36 @@ impl ExecutorContext {
                         }
                     }
                 } else {
-                    exec_state.err(CompilationIssue::err(
-                        annotation.as_source_range(),
-                        "Warnings can only be customized at the top level scope of a file",
-                    ));
+                    let message = match diagnostics_attr {
+                        annotations::WARNINGS => "Warnings can only be customized at the top level scope of a file",
+                        _ => "Diagnostics can only be customized at the top level scope of a file",
+                    };
+                    exec_state.err(CompilationIssue::err(annotation.as_source_range(), message));
                 }
+            } else if annotation.name() == Some(annotations::WARNINGS) {
+                // KCL 3.0 renamed `@warnings` to `@diagnostics`. This is only
+                // reached in KCL 3.0-preview or later, since before that the
+                // attribute is handled above. Report a non-fatal error with
+                // the fix, and ignore the attribute.
+                let mut issue = CompilationIssue::err(
+                    annotation.as_source_range(),
+                    format!(
+                        "The `@{old}` attribute was renamed to `@{new}` in KCL 3.0, so this attribute is ignored. Replace `@{old}` with `@{new}`; its `{allow}` and `{deny}` properties are unchanged.",
+                        old = annotations::WARNINGS,
+                        new = annotations::DIAGNOSTICS,
+                        allow = annotations::WARN_ALLOW,
+                        deny = annotations::WARN_DENY,
+                    ),
+                );
+                if let Some(name) = &annotation.name {
+                    issue = issue.with_suggestion(
+                        format!("Rename to `@{}`", annotations::DIAGNOSTICS),
+                        annotations::DIAGNOSTICS,
+                        Some(name.as_source_range()),
+                        crate::errors::Tag::None,
+                    );
+                }
+                exec_state.err(issue);
             } else {
                 exec_state.warn(
                     CompilationIssue::err(annotation.as_source_range(), "Unknown annotation"),
@@ -8024,6 +8056,147 @@ a = PI * 2
         let result = parse_execute(deny).await.unwrap();
         assert_eq!(result.exec_state.issues().len(), 1);
         assert_eq!(result.exec_state.issues()[0].severity, Severity::Error);
+    }
+
+    /// KCL 3.0 renamed `@warnings` to `@diagnostics`. Under KCL 3.0-preview
+    /// or later, `@diagnostics` customizes diagnostics the way `@warnings`
+    /// does in earlier versions.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn diagnostics_attribute_in_v3() {
+        let warn = "@settings(kclVersion = \"3.0-preview\")\na = PI * 2\n";
+        let result = parse_execute(warn).await.unwrap();
+        let issues = result.exec_state.issues();
+        assert_eq!(issues.len(), 1, "{issues:#?}");
+        assert_eq!(issues[0].severity, Severity::Warning);
+        assert_eq!(issues[0].tag, crate::errors::Tag::UnknownNumericUnits);
+
+        let allow = "@settings(kclVersion = \"3.0-preview\")\n@diagnostics(allow = unknownUnits)\na = PI * 2\n";
+        let result = parse_execute(allow).await.unwrap();
+        assert!(
+            result.exec_state.issues().is_empty(),
+            "{:#?}",
+            result.exec_state.issues()
+        );
+
+        let deny = "@settings(kclVersion = \"3.0-preview\")\n@diagnostics(deny = [unknownUnits])\na = PI * 2\n";
+        let result = parse_execute(deny).await.unwrap();
+        let issues = result.exec_state.issues();
+        assert_eq!(issues.len(), 1, "{issues:#?}");
+        assert_eq!(issues[0].severity, Severity::Error);
+        assert_eq!(issues[0].tag, crate::errors::Tag::UnknownNumericUnits);
+    }
+
+    /// Before KCL 3.0, `@diagnostics` is not an attribute: it gets the usual
+    /// unknown-annotation warning and has no effect, while `@warnings` keeps
+    /// working.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn diagnostics_attribute_is_unknown_before_v3() {
+        for version in ["1.0", "2.0"] {
+            let code = format!("@settings(kclVersion = {version})\n@diagnostics(allow = unknownUnits)\na = PI * 2\n");
+            let result = parse_execute(&code).await.unwrap();
+            let issues = result.exec_state.issues();
+            assert_eq!(issues.len(), 2, "code={code}, issues={issues:#?}");
+            assert_eq!(issues[0].severity, Severity::Warning);
+            assert_eq!(issues[0].message, "Unknown annotation");
+            assert_eq!(
+                &code[issues[0].source_range.start()..issues[0].source_range.end()],
+                "@diagnostics(allow = unknownUnits)"
+            );
+            assert_eq!(issues[1].severity, Severity::Warning);
+            assert_eq!(issues[1].tag, crate::errors::Tag::UnknownNumericUnits);
+
+            let code = format!("@settings(kclVersion = {version})\n@warnings(allow = unknownUnits)\na = PI * 2\n");
+            let result = parse_execute(&code).await.unwrap();
+            assert!(
+                result.exec_state.issues().is_empty(),
+                "code={code}, issues={:#?}",
+                result.exec_state.issues()
+            );
+        }
+    }
+
+    /// Errors for a malformed attribute name the attribute that was written:
+    /// `warnings` before KCL 3.0 and `diagnostics` in KCL 3.0-preview or
+    /// later.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn diagnostics_attribute_errors_use_the_attribute_name() {
+        for (version, attr, noun) in [
+            ("1.0", "warnings", "warning"),
+            ("2.0", "warnings", "warning"),
+            ("\"3.0-preview\"", "diagnostics", "diagnostic"),
+        ] {
+            let settings = format!("@settings(kclVersion = {version})\n");
+
+            let code = format!("{settings}@{attr}\n");
+            let error = parse_execute(&code).await.unwrap_err();
+            assert_eq!(error.message(), format!("Empty `{attr}` annotation"), "code={code}");
+
+            let code = format!("{settings}@{attr}(warn = unknownUnits)\n");
+            let error = parse_execute(&code).await.unwrap_err();
+            assert_eq!(
+                error.message(),
+                format!("Unexpected {attr} key: `warn`; expected one of `allow`, `deny`"),
+                "code={code}"
+            );
+
+            let code = format!("{settings}@{attr}(allow = 1)\n");
+            let error = parse_execute(&code).await.unwrap_err();
+            assert_eq!(
+                error.message(),
+                format!(
+                    "Unexpected {attr} value, expected a name or array of names, e.g., `unknownUnits` or `[unknownUnits, deprecated]`"
+                ),
+                "code={code}"
+            );
+
+            let code = format!("{settings}@{attr}(allow = bogus)\n");
+            let error = parse_execute(&code).await.unwrap_err();
+            let expected_prefix = format!("Unexpected {noun} value: `bogus`; accepted values: unknownUnits, ");
+            assert!(
+                error.message().starts_with(&expected_prefix),
+                "code={code}, message={}",
+                error.message()
+            );
+        }
+    }
+
+    /// KCL 3.0: using the old `@warnings` name is a non-fatal error that
+    /// explains the rename and offers the fix. The attribute is ignored, so
+    /// the warning it tried to allow is still reported.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn warnings_attribute_is_renamed_in_v3() {
+        let code = "@settings(kclVersion = \"3.0-preview\")\n@warnings(allow = unknownUnits)\na = PI * 2\n";
+        let result = parse_execute(code).await.unwrap();
+        let issues = result.exec_state.issues();
+        assert_eq!(issues.len(), 2, "{issues:#?}");
+
+        let renamed = &issues[0];
+        assert_eq!(renamed.severity, Severity::Error);
+        assert_eq!(
+            renamed.message,
+            "The `@warnings` attribute was renamed to `@diagnostics` in KCL 3.0, so this attribute is ignored. Replace `@warnings` with `@diagnostics`; its `allow` and `deny` properties are unchanged."
+        );
+        assert_eq!(
+            &code[renamed.source_range.start()..renamed.source_range.end()],
+            "@warnings(allow = unknownUnits)"
+        );
+        let suggestion = renamed.suggestion.as_ref().unwrap();
+        assert_eq!(suggestion.title, "Rename to `@diagnostics`");
+        assert_eq!(
+            suggestion.apply(code),
+            "@settings(kclVersion = \"3.0-preview\")\n@diagnostics(allow = unknownUnits)\na = PI * 2\n"
+        );
+
+        assert_eq!(issues[1].severity, Severity::Warning);
+        assert_eq!(issues[1].tag, crate::errors::Tag::UnknownNumericUnits);
+
+        // Since the attribute is ignored, its properties aren't checked.
+        let code = "@settings(kclVersion = \"3.0-preview\")\n@warnings(allow = bogus)\n";
+        let result = parse_execute(code).await.unwrap();
+        let issues = result.exec_state.issues();
+        assert_eq!(issues.len(), 1, "{issues:#?}");
+        assert_eq!(issues[0].severity, Severity::Error);
+        assert!(issues[0].message.starts_with("The `@warnings` attribute was renamed"));
     }
 
     #[tokio::test(flavor = "multi_thread")]
