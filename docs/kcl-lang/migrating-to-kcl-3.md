@@ -25,6 +25,14 @@ The version declared by the file you execute governs the whole program,
 including every file it imports. A program cannot run partly under KCL 2.0
 and partly under KCL 3.0, so migrate a project as a unit.
 
+## Preview
+
+The version is 3.0-preview, not 3.0, because it isn't stable yet. Behavior will
+still change without notice before the final 3.0 release, including breaking
+changes that can make a model invalid or silently different. We do not recommend
+building real models with 3.0-preview. It's only intended to get a glimpse of
+what functionality is on its way.
+
 ## Migration steps
 
 1. Change `kclVersion` to `"3.0-preview"` in the file you execute and in
@@ -200,8 +208,8 @@ picked = plates()[pickIndex()]
 
 ## `fillet` and `chamfer` run in order with other operations
 
-In KCL 2.0, `fillet` and `chamfer` were deferred until the end of the program,
-after every other modeling operation. In KCL 3.0, they are sent to the engine
+In KCL 2.0, `fillet` and `chamfer` were deferred until certain other modeling
+commands or the end of the program. In KCL 3.0, they are sent to the engine
 immediately, in order with the other operations.
 
 This has two consequences:
