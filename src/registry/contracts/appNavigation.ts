@@ -35,6 +35,7 @@ export type OpenProjectOutcome =
  */
 export interface AppNavigationService {
   openProject: (request: OpenProjectRequest) => Promise<OpenProjectOutcome>
+  showHome: () => Promise<void>
   /**
    * Transitional escape hatch for a legacy file route that returns before it
    * can call openProject. Remove it with the effectful loader integration.

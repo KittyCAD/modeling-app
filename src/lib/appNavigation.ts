@@ -19,6 +19,11 @@ export interface AppNavigationDependencies {
     resolution: ResolvedProjectOpen,
     throwIfSuperseded: () => void
   ) => Promise<Extract<OpenProjectOutcome, { kind: 'opened' }>>
+  projectOpened: (
+    outcome: Extract<OpenProjectOutcome, { kind: 'opened' }>,
+    request: OpenProjectRequest
+  ) => void
+  showHome: (openProject: AppNavigationService['openProject']) => Promise<void>
 }
 
 /**
@@ -66,21 +71,26 @@ export function createAppNavigationService(
         return resolution
       }
 
-      return dependencies.openResolvedProject(
+      const outcome = await dependencies.openResolvedProject(
         resolution,
         projectOpen.throwIfSuperseded
       )
+      dependencies.projectOpened(outcome, request)
+      return outcome
     } finally {
       projectOpen.finish()
     }
   }
 
-  return {
+  const service: AppNavigationService = {
     openProject,
+    showHome: () => dependencies.showHome(service.openProject),
     supersedeProjectOpen: (signal) => {
       activeProjectOpen?.abort()
       activeProjectOpen = undefined
       signal?.throwIfAborted()
     },
   }
+
+  return service
 }

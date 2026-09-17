@@ -1011,7 +1011,7 @@ describe('project system', () => {
     }
   })
 
-  it('does not let a superseded route load replace the active editor', async () => {
+  it('does not let a superseded project open replace the active editor', async () => {
     const projectPath = `/tmp/app-stale-route-load-${crypto.randomUUID()}`
     const mainPath = fsZds.join(projectPath, 'main.kcl')
     const alternatePath = fsZds.join(projectPath, 'alternate.kcl')
