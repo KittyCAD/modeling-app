@@ -3,9 +3,11 @@ import {
   defineRuntimeRegistryItem,
   provide,
 } from '@kittycad/registry'
+import { computed } from '@preact/signals-core'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import {
   layoutAreaLibraryValueSpec,
+  layoutPaneShortcutsValueSpec,
   layoutService,
 } from '@src/lib/layout/registry/contract'
 import { AreaType, type AreaTypeComponentProps } from '@src/lib/layout/types'
@@ -14,7 +16,10 @@ import {
   FILE_COMMAND_SCOPES,
   provideCommand,
 } from '@src/registry/contracts/commands'
-import { provideKeymapItem } from '@src/registry/contracts/keymap'
+import {
+  keymapService,
+  provideKeymapItem,
+} from '@src/registry/contracts/keymap'
 import { createElement, lazy, Suspense } from 'react'
 
 const TOGGLE_FEATURE_TREE_COMMAND_ID = 'feature-tree.toggle'
@@ -38,6 +43,17 @@ export default defineRegistryItemFactory(
     item: defineRuntimeRegistryItem({
       id: 'feature-tree',
       provides: [
+        provide(
+          layoutPaneShortcutsValueSpec,
+          computed(() => ({
+            [DefaultLayoutPaneID.FeatureTree]:
+              ctx.services
+                .signal(keymapService)
+                .value?.keymap.value.items.find(
+                  (item) => item.command === TOGGLE_FEATURE_TREE_COMMAND_ID
+                )?.keystrokes ?? [],
+          }))
+        ),
         provide(layoutAreaLibraryValueSpec, {
           [AreaType.FeatureTree]: {
             hide: () => false,

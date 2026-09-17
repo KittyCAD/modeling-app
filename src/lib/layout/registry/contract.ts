@@ -11,6 +11,7 @@ import type {
   LayoutContribution,
   Layout,
   LayoutService,
+  PaneShortcuts,
 } from '@src/lib/layout/types'
 
 /**
@@ -34,6 +35,10 @@ export const layoutContract = defineContract({
   ),
   layoutActionLibraryValueSpec: mergeObjectsValueSpec<ActionLibrary>(
     'layout.actionLibrary',
+    {}
+  ),
+  layoutPaneShortcutsValueSpec: mergeObjectsValueSpec<PaneShortcuts>(
+    'layout.paneShortcuts',
     {}
   ),
   layoutContributionsValueSpec: defineValueSpec<
@@ -76,6 +81,7 @@ export const {
   layoutService,
   layoutAreaLibraryValueSpec,
   layoutActionLibraryValueSpec,
+  layoutPaneShortcutsValueSpec,
   layoutContributionsValueSpec,
   layoutUserFeatureTransformationsValueSpec,
 } = layoutContract
