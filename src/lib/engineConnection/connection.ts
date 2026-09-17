@@ -170,8 +170,10 @@ export class Connection extends EventTarget {
     callback: (message: string) => void,
     geometryOnly = false
   ) {
+    // The API derives the engine's geometry_only setting from the CPU pool.
+    const geometryOnlyQuery = geometryOnly ? '&webrtc=false&pool=cpu' : ''
     const url = withKittycadWebSocketURL(
-      `?video_res_width=${256}&video_res_height=${256}&post_effect=ssao${geometryOnly ? '&webrtc=false' : ''}`
+      `?video_res_width=${256}&video_res_height=${256}&post_effect=ssao${geometryOnlyQuery}`
     )
     this.websocket = new WebSocket(url, [])
     this.websocket.binaryType = 'arraybuffer'

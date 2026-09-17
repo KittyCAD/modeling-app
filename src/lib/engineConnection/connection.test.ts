@@ -43,11 +43,12 @@ describe('unit testing engine connection', () => {
     vi.unstubAllGlobals()
   })
 
-  it('requests a geometry-only engine session without WebRTC', () => {
+  it('requests a CPU geometry-only engine session without WebRTC', () => {
     createUnitTestConnection({ geometryOnly: true })
 
     const websocketUrl = new URL(TestWebSocket.instances[0].url)
     expect(websocketUrl.searchParams.get('webrtc')).toBe('false')
+    expect(websocketUrl.searchParams.get('pool')).toBe('cpu')
   })
 
   it('treats session data as the successful geometry-only handshake', () => {
