@@ -9,7 +9,7 @@ import { createTwoFilesPatch } from 'diff'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => ({
-  readFile: vi.fn(async () => 'updated contents'),
+  readFile: vi.fn(async () => new TextEncoder().encode('updated contents')),
 }))
 
 vi.mock('@src/lib/wasm_lib_wrapper', () => ({}))
@@ -18,7 +18,6 @@ vi.mock('@src/lib/fs-zds', () => ({
   default: {
     join: (root: string, ...parts: string[]) =>
       parts.reduce((path, part) => `${path}/${part}`, root),
-    readFile: mocks.readFile,
     relative: (from: string, to: string) =>
       to.startsWith(`${from}/`) ? to.slice(from.length + 1) : to,
   },
@@ -27,6 +26,10 @@ vi.mock('@src/lib/fs-zds', () => ({
 vi.mock('@src/lib/zookeeper/editorPlugin', () => ({
   zookeeperEditPatchHistoryEvent: vi.fn((value) => value),
 }))
+
+const fileOperations = { readFile: mocks.readFile }
+const createHistory = (manager: KclManager) =>
+  new ZookeeperEditPatchHistory(manager, fileOperations)
 
 const projectPath = '/workspace/demo'
 const activeFilePath = `${projectPath}/main.kcl`
@@ -143,7 +146,7 @@ describe('ZookeeperEditPatchHistory', () => {
 
   it('flushes a completed write only after the exchange ends', async () => {
     const { manager, state } = createKclManager()
-    const history = new ZookeeperEditPatchHistory(manager)
+    const history = createHistory(manager)
 
     history.reserve({ activeFilePath, exchangeId: 0, projectPath })
     await completeWrite(history)
@@ -159,7 +162,7 @@ describe('ZookeeperEditPatchHistory', () => {
 
   it('flushes a completed write when a live error ends the conversation', async () => {
     const { manager, state } = createKclManager()
-    const history = new ZookeeperEditPatchHistory(manager)
+    const history = createHistory(manager)
 
     history.reserve({ activeFilePath, exchangeId: 0, projectPath })
     await completeWrite(history)
@@ -171,7 +174,7 @@ describe('ZookeeperEditPatchHistory', () => {
 
   it('recognizes a terminal response restored from conversation history', async () => {
     const { manager, state } = createKclManager()
-    const history = new ZookeeperEditPatchHistory(manager)
+    const history = createHistory(manager)
 
     history.reserve({ activeFilePath, exchangeId: 0, projectPath })
     await completeWrite(history)
@@ -183,7 +186,7 @@ describe('ZookeeperEditPatchHistory', () => {
 
   it('recognizes a separate error exchange restored from history', async () => {
     const { manager, state } = createKclManager()
-    const history = new ZookeeperEditPatchHistory(manager)
+    const history = createHistory(manager)
 
     history.reserve({ activeFilePath, exchangeId: 0, projectPath })
     await completeWrite(history)
@@ -195,7 +198,7 @@ describe('ZookeeperEditPatchHistory', () => {
 
   it('waits for a pending write after a terminal error', async () => {
     const { manager, state } = createKclManager()
-    const history = new ZookeeperEditPatchHistory(manager)
+    const history = createHistory(manager)
 
     history.reserve({ activeFilePath, exchangeId: 0, projectPath })
     history.handleActorSnapshot(separateErrorSnapshot(2))
@@ -211,7 +214,7 @@ describe('ZookeeperEditPatchHistory', () => {
 
   it('clears an unused reservation when the write is cancelled', () => {
     const { manager, state } = createKclManager()
-    const history = new ZookeeperEditPatchHistory(manager)
+    const history = createHistory(manager)
 
     history.reserve({ activeFilePath, exchangeId: 0, projectPath })
     expect(state.zookeeperHistoryRecordingInProgress).toBe(true)
@@ -224,7 +227,7 @@ describe('ZookeeperEditPatchHistory', () => {
 
   it('preserves completed snapshots when a later write is cancelled', async () => {
     const { manager, state } = createKclManager()
-    const history = new ZookeeperEditPatchHistory(manager)
+    const history = createHistory(manager)
     const laterPatch: ZookeeperEditPatch = {
       run_id: patch.run_id,
       changed_files: [
@@ -258,7 +261,7 @@ describe('ZookeeperEditPatchHistory', () => {
 
   it('falls back to the patch when a previous-content snapshot fails', async () => {
     const { manager, state } = createKclManager()
-    const history = new ZookeeperEditPatchHistory(manager)
+    const history = createHistory(manager)
     const previousCode = 'before = 1\n'
     const requestedCode = 'after = 2\n'
     const editPatch: ZookeeperEditPatch = {
@@ -312,7 +315,7 @@ describe('ZookeeperEditPatchHistory', () => {
 
   it('falls back to the full patch instead of replaying partial snapshots', async () => {
     const { manager, state } = createKclManager()
-    const history = new ZookeeperEditPatchHistory(manager)
+    const history = createHistory(manager)
     const firstPatch: ZookeeperEditPatch = {
       run_id: patch.run_id,
       changed_files: [modifiedFile('first.kcl', 'first = 1\n', 'first = 2\n')],
@@ -326,9 +329,9 @@ describe('ZookeeperEditPatchHistory', () => {
     const readError = new Error('next snapshot read failed')
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
     mocks.readFile
-      .mockResolvedValueOnce('first = 1\n')
-      .mockResolvedValueOnce('first = 2\n')
-      .mockResolvedValueOnce('second = 1\n')
+      .mockResolvedValueOnce(new TextEncoder().encode('first = 1\n'))
+      .mockResolvedValueOnce(new TextEncoder().encode('first = 2\n'))
+      .mockResolvedValueOnce(new TextEncoder().encode('second = 1\n'))
       .mockRejectedValueOnce(readError)
 
     history.reserve({ activeFilePath, exchangeId: 0, projectPath })
@@ -371,7 +374,7 @@ describe('ZookeeperEditPatchHistory', () => {
 
   it('releases a reservation when the request becomes stale', async () => {
     const { manager, state } = createKclManager()
-    const history = new ZookeeperEditPatchHistory(manager)
+    const history = createHistory(manager)
 
     history.reserve({ activeFilePath, exchangeId: 0, projectPath })
     await history.complete({
@@ -390,7 +393,7 @@ describe('ZookeeperEditPatchHistory', () => {
 
   it('does not carry interrupted history into a fresh conversation', async () => {
     const { manager, state } = createKclManager()
-    const history = new ZookeeperEditPatchHistory(manager)
+    const history = createHistory(manager)
 
     history.reserve({ activeFilePath, exchangeId: 0, projectPath })
     await completeWrite(history)
@@ -418,7 +421,7 @@ describe('ZookeeperEditPatchHistory', () => {
 
   it('clears the recording flag when recording the history event throws', async () => {
     const { manager, state } = createKclManager()
-    const history = new ZookeeperEditPatchHistory(manager)
+    const history = createHistory(manager)
     const error = new Error('history failed')
     state.addGlobalHistoryEvent.mockImplementationOnce(() => {
       throw error
@@ -435,7 +438,7 @@ describe('ZookeeperEditPatchHistory', () => {
 
   it('finishes every pending exchange when one history event throws', async () => {
     const { manager, state } = createKclManager()
-    const history = new ZookeeperEditPatchHistory(manager)
+    const history = createHistory(manager)
     const error = new Error('first history failed')
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
     state.addGlobalHistoryEvent.mockImplementationOnce(() => {
@@ -460,7 +463,7 @@ describe('ZookeeperEditPatchHistory', () => {
 
   it('drops pending and late work when disposed', async () => {
     const { manager, state } = createKclManager()
-    const history = new ZookeeperEditPatchHistory(manager)
+    const history = createHistory(manager)
 
     history.reserve({ activeFilePath, exchangeId: 0, projectPath })
     history.dispose()

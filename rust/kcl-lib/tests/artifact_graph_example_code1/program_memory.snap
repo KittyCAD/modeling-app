@@ -215,8 +215,10 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             "n": 5.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -372,11 +374,9 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
   },
   "seg01": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "seg01"
   },
   "seg02": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "seg02"
   },

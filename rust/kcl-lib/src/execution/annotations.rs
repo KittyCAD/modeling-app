@@ -11,6 +11,7 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use crate::KclError;
+use crate::KclVersion;
 use crate::SourceRange;
 use crate::errors::KclErrorDetails;
 use crate::errors::Severity;
@@ -21,7 +22,7 @@ use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::ObjectProperty;
 
 /// Annotations which should cause re-execution if they change.
-pub(super) const SIGNIFICANT_ATTRS: [&str; 3] = [SETTINGS, NO_PRELUDE, WARNINGS];
+pub(super) const SIGNIFICANT_ATTRS: [&str; 4] = [SETTINGS, NO_PRELUDE, WARNINGS, DIAGNOSTICS];
 
 pub(crate) const SETTINGS: &str = "settings";
 pub(crate) const SETTINGS_UNIT_LENGTH: &str = "defaultLengthUnit";
@@ -61,7 +62,11 @@ pub(super) const IMPL_VALUES: [&str; 6] = [
     IMPL_RUST_CONSTRAINABLE,
 ];
 
+/// Customizes how diagnostics are reported, in KCL 2 or earlier.
 pub(crate) const WARNINGS: &str = "warnings";
+/// Customizes how diagnostics are reported, in KCL 3.0 and later.
+/// KCL 3.0 renamed `@warnings` to `@diagnostics`.
+pub(crate) const DIAGNOSTICS: &str = "diagnostics";
 pub(crate) const WARN_ALLOW: &str = "allow";
 pub(crate) const WARN_DENY: &str = "deny";
 pub(crate) const WARN_WARN: &str = "warn";
@@ -176,6 +181,17 @@ pub(super) fn is_significant(attr: &&Node<Annotation>) -> bool {
     }
 }
 
+/// The name of the attribute that customizes how diagnostics are reported
+/// under the given KCL version: `warnings` before KCL 3.0 and `diagnostics`
+/// in KCL 3.0 and later.
+pub(super) fn diagnostics_attr_name(version: KclVersion) -> &'static str {
+    if version >= KclVersion::V3Preview {
+        DIAGNOSTICS
+    } else {
+        WARNINGS
+    }
+}
+
 pub(super) fn expect_properties<'a>(
     for_key: &'static str,
     annotation: &'a Node<Annotation>,
@@ -202,12 +218,17 @@ pub(super) fn expect_ident(expr: &Expr) -> Result<&str, KclError> {
     )))
 }
 
+/// Parses the value of an `allow` or `deny` property of the attribute named
+/// `attr_name`, which is used in error messages.
 pub(super) fn many_of(
     expr: &Expr,
     of: &[&'static str],
+    attr_name: &str,
     source_range: SourceRange,
 ) -> Result<Vec<&'static str>, KclError> {
-    const UNEXPECTED_MSG: &str = "Unexpected warnings value, expected a name or array of names, e.g., `unknownUnits` or `[unknownUnits, deprecated]`";
+    let unexpected_msg = format!(
+        "Unexpected {attr_name} value, expected a name or array of names, e.g., `unknownUnits` or `[unknownUnits, deprecated]`"
+    );
 
     let values = match expr {
         Expr::Name(name) => {
@@ -215,7 +236,7 @@ pub(super) fn many_of(
                 vec![*name]
             } else {
                 return Err(KclError::new_semantic(KclErrorDetails::new(
-                    UNEXPECTED_MSG.to_owned(),
+                    unexpected_msg,
                     vec![expr.into()],
                 )));
             }
@@ -230,7 +251,7 @@ pub(super) fn many_of(
                     continue;
                 }
                 return Err(KclError::new_semantic(KclErrorDetails::new(
-                    UNEXPECTED_MSG.to_owned(),
+                    unexpected_msg,
                     vec![e.into()],
                 )));
             }
@@ -238,12 +259,15 @@ pub(super) fn many_of(
         }
         _ => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                UNEXPECTED_MSG.to_owned(),
+                unexpected_msg,
                 vec![expr.into()],
             )));
         }
     };
 
+    // Each value names one diagnostic, so use the singular form of the
+    // attribute name: `warning` or `diagnostic`.
+    let noun = attr_name.strip_suffix('s').unwrap_or(attr_name);
     values
         .into_iter()
         .map(|v| {
@@ -251,7 +275,7 @@ pub(super) fn many_of(
                 .find(|vv| **vv == v)
                 .ok_or_else(|| {
                     KclError::new_semantic(KclErrorDetails::new(
-                        format!("Unexpected warning value: `{v}`; accepted values: {}", of.join(", "),),
+                        format!("Unexpected {noun} value: `{v}`; accepted values: {}", of.join(", "),),
                         vec![source_range],
                     ))
                 })

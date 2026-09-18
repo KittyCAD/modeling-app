@@ -259,4 +259,43 @@ describe('opfs', () => {
       })
     ).resolves.toBe('cube = 1')
   })
+
+  test('requires recursive mode to copy a directory', async () => {
+    const projects = root.addDirectory('projects')
+    projects.addDirectory('source')
+    projects.addDirectory('target')
+    const opfs = await getOpfs()
+
+    await expect(
+      opfs.impl.cp(
+        path.resolve('projects', 'source'),
+        path.resolve('projects', 'target')
+      )
+    ).rejects.toBe('EISDIR')
+  })
+
+  test('preserves colliding files when copy force is false', async () => {
+    const projects = root.addDirectory('projects')
+    const source = projects.addDirectory('source')
+    source.addFile('existing.kcl', 'source contents')
+    source.addFile('new.kcl', 'new contents')
+    const target = projects.addDirectory('target')
+    target.addFile('existing.kcl', 'target contents')
+
+    const opfs = await getOpfs()
+    const sourcePath = path.resolve('projects', 'source')
+    const targetPath = path.resolve('projects', 'target')
+
+    await opfs.impl.cp(sourcePath, targetPath, {
+      recursive: true,
+      force: false,
+    })
+
+    await expect(
+      opfs.impl.readFile(path.join(targetPath, 'existing.kcl'), 'utf8')
+    ).resolves.toBe('target contents')
+    await expect(
+      opfs.impl.readFile(path.join(targetPath, 'new.kcl'), 'utf8')
+    ).resolves.toBe('new contents')
+  })
 })

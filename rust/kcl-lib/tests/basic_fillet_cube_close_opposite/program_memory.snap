@@ -233,8 +233,10 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
             "n": 2.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -247,8 +249,10 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
             "n": 2.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -261,16 +265,13 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
   },
   "thing": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "thing"
   },
   "thing2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "thing2"
   },
   "thing3": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "thing3"
   }

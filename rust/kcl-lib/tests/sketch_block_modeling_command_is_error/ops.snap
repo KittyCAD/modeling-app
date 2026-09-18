@@ -95,7 +95,9 @@ description: Operations executed sketch_block_modeling_command_is_error.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -123,7 +125,9 @@ description: Operations executed sketch_block_modeling_command_is_error.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",

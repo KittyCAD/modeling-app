@@ -32,10 +32,13 @@ pub struct SketchConstraintStatus {
     /// Name of the variable the sketch was assigned to. Empty when the sketch
     /// has no enclosing variable declaration, and shared between entries when
     /// two sketches resolve to the same declaration. This name can be passed
-    /// to `ExecOutcome.render_sketch_png`, which returns an ambiguity error
-    /// when multiple sketches share it.
+    /// to `ExecOutcome.render_sketch_png`, with instance_index for duplicates.
     #[pyo3(get)]
     pub name: String,
+    /// Zero-based creation order among sketches with this name. Obtain a
+    /// fresh report for the same entrypoint after editing the project.
+    #[pyo3(get)]
+    pub instance_index: usize,
     #[pyo3(get)]
     pub status: ConstraintKind,
     #[pyo3(get)]
@@ -50,6 +53,7 @@ impl From<kcl_lib::SketchConstraintStatus> for SketchConstraintStatus {
     fn from(s: kcl_lib::SketchConstraintStatus) -> Self {
         Self {
             name: s.name,
+            instance_index: s.instance_index,
             status: s.status.into(),
             free_count: s.free_count,
             conflict_count: s.conflict_count,

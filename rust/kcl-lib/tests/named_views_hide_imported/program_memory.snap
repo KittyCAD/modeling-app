@@ -56,17 +56,21 @@ description: Variables in memory after executing named_views_hide_imported.kcl
                       {
                         "n": 1500.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -74,17 +78,21 @@ description: Variables in memory after executing named_views_hide_imported.kcl
                       {
                         "n": 2000.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -176,17 +184,21 @@ description: Variables in memory after executing named_views_hide_imported.kcl
                       {
                         "n": 2000.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -194,17 +206,21 @@ description: Variables in memory after executing named_views_hide_imported.kcl
                       {
                         "n": 2000.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 500.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -296,17 +312,21 @@ description: Variables in memory after executing named_views_hide_imported.kcl
                       {
                         "n": 2000.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 500.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -314,17 +334,21 @@ description: Variables in memory after executing named_views_hide_imported.kcl
                       {
                         "n": 1500.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 500.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -416,17 +440,21 @@ description: Variables in memory after executing named_views_hide_imported.kcl
                       {
                         "n": 1500.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 500.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -434,17 +462,21 @@ description: Variables in memory after executing named_views_hide_imported.kcl
                       {
                         "n": 1500.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -541,10 +573,10 @@ description: Variables in memory after executing named_views_hide_imported.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 324,
-                    "end": 329,
+                    "commentStart": 366,
+                    "end": 371,
                     "moduleId": 0,
-                    "start": 324,
+                    "start": 366,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -565,10 +597,10 @@ description: Variables in memory after executing named_views_hide_imported.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 391,
-                    "end": 396,
+                    "commentStart": 433,
+                    "end": 438,
                     "moduleId": 0,
-                    "start": 391,
+                    "start": 433,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -589,10 +621,10 @@ description: Variables in memory after executing named_views_hide_imported.kcl
                     500.0
                   ],
                   "tag": {
-                    "commentStart": 460,
-                    "end": 465,
+                    "commentStart": 502,
+                    "end": 507,
                     "moduleId": 0,
-                    "start": 460,
+                    "start": 502,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -613,10 +645,10 @@ description: Variables in memory after executing named_views_hide_imported.kcl
                     500.0
                   ],
                   "tag": {
-                    "commentStart": 531,
-                    "end": 536,
+                    "commentStart": 573,
+                    "end": 578,
                     "moduleId": 0,
-                    "start": 531,
+                    "start": 573,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -719,10 +751,10 @@ description: Variables in memory after executing named_views_hide_imported.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 324,
-            "end": 329,
+            "commentStart": 366,
+            "end": 371,
             "moduleId": 0,
-            "start": 324,
+            "start": 366,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -733,10 +765,10 @@ description: Variables in memory after executing named_views_hide_imported.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 391,
-            "end": 396,
+            "commentStart": 433,
+            "end": 438,
             "moduleId": 0,
-            "start": 391,
+            "start": 433,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -747,10 +779,10 @@ description: Variables in memory after executing named_views_hide_imported.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 460,
-            "end": 465,
+            "commentStart": 502,
+            "end": 507,
             "moduleId": 0,
-            "start": 460,
+            "start": 502,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -761,10 +793,10 @@ description: Variables in memory after executing named_views_hide_imported.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 531,
-            "end": 536,
+            "commentStart": 573,
+            "end": 578,
             "moduleId": 0,
-            "start": 531,
+            "start": 573,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -786,10 +818,10 @@ description: Variables in memory after executing named_views_hide_imported.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 324,
-              "end": 329,
+              "commentStart": 366,
+              "end": 371,
               "moduleId": 0,
-              "start": 324,
+              "start": 366,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -810,10 +842,10 @@ description: Variables in memory after executing named_views_hide_imported.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 391,
-              "end": 396,
+              "commentStart": 433,
+              "end": 438,
               "moduleId": 0,
-              "start": 391,
+              "start": 433,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -834,10 +866,10 @@ description: Variables in memory after executing named_views_hide_imported.kcl
               500.0
             ],
             "tag": {
-              "commentStart": 460,
-              "end": 465,
+              "commentStart": 502,
+              "end": 507,
               "moduleId": 0,
-              "start": 460,
+              "start": 502,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -858,10 +890,10 @@ description: Variables in memory after executing named_views_hide_imported.kcl
               500.0
             ],
             "tag": {
-              "commentStart": 531,
-              "end": 536,
+              "commentStart": 573,
+              "end": 578,
               "moduleId": 0,
-              "start": 531,
+              "start": 573,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -947,6 +979,26 @@ description: Variables in memory after executing named_views_hide_imported.kcl
       "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
+    }
+  },
+  "importedView": {
+    "type": "NamedView",
+    "value": {
+      "artifactId": "[uuid]",
+      "name": "Anchor only",
+      "camera": {
+        "look": {
+          "type": "oriented",
+          "orientation": "Isometric"
+        },
+        "target": null,
+        "distance": null,
+        "projection": "Orthographic"
+      },
+      "baseline": "Show",
+      "exceptIds": [
+        "[uuid]"
+      ]
     }
   }
 }

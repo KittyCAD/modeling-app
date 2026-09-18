@@ -98,6 +98,18 @@ topAt = view::named(
 )
 `
 
+const ISOMETRIC_TARGET_KCL = `${TOP_TARGET_KCL}
+isometricAt = view::named(
+  "IsometricAt",
+  camera = view::oriented(
+    view::Orientation::Isometric,
+    target = [10mm, 20mm, 0mm],
+    distance = 100mm,
+  ),
+  baseline = view::Visibility::Show,
+)
+`
+
 const VIEW_SWITCHER_PANE = `#${DefaultLayoutPaneID.NamedViews}-pane`
 const VIEW_SWITCHER_BUTTON = `${DefaultLayoutPaneID.NamedViews}-pane-button`
 
@@ -105,6 +117,16 @@ async function writeTopTargetProject(dir: string) {
   const projectDir = join(dir, 'top-target')
   await fsp.mkdir(projectDir, { recursive: true })
   await fsp.writeFile(join(projectDir, 'main.kcl'), TOP_TARGET_KCL, 'utf-8')
+}
+
+async function writeIsometricTargetProject(dir: string) {
+  const projectDir = join(dir, 'isometric-target')
+  await fsp.mkdir(projectDir, { recursive: true })
+  await fsp.writeFile(
+    join(projectDir, 'main.kcl'),
+    ISOMETRIC_TARGET_KCL,
+    'utf-8'
+  )
 }
 
 async function writeProject(dir: string) {
@@ -323,5 +345,39 @@ test.describe('KCL named views', { tag: '@desktop' }, () => {
     await expect(page.getByTestId('cam-x-position')).toHaveValue('10')
     await expect(page.getByTestId('cam-y-position')).toHaveValue('20')
     await expect(page.getByTestId('cam-z-position')).toHaveValue('100')
+  })
+
+  test('an Isometric view uses its own target and distance', async ({
+    homePage,
+    scene,
+    toolbar,
+    page,
+    folderSetupFn,
+  }) => {
+    const u = await getUtils(page)
+    await folderSetupFn(writeIsometricTargetProject)
+    await homePage.openProject('isometric-target')
+    await scene.settled()
+    await u.openDebugPanel()
+    await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
+
+    await u.clearCommandLogs()
+    await page
+      .locator(VIEW_SWITCHER_PANE)
+      .getByTestId('named-view-row')
+      .filter({ hasText: 'IsometricAt' })
+      .click()
+
+    await u.waitForCmdReceive('default_camera_set_view')
+    const camera = await scene.getCameraInfo()
+
+    expect(camera.target).toEqual([10, 20, 0])
+    const distance = Math.hypot(
+      camera.position[0] - camera.target[0],
+      camera.position[1] - camera.target[1],
+      camera.position[2] - camera.target[2]
+    )
+    // The debug camera properties round each coordinate to two decimal places.
+    expect(Math.abs(distance - 100)).toBeLessThanOrEqual(0.01)
   })
 })

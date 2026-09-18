@@ -73,6 +73,7 @@ import {
 } from '@src/lib/utils'
 import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 
 export type ConnectionSystemDeps = {
   settingsActor: SettingsActorType
@@ -1091,10 +1092,6 @@ export class ConnectionManager extends EventTarget {
           }
         )
       )
-    } else if (options?.pingPongTimeout) {
-      this.dispatchEvent(
-        new CustomEvent(EngineConnectionManagerEvents.pingPongTimeout, {})
-      )
     } else if (options?.peerConnectionClosed) {
       this.dispatchEvent(
         new CustomEvent(EngineConnectionManagerEvents.peerConnectionClosed, {})
@@ -1144,6 +1141,11 @@ export class ConnectionManager extends EventTarget {
 
     // Allow for restart!
     this.started = false
+
+    void reportClientError({
+      code: ClientErrorCode.EngineTeardown,
+      message: `Engine teardown called.`,
+    })
   }
 
   /**

@@ -12,8 +12,10 @@ description: Operations executed modular-shelf-grid.kcl
         "value": 5.0,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -41,8 +43,10 @@ description: Operations executed modular-shelf-grid.kcl
         "value": 3.0,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -70,8 +74,10 @@ description: Operations executed modular-shelf-grid.kcl
         "value": 0.4,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -99,8 +105,10 @@ description: Operations executed modular-shelf-grid.kcl
         "value": 0.5,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -128,8 +136,10 @@ description: Operations executed modular-shelf-grid.kcl
         "value": 0.4,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -157,8 +167,10 @@ description: Operations executed modular-shelf-grid.kcl
         "value": 0.02,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -186,8 +198,10 @@ description: Operations executed modular-shelf-grid.kcl
         "value": 0.38,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -215,8 +229,10 @@ description: Operations executed modular-shelf-grid.kcl
         "value": 0.02,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -244,8 +260,10 @@ description: Operations executed modular-shelf-grid.kcl
         "value": 0.36000000000000004,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -273,8 +291,10 @@ description: Operations executed modular-shelf-grid.kcl
         "value": 0.4,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -302,8 +322,10 @@ description: Operations executed modular-shelf-grid.kcl
         "value": 0.48,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -358,18 +380,22 @@ description: Operations executed modular-shelf-grid.kcl
                 "type": "SketchVar",
                 "value": -0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.4,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -384,18 +410,22 @@ description: Operations executed modular-shelf-grid.kcl
                 "type": "SketchVar",
                 "value": -0.2,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.4,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -445,18 +475,22 @@ description: Operations executed modular-shelf-grid.kcl
                 "type": "SketchVar",
                 "value": -0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -471,18 +505,22 @@ description: Operations executed modular-shelf-grid.kcl
                 "type": "SketchVar",
                 "value": -0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.4,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -576,18 +614,22 @@ description: Operations executed modular-shelf-grid.kcl
                 "type": "SketchVar",
                 "value": -0.2,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -602,18 +644,22 @@ description: Operations executed modular-shelf-grid.kcl
                 "type": "SketchVar",
                 "value": -0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -707,18 +753,22 @@ description: Operations executed modular-shelf-grid.kcl
                 "type": "SketchVar",
                 "value": -0.2,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.4,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -733,18 +783,22 @@ description: Operations executed modular-shelf-grid.kcl
                 "type": "SketchVar",
                 "value": -0.2,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1033,18 +1087,22 @@ description: Operations executed modular-shelf-grid.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1059,18 +1117,22 @@ description: Operations executed modular-shelf-grid.kcl
                 "type": "SketchVar",
                 "value": -0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1168,18 +1230,22 @@ description: Operations executed modular-shelf-grid.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -1268,18 +1334,22 @@ description: Operations executed modular-shelf-grid.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -1468,8 +1538,10 @@ description: Operations executed modular-shelf-grid.kcl
             "value": 0.5,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1513,8 +1585,10 @@ description: Operations executed modular-shelf-grid.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": "m",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "m",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -1522,8 +1596,10 @@ description: Operations executed modular-shelf-grid.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "m",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "m",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -1531,8 +1607,10 @@ description: Operations executed modular-shelf-grid.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "m",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "m",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -1545,8 +1623,10 @@ description: Operations executed modular-shelf-grid.kcl
             "value": 0.38,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1557,7 +1637,9 @@ description: Operations executed modular-shelf-grid.kcl
             "value": 2.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -1614,18 +1696,22 @@ description: Operations executed modular-shelf-grid.kcl
                 "type": "SketchVar",
                 "value": -0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.4,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1640,18 +1726,22 @@ description: Operations executed modular-shelf-grid.kcl
                 "type": "SketchVar",
                 "value": -0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1701,18 +1791,22 @@ description: Operations executed modular-shelf-grid.kcl
                 "type": "SketchVar",
                 "value": 0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.4,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1727,18 +1821,22 @@ description: Operations executed modular-shelf-grid.kcl
                 "type": "SketchVar",
                 "value": -0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.4,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1832,18 +1930,22 @@ description: Operations executed modular-shelf-grid.kcl
                 "type": "SketchVar",
                 "value": 0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1858,18 +1960,22 @@ description: Operations executed modular-shelf-grid.kcl
                 "type": "SketchVar",
                 "value": 0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.4,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1963,18 +2069,22 @@ description: Operations executed modular-shelf-grid.kcl
                 "type": "SketchVar",
                 "value": -0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1989,18 +2099,22 @@ description: Operations executed modular-shelf-grid.kcl
                 "type": "SketchVar",
                 "value": 0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2289,18 +2403,22 @@ description: Operations executed modular-shelf-grid.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2315,18 +2433,22 @@ description: Operations executed modular-shelf-grid.kcl
                 "type": "SketchVar",
                 "value": -0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2424,18 +2546,22 @@ description: Operations executed modular-shelf-grid.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -2524,18 +2650,22 @@ description: Operations executed modular-shelf-grid.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -2724,8 +2854,10 @@ description: Operations executed modular-shelf-grid.kcl
             "value": 0.02,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2769,8 +2901,10 @@ description: Operations executed modular-shelf-grid.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "m",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "m",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -2778,8 +2912,10 @@ description: Operations executed modular-shelf-grid.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "m",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "m",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -2787,8 +2923,10 @@ description: Operations executed modular-shelf-grid.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": "m",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "m",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -2801,8 +2939,10 @@ description: Operations executed modular-shelf-grid.kcl
             "value": 0.48,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2813,7 +2953,9 @@ description: Operations executed modular-shelf-grid.kcl
             "value": 2.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -2938,8 +3080,10 @@ description: Operations executed modular-shelf-grid.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": "m",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "m",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -2947,8 +3091,10 @@ description: Operations executed modular-shelf-grid.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "m",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "m",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -2956,8 +3102,10 @@ description: Operations executed modular-shelf-grid.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "m",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "m",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -2970,8 +3118,10 @@ description: Operations executed modular-shelf-grid.kcl
             "value": 0.4,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2982,7 +3132,9 @@ description: Operations executed modular-shelf-grid.kcl
             "value": 5.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -3149,8 +3301,10 @@ description: Operations executed modular-shelf-grid.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "m",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "m",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -3158,8 +3312,10 @@ description: Operations executed modular-shelf-grid.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "m",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "m",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -3167,8 +3323,10 @@ description: Operations executed modular-shelf-grid.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": "m",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "m",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -3181,8 +3339,10 @@ description: Operations executed modular-shelf-grid.kcl
             "value": 0.5,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3193,7 +3353,9 @@ description: Operations executed modular-shelf-grid.kcl
             "value": 3.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -3256,7 +3418,9 @@ description: Operations executed modular-shelf-grid.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -3284,7 +3448,9 @@ description: Operations executed modular-shelf-grid.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",

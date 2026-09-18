@@ -94,6 +94,7 @@ export const createOnWebSocketMessage = ({
   setPong,
   dispatchEvent,
   ping,
+  setPing,
   createPeerConnection,
   send,
   setSdpAnswer,
@@ -104,6 +105,7 @@ export const createOnWebSocketMessage = ({
   sdpAnswerReject,
   setApiCallId,
   getCloudProjectId,
+  getConnectionContext,
   tearDownManager,
   requestReconnect,
 }: {
@@ -111,6 +113,7 @@ export const createOnWebSocketMessage = ({
   setPong: (pong: number) => void
   dispatchEvent: (event: Event) => boolean
   ping: () => number | undefined
+  setPing: (pong: number | undefined) => void
   createPeerConnection: () => RTCPeerConnection | undefined
   send: (message: WebSocketRequest) => void
   setSdpAnswer: (answer: RTCSessionDescriptionInit) => void
@@ -121,6 +124,10 @@ export const createOnWebSocketMessage = ({
   sdpAnswerReject: (value: any) => void
   setApiCallId: (apiCallId: string) => void
   getCloudProjectId: () => string | undefined
+  getConnectionContext: () => {
+    connectionId: string
+    modelingApiCallId: string | null
+  }
   tearDownManager: (options?: ManagerTearDown) => void
   requestReconnect: () => void
 }) => {
@@ -149,12 +156,14 @@ export const createOnWebSocketMessage = ({
           message: backendDisconnectError.message,
           terminal: true,
         }
+        const connectionContext = getConnectionContext()
         tearDownManager({ websocketClosed: true, connectionError })
         const cloudProjectId = getCloudProjectId()
         void reportClientError({
           code: ClientErrorCode.EngineBackendDisconnect,
           message: backendDisconnectError.message,
           extra: {
+            ...connectionContext,
             source: 'EngineWebSocket',
             errorCode: backendDisconnectError.error_code,
             requestId: message.request_id,
@@ -214,6 +223,7 @@ export const createOnWebSocketMessage = ({
             detail: Math.min(999, Math.floor(pong - (ping() ?? 0))),
           })
         )
+        setPing(undefined)
         break
       case 'modeling_session_data':
         const apiCallId = resp.data.session.api_call_id
