@@ -421,7 +421,7 @@ async fn fix_sketch_tags_and_references(
     surfaces: Option<Vec<ExtrudeSurface>>,
 ) -> Result<()> {
     // Fix the path references in the sketch.
-    for path in new_sketch.paths.as_mut_slice() {
+    for path in &mut new_sketch.paths {
         if let Some(new_path_id) = entity_id_map.get(&path.get_id()) {
             path.set_id(*new_path_id);
         } else {
