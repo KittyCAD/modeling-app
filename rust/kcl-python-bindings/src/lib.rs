@@ -91,6 +91,10 @@ fn into_miette(error: kcl_lib::KclErrorWithOutputs, filename: &str, code: &str) 
             PyKclError {
                 retryable,
                 sketch_constraint_report: Some(constraint_report),
+                execution: Some(Arc::new(FailedExecution {
+                    outputs: error,
+                    code: code.to_owned(),
+                })),
             },
         )?;
         // Direct Rust construction bypasses the Python constructor's exception arguments.
@@ -223,6 +227,13 @@ struct PyKclError {
     retryable: bool,
     #[pyo3(get)]
     sketch_constraint_report: Option<SketchConstraintReport>,
+    execution: Option<Arc<FailedExecution>>,
+}
+
+#[derive(Debug)]
+struct FailedExecution {
+    outputs: kcl_lib::KclErrorWithOutputs,
+    code: String,
 }
 
 #[pymethods]
@@ -233,11 +244,27 @@ impl PyKclError {
         Self {
             retryable,
             sketch_constraint_report: None,
+            execution: None,
         }
     }
 
     fn is_retryable(&self) -> bool {
         self.retryable
+    }
+
+    /// Render a completed sketch retained at the failure. This does not retry
+    /// execution or imply that the project succeeded. Selection matches the
+    /// constraint report on this error, not an earlier execution.
+    #[pyo3(signature = (sketch_name, *, instance_index=None))]
+    fn render_sketch_png(&self, sketch_name: &str, instance_index: Option<usize>) -> PyResult<Vec<u8>> {
+        let execution = self
+            .execution
+            .as_ref()
+            .ok_or_else(|| PyException::new_err("No execution output is available to render a sketch"))?;
+        execution
+            .outputs
+            .render_sketch_png_instance(sketch_name, instance_index)
+            .map_err(to_py_exception)
     }
 }
 
