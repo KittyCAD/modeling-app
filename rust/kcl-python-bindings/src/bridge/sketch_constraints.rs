@@ -104,6 +104,7 @@ pub struct SketchConstraintReport {
     pub kcl_error: Option<KclErrorInfo>,
 }
 
+#[pyo3_stub_gen::derive::gen_stub_pymethods]
 #[pymethods]
 impl SketchConstraintReport {
     /// Total number of sketches across all categories.

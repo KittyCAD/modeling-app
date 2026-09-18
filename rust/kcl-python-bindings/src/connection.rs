@@ -14,12 +14,14 @@ use pyo3::pyfunction;
 use pyo3::pymethods;
 use pyo3::types::PyAny;
 
+use crate::ExecOutcome;
 use crate::ExecutedKcl;
 use crate::KclInput;
 use crate::KclProgram;
 use crate::SnapshotOptions;
 use crate::bridge::physical_properties::PhysicalPropertiesRequest;
 use crate::bridge::physical_properties::PhysicalPropertiesResponse;
+use crate::bridge::sketch_constraints::SketchConstraintReport;
 use crate::into_miette;
 use crate::load_and_parse;
 use crate::measure_model_properties;
@@ -104,6 +106,30 @@ impl KclSession {
         }
         let executed_kcl = self.executed_kcl.clone();
         spawn_py(async move { measure_model_properties(&executed_kcl.ctx, request).await }).await
+    }
+
+    /// Analyze the executed sketches and report their constraint status and execution issues.
+    /// Uses the saved execution state without executing KCL again.
+    pub async fn sketch_constraint_report(&self) -> PyResult<SketchConstraintReport> {
+        if self.is_closed {
+            return Err(PyException::new_err("Connection already closed"));
+        }
+        let executed_kcl = self.executed_kcl.clone();
+        spawn_py(async move {
+            let inner = executed_kcl
+                .state
+                .clone()
+                .into_exec_outcome(executed_kcl.env_ref, &executed_kcl.ctx)
+                .await
+                .map_err(to_py_exception)?;
+            Ok(ExecOutcome {
+                inner,
+                code: executed_kcl.code.clone(),
+                filename: executed_kcl.filename.clone(),
+            }
+            .sketch_constraint_report())
+        })
+        .await
     }
 
     /// Get 2D images of the model.
