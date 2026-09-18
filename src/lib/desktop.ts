@@ -48,6 +48,7 @@ import {
 } from '@src/lib/projectLibraries'
 import {
   getCloudProjectIdFromProjectTomlContents,
+  getProjectDefaultFileFromProjectTomlContents,
   getProjectIdFromProjectTomlContents,
   getProjectTitleFromProjectTomlContents,
   preserveProjectTomlMetadataInProjectSettingsContents,
@@ -591,6 +592,30 @@ export async function getDefaultKclFileForDir(
   const isFileEntryDir = await statIsDirectory(fileOperations, projectDir)
   if (!isFileEntryDir) {
     return Promise.reject(new Error(`Path ${projectDir} is not a directory`))
+  }
+
+  try {
+    const settings = await fileOperations.readFile(
+      fsZds.join(projectDir, PROJECT_SETTINGS_FILE_NAME)
+    )
+    const configuredFile = getProjectDefaultFileFromProjectTomlContents(
+      textDecoder.decode(settings)
+    )
+    if (configuredFile?.endsWith('.kcl')) {
+      const configuredPath = fsZds.resolve(projectDir, configuredFile)
+      const relativePath = fsZds.relative(projectDir, configuredPath)
+      if (
+        relativePath &&
+        relativePath !== '..' &&
+        !relativePath.startsWith(`..${fsZds.sep}`) &&
+        relativePath !== fsZds.resolve(relativePath) &&
+        (await fileOperations.stat(configuredPath)).kind === 'file'
+      ) {
+        return configuredPath
+      }
+    }
+  } catch {
+    // Missing settings or entry files retain the usual discovery fallback.
   }
 
   const defaultFilePath = fsZds.join(projectDir, PROJECT_ENTRYPOINT)
