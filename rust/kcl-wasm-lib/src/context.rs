@@ -45,6 +45,7 @@ impl ExecutionCallbacks for JsExecutionCallbacks {
 
 #[wasm_bindgen]
 pub struct Context {
+    engine_manager: kcl_lib::wasm_engine::EngineCommandManager,
     engine: Arc<kcl_lib::wasm_engine::EngineConnection>,
     response_context: Arc<kcl_lib::wasm_engine::ResponseContext>,
     fs: kcl_lib::FileSystemHandle,
@@ -73,6 +74,7 @@ impl Context {
 
         let response_context = Arc::new(kcl_lib::wasm_engine::ResponseContext::new());
         Ok(Self {
+            engine_manager: engine_manager.clone(),
             engine: Arc::new(kcl_lib::wasm_engine::EngineConnection::new_wasm_transport(
                 engine_manager,
                 response_context.clone(),
@@ -89,6 +91,7 @@ impl Context {
     #[wasm_bindgen(js_name = cloneWithExecuteCallbacks)]
     pub fn clone_with_execute_callbacks(&self, execution_callbacks: JsExecutionCallbacks) -> Self {
         Self {
+            engine_manager: self.engine_manager.clone(),
             engine: self.engine.clone(),
             response_context: self.response_context.clone(),
             fs: self.fs.clone(),
@@ -107,6 +110,10 @@ impl Context {
     ) -> Result<kcl_lib::ExecutorContext, String> {
         let config: kcl_lib::Configuration = serde_json::from_str(settings).map_err(|e| e.to_string())?;
         let mut settings: kcl_lib::ExecutorSettings = config.into();
+        // Read the active session each time: the app can reconnect in another mode.
+        settings.geometry_only = self.engine_manager.geometry_only();
+        // This is the engine setting, not the local renderer's SSAO preference.
+        settings.enable_ssao &= !settings.geometry_only;
         if let Some(path_src) = path {
             settings.with_current_file(kcl_lib::TypedPath::from(&path_src));
         }

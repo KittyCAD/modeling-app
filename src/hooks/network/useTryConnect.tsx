@@ -17,7 +17,7 @@ import {
 } from '@src/lib/settings/settingsUtils'
 import { reportRejection } from '@src/lib/trap'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import { useRef } from 'react'
+import { useCallback, useRef } from 'react'
 
 /**
  * Helper function, do not call this directly. Use tryConnecting instead.
@@ -31,7 +31,7 @@ const attemptToConnectToEngine = async ({
   timeToConnect,
   engineCommandManager,
   rustContext,
-  webrtc,
+  geometryOnly = false,
 }: {
   authToken: string
   videoWrapperRef: React.RefObject<HTMLDivElement | null>
@@ -41,9 +41,9 @@ const attemptToConnectToEngine = async ({
   timeToConnect: number
   engineCommandManager: ConnectionManager
   rustContext: RustContext
-  webrtc: boolean
+  geometryOnly?: boolean
 }) => {
-  const codecError = webrtc
+  const codecError = !geometryOnly
     ? await preflightEngineVideoCodecSupport()
     : undefined
   if (codecError) {
@@ -95,10 +95,10 @@ const attemptToConnectToEngine = async ({
             setAppState({ isStreamReady: true })
           },
           rustContext,
-          webrtc,
+          geometryOnly,
         })
 
-        if (!webrtc) {
+        if (geometryOnly) {
           setIsSceneReady(true)
           clearTimeout(cancelTimeout)
           return resolve(true)
@@ -180,6 +180,11 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
     message: 'kclManager.executeCode()',
   })
   await kclManager.executeCode()
+
+  if (engineCommandManager.geometryOnly) {
+    sceneInfra.camControls.clearOldCameraState()
+    return
+  }
   // TODO: resolve the ~12 remaining dependent playwright tests on this functions isPlaywright() check
   // Once zoom to fit and view isometric work on empty scenes (only grid planes) we can improve the functions
   // business logic
@@ -236,7 +241,7 @@ export async function tryConnecting({
   engineCommandManager,
   kclManager,
   rustContext,
-  webrtc,
+  geometryOnly = false,
 }: {
   abnormalCloseRetries: React.RefObject<number>
   isConnecting: React.RefObject<boolean>
@@ -253,7 +258,7 @@ export async function tryConnecting({
   engineCommandManager: ConnectionManager
   kclManager: KclManager
   rustContext: RustContext
-  webrtc: boolean
+  geometryOnly?: boolean
 }) {
   const connection = new Promise<string>((resolve, reject) => {
     void (async () => {
@@ -278,7 +283,7 @@ export async function tryConnecting({
             timeToConnect,
             engineCommandManager,
             rustContext,
-            webrtc,
+            geometryOnly,
           })
 
           // Do not count the 30 second timer to connect within the kcl execution and scene setup
@@ -350,7 +355,11 @@ export async function tryConnecting({
   })
   return connection
 }
-export const useTryConnect = ({ webrtc = true }: { webrtc?: boolean } = {}) => {
+export const useTryConnect = ({
+  geometryOnly = false,
+}: {
+  geometryOnly?: boolean
+} = {}) => {
   const { kclManager } = useSingletons()
   const isConnecting = useRef(false)
   const numberOfConnectionAttempts = useRef(0)
@@ -361,19 +370,28 @@ export const useTryConnect = ({ webrtc = true }: { webrtc?: boolean } = {}) => {
     | 'kclManager'
     | 'rustContext'
     | 'abnormalCloseRetries'
-    | 'webrtc'
+    | 'geometryOnly'
   >
 
-  return {
-    tryConnecting: (args: TryConnectingArgs) =>
+  // Reconnect callbacks can outlive a render. Read the requested mode when
+  // starting a new attempt, while existing sessions keep their own mode.
+  const modeRef = useRef(geometryOnly)
+  modeRef.current = geometryOnly
+  const connect = useCallback(
+    (args: TryConnectingArgs) =>
       tryConnecting({
         ...args,
+        geometryOnly: modeRef.current,
         engineCommandManager: kclManager.engineCommandManager,
         kclManager,
         rustContext: kclManager.rustContext,
-        webrtc,
         abnormalCloseRetries,
       }),
+    [kclManager]
+  )
+
+  return {
+    tryConnecting: connect,
     isConnecting,
     numberOfConnectionAttempts,
     abnormalCloseRetries,

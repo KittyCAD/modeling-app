@@ -115,6 +115,11 @@ export class ConnectionManager extends EventTarget {
     return this.connection?.apiCallId
   }
 
+  /** Rendering mode of the active session; reevaluated after every reconnect. */
+  get geometryOnly(): boolean {
+    return this.connection?.geometryOnly ?? false
+  }
+
   /** True when a scene command sent now reaches the engine. */
   get isReady(): boolean {
     return (
@@ -188,7 +193,7 @@ export class ConnectionManager extends EventTarget {
     callbackOnUnitTestingConnection,
     unitTestGeometryOnly,
     rustContext,
-    webrtc = true,
+    geometryOnly = false,
   }: {
     width: number
     height: number
@@ -197,7 +202,7 @@ export class ConnectionManager extends EventTarget {
     callbackOnUnitTestingConnection?: (message: string) => void
     unitTestGeometryOnly?: boolean
     rustContext?: RustContext
-    webrtc?: boolean
+    geometryOnly?: boolean
   }) {
     EngineDebugger.addLog({
       label: 'connectionManager',
@@ -217,7 +222,8 @@ export class ConnectionManager extends EventTarget {
       )
     }
 
-    const invalidStreamDimensions = validateStreamDimensions({ width, height })
+    const invalidStreamDimensions =
+      !geometryOnly && validateStreamDimensions({ width, height })
     if (invalidStreamDimensions) {
       return Promise.reject(invalidStreamDimensions)
     }
@@ -235,11 +241,11 @@ export class ConnectionManager extends EventTarget {
 
     const handleMessage = this.createMessageHandler(rustContext)
 
-    const url = this.generateWebsocketURL(webrtc)
+    const url = this.generateWebsocketURL(geometryOnly)
     this.connection = new Connection({
       url,
       token,
-      webrtc,
+      geometryOnly,
       handleOnDataChannelMessage: this.handleOnDataChannelMessage.bind(this),
       recordShutdownTrigger: this.recordShutdownTrigger.bind(this),
       tearDownManager: this.tearDown.bind(this),
@@ -281,7 +287,7 @@ export class ConnectionManager extends EventTarget {
     // Moved from ondatachannelopen in RTCPeerConnection.
     this.inSequence = 1
 
-    if (webrtc && !this.connection.peerConnection) {
+    if (!geometryOnly && !this.connection.peerConnection) {
       return Promise.reject(
         new Error('this.connection.peerConnection is undefined')
       )
@@ -415,11 +421,14 @@ export class ConnectionManager extends EventTarget {
     })
   }
 
-  generateWebsocketURL(webrtc = true) {
+  generateWebsocketURL(geometryOnly = false) {
+    if (geometryOnly) {
+      return withKittycadWebSocketURL('?geometry_only=true&webrtc=false')
+    }
     let additionalSettings = this.settings.enableSSAO ? '&post_effect=ssao' : ''
     additionalSettings +=
       '&show_grid=' + (this.settings.showScaleGrid ? 'true' : 'false')
-    additionalSettings += `&webrtc=${webrtc}`
+    additionalSettings += '&webrtc=true'
     const url = withKittycadWebSocketURL(
       `?video_res_width=${this.streamDimensions.width}&video_res_height=${this.streamDimensions.height}${additionalSettings}`
     )
@@ -428,6 +437,8 @@ export class ConnectionManager extends EventTarget {
 
   // Set the engine's theme
   async setTheme(theme: Themes) {
+    if (this.geometryOnly) return
+
     if (!this.isReady) {
       EngineDebugger.addLog({
         label: 'connectionManager',
@@ -519,6 +530,8 @@ export class ConnectionManager extends EventTarget {
 
   /** Set default system properties in the engine, with debug logging */
   async setDefaultSystemProperties(backfaceColor: string) {
+    if (this.geometryOnly) return
+
     const backfaceRgbaColor = hexToRgba(backfaceColor)
     if (!backfaceRgbaColor) {
       EngineDebugger.addLog({
@@ -568,6 +581,8 @@ export class ConnectionManager extends EventTarget {
 
   /** Set the edge highlighting setting in the engine, with debug logging */
   async setHighlightEdges(shouldHighlight: boolean) {
+    if (this.geometryOnly) return
+
     const cmd = {
       type: 'edge_lines_visible',
       hidden: !shouldHighlight,
@@ -605,6 +620,8 @@ export class ConnectionManager extends EventTarget {
 
   /** Set the "show scale grid" setting in the engine, with debug logging */
   async setShowScaleGrid(shouldShowGrid: boolean) {
+    if (this.geometryOnly) return
+
     const cmd = {
       type: 'edge_lines_visible',
       hidden: !shouldShowGrid,
@@ -1058,6 +1075,8 @@ export class ConnectionManager extends EventTarget {
   }
 
   async handleResize({ width, height }: { width: number; height: number }) {
+    if (this.geometryOnly) return
+
     if (!this.connection) {
       console.warn('unable to resize, connection is not found')
       return

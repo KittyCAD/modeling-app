@@ -1,5 +1,9 @@
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import { tryConnecting } from '@src/hooks/network/useTryConnect'
+import { tryConnecting, useTryConnect } from '@src/hooks/network/useTryConnect'
+import { useSingletons } from '@src/lib/boot'
+import { reapplyActiveViewAfterReconnect } from '@src/lib/kclNamedViewActivation'
+import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import { renderHook } from '@testing-library/react'
 import type { KclManager } from '@src/lang/KclManager'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import {
@@ -32,12 +36,78 @@ describe('tryConnecting', () => {
     vi.clearAllMocks()
   })
 
+  it('uses the latest requested mode and restores camera setup on reconnect', async () => {
+    vi.mocked(preflightEngineVideoCodecSupport).mockResolvedValue(undefined)
+    const manager = {
+      started: false,
+      geometryOnly: false,
+      connection: { mediaStream: {} },
+      start: vi.fn(async ({ geometryOnly }: { geometryOnly: boolean }) => {
+        manager.started = true
+        manager.geometryOnly = geometryOnly
+      }),
+      tearDown: vi.fn(),
+    }
+    const rustContext = {
+      clearSceneAndBustCache: vi.fn().mockResolvedValue(undefined),
+    }
+    const kclManager = {
+      engineCommandManager: manager,
+      rustContext,
+      executeCode: vi.fn().mockResolvedValue(undefined),
+    }
+    vi.mocked(useSingletons).mockReturnValue({
+      kclManager,
+    } as unknown as ReturnType<typeof useSingletons>)
+    const { result, rerender, unmount } = renderHook(
+      ({ geometryOnly }) => useTryConnect({ geometryOnly }),
+      { initialProps: { geometryOnly: true } }
+    )
+    // Simulate a callback retained by an event listener across mode changes.
+    const reconnect = result.current.tryConnecting
+    const sceneInfra = {
+      camControls: { clearOldCameraState: vi.fn() },
+    } as unknown as SceneInfra
+    for (const geometryOnly of [true, false, true]) {
+      rerender({ geometryOnly })
+      manager.started = false
+      vi.mocked(resetCameraPosition).mockClear()
+      vi.mocked(reapplyActiveViewAfterReconnect).mockClear()
+      await expect(
+        reconnect({
+          isConnecting: result.current.isConnecting,
+          numberOfConnectionAttempts: result.current.numberOfConnectionAttempts,
+          authToken: 'token',
+          videoWrapperRef: { current: document.createElement('div') },
+          videoRef: { current: { srcObject: null } as HTMLVideoElement },
+          setAppState: vi.fn(),
+          setIsSceneReady: vi.fn(),
+          timeToConnect: 1_000,
+          settingsActor: {} as SettingsActorType,
+          setShowManualConnect: vi.fn(),
+          sceneInfra,
+        })
+      ).resolves.toBe('connected')
+      expect(manager.start).toHaveBeenLastCalledWith(
+        expect.objectContaining({ geometryOnly })
+      )
+      expect(resetCameraPosition).toHaveBeenCalledTimes(geometryOnly ? 0 : 1)
+      expect(reapplyActiveViewAfterReconnect).toHaveBeenCalledTimes(
+        geometryOnly ? 0 : 1
+      )
+    }
+    expect(rustContext.clearSceneAndBustCache).toHaveBeenCalledTimes(3)
+    expect(kclManager.executeCode).toHaveBeenCalledTimes(3)
+    expect(manager.tearDown).not.toHaveBeenCalled()
+    unmount()
+  })
+
   it.each([true, false])(
-    'stops the initial retry loop after a terminal connection error (webrtc=%s)',
-    async (webrtc) => {
+    'stops the initial retry loop after a terminal connection error (geometryOnly=%s)',
+    async (geometryOnly) => {
       vi.mocked(preflightEngineVideoCodecSupport).mockImplementation(
         async () => {
-          if (!webrtc)
+          if (geometryOnly)
             throw new Error(
               'WebSocket-only connections must not check video codecs'
             )
@@ -64,7 +134,7 @@ describe('tryConnecting', () => {
 
       await expect(
         tryConnecting({
-          webrtc,
+          geometryOnly,
           abnormalCloseRetries: { current: 0 },
           isConnecting: { current: false },
           numberOfConnectionAttempts,
@@ -87,10 +157,10 @@ describe('tryConnecting', () => {
 
       expect(manager.start).toHaveBeenCalledOnce()
       expect(manager.start).toHaveBeenCalledWith(
-        expect.objectContaining({ webrtc })
+        expect.objectContaining({ geometryOnly })
       )
       expect(preflightEngineVideoCodecSupport).toHaveBeenCalledTimes(
-        webrtc ? 1 : 0
+        geometryOnly ? 0 : 1
       )
       expect(manager.tearDown).not.toHaveBeenCalled()
       expect(numberOfConnectionAttempts.current).toBe(0)

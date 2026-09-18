@@ -117,7 +117,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
     isConnecting,
     numberOfConnectionAttempts,
     abnormalCloseRetries,
-  } = useTryConnect({ webrtc: !LOCAL_WEBGPU_RENDERING_ENABLED })
+  } = useTryConnect({ geometryOnly: LOCAL_WEBGPU_RENDERING_ENABLED })
   const safariObjectFitClass = useMemo(() => {
     // on safari we want to apply object-fit: fill to fix video resize bug
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
@@ -337,7 +337,11 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         })
           .then(() => {
             // Take a screen shot after the page mounts and zoom to fit runs
-            if (projectIORef && projectIORef.path) {
+            if (
+              !engineCommandManager.geometryOnly &&
+              projectIORef &&
+              projectIORef.path
+            ) {
               createThumbnailPNGOnDesktop({
                 fileOperations,
                 projectDirectoryWithoutEndingSlash: projectIORef.path,

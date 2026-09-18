@@ -2,7 +2,6 @@ import {
   LOCAL_WEBGPU_GTAO_SAMPLES,
   LOCAL_WEBGPU_GTAO_USE_DENOISE,
   LOCAL_WEBGPU_GTAO_USE_NORMAL_MRT,
-  LOCAL_WEBGPU_RENDERING_ENABLED,
 } from '@src/clientSideScene/localRenderer/config'
 import { EdgeRenderer } from '@src/clientSideScene/localRenderer/EdgeRenderer'
 import { EnvMapLoader } from '@src/clientSideScene/localRenderer/EnvMapLoader'
@@ -19,7 +18,7 @@ import { EngineDebugger } from '@src/lib/debugger'
 import { reportRejection } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import {
-  Box3,
+  type Box3,
   type Material,
   NeutralToneMapping,
   type Object3D,
@@ -115,11 +114,6 @@ export class LocalRenderer {
     this.forceHide = props.forceHide ?? false
     this.onVisibilityChange = props.onVisibilityChange
     this.onModelLoadSettled = props.onModelLoadSettled
-
-    if (!LOCAL_WEBGPU_RENDERING_ENABLED) {
-      this.onVisibilityChange(false)
-      return
-    }
 
     this.container.style.opacity = '0'
     this.kclManager.addEventListener(

@@ -13,6 +13,7 @@ import {
   type EngineDisconnectEventDetail,
 } from '@src/lib/engineConnection/utils'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import { Themes } from '@src/lib/theme'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 class ReconnectTestWebSocket extends EventTarget {
@@ -79,9 +80,66 @@ function startConnectionManager(
 
 describe('ConnectionManager', () => {
   afterEach(() => {
+    vi.restoreAllMocks()
     vi.unstubAllGlobals()
     reportClientError.mockClear()
     ReconnectTestWebSocket.instances = []
+  })
+
+  it('uses geometry-only URL parameters without engine render settings', () => {
+    const manager = createConnectionManager()
+    vi.spyOn(manager, 'settings', 'get').mockReturnValue({
+      theme: Themes.Light,
+      enableSSAO: true,
+      showScaleGrid: true,
+      highlightEdges: true,
+      cameraProjection: 'perspective',
+      cameraOrbit: 'spherical',
+      backfaceColor: '#ffffff',
+    })
+
+    // The same manager can construct either kind of session after a mode change.
+    for (const geometryOnly of [true, false, true]) {
+      const url = new URL(manager.generateWebsocketURL(geometryOnly))
+      expect(url.searchParams.get('webrtc')).toBe(String(!geometryOnly))
+      expect(url.searchParams.get('geometry_only')).toBe(
+        geometryOnly ? 'true' : null
+      )
+      expect(url.searchParams.has('post_effect')).toBe(!geometryOnly)
+      expect(url.searchParams.has('show_grid')).toBe(!geometryOnly)
+      expect(url.searchParams.has('video_res_width')).toBe(!geometryOnly)
+    }
+    expect(manager.settings.enableSSAO).toBe(true)
+  })
+
+  it('skips rendering updates only for the current geometry-only connection', async () => {
+    const manager = createConnectionManager()
+    const send = vi.fn()
+    const sendSceneCommand = vi
+      .spyOn(manager, 'sendSceneCommand')
+      .mockResolvedValue(null)
+
+    for (const geometryOnly of [true, false, true]) {
+      addConnectedState(manager)
+      manager.connection = {
+        ...manager.connection,
+        geometryOnly,
+        deferredConnection: { promise: Promise.resolve() },
+        send,
+      } as unknown as Connection
+      sendSceneCommand.mockClear()
+      send.mockClear()
+
+      expect(manager.geometryOnly).toBe(geometryOnly)
+      await manager.setTheme(Themes.Light)
+      await manager.setDefaultSystemProperties('#ffffff')
+      await manager.setHighlightEdges(true)
+      await manager.setShowScaleGrid(true)
+      await manager.handleResize({ width: 512, height: 512 })
+
+      expect(sendSceneCommand).toHaveBeenCalledTimes(geometryOnly ? 0 : 5)
+      expect(send).toHaveBeenCalledTimes(geometryOnly ? 0 : 1)
+    }
   })
 
   it.each([1000, 1006])(

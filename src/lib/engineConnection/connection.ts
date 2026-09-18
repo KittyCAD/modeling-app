@@ -52,7 +52,10 @@ interface IDeferredPromise {
 export class Connection extends EventTarget {
   // connection url for the new Websocket()
   readonly url: string
-  readonly webrtc: boolean
+  readonly geometryOnly: boolean
+  get webrtc(): boolean {
+    return !this.geometryOnly
+  }
   // Authorization bearer token for headers on websocket
   private readonly _token: string | undefined
   private _pingPongSpan: {
@@ -118,7 +121,7 @@ export class Connection extends EventTarget {
     unitTestGeometryOnly,
     handleMessage,
     getCloudProjectId,
-    webrtc = true,
+    geometryOnly = false,
   }: {
     url: string
     token: string
@@ -130,7 +133,7 @@ export class Connection extends EventTarget {
     unitTestGeometryOnly?: boolean
     handleMessage: (event: MessageEvent<any>) => void
     getCloudProjectId: () => string | undefined
-    webrtc?: boolean
+    geometryOnly?: boolean
   }) {
     markOnce('code/startInitialEngineConnect')
     super()
@@ -141,7 +144,7 @@ export class Connection extends EventTarget {
       metadata: { id: this.id },
     })
     this.url = url
-    this.webrtc = webrtc
+    this.geometryOnly = geometryOnly
     this._token = token
     this.handleOnDataChannelMessage = handleOnDataChannelMessage
     this.recordShutdownTrigger = recordShutdownTrigger
