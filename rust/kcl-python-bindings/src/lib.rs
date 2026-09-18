@@ -8,6 +8,7 @@ use kcl_api::UnitAngle;
 use kcl_api::UnitLength;
 use kcl_lib::ExecutorContext;
 use kcl_lib::IsRetryable;
+use kcl_lib::Program;
 use kcl_lib::lint::Discovered;
 use kcl_lib::lint::FindingFamily;
 use kcl_lib::lint::checks;
@@ -51,6 +52,7 @@ use crate::bridge::sketch_constraints::SketchConstraintReport;
 const HEARTBEAT_INTERVAL_SECONDS: u64 = 5;
 
 mod bridge;
+mod connection;
 
 fn tokio() -> &'static tokio::runtime::Runtime {
     use std::sync::OnceLock;
@@ -514,11 +516,23 @@ async fn execute_and_export_impl(
         ..
     } = run_kcl(input, false, None, geometry_only).await?;
 
+    let result = export_from_executed(&ctx, &program, &code, &filename, export_format).await;
+    ctx.close().await;
+    result
+}
+
+/// This will not close the connection on error, caller should close if they're done with the connection.
+async fn export_from_executed(
+    ctx: &ExecutorContext,
+    program: &Program,
+    code: &str,
+    filename: &str,
+    export_format: FileExportFormat,
+) -> PyResult<Vec<RawFile>> {
     let settings = match program.meta_settings() {
         Ok(x) => x.unwrap_or_default(),
         Err(err) => {
-            ctx.close().await;
-            return Err(into_miette_for_parse(&filename, &code, err));
+            return Err(into_miette_for_parse(filename, code, err));
         }
     };
     let units: UnitLength = settings.default_length_units.into();
@@ -544,20 +558,19 @@ async fn execute_and_export_impl(
     let resp = match export_res {
         Ok(x) => x,
         Err(e) => {
-            ctx.close().await;
             return Err(into_kcl_exception(e));
         }
     };
 
-    let result = match resp {
-        kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Export { files } => Ok(files),
-        _ => Err(pyo3::exceptions::PyException::new_err(format!(
-            "Unexpected response from engine: {resp:?}"
-        ))),
+    let files = match resp {
+        kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Export { files } => files,
+        _ => {
+            return Err(pyo3::exceptions::PyException::new_err(format!(
+                "Unexpected response from engine: {resp:?}"
+            )));
+        }
     };
-
-    ctx.close().await;
-    result
+    Ok(files)
 }
 
 /// Parse the kcl code from a file path.
@@ -1325,6 +1338,10 @@ fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<kcl_api::UnitLength>()?;
     m.add_class::<kcl_api::UnitMass>()?;
     m.add_class::<kcl_api::UnitVolume>()?;
+
+    m.add_class::<connection::KclSession>()?;
+    m.add_function(wrap_pyfunction!(connection::new_kcl_session, m)?)?;
+    m.add_function(wrap_pyfunction!(connection::new_kcl_session_code, m)?)?;
 
     // These are fine to add top level since we rename them in pyo3 derives.
     m.add_class::<kcmc::format::step::import::Options>()?;
