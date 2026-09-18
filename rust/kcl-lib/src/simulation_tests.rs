@@ -199,20 +199,16 @@ impl TestConfig {
         let config: TestConfig = toml::from_str(&config_str).unwrap();
         Some(config)
     }
-
-    fn write_file(&self, test_dir: &Path) {
-        let test_config_path = test_dir.join("config.toml");
-        std::fs::write(test_config_path, toml::to_string(self).unwrap()).unwrap();
-    }
 }
 
 impl Test {
-    fn new(name: &str, derived_graphics_setting: Option<TestGraphicsParams>) -> Self {
+    fn new(name: &str) -> Self {
         let test_dir = Path::new("tests").join(name);
         let test_config = TestConfig::from_file(&test_dir).unwrap_or_default();
         let TestConfig {
             redact_uuids,
             kcl_versions,
+            test_graphics,
         } = test_config;
         let output_dir = if kcl_versions.is_empty() {
             test_dir.clone()
@@ -516,7 +512,7 @@ fn physical_properties_snapshot_preserves_insta_workflow() {
         (Some(1.0), 1.0 + 5e-13, true),
     ] {
         let directory = tempfile::tempdir().unwrap();
-        let mut test = Test::new("physical_properties_snapshot_workflow", None);
+        let mut test = Test::new("physical_properties_snapshot_workflow");
         test.output_dir = directory.path().to_owned();
         let snapshot_path = test.output_dir.join("physical_properties.snap");
         let properties = |value| serde_json::json!({"surface_area": {"unit": "mm2", "value": value}});
@@ -556,7 +552,7 @@ fn physical_properties_snapshot_preserves_insta_workflow() {
 #[test]
 fn physical_properties_snapshot_preserves_stored_decimal_text() {
     let directory = tempfile::tempdir().unwrap();
-    let mut test = Test::new("holes_cube", None);
+    let mut test = Test::new("holes_cube");
     test.output_dir = directory.path().to_owned();
     let snapshot_path = test.output_dir.join("physical_properties.snap");
     let original = include_str!("../tests/holes_cube/physical_properties.snap");
@@ -573,7 +569,7 @@ fn physical_properties_snapshot_preserves_stored_decimal_text() {
 }
 
 fn parse(test_name: &str) {
-    parse_test(&Test::new(test_name, None));
+    parse_test(&Test::new(test_name));
 }
 
 fn parse_test(test: &Test) {
@@ -606,7 +602,7 @@ fn parse_test(test: &Test) {
 }
 
 async fn unparse(test_name: &str) {
-    unparse_test(&Test::new(test_name, None)).await;
+    unparse_test(&Test::new(test_name)).await;
 }
 
 async fn unparse_test(test: &Test) {
@@ -660,12 +656,8 @@ async fn unparse_test(test: &Test) {
     input_result.unwrap();
 }
 
-async fn execute(test_name: &str, render_to_png: bool) {
-    let graphics = match render_to_png {
-        true => TestGraphicsParams::ExportAndRender,
-        false => TestGraphicsParams::None,
-    };
-    execute_test(&Test::new(test_name, Some(graphics))).await
+async fn execute(test_name: &str, _render_to_png: bool) {
+    execute_test(&Test::new(test_name)).await
 }
 
 async fn execute_test(test: &Test, render_to_png: bool) {
