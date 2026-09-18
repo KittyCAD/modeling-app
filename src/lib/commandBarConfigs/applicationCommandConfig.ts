@@ -39,7 +39,7 @@ import {
   GLOBAL_COMMAND_SCOPES,
   HOME_COMMAND_SCOPE,
 } from '@src/registry/contracts/commands'
-import { routerService } from '@src/registry/contracts/router'
+import { appUrlService } from '@src/registry/contracts/appUrl'
 import toast from 'react-hot-toast'
 import type { ActorRefFrom } from 'xstate'
 
@@ -400,7 +400,7 @@ export function createApplicationCommands({
             }
 
             void app.registry
-              .get(routerService)
+              .get(appUrlService)
               .navigate(
                 `${PATHS.FILE}/${safeEncodeForRouterPaths(project.default_file)}`
               )
