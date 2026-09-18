@@ -22,7 +22,7 @@ declare module '@playwright/test' {
 // So in some sense there is an implicit pool.
 // For example, the variable just beneath this text is reused many times
 // *for one worker*.
-const electronZooInstance = new ElectronZoo()
+let electronZooInstance = new ElectronZoo()
 
 // Track whether this is the first run for this worker process
 // Mac needs more time for the first window creation
@@ -92,6 +92,11 @@ const playwrightTestFnWithFixtures_ = playwrightTestFn.extend<{
         throw error
       } finally {
         if (timeoutId) clearTimeout(timeoutId)
+        // Expected failures can keep this worker alive after disposal.
+        if (!electronZooInstance.available) {
+          electronZooInstance = new ElectronZoo()
+          isFirstRun = true
+        }
       }
     },
     { timeout: 120_000 }, // Keep the global timeout as fallback
