@@ -1,10 +1,9 @@
 import { AppStreamProvider } from '@src/AppState'
 import { Router } from '@src/Router'
-import ReactDOM from 'react-dom/client'
+import type { Root } from 'react-dom/client'
 import toast, { Toaster } from 'react-hot-toast'
 import { HotkeysProvider } from 'react-hotkeys-hook'
 import ModalContainer from 'react-modal-promise'
-import '@src/index.css'
 import type { App } from '@src/lib/app'
 import {
   clearAutoUpdateDownloadProgress,
@@ -20,16 +19,13 @@ import { markOnce } from '@src/lib/performance'
 import { reportRejection } from '@src/lib/trap'
 import reportWebVitals from '@src/reportWebVitals'
 
-// Here's the entry-point for the whole app 🚀
-launchApp(app)
-
 /** The initialization sequence for this app */
-function launchApp(app: App) {
+export function launchApp(root: Root) {
   initSingletonBehavior(app)
   if (window.electron) {
     initElectronBehavior(window.electron, app)
   }
-  mountAppToReact(app)
+  mountAppToReact(app, root)
 }
 
 /** initialize behaviors that rely on singletons */
@@ -107,11 +103,7 @@ function initElectronBehavior(
 }
 
 /** mount the app as a React node and begin rendering its components */
-function mountAppToReact(app: App) {
-  const root = ReactDOM.createRoot(
-    document.getElementById('root') as HTMLElement
-  )
-
+function mountAppToReact(app: App, root: Root) {
   root.render(
     <AppContext.Provider value={app}>
       <HotkeysProvider>
