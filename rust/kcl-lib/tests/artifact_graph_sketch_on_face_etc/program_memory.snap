@@ -611,11 +611,9 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
   },
   "seg01": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "seg01"
   },
   "seg02": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "seg02"
   },

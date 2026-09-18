@@ -219,16 +219,13 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
   },
   "boreProfile": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "boreProfile"
   },
   "circle1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "circle1"
   },
   "circle2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "circle2"
   },
@@ -1138,17 +1135,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": 55.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1156,17 +1157,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1347,18 +1352,22 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
     "type": "Number",
     "value": 110.0,
     "ty": {
-      "mm": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "mm"
+      }
     }
   },
   "flangeThickness": {
     "type": "Number",
     "value": 18.0,
     "ty": {
-      "mm": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "mm"
+      }
     }
   },
   "flangeWithHollowBore": {
@@ -2191,7 +2200,6 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
   },
   "holeProfile": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "holeProfile"
   },
   "hollowBoreCutter": {
@@ -2323,8 +2331,10 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
     "value": 55.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "hollowBoreSketch": {
@@ -2344,17 +2354,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": 27.500000004,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2362,17 +2376,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": 0.0000000010000000787403704,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2653,31 +2671,25 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
   },
   "line1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line1"
   },
   "line2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line2"
   },
   "line3": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line3"
   },
   "line4": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line4"
   },
   "outerProfile": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "outerProfile"
   },
   "recessProfile": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "recessProfile"
   },
@@ -3177,18 +3189,22 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
     "type": "Number",
     "value": 64.0,
     "ty": {
-      "mm": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "mm"
+      }
     }
   },
   "robotBoltCircleRadius": {
     "type": "Number",
     "value": 32.0,
     "ty": {
-      "mm": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "mm"
+      }
     }
   },
   "robotBoltCount": {
@@ -3196,8 +3212,10 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
     "value": 8.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "robotBoltHoleCutters": {
@@ -4201,9 +4219,11 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
     "type": "Number",
     "value": 4.5,
     "ty": {
-      "mm": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "mm"
+      }
     }
   },
   "robotBoltHoleSeed": {
@@ -4347,17 +4367,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": 2.25,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4365,17 +4389,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4658,27 +4686,33 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
     "type": "Number",
     "value": 22.5,
     "ty": {
-      "degrees": null,
       "type": "Known",
-      "type": "Angle"
+      "value": {
+        "type": "Angle",
+        "value": "degrees"
+      }
     }
   },
   "robotPilotDepth": {
     "type": "Number",
     "value": 5.0,
     "ty": {
-      "mm": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "mm"
+      }
     }
   },
   "robotPilotDiameter": {
     "type": "Number",
     "value": 71.05,
     "ty": {
-      "mm": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "mm"
+      }
     }
   },
   "robotPilotRecessCutter": {
@@ -4924,17 +4958,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": 35.525,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4942,17 +4980,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5146,17 +5188,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": -38.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 47.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5164,17 +5210,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": -38.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 17.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5260,17 +5310,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5278,17 +5332,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 47.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5375,17 +5433,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 47.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5393,17 +5455,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": -28.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 47.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5490,17 +5556,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": -38.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 17.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5508,17 +5578,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": -28.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 17.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5604,17 +5678,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": -28.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 17.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5622,17 +5700,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": -28.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 47.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5718,17 +5800,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": -28.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 47.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5736,17 +5822,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": -38.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 47.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5832,17 +5922,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": -28.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 17.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5850,17 +5944,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": -28.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5947,17 +6045,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": -28.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -5965,17 +6067,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6062,17 +6168,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6080,17 +6190,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -37.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6177,17 +6291,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -37.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6195,17 +6313,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": -28.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -37.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6292,17 +6414,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": -28.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -37.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6310,17 +6436,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": -28.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6587,17 +6717,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": 36.94729125485455,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 53.56781911231327,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6605,17 +6739,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": 35.00000000001842,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 52.000000000031235,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6707,17 +6845,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": 35.43046515369339,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 26.537338888264006,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6725,17 +6867,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": 35.00000000001477,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 29.000000000034373,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6827,17 +6973,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": 0.000000000002243591484256174,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6845,17 +6995,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": 47.50000000000449,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.000000000004841999265473958,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6948,17 +7102,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": 47.50000000000673,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.000000000009683998535789916,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -6966,17 +7124,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": 47.500000000008974,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 52.00000000001452,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -7069,17 +7231,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": 47.50000000001122,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 52.00000000001937,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -7087,17 +7253,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": 35.000000000013465,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 52.00000000002421,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -7190,17 +7360,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": 47.50000000000798,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 29.00000000003171,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -7208,17 +7382,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": 35.00000000001524,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 29.00000000003171,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -7311,17 +7489,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": 35.00000000001524,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 29.00000000003171,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -7329,17 +7511,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": 35.0000000000157,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 52.000000000029054,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -7591,17 +7777,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": 37.14311155648217,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 40.56339808128199,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -7609,17 +7799,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": -0.0000000000040491874106296305,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.0000000000042938384879294345,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -7705,17 +7899,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": 49.710937631158814,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 47.49089575728714,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -7723,17 +7921,21 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                       {
                         "n": -0.0000000000049868184560574685,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.000000000005189595794271248,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],

@@ -70,11 +70,9 @@ description: Variables in memory after executing manhole-cover.kcl
   },
   "bottomEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bottomEdge"
   },
   "coverCircle": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "coverCircle"
   },
@@ -83,8 +81,10 @@ description: Variables in memory after executing manhole-cover.kcl
     "value": 22.75,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "coverRegion": {
@@ -1316,17 +1316,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 11.375,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1334,17 +1338,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2807,17 +2815,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -5.530976813964,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 8.334914115028,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2825,17 +2837,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -5.940552836109,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 8.048125896852,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2843,17 +2859,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -5.735764825036,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 8.19152000594,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2959,17 +2979,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 5.67437,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -8.539703,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2977,17 +3001,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 6.083946022144,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -8.252914781824,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2995,17 +3023,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 5.879158011072,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -8.396308890912,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3111,17 +3143,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 5.67437,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -8.539703,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3129,17 +3165,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -5.940552836109,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 8.048125896852,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3231,17 +3271,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -5.530976813964,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 8.334914115028,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3249,17 +3293,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 6.083946022144,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -8.252914781824,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3351,17 +3399,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -7.323288079717,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 6.753914098846,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3369,17 +3421,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -7.732864101861,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 6.46712588067,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3387,17 +3443,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -7.528076090789,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 6.610519989758,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3503,17 +3563,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 3.568886,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -9.673446,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3521,17 +3585,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 3.978462022144,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -9.386657781824,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3539,17 +3607,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 3.773674011072,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -9.530051890912,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3655,17 +3727,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 3.568886,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -9.673446,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3673,17 +3749,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -7.732864101861,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 6.46712588067,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3775,17 +3855,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -7.323288079717,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 6.753914098846,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3793,17 +3877,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 3.978462022144,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -9.386657781824,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3895,17 +3983,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -8.752613411521,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 4.654516243657,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3913,17 +4005,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -9.162189433665,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 4.367728025482,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3931,17 +4027,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -8.957401422593,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 4.511122134569,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4047,17 +4147,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 1.114006,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -10.3082,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4065,17 +4169,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 1.523582022144,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -10.021411781824,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4083,17 +4191,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 1.318794011072,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -10.164805890912,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4199,17 +4311,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 1.114006,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -10.3082,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4217,17 +4333,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -9.162189433665,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 4.367728025482,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4319,17 +4439,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -8.752613411521,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 4.654516243657,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4337,17 +4461,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 1.523582022144,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -10.021411781824,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4439,17 +4567,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -9.714592811273,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.88767988379,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4457,17 +4589,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -10.124168833418,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.600891665615,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4475,17 +4611,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -9.919380822345,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.744285774702,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4591,17 +4731,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -1.814767,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -10.266164,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4609,17 +4753,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -1.405190977856,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -9.979375781824,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4627,17 +4775,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -1.609978988928,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -10.122769890912,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4743,17 +4895,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -1.814767,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -10.266164,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4761,17 +4917,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -10.124168833418,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.600891665615,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4863,17 +5023,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -9.714592811273,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.88767988379,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4881,17 +5045,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -1.405190977856,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -9.979375781824,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4983,17 +5151,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -3.432174079717,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 9.478360098846,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5001,17 +5173,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -3.841750101861,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 9.19157188067,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5019,17 +5195,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -3.636962090789,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 9.334965989758,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5135,17 +5315,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 7.46,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -6.949,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5153,17 +5337,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 7.869576022144,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -6.662211781824,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5171,17 +5359,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 7.664788011072,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -6.805605890912,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5287,17 +5479,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 7.46,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -6.949,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5305,17 +5501,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -3.841750101861,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 9.19157188067,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5407,17 +5607,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -3.432174079717,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 9.478360098846,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5425,17 +5629,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 7.869576022144,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -6.662211781824,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5527,17 +5735,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -0.970619411521,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 10.103516243657,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5545,17 +5757,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -1.380195433665,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 9.816728025482,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5563,17 +5779,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -1.175407422593,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 9.960122134569,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5679,17 +5899,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 8.896,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -4.8592,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5697,17 +5921,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 9.305576022144,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -4.572411781824,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5715,17 +5943,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 9.100788011072,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -4.715805890912,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5831,17 +6063,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 8.896,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -4.8592,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5849,17 +6085,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -1.380195433665,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 9.816728025482,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5951,17 +6191,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -0.970619411521,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 10.103516243657,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5969,17 +6213,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 9.305576022144,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -4.572411781824,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6071,17 +6319,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 1.958274188727,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 10.06114388379,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6089,17 +6341,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 1.548698166582,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 9.774355665615,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6107,17 +6363,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 1.753486177655,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 9.917749774702,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6223,17 +6483,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 9.8581,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.0927,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6241,17 +6505,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 10.267676022144,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -1.805911781824,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6259,17 +6527,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 10.062888011072,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -1.949305890912,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6375,17 +6647,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 9.8581,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.0927,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6393,17 +6669,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 1.548698166582,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 9.774355665615,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6495,17 +6775,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 1.958274188727,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 10.06114388379,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6513,17 +6797,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 10.267676022144,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -1.805911781824,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6615,17 +6903,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -9.641285129936,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.357700847187,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6633,17 +6925,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -10.050861152081,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.644489065362,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6651,17 +6947,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -9.846073141009,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.501094956274,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6767,17 +7067,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -5.779208,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -8.745042,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6785,17 +7089,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -5.369631977856,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -8.458253781824,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6803,17 +7111,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -5.574419988928,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -8.601647890912,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6919,17 +7231,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -5.779208,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -8.745042,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6937,17 +7253,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -10.050861152081,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.644489065362,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7039,17 +7359,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -9.641285129936,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.357700847187,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7057,17 +7381,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -5.369631977856,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -8.458253781824,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7159,17 +7487,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 5.922622870064,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 8.540241152813,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7177,17 +7509,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 5.513046847919,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 8.253452934638,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7195,17 +7531,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 5.717834858991,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 8.396847043726,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7311,17 +7651,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 9.7847,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.1529,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7329,17 +7673,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 10.194276022144,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.439688218176,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7347,17 +7695,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 9.989488011072,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.296294109088,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7463,17 +7815,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 9.7847,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.1529,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7481,17 +7837,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 5.513046847919,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 8.253452934638,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7583,17 +7943,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 5.922622870064,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 8.540241152813,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7601,17 +7965,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 10.194276022144,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.439688218176,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7697,12 +8065,13 @@ description: Variables in memory after executing manhole-cover.kcl
     "value": 1.75,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "leftEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "leftEdge"
   },
@@ -9699,8 +10068,10 @@ description: Variables in memory after executing manhole-cover.kcl
     "value": 1.125,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "pickHoleLength": {
@@ -9708,8 +10079,10 @@ description: Variables in memory after executing manhole-cover.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "pickHoleRegion": {
@@ -9903,17 +10276,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.15,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -9921,17 +10298,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.15,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10023,17 +10404,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.15,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10041,17 +10426,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.975,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10323,17 +10712,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.975,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10341,17 +10734,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.15,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10443,17 +10840,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": -1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.975,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10461,17 +10862,21 @@ description: Variables in memory after executing manhole-cover.kcl
                       {
                         "n": 1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.975,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10557,197 +10962,161 @@ description: Variables in memory after executing manhole-cover.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "rightEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "rightEdge"
   },
   "slot1Cap1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "slot1Cap1"
   },
   "slot1Cap2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "slot1Cap2"
   },
   "slot1Side1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "slot1Side1"
   },
   "slot1Side2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "slot1Side2"
   },
   "slot2Cap1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "slot2Cap1"
   },
   "slot2Cap2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "slot2Cap2"
   },
   "slot2Side1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "slot2Side1"
   },
   "slot2Side2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "slot2Side2"
   },
   "slot3Cap1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "slot3Cap1"
   },
   "slot3Cap2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "slot3Cap2"
   },
   "slot3Side1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "slot3Side1"
   },
   "slot3Side2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "slot3Side2"
   },
   "slot4Cap1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "slot4Cap1"
   },
   "slot4Cap2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "slot4Cap2"
   },
   "slot4Side1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "slot4Side1"
   },
   "slot4Side2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "slot4Side2"
   },
   "slot5Cap1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "slot5Cap1"
   },
   "slot5Cap2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "slot5Cap2"
   },
   "slot5Side1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "slot5Side1"
   },
   "slot5Side2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "slot5Side2"
   },
   "slot6Cap1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "slot6Cap1"
   },
   "slot6Cap2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "slot6Cap2"
   },
   "slot6Side1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "slot6Side1"
   },
   "slot6Side2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "slot6Side2"
   },
   "slot7Cap1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "slot7Cap1"
   },
   "slot7Cap2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "slot7Cap2"
   },
   "slot7Side1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "slot7Side1"
   },
   "slot7Side2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "slot7Side2"
   },
   "slot8Cap1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "slot8Cap1"
   },
   "slot8Cap2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "slot8Cap2"
   },
   "slot8Side1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "slot8Side1"
   },
   "slot8Side2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "slot8Side2"
   },
   "slot9Cap1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "slot9Cap1"
   },
   "slot9Cap2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "slot9Cap2"
   },
   "slot9Side1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "slot9Side1"
   },
   "slot9Side2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "slot9Side2"
   },
   "topEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "topEdge"
   },

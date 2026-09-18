@@ -14,8 +14,10 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -23,8 +25,10 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -32,8 +36,10 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -46,8 +52,10 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -55,8 +63,10 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -64,8 +74,10 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -78,8 +90,10 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -87,8 +101,10 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -96,8 +112,10 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]

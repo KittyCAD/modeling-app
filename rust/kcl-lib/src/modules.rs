@@ -181,6 +181,14 @@ impl ModulePath {
         }
     }
 
+    pub(crate) fn is_local(&self) -> bool {
+        match self {
+            ModulePath::Main => false,
+            ModulePath::Local { .. } => true,
+            ModulePath::Std { .. } => false,
+        }
+    }
+
     pub(crate) async fn source(
         &self,
         fs: &FileSystemHandle,

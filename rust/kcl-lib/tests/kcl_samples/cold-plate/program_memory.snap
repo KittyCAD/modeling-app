@@ -135,51 +135,41 @@ description: Variables in memory after executing cold-plate.kcl
   },
   "arc1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc1"
   },
   "arc11": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc11"
   },
   "arc16": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc16"
   },
   "arc2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc2"
   },
   "arc20": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc20"
   },
   "arc24": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc24"
   },
   "arc3": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc3"
   },
   "arc4": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc4"
   },
   "arc6": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc6"
   },
   "arc7": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc7"
   },
@@ -188,8 +178,10 @@ description: Variables in memory after executing cold-plate.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "brazedCap": {
@@ -2523,17 +2515,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 2.6875000000000093,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.2500781253448379,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2541,17 +2537,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 3.3124999999999907,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.2500781253448379,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2559,17 +2559,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 3.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.71875,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2675,17 +2679,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 3.3124999999999845,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.6250781253448379,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2693,17 +2701,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 2.6875000000000155,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.6250781253448379,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2711,17 +2723,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 3.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.625,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2827,17 +2843,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -0.00000000000000000002389312529640224,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.000000000000000006240380445503733,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2845,17 +2865,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 3.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.625,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2948,17 +2972,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 3.3124999999999907,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.2500781253448379,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2966,17 +2994,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 3.3124999999999907,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.6250781253448379,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3068,17 +3100,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 2.6875000000000093,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.6250781253448379,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3086,17 +3122,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 2.6875000000000093,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.2500781253448379,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3380,17 +3420,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 0.000000000000000000024312080947383117,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0000000000000000000000000000000000000000000000000000000000006052854703857126,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3398,17 +3442,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 3.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.71875,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3684,8 +3732,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 3.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -3693,8 +3743,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 1.71875,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -4962,17 +5014,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 4.046864802988307,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.0470585437584061,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4980,17 +5036,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 4.655911120059081,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.5625587180767921,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4998,17 +5058,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 4.655867849261464,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.1875587180767855,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5114,17 +5178,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -4.6559111200634895,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.5625587180767925,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5132,17 +5200,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -4.046864802988307,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.0470585437571556,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5150,17 +5222,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -4.655867849261175,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.187558718076785,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5266,17 +5342,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -3.3125000000000013,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.6250523072540793,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5284,17 +5364,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -2.6875000000000018,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.6250390612933565,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5302,17 +5386,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -3.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.6250781243641714,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5418,17 +5506,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -1.3125000000000029,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.6250390612933565,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5436,17 +5528,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -0.6875000000000011,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.625,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5454,17 +5550,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -0.9999999999999983,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.6250781193966021,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5570,17 +5670,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 0.6875000000000011,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.625,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5588,17 +5692,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 1.3125000000000029,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.6250390612915998,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5606,17 +5714,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 0.9999999999999984,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.6250781193968374,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5722,17 +5834,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 2.6875000000000018,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.6250390612915998,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5740,17 +5856,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 3.3125000000000013,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.6250523072553298,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5758,17 +5878,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 3.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.6250781243636977,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5874,17 +5998,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 0.000000000000000000018274912584780813,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.25,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5892,17 +6020,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 0.6875,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.25,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5994,17 +6126,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 4.000000000000001,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.2500523072553298,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6012,17 +6148,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 4.046864802988306,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.047058543758406,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6114,17 +6254,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 4.655911120059081,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.5625587180767895,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6132,17 +6276,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 5.655911120059081,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.5625587180767895,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6234,17 +6382,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 5.655911120059081,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.5625587180767895,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6252,17 +6404,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 5.655911120059081,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.00004192739120217362,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6354,17 +6510,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 5.655911120059081,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.00004192739120217364,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6372,17 +6532,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -5.6559111200634895,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.000041927391202173635,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6474,17 +6638,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -5.6559111200634895,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.00004192739120217359,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6492,17 +6660,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -5.6559111200634895,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.5625587180767895,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6594,17 +6766,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -5.6559111200634895,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.5625587180767895,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6612,17 +6788,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -4.6559111200634895,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.5625587180767895,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6714,17 +6894,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -4.046864802988306,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.0470585437571553,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6732,17 +6916,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -4.000000000000001,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.2500523072540792,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6834,17 +7022,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -4.000000000000001,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.2500523072540792,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6852,17 +7044,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -3.312500000000001,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.2500523072540792,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6954,17 +7150,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -3.312500000000001,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.2500523072540792,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6972,17 +7172,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -3.312500000000001,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.6250523072540793,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7074,17 +7278,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 0.6875,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.25,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7092,17 +7300,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 0.6875,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.625,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7194,17 +7406,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -2.6875000000000013,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.6250390612933565,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7212,17 +7428,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -2.6875000000000013,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.2500390612933565,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7314,17 +7534,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -2.6875000000000013,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.2500390612933565,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7332,17 +7556,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -1.312500000000001,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.2500390612933565,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7434,17 +7662,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -1.312500000000001,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.2500390612933565,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7452,17 +7684,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -1.312500000000001,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.6250390612933565,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7554,17 +7790,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -0.6875,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.625,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7572,17 +7812,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -0.6875,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.25,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7674,17 +7918,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -0.6875,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.25,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7692,17 +7940,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -0.00000000000000000041132016653330544,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.25,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7794,17 +8046,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 1.312500000000001,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.6250390612915998,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7812,17 +8068,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 1.312500000000001,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.2500390612915997,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7914,17 +8174,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 1.312500000000001,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.2500390612915997,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7932,17 +8196,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 2.6875000000000013,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.2500390612915997,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -8034,17 +8302,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 2.6875000000000013,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.2500390612915997,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -8052,17 +8324,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 2.6875000000000013,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.6250390612915998,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -8154,17 +8430,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 3.312500000000001,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.6250523072553298,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -8172,17 +8452,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 3.312500000000001,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.2500523072553298,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -8274,17 +8558,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 3.312500000000001,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.2500523072553298,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -8292,17 +8580,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 4.000000000000001,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.2500523072553298,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10216,17 +10508,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 6.78,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -3.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10234,17 +10530,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 6.78,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10252,17 +10552,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 6.78,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10368,17 +10672,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -6.24,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10386,17 +10694,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -6.24,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10404,17 +10716,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -6.24,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10520,17 +10836,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 6.78,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10538,17 +10858,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 6.78,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 3.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10556,17 +10880,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 6.78,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10672,17 +11000,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10690,17 +11022,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -7.35,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -3.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10793,17 +11129,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -6.24,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10811,17 +11151,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -6.24,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10914,17 +11258,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -6.24,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10932,17 +11280,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -6.24,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11035,17 +11387,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11053,17 +11409,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -6.24,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11156,17 +11516,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -7.35,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -3.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11174,17 +11538,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 6.78,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -3.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11276,17 +11644,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 6.78,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11294,17 +11666,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -6.24,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11396,17 +11772,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -6.24,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11414,17 +11794,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 6.78,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11516,17 +11900,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 6.78,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 3.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11534,17 +11922,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -7.35,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 3.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11918,17 +12310,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11936,17 +12332,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -7.35,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 3.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -12039,17 +12439,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 6.78,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -12057,17 +12461,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 6.78,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -12160,17 +12568,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 6.78,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -12178,17 +12590,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 6.78,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -3.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -12281,17 +12697,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -12299,17 +12719,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 6.78,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -12402,17 +12826,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 6.78,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -12420,17 +12848,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 6.78,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 3.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -12523,17 +12955,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 6.78,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -12541,17 +12977,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 6.78,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -12644,17 +13084,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -12662,17 +13106,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 6.78,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -12771,17 +13219,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -7.35,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -3.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -12789,17 +13241,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 6.78,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -3.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -12891,17 +13347,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 6.78,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -3.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -12909,17 +13369,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 6.78,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -12927,17 +13391,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 6.78,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -13043,17 +13511,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 6.78,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -13061,17 +13533,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -6.24,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -13163,17 +13639,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -6.24,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -13181,17 +13661,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -6.24,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -13199,17 +13683,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -6.24,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -13315,17 +13803,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -6.24,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -13333,17 +13825,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 6.78,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -13435,17 +13931,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 6.78,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -13453,17 +13953,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 6.78,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 3.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -13471,17 +13975,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 6.78,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -13587,17 +14095,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": 6.78,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 3.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -13605,17 +14117,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -7.35,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 3.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -13703,8 +14219,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 1.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -13712,8 +14230,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 0.625,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -13723,8 +14243,10 @@ description: Variables in memory after executing cold-plate.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "firstGrooveLeftBottom": {
@@ -13735,8 +14257,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 0.6875,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -13744,8 +14268,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 0.625,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -13758,8 +14284,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 0.6875,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -13767,8 +14295,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 1.25,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -13778,8 +14308,10 @@ description: Variables in memory after executing cold-plate.kcl
     "value": 0.6875,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "firstGrooveRightBottom": {
@@ -13790,8 +14322,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 1.3125,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -13799,8 +14333,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 0.625,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -13813,8 +14349,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 1.3125,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -13822,8 +14360,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 1.25,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -13833,8 +14373,10 @@ description: Variables in memory after executing cold-plate.kcl
     "value": 1.3125,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "grooveFloorZ": {
@@ -13842,8 +14384,10 @@ description: Variables in memory after executing cold-plate.kcl
     "value": 0.625,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "grooveWallHeight": {
@@ -13851,12 +14395,13 @@ description: Variables in memory after executing cold-plate.kcl
     "value": 0.625,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "innerCircle": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "innerCircle"
   },
@@ -13868,8 +14413,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": -1.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -13877,8 +14424,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 0.625,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -13891,8 +14440,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": -1.3125,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -13900,8 +14451,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 0.625,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -13914,8 +14467,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": -1.3125,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -13923,8 +14478,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 1.25,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -13937,8 +14494,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": -0.6875,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -13946,8 +14505,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 0.625,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -13960,8 +14521,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": -0.6875,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -13969,8 +14532,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 1.25,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -13983,8 +14548,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": -4.655846093479077,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -13992,8 +14559,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 1.1876006454679917,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -14006,8 +14575,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": -4.655846093479077,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -14015,8 +14586,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 0.5626006454679917,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -14029,8 +14602,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": -4.046864802988305,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -14038,8 +14613,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 1.047006236503076,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -14052,8 +14629,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": -4.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -14061,8 +14640,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 1.25,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -14075,8 +14656,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": -3.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -14084,8 +14667,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 0.625,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -14098,8 +14683,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": -2.6875,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -14107,8 +14694,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 0.625,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -14121,8 +14710,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": -2.6875,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -14130,8 +14721,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 1.25,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -14144,8 +14737,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": -3.3125,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -14153,8 +14748,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 0.625,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -14167,8 +14764,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": -3.3125,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -14176,124 +14775,103 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 1.25,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
   },
   "line1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line1"
   },
   "line10": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line10"
   },
   "line12": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line12"
   },
   "line13": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line13"
   },
   "line14": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line14"
   },
   "line15": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line15"
   },
   "line16": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line16"
   },
   "line17": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line17"
   },
   "line18": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line18"
   },
   "line19": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line19"
   },
   "line2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line2"
   },
   "line21": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line21"
   },
   "line22": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line22"
   },
   "line23": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line23"
   },
   "line25": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line25"
   },
   "line26": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line26"
   },
   "line3": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line3"
   },
   "line4": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line4"
   },
   "line5": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line5"
   },
   "line6": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line6"
   },
   "line7": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line7"
   },
   "line8": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line8"
   },
   "line9": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line9"
   },
@@ -14305,17 +14883,21 @@ description: Variables in memory after executing cold-plate.kcl
         "value": -5.655846093479077,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0,
         "ty": {
-          "in": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "in"
+          }
         }
       }
     ]
@@ -14328,23 +14910,26 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 5.655846093479077,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0,
         "ty": {
-          "in": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "in"
+          }
         }
       }
     ]
   },
   "outerCircle": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "outerCircle"
   },
@@ -14353,8 +14938,10 @@ description: Variables in memory after executing cold-plate.kcl
     "value": 5.655846093479077,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "outerShoulderLeft": {
@@ -14365,8 +14952,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": -5.655846093479077,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -14374,8 +14963,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 0.5626006454679917,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -14388,8 +14979,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 5.655846093479077,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -14397,8 +14990,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 0.5626006454679917,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -14411,8 +15006,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 4.655846093479077,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -14420,8 +15017,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 1.1876006454679917,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -14431,8 +15030,10 @@ description: Variables in memory after executing cold-plate.kcl
     "value": 4.655846093479077,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "outletArcCenterZ": {
@@ -14440,8 +15041,10 @@ description: Variables in memory after executing cold-plate.kcl
     "value": 1.1876006454679917,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "outletArcEnd": {
@@ -14452,8 +15055,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 4.655846093479077,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -14461,8 +15066,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 0.5626006454679917,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -14472,8 +15079,10 @@ description: Variables in memory after executing cold-plate.kcl
     "value": 4.655846093479077,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "outletArcEndZ": {
@@ -14481,8 +15090,10 @@ description: Variables in memory after executing cold-plate.kcl
     "value": 0.5626006454679917,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "outletArcRadius": {
@@ -14490,17 +15101,21 @@ description: Variables in memory after executing cold-plate.kcl
     "value": 0.625,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "outletRampAngle": {
     "type": "Number",
     "value": 77.0,
     "ty": {
-      "degrees": null,
       "type": "Known",
-      "type": "Angle"
+      "value": {
+        "type": "Angle",
+        "value": "degrees"
+      }
     }
   },
   "outletRampDrop": {
@@ -14508,8 +15123,10 @@ description: Variables in memory after executing cold-plate.kcl
     "value": 0.20299376349692402,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "outletRampLength": {
@@ -14517,8 +15134,10 @@ description: Variables in memory after executing cold-plate.kcl
     "value": 0.20833333333333334,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "outletRampRun": {
@@ -14526,8 +15145,10 @@ description: Variables in memory after executing cold-plate.kcl
     "value": 0.04686480298830524,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "outletStraightLength": {
@@ -14535,8 +15156,10 @@ description: Variables in memory after executing cold-plate.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "plateLength": {
@@ -14544,8 +15167,10 @@ description: Variables in memory after executing cold-plate.kcl
     "value": 10.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "plateTopZ": {
@@ -14553,8 +15178,10 @@ description: Variables in memory after executing cold-plate.kcl
     "value": 1.25,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "rampEnd": {
@@ -14565,8 +15192,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 4.046864802988305,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -14574,8 +15203,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 1.047006236503076,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -14585,8 +15216,10 @@ description: Variables in memory after executing cold-plate.kcl
     "value": 4.046864802988305,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "rampEndZ": {
@@ -14594,8 +15227,10 @@ description: Variables in memory after executing cold-plate.kcl
     "value": 1.047006236503076,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "rampStart": {
@@ -14606,8 +15241,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 4.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -14615,8 +15252,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 1.25,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -14626,8 +15265,10 @@ description: Variables in memory after executing cold-plate.kcl
     "value": 4.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "secondGrooveCenter": {
@@ -14638,8 +15279,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 3.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -14647,8 +15290,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 0.625,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -14658,8 +15303,10 @@ description: Variables in memory after executing cold-plate.kcl
     "value": 3.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "secondGrooveLeftBottom": {
@@ -14670,8 +15317,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 2.6875,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -14679,8 +15328,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 0.625,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -14693,8 +15344,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 2.6875,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -14702,8 +15355,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 1.25,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -14713,8 +15368,10 @@ description: Variables in memory after executing cold-plate.kcl
     "value": 2.6875,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "secondGrooveRightBottom": {
@@ -14725,8 +15382,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 3.3125,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -14734,8 +15393,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 0.625,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -14748,8 +15409,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 3.3125,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -14757,8 +15420,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 1.25,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -14768,8 +15433,10 @@ description: Variables in memory after executing cold-plate.kcl
     "value": 3.3125,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "topCenter": {
@@ -14779,9 +15446,11 @@ description: Variables in memory after executing cold-plate.kcl
         "type": "Number",
         "value": 0.0,
         "ty": {
-          "in": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "in"
+          }
         }
       },
       {
@@ -14789,8 +15458,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 1.25,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -14800,8 +15471,10 @@ description: Variables in memory after executing cold-plate.kcl
     "value": 0.625,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "tubeInletSectionCenter": {
@@ -14812,8 +15485,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": -3.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -14821,8 +15496,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 0.625,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -14835,8 +15512,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": -7.35,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -14844,8 +15523,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": -3.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -14855,8 +15536,10 @@ description: Variables in memory after executing cold-plate.kcl
     "value": -7.35,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "tubeInnerRadius": {
@@ -14864,8 +15547,10 @@ description: Variables in memory after executing cold-plate.kcl
     "value": 0.23249999999999998,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "tubeLeftLoopCenter": {
@@ -14876,17 +15561,21 @@ description: Variables in memory after executing cold-plate.kcl
         "value": -6.24,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0,
         "ty": {
-          "in": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "in"
+          }
         }
       }
     ]
@@ -14896,8 +15585,10 @@ description: Variables in memory after executing cold-plate.kcl
     "value": -6.24,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "tubeLeftMiddlePassEnd": {
@@ -14908,8 +15599,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": -6.24,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -14917,8 +15610,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": -1.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -14931,8 +15626,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": -6.24,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -14940,8 +15637,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 1.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -14951,8 +15650,10 @@ description: Variables in memory after executing cold-plate.kcl
     "value": -2.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "tubeLowerMiddlePassY": {
@@ -14960,8 +15661,10 @@ description: Variables in memory after executing cold-plate.kcl
     "value": -1.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "tubeLowerPassY": {
@@ -14969,8 +15672,10 @@ description: Variables in memory after executing cold-plate.kcl
     "value": -3.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "tubeOuterRadius": {
@@ -14978,8 +15683,10 @@ description: Variables in memory after executing cold-plate.kcl
     "value": 0.3125,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "tubeOutletEnd": {
@@ -14990,8 +15697,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": -7.35,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -14999,8 +15708,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 3.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -15010,8 +15721,10 @@ description: Variables in memory after executing cold-plate.kcl
     "value": 6.78,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "tubeRightLowerLoopCenter": {
@@ -15022,8 +15735,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 6.78,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -15031,8 +15746,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": -2.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -15045,8 +15762,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 6.78,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -15054,8 +15773,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": -1.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -15068,8 +15789,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 6.78,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -15077,8 +15800,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": -3.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -15091,8 +15816,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 6.78,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -15100,8 +15827,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 2.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -15114,8 +15843,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 6.78,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -15123,8 +15854,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 3.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -15137,8 +15870,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 6.78,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -15146,8 +15881,10 @@ description: Variables in memory after executing cold-plate.kcl
         "value": 1.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -15299,17 +16036,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -0.000000000010000000507403662,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.000000000045000001971300284,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -15317,17 +16058,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -3.00000000002,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.62500000009,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -15420,17 +16165,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -2.7675000000475,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.62500000018,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -15438,17 +16187,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -3.000000000035,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.62500000015,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -15540,17 +16293,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -3.00000000004,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.625000000165,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -15558,17 +16315,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -2.767500000045,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.625000000175,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -15814,17 +16575,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -2.6875000000425,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.62500000016,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -15832,17 +16597,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -3.00000000003,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.62500000013,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -15934,17 +16703,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -3.000000000035,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.625000000145,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -15952,17 +16725,21 @@ description: Variables in memory after executing cold-plate.kcl
                       {
                         "n": -2.68750000004,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.625000000155,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -16049,8 +16826,10 @@ description: Variables in memory after executing cold-plate.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "tubeUpperMiddlePassY": {
@@ -16058,8 +16837,10 @@ description: Variables in memory after executing cold-plate.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "tubeUpperPassY": {
@@ -16067,8 +16848,10 @@ description: Variables in memory after executing cold-plate.kcl
     "value": 3.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "tubeWall": {
@@ -16392,8 +17175,10 @@ description: Variables in memory after executing cold-plate.kcl
     "value": 0.08,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   }
 }

@@ -1,22 +1,32 @@
 import { isolateHistory } from '@codemirror/commands'
-import { createTwoFilesPatch } from 'diff'
-import { applyPatch, parsePatch } from 'diff'
-import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
-
-import {
-  type ZookeeperEditPatch,
-  buildZookeeperHistoryExtension,
-  mergeZookeeperEditPatches,
-  zookeeperEditPatchHistoryEvent,
-} from '@src/lib/zookeeper/editorPlugin'
 import { File, KclManager, type ZDSProject } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
-import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
-import fsZds from '@src/lib/fs-zds'
+import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
+import {
+  buildZookeeperHistoryExtension as buildZookeeperHistoryExtensionWithFileOperations,
+  mergeZookeeperEditPatches,
+  type ZookeeperEditPatch,
+  zookeeperEditPatchHistoryEvent,
+} from '@src/lib/zookeeper/editorPlugin'
 import { createTestWasmRegistryItem } from '@src/unitTestUtils'
+import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
+import { applyPatch, createTwoFilesPatch, parsePatch } from 'diff'
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 
 const apps: App[] = []
+
+const buildZookeeperHistoryExtension = (
+  args: Omit<
+    Parameters<typeof buildZookeeperHistoryExtensionWithFileOperations>[0],
+    'fileOperations'
+  >
+) => {
+  return buildZookeeperHistoryExtensionWithFileOperations({
+    ...args,
+    fileOperations: testFileOperations,
+  })
+}
 const historyDisposers: Array<() => void> = []
 
 beforeAll(async () => {

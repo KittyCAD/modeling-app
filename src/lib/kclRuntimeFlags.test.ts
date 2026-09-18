@@ -1,6 +1,7 @@
 import type { Feature } from '@kittycad/lib'
 import type { KclRuntimeFlags } from '@rust/kcl-lib/bindings/KclRuntimeFlags'
 import {
+  ENABLE_Z0006_LINT_FLAG,
   KCL_CEK_EXECUTOR_FEATURE_FLAG,
   KCL_NEW_LEXER_PARSER_FEATURE_FLAG,
 } from '@src/lib/constants'
@@ -24,12 +25,15 @@ function userFeaturesWith(features: Set<Feature>) {
 }
 
 describe('kcl runtime flags', () => {
-  it('maps an enabled TS feature to On', () => {
+  it('maps enabled TS features to On', () => {
     expect(
       kclRuntimeFlagsFromUserFeatures(
-        userFeaturesWith(new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG]))
+        userFeaturesWith(
+          new Set([ENABLE_Z0006_LINT_FLAG, KCL_NEW_LEXER_PARSER_FEATURE_FLAG])
+        )
       )
     ).toEqual({
+      enable_z0006_lint: 'On',
       use_cek_executor: 'Off',
       use_new_lexer_parser: 'On',
     })
@@ -41,6 +45,7 @@ describe('kcl runtime flags', () => {
         userFeaturesWith(new Set([KCL_CEK_EXECUTOR_FEATURE_FLAG]))
       )
     ).toEqual({
+      enable_z0006_lint: 'Off',
       use_cek_executor: 'On',
       use_new_lexer_parser: 'Off',
     })
@@ -50,6 +55,7 @@ describe('kcl runtime flags', () => {
     expect(
       kclRuntimeFlagsFromUserFeatures(userFeaturesWith(new Set()))
     ).toEqual({
+      enable_z0006_lint: 'Off',
       use_cek_executor: 'Off',
       use_new_lexer_parser: 'Off',
     })
@@ -67,6 +73,7 @@ describe('kcl runtime flags', () => {
 
     expect(wasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
       JSON.stringify({
+        enable_z0006_lint: 'Off',
         use_cek_executor: 'Off',
         use_new_lexer_parser: 'On',
       })
@@ -77,6 +84,7 @@ describe('kcl runtime flags', () => {
 describe('kclRuntimeFlagsEqual', () => {
   it('is true only when both flags match', () => {
     const flags: KclRuntimeFlags = {
+      enable_z0006_lint: 'Off',
       use_cek_executor: 'On',
       use_new_lexer_parser: 'Off',
     }
@@ -94,6 +102,7 @@ describe('kclRuntimeFlagsEqual', () => {
       future_flag: 'Off' | 'On'
     }
     const flags: ExtendedKclRuntimeFlags = {
+      enable_z0006_lint: 'Off',
       use_cek_executor: 'On',
       use_new_lexer_parser: 'Off',
       future_flag: 'On',
@@ -107,6 +116,7 @@ describe('kclRuntimeFlagsEqual', () => {
     expect(
       kclRuntimeFlagsEqual(flags, {
         use_cek_executor: 'On',
+        enable_z0006_lint: 'Off',
         use_new_lexer_parser: 'Off',
       })
     ).toBe(false)
@@ -151,6 +161,7 @@ describe('waitForSettledKclRuntimeFlags', () => {
     settleWith(new Set([KCL_CEK_EXECUTOR_FEATURE_FLAG]))
 
     expect(await waitForSettledKclRuntimeFlags(userFeatures)).toEqual({
+      enable_z0006_lint: 'Off',
       use_cek_executor: 'On',
       use_new_lexer_parser: 'Off',
     })
@@ -171,6 +182,7 @@ describe('waitForSettledKclRuntimeFlags', () => {
 
     settleWith(new Set([KCL_CEK_EXECUTOR_FEATURE_FLAG]))
     expect(await pending).toEqual({
+      enable_z0006_lint: 'Off',
       use_cek_executor: 'On',
       use_new_lexer_parser: 'Off',
     })

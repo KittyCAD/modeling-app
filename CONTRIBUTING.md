@@ -57,16 +57,6 @@ npm run build:wasm
 npm run build:wasm:windows
 ```
 
-Or if you have the `gh` cli installed and want to download the latest main wasm bundle. Note that on Windows, you need to associate .ps1 files with PowerShell, which can be done via the right click menu, selecting `C:\Program Files\PowerShell\7\pwsh.exe`, and you can install tools like `gh` via `npm run install:tools:windows`.
-
-```
-# macOS/Linux
-npm run fetch:wasm
-
-# Windows
-npm run fetch:wasm:windows
-```
-
 That will build the Wasm binary and put in the `public` dir (though gitignored).
 
 Finally, to build the desktop app locally, pointing to our production zoo.dev infrastructure, accessible to everyone, run:

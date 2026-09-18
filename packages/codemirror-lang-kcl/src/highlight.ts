@@ -32,7 +32,7 @@ export const kclHighlight = styleTags({
   'Parameter/VariableDefinition': t.attributeName,
   'LabeledArgument/ArgumentLabel': t.attributeName,
   TagDeclarator: t.tagName,
-  PrimitiveType: t.typeName,
+  TypeName: t.typeName,
   // An enum variant is a value, not a type: `Color::Red` appears where values
   // appear. Modifying `variableName` rather than using a tag of its own means it
   // inherits the theme's variable colour instead of rendering unstyled.

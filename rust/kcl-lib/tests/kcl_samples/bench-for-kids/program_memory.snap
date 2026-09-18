@@ -288,8 +288,10 @@ description: Variables in memory after executing bench-for-kids.kcl
                 "n": 4.32,
                 "ty": {
                   "type": "Default",
-                  "len": "cm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "cm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -452,8 +454,10 @@ description: Variables in memory after executing bench-for-kids.kcl
                 "n": 4.32,
                 "ty": {
                   "type": "Default",
-                  "len": "cm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "cm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -616,8 +620,10 @@ description: Variables in memory after executing bench-for-kids.kcl
                 "n": 4.32,
                 "ty": {
                   "type": "Default",
-                  "len": "cm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "cm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -780,8 +786,10 @@ description: Variables in memory after executing bench-for-kids.kcl
                 "n": 4.32,
                 "ty": {
                   "type": "Default",
-                  "len": "cm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "cm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -796,7 +804,6 @@ description: Variables in memory after executing bench-for-kids.kcl
   },
   "arc1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc1"
   },
   "benchLength": {
@@ -804,8 +811,10 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 80.0,
     "ty": {
       "type": "Default",
-      "len": "cm",
-      "angle": "degrees"
+      "value": {
+        "len": "cm",
+        "angle": "degrees"
+      }
     }
   },
   "benchSeatElevation": {
@@ -813,8 +822,10 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 15.0,
     "ty": {
       "type": "Default",
-      "len": "cm",
-      "angle": "degrees"
+      "value": {
+        "len": "cm",
+        "angle": "degrees"
+      }
     }
   },
   "benchSeatRadius": {
@@ -822,8 +833,10 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 20.0,
     "ty": {
       "type": "Default",
-      "len": "cm",
-      "angle": "degrees"
+      "value": {
+        "len": "cm",
+        "angle": "degrees"
+      }
     }
   },
   "benchWidth": {
@@ -831,12 +844,13 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 40.0,
     "ty": {
       "type": "Default",
-      "len": "cm",
-      "angle": "degrees"
+      "value": {
+        "len": "cm",
+        "angle": "degrees"
+      }
     }
   },
   "circle1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "circle1"
   },
@@ -992,8 +1006,10 @@ description: Variables in memory after executing bench-for-kids.kcl
             "n": 3.8880000000000003,
             "ty": {
               "type": "Default",
-              "len": "cm",
-              "angle": "degrees"
+              "value": {
+                "len": "cm",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -1006,7 +1022,6 @@ description: Variables in memory after executing bench-for-kids.kcl
   },
   "earCapEnd": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "earCapEnd"
   },
   "earDistance": {
@@ -1014,8 +1029,10 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 16.0,
     "ty": {
       "type": "Default",
-      "len": "cm",
-      "angle": "degrees"
+      "value": {
+        "len": "cm",
+        "angle": "degrees"
+      }
     }
   },
   "earElevation": {
@@ -1023,8 +1040,10 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 31.5,
     "ty": {
       "type": "Default",
-      "len": "cm",
-      "angle": "degrees"
+      "value": {
+        "len": "cm",
+        "angle": "degrees"
+      }
     }
   },
   "earFilletRadius": {
@@ -1032,8 +1051,10 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 3.8880000000000003,
     "ty": {
       "type": "Default",
-      "len": "cm",
-      "angle": "degrees"
+      "value": {
+        "len": "cm",
+        "angle": "degrees"
+      }
     }
   },
   "earHeight": {
@@ -1041,8 +1062,10 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 20.0,
     "ty": {
       "type": "Default",
-      "len": "cm",
-      "angle": "degrees"
+      "value": {
+        "len": "cm",
+        "angle": "degrees"
+      }
     }
   },
   "earOffsetForward": {
@@ -1050,8 +1073,10 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 32.0,
     "ty": {
       "type": "Default",
-      "len": "cm",
-      "angle": "degrees"
+      "value": {
+        "len": "cm",
+        "angle": "degrees"
+      }
     }
   },
   "earPlane": {
@@ -1104,17 +1129,21 @@ description: Variables in memory after executing bench-for-kids.kcl
                       {
                         "n": 4.32,
                         "ty": {
-                          "cm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "cm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "cm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "cm"
+                          }
                         }
                       }
                     ],
@@ -1122,17 +1151,21 @@ description: Variables in memory after executing bench-for-kids.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "cm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "cm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "cm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "cm"
+                          }
                         }
                       }
                     ],
@@ -1320,8 +1353,10 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 4.32,
     "ty": {
       "type": "Default",
-      "len": "cm",
-      "angle": "degrees"
+      "value": {
+        "len": "cm",
+        "angle": "degrees"
+      }
     }
   },
   "earRegion": {
@@ -1429,8 +1464,10 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 13.0,
     "ty": {
       "type": "Default",
-      "len": "cm",
-      "angle": "degrees"
+      "value": {
+        "len": "cm",
+        "angle": "degrees"
+      }
     }
   },
   "ears": {
@@ -1588,8 +1625,10 @@ description: Variables in memory after executing bench-for-kids.kcl
                 "n": 3.8880000000000003,
                 "ty": {
                   "type": "Default",
-                  "len": "cm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "cm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -1752,8 +1791,10 @@ description: Variables in memory after executing bench-for-kids.kcl
                 "n": 3.8880000000000003,
                 "ty": {
                   "type": "Default",
-                  "len": "cm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "cm",
+                    "angle": "degrees"
+                  }
                 }
               },
               "edgeId": "[uuid]",
@@ -1918,8 +1959,10 @@ description: Variables in memory after executing bench-for-kids.kcl
             "n": 4.32,
             "ty": {
               "type": "Default",
-              "len": "cm",
-              "angle": "degrees"
+              "value": {
+                "len": "cm",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -2082,8 +2125,10 @@ description: Variables in memory after executing bench-for-kids.kcl
             "n": 4.32,
             "ty": {
               "type": "Default",
-              "len": "cm",
-              "angle": "degrees"
+              "value": {
+                "len": "cm",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -2096,7 +2141,6 @@ description: Variables in memory after executing bench-for-kids.kcl
   },
   "legCapStart": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "legCapStart"
   },
   "legChassisLength": {
@@ -2104,8 +2148,10 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 64.0,
     "ty": {
       "type": "Default",
-      "len": "cm",
-      "angle": "degrees"
+      "value": {
+        "len": "cm",
+        "angle": "degrees"
+      }
     }
   },
   "legChassisWidth": {
@@ -2113,8 +2159,10 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 24.0,
     "ty": {
       "type": "Default",
-      "len": "cm",
-      "angle": "degrees"
+      "value": {
+        "len": "cm",
+        "angle": "degrees"
+      }
     }
   },
   "legExtrudedBody": {
@@ -2270,8 +2318,10 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 4.32,
     "ty": {
       "type": "Default",
-      "len": "cm",
-      "angle": "degrees"
+      "value": {
+        "len": "cm",
+        "angle": "degrees"
+      }
     }
   },
   "legHeight": {
@@ -2279,8 +2329,10 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 16.5,
     "ty": {
       "type": "Default",
-      "len": "cm",
-      "angle": "degrees"
+      "value": {
+        "len": "cm",
+        "angle": "degrees"
+      }
     }
   },
   "legRadius": {
@@ -2288,8 +2340,10 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 4.8,
     "ty": {
       "type": "Default",
-      "len": "cm",
-      "angle": "degrees"
+      "value": {
+        "len": "cm",
+        "angle": "degrees"
+      }
     }
   },
   "legRegion": {
@@ -2409,17 +2463,21 @@ description: Variables in memory after executing bench-for-kids.kcl
                       {
                         "n": -4.8,
                         "ty": {
-                          "cm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "cm"
+                          }
                         }
                       },
                       {
                         "n": 0.0000000000000000015679998468427628,
                         "ty": {
-                          "cm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "cm"
+                          }
                         }
                       }
                     ],
@@ -2427,17 +2485,21 @@ description: Variables in memory after executing bench-for-kids.kcl
                       {
                         "n": 0.000000000000000021871006120481774,
                         "ty": {
-                          "cm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "cm"
+                          }
                         }
                       },
                       {
                         "n": 0.0000000000000000012740000048067155,
                         "ty": {
-                          "cm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "cm"
+                          }
                         }
                       }
                     ],
@@ -2529,17 +2591,21 @@ description: Variables in memory after executing bench-for-kids.kcl
                       {
                         "n": -4.8,
                         "ty": {
-                          "cm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "cm"
+                          }
                         }
                       },
                       {
                         "n": 0.0000000000000000013580001960114754,
                         "ty": {
-                          "cm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "cm"
+                          }
                         }
                       }
                     ],
@@ -2547,17 +2613,21 @@ description: Variables in memory after executing bench-for-kids.kcl
                       {
                         "n": 0.00000000000000001812201182615464,
                         "ty": {
-                          "cm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "cm"
+                          }
                         }
                       },
                       {
                         "n": 0.0000000000000000009380000671682882,
                         "ty": {
-                          "cm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "cm"
+                          }
                         }
                       }
                     ],
@@ -2743,7 +2813,6 @@ description: Variables in memory after executing bench-for-kids.kcl
   },
   "line1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line1"
   },
   "seatBody": {
@@ -2917,8 +2986,10 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 35.0,
     "ty": {
       "type": "Default",
-      "len": "cm",
-      "angle": "degrees"
+      "value": {
+        "len": "cm",
+        "angle": "degrees"
+      }
     }
   },
   "seatProfile": {
@@ -2938,17 +3009,21 @@ description: Variables in memory after executing bench-for-kids.kcl
                       {
                         "n": 20.0,
                         "ty": {
-                          "cm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "cm"
+                          }
                         }
                       },
                       {
                         "n": 15.0,
                         "ty": {
-                          "cm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "cm"
+                          }
                         }
                       }
                     ],
@@ -2956,17 +3031,21 @@ description: Variables in memory after executing bench-for-kids.kcl
                       {
                         "n": -20.0,
                         "ty": {
-                          "cm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "cm"
+                          }
                         }
                       },
                       {
                         "n": 15.0,
                         "ty": {
-                          "cm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "cm"
+                          }
                         }
                       }
                     ],
@@ -2974,17 +3053,21 @@ description: Variables in memory after executing bench-for-kids.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "cm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "cm"
+                          }
                         }
                       },
                       {
                         "n": 15.0,
                         "ty": {
-                          "cm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "cm"
+                          }
                         }
                       }
                     ],
@@ -3090,17 +3173,21 @@ description: Variables in memory after executing bench-for-kids.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "cm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "cm"
+                          }
                         }
                       },
                       {
                         "n": 15.0,
                         "ty": {
-                          "cm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "cm"
+                          }
                         }
                       }
                     ],
@@ -3108,17 +3195,21 @@ description: Variables in memory after executing bench-for-kids.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "cm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "cm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "cm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "cm"
+                          }
                         }
                       }
                     ],
@@ -3211,17 +3302,21 @@ description: Variables in memory after executing bench-for-kids.kcl
                       {
                         "n": 20.0,
                         "ty": {
-                          "cm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "cm"
+                          }
                         }
                       },
                       {
                         "n": 15.0,
                         "ty": {
-                          "cm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "cm"
+                          }
                         }
                       }
                     ],
@@ -3229,17 +3324,21 @@ description: Variables in memory after executing bench-for-kids.kcl
                       {
                         "n": -20.0,
                         "ty": {
-                          "cm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "cm"
+                          }
                         }
                       },
                       {
                         "n": 15.0,
                         "ty": {
-                          "cm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "cm"
+                          }
                         }
                       }
                     ],
@@ -3726,8 +3825,10 @@ description: Variables in memory after executing bench-for-kids.kcl
             "n": 3.4992000000000005,
             "ty": {
               "type": "Default",
-              "len": "cm",
-              "angle": "degrees"
+              "value": {
+                "len": "cm",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -3740,7 +3841,6 @@ description: Variables in memory after executing bench-for-kids.kcl
   },
   "tailCapStart": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "tailCapStart"
   },
   "tailElevation": {
@@ -3748,8 +3848,10 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 33.0,
     "ty": {
       "type": "Default",
-      "len": "cm",
-      "angle": "degrees"
+      "value": {
+        "len": "cm",
+        "angle": "degrees"
+      }
     }
   },
   "tailFilletRadius": {
@@ -3757,8 +3859,10 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 3.4992000000000005,
     "ty": {
       "type": "Default",
-      "len": "cm",
-      "angle": "degrees"
+      "value": {
+        "len": "cm",
+        "angle": "degrees"
+      }
     }
   },
   "tailLength": {
@@ -3766,8 +3870,10 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 24.0,
     "ty": {
       "type": "Default",
-      "len": "cm",
-      "angle": "degrees"
+      "value": {
+        "len": "cm",
+        "angle": "degrees"
+      }
     }
   },
   "tailPlane": {
@@ -3820,17 +3926,21 @@ description: Variables in memory after executing bench-for-kids.kcl
                       {
                         "n": 3.89,
                         "ty": {
-                          "cm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "cm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "cm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "cm"
+                          }
                         }
                       }
                     ],
@@ -3838,17 +3948,21 @@ description: Variables in memory after executing bench-for-kids.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "cm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "cm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "cm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "cm"
+                          }
                         }
                       }
                     ],
@@ -4036,8 +4150,10 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": 3.8880000000000003,
     "ty": {
       "type": "Default",
-      "len": "cm",
-      "angle": "degrees"
+      "value": {
+        "len": "cm",
+        "angle": "degrees"
+      }
     }
   },
   "tailRegion": {

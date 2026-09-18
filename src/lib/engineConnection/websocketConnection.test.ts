@@ -14,6 +14,7 @@ import { createOnWebSocketMessage } from '@src/lib/engineConnection/websocketCon
 
 const disconnectAll = vi.fn()
 const tearDownManager = vi.fn()
+const getConnectionContext = vi.fn()
 
 const createMessageHandler = (
   cloudProjectId?: string,
@@ -24,6 +25,7 @@ const createMessageHandler = (
     setPong: vi.fn(),
     dispatchEvent: vi.fn(() => true),
     ping: vi.fn(),
+    setPing: vi.fn(),
     createPeerConnection: vi.fn(),
     send: vi.fn(),
     setSdpAnswer: vi.fn(),
@@ -34,6 +36,7 @@ const createMessageHandler = (
     sdpAnswerReject: vi.fn(),
     setApiCallId: vi.fn(),
     getCloudProjectId: () => cloudProjectId,
+    getConnectionContext,
     tearDownManager,
     requestReconnect,
   })
@@ -52,6 +55,10 @@ const dispatchFailureMessage = (message: string, cloudProjectId?: string) => {
 describe('createOnWebSocketMessage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    getConnectionContext.mockReturnValue({
+      connectionId: 'local-attempt',
+      modelingApiCallId: 'server-session',
+    })
     vi.spyOn(console, 'error').mockImplementation(() => {})
     vi.spyOn(console, 'warn').mockImplementation(() => {})
   })
@@ -89,7 +96,13 @@ describe('createOnWebSocketMessage', () => {
     expect(requestReconnect).not.toHaveBeenCalled()
   })
 
-  it('reports backend Engine disconnect failures with the cloud project ID', () => {
+  it('reports backend Engine disconnect identity captured before teardown', () => {
+    tearDownManager.mockImplementationOnce(() => {
+      getConnectionContext.mockReturnValue({
+        connectionId: 'replacement-attempt',
+        modelingApiCallId: 'replacement-session',
+      })
+    })
     dispatchFailureMessage(
       'modeling connection interrupted; please reconnect and retry',
       'cloud-project-123'
@@ -108,6 +121,8 @@ describe('createOnWebSocketMessage', () => {
       code: 'engine_backend_disconnect',
       message: 'modeling connection interrupted; please reconnect and retry',
       extra: {
+        connectionId: 'local-attempt',
+        modelingApiCallId: 'server-session',
         source: 'EngineWebSocket',
         errorCode: 'internal_api',
         cloudProjectId: 'cloud-project-123',
@@ -124,6 +139,8 @@ describe('createOnWebSocketMessage', () => {
       code: 'engine_backend_disconnect',
       message: 'modeling connection interrupted; please reconnect and retry',
       extra: {
+        connectionId: 'local-attempt',
+        modelingApiCallId: 'server-session',
         source: 'EngineWebSocket',
         errorCode: 'internal_api',
       },

@@ -536,8 +536,10 @@ description: Variables in memory after executing i_shape.kcl
     "value": 5.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "d_wrist_circumference": {
@@ -548,8 +550,10 @@ description: Variables in memory after executing i_shape.kcl
         "value": 22.8,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -557,8 +561,10 @@ description: Variables in memory after executing i_shape.kcl
         "value": 10.7,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -566,8 +572,10 @@ description: Variables in memory after executing i_shape.kcl
         "value": 16.4,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -575,8 +583,10 @@ description: Variables in memory after executing i_shape.kcl
         "value": 18.5,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -1510,8 +1520,10 @@ description: Variables in memory after executing i_shape.kcl
     "value": 24.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "inner": {
@@ -1735,8 +1747,10 @@ description: Variables in memory after executing i_shape.kcl
     "value": 120.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "width": {
@@ -1744,8 +1758,10 @@ description: Variables in memory after executing i_shape.kcl
     "value": 68.4,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   }
 }
