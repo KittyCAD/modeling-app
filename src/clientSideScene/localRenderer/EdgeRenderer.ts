@@ -1,5 +1,4 @@
 import { LOCAL_WEBGPU_EDGE_LINE_WIDTH_PX } from '@src/clientSideScene/localRenderer/config'
-import type { LocalRenderPacketEdge } from '@src/clientSideScene/localRenderer/renderPacketBinary'
 import { Color, Group, Object3D } from 'three'
 import { LineSegmentsGeometry } from 'three/examples/jsm/lines/LineSegmentsGeometry.js'
 import { LineSegments2 } from 'three/examples/jsm/lines/webgpu/LineSegments2.js'
@@ -8,25 +7,12 @@ import { Line2NodeMaterial } from 'three/webgpu'
 const LIGHT_THEME_EDGE_COLOR = new Color(0x1c1c1c)
 const DARK_THEME_EDGE_COLOR = new Color(0xf9f9f9)
 
-export type EdgeSegmentRange = {
-  firstSegment: number
-  segmentCount: number
-}
-
-export type EdgeSelectionTarget = {
-  packetIndex: number
-  object: Object3D
-}
-
 export class EdgeRenderer {
   readonly lines: LineSegments2
 
   private readonly group = new Group()
   private readonly geometry = new LineSegmentsGeometry()
   private readonly material: Line2NodeMaterial
-  private segmentToEdgeIndex = new Uint32Array()
-  private edgeObjects: Object3D[] = []
-  private edgeSegmentRanges = new Map<string, EdgeSegmentRange>()
 
   constructor(backgroundColor: string, visible = true) {
     this.material = new Line2NodeMaterial({
@@ -47,60 +33,9 @@ export class EdgeRenderer {
     this.group.visible = visible
   }
 
-  setEdges(edges: LocalRenderPacketEdge[]) {
-    this.geometry.dispose()
-    this.group.clear()
-
-    const renderableEdges = edges
-      .map((edge, packetIndex) => ({ edge, packetIndex }))
-      .filter(({ edge }) => edge.positions.length >= 6)
-    const segmentCount = renderableEdges.reduce(
-      (count, { edge }) => count + Math.floor(edge.positions.length / 3) - 1,
-      0
-    )
-    const segmentPositions = new Float32Array(segmentCount * 6)
-    this.segmentToEdgeIndex = new Uint32Array(segmentCount)
-    this.edgeObjects = []
-    this.edgeSegmentRanges.clear()
-    const selectionTargets: EdgeSelectionTarget[] = []
-
-    let segmentOffset = 0
-    renderableEdges.forEach(({ edge, packetIndex }, edgeOffset) => {
-      const firstSegment = segmentOffset
-      const pointCount = Math.floor(edge.positions.length / 3)
-      for (let pointOffset = 0; pointOffset < pointCount - 1; pointOffset++) {
-        const sourceOffset = pointOffset * 3
-        segmentPositions.set(
-          edge.positions.subarray(sourceOffset, sourceOffset + 6),
-          segmentOffset * 6
-        )
-        this.segmentToEdgeIndex[segmentOffset] = edgeOffset
-        segmentOffset += 1
-      }
-
-      this.edgeSegmentRanges.set(edge.edgeId, {
-        firstSegment,
-        segmentCount: segmentOffset - firstSegment,
-      })
-
-      const edgeObject = new Object3D()
-      edgeObject.name = `edge_${edge.edgeIndex}`
-      this.edgeObjects.push(edgeObject)
-      selectionTargets.push({ packetIndex, object: edgeObject })
-      this.group.add(edgeObject)
-    })
-
-    if (segmentCount > 0) {
-      this.geometry.setPositions(segmentPositions)
-      this.group.add(this.lines)
-    }
-    return selectionTargets
-  }
-
   addTo(parent: Object3D) {
-    if (this.segmentToEdgeIndex.length > 0) {
-      parent.add(this.group)
-    }
+    this.group.add(this.lines)
+    parent.add(this.group)
   }
 
   removeFromParent() {
@@ -109,17 +44,6 @@ export class EdgeRenderer {
 
   isLineObject(object: Object3D) {
     return object === this.lines
-  }
-
-  getEdgeObjectForSegment(segmentIndex: number) {
-    const edgeOffset = this.segmentToEdgeIndex[segmentIndex]
-    return edgeOffset === undefined
-      ? null
-      : (this.edgeObjects[edgeOffset] ?? null)
-  }
-
-  getSegmentRange(edgeId: string) {
-    return this.edgeSegmentRanges.get(edgeId) ?? null
   }
 
   setBackgroundColor(backgroundColor: string) {
@@ -135,9 +59,6 @@ export class EdgeRenderer {
     this.group.clear()
     this.geometry.dispose()
     this.material.dispose()
-    this.segmentToEdgeIndex = new Uint32Array()
-    this.edgeObjects = []
-    this.edgeSegmentRanges.clear()
   }
 }
 

@@ -13,9 +13,6 @@ import type {
   ApiVersion,
   ConstraintLabelPositionEdit,
   ExistingSegmentCtor,
-  FrontendRenderPacket,
-  FrontendRenderPacketMetadata,
-  FrontendRenderPacketSketchSegment,
   Number,
   SetProgramOutcome as RustSetProgramOutcome,
   SceneGraphDelta,
@@ -25,19 +22,7 @@ import type {
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
-import type {
-  OutputFormat3d,
-  RenderPacketBinarySection,
-  RenderPacketBinarySections,
-  RenderPacketBodyMaterial,
-  RenderPacketEdge,
-  RenderPacketPrimitive,
-  RenderPacketRegion,
-  RenderPacketRegionLoop,
-  RenderPacketTrimLoop,
-  RenderPacketTrimMode,
-  RenderPacketVertexLayout,
-} from '@rust/kcl-lib/bindings/ModelingCmd'
+import type { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 import { type Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
@@ -58,22 +43,6 @@ import type { DeepPartial } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import toast from 'react-hot-toast'
-
-export type {
-  FrontendRenderPacket as RenderPacket,
-  FrontendRenderPacketMetadata as RenderPacketMetadata,
-  RenderPacketBinarySection,
-  RenderPacketBinarySections,
-  RenderPacketBodyMaterial,
-  RenderPacketEdge,
-  RenderPacketPrimitive,
-  RenderPacketRegion,
-  RenderPacketRegionLoop,
-  FrontendRenderPacketSketchSegment as RenderPacketSketchSegment,
-  RenderPacketTrimLoop,
-  RenderPacketTrimMode,
-  RenderPacketVertexLayout,
-}
 
 export default class RustContext {
   private rustInstance: ModuleType | null = null
@@ -242,27 +211,6 @@ export default class RustContext {
         JSON.stringify(format),
         JSON.stringify(settings)
       )
-    } catch (e: any) {
-      const parsed: RustKclError = JSON.parse(e.toString())
-      if (toastId) {
-        toast.error(parsed.details.msg, { id: toastId })
-      }
-      return
-    }
-  }
-
-  /** Export a scene to a browser render packet. */
-  async exportRenderPacket(
-    settings: DeepPartial<Configuration>,
-    toastId?: string
-  ): Promise<FrontendRenderPacket | undefined> {
-    const instance = await this._checkContextInstance()
-
-    try {
-      const wasmContext = instance as unknown as {
-        exportRenderPacket: (settings: string) => Promise<FrontendRenderPacket>
-      }
-      return await wasmContext.exportRenderPacket(JSON.stringify(settings))
     } catch (e: any) {
       const parsed: RustKclError = JSON.parse(e.toString())
       if (toastId) {

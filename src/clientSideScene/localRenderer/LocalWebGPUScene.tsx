@@ -13,7 +13,6 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
     highlightEdges,
     onVisibilityChange,
     forceHide = false,
-    commandProxyEnabled = true,
   } = props
   const containerRef = useRef<HTMLDivElement>(null)
   const rendererRef = useRef<LocalRenderer | null>(null)
@@ -72,10 +71,6 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
   useEffect(() => {
     rendererRef.current?.setForceHide(forceHide)
   }, [forceHide])
-
-  useEffect(() => {
-    rendererRef.current?.setCommandProxyEnabled(commandProxyEnabled)
-  }, [commandProxyEnabled])
 
   useEffect(() => {
     rendererRef.current?.setOnVisibilityChange(onVisibilityChange)

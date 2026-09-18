@@ -1,28 +1,17 @@
-import type { LocalRenderPacket } from '@src/clientSideScene/localRenderer/renderPacketBinary'
-import { isArray } from '@src/lib/utils'
 import {
-  BufferAttribute,
   BufferGeometry,
   Color,
-  DoubleSide,
-  InstancedBufferAttribute,
   type Material,
-  Mesh,
   NearestFilter,
-  NoBlending,
   type Object3D,
   RedIntegerFormat,
   Scene,
   UnsignedIntType,
   Vector2,
 } from 'three'
-import { LineSegmentsGeometry } from 'three/examples/jsm/lines/LineSegmentsGeometry.js'
 import { LineSegments2 } from 'three/examples/jsm/lines/webgpu/LineSegments2.js'
-import { attribute, outputStruct, uint, varying } from 'three/tsl'
 import {
   Line2NodeMaterial,
-  MeshBasicNodeMaterial,
-  type Node,
   RenderTarget,
   type WebGPURenderer,
 } from 'three/webgpu'
@@ -30,15 +19,8 @@ import {
 const SELECTION_LINE_WIDTH_AT_REFERENCE_PX = 24
 const SELECTION_LINE_WIDTH_REFERENCE_VIEWPORT_PX = 2048
 
-export type IntegerIdPickSource =
-  | { type: 'primitive'; packetIndex: number }
-  | { type: 'edge'; packetIndex: number }
-  | { type: 'sketch'; packetIndex: number }
-  | { type: 'region'; packetIndex: number }
-
 export type IntegerIdPickTarget = {
   object: Object3D
-  source: IntegerIdPickSource
 }
 
 export type IntegerIdPickerGeometryStats = {
@@ -52,14 +34,9 @@ export type IntegerIdPickerGeometryStats = {
   sketchSegmentCount: number
   regionCount: number
   regionTriangleCount: number
-  trimmedFaceCount: number
-  trimLoopCount: number
-  trimPointCount: number
   vertexBufferBytes: number
   indexBufferBytes: number
-  primitiveIndexBufferBytes: number
   edgeSegmentBufferBytes: number
-  trimPointBufferBytes: number
 }
 
 export type IntegerIdPickerDiagnostics = {
@@ -83,18 +60,6 @@ export type IntegerIdPickResult = {
   diagnostics: IntegerIdPickerDiagnostics
 }
 
-type IntegerIdPickerModel = {
-  packet: LocalRenderPacket
-  targets: IntegerIdPickTarget[]
-  surfaceObjects: Mesh[]
-  edgeLines: LineSegments2
-  geometryStats: IntegerIdPickerGeometryStats
-}
-
-type NodeMaterialWithMask = Material & {
-  maskNode?: Node<'bool'> | null
-}
-
 export class IntegerIdPicker {
   private readonly renderer: WebGPURenderer
   private readonly scene = new Scene()
@@ -108,58 +73,13 @@ export class IntegerIdPicker {
   private idSceneBuildDurationMs = 0
   private dirty = true
   private version = 0
-  private edgesVisible = true
 
   constructor(renderer: WebGPURenderer) {
     this.renderer = renderer
     this.scene.background = new Color(0)
   }
 
-  setModel({
-    packet,
-    targets,
-    surfaceObjects,
-    edgeLines,
-    geometryStats,
-  }: IntegerIdPickerModel) {
-    const startedAt = performance.now()
-    this.clearModel()
-    this.geometryStats = geometryStats
-
-    const primitiveIdByPacketIndex = new Map<number, number>()
-    const edgeIdByPacketIndex = new Map<number, number>()
-    const sketchIdByPacketIndex = new Map<number, number>()
-    const regionIdByPacketIndex = new Map<number, number>()
-
-    for (const target of targets) {
-      const selectionId = this.targetById.length
-      this.targetById.push(target)
-      switch (target.source.type) {
-        case 'primitive':
-          primitiveIdByPacketIndex.set(target.source.packetIndex, selectionId)
-          break
-        case 'edge':
-          edgeIdByPacketIndex.set(target.source.packetIndex, selectionId)
-          break
-        case 'sketch':
-          sketchIdByPacketIndex.set(target.source.packetIndex, selectionId)
-          break
-        case 'region':
-          regionIdByPacketIndex.set(target.source.packetIndex, selectionId)
-          break
-      }
-    }
-
-    this.addSurfaces(packet, surfaceObjects, primitiveIdByPacketIndex)
-    this.addEdges(packet, edgeLines, edgeIdByPacketIndex)
-    this.addSketches(packet, sketchIdByPacketIndex)
-    this.addRegions(targets, regionIdByPacketIndex)
-    this.idSceneBuildDurationMs = performance.now() - startedAt
-    this.invalidate()
-  }
-
   setEdgesVisible(visible: boolean) {
-    this.edgesVisible = visible
     if (this.edgeObject) {
       this.edgeObject.visible = visible
     }
@@ -269,166 +189,6 @@ export class IntegerIdPicker {
     this.renderTarget = null
   }
 
-  private addSurfaces(
-    packet: LocalRenderPacket,
-    surfaceObjects: Mesh[],
-    idByPacketIndex: Map<number, number>
-  ) {
-    const idByPrimitiveIndex = new Map<number, number>()
-    packet.primitives.forEach((primitive, packetIndex) => {
-      const selectionId = idByPacketIndex.get(packetIndex)
-      if (selectionId !== undefined) {
-        idByPrimitiveIndex.set(primitive.primitiveIndex, selectionId)
-      }
-    })
-
-    const selectionIds = new Uint32Array(packet.primitiveIndices.length)
-    for (
-      let vertexIndex = 0;
-      vertexIndex < selectionIds.length;
-      vertexIndex++
-    ) {
-      selectionIds[vertexIndex] =
-        idByPrimitiveIndex.get(packet.primitiveIndices[vertexIndex]) ?? 0
-    }
-    const selectionIdAttribute = new BufferAttribute(selectionIds, 1)
-
-    for (const sourceObject of surfaceObjects) {
-      const geometry = createGeometryView(sourceObject.geometry)
-      geometry.setAttribute('selectionId', selectionIdAttribute)
-      const sourceMaterial = getFirstMaterial(sourceObject.material)
-      const material = createIdMaterial(
-        sourceMaterial?.side,
-        (sourceMaterial as NodeMaterialWithMask | null)?.maskNode ?? null
-      )
-      const object = new Mesh(geometry, material)
-      copyWorldTransform(object, sourceObject)
-      object.frustumCulled = false
-      object.renderOrder = 0
-      this.geometries.push(geometry)
-      this.materials.add(material)
-      this.scene.add(object)
-    }
-  }
-
-  private addEdges(
-    packet: LocalRenderPacket,
-    sourceLines: LineSegments2,
-    idByPacketIndex: Map<number, number>
-  ) {
-    const selectionIds: number[] = []
-    packet.edges.forEach((edge, packetIndex) => {
-      const segmentCount = Math.max(
-        0,
-        Math.floor(edge.positions.length / 3) - 1
-      )
-      const selectionId = idByPacketIndex.get(packetIndex) ?? 0
-      for (let segmentIndex = 0; segmentIndex < segmentCount; segmentIndex++) {
-        selectionIds.push(selectionId)
-      }
-    })
-    if (selectionIds.length === 0) {
-      return
-    }
-
-    const geometry = createLineGeometryView(sourceLines.geometry)
-    geometry.setAttribute(
-      'selectionId',
-      new InstancedBufferAttribute(new Uint32Array(selectionIds), 1)
-    )
-    const material = createIdLineMaterial()
-    const object = new LineSegments2(geometry, material)
-    copyWorldTransform(object, sourceLines)
-    object.frustumCulled = false
-    object.renderOrder = 2
-    object.visible = this.edgesVisible
-    this.edgeObject = object
-    this.geometries.push(geometry)
-    this.materials.add(material)
-    this.scene.add(object)
-  }
-
-  private addSketches(
-    packet: LocalRenderPacket,
-    idByPacketIndex: Map<number, number>
-  ) {
-    const positions: number[] = []
-    const selectionIds: number[] = []
-    packet.sketches.forEach((sketch, packetIndex) => {
-      const pointCount = Math.floor(sketch.positions.length / 3)
-      const selectionId = idByPacketIndex.get(packetIndex) ?? 0
-      for (let pointIndex = 0; pointIndex < pointCount - 1; pointIndex++) {
-        const offset = pointIndex * 3
-        positions.push(
-          sketch.positions[offset],
-          sketch.positions[offset + 1],
-          sketch.positions[offset + 2],
-          sketch.positions[offset + 3],
-          sketch.positions[offset + 4],
-          sketch.positions[offset + 5]
-        )
-        selectionIds.push(selectionId)
-      }
-    })
-    if (selectionIds.length === 0) {
-      return
-    }
-
-    const geometry = new LineSegmentsGeometry()
-    geometry.setPositions(new Float32Array(positions))
-    geometry.setAttribute(
-      'selectionId',
-      new InstancedBufferAttribute(new Uint32Array(selectionIds), 1)
-    )
-    const material = createIdLineMaterial()
-    const object = new LineSegments2(geometry, material)
-    object.frustumCulled = false
-    object.renderOrder = 2
-    this.geometries.push(geometry)
-    this.materials.add(material)
-    this.scene.add(object)
-  }
-
-  private addRegions(
-    targets: IntegerIdPickTarget[],
-    idByPacketIndex: Map<number, number>
-  ) {
-    const material = createIdMaterial(DoubleSide)
-    let regionAdded = false
-
-    for (const target of targets) {
-      if (target.source.type !== 'region' || !(target.object instanceof Mesh)) {
-        continue
-      }
-      const selectionId = idByPacketIndex.get(target.source.packetIndex)
-      if (selectionId === undefined) {
-        continue
-      }
-
-      const geometry = createGeometryView(target.object.geometry)
-      const vertexCount = geometry.getAttribute('position').count
-      const selectionIds = new Uint32Array(vertexCount)
-      selectionIds.fill(selectionId)
-      geometry.setAttribute('selectionId', new BufferAttribute(selectionIds, 1))
-      const object = new Mesh(geometry, material)
-      copyWorldTransform(object, target.object)
-      object.frustumCulled = false
-      object.renderOrder = 1
-      this.geometries.push(geometry)
-      this.scene.add(object)
-      regionAdded = true
-    }
-
-    if (regionAdded) {
-      material.polygonOffset = true
-      material.polygonOffsetFactor = -1
-      material.polygonOffsetUnits = -1
-      this.materials.add(material)
-    } else {
-      material.dispose()
-    }
-  }
-
   private ensureRenderTarget() {
     this.renderer.getDrawingBufferSize(this.drawingBufferSize)
     const width = Math.max(1, Math.floor(this.drawingBufferSize.x))
@@ -481,95 +241,6 @@ export class IntegerIdPicker {
     this.renderer.autoClear = previousAutoClear
     this.dirty = false
   }
-}
-
-function createIntegerOutputNode() {
-  const selectionIdAttribute = attribute(
-    'selectionId',
-    'uint'
-  ) as unknown as Node<'uint'>
-  const selectionId = varying(selectionIdAttribute) as unknown as Node<'uint'>
-  return outputStruct(uint(selectionId)) as Node
-}
-
-function createIdMaterial(
-  side?: Material['side'],
-  maskNode?: Node<'bool'> | null
-) {
-  const material = new MeshBasicNodeMaterial({
-    side,
-    depthTest: true,
-    depthWrite: true,
-    transparent: false,
-    blending: NoBlending,
-  })
-  material.fog = false
-  material.toneMapped = false
-  material.maskNode = maskNode ?? null
-  material.outputNode = createIntegerOutputNode()
-  return material
-}
-
-function createIdLineMaterial() {
-  const material = new Line2NodeMaterial({
-    linewidth: SELECTION_LINE_WIDTH_AT_REFERENCE_PX,
-  })
-  material.worldUnits = false
-  material.alphaToCoverage = false
-  material.depthTest = true
-  material.depthWrite = true
-  material.transparent = false
-  material.blending = NoBlending
-  material.fog = false
-  material.toneMapped = false
-  material.polygonOffset = true
-  material.polygonOffsetFactor = -1
-  material.polygonOffsetUnits = -1
-  material.outputNode = createIntegerOutputNode()
-  return material
-}
-
-function createGeometryView(source: BufferGeometry) {
-  const geometry = new BufferGeometry()
-  for (const attributeName of ['position', 'uv', 'primitiveIndex']) {
-    const sourceAttribute = source.getAttribute(attributeName)
-    if (sourceAttribute) {
-      geometry.setAttribute(attributeName, sourceAttribute)
-    }
-  }
-  if (source.index) {
-    geometry.setIndex(source.index)
-  }
-  geometry.drawRange = { ...source.drawRange }
-  geometry.boundingBox = source.boundingBox
-  geometry.boundingSphere = source.boundingSphere
-  return geometry
-}
-
-function createLineGeometryView(source: LineSegmentsGeometry) {
-  const geometry = new LineSegmentsGeometry()
-  for (const attributeName of ['instanceStart', 'instanceEnd']) {
-    const sourceAttribute = source.getAttribute(attributeName)
-    if (sourceAttribute) {
-      geometry.setAttribute(attributeName, sourceAttribute)
-    }
-  }
-  geometry.instanceCount = source.instanceCount
-  geometry.boundingBox = source.boundingBox
-  geometry.boundingSphere = source.boundingSphere
-  return geometry
-}
-
-function copyWorldTransform(target: Object3D, source: Object3D) {
-  source.updateWorldMatrix(true, false)
-  target.matrix.copy(source.matrixWorld)
-  target.matrixWorld.copy(source.matrixWorld)
-  target.matrixAutoUpdate = false
-  target.layers.mask = source.layers.mask
-}
-
-function getFirstMaterial(material: Material | Material[]) {
-  return isArray(material) ? (material[0] ?? null) : material
 }
 
 function clampPixel(value: number, size: number) {

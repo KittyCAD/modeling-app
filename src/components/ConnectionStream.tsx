@@ -103,9 +103,6 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
     return isSafari ? ' object-fill' : ''
   }, [])
 
-  const isSketchInteractionMode =
-    modelingMachineState.matches('Sketch') ||
-    modelingMachineState.matches('sketchSolveMode')
   const reportEngineDisconnect = useCallback(
     (eventType: EngineDisconnectEvent, extra?: Record<string, unknown>) => {
       const kclSource = kclManager.code
@@ -593,8 +590,6 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
 
   const shouldShowLocalWebGpuScene =
     LOCAL_WEBGPU_RENDERING_ENABLED && isLocalRenderVisible
-  const shouldEnableLocalWebGpuSelectionProxy =
-    shouldShowLocalWebGpuScene && !isSketchInteractionMode
 
   useEffect(() => {
     const cameraControls = sceneInfra.camControls
@@ -648,7 +643,6 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           highlightEdges={settingsValues.modeling.highlightEdges.current}
           onVisibilityChange={handleLocalVisibilityChange}
           forceHide={!shouldShowLocalWebGpuScene}
-          commandProxyEnabled={shouldEnableLocalWebGpuSelectionProxy}
         />
       )}
       <ClientSideScene
