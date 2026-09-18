@@ -1,6 +1,6 @@
 import { isOnboardingPath, type OnboardingPath } from '@src/lib/onboardingPaths'
 import { PATHS } from '@src/lib/paths'
-import { defineAppOverlayContribution } from '@src/registry/contracts/router'
+import { defineAppOverlayContribution } from '@src/registry/contracts/appUrl'
 
 export interface OnboardingOverlayState {
   step?: OnboardingPath

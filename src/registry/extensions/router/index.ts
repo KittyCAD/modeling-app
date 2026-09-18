@@ -7,11 +7,11 @@ import {
 import { signal } from '@preact/signals-core'
 import {
   type AppOverlayContribution,
+  type AppUrlRuntimeValues,
+  type AppUrlService,
+  appUrlService,
   appOverlayContributionsValueSpec,
-  type RouterRegistryService,
-  type RouterRuntimeValues,
-  routerService,
-} from '@src/registry/contracts/router'
+} from '@src/registry/contracts/appUrl'
 import {
   createPath,
   type Location,
@@ -104,11 +104,11 @@ const createUnseededNavigate =
     }
   }
 
-export const createRouterRegistryService = ({
+export const createAppUrlService = ({
   getOverlayContributions = () => [],
 }: {
   getOverlayContributions?: () => readonly AppOverlayContribution[]
-} = {}): RouterRegistryService => {
+} = {}): AppUrlService => {
   const location = signal<Location>(readBrowserLocation())
   const isReady = signal(false)
   const syncBrowserLocation = () => {
@@ -137,7 +137,7 @@ export const createRouterRegistryService = ({
     isReady.value = false
   }
 
-  const serviceImpl: RouterRegistryService = {
+  const serviceImpl: AppUrlService = {
     location,
     isReady,
     navigate,
@@ -159,7 +159,7 @@ export const createRouterRegistryService = ({
 
       return () => resetNavigate(nextNavigate)
     },
-    seed: (values: RouterRuntimeValues) => {
+    seed: (values: AppUrlRuntimeValues) => {
       serviceImpl.setLocation(values.location)
       return serviceImpl.setNavigate(values.navigate)
     },
@@ -174,7 +174,7 @@ export const createRouterRegistryService = ({
 }
 
 export const routerExtension = defineRegistryItemFactory((ctx) => {
-  const serviceImpl = createRouterRegistryService({
+  const serviceImpl = createAppUrlService({
     getOverlayContributions: () =>
       ctx.valueSpecs.get(appOverlayContributionsValueSpec),
   })
@@ -182,7 +182,7 @@ export const routerExtension = defineRegistryItemFactory((ctx) => {
   return {
     item: defineRuntimeRegistryItem({
       id: 'router-extension',
-      providesServices: [provideService(routerService, serviceImpl)],
+      providesServices: [provideService(appUrlService, serviceImpl)],
       dispose: serviceImpl.reset,
     }),
   }

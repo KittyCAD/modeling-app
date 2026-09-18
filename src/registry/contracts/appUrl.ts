@@ -6,7 +6,7 @@ import {
 import type { ReadonlySignal } from '@preact/signals-core'
 import type { Location, NavigateFunction } from 'react-router-dom'
 
-export type RouterRuntimeValues = {
+export type AppUrlRuntimeValues = {
   location: Location
   navigate: NavigateFunction
 }
@@ -80,13 +80,13 @@ export const defineAppOverlayContribution = <State>(
 })
 
 /**
- * Shared app routing service.
+ * Owns the application's URL representation, not application state changes.
  *
  * The service is constructed before React Router is mounted, so its public
- * values are non-nullable while `isReady` records whether they have been seeded
- * from an active router runtime.
+ * values are non-nullable while `isReady` records whether the React Router
+ * bridge has seeded an active runtime.
  */
-export type RouterRegistryService = {
+export type AppUrlService = {
   location: ReadonlySignal<Location>
   isReady: ReadonlySignal<boolean>
   navigate: NavigateFunction
@@ -97,16 +97,16 @@ export type RouterRegistryService = {
   getLocation: () => Location
   setLocation: (location: Location) => void
   setNavigate: (navigate: NavigateFunction) => () => void
-  seed: (values: RouterRuntimeValues) => () => void
+  seed: (values: AppUrlRuntimeValues) => () => void
   reset: () => void
 }
 
-export const routerContract = defineContract({
-  routerService: defineService<RouterRegistryService>('router.service'),
+export const appUrlContract = defineContract({
+  appUrlService: defineService<AppUrlService>('application-url.service'),
   appOverlayContributionsValueSpec: appendValueSpec<AppOverlayContribution>(
     'application-overlays'
   ),
 })
 
-export const { appOverlayContributionsValueSpec, routerService } =
-  routerContract
+export const { appOverlayContributionsValueSpec, appUrlService } =
+  appUrlContract

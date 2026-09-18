@@ -4,7 +4,7 @@ import type {
   AppDestinationKind,
   AppOverlayContribution,
   InitialUrlIntent,
-} from '@src/registry/contracts/router'
+} from '@src/registry/contracts/appUrl'
 
 interface ApplicationUrl {
   pathname: string
