@@ -1,5 +1,5 @@
 import { PATHS } from '@src/lib/paths'
-import { defineAppOverlayContribution } from '@src/registry/contracts/router'
+import { defineAppOverlayContribution } from '@src/registry/contracts/appUrl'
 
 export type SettingsOverlayTab = 'user' | 'project' | 'keybindings' | 'plugins'
 
