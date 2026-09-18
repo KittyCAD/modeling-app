@@ -1,4 +1,5 @@
 import { attachRendererCrashDiagnostics } from '@e2e/playwright/fixtures/electronCrashDiagnostics'
+import { interactionDiscoveryFixtures } from '@e2e/playwright/fixtures/interactionDiscoveryFixture'
 import { expect, test as playwrightTestFn } from '@e2e/playwright/base-test'
 import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'
 import {
@@ -98,8 +99,13 @@ const playwrightTestFnWithFixtures_ = playwrightTestFn.extend<{
   ],
 })
 
-const test = playwrightTestFnWithFixtures_.extend<Fixtures>(
+const appTest = playwrightTestFnWithFixtures_.extend<Fixtures>(
   fixturesBasedOnProcessEnvPlatform
 )
+
+const test =
+  process.env.PLAYWRIGHT_INTERACTION_DISCOVERY === '1'
+    ? appTest.extend(interactionDiscoveryFixtures)
+    : appTest
 
 export { test }
