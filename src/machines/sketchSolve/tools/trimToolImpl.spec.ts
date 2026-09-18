@@ -108,7 +108,10 @@ sketch(on = YZ) {
 })
 
 afterAll(() => {
-  engineCommandManagerInThisFile.tearDown()
+  engineCommandManagerInThisFile.tearDown({
+    route: 'user-requested',
+    initiatedBy: 'client',
+  })
 })
 
 // Removed helper functions - no longer used after migrating getTrimSpawnTerminations tests to Rust
