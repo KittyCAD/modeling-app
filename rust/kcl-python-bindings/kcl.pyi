@@ -490,6 +490,11 @@ class KclSession:
         Measure the active model's physical properties.
         Supports choosing any of the available properties, like volume, mass, bounding box, or any combination of them.
         """
+    async def sketch_constraint_report(self) -> SketchConstraintReport:
+        r"""
+        Analyze the executed sketches and report their constraint status and execution issues.
+        Uses the saved execution state without executing KCL again.
+        """
     async def snapshots(self, image_format: ImageFormat, snapshot_options: typing.Sequence[SnapshotOptions], *, zoom: builtins.bool = ...) -> builtins.list[builtins.list[builtins.int]]:
         r"""
         Get 2D images of the model.
@@ -672,6 +677,10 @@ class SketchConstraintReport:
     def is_complete(self) -> builtins.bool: ...
     @property
     def kcl_error(self) -> typing.Optional[KclErrorInfo]: ...
+    def total_sketches(self) -> builtins.int:
+        r"""
+        Total number of sketches across all categories.
+        """
 
 @typing.final
 class SketchConstraintStatus:

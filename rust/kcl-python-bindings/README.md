@@ -6,7 +6,8 @@ Python bindings to the rust kcl-lib crate.
 
 The [tests.py](tests/tests.py) file contains examples of how to use the library.
 
-Execute KCL once, then reuse the session for snapshots, exports, and measurements:
+Execute KCL once, then reuse the session for snapshots, exports, measurements,
+and sketch constraint reports:
 
 ```python
 async with await kcl.new_kcl_session("main.kcl") as session:
@@ -15,6 +16,7 @@ async with await kcl.new_kcl_session("main.kcl") as session:
     request = kcl.PhysicalPropertiesRequest()
     request.set_volume(kcl.UnitVolume.CubicMillimeters)
     properties = await session.measure(request)
+    constraints = await session.sketch_constraint_report()
 ```
 
 Use `new_kcl_session_code(code)` for a source string. The context manager closes
