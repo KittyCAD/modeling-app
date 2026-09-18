@@ -1,253 +1,99 @@
-import type { App } from '@src/lib/app'
-import { createAppNavigationService } from '@src/lib/appNavigation'
-import type * as PathsModule from '@src/lib/paths'
-import { PATHS } from '@src/lib/paths'
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
+import {
+  type AppNavigationDependencies,
+  createAppNavigationService,
+} from '@src/lib/appNavigation'
+import type { ResolvedProjectOpen } from '@src/lib/projectOpen'
+import { beforeEach, describe, expect, test, vi } from 'vitest'
 
-/**
- * `appNavigation.openProject` owns resolution and delegates lifecycle, so these
- * pin both: the
- * exact redirect strings it produces when given a `requestUrl` (the Playwright
- * suite asserts URLs literally), and the fact that without one it resolves to
- * the project default and just opens it.
- */
-
-const mocks = vi.hoisted(() => ({
-  getProjectInfo: vi.fn(),
-  stat: vi.fn(),
-  parseProjectRoute: vi.fn(),
-  getProjectLibraryOwnership: vi.fn(async () => undefined),
-  loadRouteSettings: vi.fn(),
-  waitFor: vi.fn(async () => undefined),
-  openEditor: vi.fn(async () => ({ code: 'x = 1' })),
-  openProject: vi.fn(),
-  send: vi.fn(),
-}))
-
-vi.mock('@src/lib/desktop', () => ({
-  getProjectInfo: mocks.getProjectInfo,
-  isPathNotFoundError: (error: unknown) =>
-    error instanceof Error && error.message === 'ENOENT',
-}))
-vi.mock('@src/lib/fs-zds', () => ({
-  // `sep` matters: `getStringAfterLastSeparator` splits on it.
-  default: { stat: mocks.stat, sep: '/' },
-}))
-vi.mock('@src/lang/std/fileSystemManager', () => ({
-  projectFsManager: { dir: '' },
-}))
-vi.mock('@src/lib/projectLibraryOwnership', () => ({
-  getProjectLibraryOwnership: mocks.getProjectLibraryOwnership,
-}))
-vi.mock('@src/lib/routeSettings', () => ({
-  loadRouteSettings: mocks.loadRouteSettings,
-}))
-vi.mock('xstate', () => ({ waitFor: mocks.waitFor }))
-vi.mock('@src/lib/paths', async () => {
-  const actual = await vi.importActual<typeof PathsModule>('@src/lib/paths')
-  return { ...actual, parseProjectRoute: mocks.parseProjectRoute }
-})
-
-const originalElectron = window.electron
-
-function fakeApp(
-  wasmInstancePromise: Promise<unknown> = Promise.resolve({})
-): App {
-  return {
-    registry: {
-      get: () => ({
-        stat: mocks.stat,
-        openProject: mocks.openProject,
-      }),
-    },
-    singletons: { kclManager: { wasmInstancePromise } },
-    settings: { actor: { send: mocks.send } },
-    project: undefined,
-    systemIOActor: {
-      getSnapshot: () => ({
-        context: {
-          requestedFileName: { project: undefined },
-          projectDirectoryPath: '/library',
-          folders: [],
-        },
-        matches: () => false,
-      }),
-      send: vi.fn(),
-    },
-  } as unknown as App
+const resolvedProject: ResolvedProjectOpen = {
+  kind: 'resolved',
+  projectName: 'bracket',
+  projectPath: '/projects/bracket',
+  initialEditorPath: '/projects/bracket/main.kcl',
+  project: {
+    name: 'bracket',
+    path: '/projects/bracket',
+    children: [],
+    kcl_file_count: 1,
+    directory_count: 0,
+    metadata: null,
+    default_file: '/projects/bracket/main.kcl',
+    readWriteAccess: true,
+  },
+  file: { name: 'main.kcl', path: '/projects/bracket/main.kcl' },
 }
 
-function appNavigation() {
-  return createAppNavigationService(fakeApp())
+function navigationHarness(overrides: Partial<AppNavigationDependencies> = {}) {
+  const dependencies: AppNavigationDependencies = {
+    resolveProjectOpen: vi.fn(async () => resolvedProject),
+    openResolvedProject: vi.fn<
+      AppNavigationDependencies['openResolvedProject']
+    >(async (resolution) => ({
+      kind: 'opened',
+      data: {
+        code: 'x = 1',
+        project: resolution.project,
+        file: { ...resolution.file, children: [] },
+      },
+    })),
+    ...overrides,
+  }
+
+  return {
+    dependencies,
+    navigation: createAppNavigationService(dependencies),
+  }
 }
 
 beforeEach(() => {
-  mocks.openProject.mockImplementation(async () => ({
-    project: {
-      projectIORefSignal: { value: { libraryPath: '/library' } },
-    },
-    editor: await mocks.openEditor(),
-  }))
-  mocks.loadRouteSettings.mockResolvedValue({
-    settings: { app: { libraries: undefined } },
-    configuration: {},
-  })
-  window.electron = undefined
-})
-
-afterEach(() => {
   vi.clearAllMocks()
-  window.electron = originalElectron
 })
 
-describe('OpenProject, asked through a URL', () => {
-  test('a project root redirects to its default file, preserving the rest of the URL', async () => {
-    mocks.parseProjectRoute.mockReturnValue({
-      projectName: 'proj',
-      projectPath: '/library/proj',
-      currentFileName: undefined,
-      currentFilePath: undefined,
+describe('appNavigation', () => {
+  test('returns a canonical redirect without opening a project', async () => {
+    const { dependencies, navigation } = navigationHarness({
+      resolveProjectOpen: vi.fn<
+        AppNavigationDependencies['resolveProjectOpen']
+      >(async () => ({
+        kind: 'redirect',
+        to: '/file/canonical',
+      })),
     })
-    mocks.getProjectInfo.mockResolvedValue({
-      default_file: '/library/proj/main.kcl',
-    })
-
-    const result = await appNavigation().openProject({
-      target: '/library/proj',
-      requestUrl: `http://localhost${PATHS.FILE}/%2Flibrary%2Fproj?pool=alpha`,
-    })
-
-    // A substitution on the whole request URL rather than a rebuilt path, so
-    // the origin and query string survive untouched.
-    expect(result).toEqual({
-      kind: 'redirect',
-      to: `http://localhost${PATHS.FILE}/%2Flibrary%2Fproj%2Fmain.kcl?pool=alpha`,
-    })
-  })
-
-  test('an unusable file falls back to the project default, carrying the query string', async () => {
-    mocks.parseProjectRoute.mockReturnValue({
-      projectName: undefined,
-      projectPath: '/library/proj',
-      currentFileName: 'main.kcl',
-      currentFilePath: '/library/proj/main.kcl',
-    })
-    mocks.getProjectInfo.mockResolvedValue({
-      default_file: '/library/proj/main.kcl',
-    })
-    mocks.stat.mockResolvedValue({})
-
-    const result = await appNavigation().openProject({
-      target: '/library/proj/nope.kcl',
-      requestUrl: `http://localhost${PATHS.FILE}/%2Flibrary%2Fproj%2Fnope.kcl?pool=alpha`,
-    })
-
-    expect(result).toEqual({
-      kind: 'redirect',
-      to: `${PATHS.FILE}/${encodeURIComponent('/library/proj/main.kcl')}?pool=alpha`,
-    })
-  })
-
-  test('a /settings URL never redirects to the default file', async () => {
-    mocks.parseProjectRoute.mockReturnValue({
-      projectName: 'proj',
-      projectPath: '/library/proj',
-      currentFileName: undefined,
-      currentFilePath: undefined,
-    })
-    mocks.getProjectInfo.mockResolvedValue({ path: '/library/proj' })
-
-    // Settings is reachable on a project root, so the shape that would
-    // otherwise redirect has to fall through and open instead.
-    const result = await appNavigation().openProject({
-      target: '/library/proj',
-      requestUrl: `http://localhost${PATHS.FILE}/%2Flibrary%2Fproj/settings`,
-    })
-
-    expect(result.kind).toBe('opened')
-  })
-
-  test('an unresolvable id rejects, so the router error element still shows', async () => {
-    mocks.parseProjectRoute.mockReturnValue(undefined)
 
     await expect(
-      appNavigation().openProject({
-        target: '/library/proj/main.kcl',
-        requestUrl: 'http://localhost/file/x',
-      })
-    ).rejects.toThrow('bug: projectPathData undefined')
+      navigation.openProject({ target: '/projects/bracket' })
+    ).resolves.toEqual({ kind: 'redirect', to: '/file/canonical' })
+    expect(dependencies.openResolvedProject).not.toHaveBeenCalled()
   })
-})
 
-describe('OpenProject, asked directly', () => {
+  test('opens a resolved project through the lifecycle operation', async () => {
+    const { dependencies, navigation } = navigationHarness()
+
+    await expect(
+      navigation.openProject({ target: '/projects/bracket' })
+    ).resolves.toMatchObject({ kind: 'opened' })
+    expect(dependencies.openResolvedProject).toHaveBeenCalledWith(
+      resolvedProject,
+      expect.any(Function)
+    )
+  })
+
   test('a newer intent supersedes an in-flight project open', async () => {
-    let resolveWasm: (wasm: unknown) => void = () => undefined
-    const wasmInstancePromise = new Promise((resolve) => {
-      resolveWasm = resolve
+    let finishResolution: () => void = () => undefined
+    const resolutionStarted = new Promise<void>((resolve) => {
+      finishResolution = resolve
     })
-    const navigation = createAppNavigationService(fakeApp(wasmInstancePromise))
+    const { navigation } = navigationHarness({
+      resolveProjectOpen: vi.fn(async () => {
+        await resolutionStarted
+        return resolvedProject
+      }),
+    })
 
-    const firstOpen = navigation.openProject({ target: '/library/proj' })
+    const firstOpen = navigation.openProject({ target: '/projects/bracket' })
     navigation.supersedeProjectOpen()
-    resolveWasm({})
+    finishResolution()
 
     await expect(firstOpen).rejects.toMatchObject({ name: 'AbortError' })
-  })
-
-  test('opens the project default rather than returning a redirect', async () => {
-    mocks.parseProjectRoute.mockReturnValue({
-      projectName: 'proj',
-      projectPath: '/library/proj',
-      currentFileName: undefined,
-      currentFilePath: undefined,
-    })
-    mocks.getProjectInfo.mockResolvedValue({
-      default_file: '/library/proj/main.kcl',
-    })
-
-    // With no URL there is nothing to correct, so the case that would have
-    // redirected resolves to the default file and opens it. This is what lets
-    // callers that are not a route open a file at all.
-    const result = await appNavigation().openProject({
-      target: '/library/proj',
-    })
-
-    expect(result).toMatchObject({
-      kind: 'opened',
-      data: { file: { path: '/library/proj/main.kcl', name: 'main.kcl' } },
-    })
-    expect(mocks.openProject).toHaveBeenCalledWith(
-      expect.objectContaining({
-        initialEditor: expect.objectContaining({
-          path: '/library/proj/main.kcl',
-        }),
-      })
-    )
-  })
-
-  test('opens a named file without consulting the default', async () => {
-    mocks.parseProjectRoute.mockReturnValue({
-      projectName: 'proj',
-      projectPath: '/library/proj',
-      currentFileName: 'part.kcl',
-      currentFilePath: '/library/proj/part.kcl',
-    })
-    mocks.getProjectInfo.mockResolvedValue({
-      default_file: '/library/proj/main.kcl',
-    })
-    mocks.stat.mockResolvedValue({})
-
-    const result = await appNavigation().openProject({
-      target: '/library/proj/part.kcl',
-    })
-
-    expect(result).toMatchObject({ kind: 'opened' })
-    expect(mocks.openProject).toHaveBeenCalledWith(
-      expect.objectContaining({
-        initialEditor: expect.objectContaining({
-          path: '/library/proj/part.kcl',
-        }),
-      })
-    )
   })
 })
