@@ -1245,7 +1245,7 @@ export class ConnectionManager extends EventTarget {
       label: 'connectionManager',
       message: 'offline, calling tearDown()',
     })
-    this.tearDown()
+    this.tearDown({ route: 'window-offline', initiatedBy: 'client' })
   }
 
   // VITEST ONLY
