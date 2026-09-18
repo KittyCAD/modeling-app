@@ -63,6 +63,7 @@ gltf-json = "1.4.1"
 http = { workspace = true }
 image = { version = "0.25.10", default-features = false, features = ["png"] }
 image-compare = "0.5.0"
+imbl = { version = "7.0.1", features = ["serde"] }
 indexmap = { workspace = true, features = ["serde", "rayon"] }
 itertools = "0.15.0"
 kcl-api = { version = "=0.2.185", path = "../kcl-api" }
