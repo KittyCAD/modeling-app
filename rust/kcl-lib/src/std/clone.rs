@@ -1152,6 +1152,7 @@ patterned = patternLinear3d(
     instances = 2,
     distance = 20,
     axis = [1, 0, 0],
+    useOriginal = true,
 )
 patternCopy = patterned[1]
 clonedCopy = clone(patternCopy)

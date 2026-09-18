@@ -350,7 +350,7 @@ async fn send_pattern_transform<T: GeometryTrait>(
     let extra_instances = transforms.len();
     let geometry_id = geometry.id(&args.ctx).await?;
     let entity_id = if use_original {
-        geometry.topology_id()
+        geometry.original_id()
     } else {
         geometry_id
     };
@@ -562,7 +562,7 @@ pub trait GeometryTrait: Clone {
     type Set: Into<Vec<Self>> + Clone;
     #[allow(async_fn_in_trait)]
     async fn id(&mut self, ctx: &ExecutorContext) -> Result<Uuid, KclError>;
-    fn topology_id(&self) -> Uuid;
+    fn original_id(&self) -> Uuid;
     fn set_id(&mut self, id: Uuid);
     fn set_artifact_id(&mut self, id: Uuid);
     fn array_to_point3d(
@@ -585,7 +585,7 @@ impl GeometryTrait for Sketch {
     async fn id(&mut self, _: &ExecutorContext) -> Result<Uuid, KclError> {
         Ok(self.id)
     }
-    fn topology_id(&self) -> Uuid {
+    fn original_id(&self) -> Uuid {
         self.original_id
     }
     fn array_to_point3d(
@@ -622,8 +622,17 @@ impl GeometryTrait for Solid {
         Ok(self.id)
     }
 
-    fn topology_id(&self) -> Uuid {
-        Solid::topology_id(self)
+    fn original_id(&self) -> Uuid {
+        // Composites own their topology even when they retain a creator sketch.
+        // Sweep-backed features keep a separate artifact and original sketch.
+        let source_artifact_id = self.pattern_source_artifact_id.unwrap_or(self.artifact_id);
+        if source_artifact_id == self.topology_id().into() {
+            self.topology_id()
+        } else {
+            self.sketch()
+                .map(|sketch| sketch.original_id)
+                .unwrap_or_else(|| self.topology_id())
+        }
     }
 
     fn array_to_point3d(
@@ -648,7 +657,7 @@ impl GeometryTrait for ImportedGeometry {
         ImportedGeometry::id(self, ctx).await
     }
 
-    fn topology_id(&self) -> Uuid {
+    fn original_id(&self) -> Uuid {
         self.id
     }
 
@@ -1421,7 +1430,7 @@ async fn pattern_circular<T: GeometryTrait>(
                 mcmd::EntityCircularPattern::builder()
                     .axis(kcmc::shared::Point3d::from(data.axis()))
                     .entity_id(if data.use_original() {
-                        geometry.topology_id()
+                        geometry.original_id()
                     } else {
                         geometry_id
                     })
