@@ -302,6 +302,13 @@ async def test_kcl_execute_code():
 
 @requires_engine
 @pytest.mark.asyncio
+async def test_kcl_execute_code_geometry_only():
+    outcome = await execute_with_retries(kcl.execute_code, box_code, geometry_only=True)
+    assert outcome.issues() == []
+
+
+@requires_engine
+@pytest.mark.asyncio
 async def test_kcl_execute_code_and_snapshot():
     # Read from a file.
     with open(lego_file, "r") as f:
