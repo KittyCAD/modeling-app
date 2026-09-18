@@ -489,19 +489,23 @@ class KclSession:
         r"""
         Measure the active model's physical properties.
         Supports choosing any of the available properties, like volume, mass, bounding box, or any combination of them.
+        It is NOT safe to concurrently call methods on this object. Only call one of measure, export, etc at a time.
         """
     async def sketch_constraint_report(self) -> SketchConstraintReport:
         r"""
         Analyze the executed sketches and report their constraint status and execution issues.
         Uses the saved execution state without executing KCL again.
+        It is NOT safe to concurrently call methods on this object. Only call one of measure, export, etc at a time.
         """
     async def snapshots(self, image_format: ImageFormat, snapshot_options: typing.Sequence[SnapshotOptions], *, zoom: builtins.bool = ...) -> builtins.list[builtins.list[builtins.int]]:
         r"""
         Get 2D images of the model.
+        It is NOT safe to concurrently call methods on this object. Only call one of measure, export, etc at a time.
         """
     async def export(self, export_format: FileExportFormat) -> builtins.list[RawFile]:
         r"""
         Get 3D files containing this model.
+        It is NOT safe to concurrently call methods on this object. Only call one of measure, export, etc at a time.
         """
 
 @typing.final
