@@ -2,6 +2,8 @@ import { defineConfig, devices } from '@playwright/test'
 
 // The existing app fixtures select their platform when modules are imported.
 process.env.TARGET = 'desktop'
+// Discovery must not start a competing session in the controlled profile.
+process.env.PLAYWRIGHT_INTERACTION_DISCOVERY = '0'
 
 export default defineConfig({
   testDir: './e2e/performance',

@@ -88,6 +88,40 @@ Inspect the HTML report with:
 npm exec -- playwright show-report playwright-report/interaction-performance
 ```
 
+## Discovery during functional tests
+
+Ordinary web and Electron Playwright tests can collect additional report-only
+samples. Build with `VITE_INTERACTION_PERFORMANCE=1`, then opt in to the fixture
+with `PLAYWRIGHT_INTERACTION_DISCOVERY=1`. For example, after the optimized
+Electron build above:
+
+```sh
+NODE_ENV=production TARGET=desktop VITE_ZOO_BASE_DOMAIN=dev.zoo.dev \
+  PLAYWRIGHT_INTERACTION_DISCOVERY=1 INTERACTION_DISCOVERY_BUILD=optimized \
+  npm exec -- playwright test --config=playwright.electron.config.ts \
+  --grep=@desktop --workers=1
+```
+
+Each test gets raw JSON and a readable summary attachment. The reporter also
+writes `test-results/interaction-discovery/discovery.jsonl` and `summary.txt`,
+including scenario, project, attempt, worker, platform, build label, motion, and
+viewport metadata. Unknown controls remain unattributed. Latency warnings,
+collection errors, and unsupported instrumentation never change the functional
+test's status. A normal release build reports `instrumentation-not-built`.
+
+Discovery is partial: it covers the main page after fixture setup, checkpoints
+once per second, and retains up to 32 documents per test. Full navigation can
+lose inputs before the next checkpoint; same-document routes retain their
+session. The final snapshot can precede delayed Event Timing delivery. Profile
+changes observed at checkpoints exclude that document from aggregate summaries,
+but changes between checkpoints can be missed. Raw snapshots remain available.
+
+These results help expand the interaction inventory. Their fixtures, traces,
+parallel workers, and partially observed profiles differ from the controlled
+performance suite, so they are not enforcement measurements. Discovery is off by
+default and explicitly disabled in `playwright.performance.config.ts` to avoid
+competing recording sessions.
+
 ## Calibration and rollout
 
 Repeat unchanged commits on a consistent runner before enforcing latency:
