@@ -1,10 +1,13 @@
-import {
-  type ClientMetrics,
-  type WebSocketRequest,
+import type {
+  ClientMetrics,
+  WebSocketRequest,
 } from '@kittycad/lib/dist/types/src'
+import {
+  ClientErrorCode,
+  errorToMessage,
+  reportClientError,
+} from '@src/lib/clientErrors'
 import { EngineDebugger } from '@src/lib/debugger'
-import { markOnce } from '@src/lib/performance'
-import { reportRejection } from '@src/lib/trap'
 import type { Connection } from '@src/lib/engineConnection/connection'
 import type {
   IEventListenerTracked,
@@ -15,6 +18,8 @@ import {
   EngineConnectionEvents,
   EngineConnectionStateType,
 } from '@src/lib/engineConnection/utils'
+import { markOnce } from '@src/lib/performance'
+import { reportRejection } from '@src/lib/trap'
 
 export function createOnIceCandidate({
   initiateConnectionExclusive,
@@ -150,6 +155,101 @@ export function createOnIceCandidateError() {
   return onIceCandidateError
 }
 
+type WebrtcDisconnectRoute =
+  | 'peer-connection-failed'
+  | 'peer-connection-disconnected'
+  | 'peer-connection-closed'
+
+async function reportWebrtcDisconnect({
+  connection,
+  peerConnection,
+  route,
+}: {
+  connection: Connection
+  peerConnection: RTCPeerConnection
+  route: WebrtcDisconnectRoute
+}) {
+  const sourceTime = new Date().toISOString()
+  const state = {
+    peerConnectionState: peerConnection.connectionState,
+    iceConnectionState: peerConnection.iceConnectionState,
+    iceGatheringState: peerConnection.iceGatheringState,
+    signalingState: peerConnection.signalingState,
+    sctpTransportState: peerConnection.sctp?.state ?? null,
+    dtlsTransportState: peerConnection.sctp?.transport.state ?? null,
+    iceTransportState:
+      peerConnection.sctp?.transport.iceTransport.state ?? null,
+  }
+  const statsDiagnostics: Record<string, unknown> = {}
+
+  try {
+    const stats = await peerConnection.getStats()
+    const reports = Array.from(stats.values())
+    const transport = reports.find((report) => report.type === 'transport')
+    const pair = transport?.selectedCandidatePairId
+      ? stats.get(transport.selectedCandidatePairId)
+      : reports.find(
+          (report) =>
+            report.type === 'candidate-pair' &&
+            report.nominated &&
+            report.state === 'succeeded'
+        )
+    const inbound = reports.find(
+      (report) => report.type === 'inbound-rtp' && report.kind === 'video'
+    )
+    const localCandidate = pair ? stats.get(pair.localCandidateId) : undefined
+    const remoteCandidate = pair ? stats.get(pair.remoteCandidateId) : undefined
+
+    Object.assign(statsDiagnostics, {
+      statsCollected: true,
+      selectedCandidatePairState: pair?.state ?? null,
+      selectedCandidatePairNominated: pair?.nominated ?? null,
+      selectedCandidatePairRtt: pair?.currentRoundTripTime ?? null,
+      selectedCandidatePairBytesReceived: pair?.bytesReceived ?? null,
+      selectedCandidatePairBytesSent: pair?.bytesSent ?? null,
+      selectedCandidatePairRequestsSent: pair?.requestsSent ?? null,
+      selectedCandidatePairResponsesReceived: pair?.responsesReceived ?? null,
+      selectedCandidatePairConsentRequestsSent:
+        pair?.consentRequestsSent ?? null,
+      selectedCandidatePairLastPacketReceived:
+        pair?.lastPacketReceivedTimestamp ?? null,
+      selectedCandidatePairLastPacketSent:
+        pair?.lastPacketSentTimestamp ?? null,
+      localCandidateType: localCandidate?.candidateType ?? null,
+      localCandidateProtocol: localCandidate?.protocol ?? null,
+      localCandidateRelayProtocol: localCandidate?.relayProtocol ?? null,
+      remoteCandidateType: remoteCandidate?.candidateType ?? null,
+      remoteCandidateProtocol: remoteCandidate?.protocol ?? null,
+      inboundVideoPacketsReceived: inbound?.packetsReceived ?? null,
+      inboundVideoPacketsLost: inbound?.packetsLost ?? null,
+      inboundVideoBytesReceived: inbound?.bytesReceived ?? null,
+      inboundVideoFramesDecoded: inbound?.framesDecoded ?? null,
+      inboundVideoFramesDropped: inbound?.framesDropped ?? null,
+    })
+  } catch (error) {
+    Object.assign(statsDiagnostics, {
+      statsCollected: false,
+      statsCollectionError: errorToMessage(error),
+    })
+  }
+
+  await reportClientError({
+    code: ClientErrorCode.EngineWebrtcDisconnect,
+    message: `WebRTC disconnected: ${route}.`,
+    dedupeKey: `engine-webrtc-disconnect:${connection.id}`,
+    extra: {
+      source: 'RTCPeerConnection',
+      sourceTime,
+      shutdownRoute: route,
+      initiatedBy: 'unknown',
+      connectionId: connection.id,
+      modelingApiCallId: connection.apiCallId ?? null,
+      ...state,
+      ...statsDiagnostics,
+    },
+  })
+}
+
 export function createOnConnectionStateChange({
   dispatchEvent,
   connection,
@@ -161,14 +261,33 @@ export function createOnConnectionStateChange({
 }) {
   // https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/connectionstatechange_event
   // Event type: generic Event type...
-  const onConnectionStateChange = (event: any) => {
+  const onConnectionStateChange = (event: Event) => {
+    const peerConnection = event.target as RTCPeerConnection
     EngineDebugger.addLog({
       label: 'onConnectionStateChange',
       message: 'connectionstatechange',
-      metadata: { event, connectionState: event.target?.connectionState },
+      metadata: {
+        event,
+        connectionState: peerConnection.connectionState,
+        iceConnectionState: peerConnection.iceConnectionState,
+        iceGatheringState: peerConnection.iceGatheringState,
+        signalingState: peerConnection.signalingState,
+      },
     })
 
-    switch (event.target?.connectionState) {
+    const tearDownForWebrtcState = (route: WebrtcDisconnectRoute) => {
+      const options: ManagerTearDown = { route, initiatedBy: 'unknown' }
+      if (connection.recordShutdownTrigger(options)) {
+        void reportWebrtcDisconnect({
+          connection,
+          peerConnection,
+          route,
+        }).catch(reportRejection)
+      }
+      tearDownManager(options)
+    }
+
+    switch (peerConnection.connectionState) {
       // From what I understand, only after have we done the ICE song and
       // dance is it safest to connect the video tracks / stream
       case 'connected':
@@ -182,24 +301,15 @@ export function createOnConnectionStateChange({
         break
       case 'failed':
         dispatchEvent(new CustomEvent(EngineConnectionEvents.Offline, {}))
-        tearDownManager({
-          route: 'peer-connection-failed',
-          initiatedBy: 'unknown',
-        })
+        tearDownForWebrtcState('peer-connection-failed')
         break
       case 'disconnected':
         dispatchEvent(new CustomEvent(EngineConnectionEvents.Offline, {}))
-        tearDownManager({
-          route: 'peer-connection-disconnected',
-          initiatedBy: 'unknown',
-        })
+        tearDownForWebrtcState('peer-connection-disconnected')
         break
       case 'closed':
         dispatchEvent(new CustomEvent(EngineConnectionEvents.Offline, {}))
-        tearDownManager({
-          route: 'peer-connection-closed',
-          initiatedBy: 'unknown',
-        })
+        tearDownForWebrtcState('peer-connection-closed')
         break
       default:
         break
