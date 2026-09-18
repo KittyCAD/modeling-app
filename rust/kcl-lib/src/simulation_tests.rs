@@ -654,6 +654,10 @@ async fn execute(test_name: &str, render_to_png: bool) {
 }
 
 async fn execute_test(test: &Test, render_to_png: bool) {
+    miette::set_hook(Box::new(|_| {
+        Box::new(miette::MietteHandlerOpts::new().show_related_errors_as_nested().build())
+    }))
+    .unwrap();
     if test.kcl_versions.is_empty() {
         execute_once(test, render_to_png, None).await;
         return;
@@ -932,9 +936,6 @@ async fn execute_once(test: &Test, render_to_png: bool, kcl_version: Option<&str
                     // Snapshot the KCL error with a fancy graphical report.
                     // This looks like a Cargo compile error, with arrows pointing
                     // to source code, underlines, etc.
-                    let _ = miette::set_hook(Box::new(|_| {
-                        Box::new(miette::MietteHandlerOpts::new().show_related_errors_as_nested().build())
-                    }));
                     let report = error.clone().into_miette_report_with_outputs(&input).unwrap();
                     let report = miette::Report::new(report);
                     if previously_passed {
