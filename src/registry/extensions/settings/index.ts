@@ -21,7 +21,7 @@ import {
   projectLibrarySettingDefaultPoliciesValueSpec,
   projectLibrarySettingDefaultsValueSpec,
 } from '@src/registry/contracts/projectLibraries'
-import { appOverlayContributionsValueSpec } from '@src/registry/contracts/router'
+import { appOverlayContributionsValueSpec } from '@src/registry/contracts/appUrl'
 import {
   type SettingsRegistryService,
   settingsService,
