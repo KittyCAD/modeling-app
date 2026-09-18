@@ -109,12 +109,15 @@ async def test_kcl_session_context_manager(tmp_path, from_file):
 
     async with session as entered:
         assert entered is session
+        assert isinstance(session.outcome, kcl.ExecOutcome)
+        assert session.outcome.issues() == []
         report = await session.sketch_constraint_report()
         assert report.total_sketches() == 0
         assert report.is_complete is True
 
     # Context exit closes the session, and repeated close is harmless.
     await session.close()
+    assert session.outcome.report_all() == []
     with pytest.raises(Exception, match="Connection already closed"):
         async with session:
             pytest.fail("A closed session must not be entered")
@@ -173,6 +176,7 @@ solid = extrude(disk, length = 10mm)
         report = await session.sketch_constraint_report()
         assert report.total_sketches() == 1
         assert report.under_constrained[0].name == "profile"
+        assert session.outcome.sketch_constraint_report().total_sketches() == 1
         images = await session.snapshots(kcl.ImageFormat.Png, [])
         assert len(images) == 1
         assert bytes(images[0]).startswith(b"\x89PNG\r\n\x1a\n")
@@ -228,6 +232,16 @@ freeSketch = sketch(on = XY) {
             assert free.status == kcl.ConstraintKind.UnderConstrained
             assert free.free_count > 0
 
+        outcome = session.outcome
+        png = bytes(outcome.render_sketch_png("fixedSketch"))
+        assert png.startswith(b"\x89PNG\r\n\x1a\n")
+
+    # Local results remain usable after the connection and source are gone.
+    assert session.outcome.sketch_constraint_report().total_sketches() == 2
+    del session
+    assert outcome.sketch_constraint_report().total_sketches() == 2
+    assert bytes(outcome.render_sketch_png("fixedSketch")) == png
+
 
 @pytest.mark.asyncio
 async def test_kcl_session_sketch_constraint_report_preserves_warnings():
@@ -239,6 +253,13 @@ async def test_kcl_session_sketch_constraint_report_preserves_warnings():
         assert report.warnings
         assert any("angle" in warning for warning in report.warnings)
         assert report.is_complete is True
+        outcome = session.outcome
+
+    issues = outcome.issues()
+    warnings = [outcome.report(issue) for issue in issues if issue.is_warning()]
+    assert warnings == report.warnings
+    assert outcome.report_all() == [outcome.report(issue) for issue in issues]
+    assert session.outcome.report_all() == outcome.report_all()
 
 
 @pytest.mark.asyncio
@@ -403,11 +424,16 @@ async def test_kcl_mock_execute():
 
 
 @pytest.mark.asyncio
-async def test_duplicate_sketch_instances() -> None:
+@pytest.mark.parametrize("use_session", [False, True])
+async def test_duplicate_sketch_instances(use_session) -> None:
     fixture = os.path.join(
         tests_dir, "sketch_visualizer", "duplicate_names", "input.kcl"
     )
-    outcome = await kcl.mock_execute(fixture)
+    if use_session:
+        async with await kcl.new_kcl_session(fixture, mock=True) as session:
+            outcome = session.outcome
+    else:
+        outcome = await kcl.mock_execute(fixture)
     report = outcome.sketch_constraint_report()
     assert [s.instance_index for s in report.fully_constrained] == [0, 1]
     with pytest.raises(Exception, match="found 2 sketches named `profile`"):

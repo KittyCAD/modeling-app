@@ -2,6 +2,7 @@
 use std::future::Future;
 use std::path::Path;
 use std::path::PathBuf;
+use std::sync::Arc;
 
 use anyhow::Result;
 use kcl_api::UnitAngle;
@@ -280,9 +281,9 @@ async fn new_context_state(
 #[pyclass(from_py_object)]
 #[derive(Debug, Clone)]
 struct ExecOutcome {
-    inner: kcl_lib::ExecOutcome,
-    code: String,
-    filename: String,
+    inner: Arc<kcl_lib::ExecOutcome>,
+    code: Arc<str>,
+    filename: Arc<str>,
 }
 
 impl ExecOutcome {
@@ -390,9 +391,9 @@ async fn execute_impl(input: KclInput, mock: bool) -> PyResult<ExecOutcome> {
     };
     ctx.close().await;
     Ok(ExecOutcome {
-        inner: outcome,
-        code,
-        filename,
+        inner: Arc::new(outcome),
+        code: code.into(),
+        filename: filename.into(),
     })
 }
 
@@ -1300,6 +1301,7 @@ fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<kcl_api::UnitVolume>()?;
 
     m.add_class::<connection::KclSession>()?;
+    m.add_class::<ExecOutcome>()?;
     m.add_function(wrap_pyfunction!(connection::new_kcl_session, m)?)?;
     m.add_function(wrap_pyfunction!(connection::new_kcl_session_code, m)?)?;
 
