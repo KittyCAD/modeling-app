@@ -248,7 +248,7 @@ function setUpMoveToolCallbacks({
       getDrawingBufferSize: vi.fn((target: Vector2) => target.set(1_000, 800)),
     },
     getPlaneIntersectPoint: vi.fn(() => planeIntersectPoint),
-    getClientSceneScaleFactor: vi.fn(() => 1),
+    getClientSceneScaleFactor: vi.fn(() => (snapToGrid ? 0.01 : 1)),
     baseUnitMultiplier: 1,
     isAreaSelectActive,
   } as unknown as SceneInfra
@@ -320,7 +320,7 @@ function setUpMoveToolCallbacks({
             modeling: {
               snapToGrid: { current: snapToGrid },
               fixedSizeGrid: { current: true },
-              majorGridSpacing: { current: 2 },
+              majorGridSpacing: { current: 1 },
               minorGridsPerMajor: { current: 4 },
               snapsPerMinor: { current: 2 },
             },
@@ -2384,8 +2384,8 @@ describe('createOnDragCallback', () => {
         ctor: {
           type: 'Point',
           position: {
-            x: { type: 'Var', value: 20.25, units: 'Mm' },
-            y: { type: 'Var', value: 10.5, units: 'Mm' },
+            x: { type: 'Var', value: 20.375, units: 'Mm' },
+            y: { type: 'Var', value: 10.625, units: 'Mm' },
           },
         },
       },
@@ -3347,7 +3347,7 @@ describe('createOnDragCallback', () => {
     const dragSnappingDeps = createDragSnappingDeps()
     dragSnappingDeps.getGridSnapOptions.mockReturnValue({
       fixedSizeGrid: true,
-      majorGridSpacing: 2,
+      majorGridSpacing: 1,
       minorGridsPerMajor: 4,
       snapsPerMinor: 2,
       pixelsPerBaseUnit: 100,
@@ -3380,7 +3380,7 @@ describe('createOnDragCallback', () => {
     expect(dragSnappingDeps.onUpdateDragSnapping).toHaveBeenCalledWith(
       expect.objectContaining({
         target: { type: 'grid' },
-        position: [10.25, 20.5],
+        position: [10.375, 20.625],
       })
     )
     expect(editSegments.mock.calls[0]?.[2]).toEqual([
@@ -3389,14 +3389,14 @@ describe('createOnDragCallback', () => {
         ctor: {
           type: 'Point',
           position: {
-            x: { type: 'Var', value: 10.25, units: 'Mm' },
-            y: { type: 'Var', value: 20.5, units: 'Mm' },
+            x: { type: 'Var', value: 10.375, units: 'Mm' },
+            y: { type: 'Var', value: 20.625, units: 'Mm' },
           },
         },
       },
     ])
     expect(setLastSuccessfulDragFromPoint).toHaveBeenCalledWith(
-      expect.objectContaining({ x: 10.25, y: 20.5 })
+      expect.objectContaining({ x: 10.375, y: 20.625 })
     )
   })
 
@@ -3429,14 +3429,14 @@ describe('createOnDragCallback', () => {
 
       const snappedCenter = createPointApiObject({
         id: 1,
-        x: 20.25,
-        y: 10.5,
+        x: 20.375,
+        y: 10.625,
         owner: 4,
       })
       const snappedStart = createPointApiObject({
         id: 2,
-        x: 30.25,
-        y: 10.5,
+        x: 30.375,
+        y: 10.625,
         owner: 4,
       })
       const snappedObjects = [
@@ -3449,8 +3449,8 @@ describe('createOnDragCallback', () => {
         snappedObjects.push(
           createPointApiObject({
             id: 3,
-            x: 20.25,
-            y: 20.5,
+            x: 20.375,
+            y: 20.625,
             owner: 4,
           })
         )
@@ -3488,18 +3488,18 @@ describe('createOnDragCallback', () => {
       const ownerEdit = previewEdits.find(({ id }) => id === 4)
       expect(pointEdit?.ctor).toMatchObject({
         type: 'Point',
-        position: { x: { value: 30.25 }, y: { value: 10.5 } },
+        position: { x: { value: 30.375 }, y: { value: 10.625 } },
       })
       // Rust merges point/owner edits in order. Both must describe the same
       // snapped point, and the owner must translate without changing its radius.
       expect(ownerEdit?.ctor).toMatchObject({
         type: segmentType,
-        start: { x: { value: 30.25 }, y: { value: 10.5 } },
-        center: { x: { value: 20.25 }, y: { value: 10.5 } },
+        start: { x: { value: 30.375 }, y: { value: 10.625 } },
+        center: { x: { value: 20.375 }, y: { value: 10.625 } },
       })
       if (segmentType === 'Arc') {
         expect(ownerEdit?.ctor).toMatchObject({
-          end: { x: { value: 20.25 }, y: { value: 20.5 } },
+          end: { x: { value: 20.375 }, y: { value: 20.625 } },
         })
       }
 

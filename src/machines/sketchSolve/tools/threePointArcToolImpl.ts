@@ -10,7 +10,6 @@ import type { Coords2d } from '@src/lang/util'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import { roundOff } from '@src/lib/utils'
 import { getAngleDiff, lerp2d, subVec } from '@src/lib/utils2d'
 import {
   isArcSegment,
@@ -28,6 +27,7 @@ import {
   sendHoveredSnappingCandidate,
   updateToolSnappingPreview,
 } from '@src/machines/sketchSolve/tools/toolSnappingUtils'
+import { resolveSketchPoint } from '@src/machines/sketchSolve/tools/sketchCoordinates'
 import type { ActionArgs, AssignArgs, ProvidedActor } from 'xstate'
 
 export const TOOL_ID = 'Three-point arc tool'
@@ -241,16 +241,16 @@ async function editArcWithThreePoints({
         ctor: {
           type: 'Arc',
           center: {
-            x: { type: 'Var', value: roundOff(centerPoint[0]), units },
-            y: { type: 'Var', value: roundOff(centerPoint[1]), units },
+            x: { type: 'Var', value: centerPoint[0], units },
+            y: { type: 'Var', value: centerPoint[1], units },
           },
           start: {
-            x: { type: 'Var', value: roundOff(startPoint[0]), units },
-            y: { type: 'Var', value: roundOff(startPoint[1]), units },
+            x: { type: 'Var', value: startPoint[0], units },
+            y: { type: 'Var', value: startPoint[1], units },
           },
           end: {
-            x: { type: 'Var', value: roundOff(endPoint[0]), units },
-            y: { type: 'Var', value: roundOff(endPoint[1]), units },
+            x: { type: 'Var', value: endPoint[0], units },
+            y: { type: 'Var', value: endPoint[1], units },
           },
           direction,
         },
@@ -277,7 +277,7 @@ export function addFirstPointListener({ self, context }: ToolActionArgs) {
         mousePosition,
         mouseEvent: args.mouseEvent,
       })
-      const [x, y] = snappingCandidate?.position ?? mousePosition
+      const [x, y] = resolveSketchPoint(mousePosition, snappingCandidate)
       self.send({
         type: 'add point',
         data: [x, y],
@@ -327,7 +327,7 @@ export function addSecondPointListener({ self, context }: ToolActionArgs) {
         excludedPointIds:
           context.startPointId === undefined ? [] : [context.startPointId],
       })
-      const [x, y] = snappingCandidate?.position ?? mousePosition
+      const [x, y] = resolveSketchPoint(mousePosition, snappingCandidate)
       self.send({
         type: 'add point',
         data: [x, y],
@@ -396,7 +396,7 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
           context.arcEndPointId,
         ].filter((id): id is number => id !== undefined),
       })
-      const endPoint = snappingCandidate?.position ?? mousePosition
+      const endPoint = resolveSketchPoint(mousePosition, snappingCandidate)
       sendHoveredSnappingCandidate(self, snappingCandidate)
       updateToolSnappingPreview({
         sceneInfra: context.sceneInfra,
@@ -455,7 +455,7 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
           context.arcEndPointId,
         ].filter((id): id is number => id !== undefined),
       })
-      const [x, y] = snappingCandidate?.position ?? mousePosition
+      const [x, y] = resolveSketchPoint(mousePosition, snappingCandidate)
       self.send({
         type: 'add point',
         data: [x, y],
@@ -602,8 +602,8 @@ export async function addDraftPointActor({
     {
       type: 'Point',
       position: {
-        x: { type: 'Var', value: roundOff(point[0]), units },
-        y: { type: 'Var', value: roundOff(point[1]), units },
+        x: { type: 'Var', value: point[0], units },
+        y: { type: 'Var', value: point[1], units },
       },
     },
     'three-point-arc-draft-point',
@@ -678,16 +678,16 @@ export async function createArcActor({
   const segmentCtor: SegmentCtor = {
     type: 'Arc',
     start: {
-      x: { type: 'Var', value: roundOff(startPoint[0]), units },
-      y: { type: 'Var', value: roundOff(startPoint[1]), units },
+      x: { type: 'Var', value: startPoint[0], units },
+      y: { type: 'Var', value: startPoint[1], units },
     },
     end: {
-      x: { type: 'Var', value: roundOff(throughPoint[0]), units },
-      y: { type: 'Var', value: roundOff(throughPoint[1]), units },
+      x: { type: 'Var', value: throughPoint[0], units },
+      y: { type: 'Var', value: throughPoint[1], units },
     },
     center: {
-      x: { type: 'Var', value: roundOff(midpoint[0]), units },
-      y: { type: 'Var', value: roundOff(midpoint[1]), units },
+      x: { type: 'Var', value: midpoint[0], units },
+      y: { type: 'Var', value: midpoint[1], units },
     },
   }
 

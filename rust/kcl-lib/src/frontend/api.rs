@@ -375,6 +375,9 @@ impl From<(f64, UnitLength)> for Number {
 pub enum Expr {
     Number(Number),
     Var(Number),
+    /// A coordinate already chosen by a drawing tool or authored in KCL.
+    /// Serialize it without quantizing again, including fine or repeating grids.
+    VarExact(Number),
     Variable(String),
 }
 

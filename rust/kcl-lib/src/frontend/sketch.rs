@@ -288,6 +288,40 @@ pub enum SegmentCtor {
 }
 
 impl SegmentCtor {
+    /// Preserve tool-selected or retained authored coordinates when writing KCL.
+    /// Computed constructors keep the default rounding unless explicitly opted in.
+    pub fn with_exact_coordinates(mut self) -> Self {
+        let exact = |point: &mut Point2d<Expr>| {
+            for expr in [&mut point.x, &mut point.y] {
+                if let Expr::Var(number) = expr {
+                    *expr = Expr::VarExact(*number);
+                }
+            }
+        };
+        match &mut self {
+            Self::Point(point) => exact(&mut point.position),
+            Self::Line(line) => {
+                exact(&mut line.start);
+                exact(&mut line.end);
+            }
+            Self::Arc(arc) => {
+                exact(&mut arc.start);
+                exact(&mut arc.end);
+                exact(&mut arc.center);
+            }
+            Self::Circle(circle) => {
+                exact(&mut circle.start);
+                exact(&mut circle.center);
+            }
+            Self::ControlPointSpline(spline) => {
+                for point in &mut spline.points {
+                    exact(point);
+                }
+            }
+        }
+        self
+    }
+
     /// What kind of geometry is this (point, line, arc, etc)
     /// Suitable for use in user-facing messages.
     pub fn human_friendly_kind_with_article(&self) -> &'static str {

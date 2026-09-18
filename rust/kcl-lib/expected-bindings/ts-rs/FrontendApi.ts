@@ -104,7 +104,7 @@ export type Error = { msg: string, };
 
 export type ExistingSegmentCtor = { id: ApiObjectId, ctor: SegmentCtor, };
 
-export type Expr = { "type": "Number" } & Number | { "type": "Var" } & Number | { "type": "Variable" } & string;
+export type Expr = { "type": "Number" } & Number | { "type": "Var" } & Number | { "type": "VarExact" } & Number | { "type": "Variable" } & string;
 
 /**
  * Multiple fixed constraints, allowing callers to add fixed constraints on

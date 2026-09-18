@@ -120,9 +120,9 @@ describe('center arc grid preview', () => {
 
     await getOnMove()?.(moveEvent())
 
-    expect(getArcEndpoints(getArcCtor(editSegments))).toContainEqual([
-      9.14, 4.06,
-    ])
+    const end = getArcEndpoints(getArcCtor(editSegments))[1]
+    expect(Math.hypot(...end)).toBeCloseTo(10, 12)
+    expect(end[0] / end[1]).toBeCloseTo(9 / 4, 12)
     expect(updateToolSnappingPreview).toHaveBeenLastCalledWith({
       sceneInfra,
       target: null,
@@ -166,9 +166,9 @@ describe('center arc grid preview', () => {
 
     await getOnMove()?.(moveEvent())
 
-    expect(getArcEndpoints(getArcCtor(editSegments))).toContainEqual([
-      7.07, 7.07,
-    ])
+    const end = getArcEndpoints(getArcCtor(editSegments))[1]
+    expect(Math.hypot(...end)).toBeCloseTo(10, 12)
+    expect(end[0]).toBeCloseTo(end[1], 12)
     expect(updateToolSnappingPreview).toHaveBeenLastCalledWith({
       sceneInfra,
       target: pointCandidate,
