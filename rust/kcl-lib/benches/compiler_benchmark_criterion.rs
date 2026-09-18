@@ -28,7 +28,7 @@ pub fn bench_parse(c: &mut Criterion) {
 /// Generate and parse each program outside the timed loop to isolate execution.
 pub fn bench_mock(c: &mut Criterion) {
     let mut group = c.benchmark_group("no_engine_mock_execute_mike_stress_test");
-    for n in [3000] {
+    for n in [1000, 2000, 3000, 4000, 5000, 6000] {
         let program = kcl_lib::Program::parse_no_errs(&mike_stress_test_program(n)).unwrap();
         group.bench_with_input(BenchmarkId::from_parameter(n), &program, |b, program| {
             let rt = tokio::runtime::Runtime::new().unwrap();
