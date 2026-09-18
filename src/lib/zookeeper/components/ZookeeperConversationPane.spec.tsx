@@ -202,7 +202,6 @@ const createPaneProps = (
   } as PaneProps['zookeeperMode'],
   ...overrides,
 })
-
 const latestConversationProps = () => {
   const calls = conversationRender.mock.calls
   return calls[calls.length - 1][0] as ZookeeperConversationProps

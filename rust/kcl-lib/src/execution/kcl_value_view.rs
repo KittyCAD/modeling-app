@@ -362,7 +362,7 @@ impl From<KclValue> for KclValueView {
                     constrainable,
                 }
             }
-            KclValue::TagIdentifier(tag) => Self::TagIdentifier(tag_identifier_view(*tag)),
+            KclValue::TagIdentifier(tag) => Self::TagIdentifier { value: tag.value },
             KclValue::TagDeclarator(tag) => Self::TagDeclarator {
                 value: tag.inner.name.clone(),
             },

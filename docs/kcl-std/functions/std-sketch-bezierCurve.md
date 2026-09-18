@@ -65,7 +65,7 @@ example = extrude(exampleSketch, length = 10)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the bezierCurve function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-bezierCurve0_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-bezierCurve0_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-bezierCurve0.png"
@@ -89,7 +89,7 @@ startSketchOn(XY)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the bezierCurve function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-bezierCurve1_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-bezierCurve1_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-bezierCurve1.png"

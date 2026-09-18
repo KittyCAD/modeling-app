@@ -4,8 +4,14 @@
 set -euo pipefail
 
 if [[ -f "test-results/.last-run.json" ]]; then
-    # An outer retry must not accept a saved passed status with global errors.
-    node scripts/check-playwright-run.mjs
+    saved_run_status=0
+    node scripts/check-playwright-run.mjs --classify-for-outer-retry || saved_run_status=$?
+    if [[ $saved_run_status -eq 2 ]]; then
+        # --last-failed cannot recover global errors, so rerun the full shard.
+        rm -f test-results/.last-run.json test-results/report.json
+    elif [[ $saved_run_status -ne 0 ]]; then
+        exit "$saved_run_status"
+    fi
 fi
 
 if [[ ! -f "test-results/.last-run.json" ]]; then

@@ -84,8 +84,10 @@ description: Operations executed blend_with_edge_specifier_objects.kcl
             "value": -5.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -133,8 +135,10 @@ description: Operations executed blend_with_edge_specifier_objects.kcl
             "value": -5.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -186,8 +190,10 @@ description: Operations executed blend_with_edge_specifier_objects.kcl
                   "value": 0.0,
                   "ty": {
                     "type": "Default",
-                    "len": "mm",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "mm",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 "sideFaces": {
@@ -225,8 +231,10 @@ description: Operations executed blend_with_edge_specifier_objects.kcl
                   "value": 0.0,
                   "ty": {
                     "type": "Default",
-                    "len": "mm",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "mm",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 "sideFaces": {
@@ -299,7 +307,9 @@ description: Operations executed blend_with_edge_specifier_objects.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -327,7 +337,9 @@ description: Operations executed blend_with_edge_specifier_objects.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",

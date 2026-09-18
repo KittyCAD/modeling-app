@@ -52,17 +52,21 @@ description: Variables in memory after executing named_views_hide_helix.kcl
                       {
                         "n": 25.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -70,17 +74,21 @@ description: Variables in memory after executing named_views_hide_helix.kcl
                       {
                         "n": 35.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -172,17 +180,21 @@ description: Variables in memory after executing named_views_hide_helix.kcl
                       {
                         "n": 35.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -190,17 +202,21 @@ description: Variables in memory after executing named_views_hide_helix.kcl
                       {
                         "n": 35.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -292,17 +308,21 @@ description: Variables in memory after executing named_views_hide_helix.kcl
                       {
                         "n": 35.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -310,17 +330,21 @@ description: Variables in memory after executing named_views_hide_helix.kcl
                       {
                         "n": 25.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -412,17 +436,21 @@ description: Variables in memory after executing named_views_hide_helix.kcl
                       {
                         "n": 25.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -430,17 +458,21 @@ description: Variables in memory after executing named_views_hide_helix.kcl
                       {
                         "n": 25.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -537,10 +569,10 @@ description: Variables in memory after executing named_views_hide_helix.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 466,
-                    "end": 471,
+                    "commentStart": 546,
+                    "end": 551,
                     "moduleId": 0,
-                    "start": 466,
+                    "start": 546,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -561,10 +593,10 @@ description: Variables in memory after executing named_views_hide_helix.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 529,
-                    "end": 534,
+                    "commentStart": 609,
+                    "end": 614,
                     "moduleId": 0,
-                    "start": 529,
+                    "start": 609,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -585,10 +617,10 @@ description: Variables in memory after executing named_views_hide_helix.kcl
                     10.0
                   ],
                   "tag": {
-                    "commentStart": 593,
-                    "end": 598,
+                    "commentStart": 673,
+                    "end": 678,
                     "moduleId": 0,
-                    "start": 593,
+                    "start": 673,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -609,10 +641,10 @@ description: Variables in memory after executing named_views_hide_helix.kcl
                     10.0
                   ],
                   "tag": {
-                    "commentStart": 658,
-                    "end": 663,
+                    "commentStart": 738,
+                    "end": 743,
                     "moduleId": 0,
-                    "start": 658,
+                    "start": 738,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -715,10 +747,10 @@ description: Variables in memory after executing named_views_hide_helix.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 466,
-            "end": 471,
+            "commentStart": 546,
+            "end": 551,
             "moduleId": 0,
-            "start": 466,
+            "start": 546,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -729,10 +761,10 @@ description: Variables in memory after executing named_views_hide_helix.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 529,
-            "end": 534,
+            "commentStart": 609,
+            "end": 614,
             "moduleId": 0,
-            "start": 529,
+            "start": 609,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -743,10 +775,10 @@ description: Variables in memory after executing named_views_hide_helix.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 593,
-            "end": 598,
+            "commentStart": 673,
+            "end": 678,
             "moduleId": 0,
-            "start": 593,
+            "start": 673,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -757,10 +789,10 @@ description: Variables in memory after executing named_views_hide_helix.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 658,
-            "end": 663,
+            "commentStart": 738,
+            "end": 743,
             "moduleId": 0,
-            "start": 658,
+            "start": 738,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -782,10 +814,10 @@ description: Variables in memory after executing named_views_hide_helix.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 466,
-              "end": 471,
+              "commentStart": 546,
+              "end": 551,
               "moduleId": 0,
-              "start": 466,
+              "start": 546,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -806,10 +838,10 @@ description: Variables in memory after executing named_views_hide_helix.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 529,
-              "end": 534,
+              "commentStart": 609,
+              "end": 614,
               "moduleId": 0,
-              "start": 529,
+              "start": 609,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -830,10 +862,10 @@ description: Variables in memory after executing named_views_hide_helix.kcl
               10.0
             ],
             "tag": {
-              "commentStart": 593,
-              "end": 598,
+              "commentStart": 673,
+              "end": 678,
               "moduleId": 0,
-              "start": 593,
+              "start": 673,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -854,10 +886,10 @@ description: Variables in memory after executing named_views_hide_helix.kcl
               10.0
             ],
             "tag": {
-              "commentStart": 658,
-              "end": 663,
+              "commentStart": 738,
+              "end": 743,
               "moduleId": 0,
-              "start": 658,
+              "start": 738,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -955,6 +987,26 @@ description: Variables in memory after executing named_views_hide_helix.kcl
       "ccw": false,
       "cylinderId": null,
       "units": "mm"
+    }
+  },
+  "helixView": {
+    "type": "NamedView",
+    "value": {
+      "artifactId": "[uuid]",
+      "name": "Outer helix",
+      "camera": {
+        "look": {
+          "type": "oriented",
+          "orientation": "Isometric"
+        },
+        "target": null,
+        "distance": null,
+        "projection": "Orthographic"
+      },
+      "baseline": "Show",
+      "exceptIds": [
+        "[uuid]"
+      ]
     }
   },
   "helixVisible": {

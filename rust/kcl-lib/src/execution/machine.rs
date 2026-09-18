@@ -1192,13 +1192,15 @@ async fn step_eval(
                 Some(name) => crate::execution::StatementKind::Declaration { name },
                 None => crate::execution::StatementKind::Expression,
             };
-            let value = ctx.create_function_closure(
-                &function_expression,
-                &annotations,
-                &metadata,
-                statement_kind,
-                exec_state,
-            )?;
+            let value = ctx
+                .create_function_closure(
+                    &function_expression,
+                    &annotations,
+                    &metadata,
+                    statement_kind,
+                    exec_state,
+                )
+                .await?;
             Ok(Control::Apply(Applied::Value(value)))
         }
         Expr::PipeSubstitution(pipe_substitution) => match &decl_name {
@@ -1549,8 +1551,10 @@ async fn step_apply(
                 &value,
                 &node.ty,
                 exec_state,
+                ctx,
                 SourceRange::from(node.as_ref()),
-            )?;
+            )
+            .await?;
             Ok(Control::Apply(Applied::Value(value)))
         }
         Kont::LabelDone { node } => {
@@ -1768,7 +1772,7 @@ async fn step_block(
                     index += 1;
                     continue;
                 }
-                ctx.exec_type_declaration(ty, body_type, exec_state)?;
+                ctx.exec_type_declaration(ty, body_type, exec_state).await?;
                 last = None;
                 index += 1;
             }
