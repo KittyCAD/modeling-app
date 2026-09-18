@@ -36,6 +36,7 @@ __all__ = [
     "InputFormat3d",
     "InventorImportOptions",
     "KclErrorInfo",
+    "KclSession",
     "NxImportOptions",
     "ObjExportOptions",
     "ObjImportOptions",
@@ -89,6 +90,8 @@ __all__ = [
     "lint_and_fix_families",
     "mock_execute",
     "mock_execute_code",
+    "new_kcl_session",
+    "new_kcl_session_code",
     "parse",
     "parse_code",
     "relevant_file_extensions",
@@ -462,6 +465,30 @@ class KclErrorInfo:
     def phase(self) -> builtins.str: ...
     @property
     def text(self) -> builtins.str: ...
+
+@typing.final
+class KclSession:
+    r"""
+    Created after executing a KCL project.
+    Lets you call follow-up methods, like exporting or snapshotting, without re-executing the KCL.
+    """
+    async def close(self) -> None:
+        r"""
+        After calling this, calling any methods that use the connection will raise an exception.
+        """
+    async def measure(self, request: PhysicalPropertiesRequest) -> PhysicalPropertiesResponse:
+        r"""
+        Measure the active model's physical properties.
+        Supports choosing any of the available properties, like volume, mass, bounding box, or any combination of them.
+        """
+    async def snapshots(self, image_format: ImageFormat, snapshot_options: typing.Sequence[SnapshotOptions], zoom: builtins.bool) -> builtins.list[builtins.list[builtins.int]]:
+        r"""
+        Get 2D images of the model.
+        """
+    async def export(self, export_format: FileExportFormat) -> builtins.list[RawFile]:
+        r"""
+        Get 3D files containing this model.
+        """
 
 @typing.final
 class NxImportOptions:
@@ -1420,6 +1447,20 @@ async def mock_execute(path: builtins.str) -> zooExecOutcome:
 async def mock_execute_code(code: builtins.str) -> zooExecOutcome:
     r"""
     Mock execute the kcl code.
+    """
+
+async def new_kcl_session(path: builtins.str, mock: builtins.bool, highlight_edges: typing.Optional[builtins.bool]) -> zooKclSession:
+    r"""
+    Execute this KCL project.
+    Return an executed KCL project with its connection still available.
+    You can call follow-up methods, like exporting or snapshotting or measuring, on the returned session.
+    """
+
+async def new_kcl_session_code(code: builtins.str, mock: builtins.bool, highlight_edges: typing.Optional[builtins.bool]) -> zooKclSession:
+    r"""
+    Execute this KCL source code string.
+    Return an executed KCL project with its connection still available.
+    You can call follow-up methods, like exporting or snapshotting or measuring, on the returned session.
     """
 
 async def parse(path: builtins.str) -> builtins.bool:
