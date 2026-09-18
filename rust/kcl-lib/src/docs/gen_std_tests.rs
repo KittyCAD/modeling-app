@@ -497,9 +497,7 @@ fn docs_for_type(ty: &str, kcl_std: &ModData) -> Option<String> {
     None
 }
 
-/// Render the markdown page for a constant. Split out of
-/// `generate_const_from_kcl` so the rendering can be unit tested with a
-/// synthetic `ConstData`.
+/// Render the markdown page for a constant; split out so it can be unit tested.
 fn render_const_page(cnst: &ConstData, example_name: &str, kcl_std: &ModData) -> Result<String> {
     check_deprecation_attrs(&cnst.qual_name, &cnst.properties)?;
 
@@ -792,9 +790,8 @@ fn test_render_function_page_marks_arg_lifecycle() {
     );
 }
 
-/// Renders synthetic function, type, and constant pages so the added-in
-/// line is covered even while std declares no `added_in` item. The exact
-/// whitespace of real pages is pinned by test_generate_stdlib_markdown_docs.
+/// Synthetic pages cover the added-in line while std declares no `added_in`
+/// item; real-page whitespace is pinned by test_generate_stdlib_markdown_docs.
 #[test]
 fn test_render_pages_mark_added_in() {
     let kcl_std = crate::docs::kcl_doc::walk_stdlib();

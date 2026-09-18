@@ -1532,8 +1532,7 @@ impl ExecutorContext {
                         exec_state.mod_local.module_exports.push(name.clone());
                     }
                 }
-                // The module's skipped declarations come along with its names,
-                // so that a use of one here can explain what is missing.
+                // The skipped declarations come along with the names.
                 exec_state
                     .import_not_yet_added(&not_yet_added, matches!(import_stmt.visibility, ItemVisibility::Export));
             }
@@ -2246,16 +2245,9 @@ impl ExecutorContext {
     }
 }
 
-/// Whether to skip a declaration because the program's KCL version predates
-/// the declaration's `added_in` version. A skipped declaration is not
-/// evaluated, bound, or exported, exactly as if it were not in the file. The
-/// skip is recorded in the current module's scope under the memory key `key`
-/// would produce, so that a later failed lookup of that name can explain why;
-/// see [`ExecState::with_not_yet_added_hint`]. Shared by both executors.
-///
-/// Declarations without attributes take the early return, and `key` is only
-/// computed for a declaration that is skipped, so the common case does no
-/// extra work.
+/// Skip a declaration whose `added_in` the program predates, recording it under
+/// `key` so a failed lookup can explain why. Shared by both executors. `key` is
+/// only computed on a skip, so declarations without attributes cost nothing.
 pub(super) fn skip_if_not_yet_added(
     annotations: &[Node<Annotation>],
     key: impl FnOnce() -> String,
@@ -3463,8 +3455,7 @@ impl Node<Name> {
 
             // No value and no module of this name exists. If a type does, report
             // that instead: "is not defined" would point away from the mistake.
-            // Failing that, a declaration of this name may have been skipped
-            // because the program's KCL version predates it.
+            // Failing that, the name may be a declaration skipped as not yet added.
             return Err(type_used_as_value(exec_state, &self.name)
                 .unwrap_or_else(|| exec_state.with_not_yet_added_hint(&[&self.name.name], not_defined)));
         }
@@ -3567,8 +3558,7 @@ impl Node<Name> {
         }
 
         // Neither item or module is defined. The module may have skipped a
-        // declaration of this name because the program's KCL version
-        // predates it.
+        // declaration of this name as not yet added.
         if item_value.is_err() && mod_value.is_err() {
             return item_value
                 .map_err(|err| exec_state.with_not_yet_added_hint_from(&not_yet_added, &[&self.name.name], err));
