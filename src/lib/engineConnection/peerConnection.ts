@@ -157,7 +157,7 @@ export function createOnConnectionStateChange({
 }: {
   dispatchEvent: (event: Event) => boolean
   connection: Connection
-  tearDownManager: (options?: ManagerTearDown) => void
+  tearDownManager: (options: ManagerTearDown) => void
 }) {
   // https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/connectionstatechange_event
   // Event type: generic Event type...
@@ -182,15 +182,24 @@ export function createOnConnectionStateChange({
         break
       case 'failed':
         dispatchEvent(new CustomEvent(EngineConnectionEvents.Offline, {}))
-        tearDownManager({ peerConnectionFailed: true })
+        tearDownManager({
+          route: 'peer-connection-failed',
+          initiatedBy: 'unknown',
+        })
         break
       case 'disconnected':
         dispatchEvent(new CustomEvent(EngineConnectionEvents.Offline, {}))
-        tearDownManager({ peerConnectionDisconnected: true })
+        tearDownManager({
+          route: 'peer-connection-disconnected',
+          initiatedBy: 'unknown',
+        })
         break
       case 'closed':
         dispatchEvent(new CustomEvent(EngineConnectionEvents.Offline, {}))
-        tearDownManager({ peerConnectionClosed: true })
+        tearDownManager({
+          route: 'peer-connection-closed',
+          initiatedBy: 'unknown',
+        })
         break
       default:
         break
@@ -325,7 +334,7 @@ export const createOnDataChannel = ({
   startPingPong: () => void
   connectionPromiseResolve: (value: unknown) => void
   handleOnDataChannelMessage: (event: MessageEvent<any>) => void
-  tearDownManager: (options?: ManagerTearDown) => void
+  tearDownManager: (options: ManagerTearDown) => void
 }) => {
   const onDataChannel = (event: RTCDataChannelEvent) => {
     dispatchEvent(
@@ -482,7 +491,7 @@ export const createOnDataChannelClose = ({
   onDataChannelOpen: (event: Event) => void
   onDataChannelError: (event: Event) => void
   onDataChannelMessage: (event: MessageEvent<any>) => void
-  tearDownManager: (options?: ManagerTearDown) => void
+  tearDownManager: (options: ManagerTearDown) => void
 }) => {
   const onDataChannelClose = () => {
     EngineDebugger.addLog({
@@ -492,7 +501,10 @@ export const createOnDataChannelClose = ({
     unreliableDataChannel.removeEventListener('open', onDataChannelOpen)
     unreliableDataChannel.removeEventListener('error', onDataChannelError)
     unreliableDataChannel.removeEventListener('message', onDataChannelMessage)
-    tearDownManager({ dataChannelClosed: true })
+    tearDownManager({
+      route: 'data-channel-closed',
+      initiatedBy: 'unknown',
+    })
   }
   return onDataChannelClose
 }

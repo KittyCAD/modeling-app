@@ -168,7 +168,10 @@ export class ElectronZoo {
           return resolve(undefined)
         }
 
-        window.engineCommandManager.tearDown()
+        window.engineCommandManager.tearDown({
+          route: 'user-requested',
+          initiatedBy: 'client',
+        })
 
         // Keep polling (per js event tick) until state is Disconnected.
         const timeA = Date.now()
