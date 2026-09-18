@@ -1,31 +1,31 @@
 import { render, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it } from 'vitest'
-import { createRouterRegistryService } from '.'
-import { RouterServiceSync } from './RouterServiceSync'
+import { createAppUrlService } from '.'
+import { AppUrlServiceSync } from './RouterServiceSync'
 
-describe('RouterServiceSync', () => {
-  it('seeds the router service from React Router hooks', async () => {
-    const router = createRouterRegistryService()
+describe('AppUrlServiceSync', () => {
+  it('seeds the app URL service from React Router hooks', async () => {
+    const appUrl = createAppUrlService()
 
     render(
       <MemoryRouter initialEntries={['/initial?tab=unit#anchor']}>
-        <RouterServiceSync router={router} />
+        <AppUrlServiceSync appUrl={appUrl} />
       </MemoryRouter>
     )
 
     await waitFor(() => {
-      expect(router.isReady.value).toBe(true)
-      expect(router.location.value.pathname).toBe('/initial')
+      expect(appUrl.isReady.value).toBe(true)
+      expect(appUrl.location.value.pathname).toBe('/initial')
     })
 
-    expect(router.location.value.search).toBe('?tab=unit')
-    expect(router.location.value.hash).toBe('#anchor')
+    expect(appUrl.location.value.search).toBe('?tab=unit')
+    expect(appUrl.location.value.hash).toBe('#anchor')
 
-    void router.navigate('/next')
+    void appUrl.navigate('/next')
 
     await waitFor(() => {
-      expect(router.location.value.pathname).toBe('/next')
+      expect(appUrl.location.value.pathname).toBe('/next')
     })
   })
 })
