@@ -242,9 +242,14 @@ async fn load_and_parse(input: KclInput) -> PyResult<KclProgram> {
     })
 }
 
-fn executor_settings(current_file: Option<PathBuf>, highlight_edges: Option<bool>) -> kcl_lib::ExecutorSettings {
+fn executor_settings(
+    current_file: Option<PathBuf>,
+    highlight_edges: Option<bool>,
+    geometry_only: bool,
+) -> kcl_lib::ExecutorSettings {
     let mut settings: kcl_lib::ExecutorSettings = kcl_lib::ExecutorSettings {
         heartbeats: Some(HEARTBEAT_INTERVAL_SECONDS),
+        geometry_only,
         ..Default::default()
     };
     if let Some(current_file) = current_file {
@@ -262,8 +267,9 @@ async fn new_context_state(
     current_file: Option<PathBuf>,
     mock: bool,
     highlight_edges: Option<bool>,
+    geometry_only: bool,
 ) -> Result<(ExecutorContext, kcl_lib::ExecState)> {
-    let settings = executor_settings(current_file, highlight_edges);
+    let settings = executor_settings(current_file, highlight_edges, geometry_only);
     let ctx = if mock {
         ExecutorContext::new_mock(Some(settings)).await
     } else {
@@ -342,7 +348,12 @@ struct ExecutedKcl {
     filename: String,
 }
 
-async fn run_kcl(input: KclInput, mock: bool, highlight_edges: Option<bool>) -> PyResult<ExecutedKcl> {
+async fn run_kcl(
+    input: KclInput,
+    mock: bool,
+    highlight_edges: Option<bool>,
+    geometry_only: bool,
+) -> PyResult<ExecutedKcl> {
     let KclProgram {
         code,
         program,
@@ -350,7 +361,7 @@ async fn run_kcl(input: KclInput, mock: bool, highlight_edges: Option<bool>) -> 
         filename,
     } = load_and_parse(input).await?;
 
-    let (ctx, mut state) = new_context_state(path, mock, highlight_edges)
+    let (ctx, mut state) = new_context_state(path, mock, highlight_edges, geometry_only)
         .await
         .map_err(to_py_exception)?;
     let (env_ref, _) = match ctx.run(&program, &mut state).await {
@@ -370,7 +381,7 @@ async fn run_kcl(input: KclInput, mock: bool, highlight_edges: Option<bool>) -> 
     })
 }
 
-async fn execute_impl(input: KclInput, mock: bool) -> PyResult<ExecOutcome> {
+async fn execute_impl(input: KclInput, mock: bool, geometry_only: bool) -> PyResult<ExecOutcome> {
     let ExecutedKcl {
         ctx,
         state,
@@ -378,7 +389,7 @@ async fn execute_impl(input: KclInput, mock: bool) -> PyResult<ExecOutcome> {
         code,
         filename,
         ..
-    } = run_kcl(input, mock, None).await?;
+    } = run_kcl(input, mock, None, geometry_only).await?;
     let outcome = match state.into_exec_outcome(env_ref, &ctx).await {
         Ok(outcome) => outcome,
         Err(err) => {
@@ -412,7 +423,9 @@ async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstr
         }
     };
 
-    let (ctx, mut state) = new_context_state(path, false, None).await.map_err(to_py_exception)?;
+    let (ctx, mut state) = new_context_state(path, false, None, false)
+        .await
+        .map_err(to_py_exception)?;
     let result = match ctx.run(&program, &mut state).await {
         Ok((env_ref, _)) => {
             let outcome = state.into_exec_outcome(env_ref, &ctx).await.map_err(to_py_exception)?;
@@ -450,7 +463,7 @@ async fn execute_and_snapshot_views_impl(
     zoom: bool,
     highlight_edges: Option<bool>,
 ) -> PyResult<Vec<Vec<u8>>> {
-    let ExecutedKcl { ctx, .. } = run_kcl(input, false, highlight_edges).await?;
+    let ExecutedKcl { ctx, .. } = run_kcl(input, false, highlight_edges, false).await?;
     let result = take_snaps(&ctx, image_format, snapshot_options, zoom).await;
     ctx.close().await;
     result
@@ -459,8 +472,9 @@ async fn execute_and_snapshot_views_impl(
 async fn execute_and_measure_impl(
     input: KclInput,
     request: PhysicalPropertiesRequest,
+    geometry_only: bool,
 ) -> PyResult<PhysicalPropertiesResponse> {
-    let ExecutedKcl { ctx, .. } = run_kcl(input, false, None).await?;
+    let ExecutedKcl { ctx, .. } = run_kcl(input, false, None, geometry_only).await?;
     let result = measure_model_properties(&ctx, request).await;
     ctx.close().await;
     result
@@ -478,22 +492,27 @@ async fn execute_and_bounding_box_impl(
     input: KclInput,
     entity_ids: Vec<String>,
     output_unit: Option<UnitLength>,
+    geometry_only: bool,
 ) -> PyResult<BoundingBoxResponse> {
     let entity_ids = parse_entity_ids(entity_ids)?;
-    let ExecutedKcl { ctx, .. } = run_kcl(input, false, None).await?;
+    let ExecutedKcl { ctx, .. } = run_kcl(input, false, None, geometry_only).await?;
     let result = get_bounding_box(&ctx, entity_ids, output_unit).await;
     ctx.close().await;
     result
 }
 
-async fn execute_and_export_impl(input: KclInput, export_format: FileExportFormat) -> PyResult<Vec<RawFile>> {
+async fn execute_and_export_impl(
+    input: KclInput,
+    export_format: FileExportFormat,
+    geometry_only: bool,
+) -> PyResult<Vec<RawFile>> {
     let ExecutedKcl {
         ctx,
         program,
         code,
         filename,
         ..
-    } = run_kcl(input, false, None).await?;
+    } = run_kcl(input, false, None, geometry_only).await?;
 
     let settings = match program.meta_settings() {
         Ok(x) => x.unwrap_or_default(),
@@ -589,30 +608,30 @@ fn parse_code(code: String) -> PyResult<bool> {
 
 /// Execute the kcl code from a file path.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
-async fn execute(path: String) -> PyResult<ExecOutcome> {
-    spawn_py(async move { execute_impl(KclInput::Path(path), false).await }).await
+#[pyfunction(signature = (path, *, geometry_only=false))]
+async fn execute(path: String, geometry_only: bool) -> PyResult<ExecOutcome> {
+    spawn_py(async move { execute_impl(KclInput::Path(path), false, geometry_only).await }).await
 }
 
 /// Execute the kcl code.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
-async fn execute_code(code: String) -> PyResult<ExecOutcome> {
-    spawn_py(async move { execute_impl(KclInput::Code(code), false).await }).await
+#[pyfunction(signature = (code, *, geometry_only=false))]
+async fn execute_code(code: String, geometry_only: bool) -> PyResult<ExecOutcome> {
+    spawn_py(async move { execute_impl(KclInput::Code(code), false, geometry_only).await }).await
 }
 
 /// Mock execute the kcl code.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn mock_execute_code(code: String) -> PyResult<ExecOutcome> {
-    spawn_py(async move { execute_impl(KclInput::Code(code), true).await }).await
+    spawn_py(async move { execute_impl(KclInput::Code(code), true, false).await }).await
 }
 
 /// Mock execute the kcl code from a file path.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn mock_execute(path: String) -> PyResult<ExecOutcome> {
-    spawn_py(async move { execute_impl(KclInput::Path(path), true).await }).await
+    spawn_py(async move { execute_impl(KclInput::Path(path), true, false).await }).await
 }
 
 /// Execute a kcl file and return a report of sketch constraint status.
@@ -671,7 +690,7 @@ async fn import_and_snapshot_views(
 ) -> PyResult<Vec<Vec<u8>>> {
     let zoom = zoom.unwrap_or(true);
     spawn_py(async move {
-        let (ctx, _state) = new_context_state(None, false, highlight_edges)
+        let (ctx, _state) = new_context_state(None, false, highlight_edges, false)
             .await
             .map_err(to_py_exception)?;
         if let Err(e) = import(&ctx, filepaths, format).await {
@@ -785,43 +804,56 @@ async fn execute_code_and_snapshot(
 
 /// Execute a kcl file and measure physical properties of the resulting model.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
-async fn execute_and_measure(path: String, request: PhysicalPropertiesRequest) -> PyResult<PhysicalPropertiesResponse> {
-    spawn_py(async move { execute_and_measure_impl(KclInput::Path(path), request).await }).await
+#[pyfunction(signature = (path, request, *, geometry_only=false))]
+async fn execute_and_measure(
+    path: String,
+    request: PhysicalPropertiesRequest,
+    geometry_only: bool,
+) -> PyResult<PhysicalPropertiesResponse> {
+    spawn_py(async move { execute_and_measure_impl(KclInput::Path(path), request, geometry_only).await }).await
 }
 
 /// Execute the kcl code and measure physical properties of the resulting model.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
+#[pyfunction(signature = (code, request, *, geometry_only=false))]
 async fn execute_code_and_measure(
     code: String,
     request: PhysicalPropertiesRequest,
+    geometry_only: bool,
 ) -> PyResult<PhysicalPropertiesResponse> {
-    spawn_py(async move { execute_and_measure_impl(KclInput::Code(code), request).await }).await
+    spawn_py(async move { execute_and_measure_impl(KclInput::Code(code), request, geometry_only).await }).await
 }
 
 /// Execute a kcl file and return the model's bounding box.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (path, entity_ids=None, output_unit=None))]
+#[pyfunction(signature = (path, entity_ids=None, output_unit=None, *, geometry_only=false))]
 async fn execute_and_bounding_box(
     path: String,
     entity_ids: Option<Vec<String>>,
     output_unit: Option<UnitLength>,
+    geometry_only: bool,
 ) -> PyResult<BoundingBoxResponse> {
     let entity_ids = entity_ids.unwrap_or_default();
-    spawn_py(async move { execute_and_bounding_box_impl(KclInput::Path(path), entity_ids, output_unit).await }).await
+    spawn_py(async move {
+        execute_and_bounding_box_impl(KclInput::Path(path), entity_ids, output_unit, geometry_only).await
+    })
+    .await
 }
 
 /// Execute the kcl code and return the model's bounding box.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (code, entity_ids=None, output_unit=None))]
+#[pyfunction(signature = (code, entity_ids=None, output_unit=None, *, geometry_only=false))]
 async fn execute_code_and_bounding_box(
     code: String,
     entity_ids: Option<Vec<String>>,
     output_unit: Option<UnitLength>,
+    geometry_only: bool,
 ) -> PyResult<BoundingBoxResponse> {
     let entity_ids = entity_ids.unwrap_or_default();
-    spawn_py(async move { execute_and_bounding_box_impl(KclInput::Code(code), entity_ids, output_unit).await }).await
+    spawn_py(async move {
+        execute_and_bounding_box_impl(KclInput::Code(code), entity_ids, output_unit, geometry_only).await
+    })
+    .await
 }
 
 /// Customize a snapshot.
@@ -1157,16 +1189,24 @@ async fn get_bounding_box(
 
 /// Execute a kcl file and export it to a specific file format.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
-async fn execute_and_export(path: String, export_format: FileExportFormat) -> PyResult<Vec<RawFile>> {
-    spawn_py(async move { execute_and_export_impl(KclInput::Path(path), export_format).await }).await
+#[pyfunction(signature = (path, export_format, *, geometry_only=false))]
+async fn execute_and_export(
+    path: String,
+    export_format: FileExportFormat,
+    geometry_only: bool,
+) -> PyResult<Vec<RawFile>> {
+    spawn_py(async move { execute_and_export_impl(KclInput::Path(path), export_format, geometry_only).await }).await
 }
 
 /// Execute the kcl code and export it to a specific file format.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
-async fn execute_code_and_export(code: String, export_format: FileExportFormat) -> PyResult<Vec<RawFile>> {
-    spawn_py(async move { execute_and_export_impl(KclInput::Code(code), export_format).await }).await
+#[pyfunction(signature = (code, export_format, *, geometry_only=false))]
+async fn execute_code_and_export(
+    code: String,
+    export_format: FileExportFormat,
+    geometry_only: bool,
+) -> PyResult<Vec<RawFile>> {
+    spawn_py(async move { execute_and_export_impl(KclInput::Code(code), export_format, geometry_only).await }).await
 }
 
 /// Format the kcl code. This will return the formatted code.
@@ -1361,16 +1401,23 @@ mod tests {
 
     #[test]
     fn executor_settings_preserve_default_edge_visibility_without_override() {
-        let settings = executor_settings(None, None);
+        let settings = executor_settings(None, None, false);
 
         assert!(settings.highlight_edges);
     }
 
     #[test]
     fn executor_settings_apply_edge_visibility_override() {
-        let settings = executor_settings(None, Some(false));
+        let settings = executor_settings(None, Some(false), false);
 
         assert!(!settings.highlight_edges);
+    }
+
+    #[test]
+    fn executor_settings_enable_geometry_only_execution() {
+        let settings = executor_settings(None, None, true);
+
+        assert!(settings.geometry_only);
     }
 
     /// Cube and cylinder positioned so they do not overlap, then subtracted.
@@ -1402,7 +1449,7 @@ result = subtract(cube, tools = [cylinder])
 
     #[tokio::test(flavor = "multi_thread")]
     async fn exec_outcome_report_renders_csg_no_overlap_warning() {
-        let outcome = execute_impl(KclInput::Code(NO_OVERLAP_SUBTRACT_KCL.to_string()), false)
+        let outcome = execute_impl(KclInput::Code(NO_OVERLAP_SUBTRACT_KCL.to_string()), false, false)
             .await
             .expect("execute_impl should succeed for valid non-overlapping subtract");
 
@@ -1443,7 +1490,7 @@ result = subtract(cube, tools = [cylinder])
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_exec_outcome_report_renders_imported_module_warning_against_imported_source() {
         let project_dir = concat!(env!("CARGO_MANIFEST_DIR"), "/files/imported_warning");
-        let outcome = execute_impl(KclInput::Path(project_dir.to_owned()), true)
+        let outcome = execute_impl(KclInput::Path(project_dir.to_owned()), true, false)
             .await
             .expect("mock execute_impl should succeed for a project that only warns");
 
