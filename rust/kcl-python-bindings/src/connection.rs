@@ -100,6 +100,7 @@ impl KclSession {
 
     /// Measure the active model's physical properties.
     /// Supports choosing any of the available properties, like volume, mass, bounding box, or any combination of them.
+    /// It is NOT safe to concurrently call methods on this object. Only call one of measure, export, etc at a time.
     pub async fn measure(&self, request: PhysicalPropertiesRequest) -> PyResult<PhysicalPropertiesResponse> {
         if self.is_closed {
             return Err(PyException::new_err("Connection already closed"));
@@ -110,6 +111,7 @@ impl KclSession {
 
     /// Analyze the executed sketches and report their constraint status and execution issues.
     /// Uses the saved execution state without executing KCL again.
+    /// It is NOT safe to concurrently call methods on this object. Only call one of measure, export, etc at a time.
     pub async fn sketch_constraint_report(&self) -> PyResult<SketchConstraintReport> {
         if self.is_closed {
             return Err(PyException::new_err("Connection already closed"));
@@ -133,6 +135,7 @@ impl KclSession {
     }
 
     /// Get 2D images of the model.
+    /// It is NOT safe to concurrently call methods on this object. Only call one of measure, export, etc at a time.
     #[pyo3(signature = (image_format, snapshot_options, *, zoom=true))]
     pub async fn snapshots(
         &self,
@@ -148,6 +151,7 @@ impl KclSession {
     }
 
     /// Get 3D files containing this model.
+    /// It is NOT safe to concurrently call methods on this object. Only call one of measure, export, etc at a time.
     pub async fn export(&self, export_format: FileExportFormat) -> PyResult<Vec<RawFile>> {
         if self.is_closed {
             return Err(PyException::new_err("Connection already closed"));
