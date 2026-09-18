@@ -165,10 +165,12 @@ async function reportWebrtcDisconnect({
   connection,
   peerConnection,
   route,
+  initiatedBy,
 }: {
   connection: Connection
   peerConnection: RTCPeerConnection
   route: WebrtcDisconnectRoute
+  initiatedBy: ManagerTearDown['initiatedBy']
 }) {
   const sourceTime = new Date().toISOString()
   const state = {
@@ -242,7 +244,7 @@ async function reportWebrtcDisconnect({
       source: 'RTCPeerConnection',
       sourceTime,
       shutdownRoute: route,
-      initiatedBy: 'unknown',
+      initiatedBy,
       connectionId: connection.id,
       modelingApiCallId: connection.apiCallId ?? null,
       ...state,
@@ -277,12 +279,15 @@ export function createOnConnectionStateChange({
     })
 
     const tearDownForWebrtcState = (route: WebrtcDisconnectRoute) => {
-      const options: ManagerTearDown = { route, initiatedBy: 'unknown' }
+      const initiatedBy =
+        route === 'peer-connection-closed' ? 'client' : 'unknown'
+      const options: ManagerTearDown = { route, initiatedBy }
       if (connection.recordShutdownTrigger(options)) {
         void reportWebrtcDisconnect({
           connection,
           peerConnection,
           route,
+          initiatedBy,
         }).catch(reportRejection)
       }
       tearDownManager(options)
@@ -631,6 +636,7 @@ export const createOnDataChannelClose = ({
         connection,
         peerConnection,
         route: 'data-channel-closed',
+        initiatedBy: options.initiatedBy,
       }).catch(reportRejection)
     }
     tearDownManager(options)
