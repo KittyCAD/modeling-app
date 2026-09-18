@@ -13,8 +13,8 @@ description: Lints mounting-plate.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      2723,
-      3198,
+      2745,
+      3220,
       0
     ],
     "overridden": false,

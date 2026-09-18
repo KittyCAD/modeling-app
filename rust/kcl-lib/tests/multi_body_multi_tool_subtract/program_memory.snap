@@ -8,8 +8,10 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "value": 6.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "boreDiameter": {
@@ -17,8 +19,10 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "value": 1.5,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "extrude001": {
@@ -26,6 +30,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -146,17 +152,17 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "YZ",
           "objectId": 0,
+          "kind": "YZ",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -200,7 +206,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -213,6 +220,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -327,7 +336,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -340,6 +350,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -508,7 +520,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -521,6 +534,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -689,7 +704,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -702,6 +718,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -816,7 +834,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -832,6 +851,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -914,7 +935,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -927,6 +949,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1009,7 +1033,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1022,6 +1047,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1104,7 +1131,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1117,6 +1145,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1199,7 +1229,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1214,8 +1245,10 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "value": 2.5,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "mountCenterToCenter": {
@@ -1223,8 +1256,10 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "value": 1.625,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "portCenterToCenter": {
@@ -1232,8 +1267,10 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "value": 3.875,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "profile001": {
@@ -1319,17 +1356,17 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "YZ",
         "objectId": 0,
+        "kind": "YZ",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -1373,7 +1410,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "profile002": {
@@ -1449,7 +1487,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "profile003": {
@@ -1550,7 +1589,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "profile004": {
@@ -1684,7 +1724,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "profile005": {
@@ -1818,7 +1859,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "profile006": {
@@ -1894,7 +1936,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "profile007": {
@@ -1995,7 +2038,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "profile008": {
@@ -2071,7 +2115,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "profile009": {
@@ -2147,7 +2192,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "profile010": {
@@ -2223,7 +2269,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "profile011": {
@@ -2299,21 +2346,19 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "rectangleSegmentA001": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "rectangleSegmentA001"
   },
   "rectangleSegmentA002": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "rectangleSegmentA002"
   },
   "rectangleSegmentA003": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "rectangleSegmentA003"
   },
@@ -2322,8 +2367,10 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "value": 0.625,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "rodThreadLength": {
@@ -2331,8 +2378,10 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "value": 0.75,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "rodThreadSize": {
@@ -2340,8 +2389,10 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "value": 0.438,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "sketch001": {
@@ -2349,8 +2400,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "YZ",
       "objectId": 0,
+      "kind": "YZ",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -2517,8 +2568,10 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "width": {
@@ -2526,8 +2579,10 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "value": 2.5,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   }
 }

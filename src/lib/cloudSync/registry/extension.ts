@@ -22,8 +22,10 @@ import {
   retryCloudSync,
   setCloudSyncOpenedProject,
   startCloudSyncProject,
+  syncCloudSyncProjectNow,
 } from '@src/lib/cloudSync'
 import { getCloudProjectLibraryMaterializationDirectoryPath } from '@src/lib/cloudSync/paths'
+import { CLOUD_SYNC_PLUGIN_ID } from '@src/lib/cloudSync/registry/constants'
 import {
   type CloudSyncRegistryRuntimeConfig,
   type CloudSyncRegistryService,
@@ -47,8 +49,6 @@ import {
   settingsService,
 } from '@src/registry/contracts/settings'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
-
-const CLOUD_SYNC_PLUGIN_ID = 'cloud-sync'
 
 type SettingsSnapshot = ReturnType<
   SettingsRegistryService['actor']['getSnapshot']
@@ -284,6 +284,7 @@ export const cloudSyncExtension = defineRegistryItemFactory((ctx) => {
     retry: retryCloudSync,
     setOpenedProject: setCloudSyncOpenedProject,
     startProjectSync: startCloudSyncProject,
+    syncNow: syncCloudSyncProjectNow,
     disconnectProjectSync: disconnectCloudSyncProject,
     deleteRemoteProject: deleteRemoteCloudProject,
     deleteLocalProjectRealizations: deleteCloudSyncLocalProjectRealizations,

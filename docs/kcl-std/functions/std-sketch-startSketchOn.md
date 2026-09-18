@@ -21,6 +21,8 @@ startSketchOn(
 
 This is part of sketch v1 and is deprecated in favor of
 [sketch-solve](/docs/kcl-std/modules/std-solver).
+Legacy sketch functions cannot be used with constraints; strongly prefer
+a [`sketch` block](/docs/kcl-lang/sketches) instead.
 
 ### Sketch on Face Behavior
 
@@ -132,7 +134,7 @@ example003 = extrude(exampleSketch003, length = 5)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the startSketchOn function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-startSketchOn0_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-startSketchOn0_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-startSketchOn0.png"
@@ -178,7 +180,7 @@ example003 = extrude(exampleSketch003, length = 5)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the startSketchOn function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-startSketchOn1_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-startSketchOn1_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-startSketchOn1.png"
@@ -222,7 +224,7 @@ example003 = extrude(exampleSketch003, length = 5)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the startSketchOn function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-startSketchOn2_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-startSketchOn2_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-startSketchOn2.png"
@@ -261,7 +263,7 @@ example002 = extrude(exampleSketch002, length = 5)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the startSketchOn function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-startSketchOn3_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-startSketchOn3_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-startSketchOn3.png"
@@ -307,7 +309,7 @@ example002 = extrude(exampleSketch002, length = 5)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the startSketchOn function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-startSketchOn4_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-startSketchOn4_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-startSketchOn4.png"
@@ -338,7 +340,7 @@ a1 = startSketchOn({
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the startSketchOn function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-startSketchOn5_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-startSketchOn5_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-startSketchOn5.png"
@@ -371,7 +373,7 @@ subtract(cube001, tools = cube002)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the startSketchOn function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-startSketchOn6_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-startSketchOn6_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-startSketchOn6.png"
@@ -415,7 +417,7 @@ tower = extrude(sideSketch, length = 1mm)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the startSketchOn function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-startSketchOn7_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-startSketchOn7_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-startSketchOn7.png"

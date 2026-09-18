@@ -2172,6 +2172,7 @@ description: Result of parsing zds_extrude_fillet_top_edge.kcl
       }
     ],
     "moduleId": 0,
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

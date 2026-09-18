@@ -11,6 +11,7 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use crate::KclError;
+use crate::KclVersion;
 use crate::SourceRange;
 use crate::errors::KclErrorDetails;
 use crate::errors::Severity;
@@ -21,7 +22,7 @@ use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::ObjectProperty;
 
 /// Annotations which should cause re-execution if they change.
-pub(super) const SIGNIFICANT_ATTRS: [&str; 3] = [SETTINGS, NO_PRELUDE, WARNINGS];
+pub(super) const SIGNIFICANT_ATTRS: [&str; 4] = [SETTINGS, NO_PRELUDE, WARNINGS, DIAGNOSTICS];
 
 pub(crate) const SETTINGS: &str = "settings";
 pub(crate) const SETTINGS_UNIT_LENGTH: &str = "defaultLengthUnit";
@@ -30,8 +31,10 @@ pub(crate) const SETTINGS_VERSION: &str = "kclVersion";
 pub(crate) const SETTINGS_EXPERIMENTAL_FEATURES: &str = "experimentalFeatures";
 
 pub(super) const NO_PRELUDE: &str = "no_std";
+pub(crate) const ADDED_IN: &str = "added_in";
 pub(crate) const DEPRECATED: &str = "deprecated";
 pub(crate) const DEPRECATED_SINCE: &str = "deprecated_since";
+pub(crate) const REMOVED_IN: &str = "removed_in";
 pub(crate) const DOC_CATEGORY: &str = "doc_category";
 pub(crate) const EXPERIMENTAL: &str = "experimental";
 pub(crate) const INCLUDE_IN_FEATURE_TREE: &str = "feature_tree";
@@ -59,7 +62,11 @@ pub(super) const IMPL_VALUES: [&str; 6] = [
     IMPL_RUST_CONSTRAINABLE,
 ];
 
+/// Customizes how diagnostics are reported, in KCL 2 or earlier.
 pub(crate) const WARNINGS: &str = "warnings";
+/// Customizes how diagnostics are reported, in KCL 3.0 and later.
+/// KCL 3.0 renamed `@warnings` to `@diagnostics`.
+pub(crate) const DIAGNOSTICS: &str = "diagnostics";
 pub(crate) const WARN_ALLOW: &str = "allow";
 pub(crate) const WARN_DENY: &str = "deny";
 pub(crate) const WARN_WARN: &str = "warn";
@@ -174,6 +181,17 @@ pub(super) fn is_significant(attr: &&Node<Annotation>) -> bool {
     }
 }
 
+/// The name of the attribute that customizes how diagnostics are reported
+/// under the given KCL version: `warnings` before KCL 3.0 and `diagnostics`
+/// in KCL 3.0 and later.
+pub(super) fn diagnostics_attr_name(version: KclVersion) -> &'static str {
+    if version >= KclVersion::V3Preview {
+        DIAGNOSTICS
+    } else {
+        WARNINGS
+    }
+}
+
 pub(super) fn expect_properties<'a>(
     for_key: &'static str,
     annotation: &'a Node<Annotation>,
@@ -200,12 +218,17 @@ pub(super) fn expect_ident(expr: &Expr) -> Result<&str, KclError> {
     )))
 }
 
+/// Parses the value of an `allow` or `deny` property of the attribute named
+/// `attr_name`, which is used in error messages.
 pub(super) fn many_of(
     expr: &Expr,
     of: &[&'static str],
+    attr_name: &str,
     source_range: SourceRange,
 ) -> Result<Vec<&'static str>, KclError> {
-    const UNEXPECTED_MSG: &str = "Unexpected warnings value, expected a name or array of names, e.g., `unknownUnits` or `[unknownUnits, deprecated]`";
+    let unexpected_msg = format!(
+        "Unexpected {attr_name} value, expected a name or array of names, e.g., `unknownUnits` or `[unknownUnits, deprecated]`"
+    );
 
     let values = match expr {
         Expr::Name(name) => {
@@ -213,7 +236,7 @@ pub(super) fn many_of(
                 vec![*name]
             } else {
                 return Err(KclError::new_semantic(KclErrorDetails::new(
-                    UNEXPECTED_MSG.to_owned(),
+                    unexpected_msg,
                     vec![expr.into()],
                 )));
             }
@@ -228,7 +251,7 @@ pub(super) fn many_of(
                     continue;
                 }
                 return Err(KclError::new_semantic(KclErrorDetails::new(
-                    UNEXPECTED_MSG.to_owned(),
+                    unexpected_msg,
                     vec![e.into()],
                 )));
             }
@@ -236,12 +259,15 @@ pub(super) fn many_of(
         }
         _ => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                UNEXPECTED_MSG.to_owned(),
+                unexpected_msg,
                 vec![expr.into()],
             )));
         }
     };
 
+    // Each value names one diagnostic, so use the singular form of the
+    // attribute name: `warning` or `diagnostic`.
+    let noun = attr_name.strip_suffix('s').unwrap_or(attr_name);
     values
         .into_iter()
         .map(|v| {
@@ -249,7 +275,7 @@ pub(super) fn many_of(
                 .find(|vv| **vv == v)
                 .ok_or_else(|| {
                     KclError::new_semantic(KclErrorDetails::new(
-                        format!("Unexpected warning value: `{v}`; accepted values: {}", of.join(", "),),
+                        format!("Unexpected {noun} value: `{v}`; accepted values: {}", of.join(", "),),
                         vec![source_range],
                     ))
                 })
@@ -303,9 +329,9 @@ impl Default for FnAttrs {
     }
 }
 
-/// A constraint on a KCL version, e.g. the threshold that `@(deprecated_since =
-/// "2.0")` describes. Stored as the parsed component list so comparisons are
-/// numeric, not lexical.
+/// A constraint on a KCL version, e.g. the threshold that `@(added_in = "3.0")`,
+/// `@(deprecated_since = "2.0")`, or `@(removed_in = "3.0")` describes.
+/// Stored as the parsed component list so comparisons are numeric, not lexical.
 ///
 /// Distinct from the concrete `kclVersion` set in `@settings(...)`: this type
 /// represents a version *boundary*, and we expect to grow more constraint kinds
@@ -326,6 +352,12 @@ impl VersionConstraint {
             .collect::<Option<Vec<_>>>()?;
         if parts.is_empty() { None } else { Some(Self(parts)) }
     }
+
+    /// Whether this version boundary comes strictly before `other`, comparing
+    /// components numerically, like [`version_ge`] does for concrete versions.
+    pub(crate) fn is_before(&self, other: &Self) -> bool {
+        self.0 < other.0
+    }
 }
 
 impl fmt::Display for VersionConstraint {
@@ -344,12 +376,13 @@ impl fmt::Display for VersionConstraint {
 
 /// Returns true when the concrete `version` (e.g., from `@settings(kclVersion = ...)`)
 /// is greater than or equal to the `constraint`. Returns false if `version` cannot be
-/// parsed as a dotted integer version.
+/// parsed as a dotted integer version with an optional pre-release suffix.
 pub(crate) fn version_ge(version: &str, constraint: &VersionConstraint) -> bool {
-    let Some(parsed): Option<Vec<u32>> = version.split('.').map(|p| p.parse::<u32>().ok()).collect() else {
+    let release = version.split_once('-').map_or(version, |(release, _)| release);
+    let Some(parsed) = VersionConstraint::parse(release) else {
         return false;
     };
-    parsed >= constraint.0
+    parsed.0 >= constraint.0
 }
 
 pub(super) fn get_fn_attrs(
@@ -464,6 +497,17 @@ mod tests {
     }
 
     #[test]
+    fn version_constraint_is_before_compares_numerically() {
+        assert!(vc("2.0").is_before(&vc("3.0")));
+        assert!(vc("2.9").is_before(&vc("2.10")));
+        assert!(vc("9.0").is_before(&vc("10.0")));
+        assert!(vc("3.0").is_before(&vc("3.0.1")));
+        assert!(!vc("3.0").is_before(&vc("3.0")));
+        assert!(!vc("3.0").is_before(&vc("2.0")));
+        assert!(!vc("2.10").is_before(&vc("2.9")));
+    }
+
+    #[test]
     fn version_constraint_display_round_trips() {
         assert_eq!(vc("1.0").to_string(), "1.0");
         assert_eq!(vc("2.1.3").to_string(), "2.1.3");
@@ -482,5 +526,11 @@ mod tests {
         assert!(!version_ge("1.99", &vc("2.0")));
         // An unparsable concrete version never satisfies the constraint.
         assert!(!version_ge("bogus", &vc("1.0")));
+    }
+
+    #[test]
+    fn version_ge_supports_prerelease_versions() {
+        assert!(version_ge("3.0-preview", &vc("2.0")));
+        assert!(!version_ge("3.0-preview", &vc("4.0")));
     }
 }

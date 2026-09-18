@@ -159,6 +159,7 @@ export const Settings = () => {
         >
           <Dialog.Panel
             data-testid="settings-dialog-panel"
+            data-command-bar-host
             className="rounded relative mx-auto bg-chalkboard-10 dark:bg-chalkboard-100 border dark:border-chalkboard-70 w-[90vw] h-[80vh] max-h-[calc(100vh-2rem)] shadow-lg flex flex-col gap-8"
           >
             <div className="p-5 pb-0 flex justify-between items-center">

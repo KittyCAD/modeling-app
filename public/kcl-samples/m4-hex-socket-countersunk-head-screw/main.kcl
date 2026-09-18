@@ -1,6 +1,6 @@
 // M4 Hex Socket Countersunk Head Screw
 // Simplified M4 countersunk screw with a conical flush-mount head and internal hex socket drive for fast layout and fit checks.
-// Categories: Fasteners
+// Categories: Mechanical Components
 
 @settings(defaultLengthUnit = mm, kclVersion = 2.0)
 

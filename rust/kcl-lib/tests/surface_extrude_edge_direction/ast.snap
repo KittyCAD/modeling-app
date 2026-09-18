@@ -1601,6 +1601,7 @@ description: Result of parsing surface_extrude_edge_direction.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

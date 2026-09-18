@@ -31,6 +31,8 @@ pub enum RuntimeFlag {
 #[ts(export)]
 pub struct KclRuntimeFlags {
     #[serde(default)]
+    pub enable_z0006_lint: RuntimeFlag,
+    #[serde(default)]
     pub use_cek_executor: RuntimeFlag,
     #[serde(default)]
     pub use_new_lexer_parser: RuntimeFlag,
@@ -38,6 +40,7 @@ pub struct KclRuntimeFlags {
 
 impl KclRuntimeFlags {
     pub const DEFAULT: Self = Self {
+        enable_z0006_lint: RuntimeFlag::Unset,
         use_cek_executor: RuntimeFlag::Unset,
         use_new_lexer_parser: RuntimeFlag::Unset,
     };
@@ -66,6 +69,10 @@ pub fn kcl_runtime_flags() -> KclRuntimeFlags {
         Ok(guard) => *guard,
         Err(poisoned) => *poisoned.into_inner(),
     }
+}
+
+pub(crate) fn z0006_refactor_metadata_enabled() -> bool {
+    kcl_runtime_flags().enable_z0006_lint == RuntimeFlag::On
 }
 
 pub(crate) trait RuntimeFlagResolve {
@@ -111,6 +118,7 @@ mod tests {
         assert_eq!(
             flags,
             KclRuntimeFlags {
+                enable_z0006_lint: RuntimeFlag::Unset,
                 use_cek_executor: RuntimeFlag::Unset,
                 use_new_lexer_parser: RuntimeFlag::On,
             }

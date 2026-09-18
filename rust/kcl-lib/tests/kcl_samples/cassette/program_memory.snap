@@ -8,8 +8,8 @@ description: Variables in memory after executing cassette.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 0,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 16.66875,
@@ -43,37 +43,37 @@ description: Variables in memory after executing cassette.kcl
     "type": "Number",
     "value": 0.25,
     "ty": {
-      "in": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "in"
+      }
     }
   },
   "flankRadius": {
     "type": "Number",
     "value": 0.185,
     "ty": {
-      "in": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "in"
+      }
     }
   },
   "innerArc": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "innerArc"
   },
   "outerArc": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "outerArc"
   },
   "radialIn": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "radialIn"
   },
   "radialOut": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "radialOut"
   },
@@ -81,36 +81,44 @@ description: Variables in memory after executing cassette.kcl
     "type": "Number",
     "value": 0.065,
     "ty": {
-      "in": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "in"
+      }
     }
   },
   "rollerWidth": {
     "type": "Number",
     "value": 0.09375,
     "ty": {
-      "in": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "in"
+      }
     }
   },
   "shaftDiameter": {
     "type": "Number",
     "value": 12.0,
     "ty": {
-      "mm": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "mm"
+      }
     }
   },
   "shaftRadius": {
     "type": "Number",
     "value": 6.0,
     "ty": {
-      "mm": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "mm"
+      }
     }
   },
   "speed1": {
@@ -121,6 +129,8 @@ description: Variables in memory after executing cassette.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -128,10 +138,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3200,
-                "end": 3208,
+                "commentStart": 3240,
+                "end": 3248,
                 "moduleId": 0,
-                "start": 3200,
+                "start": 3240,
                 "type": "TagDeclarator",
                 "value": "flankOut"
               },
@@ -142,10 +152,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3274,
-                "end": 3277,
+                "commentStart": 3314,
+                "end": 3317,
                 "moduleId": 0,
-                "start": 3274,
+                "start": 3314,
                 "type": "TagDeclarator",
                 "value": "tip"
               },
@@ -156,10 +166,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3353,
-                "end": 3360,
+                "commentStart": 3393,
+                "end": 3400,
                 "moduleId": 0,
-                "start": 3353,
+                "start": 3393,
                 "type": "TagDeclarator",
                 "value": "flankIn"
               },
@@ -170,10 +180,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3456,
-                "end": 3460,
+                "commentStart": 3496,
+                "end": 3500,
                 "moduleId": 0,
-                "start": 3456,
+                "start": 3496,
                 "type": "TagDeclarator",
                 "value": "root"
               },
@@ -201,10 +211,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.18499999999999997,
                 "tag": {
-                  "commentStart": 3200,
-                  "end": 3208,
+                  "commentStart": 3240,
+                  "end": 3248,
                   "moduleId": 0,
-                  "start": 3200,
+                  "start": 3240,
                   "type": "TagDeclarator",
                   "value": "flankOut"
                 },
@@ -231,10 +241,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.48494333909683407,
                 "tag": {
-                  "commentStart": 3274,
-                  "end": 3277,
+                  "commentStart": 3314,
+                  "end": 3317,
                   "moduleId": 0,
-                  "start": 3274,
+                  "start": 3314,
                   "type": "TagDeclarator",
                   "value": "tip"
                 },
@@ -261,10 +271,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.18500000000000003,
                 "tag": {
-                  "commentStart": 3353,
-                  "end": 3360,
+                  "commentStart": 3393,
+                  "end": 3400,
                   "moduleId": 0,
-                  "start": 3353,
+                  "start": 3393,
                   "type": "TagDeclarator",
                   "value": "flankIn"
                 },
@@ -291,10 +301,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.065,
                 "tag": {
-                  "commentStart": 3456,
-                  "end": 3460,
+                  "commentStart": 3496,
+                  "end": 3500,
                   "moduleId": 0,
-                  "start": 3456,
+                  "start": 3496,
                   "type": "TagDeclarator",
                   "value": "root"
                 },
@@ -307,17 +317,17 @@ description: Variables in memory after executing cassette.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 16,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 2.3812499999999996,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -373,8 +383,8 @@ description: Variables in memory after executing cassette.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -387,6 +397,8 @@ description: Variables in memory after executing cassette.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -394,10 +406,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4123,
-                "end": 4128,
+                "commentStart": 4163,
+                "end": 4168,
                 "moduleId": 0,
-                "start": 4123,
+                "start": 4163,
                 "type": "TagDeclarator",
                 "value": "outer"
               },
@@ -408,10 +420,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4197,
-                "end": 4202,
+                "commentStart": 4237,
+                "end": 4242,
                 "moduleId": 0,
-                "start": 4197,
+                "start": 4237,
                 "type": "TagDeclarator",
                 "value": "inner"
               },
@@ -439,10 +451,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.3070866141732284,
                 "tag": {
-                  "commentStart": 4123,
-                  "end": 4128,
+                  "commentStart": 4163,
+                  "end": 4168,
                   "moduleId": 0,
-                  "start": 4123,
+                  "start": 4163,
                   "type": "TagDeclarator",
                   "value": "outer"
                 },
@@ -469,10 +481,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.2362204724409449,
                 "tag": {
-                  "commentStart": 4197,
-                  "end": 4202,
+                  "commentStart": 4237,
+                  "end": 4242,
                   "moduleId": 0,
-                  "start": 4197,
+                  "start": 4237,
                   "type": "TagDeclarator",
                   "value": "inner"
                 },
@@ -485,17 +497,17 @@ description: Variables in memory after executing cassette.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 34,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 1.1906249999999998,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -543,8 +555,8 @@ description: Variables in memory after executing cassette.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -562,6 +574,8 @@ description: Variables in memory after executing cassette.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -569,10 +583,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3200,
-                "end": 3208,
+                "commentStart": 3240,
+                "end": 3248,
                 "moduleId": 0,
-                "start": 3200,
+                "start": 3240,
                 "type": "TagDeclarator",
                 "value": "flankOut"
               },
@@ -583,10 +597,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3274,
-                "end": 3277,
+                "commentStart": 3314,
+                "end": 3317,
                 "moduleId": 0,
-                "start": 3274,
+                "start": 3314,
                 "type": "TagDeclarator",
                 "value": "tip"
               },
@@ -597,10 +611,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3353,
-                "end": 3360,
+                "commentStart": 3393,
+                "end": 3400,
                 "moduleId": 0,
-                "start": 3353,
+                "start": 3393,
                 "type": "TagDeclarator",
                 "value": "flankIn"
               },
@@ -611,10 +625,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3456,
-                "end": 3460,
+                "commentStart": 3496,
+                "end": 3500,
                 "moduleId": 0,
-                "start": 3456,
+                "start": 3496,
                 "type": "TagDeclarator",
                 "value": "root"
               },
@@ -642,10 +656,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.18499999999999997,
                 "tag": {
-                  "commentStart": 3200,
-                  "end": 3208,
+                  "commentStart": 3240,
+                  "end": 3248,
                   "moduleId": 0,
-                  "start": 3200,
+                  "start": 3240,
                   "type": "TagDeclarator",
                   "value": "flankOut"
                 },
@@ -672,10 +686,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.6553920126170176,
                 "tag": {
-                  "commentStart": 3274,
-                  "end": 3277,
+                  "commentStart": 3314,
+                  "end": 3317,
                   "moduleId": 0,
-                  "start": 3274,
+                  "start": 3314,
                   "type": "TagDeclarator",
                   "value": "tip"
                 },
@@ -702,10 +716,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.18499999999999994,
                 "tag": {
-                  "commentStart": 3353,
-                  "end": 3360,
+                  "commentStart": 3393,
+                  "end": 3400,
                   "moduleId": 0,
-                  "start": 3353,
+                  "start": 3393,
                   "type": "TagDeclarator",
                   "value": "flankIn"
                 },
@@ -732,10 +746,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.065,
                 "tag": {
-                  "commentStart": 3456,
-                  "end": 3460,
+                  "commentStart": 3496,
+                  "end": 3500,
                   "moduleId": 0,
-                  "start": 3456,
+                  "start": 3496,
                   "type": "TagDeclarator",
                   "value": "root"
                 },
@@ -748,17 +762,17 @@ description: Variables in memory after executing cassette.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 42,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 4.762499999999999,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -814,8 +828,8 @@ description: Variables in memory after executing cassette.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -828,6 +842,8 @@ description: Variables in memory after executing cassette.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -835,10 +851,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4123,
-                "end": 4128,
+                "commentStart": 4163,
+                "end": 4168,
                 "moduleId": 0,
-                "start": 4123,
+                "start": 4163,
                 "type": "TagDeclarator",
                 "value": "outer"
               },
@@ -849,10 +865,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4197,
-                "end": 4202,
+                "commentStart": 4237,
+                "end": 4242,
                 "moduleId": 0,
-                "start": 4197,
+                "start": 4237,
                 "type": "TagDeclarator",
                 "value": "inner"
               },
@@ -880,10 +896,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.3070866141732284,
                 "tag": {
-                  "commentStart": 4123,
-                  "end": 4128,
+                  "commentStart": 4163,
+                  "end": 4168,
                   "moduleId": 0,
-                  "start": 4123,
+                  "start": 4163,
                   "type": "TagDeclarator",
                   "value": "outer"
                 },
@@ -910,10 +926,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.2362204724409449,
                 "tag": {
-                  "commentStart": 4197,
-                  "end": 4202,
+                  "commentStart": 4237,
+                  "end": 4242,
                   "moduleId": 0,
-                  "start": 4197,
+                  "start": 4237,
                   "type": "TagDeclarator",
                   "value": "inner"
                 },
@@ -926,17 +942,17 @@ description: Variables in memory after executing cassette.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 60,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 3.571875,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -984,8 +1000,8 @@ description: Variables in memory after executing cassette.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1003,6 +1019,8 @@ description: Variables in memory after executing cassette.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1010,10 +1028,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3200,
-                "end": 3208,
+                "commentStart": 3240,
+                "end": 3248,
                 "moduleId": 0,
-                "start": 3200,
+                "start": 3240,
                 "type": "TagDeclarator",
                 "value": "flankOut"
               },
@@ -1024,10 +1042,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3274,
-                "end": 3277,
+                "commentStart": 3314,
+                "end": 3317,
                 "moduleId": 0,
-                "start": 3274,
+                "start": 3314,
                 "type": "TagDeclarator",
                 "value": "tip"
               },
@@ -1038,10 +1056,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3353,
-                "end": 3360,
+                "commentStart": 3393,
+                "end": 3400,
                 "moduleId": 0,
-                "start": 3353,
+                "start": 3393,
                 "type": "TagDeclarator",
                 "value": "flankIn"
               },
@@ -1052,10 +1070,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3456,
-                "end": 3460,
+                "commentStart": 3496,
+                "end": 3500,
                 "moduleId": 0,
-                "start": 3456,
+                "start": 3496,
                 "type": "TagDeclarator",
                 "value": "root"
               },
@@ -1083,10 +1101,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.18499999999999997,
                 "tag": {
-                  "commentStart": 3200,
-                  "end": 3208,
+                  "commentStart": 3240,
+                  "end": 3248,
                   "moduleId": 0,
-                  "start": 3200,
+                  "start": 3240,
                   "type": "TagDeclarator",
                   "value": "flankOut"
                 },
@@ -1113,10 +1131,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.8208765990631035,
                 "tag": {
-                  "commentStart": 3274,
-                  "end": 3277,
+                  "commentStart": 3314,
+                  "end": 3317,
                   "moduleId": 0,
-                  "start": 3274,
+                  "start": 3314,
                   "type": "TagDeclarator",
                   "value": "tip"
                 },
@@ -1143,10 +1161,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.18499999999999994,
                 "tag": {
-                  "commentStart": 3353,
-                  "end": 3360,
+                  "commentStart": 3393,
+                  "end": 3400,
                   "moduleId": 0,
-                  "start": 3353,
+                  "start": 3393,
                   "type": "TagDeclarator",
                   "value": "flankIn"
                 },
@@ -1173,10 +1191,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.065,
                 "tag": {
-                  "commentStart": 3456,
-                  "end": 3460,
+                  "commentStart": 3496,
+                  "end": 3500,
                   "moduleId": 0,
-                  "start": 3456,
+                  "start": 3496,
                   "type": "TagDeclarator",
                   "value": "root"
                 },
@@ -1189,17 +1207,17 @@ description: Variables in memory after executing cassette.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 68,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 7.14375,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1255,8 +1273,8 @@ description: Variables in memory after executing cassette.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1269,6 +1287,8 @@ description: Variables in memory after executing cassette.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1276,10 +1296,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4123,
-                "end": 4128,
+                "commentStart": 4163,
+                "end": 4168,
                 "moduleId": 0,
-                "start": 4123,
+                "start": 4163,
                 "type": "TagDeclarator",
                 "value": "outer"
               },
@@ -1290,10 +1310,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4197,
-                "end": 4202,
+                "commentStart": 4237,
+                "end": 4242,
                 "moduleId": 0,
-                "start": 4197,
+                "start": 4237,
                 "type": "TagDeclarator",
                 "value": "inner"
               },
@@ -1321,10 +1341,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.3070866141732284,
                 "tag": {
-                  "commentStart": 4123,
-                  "end": 4128,
+                  "commentStart": 4163,
+                  "end": 4168,
                   "moduleId": 0,
-                  "start": 4123,
+                  "start": 4163,
                   "type": "TagDeclarator",
                   "value": "outer"
                 },
@@ -1351,10 +1371,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.2362204724409449,
                 "tag": {
-                  "commentStart": 4197,
-                  "end": 4202,
+                  "commentStart": 4237,
+                  "end": 4242,
                   "moduleId": 0,
-                  "start": 4197,
+                  "start": 4237,
                   "type": "TagDeclarator",
                   "value": "inner"
                 },
@@ -1367,17 +1387,17 @@ description: Variables in memory after executing cassette.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 86,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 5.953125,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1425,8 +1445,8 @@ description: Variables in memory after executing cassette.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1444,6 +1464,8 @@ description: Variables in memory after executing cassette.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1451,10 +1473,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3200,
-                "end": 3208,
+                "commentStart": 3240,
+                "end": 3248,
                 "moduleId": 0,
-                "start": 3200,
+                "start": 3240,
                 "type": "TagDeclarator",
                 "value": "flankOut"
               },
@@ -1465,10 +1487,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3274,
-                "end": 3277,
+                "commentStart": 3314,
+                "end": 3317,
                 "moduleId": 0,
-                "start": 3274,
+                "start": 3314,
                 "type": "TagDeclarator",
                 "value": "tip"
               },
@@ -1479,10 +1501,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3353,
-                "end": 3360,
+                "commentStart": 3393,
+                "end": 3400,
                 "moduleId": 0,
-                "start": 3353,
+                "start": 3393,
                 "type": "TagDeclarator",
                 "value": "flankIn"
               },
@@ -1493,10 +1515,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3456,
-                "end": 3460,
+                "commentStart": 3496,
+                "end": 3500,
                 "moduleId": 0,
-                "start": 3456,
+                "start": 3496,
                 "type": "TagDeclarator",
                 "value": "root"
               },
@@ -1524,10 +1546,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.18500000000000003,
                 "tag": {
-                  "commentStart": 3200,
-                  "end": 3208,
+                  "commentStart": 3240,
+                  "end": 3248,
                   "moduleId": 0,
-                  "start": 3200,
+                  "start": 3240,
                   "type": "TagDeclarator",
                   "value": "flankOut"
                 },
@@ -1554,10 +1576,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.9840658281056449,
                 "tag": {
-                  "commentStart": 3274,
-                  "end": 3277,
+                  "commentStart": 3314,
+                  "end": 3317,
                   "moduleId": 0,
-                  "start": 3274,
+                  "start": 3314,
                   "type": "TagDeclarator",
                   "value": "tip"
                 },
@@ -1584,10 +1606,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.18500000000000008,
                 "tag": {
-                  "commentStart": 3353,
-                  "end": 3360,
+                  "commentStart": 3393,
+                  "end": 3400,
                   "moduleId": 0,
-                  "start": 3353,
+                  "start": 3393,
                   "type": "TagDeclarator",
                   "value": "flankIn"
                 },
@@ -1614,10 +1636,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.06500000000000003,
                 "tag": {
-                  "commentStart": 3456,
-                  "end": 3460,
+                  "commentStart": 3496,
+                  "end": 3500,
                   "moduleId": 0,
-                  "start": 3456,
+                  "start": 3496,
                   "type": "TagDeclarator",
                   "value": "root"
                 },
@@ -1630,17 +1652,17 @@ description: Variables in memory after executing cassette.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 94,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 9.524999999999999,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1696,8 +1718,8 @@ description: Variables in memory after executing cassette.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1710,6 +1732,8 @@ description: Variables in memory after executing cassette.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1717,10 +1741,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4123,
-                "end": 4128,
+                "commentStart": 4163,
+                "end": 4168,
                 "moduleId": 0,
-                "start": 4123,
+                "start": 4163,
                 "type": "TagDeclarator",
                 "value": "outer"
               },
@@ -1731,10 +1755,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4197,
-                "end": 4202,
+                "commentStart": 4237,
+                "end": 4242,
                 "moduleId": 0,
-                "start": 4197,
+                "start": 4237,
                 "type": "TagDeclarator",
                 "value": "inner"
               },
@@ -1762,10 +1786,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.3070866141732284,
                 "tag": {
-                  "commentStart": 4123,
-                  "end": 4128,
+                  "commentStart": 4163,
+                  "end": 4168,
                   "moduleId": 0,
-                  "start": 4123,
+                  "start": 4163,
                   "type": "TagDeclarator",
                   "value": "outer"
                 },
@@ -1792,10 +1816,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.2362204724409449,
                 "tag": {
-                  "commentStart": 4197,
-                  "end": 4202,
+                  "commentStart": 4237,
+                  "end": 4242,
                   "moduleId": 0,
-                  "start": 4197,
+                  "start": 4237,
                   "type": "TagDeclarator",
                   "value": "inner"
                 },
@@ -1808,17 +1832,17 @@ description: Variables in memory after executing cassette.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 112,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 8.334375,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1866,8 +1890,8 @@ description: Variables in memory after executing cassette.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1885,6 +1909,8 @@ description: Variables in memory after executing cassette.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1892,10 +1918,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3200,
-                "end": 3208,
+                "commentStart": 3240,
+                "end": 3248,
                 "moduleId": 0,
-                "start": 3200,
+                "start": 3240,
                 "type": "TagDeclarator",
                 "value": "flankOut"
               },
@@ -1906,10 +1932,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3274,
-                "end": 3277,
+                "commentStart": 3314,
+                "end": 3317,
                 "moduleId": 0,
-                "start": 3274,
+                "start": 3314,
                 "type": "TagDeclarator",
                 "value": "tip"
               },
@@ -1920,10 +1946,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3353,
-                "end": 3360,
+                "commentStart": 3393,
+                "end": 3400,
                 "moduleId": 0,
-                "start": 3353,
+                "start": 3393,
                 "type": "TagDeclarator",
                 "value": "flankIn"
               },
@@ -1934,10 +1960,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3456,
-                "end": 3460,
+                "commentStart": 3496,
+                "end": 3500,
                 "moduleId": 0,
-                "start": 3456,
+                "start": 3496,
                 "type": "TagDeclarator",
                 "value": "root"
               },
@@ -1965,10 +1991,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.18500000000000003,
                 "tag": {
-                  "commentStart": 3200,
-                  "end": 3208,
+                  "commentStart": 3240,
+                  "end": 3248,
                   "moduleId": 0,
-                  "start": 3200,
+                  "start": 3240,
                   "type": "TagDeclarator",
                   "value": "flankOut"
                 },
@@ -1995,10 +2021,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 1.146011480507111,
                 "tag": {
-                  "commentStart": 3274,
-                  "end": 3277,
+                  "commentStart": 3314,
+                  "end": 3317,
                   "moduleId": 0,
-                  "start": 3274,
+                  "start": 3314,
                   "type": "TagDeclarator",
                   "value": "tip"
                 },
@@ -2025,10 +2051,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.18500000000000003,
                 "tag": {
-                  "commentStart": 3353,
-                  "end": 3360,
+                  "commentStart": 3393,
+                  "end": 3400,
                   "moduleId": 0,
-                  "start": 3353,
+                  "start": 3393,
                   "type": "TagDeclarator",
                   "value": "flankIn"
                 },
@@ -2055,10 +2081,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.06499999999999997,
                 "tag": {
-                  "commentStart": 3456,
-                  "end": 3460,
+                  "commentStart": 3496,
+                  "end": 3500,
                   "moduleId": 0,
-                  "start": 3456,
+                  "start": 3496,
                   "type": "TagDeclarator",
                   "value": "root"
                 },
@@ -2071,17 +2097,17 @@ description: Variables in memory after executing cassette.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 120,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 11.90625,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2137,8 +2163,8 @@ description: Variables in memory after executing cassette.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2151,6 +2177,8 @@ description: Variables in memory after executing cassette.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -2158,10 +2186,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4123,
-                "end": 4128,
+                "commentStart": 4163,
+                "end": 4168,
                 "moduleId": 0,
-                "start": 4123,
+                "start": 4163,
                 "type": "TagDeclarator",
                 "value": "outer"
               },
@@ -2172,10 +2200,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4197,
-                "end": 4202,
+                "commentStart": 4237,
+                "end": 4242,
                 "moduleId": 0,
-                "start": 4197,
+                "start": 4237,
                 "type": "TagDeclarator",
                 "value": "inner"
               },
@@ -2203,10 +2231,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.3070866141732284,
                 "tag": {
-                  "commentStart": 4123,
-                  "end": 4128,
+                  "commentStart": 4163,
+                  "end": 4168,
                   "moduleId": 0,
-                  "start": 4123,
+                  "start": 4163,
                   "type": "TagDeclarator",
                   "value": "outer"
                 },
@@ -2233,10 +2261,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.2362204724409449,
                 "tag": {
-                  "commentStart": 4197,
-                  "end": 4202,
+                  "commentStart": 4237,
+                  "end": 4242,
                   "moduleId": 0,
-                  "start": 4197,
+                  "start": 4237,
                   "type": "TagDeclarator",
                   "value": "inner"
                 },
@@ -2249,17 +2277,17 @@ description: Variables in memory after executing cassette.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 138,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 10.715625,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2307,8 +2335,8 @@ description: Variables in memory after executing cassette.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2326,6 +2354,8 @@ description: Variables in memory after executing cassette.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -2333,10 +2363,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3200,
-                "end": 3208,
+                "commentStart": 3240,
+                "end": 3248,
                 "moduleId": 0,
-                "start": 3200,
+                "start": 3240,
                 "type": "TagDeclarator",
                 "value": "flankOut"
               },
@@ -2347,10 +2377,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3274,
-                "end": 3277,
+                "commentStart": 3314,
+                "end": 3317,
                 "moduleId": 0,
-                "start": 3274,
+                "start": 3314,
                 "type": "TagDeclarator",
                 "value": "tip"
               },
@@ -2361,10 +2391,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3353,
-                "end": 3360,
+                "commentStart": 3393,
+                "end": 3400,
                 "moduleId": 0,
-                "start": 3353,
+                "start": 3393,
                 "type": "TagDeclarator",
                 "value": "flankIn"
               },
@@ -2375,10 +2405,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3456,
-                "end": 3460,
+                "commentStart": 3496,
+                "end": 3500,
                 "moduleId": 0,
-                "start": 3456,
+                "start": 3496,
                 "type": "TagDeclarator",
                 "value": "root"
               },
@@ -2406,10 +2436,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.185,
                 "tag": {
-                  "commentStart": 3200,
-                  "end": 3208,
+                  "commentStart": 3240,
+                  "end": 3248,
                   "moduleId": 0,
-                  "start": 3200,
+                  "start": 3240,
                   "type": "TagDeclarator",
                   "value": "flankOut"
                 },
@@ -2436,10 +2466,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 1.30720962617751,
                 "tag": {
-                  "commentStart": 3274,
-                  "end": 3277,
+                  "commentStart": 3314,
+                  "end": 3317,
                   "moduleId": 0,
-                  "start": 3274,
+                  "start": 3314,
                   "type": "TagDeclarator",
                   "value": "tip"
                 },
@@ -2466,10 +2496,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.18499999999999997,
                 "tag": {
-                  "commentStart": 3353,
-                  "end": 3360,
+                  "commentStart": 3393,
+                  "end": 3400,
                   "moduleId": 0,
-                  "start": 3353,
+                  "start": 3393,
                   "type": "TagDeclarator",
                   "value": "flankIn"
                 },
@@ -2496,10 +2526,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.06500000000000003,
                 "tag": {
-                  "commentStart": 3456,
-                  "end": 3460,
+                  "commentStart": 3496,
+                  "end": 3500,
                   "moduleId": 0,
-                  "start": 3456,
+                  "start": 3496,
                   "type": "TagDeclarator",
                   "value": "root"
                 },
@@ -2512,17 +2542,17 @@ description: Variables in memory after executing cassette.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 146,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 14.2875,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2578,8 +2608,8 @@ description: Variables in memory after executing cassette.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2592,6 +2622,8 @@ description: Variables in memory after executing cassette.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -2599,10 +2631,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4123,
-                "end": 4128,
+                "commentStart": 4163,
+                "end": 4168,
                 "moduleId": 0,
-                "start": 4123,
+                "start": 4163,
                 "type": "TagDeclarator",
                 "value": "outer"
               },
@@ -2613,10 +2645,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4197,
-                "end": 4202,
+                "commentStart": 4237,
+                "end": 4242,
                 "moduleId": 0,
-                "start": 4197,
+                "start": 4237,
                 "type": "TagDeclarator",
                 "value": "inner"
               },
@@ -2644,10 +2676,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.3070866141732284,
                 "tag": {
-                  "commentStart": 4123,
-                  "end": 4128,
+                  "commentStart": 4163,
+                  "end": 4168,
                   "moduleId": 0,
-                  "start": 4123,
+                  "start": 4163,
                   "type": "TagDeclarator",
                   "value": "outer"
                 },
@@ -2674,10 +2706,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.2362204724409449,
                 "tag": {
-                  "commentStart": 4197,
-                  "end": 4202,
+                  "commentStart": 4237,
+                  "end": 4242,
                   "moduleId": 0,
-                  "start": 4197,
+                  "start": 4237,
                   "type": "TagDeclarator",
                   "value": "inner"
                 },
@@ -2690,17 +2722,17 @@ description: Variables in memory after executing cassette.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 164,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 13.096874999999999,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2748,8 +2780,8 @@ description: Variables in memory after executing cassette.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2767,6 +2799,8 @@ description: Variables in memory after executing cassette.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -2774,10 +2808,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3200,
-                "end": 3208,
+                "commentStart": 3240,
+                "end": 3248,
                 "moduleId": 0,
-                "start": 3200,
+                "start": 3240,
                 "type": "TagDeclarator",
                 "value": "flankOut"
               },
@@ -2788,10 +2822,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3274,
-                "end": 3277,
+                "commentStart": 3314,
+                "end": 3317,
                 "moduleId": 0,
-                "start": 3274,
+                "start": 3314,
                 "type": "TagDeclarator",
                 "value": "tip"
               },
@@ -2802,10 +2836,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3353,
-                "end": 3360,
+                "commentStart": 3393,
+                "end": 3400,
                 "moduleId": 0,
-                "start": 3353,
+                "start": 3393,
                 "type": "TagDeclarator",
                 "value": "flankIn"
               },
@@ -2816,10 +2850,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3456,
-                "end": 3460,
+                "commentStart": 3496,
+                "end": 3500,
                 "moduleId": 0,
-                "start": 3456,
+                "start": 3496,
                 "type": "TagDeclarator",
                 "value": "root"
               },
@@ -2847,10 +2881,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.18499999999999997,
                 "tag": {
-                  "commentStart": 3200,
-                  "end": 3208,
+                  "commentStart": 3240,
+                  "end": 3248,
                   "moduleId": 0,
-                  "start": 3200,
+                  "start": 3240,
                   "type": "TagDeclarator",
                   "value": "flankOut"
                 },
@@ -2877,10 +2911,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 1.5080466517843298,
                 "tag": {
-                  "commentStart": 3274,
-                  "end": 3277,
+                  "commentStart": 3314,
+                  "end": 3317,
                   "moduleId": 0,
-                  "start": 3274,
+                  "start": 3314,
                   "type": "TagDeclarator",
                   "value": "tip"
                 },
@@ -2907,10 +2941,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.18500000000000003,
                 "tag": {
-                  "commentStart": 3353,
-                  "end": 3360,
+                  "commentStart": 3393,
+                  "end": 3400,
                   "moduleId": 0,
-                  "start": 3353,
+                  "start": 3393,
                   "type": "TagDeclarator",
                   "value": "flankIn"
                 },
@@ -2937,10 +2971,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.065,
                 "tag": {
-                  "commentStart": 3456,
-                  "end": 3460,
+                  "commentStart": 3496,
+                  "end": 3500,
                   "moduleId": 0,
-                  "start": 3456,
+                  "start": 3496,
                   "type": "TagDeclarator",
                   "value": "root"
                 },
@@ -2953,17 +2987,17 @@ description: Variables in memory after executing cassette.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 172,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 16.66875,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3019,8 +3053,8 @@ description: Variables in memory after executing cassette.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3033,6 +3067,8 @@ description: Variables in memory after executing cassette.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3040,10 +3076,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4123,
-                "end": 4128,
+                "commentStart": 4163,
+                "end": 4168,
                 "moduleId": 0,
-                "start": 4123,
+                "start": 4163,
                 "type": "TagDeclarator",
                 "value": "outer"
               },
@@ -3054,10 +3090,10 @@ description: Variables in memory after executing cassette.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4197,
-                "end": 4202,
+                "commentStart": 4237,
+                "end": 4242,
                 "moduleId": 0,
-                "start": 4197,
+                "start": 4237,
                 "type": "TagDeclarator",
                 "value": "inner"
               },
@@ -3085,10 +3121,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.3070866141732284,
                 "tag": {
-                  "commentStart": 4123,
-                  "end": 4128,
+                  "commentStart": 4163,
+                  "end": 4168,
                   "moduleId": 0,
-                  "start": 4123,
+                  "start": 4163,
                   "type": "TagDeclarator",
                   "value": "outer"
                 },
@@ -3115,10 +3151,10 @@ description: Variables in memory after executing cassette.kcl
                 ],
                 "radius": 0.2362204724409449,
                 "tag": {
-                  "commentStart": 4197,
-                  "end": 4202,
+                  "commentStart": 4237,
+                  "end": 4242,
                   "moduleId": 0,
-                  "start": 4197,
+                  "start": 4237,
                   "type": "TagDeclarator",
                   "value": "inner"
                 },
@@ -3131,17 +3167,17 @@ description: Variables in memory after executing cassette.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 190,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 15.478124999999999,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3189,8 +3225,8 @@ description: Variables in memory after executing cassette.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3205,8 +3241,10 @@ description: Variables in memory after executing cassette.kcl
     "value": 7.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "splineCutter": {
@@ -3214,6 +3252,8 @@ description: Variables in memory after executing cassette.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3221,10 +3261,10 @@ description: Variables in memory after executing cassette.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 632,
-            "end": 640,
+            "commentStart": 672,
+            "end": 680,
             "moduleId": 0,
-            "start": 632,
+            "start": 672,
             "type": "TagDeclarator",
             "value": "outerArc"
           },
@@ -3235,10 +3275,10 @@ description: Variables in memory after executing cassette.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 793,
-            "end": 801,
+            "commentStart": 833,
+            "end": 841,
             "moduleId": 0,
-            "start": 793,
+            "start": 833,
             "type": "TagDeclarator",
             "value": "radialIn"
           },
@@ -3249,10 +3289,10 @@ description: Variables in memory after executing cassette.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 994,
-            "end": 1002,
+            "commentStart": 1034,
+            "end": 1042,
             "moduleId": 0,
-            "start": 994,
+            "start": 1034,
             "type": "TagDeclarator",
             "value": "innerArc"
           },
@@ -3263,10 +3303,10 @@ description: Variables in memory after executing cassette.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1231,
-            "end": 1240,
+            "commentStart": 1271,
+            "end": 1280,
             "moduleId": 0,
-            "start": 1231,
+            "start": 1271,
             "type": "TagDeclarator",
             "value": "radialOut"
           },
@@ -3294,10 +3334,10 @@ description: Variables in memory after executing cassette.kcl
             ],
             "radius": 0.2362204724409449,
             "tag": {
-              "commentStart": 632,
-              "end": 640,
+              "commentStart": 672,
+              "end": 680,
               "moduleId": 0,
-              "start": 632,
+              "start": 672,
               "type": "TagDeclarator",
               "value": "outerArc"
             },
@@ -3318,10 +3358,10 @@ description: Variables in memory after executing cassette.kcl
               0.041019254566991424
             ],
             "tag": {
-              "commentStart": 793,
-              "end": 801,
+              "commentStart": 833,
+              "end": 841,
               "moduleId": 0,
-              "start": 793,
+              "start": 833,
               "type": "TagDeclarator",
               "value": "radialIn"
             },
@@ -3348,10 +3388,10 @@ description: Variables in memory after executing cassette.kcl
             ],
             "radius": 0.22622047244094493,
             "tag": {
-              "commentStart": 994,
-              "end": 1002,
+              "commentStart": 1034,
+              "end": 1042,
               "moduleId": 0,
-              "start": 994,
+              "start": 1034,
               "type": "TagDeclarator",
               "value": "innerArc"
             },
@@ -3372,10 +3412,10 @@ description: Variables in memory after executing cassette.kcl
               0.07737195840745248
             ],
             "tag": {
-              "commentStart": 1231,
-              "end": 1240,
+              "commentStart": 1271,
+              "end": 1280,
               "moduleId": 0,
-              "start": 1231,
+              "start": 1271,
               "type": "TagDeclarator",
               "value": "radialOut"
             },
@@ -3388,17 +3428,17 @@ description: Variables in memory after executing cassette.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 16.66875,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3454,8 +3494,8 @@ description: Variables in memory after executing cassette.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -3467,9 +3507,11 @@ description: Variables in memory after executing cassette.kcl
     "type": "Number",
     "value": 5.746,
     "ty": {
-      "mm": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "mm"
+      }
     }
   },
   "splineOutline": {
@@ -3494,10 +3536,10 @@ description: Variables in memory after executing cassette.kcl
           ],
           "radius": 0.2362204724409449,
           "tag": {
-            "commentStart": 632,
-            "end": 640,
+            "commentStart": 672,
+            "end": 680,
             "moduleId": 0,
-            "start": 632,
+            "start": 672,
             "type": "TagDeclarator",
             "value": "outerArc"
           },
@@ -3518,10 +3560,10 @@ description: Variables in memory after executing cassette.kcl
             0.041019254566991424
           ],
           "tag": {
-            "commentStart": 793,
-            "end": 801,
+            "commentStart": 833,
+            "end": 841,
             "moduleId": 0,
-            "start": 793,
+            "start": 833,
             "type": "TagDeclarator",
             "value": "radialIn"
           },
@@ -3548,10 +3590,10 @@ description: Variables in memory after executing cassette.kcl
           ],
           "radius": 0.22622047244094493,
           "tag": {
-            "commentStart": 994,
-            "end": 1002,
+            "commentStart": 1034,
+            "end": 1042,
             "moduleId": 0,
-            "start": 994,
+            "start": 1034,
             "type": "TagDeclarator",
             "value": "innerArc"
           },
@@ -3572,10 +3614,10 @@ description: Variables in memory after executing cassette.kcl
             0.07737195840745248
           ],
           "tag": {
-            "commentStart": 1231,
-            "end": 1240,
+            "commentStart": 1271,
+            "end": 1280,
             "moduleId": 0,
-            "start": 1231,
+            "start": 1271,
             "type": "TagDeclarator",
             "value": "radialOut"
           },
@@ -3588,17 +3630,17 @@ description: Variables in memory after executing cassette.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 16.66875,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -3680,10 +3722,10 @@ description: Variables in memory after executing cassette.kcl
           ],
           "radius": 0.2362204724409449,
           "tag": {
-            "commentStart": 632,
-            "end": 640,
+            "commentStart": 672,
+            "end": 680,
             "moduleId": 0,
-            "start": 632,
+            "start": 672,
             "type": "TagDeclarator",
             "value": "outerArc"
           },
@@ -3704,10 +3746,10 @@ description: Variables in memory after executing cassette.kcl
             0.041019254566991424
           ],
           "tag": {
-            "commentStart": 793,
-            "end": 801,
+            "commentStart": 833,
+            "end": 841,
             "moduleId": 0,
-            "start": 793,
+            "start": 833,
             "type": "TagDeclarator",
             "value": "radialIn"
           },
@@ -3734,10 +3776,10 @@ description: Variables in memory after executing cassette.kcl
           ],
           "radius": 0.22622047244094493,
           "tag": {
-            "commentStart": 994,
-            "end": 1002,
+            "commentStart": 1034,
+            "end": 1042,
             "moduleId": 0,
-            "start": 994,
+            "start": 1034,
             "type": "TagDeclarator",
             "value": "innerArc"
           },
@@ -3758,10 +3800,10 @@ description: Variables in memory after executing cassette.kcl
             0.07737195840745248
           ],
           "tag": {
-            "commentStart": 1231,
-            "end": 1240,
+            "commentStart": 1271,
+            "end": 1280,
             "moduleId": 0,
-            "start": 1231,
+            "start": 1271,
             "type": "TagDeclarator",
             "value": "radialOut"
           },
@@ -3774,17 +3816,17 @@ description: Variables in memory after executing cassette.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 16.66875,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -3840,8 +3882,8 @@ description: Variables in memory after executing cassette.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "splineSeed": {
@@ -3861,17 +3903,21 @@ description: Variables in memory after executing cassette.kcl
                       {
                         "n": 0.2227836751499271,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.03928277279032212,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3879,17 +3925,21 @@ description: Variables in memory after executing cassette.kcl
                       {
                         "n": 0.21257770862345787,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.07737195840745247,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3897,17 +3947,21 @@ description: Variables in memory after executing cassette.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4024,10 +4078,10 @@ description: Variables in memory after executing cassette.kcl
                   ],
                   "radius": 0.2362204724409449,
                   "tag": {
-                    "commentStart": 632,
-                    "end": 640,
+                    "commentStart": 672,
+                    "end": 680,
                     "moduleId": 0,
-                    "start": 632,
+                    "start": 672,
                     "type": "TagDeclarator",
                     "value": "outerArc"
                   },
@@ -4048,10 +4102,10 @@ description: Variables in memory after executing cassette.kcl
                     0.041019254566991424
                   ],
                   "tag": {
-                    "commentStart": 793,
-                    "end": 801,
+                    "commentStart": 833,
+                    "end": 841,
                     "moduleId": 0,
-                    "start": 793,
+                    "start": 833,
                     "type": "TagDeclarator",
                     "value": "radialIn"
                   },
@@ -4078,10 +4132,10 @@ description: Variables in memory after executing cassette.kcl
                   ],
                   "radius": 0.22622047244094493,
                   "tag": {
-                    "commentStart": 994,
-                    "end": 1002,
+                    "commentStart": 1034,
+                    "end": 1042,
                     "moduleId": 0,
-                    "start": 994,
+                    "start": 1034,
                     "type": "TagDeclarator",
                     "value": "innerArc"
                   },
@@ -4102,10 +4156,10 @@ description: Variables in memory after executing cassette.kcl
                     0.07737195840745248
                   ],
                   "tag": {
-                    "commentStart": 1231,
-                    "end": 1240,
+                    "commentStart": 1271,
+                    "end": 1280,
                     "moduleId": 0,
-                    "start": 1231,
+                    "start": 1271,
                     "type": "TagDeclarator",
                     "value": "radialOut"
                   },
@@ -4118,17 +4172,17 @@ description: Variables in memory after executing cassette.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 16.66875,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -4205,17 +4259,21 @@ description: Variables in memory after executing cassette.kcl
                       {
                         "n": 0.2362204724409449,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4223,17 +4281,21 @@ description: Variables in memory after executing cassette.kcl
                       {
                         "n": 0.23263175268004915,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.041019254566991424,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4241,17 +4303,21 @@ description: Variables in memory after executing cassette.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4357,17 +4423,21 @@ description: Variables in memory after executing cassette.kcl
                       {
                         "n": 5.908846518073248,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 1.041889066001582,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4375,17 +4445,21 @@ description: Variables in memory after executing cassette.kcl
                       {
                         "n": 5.658705348808148,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.9977824288741818,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4477,17 +4551,21 @@ description: Variables in memory after executing cassette.kcl
                       {
                         "n": 5.39947379903583,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 1.9652477435492925,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4495,17 +4573,21 @@ description: Variables in memory after executing cassette.kcl
                       {
                         "n": 5.638155724715451,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 2.0521208599540124,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -4590,9 +4672,11 @@ description: Variables in memory after executing cassette.kcl
     "type": "Number",
     "value": 0.046875,
     "ty": {
-      "in": null,
       "type": "Known",
-      "type": "Length"
+      "value": {
+        "type": "Length",
+        "value": "in"
+      }
     }
   }
 }

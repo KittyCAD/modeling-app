@@ -1,6 +1,6 @@
 // Inner Thread
 // An example of an inner thread on a cylinder.
-// Categories: Fasteners
+// Categories: Mechanical Components; Science & Education
 
 @settings(defaultLengthUnit = mm, kclVersion = 2.0)
 

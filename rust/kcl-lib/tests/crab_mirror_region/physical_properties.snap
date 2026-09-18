@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties crab_mirror_region.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.0,
+      "y": 1.041399999999996,
+      "z": 25.4
+    },
+    "dimensions": {
+      "x": 307.84799999999996,
+      "y": 182.3212,
+      "z": 50.8
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 126240.40363220956
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 1078.9543590590256
+  }
+}

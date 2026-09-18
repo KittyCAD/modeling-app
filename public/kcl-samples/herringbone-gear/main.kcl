@@ -1,6 +1,6 @@
 // Herringbone Gear
 // A double-helical involute gear with opposing tooth angles and an 8 mm center bore.
-// Categories: Automotive, Aerospace
+// Categories: Mechanical Components
 
 @settings(defaultLengthUnit = mm, kclVersion = 2.0, experimentalFeatures = allow)
 

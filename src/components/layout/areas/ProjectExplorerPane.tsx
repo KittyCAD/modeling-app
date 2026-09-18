@@ -1,9 +1,9 @@
 import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
 import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
 import type { FileExplorerEntry } from '@src/components/Explorer/utils'
-import { ToastInsert } from '@src/components/ToastInsert'
-import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { getProjectExplorerProjectWithPlaceholders } from '@src/components/layout/areas/ProjectExplorerPane.utils'
+import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
+import { ToastInsert } from '@src/components/ToastInsert'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import {
@@ -21,7 +21,6 @@ import {
   togglePaneLayoutNode,
 } from '@src/lib/layout'
 import {
-  getEXTNoPeriod,
   isExtensionARelevantExtension,
   parentPathRelativeToProject,
 } from '@src/lib/paths'
@@ -36,7 +35,7 @@ import { use, useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 
 export function ProjectExplorerPane(props: AreaTypeComponentProps) {
-  const { commands, project, systemIOActor, layout } = useApp()
+  const { commands, fileOperations, project, systemIOActor, layout } = useApp()
   const { kclManager } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const projects = useFolders()
@@ -127,14 +126,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
 
       const RELEVANT_FILE_EXTENSIONS = relevantFileExtensions(wasmInstance)
       const isRelevantFile = (filename: string): boolean => {
-        const extension = getEXTNoPeriod(filename)
-        if (!extension) {
-          return false
-        }
-        return isExtensionARelevantExtension(
-          extension,
-          RELEVANT_FILE_EXTENSIONS
-        )
+        return isExtensionARelevantExtension(filename, RELEVANT_FILE_EXTENSIONS)
       }
 
       // Only open the file if it is a kcl file.
@@ -156,6 +148,14 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
             },
           })
         }
+        const navigateAfterFlush = () => {
+          void kclManager
+            .flushWriteToFile()
+            .then((saved) => {
+              if (saved) navigateHelper()
+            })
+            .catch(reportRejection)
+        }
 
         if (modelingMachineState.matches('Sketch')) {
           modelingSend({ type: 'Cancel' })
@@ -168,11 +168,11 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
             })
           })
           waitForIdlePromise.catch(reportRejection).finally(() => {
-            navigateHelper()
+            navigateAfterFlush()
           })
         } else {
           // immediately navigate
-          navigateHelper()
+          navigateAfterFlush()
         }
       } else if (
         projectRef.current?.value.name &&
@@ -183,7 +183,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
         // be checked before the "relevant file" branch below because some text
         // extensions (e.g. .md) are also importable.
         openCodeEditorPaneIfClosed()
-        openActiveTextFile(entry.path).catch(reportRejection)
+        openActiveTextFile(fileOperations, entry.path).catch(reportRejection)
       } else if (isRelevantFile(entry.path) && projectRef.current?.value.path) {
         // Allow insert if it is a importable file
         toast.custom(
@@ -209,7 +209,9 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       }
     },
     [
+      fileOperations,
       commands,
+      kclManager,
       modelingActor,
       modelingMachineState,
       modelingSend,

@@ -8,6 +8,8 @@ description: Variables in memory after executing sketch_on_face_union.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -166,17 +168,17 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "YZ",
           "objectId": 0,
+          "kind": "YZ",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -224,7 +226,8 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -234,7 +237,6 @@ description: Variables in memory after executing sketch_on_face_union.kcl
   },
   "bottomFace": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bottomFace"
   },
   "height": {
@@ -242,8 +244,10 @@ description: Variables in memory after executing sketch_on_face_union.kcl
     "value": 120.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "leg001": {
@@ -251,6 +255,8 @@ description: Variables in memory after executing sketch_on_face_union.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -399,7 +405,8 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -552,7 +559,8 @@ description: Variables in memory after executing sketch_on_face_union.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "newSketch": {
@@ -560,6 +568,8 @@ description: Variables in memory after executing sketch_on_face_union.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -718,17 +728,17 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "YZ",
           "objectId": 0,
+          "kind": "YZ",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -776,7 +786,8 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -891,17 +902,17 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "YZ",
         "objectId": 0,
+        "kind": "YZ",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -949,7 +960,8 @@ description: Variables in memory after executing sketch_on_face_union.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "profile002": {
@@ -1028,17 +1040,17 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "YZ",
         "objectId": 0,
+        "kind": "YZ",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -1076,7 +1088,8 @@ description: Variables in memory after executing sketch_on_face_union.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "profile003": {
@@ -1155,17 +1168,17 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "YZ",
         "objectId": 0,
+        "kind": "YZ",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -1203,7 +1216,8 @@ description: Variables in memory after executing sketch_on_face_union.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "profile004": {
@@ -1383,17 +1397,17 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "YZ",
         "objectId": 0,
+        "kind": "YZ",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -1441,7 +1455,8 @@ description: Variables in memory after executing sketch_on_face_union.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "profile006": {
@@ -1449,6 +1464,8 @@ description: Variables in memory after executing sketch_on_face_union.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1555,17 +1572,17 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 1,
+          "kind": "Custom",
           "origin": {
             "x": 2.54,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -1603,7 +1620,8 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1616,6 +1634,8 @@ description: Variables in memory after executing sketch_on_face_union.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1722,17 +1742,17 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 1,
+          "kind": "Custom",
           "origin": {
             "x": 2.54,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -1770,7 +1790,8 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1783,8 +1804,8 @@ description: Variables in memory after executing sketch_on_face_union.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "YZ",
       "objectId": 0,
+      "kind": "YZ",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -1816,8 +1837,8 @@ description: Variables in memory after executing sketch_on_face_union.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 1,
+      "kind": "Custom",
       "origin": {
         "x": 2.54,
         "y": 0.0,
@@ -1846,7 +1867,6 @@ description: Variables in memory after executing sketch_on_face_union.kcl
   },
   "tag001": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "tag001"
   },
   "thickness": {
@@ -1854,8 +1874,10 @@ description: Variables in memory after executing sketch_on_face_union.kcl
     "value": 4.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "trussSupportAngle": {
@@ -1863,8 +1885,10 @@ description: Variables in memory after executing sketch_on_face_union.kcl
     "value": 15.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   }
 }

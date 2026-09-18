@@ -8,8 +8,10 @@ description: Variables in memory after executing planetary-gearset.kcl
     "value": 4.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "planetGear": {
@@ -17,6 +19,8 @@ description: Variables in memory after executing planetary-gearset.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -26,7 +30,7 @@ description: Variables in memory after executing planetary-gearset.kcl
           "tag": {
             "commentStart": 1163,
             "end": 1169,
-            "moduleId": 16,
+            "moduleId": 17,
             "start": 1163,
             "type": "TagDeclarator",
             "value": "seg01"
@@ -72,7 +76,7 @@ description: Variables in memory after executing planetary-gearset.kcl
             "tag": {
               "commentStart": 1163,
               "end": 1169,
-              "moduleId": 16,
+              "moduleId": 17,
               "start": 1163,
               "type": "TagDeclarator",
               "value": "seg01"
@@ -154,17 +158,17 @@ description: Variables in memory after executing planetary-gearset.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 3,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -208,7 +212,8 @@ description: Variables in memory after executing planetary-gearset.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -217,7 +222,6 @@ description: Variables in memory after executing planetary-gearset.kcl
     }
   },
   "seg01": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "seg01"
   }

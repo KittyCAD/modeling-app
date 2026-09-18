@@ -63,10 +63,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 2858,
-            "end": 2863,
+            "commentStart": 2870,
+            "end": 2875,
             "moduleId": 0,
-            "start": 2858,
+            "start": 2870,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -87,10 +87,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
             1.0
           ],
           "tag": {
-            "commentStart": 2927,
-            "end": 2932,
+            "commentStart": 2939,
+            "end": 2944,
             "moduleId": 0,
-            "start": 2927,
+            "start": 2939,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -111,10 +111,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
             1.0
           ],
           "tag": {
-            "commentStart": 3035,
-            "end": 3040,
+            "commentStart": 3047,
+            "end": 3052,
             "moduleId": 0,
-            "start": 3035,
+            "start": 3047,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -135,10 +135,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 3143,
-            "end": 3148,
+            "commentStart": 3155,
+            "end": 3160,
             "moduleId": 0,
-            "start": 3143,
+            "start": 3155,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -151,17 +151,17 @@ description: Variables in memory after executing split-washer-spring-version.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -217,8 +217,8 @@ description: Variables in memory after executing split-washer-spring-version.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "splitWasherBody": {
@@ -226,6 +226,8 @@ description: Variables in memory after executing split-washer-spring-version.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -233,10 +235,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2858,
-            "end": 2863,
+            "commentStart": 2870,
+            "end": 2875,
             "moduleId": 0,
-            "start": 2858,
+            "start": 2870,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -247,10 +249,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2927,
-            "end": 2932,
+            "commentStart": 2939,
+            "end": 2944,
             "moduleId": 0,
-            "start": 2927,
+            "start": 2939,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -261,10 +263,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3035,
-            "end": 3040,
+            "commentStart": 3047,
+            "end": 3052,
             "moduleId": 0,
-            "start": 3035,
+            "start": 3047,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -275,10 +277,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3143,
-            "end": 3148,
+            "commentStart": 3155,
+            "end": 3160,
             "moduleId": 0,
-            "start": 3143,
+            "start": 3155,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -300,10 +302,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 2858,
-              "end": 2863,
+              "commentStart": 2870,
+              "end": 2875,
               "moduleId": 0,
-              "start": 2858,
+              "start": 2870,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -324,10 +326,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
               1.0
             ],
             "tag": {
-              "commentStart": 2927,
-              "end": 2932,
+              "commentStart": 2939,
+              "end": 2944,
               "moduleId": 0,
-              "start": 2927,
+              "start": 2939,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -348,10 +350,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
               1.0
             ],
             "tag": {
-              "commentStart": 3035,
-              "end": 3040,
+              "commentStart": 3047,
+              "end": 3052,
               "moduleId": 0,
-              "start": 3035,
+              "start": 3047,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -372,10 +374,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 3143,
-              "end": 3148,
+              "commentStart": 3155,
+              "end": 3160,
               "moduleId": 0,
-              "start": 3143,
+              "start": 3155,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -388,17 +390,17 @@ description: Variables in memory after executing split-washer-spring-version.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -454,8 +456,8 @@ description: Variables in memory after executing split-washer-spring-version.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -468,8 +470,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
     "value": 4.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "washerHoleRadius": {
@@ -477,8 +481,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "washerOuterDiameter": {
@@ -486,8 +492,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
     "value": 8.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "washerOuterRadius": {
@@ -495,8 +503,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
     "value": 4.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "washerSectionProfile": {
@@ -516,17 +526,21 @@ description: Variables in memory after executing split-washer-spring-version.kcl
                       {
                         "n": 2.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -534,17 +548,21 @@ description: Variables in memory after executing split-washer-spring-version.kcl
                       {
                         "n": 2.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 1.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -636,17 +654,21 @@ description: Variables in memory after executing split-washer-spring-version.kcl
                       {
                         "n": 2.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 1.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -654,17 +676,21 @@ description: Variables in memory after executing split-washer-spring-version.kcl
                       {
                         "n": 4.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 1.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -756,17 +782,21 @@ description: Variables in memory after executing split-washer-spring-version.kcl
                       {
                         "n": 4.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 1.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -774,17 +804,21 @@ description: Variables in memory after executing split-washer-spring-version.kcl
                       {
                         "n": 4.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -876,17 +910,21 @@ description: Variables in memory after executing split-washer-spring-version.kcl
                       {
                         "n": 4.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -894,17 +932,21 @@ description: Variables in memory after executing split-washer-spring-version.kcl
                       {
                         "n": 2.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1001,10 +1043,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 2858,
-                    "end": 2863,
+                    "commentStart": 2870,
+                    "end": 2875,
                     "moduleId": 0,
-                    "start": 2858,
+                    "start": 2870,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -1025,10 +1067,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
                     1.0
                   ],
                   "tag": {
-                    "commentStart": 2927,
-                    "end": 2932,
+                    "commentStart": 2939,
+                    "end": 2944,
                     "moduleId": 0,
-                    "start": 2927,
+                    "start": 2939,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -1049,10 +1091,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
                     1.0
                   ],
                   "tag": {
-                    "commentStart": 3035,
-                    "end": 3040,
+                    "commentStart": 3047,
+                    "end": 3052,
                     "moduleId": 0,
-                    "start": 3035,
+                    "start": 3047,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -1073,10 +1115,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 3143,
-                    "end": 3148,
+                    "commentStart": 3155,
+                    "end": 3160,
                     "moduleId": 0,
-                    "start": 3143,
+                    "start": 3155,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -1089,17 +1131,17 @@ description: Variables in memory after executing split-washer-spring-version.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -1170,8 +1212,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "washerSplitHeight": {
@@ -1179,8 +1223,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "washerThickness": {
@@ -1188,8 +1234,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   }
 }

@@ -72,8 +72,8 @@ description: Variables in memory after executing liquid-impeller.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 77,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -102,21 +102,17 @@ description: Variables in memory after executing liquid-impeller.kcl
   },
   "arc1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc1"
   },
   "arc2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc2"
   },
   "arc3": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc3"
   },
   "arc4": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc4"
   },
@@ -125,6 +121,8 @@ description: Variables in memory after executing liquid-impeller.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -132,10 +130,10 @@ description: Variables in memory after executing liquid-impeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2098,
-            "end": 2103,
+            "commentStart": 2123,
+            "end": 2128,
             "moduleId": 0,
-            "start": 2098,
+            "start": 2123,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -146,10 +144,10 @@ description: Variables in memory after executing liquid-impeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2167,
-            "end": 2172,
+            "commentStart": 2192,
+            "end": 2197,
             "moduleId": 0,
-            "start": 2167,
+            "start": 2192,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -160,10 +158,10 @@ description: Variables in memory after executing liquid-impeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2277,
-            "end": 2282,
+            "commentStart": 2302,
+            "end": 2307,
             "moduleId": 0,
-            "start": 2277,
+            "start": 2302,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -174,10 +172,10 @@ description: Variables in memory after executing liquid-impeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2392,
-            "end": 2396,
+            "commentStart": 2417,
+            "end": 2421,
             "moduleId": 0,
-            "start": 2392,
+            "start": 2417,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -188,10 +186,10 @@ description: Variables in memory after executing liquid-impeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2540,
-            "end": 2545,
+            "commentStart": 2565,
+            "end": 2570,
             "moduleId": 0,
-            "start": 2540,
+            "start": 2565,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -202,10 +200,10 @@ description: Variables in memory after executing liquid-impeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2661,
-            "end": 2666,
+            "commentStart": 2686,
+            "end": 2691,
             "moduleId": 0,
-            "start": 2661,
+            "start": 2686,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -227,10 +225,10 @@ description: Variables in memory after executing liquid-impeller.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 2098,
-              "end": 2103,
+              "commentStart": 2123,
+              "end": 2128,
               "moduleId": 0,
-              "start": 2098,
+              "start": 2123,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -251,10 +249,10 @@ description: Variables in memory after executing liquid-impeller.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 2167,
-              "end": 2172,
+              "commentStart": 2192,
+              "end": 2197,
               "moduleId": 0,
-              "start": 2167,
+              "start": 2192,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -275,10 +273,10 @@ description: Variables in memory after executing liquid-impeller.kcl
               0.1
             ],
             "tag": {
-              "commentStart": 2277,
-              "end": 2282,
+              "commentStart": 2302,
+              "end": 2307,
               "moduleId": 0,
-              "start": 2277,
+              "start": 2302,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -305,10 +303,10 @@ description: Variables in memory after executing liquid-impeller.kcl
             ],
             "radius": 0.09949848399825222,
             "tag": {
-              "commentStart": 2392,
-              "end": 2396,
+              "commentStart": 2417,
+              "end": 2421,
               "moduleId": 0,
-              "start": 2392,
+              "start": 2417,
               "type": "TagDeclarator",
               "value": "arc4"
             },
@@ -329,10 +327,10 @@ description: Variables in memory after executing liquid-impeller.kcl
               0.1297759225127791
             ],
             "tag": {
-              "commentStart": 2540,
-              "end": 2545,
+              "commentStart": 2565,
+              "end": 2570,
               "moduleId": 0,
-              "start": 2540,
+              "start": 2565,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -353,10 +351,10 @@ description: Variables in memory after executing liquid-impeller.kcl
               0.27
             ],
             "tag": {
-              "commentStart": 2661,
-              "end": 2666,
+              "commentStart": 2686,
+              "end": 2691,
               "moduleId": 0,
-              "start": 2661,
+              "start": 2686,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -377,10 +375,10 @@ description: Variables in memory after executing liquid-impeller.kcl
               0.27
             ],
             "tag": {
-              "commentStart": 2778,
-              "end": 2783,
+              "commentStart": 2803,
+              "end": 2808,
               "moduleId": 0,
-              "start": 2778,
+              "start": 2803,
               "type": "TagDeclarator",
               "value": "line7"
             },
@@ -393,17 +391,17 @@ description: Variables in memory after executing liquid-impeller.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 44,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -471,8 +469,8 @@ description: Variables in memory after executing liquid-impeller.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": null,
       "endCapId": null,
@@ -482,7 +480,6 @@ description: Variables in memory after executing liquid-impeller.kcl
   },
   "circle1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "circle1"
   },
   "impellerDiameter": {
@@ -490,42 +487,37 @@ description: Variables in memory after executing liquid-impeller.kcl
     "value": 4.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "line1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line1"
   },
   "line2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line2"
   },
   "line3": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line3"
   },
   "line4": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line4"
   },
   "line5": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line5"
   },
   "line6": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line6"
   },
   "line7": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line7"
   },
@@ -534,8 +526,10 @@ description: Variables in memory after executing liquid-impeller.kcl
     "value": 0.25,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "mountingHole": {
@@ -543,6 +537,8 @@ description: Variables in memory after executing liquid-impeller.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -550,10 +546,10 @@ description: Variables in memory after executing liquid-impeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 415,
-            "end": 422,
+            "commentStart": 440,
+            "end": 447,
             "moduleId": 0,
-            "start": 415,
+            "start": 440,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -564,10 +560,10 @@ description: Variables in memory after executing liquid-impeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 415,
-            "end": 422,
+            "commentStart": 440,
+            "end": 447,
             "moduleId": 0,
-            "start": 415,
+            "start": 440,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -578,10 +574,10 @@ description: Variables in memory after executing liquid-impeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 578,
-            "end": 583,
+            "commentStart": 603,
+            "end": 608,
             "moduleId": 0,
-            "start": 578,
+            "start": 603,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -592,10 +588,10 @@ description: Variables in memory after executing liquid-impeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 744,
-            "end": 749,
+            "commentStart": 769,
+            "end": 774,
             "moduleId": 0,
-            "start": 744,
+            "start": 769,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -623,10 +619,10 @@ description: Variables in memory after executing liquid-impeller.kcl
             ],
             "radius": 0.12500000000683767,
             "tag": {
-              "commentStart": 415,
-              "end": 422,
+              "commentStart": 440,
+              "end": 447,
               "moduleId": 0,
-              "start": 415,
+              "start": 440,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -653,10 +649,10 @@ description: Variables in memory after executing liquid-impeller.kcl
             ],
             "radius": 0.12500000000683767,
             "tag": {
-              "commentStart": 415,
-              "end": 422,
+              "commentStart": 440,
+              "end": 447,
               "moduleId": 0,
-              "start": 415,
+              "start": 440,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -677,10 +673,10 @@ description: Variables in memory after executing liquid-impeller.kcl
               -0.08125000007838837
             ],
             "tag": {
-              "commentStart": 578,
-              "end": 583,
+              "commentStart": 603,
+              "end": 608,
               "moduleId": 0,
-              "start": 578,
+              "start": 603,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -701,10 +697,10 @@ description: Variables in memory after executing liquid-impeller.kcl
               0.08125000004317415
             ],
             "tag": {
-              "commentStart": 744,
-              "end": 749,
+              "commentStart": 769,
+              "end": 774,
               "moduleId": 0,
-              "start": 744,
+              "start": 769,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -717,17 +713,17 @@ description: Variables in memory after executing liquid-impeller.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -787,8 +783,8 @@ description: Variables in memory after executing liquid-impeller.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -801,8 +797,10 @@ description: Variables in memory after executing liquid-impeller.kcl
     "value": 0.1,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "region001": {
@@ -827,10 +825,10 @@ description: Variables in memory after executing liquid-impeller.kcl
           ],
           "radius": 0.12500000000683767,
           "tag": {
-            "commentStart": 415,
-            "end": 422,
+            "commentStart": 440,
+            "end": 447,
             "moduleId": 0,
-            "start": 415,
+            "start": 440,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -857,10 +855,10 @@ description: Variables in memory after executing liquid-impeller.kcl
           ],
           "radius": 0.12500000000683767,
           "tag": {
-            "commentStart": 415,
-            "end": 422,
+            "commentStart": 440,
+            "end": 447,
             "moduleId": 0,
-            "start": 415,
+            "start": 440,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -881,10 +879,10 @@ description: Variables in memory after executing liquid-impeller.kcl
             -0.08125000007838837
           ],
           "tag": {
-            "commentStart": 578,
-            "end": 583,
+            "commentStart": 603,
+            "end": 608,
             "moduleId": 0,
-            "start": 578,
+            "start": 603,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -905,10 +903,10 @@ description: Variables in memory after executing liquid-impeller.kcl
             0.08125000004317415
           ],
           "tag": {
-            "commentStart": 744,
-            "end": 749,
+            "commentStart": 769,
+            "end": 774,
             "moduleId": 0,
-            "start": 744,
+            "start": 769,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -921,17 +919,17 @@ description: Variables in memory after executing liquid-impeller.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -991,8 +989,8 @@ description: Variables in memory after executing liquid-impeller.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "region002": {
@@ -1011,10 +1009,10 @@ description: Variables in memory after executing liquid-impeller.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 2098,
-            "end": 2103,
+            "commentStart": 2123,
+            "end": 2128,
             "moduleId": 0,
-            "start": 2098,
+            "start": 2123,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1035,10 +1033,10 @@ description: Variables in memory after executing liquid-impeller.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 2167,
-            "end": 2172,
+            "commentStart": 2192,
+            "end": 2197,
             "moduleId": 0,
-            "start": 2167,
+            "start": 2192,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1059,10 +1057,10 @@ description: Variables in memory after executing liquid-impeller.kcl
             0.1
           ],
           "tag": {
-            "commentStart": 2277,
-            "end": 2282,
+            "commentStart": 2302,
+            "end": 2307,
             "moduleId": 0,
-            "start": 2277,
+            "start": 2302,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1089,10 +1087,10 @@ description: Variables in memory after executing liquid-impeller.kcl
           ],
           "radius": 0.09949848399825222,
           "tag": {
-            "commentStart": 2392,
-            "end": 2396,
+            "commentStart": 2417,
+            "end": 2421,
             "moduleId": 0,
-            "start": 2392,
+            "start": 2417,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -1113,10 +1111,10 @@ description: Variables in memory after executing liquid-impeller.kcl
             0.1297759225127791
           ],
           "tag": {
-            "commentStart": 2540,
-            "end": 2545,
+            "commentStart": 2565,
+            "end": 2570,
             "moduleId": 0,
-            "start": 2540,
+            "start": 2565,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -1137,10 +1135,10 @@ description: Variables in memory after executing liquid-impeller.kcl
             0.27
           ],
           "tag": {
-            "commentStart": 2661,
-            "end": 2666,
+            "commentStart": 2686,
+            "end": 2691,
             "moduleId": 0,
-            "start": 2661,
+            "start": 2686,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -1161,10 +1159,10 @@ description: Variables in memory after executing liquid-impeller.kcl
             0.27
           ],
           "tag": {
-            "commentStart": 2778,
-            "end": 2783,
+            "commentStart": 2803,
+            "end": 2808,
             "moduleId": 0,
-            "start": 2778,
+            "start": 2803,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -1177,17 +1175,17 @@ description: Variables in memory after executing liquid-impeller.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 44,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1255,8 +1253,8 @@ description: Variables in memory after executing liquid-impeller.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "region003": {
@@ -1281,10 +1279,10 @@ description: Variables in memory after executing liquid-impeller.kcl
           ],
           "radius": 1.3287047462634483,
           "tag": {
-            "commentStart": 3352,
-            "end": 3356,
+            "commentStart": 3377,
+            "end": 3381,
             "moduleId": 0,
-            "start": 3352,
+            "start": 3377,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -1311,10 +1309,10 @@ description: Variables in memory after executing liquid-impeller.kcl
           ],
           "radius": 0.07000000000002446,
           "tag": {
-            "commentStart": 3465,
-            "end": 3469,
+            "commentStart": 3490,
+            "end": 3494,
             "moduleId": 0,
-            "start": 3465,
+            "start": 3490,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -1341,10 +1339,10 @@ description: Variables in memory after executing liquid-impeller.kcl
           ],
           "radius": 1.1850000001174854,
           "tag": {
-            "commentStart": 3618,
-            "end": 3622,
+            "commentStart": 3643,
+            "end": 3647,
             "moduleId": 0,
-            "start": 3618,
+            "start": 3643,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -1371,10 +1369,10 @@ description: Variables in memory after executing liquid-impeller.kcl
           ],
           "radius": 0.07000000000001803,
           "tag": {
-            "commentStart": 3771,
-            "end": 3775,
+            "commentStart": 3796,
+            "end": 3800,
             "moduleId": 0,
-            "start": 3771,
+            "start": 3796,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -1387,17 +1385,17 @@ description: Variables in memory after executing liquid-impeller.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 77,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 2.54,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1453,8 +1451,8 @@ description: Variables in memory after executing liquid-impeller.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "sketch001": {
@@ -1474,17 +1472,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": 0.08838834769535815,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.08838834761417194,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1492,17 +1494,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": 0.0000000000016116534542554913,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0000000000016116479811294438,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1594,17 +1600,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": -0.2500000000497237,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.08125000007838837,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1612,17 +1622,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": 0.24999999995027625,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.08125000005307587,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1714,17 +1728,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": 0.24999999995288041,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.08125000000932586,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1732,17 +1750,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": 0.24999999994617625,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.08125000004317415,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1834,17 +1856,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": 0.24999999994617625,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.08125000007723664,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1852,17 +1878,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": -0.2500000000512196,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.08125000007723664,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1954,17 +1984,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": -0.2500000000512196,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.08125000009379915,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -1972,17 +2006,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": -0.2500000000471196,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.08125000008713837,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2074,17 +2112,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": -0.2500000000523279,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.08125000008807587,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2092,17 +2134,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": 0.24999999994878042,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.08125000005286165,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2195,17 +2241,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": 0.24999999994767208,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.08125000006088837,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2213,17 +2263,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": -0.25000000004861545,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.08125000010161164,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2327,10 +2381,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                   ],
                   "radius": 0.12500000000683767,
                   "tag": {
-                    "commentStart": 415,
-                    "end": 422,
+                    "commentStart": 440,
+                    "end": 447,
                     "moduleId": 0,
-                    "start": 415,
+                    "start": 440,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -2368,10 +2422,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                     -0.08125000007838837
                   ],
                   "tag": {
-                    "commentStart": 578,
-                    "end": 583,
+                    "commentStart": 603,
+                    "end": 608,
                     "moduleId": 0,
-                    "start": 578,
+                    "start": 603,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -2392,10 +2446,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                     -0.08125000005307587
                   ],
                   "tag": {
-                    "commentStart": 662,
-                    "end": 667,
+                    "commentStart": 687,
+                    "end": 692,
                     "moduleId": 0,
-                    "start": 662,
+                    "start": 687,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -2416,10 +2470,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                     0.08125000004317415
                   ],
                   "tag": {
-                    "commentStart": 744,
-                    "end": 749,
+                    "commentStart": 769,
+                    "end": 774,
                     "moduleId": 0,
-                    "start": 744,
+                    "start": 769,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -2440,10 +2494,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                     0.08125000007723664
                   ],
                   "tag": {
-                    "commentStart": 826,
-                    "end": 831,
+                    "commentStart": 851,
+                    "end": 856,
                     "moduleId": 0,
-                    "start": 826,
+                    "start": 851,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -2456,17 +2510,17 @@ description: Variables in memory after executing liquid-impeller.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -2547,17 +2601,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": 0.0000000000016116545698752232,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.000000000001611643623623123,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2639,17 +2697,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": 0.3897759224917863,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.12977592251360862,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2657,17 +2719,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": 0.46,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.10031689345646971,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2675,17 +2741,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": 0.4604481549976604,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.19981436817341178,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2791,17 +2861,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2809,17 +2883,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": 2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2911,17 +2989,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": 2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -2929,17 +3011,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": 2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.1,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3031,17 +3117,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": 2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.1,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3049,17 +3139,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": 0.46,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.10031689345615281,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3151,17 +3245,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": 0.3897759224920104,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.1297759225138327,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3169,17 +3267,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": 0.25,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.27,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3271,17 +3373,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": 0.25,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.27,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3289,17 +3395,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.27,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3391,17 +3501,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.27,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3409,17 +3523,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3516,10 +3634,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 2098,
-                    "end": 2103,
+                    "commentStart": 2123,
+                    "end": 2128,
                     "moduleId": 0,
-                    "start": 2098,
+                    "start": 2123,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -3540,10 +3658,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 2167,
-                    "end": 2172,
+                    "commentStart": 2192,
+                    "end": 2197,
                     "moduleId": 0,
-                    "start": 2167,
+                    "start": 2192,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -3564,10 +3682,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                     0.1
                   ],
                   "tag": {
-                    "commentStart": 2277,
-                    "end": 2282,
+                    "commentStart": 2302,
+                    "end": 2307,
                     "moduleId": 0,
-                    "start": 2277,
+                    "start": 2302,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -3594,10 +3712,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                   ],
                   "radius": 0.09949848399825222,
                   "tag": {
-                    "commentStart": 2392,
-                    "end": 2396,
+                    "commentStart": 2417,
+                    "end": 2421,
                     "moduleId": 0,
-                    "start": 2392,
+                    "start": 2417,
                     "type": "TagDeclarator",
                     "value": "arc4"
                   },
@@ -3618,10 +3736,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                     0.1297759225127791
                   ],
                   "tag": {
-                    "commentStart": 2540,
-                    "end": 2545,
+                    "commentStart": 2565,
+                    "end": 2570,
                     "moduleId": 0,
-                    "start": 2540,
+                    "start": 2565,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -3642,10 +3760,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                     0.27
                   ],
                   "tag": {
-                    "commentStart": 2661,
-                    "end": 2666,
+                    "commentStart": 2686,
+                    "end": 2691,
                     "moduleId": 0,
-                    "start": 2661,
+                    "start": 2686,
                     "type": "TagDeclarator",
                     "value": "line6"
                   },
@@ -3666,10 +3784,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                     0.27
                   ],
                   "tag": {
-                    "commentStart": 2778,
-                    "end": 2783,
+                    "commentStart": 2803,
+                    "end": 2808,
                     "moduleId": 0,
-                    "start": 2778,
+                    "start": 2803,
                     "type": "TagDeclarator",
                     "value": "line7"
                   },
@@ -3682,17 +3800,17 @@ description: Variables in memory after executing liquid-impeller.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 44,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -3787,17 +3905,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": 0.3711090083323184,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.7915740185543417,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3805,17 +3927,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": 1.9260094190121424,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.5200000005845972,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3823,17 +3949,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": 0.5973066027371754,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.5177353226742583,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3939,17 +4069,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": 0.3897219236621217,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.6528199279490822,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3957,17 +4091,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": 0.3711090083323184,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.7915740185543417,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -3975,17 +4113,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": 0.379955441230024,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.7221352640653195,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4091,17 +4233,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": 0.38972192366212177,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.6528199279490818,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4109,17 +4255,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": 1.786009419012139,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.5199999510943855,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4127,17 +4277,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": 0.6010289987699126,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.5131879280655467,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4243,17 +4397,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": 1.9260094190121422,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.5200000005845972,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4261,17 +4419,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": 1.7860094190121403,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.5199999510943855,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4279,17 +4441,21 @@ description: Variables in memory after executing liquid-impeller.kcl
                       {
                         "n": 1.8560094190121412,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.52,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -4406,10 +4572,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                   ],
                   "radius": 1.3287047462634483,
                   "tag": {
-                    "commentStart": 3352,
-                    "end": 3356,
+                    "commentStart": 3377,
+                    "end": 3381,
                     "moduleId": 0,
-                    "start": 3352,
+                    "start": 3377,
                     "type": "TagDeclarator",
                     "value": "arc1"
                   },
@@ -4453,10 +4619,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                   ],
                   "radius": 0.07000000000002446,
                   "tag": {
-                    "commentStart": 3465,
-                    "end": 3469,
+                    "commentStart": 3490,
+                    "end": 3494,
                     "moduleId": 0,
-                    "start": 3465,
+                    "start": 3490,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -4500,10 +4666,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                   ],
                   "radius": 1.1850000001174854,
                   "tag": {
-                    "commentStart": 3618,
-                    "end": 3622,
+                    "commentStart": 3643,
+                    "end": 3647,
                     "moduleId": 0,
-                    "start": 3618,
+                    "start": 3643,
                     "type": "TagDeclarator",
                     "value": "arc3"
                   },
@@ -4530,10 +4696,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                   ],
                   "radius": 0.07000000000001803,
                   "tag": {
-                    "commentStart": 3771,
-                    "end": 3775,
+                    "commentStart": 3796,
+                    "end": 3800,
                     "moduleId": 0,
-                    "start": 3771,
+                    "start": 3796,
                     "type": "TagDeclarator",
                     "value": "arc4"
                   },
@@ -4546,17 +4712,17 @@ description: Variables in memory after executing liquid-impeller.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 77,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 2.54,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -4630,6 +4796,8 @@ description: Variables in memory after executing liquid-impeller.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -4637,10 +4805,10 @@ description: Variables in memory after executing liquid-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3352,
-                "end": 3356,
+                "commentStart": 3377,
+                "end": 3381,
                 "moduleId": 0,
-                "start": 3352,
+                "start": 3377,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -4651,10 +4819,10 @@ description: Variables in memory after executing liquid-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3465,
-                "end": 3469,
+                "commentStart": 3490,
+                "end": 3494,
                 "moduleId": 0,
-                "start": 3465,
+                "start": 3490,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -4665,10 +4833,10 @@ description: Variables in memory after executing liquid-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3618,
-                "end": 3622,
+                "commentStart": 3643,
+                "end": 3647,
                 "moduleId": 0,
-                "start": 3618,
+                "start": 3643,
                 "type": "TagDeclarator",
                 "value": "arc3"
               },
@@ -4679,10 +4847,10 @@ description: Variables in memory after executing liquid-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3771,
-                "end": 3775,
+                "commentStart": 3796,
+                "end": 3800,
                 "moduleId": 0,
-                "start": 3771,
+                "start": 3796,
                 "type": "TagDeclarator",
                 "value": "arc4"
               },
@@ -4710,10 +4878,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                 ],
                 "radius": 1.3287047462634483,
                 "tag": {
-                  "commentStart": 3352,
-                  "end": 3356,
+                  "commentStart": 3377,
+                  "end": 3381,
                   "moduleId": 0,
-                  "start": 3352,
+                  "start": 3377,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
@@ -4740,10 +4908,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                 ],
                 "radius": 0.07000000000002446,
                 "tag": {
-                  "commentStart": 3465,
-                  "end": 3469,
+                  "commentStart": 3490,
+                  "end": 3494,
                   "moduleId": 0,
-                  "start": 3465,
+                  "start": 3490,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -4770,10 +4938,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                 ],
                 "radius": 1.1850000001174854,
                 "tag": {
-                  "commentStart": 3618,
-                  "end": 3622,
+                  "commentStart": 3643,
+                  "end": 3647,
                   "moduleId": 0,
-                  "start": 3618,
+                  "start": 3643,
                   "type": "TagDeclarator",
                   "value": "arc3"
                 },
@@ -4800,10 +4968,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                 ],
                 "radius": 0.07000000000001803,
                 "tag": {
-                  "commentStart": 3771,
-                  "end": 3775,
+                  "commentStart": 3796,
+                  "end": 3800,
                   "moduleId": 0,
-                  "start": 3771,
+                  "start": 3796,
                   "type": "TagDeclarator",
                   "value": "arc4"
                 },
@@ -4816,17 +4984,17 @@ description: Variables in memory after executing liquid-impeller.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 77,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 2.54,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4882,8 +5050,8 @@ description: Variables in memory after executing liquid-impeller.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -4896,6 +5064,8 @@ description: Variables in memory after executing liquid-impeller.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -4903,10 +5073,10 @@ description: Variables in memory after executing liquid-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3352,
-                "end": 3356,
+                "commentStart": 3377,
+                "end": 3381,
                 "moduleId": 0,
-                "start": 3352,
+                "start": 3377,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -4917,10 +5087,10 @@ description: Variables in memory after executing liquid-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3465,
-                "end": 3469,
+                "commentStart": 3490,
+                "end": 3494,
                 "moduleId": 0,
-                "start": 3465,
+                "start": 3490,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -4931,10 +5101,10 @@ description: Variables in memory after executing liquid-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3618,
-                "end": 3622,
+                "commentStart": 3643,
+                "end": 3647,
                 "moduleId": 0,
-                "start": 3618,
+                "start": 3643,
                 "type": "TagDeclarator",
                 "value": "arc3"
               },
@@ -4945,10 +5115,10 @@ description: Variables in memory after executing liquid-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3771,
-                "end": 3775,
+                "commentStart": 3796,
+                "end": 3800,
                 "moduleId": 0,
-                "start": 3771,
+                "start": 3796,
                 "type": "TagDeclarator",
                 "value": "arc4"
               },
@@ -4976,10 +5146,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                 ],
                 "radius": 1.3287047462634483,
                 "tag": {
-                  "commentStart": 3352,
-                  "end": 3356,
+                  "commentStart": 3377,
+                  "end": 3381,
                   "moduleId": 0,
-                  "start": 3352,
+                  "start": 3377,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
@@ -5006,10 +5176,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                 ],
                 "radius": 0.07000000000002446,
                 "tag": {
-                  "commentStart": 3465,
-                  "end": 3469,
+                  "commentStart": 3490,
+                  "end": 3494,
                   "moduleId": 0,
-                  "start": 3465,
+                  "start": 3490,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -5036,10 +5206,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                 ],
                 "radius": 1.1850000001174854,
                 "tag": {
-                  "commentStart": 3618,
-                  "end": 3622,
+                  "commentStart": 3643,
+                  "end": 3647,
                   "moduleId": 0,
-                  "start": 3618,
+                  "start": 3643,
                   "type": "TagDeclarator",
                   "value": "arc3"
                 },
@@ -5066,10 +5236,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                 ],
                 "radius": 0.07000000000001803,
                 "tag": {
-                  "commentStart": 3771,
-                  "end": 3775,
+                  "commentStart": 3796,
+                  "end": 3800,
                   "moduleId": 0,
-                  "start": 3771,
+                  "start": 3796,
                   "type": "TagDeclarator",
                   "value": "arc4"
                 },
@@ -5082,17 +5252,17 @@ description: Variables in memory after executing liquid-impeller.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 77,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 2.54,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5148,8 +5318,8 @@ description: Variables in memory after executing liquid-impeller.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -5162,6 +5332,8 @@ description: Variables in memory after executing liquid-impeller.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -5169,10 +5341,10 @@ description: Variables in memory after executing liquid-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3352,
-                "end": 3356,
+                "commentStart": 3377,
+                "end": 3381,
                 "moduleId": 0,
-                "start": 3352,
+                "start": 3377,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -5183,10 +5355,10 @@ description: Variables in memory after executing liquid-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3465,
-                "end": 3469,
+                "commentStart": 3490,
+                "end": 3494,
                 "moduleId": 0,
-                "start": 3465,
+                "start": 3490,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -5197,10 +5369,10 @@ description: Variables in memory after executing liquid-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3618,
-                "end": 3622,
+                "commentStart": 3643,
+                "end": 3647,
                 "moduleId": 0,
-                "start": 3618,
+                "start": 3643,
                 "type": "TagDeclarator",
                 "value": "arc3"
               },
@@ -5211,10 +5383,10 @@ description: Variables in memory after executing liquid-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3771,
-                "end": 3775,
+                "commentStart": 3796,
+                "end": 3800,
                 "moduleId": 0,
-                "start": 3771,
+                "start": 3796,
                 "type": "TagDeclarator",
                 "value": "arc4"
               },
@@ -5242,10 +5414,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                 ],
                 "radius": 1.3287047462634483,
                 "tag": {
-                  "commentStart": 3352,
-                  "end": 3356,
+                  "commentStart": 3377,
+                  "end": 3381,
                   "moduleId": 0,
-                  "start": 3352,
+                  "start": 3377,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
@@ -5272,10 +5444,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                 ],
                 "radius": 0.07000000000002446,
                 "tag": {
-                  "commentStart": 3465,
-                  "end": 3469,
+                  "commentStart": 3490,
+                  "end": 3494,
                   "moduleId": 0,
-                  "start": 3465,
+                  "start": 3490,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -5302,10 +5474,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                 ],
                 "radius": 1.1850000001174854,
                 "tag": {
-                  "commentStart": 3618,
-                  "end": 3622,
+                  "commentStart": 3643,
+                  "end": 3647,
                   "moduleId": 0,
-                  "start": 3618,
+                  "start": 3643,
                   "type": "TagDeclarator",
                   "value": "arc3"
                 },
@@ -5332,10 +5504,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                 ],
                 "radius": 0.07000000000001803,
                 "tag": {
-                  "commentStart": 3771,
-                  "end": 3775,
+                  "commentStart": 3796,
+                  "end": 3800,
                   "moduleId": 0,
-                  "start": 3771,
+                  "start": 3796,
                   "type": "TagDeclarator",
                   "value": "arc4"
                 },
@@ -5348,17 +5520,17 @@ description: Variables in memory after executing liquid-impeller.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 77,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 2.54,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5414,8 +5586,8 @@ description: Variables in memory after executing liquid-impeller.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -5428,6 +5600,8 @@ description: Variables in memory after executing liquid-impeller.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -5435,10 +5609,10 @@ description: Variables in memory after executing liquid-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3352,
-                "end": 3356,
+                "commentStart": 3377,
+                "end": 3381,
                 "moduleId": 0,
-                "start": 3352,
+                "start": 3377,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -5449,10 +5623,10 @@ description: Variables in memory after executing liquid-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3465,
-                "end": 3469,
+                "commentStart": 3490,
+                "end": 3494,
                 "moduleId": 0,
-                "start": 3465,
+                "start": 3490,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -5463,10 +5637,10 @@ description: Variables in memory after executing liquid-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3618,
-                "end": 3622,
+                "commentStart": 3643,
+                "end": 3647,
                 "moduleId": 0,
-                "start": 3618,
+                "start": 3643,
                 "type": "TagDeclarator",
                 "value": "arc3"
               },
@@ -5477,10 +5651,10 @@ description: Variables in memory after executing liquid-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3771,
-                "end": 3775,
+                "commentStart": 3796,
+                "end": 3800,
                 "moduleId": 0,
-                "start": 3771,
+                "start": 3796,
                 "type": "TagDeclarator",
                 "value": "arc4"
               },
@@ -5508,10 +5682,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                 ],
                 "radius": 1.3287047462634483,
                 "tag": {
-                  "commentStart": 3352,
-                  "end": 3356,
+                  "commentStart": 3377,
+                  "end": 3381,
                   "moduleId": 0,
-                  "start": 3352,
+                  "start": 3377,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
@@ -5538,10 +5712,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                 ],
                 "radius": 0.07000000000002446,
                 "tag": {
-                  "commentStart": 3465,
-                  "end": 3469,
+                  "commentStart": 3490,
+                  "end": 3494,
                   "moduleId": 0,
-                  "start": 3465,
+                  "start": 3490,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -5568,10 +5742,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                 ],
                 "radius": 1.1850000001174854,
                 "tag": {
-                  "commentStart": 3618,
-                  "end": 3622,
+                  "commentStart": 3643,
+                  "end": 3647,
                   "moduleId": 0,
-                  "start": 3618,
+                  "start": 3643,
                   "type": "TagDeclarator",
                   "value": "arc3"
                 },
@@ -5598,10 +5772,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                 ],
                 "radius": 0.07000000000001803,
                 "tag": {
-                  "commentStart": 3771,
-                  "end": 3775,
+                  "commentStart": 3796,
+                  "end": 3800,
                   "moduleId": 0,
-                  "start": 3771,
+                  "start": 3796,
                   "type": "TagDeclarator",
                   "value": "arc4"
                 },
@@ -5614,17 +5788,17 @@ description: Variables in memory after executing liquid-impeller.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 77,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 2.54,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5680,8 +5854,8 @@ description: Variables in memory after executing liquid-impeller.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -5694,6 +5868,8 @@ description: Variables in memory after executing liquid-impeller.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -5701,10 +5877,10 @@ description: Variables in memory after executing liquid-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3352,
-                "end": 3356,
+                "commentStart": 3377,
+                "end": 3381,
                 "moduleId": 0,
-                "start": 3352,
+                "start": 3377,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -5715,10 +5891,10 @@ description: Variables in memory after executing liquid-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3465,
-                "end": 3469,
+                "commentStart": 3490,
+                "end": 3494,
                 "moduleId": 0,
-                "start": 3465,
+                "start": 3490,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -5729,10 +5905,10 @@ description: Variables in memory after executing liquid-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3618,
-                "end": 3622,
+                "commentStart": 3643,
+                "end": 3647,
                 "moduleId": 0,
-                "start": 3618,
+                "start": 3643,
                 "type": "TagDeclarator",
                 "value": "arc3"
               },
@@ -5743,10 +5919,10 @@ description: Variables in memory after executing liquid-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3771,
-                "end": 3775,
+                "commentStart": 3796,
+                "end": 3800,
                 "moduleId": 0,
-                "start": 3771,
+                "start": 3796,
                 "type": "TagDeclarator",
                 "value": "arc4"
               },
@@ -5774,10 +5950,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                 ],
                 "radius": 1.3287047462634483,
                 "tag": {
-                  "commentStart": 3352,
-                  "end": 3356,
+                  "commentStart": 3377,
+                  "end": 3381,
                   "moduleId": 0,
-                  "start": 3352,
+                  "start": 3377,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
@@ -5804,10 +5980,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                 ],
                 "radius": 0.07000000000002446,
                 "tag": {
-                  "commentStart": 3465,
-                  "end": 3469,
+                  "commentStart": 3490,
+                  "end": 3494,
                   "moduleId": 0,
-                  "start": 3465,
+                  "start": 3490,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -5834,10 +6010,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                 ],
                 "radius": 1.1850000001174854,
                 "tag": {
-                  "commentStart": 3618,
-                  "end": 3622,
+                  "commentStart": 3643,
+                  "end": 3647,
                   "moduleId": 0,
-                  "start": 3618,
+                  "start": 3643,
                   "type": "TagDeclarator",
                   "value": "arc3"
                 },
@@ -5864,10 +6040,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                 ],
                 "radius": 0.07000000000001803,
                 "tag": {
-                  "commentStart": 3771,
-                  "end": 3775,
+                  "commentStart": 3796,
+                  "end": 3800,
                   "moduleId": 0,
-                  "start": 3771,
+                  "start": 3796,
                   "type": "TagDeclarator",
                   "value": "arc4"
                 },
@@ -5880,17 +6056,17 @@ description: Variables in memory after executing liquid-impeller.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 77,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 2.54,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5946,8 +6122,8 @@ description: Variables in memory after executing liquid-impeller.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -5960,6 +6136,8 @@ description: Variables in memory after executing liquid-impeller.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -5967,10 +6145,10 @@ description: Variables in memory after executing liquid-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3352,
-                "end": 3356,
+                "commentStart": 3377,
+                "end": 3381,
                 "moduleId": 0,
-                "start": 3352,
+                "start": 3377,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -5981,10 +6159,10 @@ description: Variables in memory after executing liquid-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3465,
-                "end": 3469,
+                "commentStart": 3490,
+                "end": 3494,
                 "moduleId": 0,
-                "start": 3465,
+                "start": 3490,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -5995,10 +6173,10 @@ description: Variables in memory after executing liquid-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3618,
-                "end": 3622,
+                "commentStart": 3643,
+                "end": 3647,
                 "moduleId": 0,
-                "start": 3618,
+                "start": 3643,
                 "type": "TagDeclarator",
                 "value": "arc3"
               },
@@ -6009,10 +6187,10 @@ description: Variables in memory after executing liquid-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3771,
-                "end": 3775,
+                "commentStart": 3796,
+                "end": 3800,
                 "moduleId": 0,
-                "start": 3771,
+                "start": 3796,
                 "type": "TagDeclarator",
                 "value": "arc4"
               },
@@ -6040,10 +6218,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                 ],
                 "radius": 1.3287047462634483,
                 "tag": {
-                  "commentStart": 3352,
-                  "end": 3356,
+                  "commentStart": 3377,
+                  "end": 3381,
                   "moduleId": 0,
-                  "start": 3352,
+                  "start": 3377,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
@@ -6070,10 +6248,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                 ],
                 "radius": 0.07000000000002446,
                 "tag": {
-                  "commentStart": 3465,
-                  "end": 3469,
+                  "commentStart": 3490,
+                  "end": 3494,
                   "moduleId": 0,
-                  "start": 3465,
+                  "start": 3490,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -6100,10 +6278,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                 ],
                 "radius": 1.1850000001174854,
                 "tag": {
-                  "commentStart": 3618,
-                  "end": 3622,
+                  "commentStart": 3643,
+                  "end": 3647,
                   "moduleId": 0,
-                  "start": 3618,
+                  "start": 3643,
                   "type": "TagDeclarator",
                   "value": "arc3"
                 },
@@ -6130,10 +6308,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                 ],
                 "radius": 0.07000000000001803,
                 "tag": {
-                  "commentStart": 3771,
-                  "end": 3775,
+                  "commentStart": 3796,
+                  "end": 3800,
                   "moduleId": 0,
-                  "start": 3771,
+                  "start": 3796,
                   "type": "TagDeclarator",
                   "value": "arc4"
                 },
@@ -6146,17 +6324,17 @@ description: Variables in memory after executing liquid-impeller.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 77,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 2.54,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6212,8 +6390,8 @@ description: Variables in memory after executing liquid-impeller.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -6226,6 +6404,8 @@ description: Variables in memory after executing liquid-impeller.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -6233,10 +6413,10 @@ description: Variables in memory after executing liquid-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3352,
-                "end": 3356,
+                "commentStart": 3377,
+                "end": 3381,
                 "moduleId": 0,
-                "start": 3352,
+                "start": 3377,
                 "type": "TagDeclarator",
                 "value": "arc1"
               },
@@ -6247,10 +6427,10 @@ description: Variables in memory after executing liquid-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3465,
-                "end": 3469,
+                "commentStart": 3490,
+                "end": 3494,
                 "moduleId": 0,
-                "start": 3465,
+                "start": 3490,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -6261,10 +6441,10 @@ description: Variables in memory after executing liquid-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3618,
-                "end": 3622,
+                "commentStart": 3643,
+                "end": 3647,
                 "moduleId": 0,
-                "start": 3618,
+                "start": 3643,
                 "type": "TagDeclarator",
                 "value": "arc3"
               },
@@ -6275,10 +6455,10 @@ description: Variables in memory after executing liquid-impeller.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3771,
-                "end": 3775,
+                "commentStart": 3796,
+                "end": 3800,
                 "moduleId": 0,
-                "start": 3771,
+                "start": 3796,
                 "type": "TagDeclarator",
                 "value": "arc4"
               },
@@ -6306,10 +6486,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                 ],
                 "radius": 1.3287047462634483,
                 "tag": {
-                  "commentStart": 3352,
-                  "end": 3356,
+                  "commentStart": 3377,
+                  "end": 3381,
                   "moduleId": 0,
-                  "start": 3352,
+                  "start": 3377,
                   "type": "TagDeclarator",
                   "value": "arc1"
                 },
@@ -6336,10 +6516,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                 ],
                 "radius": 0.07000000000002446,
                 "tag": {
-                  "commentStart": 3465,
-                  "end": 3469,
+                  "commentStart": 3490,
+                  "end": 3494,
                   "moduleId": 0,
-                  "start": 3465,
+                  "start": 3490,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -6366,10 +6546,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                 ],
                 "radius": 1.1850000001174854,
                 "tag": {
-                  "commentStart": 3618,
-                  "end": 3622,
+                  "commentStart": 3643,
+                  "end": 3647,
                   "moduleId": 0,
-                  "start": 3618,
+                  "start": 3643,
                   "type": "TagDeclarator",
                   "value": "arc3"
                 },
@@ -6396,10 +6576,10 @@ description: Variables in memory after executing liquid-impeller.kcl
                 ],
                 "radius": 0.07000000000001803,
                 "tag": {
-                  "commentStart": 3771,
-                  "end": 3775,
+                  "commentStart": 3796,
+                  "end": 3800,
                   "moduleId": 0,
-                  "start": 3771,
+                  "start": 3796,
                   "type": "TagDeclarator",
                   "value": "arc4"
                 },
@@ -6412,17 +6592,17 @@ description: Variables in memory after executing liquid-impeller.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 77,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 2.54,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6478,8 +6658,8 @@ description: Variables in memory after executing liquid-impeller.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -6494,8 +6674,10 @@ description: Variables in memory after executing liquid-impeller.kcl
     "value": 7.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "vaneHeight": {
@@ -6503,8 +6685,10 @@ description: Variables in memory after executing liquid-impeller.kcl
     "value": 0.3,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "vaneThickness": {
@@ -6512,8 +6696,10 @@ description: Variables in memory after executing liquid-impeller.kcl
     "value": 0.15,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   }
 }

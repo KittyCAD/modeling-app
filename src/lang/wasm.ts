@@ -19,7 +19,7 @@ import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { OperationCallbackArgs } from '@rust/kcl-lib/bindings/OperationCallbackArgs'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
-import type { Sketch } from '@rust/kcl-lib/bindings/Sketch'
+import type { SketchView as Sketch } from '@rust/kcl-lib/bindings/SketchView'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 
 import type { DirectTagFilletMeta } from '@rust/kcl-lib/bindings/DirectTagFilletMeta'
@@ -119,11 +119,11 @@ export type SyntaxType =
   | 'ImportStatement'
   | 'SketchBlock'
 
-export type { ExtrudeSurface } from '@rust/kcl-lib/bindings/ExtrudeSurface'
+export type { ExtrudeSurfaceView as ExtrudeSurface } from '@rust/kcl-lib/bindings/ExtrudeSurfaceView'
 export type { KclValueView } from '@rust/kcl-lib/bindings/KclValueView'
-export type { Path } from '@rust/kcl-lib/bindings/Path'
-export type { Sketch } from '@rust/kcl-lib/bindings/Sketch'
-export type { Solid } from '@rust/kcl-lib/bindings/Solid'
+export type { PathView as Path } from '@rust/kcl-lib/bindings/PathView'
+export type { SketchView as Sketch } from '@rust/kcl-lib/bindings/SketchView'
+export type { SolidView as Solid } from '@rust/kcl-lib/bindings/SolidView'
 
 function bestSourceRange(error: RustKclError): SourceRange {
   if (error.details.sourceRanges.length === 0) {

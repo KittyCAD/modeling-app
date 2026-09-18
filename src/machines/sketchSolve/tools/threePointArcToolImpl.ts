@@ -382,11 +382,12 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
         return
       }
 
+      const mousePosition = [twoD.x, twoD.y] as Coords2d
       const snappingCandidate = getBestSnappingCandidate({
         self,
         sceneInfra: context.sceneInfra,
         sketchId: context.sketchId,
-        mousePosition: [twoD.x, twoD.y],
+        mousePosition,
         mouseEvent: args.mouseEvent,
         excludedPointIds: [
           context.startPointId,
@@ -395,6 +396,7 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
           context.arcEndPointId,
         ].filter((id): id is number => id !== undefined),
       })
+      const endPoint = snappingCandidate?.position ?? mousePosition
       sendHoveredSnappingCandidate(self, snappingCandidate)
       updateToolSnappingPreview({
         sceneInfra: context.sceneInfra,
@@ -410,7 +412,7 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
         const result = await editArcWithThreePoints({
           arcId,
           startPoint,
-          endPoint: [twoD.x, twoD.y],
+          endPoint,
           throughPoint,
           rustContext: context.rustContext,
           kclManager: context.kclManager,

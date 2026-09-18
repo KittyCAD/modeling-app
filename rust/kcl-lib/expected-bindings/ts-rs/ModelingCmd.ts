@@ -247,13 +247,14 @@ export type AnnotationMbdBasicDimension = {
  */
 symbol: MbdSymbol | null, 
 /**
- * The explicitly defined dimension.  Only required if the measurement is not automatically calculated.
+ * The explicitly defined dimension.
+ * Only required if the measurement is not automatically calculated.
  */
 dimension: number | null, 
 /**
  * The tolerance of the dimension
  */
-tolerance: number, };
+tolerance?: number | null, };
 
 /**
  * Parameters for defining an MBD Geometric control frame
@@ -268,7 +269,8 @@ symbol: MbdSymbol,
  */
 diameter_symbol: MbdSymbol | null, 
 /**
- * Tolerance value - the total tolerance of the geometric control.  The unit is based on the drawing standard.
+ * Tolerance value - the total tolerance of the geometric control.
+ * The unit is based on the drawing standard.
  */
 tolerance: number, 
 /**
@@ -327,7 +329,14 @@ feature_control: AnnotationFeatureControl | null,
 /**
  * Set as a feature tag annotation
  */
-feature_tag: AnnotationFeatureTag | null, };
+feature_tag: AnnotationFeatureTag | null, 
+/**
+ * Human-friendly identifier for this annotation.
+ * Included in some exports and metadata of the model.
+ * This is _not_ displayed visually in, the annotation,
+ * it's only metadata.
+ */
+name?: string | null, };
 
 /**
  * Horizontal Text alignment
@@ -472,7 +481,7 @@ tolerance: LengthUnit, };
  * aka non-coplanar.
  *
  * Prefer one `tool` over multiple when calling this feature.
- * 
+ *
  * Failure cases:
  * * A common failure is unsupported coplanar faces try to be unioned.
  *
@@ -514,7 +523,7 @@ tolerance: LengthUnit, };
  *
  * Most successful unions come from solids who's faces do not overlap
  * aka non-coplanar.
- * 
+ *
  * Failure cases:
  * * A common failure is unsupported coincident faces try to be unioned.
  *
@@ -2515,7 +2524,7 @@ export type OutputFormat2d = { "type": "dxf" } & DxfExportOptions;
 /**
  * Output 3D format specifier.
  */
-export type OutputFormat3d = { "type": "fbx" } & FbxExportOptions | { "type": "gltf" } & GltfExportOptions | { "type": "obj" } & ObjExportOptions | { "type": "ply" } & PlyExportOptions | { "type": "render_packet" } & RenderPacketExportOptions | { "type": "step" } & StepExportOptions | { "type": "stl" } & StlExportOptions;
+export type OutputFormat3d = { "type": "fbx" } & FbxExportOptions | { "type": "gltf" } & GltfExportOptions | { "type": "obj" } & ObjExportOptions | { "type": "ply" } & PlyExportOptions | { "type": "step" } & StepExportOptions | { "type": "stl" } & StlExportOptions;
 
 /**
  *Options for importing Parasolid part format.
@@ -2642,23 +2651,6 @@ control2: Point3d<LengthUnit>,
 end: Point3d<LengthUnit>, 
 /**
  *Whether or not this bezier is a relative offset
- */
-relative: boolean, } | { "type": "curve", 
-/**
- * Degree of the curve.
- */
-degree: number, 
-/**
- * Whether to use the homogeneous `w` component as a rational weight.
- */
-rational: boolean, 
-/**
- * Ordered control points for the curve.
- * The final 3D point becomes the new path "pen" position.
- */
-points: Array<Point4d<LengthUnit>>, 
-/**
- *Whether or not this curve is a relative offset
  */
 relative: boolean, } | { "type": "tangential_arc", 
 /**
@@ -3018,323 +3010,6 @@ export type RemoveSceneObjects = {
 object_ids: Array<string>, };
 
 /**
- * Metadata for a binary render packet consumed by the browser renderer.
- */
-export type RenderPacket = { 
-/**
- * Binary render packet format version.
- */
-version: number, 
-/**
- * Layout of the interleaved surface vertex buffer.
- */
-vertexLayout: RenderPacketVertexLayout, 
-/**
- * Byte ranges relative to the beginning of the packet's binary payload.
- */
-sections: RenderPacketBinarySections, 
-/**
- * PBR materials keyed by the body IDs referenced by renderable primitives.
- */
-bodyMaterials: Array<RenderPacketBodyMaterial>, 
-/**
- * Individual renderable face primitives with stable engine metadata.
- */
-primitives: Array<RenderPacketPrimitive>, 
-/**
- * Explicit engine-authored edge polylines with stable engine metadata.
- */
-edges: Array<RenderPacketEdge>, 
-/**
- * Explicit engine-authored sketch/wire polylines with sketch-local metadata.
- */
-sketches: Array<RenderPacketSketchSegment>, 
-/**
- * Explicit engine-authored sketch regions with stable engine metadata.
- */
-regions: Array<RenderPacketRegion>, };
-
-/**
- * A byte range within the binary payload following the JSON metadata.
- */
-export type RenderPacketBinarySection = { 
-/**
- * Byte offset relative to the beginning of the binary payload.
- */
-byteOffset: number, 
-/**
- * Length of the section in bytes.
- */
-byteLength: number, };
-
-/**
- * Packed numerical sections stored after the JSON metadata.
- */
-export type RenderPacketBinarySections = { 
-/**
- * Interleaved surface vertices.
- */
-vertices: RenderPacketBinarySection, 
-/**
- * Packet-wide uint32 primitive index for each surface vertex.
- */
-primitiveIndices: RenderPacketBinarySection, 
-/**
- * Global uint32 triangle indices.
- */
-indices: RenderPacketBinarySection, 
-/**
- * Packed float32x2 trim-loop points.
- */
-trimPoints: RenderPacketBinarySection, 
-/**
- * Packed float32x3 edge-polyline points.
- */
-edgePoints: RenderPacketBinarySection, 
-/**
- * Packed float32x3 sketch-segment points.
- */
-sketchPoints: RenderPacketBinarySection, 
-/**
- * Packed float32x2 sketch-region points.
- */
-regionPoints: RenderPacketBinarySection, };
-
-/**
- * The PBR material assigned to a body in a render packet.
- */
-export type RenderPacketBodyMaterial = { 
-/**
- * Stable engine body UUID used by renderable primitives.
- */
-bodyId: string, 
-/**
- * Front-face PBR base color, including opacity in the alpha channel.
- */
-baseColor: Color, 
-/**
- * PBR metallic factor in the range 0 to 1.
- */
-metalness: number, 
-/**
- * PBR roughness factor in the range 0 to 1.
- */
-roughness: number, };
-
-/**
- * A single renderable edge polyline in a render packet.
- */
-export type RenderPacketEdge = { 
-/**
- * First float32x3 point in the packet-wide edge-point section.
- */
-firstPoint: number, 
-/**
- * Number of points in this edge polyline.
- */
-pointCount: number, 
-/**
- * Stable engine object UUID for the parent solid.
- */
-objectId: string, 
-/**
- * Stable engine body UUID for the parent solid.
- */
-bodyId: string, 
-/**
- * Stable engine edge UUID.
- */
-edgeId: string, 
-/**
- * The edge index within the solid at export time.
- */
-edgeIndex: number, };
-
-/**
- * Options for exporting a render packet.
- */
-export type RenderPacketExportOptions = Record<symbol, never>;
-
-/**
- * A single renderable face range in a render packet.
- */
-export type RenderPacketPrimitive = { 
-/**
- * First vertex in the packet-wide interleaved vertex section.
- */
-firstVertex: number, 
-/**
- * Number of vertices belonging to this face.
- */
-vertexCount: number, 
-/**
- * First index in the packet-wide index section.
- */
-firstIndex: number, 
-/**
- * Number of indices belonging to this face.
- */
-indexCount: number, 
-/**
- * Index of this face's material in `RenderPacket::body_materials`.
- */
-materialIndex: number, 
-/**
- * Trim implementation selected by the geometry engine.
- */
-trimMode: RenderPacketTrimMode, 
-/**
- * Trim loops in the same normalized face-local uv space as `uvs`.
- */
-trimLoops: Array<RenderPacketTrimLoop>, 
-/**
- * Stable engine object UUID for the parent solid.
- */
-objectId: string, 
-/**
- * Stable engine body UUID for the parent solid.
- */
-bodyId: string, 
-/**
- * Stable engine face UUID.
- */
-faceId: string, 
-/**
- * The face index within the solid at export time.
- */
-faceIndex: number, 
-/**
- * The primitive index within the generated packet.
- */
-primitiveIndex: number, };
-
-/**
- * A single implicit sketch region in a render packet.
- */
-export type RenderPacketRegion = { 
-/**
- * The sketch plane origin in OpenGL/glTF world coordinates and meters.
- */
-planeOrigin: Point3d<number>, 
-/**
- * The sketch plane x axis in OpenGL/glTF world coordinates.
- */
-planeXAxis: Point3d<number>, 
-/**
- * The sketch plane y axis in OpenGL/glTF world coordinates.
- */
-planeYAxis: Point3d<number>, 
-/**
- * The explicit outer loop for this region in sketch-plane local meters.
- */
-outerLoop: RenderPacketRegionLoop, 
-/**
- * Hole loops for this region in sketch-plane local meters.
- */
-holeLoops: Array<RenderPacketRegionLoop>, 
-/**
- * Stable engine scene object UUID for the sketch owner.
- */
-sketchId: string, 
-/**
- * Stable engine region UUID.
- */
-regionId: string, 
-/**
- * Stable engine parent path UUID. This mirrors `entity_get_parent_id`.
- */
-parentId: string, 
-/**
- * A point guaranteed to be inside the region, in engine millimeters.
- */
-queryPoint: Point2d<number>, };
-
-/**
- * A single 2D loop in sketch-plane local meters.
- */
-export type RenderPacketRegionLoop = { 
-/**
- * First float32x2 point in the packet-wide region-point section.
- */
-firstPoint: number, 
-/**
- * Number of points in this loop.
- */
-pointCount: number, };
-
-/**
- * A single renderable sketch/wire polyline in a render packet.
- */
-export type RenderPacketSketchSegment = { 
-/**
- * First float32x3 point in the packet-wide sketch-point section.
- */
-firstPoint: number, 
-/**
- * Number of points in this sketch segment.
- */
-pointCount: number, 
-/**
- * Stable engine scene object UUID for the sketch owner.
- */
-sketchId: string, 
-/**
- * Stable artifact/entity UUID for the underlying sketch segment, when available.
- */
-segmentId: string | null, 
-/**
- * Curve index within the sketch path or hole loop.
- */
-segmentIndex: number, 
-/**
- * Hole index when this segment belongs to a hole loop.
- */
-holeIndex: number | null, 
-/**
- * Whether the underlying curve is closed.
- */
-closed: boolean, };
-
-/**
- * A single trim loop in normalized face-local uv space.
- */
-export type RenderPacketTrimLoop = { 
-/**
- * First float32x2 point in the packet-wide trim-point section.
- */
-firstPoint: number, 
-/**
- * Number of points in this closed trim loop.
- */
-pointCount: number, };
-
-/**
- * How the browser renderer should evaluate a face's trim loops.
- */
-export type RenderPacketTrimMode = "none" | "hybrid" | "complexTexture";
-
-/**
- * Layout of a surface vertex in the interleaved vertex section.
- */
-export type RenderPacketVertexLayout = { 
-/**
- * Distance in bytes between consecutive vertices.
- */
-stride: number, 
-/**
- * Byte offset of the float32x3 position.
- */
-positionOffset: number, 
-/**
- * Byte offset of the float32x3 normal.
- */
-normalOffset: number, 
-/**
- * Byte offset of the float32x2 UV coordinate.
- */
-uvOffset: number, };
-
-/**
  * Command for revolving a solid 2d.
  */
 export type Revolve = { 
@@ -3606,7 +3281,11 @@ highlight_color: Color | null,
 /**
  * The default color to use for selection
  */
-selection_color: Color | null, };
+selection_color: Color | null, 
+/**
+ * The default color to use for the edges of 3D bodies.
+ */
+edge_3d_color: Color | null, };
 
 /**
  * Set the grid lines to auto scale. The grid will get larger the further you zoom out,
@@ -3805,7 +3484,11 @@ use_legacy?: boolean,
 /**
  * Which version of the edge cut algorithm to use.
  */
-version?: EdgeCutVersion, };
+version?: EdgeCutVersion, 
+/**
+ * If true, also cut edges that are tangent to the selected edges.
+ */
+tangent_chain?: boolean, };
 
 /**
  * Cut the list of given edges with the given cut parameters.
@@ -3849,7 +3532,11 @@ use_legacy?: boolean,
 /**
  * Which version of the edge cut algorithm to use.
  */
-version?: EdgeCutVersion, };
+version?: EdgeCutVersion, 
+/**
+ * If true, also cut edges that are tangent to the selected edges.
+ */
+tangent_chain?: boolean, };
 
 /**
  * Fillets the given edge with the specified radius.

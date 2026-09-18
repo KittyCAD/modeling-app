@@ -3,6 +3,7 @@ import {
   cloudSyncRemoteProjects,
   configureCloudSyncEngine,
   deleteRemoteCloudProject,
+  disableCloudSyncEngineForTest,
   getCloudSyncProjectMetadata,
   renameRemoteCloudProject,
 } from '@src/lib/cloudSync'
@@ -38,7 +39,7 @@ describe('renameRemoteCloudProject', () => {
   })
 
   afterEach(async () => {
-    configureCloudSyncEngine({ enabled: false })
+    await disableCloudSyncEngineForTest()
     vi.unstubAllGlobals()
     await deleteCloudSyncTestDatabase()
   })
@@ -132,7 +133,7 @@ describe('deleteRemoteCloudProject', () => {
   })
 
   afterEach(async () => {
-    configureCloudSyncEngine({ enabled: false })
+    await disableCloudSyncEngineForTest()
     vi.unstubAllGlobals()
     await deleteCloudSyncTestDatabase()
   })

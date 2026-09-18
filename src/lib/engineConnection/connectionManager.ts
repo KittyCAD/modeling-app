@@ -31,6 +31,7 @@ import {
   createOnEngineOffline,
 } from '@src/lib/engineConnection/connectionManagerEvents'
 import type {
+  EngineConnectionError,
   IEventListenerTracked,
   ManagerTearDown,
   ModelTypes,
@@ -46,6 +47,7 @@ import {
   EngineConnectionStateType,
   REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE,
   validateStreamDimensions,
+  type EngineDisconnectEventDetail,
 } from '@src/lib/engineConnection/utils'
 import {
   isExportResponse,
@@ -57,6 +59,7 @@ import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
 import {
   darkModeMatcher,
+  edgeColor,
   getOppositeTheme,
   getThemeColorForEngine,
   type Themes,
@@ -71,6 +74,7 @@ import {
 } from '@src/lib/utils'
 import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 
 export type ConnectionSystemDeps = {
   settingsActor: SettingsActorType
@@ -103,6 +107,9 @@ export class ConnectionManager extends EventTarget {
   commandLogs: CommandLog[] = []
 
   connection: Connection | undefined
+  lastConnectionError: EngineConnectionError | undefined
+  private connectionStartedAt = performance.now()
+  private shutdownReported = false
 
   get apiCallId(): string | undefined {
     return this.connection?.apiCallId
@@ -162,6 +169,7 @@ export class ConnectionManager extends EventTarget {
     this.allEventListeners = new Map()
     this.id = uuidv4()
     this.callbackOnUnitTestingConnection = null
+    this.lastConnectionError = undefined
   }
 
   setInSequence(sequence: number) {
@@ -178,6 +186,7 @@ export class ConnectionManager extends EventTarget {
     token,
     setStreamIsReady,
     callbackOnUnitTestingConnection,
+    unitTestGeometryOnly,
     rustContext,
     webrtc = true,
   }: {
@@ -186,6 +195,7 @@ export class ConnectionManager extends EventTarget {
     token: string
     setStreamIsReady: (setStreamIsReady: boolean) => void
     callbackOnUnitTestingConnection?: (message: string) => void
+    unitTestGeometryOnly?: boolean
     rustContext?: RustContext
     webrtc?: boolean
   }) {
@@ -212,6 +222,9 @@ export class ConnectionManager extends EventTarget {
       return Promise.reject(invalidStreamDimensions)
     }
 
+    this.lastConnectionError = undefined
+    this.connectionStartedAt = performance.now()
+    this.shutdownReported = false
     this.started = true
     this.rejectAllPendingCommands()
 
@@ -228,9 +241,11 @@ export class ConnectionManager extends EventTarget {
       token,
       webrtc,
       handleOnDataChannelMessage: this.handleOnDataChannelMessage.bind(this),
+      recordShutdownTrigger: this.recordShutdownTrigger.bind(this),
       tearDownManager: this.tearDown.bind(this),
       rejectPendingCommand: this.rejectPendingCommand.bind(this),
       callbackOnUnitTestingConnection,
+      unitTestGeometryOnly,
       handleMessage,
       getCloudProjectId: () =>
         this.systemDeps.settingsActor.getSnapshot().context.currentProject
@@ -466,6 +481,7 @@ export class ConnectionManager extends EventTarget {
       color: defaultSystemColor,
       highlight_color: SYSTEM_HIGHLIGHT_COLOR,
       selection_color: SYSTEM_SELECTION_COLOR,
+      edge_3d_color: edgeColor(),
     } as const
     EngineDebugger.addLog({
       label: 'connectionManager',
@@ -802,7 +818,6 @@ export class ConnectionManager extends EventTarget {
     if (message.command.type === 'modeling_cmd_req') {
       const commandName = message.command.cmd.type
       if (commandName.includes('export')) {
-        // If the command name includes export of any type do not time it out within 60 seconds
         timeoutPendingCommand = false
       }
     }
@@ -1073,16 +1088,62 @@ export class ConnectionManager extends EventTarget {
     this.connection.send(resizeCmd)
   }
 
-  tearDown(options?: ManagerTearDown) {
+  recordShutdownTrigger(options: ManagerTearDown) {
+    if (this.shutdownReported) return false
+
+    this.shutdownReported = true
+    const connection = this.connection
+
+    void reportClientError({
+      code: ClientErrorCode.EngineTeardown,
+      message: `Engine teardown called: ${options.route}.`,
+      extra: {
+        source: 'ConnectionManager',
+        shutdownRoute: options.route,
+        initiatedBy: options.initiatedBy,
+        sourceTime: new Date().toISOString(),
+        monotonicElapsedMs: Math.max(
+          0,
+          performance.now() - this.connectionStartedAt
+        ),
+        pendingCommandCount: Object.keys(this.pendingCommands).length,
+        hasConnection: Boolean(connection),
+        connectionId: connection?.id ?? null,
+        modelingApiCallId: connection?.apiCallId ?? null,
+        websocketCloseCode: options.code ?? null,
+        websocketCloseReason: options.reason ?? null,
+        reconnectRequested: options.reconnectRequested ?? false,
+        connectionConnected: connection?.connected ?? false,
+        websocketReadyState: connection?.websocket?.readyState ?? null,
+        peerConnectionState:
+          connection?.peerConnection?.connectionState ?? null,
+        iceConnectionState:
+          connection?.peerConnection?.iceConnectionState ?? null,
+        dataChannelReadyState:
+          connection?.unreliableDataChannel?.readyState ?? null,
+      },
+    })
+
+    return true
+  }
+
+  tearDown(options: ManagerTearDown) {
+    const connection = this.connection
+    const isFirstShutdownTrigger = this.recordShutdownTrigger(options)
+
     EngineDebugger.addLog({
       label: 'connectionManager',
       message: `invoked tearDown()`,
       metadata: {
         options,
+        route: options.route,
+        initiatedBy: options.initiatedBy,
+        isFirstShutdownTrigger,
         started: !!this.started,
-        connection: !!this.connection,
+        connection: !!connection,
       },
     })
+
     if (!this.started) {
       EngineDebugger.addLog({
         label: 'connectionManager',
@@ -1098,29 +1159,43 @@ export class ConnectionManager extends EventTarget {
       })
     }
 
+    if (options.connectionError) {
+      this.lastConnectionError = options.connectionError
+    }
+
     // It was torn down from a websocket close.
-    if (options?.websocketClosed) {
+    if (
+      options.route === 'websocket-closed' ||
+      options.route === 'backend-shutdown'
+    ) {
       this.dispatchEvent(
-        new CustomEvent(EngineConnectionManagerEvents.WebsocketClosed, {
-          detail: { code: options.code },
-        })
+        new CustomEvent<EngineDisconnectEventDetail>(
+          EngineConnectionManagerEvents.WebsocketClosed,
+          {
+            detail: {
+              code: options.code,
+              connectionError: options.connectionError,
+              reconnectRequested: options.reconnectRequested ?? false,
+            },
+          }
+        )
       )
-    } else if (options?.peerConnectionClosed) {
+    } else if (options.route === 'peer-connection-closed') {
       this.dispatchEvent(
         new CustomEvent(EngineConnectionManagerEvents.peerConnectionClosed, {})
       )
-    } else if (options?.peerConnectionDisconnected) {
+    } else if (options.route === 'peer-connection-disconnected') {
       this.dispatchEvent(
         new CustomEvent(
           EngineConnectionManagerEvents.peerConnectionDisconnected,
           {}
         )
       )
-    } else if (options?.peerConnectionFailed) {
+    } else if (options.route === 'peer-connection-failed') {
       this.dispatchEvent(
         new CustomEvent(EngineConnectionManagerEvents.peerConnectionFailed, {})
       )
-    } else if (options?.dataChannelClosed) {
+    } else if (options.route === 'data-channel-closed') {
       this.dispatchEvent(
         new CustomEvent(EngineConnectionManagerEvents.dataChannelClose, {})
       )
@@ -1207,7 +1282,7 @@ export class ConnectionManager extends EventTarget {
       label: 'connectionManager',
       message: 'offline, calling tearDown()',
     })
-    this.tearDown()
+    this.tearDown({ route: 'window-offline', initiatedBy: 'client' })
   }
 
   // VITEST ONLY

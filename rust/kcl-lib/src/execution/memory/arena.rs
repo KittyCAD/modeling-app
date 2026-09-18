@@ -246,12 +246,30 @@ pub(crate) struct Stack {
     call_stack: Vec<EnvironmentRef>,
 }
 
+/// An environment's own deferred obligation to its parent, executed when the
+/// environment is popped. This does not describe the overall pinning policy:
+/// a call frame's parent is pinned eagerly by the snapshot taken at closure
+/// creation, and `push_new_env_for_scope`'s parent is pinned eagerly by the
+/// snapshot at push, so both carry `None` here.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum ParentPin {
+    /// This environment never pins its parent itself.
+    None,
+    /// Mark the parent as possibly-referenced when this environment is
+    /// popped, iff this environment itself might be referenced by then (e.g.
+    /// a closure was declared inside it). Used for block scopes (KCL 3.0
+    /// if-arm bodies; see `push_new_env_for_block`) so that an unreferenced
+    /// block doesn't pin its enclosing frame in memory.
+    OnPopIfRefed,
+}
+
 #[derive(Debug)]
 struct Environment {
     bindings: IndexMap<String, (usize, KclValue)>,
     // An outer scope, if one exists.
     parent: Option<EnvironmentRef>,
     might_be_refed: bool,
+    parent_pin: ParentPin,
     // The id of the `Stack` if this `Environment` is on a call stack. If this is >0 then it may
     // only be read or written by that `Stack`; if 0 then the env is read-only.
     owner: usize,
@@ -481,6 +499,7 @@ impl ProgramMemory {
         &self,
         parent: Option<EnvironmentRef>,
         is_root_env: bool,
+        parent_pin: ParentPin,
         owner: usize,
         op: &str,
     ) -> Result<EnvironmentRef, KclError> {
@@ -492,6 +511,7 @@ impl ProgramMemory {
         envs.push(Arc::new(RwLock::new(Environment::new_checked(
             parent,
             is_root_env,
+            parent_pin,
             owner,
             op,
         )?)));
@@ -509,6 +529,22 @@ impl ProgramMemory {
             .cloned()
             .ok_or_else(|| arena_env_index_out_of_range("popping environment", old.index(), envs.len()))?;
         let mut env = self.write_env(&env, old.index(), "popping environment")?;
+
+        // A block-scope env that might be referenced keeps its parent chain
+        // alive: mark the parent now, deferred from the block's creation so
+        // that unreferenced blocks don't pin their enclosing frame (see
+        // `ParentPin::OnPopIfRefed`).
+        if env.parent_pin == ParentPin::OnPopIfRefed
+            && env.might_be_refed
+            && let Some(parent) = env.parent
+        {
+            let parent_env = envs.get(parent.index()).cloned().ok_or_else(|| {
+                arena_env_index_out_of_range("pinning a block environment's parent", parent.index(), envs.len())
+            })?;
+            self.write_env(&parent_env, parent.index(), "pinning a block environment's parent")?
+                .mark_as_refed();
+        }
+
         env.compact(owner, "popping environment")?;
 
         if env.is_empty() && old.index() == envs.len() - 1 {
@@ -542,6 +578,21 @@ impl ProgramMemory {
 
         Ok(old_env)
     }
+
+    /// The number of environments currently retaining bindings. Compacted,
+    /// truly popped, and never-bound environments don't count. A test-only
+    /// observable for memory reclamation.
+    #[cfg(test)]
+    pub(crate) fn envs_with_bindings(&self) -> usize {
+        self.environments
+            .read()
+            .map(|envs| {
+                envs.iter()
+                    .filter(|env| env.read().map(|env| !env.bindings.is_empty()).unwrap_or(false))
+                    .count()
+            })
+            .unwrap_or(0)
+    }
 }
 
 impl Stack {
@@ -571,9 +622,13 @@ impl Stack {
     /// `parent` is the environment where the function being called is declared (not the caller's
     /// environment, which is probably `self.current_env`).
     pub fn push_new_env_for_call(&mut self, parent: EnvironmentRef) -> Result<(), KclError> {
-        let env_ref = self
-            .memory
-            .new_env_checked(Some(parent), false, self.id, "pushing a call environment")?;
+        let env_ref = self.memory.new_env_checked(
+            Some(parent),
+            false,
+            ParentPin::None,
+            self.id,
+            "pushing a call environment",
+        )?;
         self.call_stack.push(self.current_env);
         self.current_env = env_ref;
         Ok(())
@@ -587,6 +642,34 @@ impl Stack {
         // We need to snapshot in case there is a function decl in the new scope.
         let snapshot = self.snapshot()?;
         self.push_new_env_for_call(snapshot)
+    }
+
+    /// Push a stack frame for a block scope, e.g. a KCL 3.0 if-arm body.
+    ///
+    /// Like [`Self::push_new_env_for_scope`], the parent is the current
+    /// environment, and the epoch is advanced so that bindings added to the
+    /// parent afterwards are invisible through the new env's parent ref. Unlike
+    /// it, the parent is not immediately marked as possibly-referenced, which
+    /// would pin the enclosing frame in memory forever (one retained frame per
+    /// call for any function whose body evaluates the block). Instead the new
+    /// env records the obligation, and popping it marks the parent only if the
+    /// block's env itself might be referenced by then (e.g. a closure was
+    /// declared inside it), which keeps parent chains alive transitively.
+    pub fn push_new_env_for_block(&mut self) -> Result<(), KclError> {
+        self.memory.stats.epoch_count.fetch_add(1, Ordering::Relaxed);
+        let prev_epoch = self.memory.epoch.fetch_add(1, Ordering::Relaxed);
+        let parent = EnvironmentRef::at_epoch(self.current_env.index(), prev_epoch);
+
+        let env_ref = self.memory.new_env_checked(
+            Some(parent),
+            false,
+            ParentPin::OnPopIfRefed,
+            self.id,
+            "pushing a block environment",
+        )?;
+        self.call_stack.push(self.current_env);
+        self.current_env = env_ref;
+        Ok(())
     }
 
     /// Push a new stack frame on to the call stack with no connection to a parent environment.
@@ -604,9 +687,9 @@ impl Stack {
         } else {
             None
         };
-        let env_ref = self
-            .memory
-            .new_env_checked(parent, true, self.id, "pushing a root environment")?;
+        let env_ref =
+            self.memory
+                .new_env_checked(parent, true, ParentPin::None, self.id, "pushing a root environment")?;
         self.call_stack.push(self.current_env);
         self.current_env = env_ref;
         Ok(())
@@ -669,9 +752,24 @@ impl Stack {
             let env_cell = self
                 .memory
                 .get_env_checked(old.index(), "preserving and popping environment")?;
-            self.memory
-                .write_env(&env_cell, old.index(), "preserving and popping environment")?
-                .read_only();
+            let mut env = self
+                .memory
+                .write_env(&env_cell, old.index(), "preserving and popping environment")?;
+            env.read_only();
+            // A preserved env stays alive by definition, so honor a block env's
+            // deferred parent pin unconditionally.
+            let parent_to_pin = (env.parent_pin == ParentPin::OnPopIfRefed)
+                .then_some(env.parent)
+                .flatten();
+            drop(env);
+            if let Some(parent) = parent_to_pin {
+                let parent_cell = self
+                    .memory
+                    .get_env_checked(parent.index(), "preserving and popping environment")?;
+                self.memory
+                    .write_env(&parent_cell, parent.index(), "preserving and popping environment")?
+                    .mark_as_refed();
+            }
         }
         Ok(old)
     }
@@ -1001,6 +1099,7 @@ impl Environment {
             bindings: self.bindings.clone(),
             parent: self.parent,
             might_be_refed: self.might_be_refed,
+            parent_pin: self.parent_pin,
             owner: 0,
         })
     }
@@ -1010,6 +1109,7 @@ impl Environment {
     fn new_checked(
         parent: Option<EnvironmentRef>,
         might_be_refed: bool,
+        parent_pin: ParentPin,
         owner: usize,
         op: &str,
     ) -> Result<Self, KclError> {
@@ -1026,6 +1126,7 @@ impl Environment {
             bindings: IndexMap::new(),
             parent,
             might_be_refed,
+            parent_pin,
             owner,
         })
     }
@@ -1035,6 +1136,7 @@ impl Environment {
             bindings: IndexMap::new(),
             parent: None,
             might_be_refed: false,
+            parent_pin: ParentPin::None,
             owner: 0,
         }
     }
@@ -1250,6 +1352,109 @@ mod tests {
         mem.memory
             .get_from(key, snapshot, sr(), mem.id)
             .expect_err("expected snapshot lookup to fail");
+    }
+
+    #[test]
+    fn unreferenced_block_env_does_not_pin_its_parent() {
+        let mem = &mut stack_for_tests();
+
+        // A call frame with a binding, containing a block scope with a
+        // binding, where nothing references the block.
+        mem.push_new_env_for_call(mem.current_env).unwrap();
+        mem.add("frame_local".to_owned(), val(1), sr()).unwrap();
+        mem.push_new_env_for_block().unwrap();
+        mem.add("block_local".to_owned(), val(2), sr()).unwrap();
+
+        mem.pop_env().unwrap(); // the block
+        mem.pop_env().unwrap(); // the frame
+
+        // Both the block env and the frame must be reclaimed; before
+        // deferred parent pinning, the block's creation marked the frame as
+        // possibly-referenced forever.
+        assert_eq!(mem.memory.envs_with_bindings(), 0);
+    }
+
+    #[test]
+    fn referenced_block_env_pins_its_parent_chain() {
+        let mem = &mut stack_for_tests();
+
+        mem.push_new_env_for_call(mem.current_env).unwrap();
+        mem.add("frame_local".to_owned(), val(1), sr()).unwrap();
+        mem.push_new_env_for_block().unwrap();
+        mem.add("block_local".to_owned(), val(2), sr()).unwrap();
+        // What closure creation does: reference the block env.
+        let closure_env = mem.snapshot().unwrap();
+
+        mem.pop_env().unwrap(); // the block: referenced, so it pins the frame
+        mem.pop_env().unwrap(); // the frame: pinned, so it survives
+
+        // Lookups through the reference still see the block env and, via its
+        // parent chain, the frame.
+        assert_get_from(mem, "block_local", 2, closure_env);
+        assert_get_from(mem, "frame_local", 1, closure_env);
+        assert_eq!(mem.memory.envs_with_bindings(), 2);
+    }
+
+    #[test]
+    fn nested_block_envs_pin_transitively() {
+        let mem = &mut stack_for_tests();
+
+        mem.push_new_env_for_call(mem.current_env).unwrap();
+        mem.add("frame_local".to_owned(), val(1), sr()).unwrap();
+        mem.push_new_env_for_block().unwrap();
+        mem.add("outer_block_local".to_owned(), val(2), sr()).unwrap();
+        mem.push_new_env_for_block().unwrap();
+        mem.add("inner_block_local".to_owned(), val(3), sr()).unwrap();
+        let closure_env = mem.snapshot().unwrap();
+
+        mem.pop_env().unwrap(); // inner block pins outer block
+        mem.pop_env().unwrap(); // outer block pins the frame
+        mem.pop_env().unwrap(); // the frame survives
+
+        assert_get_from(mem, "inner_block_local", 3, closure_env);
+        assert_get_from(mem, "outer_block_local", 2, closure_env);
+        assert_get_from(mem, "frame_local", 1, closure_env);
+        assert_eq!(mem.memory.envs_with_bindings(), 3);
+    }
+
+    #[test]
+    fn preserved_nested_block_env_pins_parent_chain() {
+        let mem = &mut stack_for_tests();
+
+        mem.push_new_env_for_call(mem.current_env).unwrap();
+        mem.add("frame_local".to_owned(), val(1), sr()).unwrap();
+        mem.push_new_env_for_block().unwrap();
+        mem.add("outer_block_local".to_owned(), val(2), sr()).unwrap();
+        mem.push_new_env_for_block().unwrap();
+        mem.add("inner_block_local".to_owned(), val(3), sr()).unwrap();
+
+        // Unlike closure creation, preserving an environment does not take a
+        // snapshot first. It must still pin the block's parent unconditionally.
+        let preserved_env = mem.pop_and_preserve_env().unwrap();
+        mem.pop_env().unwrap(); // outer block pins the frame
+        mem.pop_env().unwrap(); // the frame survives
+
+        assert_get_from(mem, "inner_block_local", 3, preserved_env);
+        assert_get_from(mem, "outer_block_local", 2, preserved_env);
+        assert_get_from(mem, "frame_local", 1, preserved_env);
+        assert_eq!(mem.memory.envs_with_bindings(), 3);
+    }
+
+    #[test]
+    fn block_env_parent_ref_hides_later_parent_bindings() {
+        let mem = &mut stack_for_tests();
+
+        mem.push_new_env_for_call(mem.current_env).unwrap();
+        mem.add("before_block".to_owned(), val(1), sr()).unwrap();
+        mem.push_new_env_for_block().unwrap();
+        let closure_env = mem.snapshot().unwrap();
+        mem.pop_env().unwrap();
+
+        // A binding added to the frame after the block must be invisible
+        // through the block's parent ref, exactly as with a snapshot.
+        mem.add("after_block".to_owned(), val(2), sr()).unwrap();
+        assert_get_from(mem, "before_block", 1, closure_env);
+        assert_missing_from(mem, "after_block", closure_env);
     }
 
     #[test]

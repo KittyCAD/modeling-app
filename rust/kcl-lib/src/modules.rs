@@ -102,6 +102,7 @@ pub(crate) fn read_std(mod_name: &str) -> Option<&'static str> {
         "hole" => Some(include_str!("../std/hole.kcl")),
         "gear" => Some(include_str!("../std/gear.kcl")),
         "view" => Some(include_str!("../std/view.kcl")),
+        "operation" => Some(include_str!("../std/operation.kcl")),
         _ => None,
     }
 }
@@ -177,6 +178,14 @@ impl ModulePath {
         match self {
             ModulePath::Local { value: p, .. } => p,
             _ => unreachable!(),
+        }
+    }
+
+    pub(crate) fn is_local(&self) -> bool {
+        match self {
+            ModulePath::Main => false,
+            ModulePath::Local { .. } => true,
+            ModulePath::Std { .. } => false,
         }
     }
 

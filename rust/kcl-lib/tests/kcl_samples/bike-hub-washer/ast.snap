@@ -6428,7 +6428,7 @@ description: Result of parsing bike-hub-washer.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Automotive",
+            "value": "Categories: Automotive & Transportation; Mechanical Components; 3D Printable",
             "style": "line"
           }
         },
@@ -6444,6 +6444,7 @@ description: Result of parsing bike-hub-washer.kcl
         }
       ]
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

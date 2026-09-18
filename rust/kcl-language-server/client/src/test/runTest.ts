@@ -2,6 +2,7 @@ import * as fs from 'fs'
 import * as os from 'os'
 import * as path from 'path'
 import { runTests } from '@vscode/test-electron'
+import { removeVSCodeProfile } from './vscodeProfile'
 
 function createShortVSCodeProfileDir() {
   const tempRoot = process.platform === 'win32' ? os.tmpdir() : '/tmp'
@@ -14,7 +15,10 @@ async function main() {
   try {
     // The folder containing the Extension Manifest package.json
     // Passed to `--extensionDevelopmentPath`
-    const extensionDevelopmentPath = path.resolve(__dirname, '../../')
+    // This file is compiled to <extension>/dist/client/src/test/runTest.js, so
+    // the manifest is four levels up. Pointing anywhere inside dist/ leaves the
+    // extension unloaded and vscode.extensions.getExtension returning undefined.
+    const extensionDevelopmentPath = path.resolve(__dirname, '../../../../')
 
     // The path to the extension test runner script
     // Passed to --extensionTestsPath
@@ -34,7 +38,7 @@ async function main() {
     console.error('Failed to run tests')
     process.exitCode = 1
   } finally {
-    fs.rmSync(vscodeProfileDir, { force: true, recursive: true })
+    await removeVSCodeProfile(vscodeProfileDir)
   }
 }
 

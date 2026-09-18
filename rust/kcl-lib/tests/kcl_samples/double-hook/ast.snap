@@ -8900,7 +8900,7 @@ description: Result of parsing double-hook.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Maker",
+            "value": "Categories: Home & Lifestyle; 3D Printable; Parametric",
             "style": "line"
           }
         },
@@ -8916,6 +8916,7 @@ description: Result of parsing double-hook.kcl
         }
       ]
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

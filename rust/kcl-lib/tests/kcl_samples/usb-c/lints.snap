@@ -13,8 +13,8 @@ description: Lints usb-c.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      1577,
-      2095,
+      1571,
+      2089,
       0
     ],
     "overridden": false,

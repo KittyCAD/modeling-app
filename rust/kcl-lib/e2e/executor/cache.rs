@@ -133,7 +133,7 @@ async fn kcl_test_cache_change_grid_visualizes_grid_off_to_on() {
     let first = result.first().unwrap();
     let second = result.last().unwrap();
 
-    assert!(first.1 != second.1);
+    assert_ne!(first.1, second.1);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -174,7 +174,7 @@ async fn kcl_test_cache_change_grid_visualizes_grid_on_to_off() {
     let first = result.first().unwrap();
     let second = result.last().unwrap();
 
-    assert!(first.1 != second.1);
+    assert_ne!(first.1, second.1);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -215,7 +215,7 @@ async fn kcl_test_cache_change_highlight_edges_changes_visual() {
     let first = result.first().unwrap();
     let second = result.last().unwrap();
 
-    assert!(first.1 != second.1);
+    assert_ne!(first.1, second.1);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -705,7 +705,8 @@ profile001 = startProfile(sketch001, at = [281.54, 305.81])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude(profile001, length = 100)
-    |> translate(z = 100)
+  |> clone()
+  |> translate(z = 100)
 "#
         .to_string(),
     );
@@ -730,10 +731,10 @@ extrude(profile001, length = 100)
     let r1 = result.first().unwrap();
     let r2 = result.last().unwrap();
 
-    assert!(r1.1 != r2.1, "The images should be different");
+    assert_ne!(r1.1, r2.1, "The images should be different");
     // Make sure the outcomes are different.
-    assert!(
-        r1.2.artifact_graph != r2.2.artifact_graph,
+    assert_ne!(
+        r1.2.artifact_graph, r2.2.artifact_graph,
         "The outcomes artifact graphs should be different"
     );
 }
@@ -795,7 +796,7 @@ extrude(profile001, length = 100)"#
     let first = result.first().unwrap();
     let last = result.last().unwrap();
 
-    assert!(first.1 != last.1, "The images should be different for the grid");
+    assert_ne!(first.1, last.1, "The images should be different for the grid");
     assert_eq!(first.2, last.2, "The outcomes should be the same");
 }
 

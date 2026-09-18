@@ -1,6 +1,6 @@
 // Mounting Plate
 // A flat support plate with four mounting holes, a center opening, and rounded vertical corners.
-// Categories: Manufacturing, Construction
+// Categories: Mechanical Components; Industrial & Manufacturing
 
 @settings(defaultLengthUnit = in, kclVersion = 2.0, experimentalFeatures = allow)
 

@@ -2632,7 +2632,7 @@ description: Result of parsing split-washer-spring-version.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Fasteners",
+            "value": "Categories: Mechanical Components",
             "style": "line"
           }
         },
@@ -2648,6 +2648,7 @@ description: Result of parsing split-washer-spring-version.kcl
         }
       ]
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

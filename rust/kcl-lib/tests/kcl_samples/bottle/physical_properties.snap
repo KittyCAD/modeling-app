@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties bottle.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.000000000003808509063674137,
+      "y": 0.05272312249223887,
+      "z": 110.0
+    },
+    "dimensions": {
+      "x": 150.0,
+      "y": 131.1866751582267,
+      "z": 220.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 174662.89732715266
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 347.5081454856384
+  }
+}

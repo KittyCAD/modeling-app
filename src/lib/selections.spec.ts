@@ -14,13 +14,16 @@ import {
   getSelectionReferences,
   getSelectionTypeDisplayText,
   getStableOffsetPlaneData,
+  getUnresolvedEnginePrimitiveSelections,
   handleSelectionBatch,
+  removeEnginePrimitiveSelectionFromSelections,
   removeReferenceFromSelections,
   selectSketchPlane,
 } from '@src/lib/selections'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import type {
   DefaultPlaneSelection,
+  EnginePrimitiveSelection,
   Selection,
 } from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
@@ -1656,6 +1659,50 @@ cube = extrude(cubeRegion, length = 10)
     ).toEqual({
       graphSelections: [],
       otherSelections: ['x-axis'],
+    })
+  })
+
+  test('identifies and removes engine primitives without KCL references', () => {
+    const unresolvedFace: EnginePrimitiveSelection = {
+      type: 'enginePrimitive',
+      entityId: 'unresolved-face',
+      parentEntityId: 'body',
+      primitiveIndex: 1,
+      primitiveType: 'face',
+    }
+    const resolvedEdge: EnginePrimitiveSelection = {
+      type: 'enginePrimitive',
+      entityId: 'resolved-edge',
+      parentEntityId: 'body',
+      primitiveIndex: 2,
+      primitiveType: 'edge',
+    }
+
+    expect(
+      getUnresolvedEnginePrimitiveSelections(
+        [unresolvedFace, resolvedEdge],
+        [
+          {
+            id: 'edge:resolved-edge',
+            label: 'Edge',
+            code: 'getEdge(body, 2)',
+            enginePrimitiveSelection: resolvedEdge,
+          },
+        ]
+      )
+    ).toEqual([unresolvedFace])
+
+    expect(
+      removeEnginePrimitiveSelectionFromSelections(
+        {
+          graphSelections: [],
+          otherSelections: [unresolvedFace, resolvedEdge, 'x-axis'],
+        },
+        unresolvedFace
+      )
+    ).toEqual({
+      graphSelections: [],
+      otherSelections: [resolvedEdge, 'x-axis'],
     })
   })
 })

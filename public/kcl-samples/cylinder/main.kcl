@@ -1,6 +1,6 @@
 // Cylinder
 // A cylinder is a primitive shape defined by its diameter and length
-// Categories: Maker
+// Categories: Science & Education; Parametric
 
 @settings(defaultLengthUnit = mm, kclVersion = 2.0)
 

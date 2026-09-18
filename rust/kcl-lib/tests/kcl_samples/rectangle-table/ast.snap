@@ -4527,7 +4527,7 @@ description: Result of parsing rectangle-table.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Construction, Maker",
+            "value": "Categories: Home & Lifestyle",
             "style": "line"
           }
         },
@@ -4543,6 +4543,7 @@ description: Result of parsing rectangle-table.kcl
         }
       ]
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

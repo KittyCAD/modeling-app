@@ -406,7 +406,8 @@ description: Result of parsing bad_units_in_annotation.kcl
               "commentStart": 0,
               "end": 0,
               "moduleId": 0,
-              "start": 0
+              "start": 0,
+              "type": "Program"
             },
             "commentStart": 0,
             "end": 0,
@@ -1332,6 +1333,7 @@ description: Result of parsing bad_units_in_annotation.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

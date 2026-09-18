@@ -8,8 +8,10 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "bracket": {
@@ -17,6 +19,8 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -229,17 +233,17 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "XY",
           "objectId": 0,
+          "kind": "XY",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -277,7 +281,8 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -290,8 +295,10 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
     "value": 12.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "filletR": {
@@ -299,8 +306,10 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
     "value": 0.7236272269866327,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "p": {
@@ -308,8 +317,10 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
     "value": 150.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "shelfMountL": {
@@ -317,8 +328,10 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
     "value": 9.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "sigmaAllow": {
@@ -326,8 +339,10 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
     "value": 15000.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "thickness": {
@@ -335,8 +350,10 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
     "value": 0.36181361349331637,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "wallMountL": {
@@ -344,8 +361,10 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
     "value": 8.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "width": {
@@ -353,8 +372,10 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
     "value": 11.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   }
 }

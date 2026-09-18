@@ -1,6 +1,6 @@
 // Gas Impeller
 // The rotating component in a turbomachine (compressor, blower, or turbocharger) that adds energy to a gas by spinning it at speed
-// Categories: Aerospace, Manufacturing
+// Categories: Industrial & Manufacturing; Mechanical Components
 
 // Project settings
 @settings(defaultLengthUnit = mm, kclVersion = 2.0)

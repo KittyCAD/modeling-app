@@ -1,6 +1,6 @@
 // Router Template for a Cross bar
 // A guide for routing a slate for a cross bar.
-// Categories: Construction
+// Categories: Tools; 3D Printable
 
 @settings(defaultLengthUnit = mm, kclVersion = 2.0)
 

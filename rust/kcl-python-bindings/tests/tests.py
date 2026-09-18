@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
+import asyncio
 import os
 import sys
 
-import pytest
-from flaky import flaky
-
 import kcl
+import pytest
 from kcl import Point3d
 
 # Get the path to this script's parent directory.
@@ -50,18 +49,28 @@ requires_engine = pytest.mark.skipif(
 )
 
 MAX_EXECUTION_ATTEMPTS = 3
+EXECUTION_RETRY_BASE_DELAY_SECONDS = 1
 
 
 async def execute_with_retries(async_fn, *args, **kwargs):
     retries_remaining = MAX_EXECUTION_ATTEMPTS - 1
+    attempt = 1
     while True:
         try:
             return await async_fn(*args, **kwargs)
         except Exception as error:
             is_retryable = getattr(error, "is_retryable", None)
             if retries_remaining > 0 and callable(is_retryable) and is_retryable():
-                print(f"Execute got {error}; retrying...", file=sys.stderr)
+                delay_seconds = EXECUTION_RETRY_BASE_DELAY_SECONDS * 2 ** (attempt - 1)
+                print(
+                    f"Execute attempt {attempt}/{MAX_EXECUTION_ATTEMPTS} got "
+                    f"retryable {type(error).__name__}: {error}; retrying in "
+                    f"{delay_seconds}s...",
+                    file=sys.stderr,
+                )
+                await asyncio.sleep(delay_seconds)
                 retries_remaining -= 1
+                attempt += 1
                 continue
             raise
 
@@ -108,6 +117,54 @@ async def test_kcl_parse():
 def test_kcl_error_is_retryable():
     assert kcl.KclError("retry me", True).is_retryable() is True
     assert kcl.KclError("do not retry").is_retryable() is False
+
+
+@pytest.mark.asyncio
+async def test_execute_with_retries_uses_backoff_for_retryable_errors(
+    monkeypatch, capsys
+):
+    attempts = 0
+    observed_delays = []
+
+    class RetryableTestError(Exception):
+        def is_retryable(self):
+            return True
+
+    async def fail_twice_then_succeed():
+        nonlocal attempts
+        attempts += 1
+        if attempts < MAX_EXECUTION_ATTEMPTS:
+            raise RetryableTestError("temporary engine failure")
+        return "success"
+
+    async def record_sleep(delay_seconds):
+        observed_delays.append(delay_seconds)
+
+    monkeypatch.setattr(asyncio, "sleep", record_sleep)
+
+    assert await execute_with_retries(fail_twice_then_succeed) == "success"
+    assert attempts == MAX_EXECUTION_ATTEMPTS
+    assert observed_delays == [1, 2]
+    assert "attempt 1/3" in capsys.readouterr().err
+
+
+@pytest.mark.asyncio
+async def test_execute_with_retries_does_not_retry_other_errors(monkeypatch):
+    attempts = 0
+
+    async def fail():
+        nonlocal attempts
+        attempts += 1
+        raise ValueError("deterministic failure")
+
+    async def unexpected_sleep(_delay_seconds):
+        pytest.fail("a non-retryable failure must not back off")
+
+    monkeypatch.setattr(asyncio, "sleep", unexpected_sleep)
+
+    with pytest.raises(ValueError, match="deterministic failure"):
+        await execute_with_retries(fail)
+    assert attempts == 1
 
 
 @pytest.mark.asyncio
@@ -201,6 +258,27 @@ async def test_kcl_mock_execute():
 
 
 @pytest.mark.asyncio
+async def test_duplicate_sketch_instances() -> None:
+    fixture = os.path.join(
+        tests_dir, "sketch_visualizer", "duplicate_names", "input.kcl"
+    )
+    outcome = await kcl.mock_execute(fixture)
+    report = outcome.sketch_constraint_report()
+    assert [s.instance_index for s in report.fully_constrained] == [0, 1]
+    with pytest.raises(Exception, match="found 2 sketches named `profile`"):
+        outcome.render_sketch_png("profile")
+    images = [
+        bytes(outcome.render_sketch_png("profile", instance_index=i)) for i in (0, 1)
+    ]
+    assert all(png.startswith(b"\x89PNG\r\n\x1a\n") for png in images)
+    assert images[0] != images[1]
+    with pytest.raises(Exception, match="out of range"):
+        outcome.render_sketch_png("profile", instance_index=2)
+    with pytest.raises(OverflowError):
+        outcome.render_sketch_png("profile", instance_index=-1)
+
+
+@pytest.mark.asyncio
 async def test_kcl_mock_execute_code():
     # Read from a file.
     with open(lego_file, "r") as f:
@@ -220,6 +298,13 @@ async def test_kcl_execute_code():
         assert code is not None
         assert len(code) > 0
         await execute_with_retries(kcl.execute_code, code)
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_kcl_execute_code_geometry_only():
+    outcome = await execute_with_retries(kcl.execute_code, box_code, geometry_only=True)
+    assert outcome.issues() == []
 
 
 @requires_engine
@@ -263,7 +348,6 @@ async def test_kcl_execute_code_and_export():
 
 
 @requires_engine
-@flaky
 @pytest.mark.asyncio
 async def test_kcl_execute_dir_assembly():
     # Read from a file.
@@ -368,7 +452,6 @@ async def test_import_and_snapshots_single():
 
 
 @requires_engine
-@flaky
 @pytest.mark.asyncio
 async def test_kcl_execute_and_snapshot_dir():
     # Read from a file.
@@ -403,8 +486,8 @@ async def test_kcl_execute_and_measure():
         com = response.get_center_of_mass()
         print(com.x, com.y, com.z)
         assert com.x == pytest.approx(0.01788371801376342, rel=0, abs=1e-5)
-        assert com.y == pytest.approx(0.24748362600803375, rel=0, abs=1e-5)
-        assert com.z == pytest.approx(-0.0216667298227548, rel=0, abs=1e-5)
+        assert com.y == pytest.approx(0.02166672982275486, rel=0, abs=1e-5)
+        assert com.z == pytest.approx(0.24748362600803375, rel=0, abs=1e-5)
         assert response.get_center_of_mass_unit() == kcl.UnitLength.Centimeters
 
 

@@ -13,8 +13,8 @@ description: Lints propeller.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      3030,
-      3227,
+      3053,
+      3250,
       0
     ],
     "overridden": false,

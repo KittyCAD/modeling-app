@@ -8,6 +8,8 @@ description: Variables in memory after executing subtract_regression03.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -48,17 +50,17 @@ description: Variables in memory after executing subtract_regression03.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 1,
+          "kind": "Custom",
           "origin": {
             "x": -0.503704,
             "y": -0.264924,
             "z": 0.0,
             "units": "in"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.7435091262737867,
             "y": 0.6687257877094245,
@@ -96,7 +98,8 @@ description: Variables in memory after executing subtract_regression03.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -109,6 +112,8 @@ description: Variables in memory after executing subtract_regression03.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -191,17 +196,17 @@ description: Variables in memory after executing subtract_regression03.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 2,
+          "kind": "Custom",
           "origin": {
             "x": -0.503704,
             "y": -0.28,
             "z": 0.0,
             "units": "in"
           },
-          "type": "plane",
           "xAxis": {
             "x": -0.7435091262737867,
             "y": 0.6687257877094245,
@@ -239,7 +244,8 @@ description: Variables in memory after executing subtract_regression03.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -252,6 +258,8 @@ description: Variables in memory after executing subtract_regression03.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -292,17 +300,17 @@ description: Variables in memory after executing subtract_regression03.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 1,
+          "kind": "Custom",
           "origin": {
             "x": -0.503704,
             "y": -0.264924,
             "z": 0.0,
             "units": "in"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.7435091262737867,
             "y": 0.6687257877094245,
@@ -340,7 +348,8 @@ description: Variables in memory after executing subtract_regression03.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -353,6 +362,8 @@ description: Variables in memory after executing subtract_regression03.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -435,17 +446,17 @@ description: Variables in memory after executing subtract_regression03.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 3,
+          "kind": "Custom",
           "origin": {
             "x": 0.42,
             "y": -0.28,
             "z": 0.0,
             "units": "in"
           },
-          "type": "plane",
           "xAxis": {
             "x": -0.6025804201392091,
             "y": -0.7980581665924197,
@@ -483,7 +494,8 @@ description: Variables in memory after executing subtract_regression03.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -502,8 +514,10 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": -0.503704,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -511,8 +525,10 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": -0.264924,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -520,8 +536,10 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -534,8 +552,10 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.191884,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -543,8 +563,10 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.172584,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -552,8 +574,10 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -566,8 +590,10 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -575,8 +601,10 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -584,8 +612,10 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -598,8 +628,10 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": -0.191884,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -607,8 +639,10 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.172584,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -616,8 +650,10 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -636,8 +672,10 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": -0.503704,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -645,8 +683,10 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": -0.28,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -654,8 +694,10 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -668,8 +710,10 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": -0.191884,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -677,8 +721,10 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.172584,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -686,8 +732,10 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -700,8 +748,10 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -709,8 +759,10 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -718,8 +770,10 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -732,8 +786,10 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": -0.191884,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -741,8 +797,10 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.172584,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -750,8 +808,10 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -770,8 +830,10 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.42,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -779,8 +841,10 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": -0.28,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -788,8 +852,10 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -802,8 +868,10 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": -0.200323,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -811,8 +879,10 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": -0.265308,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -820,8 +890,10 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -834,8 +906,10 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -843,8 +917,10 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -852,8 +928,10 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -866,8 +944,10 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.200323,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -875,8 +955,10 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.265308,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           {
@@ -884,8 +966,10 @@ description: Variables in memory after executing subtract_regression03.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           }
         ]
@@ -898,8 +982,8 @@ description: Variables in memory after executing subtract_regression03.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 1,
+      "kind": "Custom",
       "origin": {
         "x": -0.503704,
         "y": -0.264924,
@@ -957,17 +1041,17 @@ description: Variables in memory after executing subtract_regression03.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 1,
+        "kind": "Custom",
         "origin": {
           "x": -0.503704,
           "y": -0.264924,
           "z": 0.0,
           "units": "in"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.7435091262737867,
           "y": 0.6687257877094245,
@@ -1005,7 +1089,8 @@ description: Variables in memory after executing subtract_regression03.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "sketch002": {
@@ -1013,8 +1098,8 @@ description: Variables in memory after executing subtract_regression03.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "XY",
       "objectId": 0,
+      "kind": "XY",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -1186,17 +1271,17 @@ description: Variables in memory after executing subtract_regression03.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "XY",
         "objectId": 0,
+        "kind": "XY",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1243,8 +1328,8 @@ description: Variables in memory after executing subtract_regression03.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 2,
+      "kind": "Custom",
       "origin": {
         "x": -0.503704,
         "y": -0.28,
@@ -1330,17 +1415,17 @@ description: Variables in memory after executing subtract_regression03.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 2,
+        "kind": "Custom",
         "origin": {
           "x": -0.503704,
           "y": -0.28,
           "z": 0.0,
           "units": "in"
         },
-        "type": "plane",
         "xAxis": {
           "x": -0.7435091262737867,
           "y": 0.6687257877094245,
@@ -1378,7 +1463,8 @@ description: Variables in memory after executing subtract_regression03.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "sketch004": {
@@ -1386,8 +1472,8 @@ description: Variables in memory after executing subtract_regression03.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 3,
+      "kind": "Custom",
       "origin": {
         "x": 0.42,
         "y": -0.28,
@@ -1473,17 +1559,17 @@ description: Variables in memory after executing subtract_regression03.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 3,
+        "kind": "Custom",
         "origin": {
           "x": 0.42,
           "y": -0.28,
           "z": 0.0,
           "units": "in"
         },
-        "type": "plane",
         "xAxis": {
           "x": -0.6025804201392091,
           "y": -0.7980581665924197,
@@ -1521,7 +1607,8 @@ description: Variables in memory after executing subtract_regression03.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "sweepExtrude000": {
@@ -1529,6 +1616,8 @@ description: Variables in memory after executing subtract_regression03.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1569,17 +1658,17 @@ description: Variables in memory after executing subtract_regression03.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 1,
+          "kind": "Custom",
           "origin": {
             "x": -0.503704,
             "y": -0.264924,
             "z": 0.0,
             "units": "in"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.7435091262737867,
             "y": 0.6687257877094245,
@@ -1617,7 +1706,8 @@ description: Variables in memory after executing subtract_regression03.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",

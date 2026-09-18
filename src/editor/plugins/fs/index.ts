@@ -15,6 +15,7 @@ type FSEffectProps = {
   src: string
   target: string
   requestedProjectName: string
+  requestedFileName?: string
 }
 const restoreFile = StateEffect.define<FSEffectProps>()
 const archiveFile = StateEffect.define<FSEffectProps>()

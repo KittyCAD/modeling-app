@@ -3345,6 +3345,7 @@ description: Result of parsing named_views_baseline_show.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

@@ -69,17 +69,17 @@ description: Variables in memory after executing tag_inner_face.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "XZ",
         "objectId": 0,
+        "kind": "XZ",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -127,7 +127,8 @@ description: Variables in memory after executing tag_inner_face.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "extrude001": {
@@ -135,6 +136,8 @@ description: Variables in memory after executing tag_inner_face.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -319,17 +322,17 @@ description: Variables in memory after executing tag_inner_face.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "XZ",
           "objectId": 0,
+          "kind": "XZ",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -377,7 +380,8 @@ description: Variables in memory after executing tag_inner_face.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -386,7 +390,6 @@ description: Variables in memory after executing tag_inner_face.kcl
     }
   },
   "innerFace": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "innerFace"
   },
@@ -516,17 +519,17 @@ description: Variables in memory after executing tag_inner_face.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "XZ",
         "objectId": 0,
+        "kind": "XZ",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -574,11 +577,11 @@ description: Variables in memory after executing tag_inner_face.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "outerFace": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "outerFace"
   },
@@ -587,8 +590,8 @@ description: Variables in memory after executing tag_inner_face.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "XZ",
       "objectId": 0,
+      "kind": "XZ",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -681,17 +684,17 @@ description: Variables in memory after executing tag_inner_face.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "XZ",
         "objectId": 0,
+        "kind": "XZ",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -735,7 +738,8 @@ description: Variables in memory after executing tag_inner_face.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   }
 }

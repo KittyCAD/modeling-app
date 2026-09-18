@@ -1,0 +1,49 @@
+// This tests if/else-if/else branch scoping under KCL 3.0:
+// each branch body introduces its own scope, so branch-local variables may
+// shadow outer ones and are dropped at the branch's closing brace.
+@settings(kclVersion = "3.0-preview")
+
+// Shadowing an outer variable inside a branch leaves the outer one intact.
+outer = 1
+shadowResult = if true {
+  outer = 2
+  outer + 10
+} else {
+  0
+}
+assert(shadowResult, isEqualTo = 12, error = "the branch sees its own shadowing binding")
+assert(outer, isEqualTo = 1, error = "the outer binding is unchanged after the if")
+
+// A branch of an else-if arm has its own scope too, and nested arms nest.
+nested = if false {
+  0
+} else if true {
+  a = 1
+  b = if true {
+    c = 2
+    a + c
+  } else {
+    0
+  }
+  a + b
+} else {
+  0
+}
+assert(nested, isEqualTo = 4, error = "else-if and nested arms compute from their own scopes")
+
+// A closure declared in a branch keeps its captured branch-locals alive
+// after the branch's scope ends.
+n = 1
+f = if true {
+  m = 41
+  g = fn() {
+    return m + n
+  }
+  g
+} else {
+  g = fn() {
+    return 0
+  }
+  g
+}
+assert(f(), isEqualTo = 42, error = "the escaped closure still sees its branch-locals")

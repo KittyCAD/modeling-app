@@ -9,6 +9,7 @@ import { computed } from '@preact/signals-core'
 import { getCloudProjectLibraryMaterializationDirectoryPath } from '@src/lib/cloudSync/paths'
 import { getProjectInfo } from '@src/lib/desktop'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
+import { separateProjectsSharingProjectId } from '@src/lib/projectIdentity'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
@@ -17,12 +18,17 @@ import {
 } from '@src/lib/projectLibraries'
 import { invalidateProjectLibraryRealizations } from '@src/lib/projectLibraries/registry/invalidation'
 import {
+  makeZookeeperConversationStore,
+  type ZookeeperConversationStore,
+} from '@src/lib/zookeeper/zookeeperConversationStore'
+import {
   type CloudProjectRelationship,
   type CloudProjectRelationshipRealization,
   cloudProjectRelationshipsService,
   cloudSyncService,
 } from '@src/registry/contracts/cloudSync'
 import { commandSystemService } from '@src/registry/contracts/commands'
+import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import {
   type HomeProjectActionsService,
   type HomeProjectDuplicateRealization,
@@ -43,6 +49,7 @@ import {
 import { settingsService } from '@src/registry/contracts/settings'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import toast from 'react-hot-toast'
+import { NIL as uuidNIL } from 'uuid'
 
 function homeProjectDisplayNameExists({
   entries,
@@ -96,7 +103,8 @@ function realizationDeletesRemoteOnDelete(
  * realization are not enough for Home to infer relationship identity.
  */
 function homeProjectEntryFromRealization(
-  realization: ProjectLibraryRealization
+  realization: ProjectLibraryRealization,
+  duplicateProjectIdPaths: readonly string[] | undefined
 ): HomeProjectEntryContribution {
   return {
     source: 'local',
@@ -116,7 +124,40 @@ function homeProjectEntryFromRealization(
     thumbnail: realization.thumbnail,
     conflict: realization.conflict,
     syncFailure: realization.syncFailure,
+    duplicateProjectIdPaths,
   }
+}
+
+function duplicateProjectIdPathsByLocalPath(
+  realizations: readonly ProjectLibraryRealization[]
+) {
+  const projectPathsById = new Map<string, Set<string>>()
+
+  for (const realization of realizations) {
+    if (!realization.projectId || realization.projectId === uuidNIL) {
+      continue
+    }
+    const projectPaths =
+      projectPathsById.get(realization.projectId) ?? new Set()
+    projectPaths.add(realization.localProjectPath)
+    projectPathsById.set(realization.projectId, projectPaths)
+  }
+
+  const duplicatePathsByLocalPath = new Map<string, string[]>()
+  for (const projectPathSet of projectPathsById.values()) {
+    if (projectPathSet.size < 2) {
+      continue
+    }
+    const projectPaths = Array.from(projectPathSet)
+    for (const projectPath of projectPaths) {
+      duplicatePathsByLocalPath.set(
+        projectPath,
+        projectPaths.filter((candidatePath) => candidatePath !== projectPath)
+      )
+    }
+  }
+
+  return duplicatePathsByLocalPath
 }
 
 /** Local library membership is copied from relationship realizations. */
@@ -179,7 +220,8 @@ function homeProjectDuplicateRealizationFromRelationship(
  * merge arbitrary provider entries or decide which local folders are duplicates.
  */
 function homeProjectEntryFromCloudRelationship(
-  relationship: CloudProjectRelationship
+  relationship: CloudProjectRelationship,
+  duplicateProjectIdPaths: readonly string[] | undefined
 ): HomeProjectEntryContribution {
   const canonical = relationship.canonicalRealization?.realization
   const duplicateRealizations = relationship.duplicateRealizations.map(
@@ -229,6 +271,7 @@ function homeProjectEntryFromCloudRelationship(
     syncFailure: relationship.syncFailure ?? canonical?.syncFailure,
     duplicateRealizations:
       duplicateRealizations.length > 0 ? duplicateRealizations : undefined,
+    duplicateProjectIdPaths,
   }
 }
 
@@ -244,6 +287,8 @@ export function deriveHomeProjectEntryContributions({
   realizations: readonly ProjectLibraryRealization[]
   cloudRelationships: readonly CloudProjectRelationship[]
 }): HomeProjectEntryContribution[] {
+  const duplicateProjectIdPaths =
+    duplicateProjectIdPathsByLocalPath(realizations)
   const relationshipLocalPaths = new Set(
     cloudRelationships.flatMap((relationship) =>
       relationship.localRealizations.map(
@@ -251,14 +296,24 @@ export function deriveHomeProjectEntryContributions({
       )
     )
   )
-  const relationshipEntries = cloudRelationships.map(
-    homeProjectEntryFromCloudRelationship
-  )
+  const relationshipEntries = cloudRelationships.map((relationship) => {
+    const canonicalPath =
+      relationship.canonicalRealization?.realization.localProjectPath
+    return homeProjectEntryFromCloudRelationship(
+      relationship,
+      canonicalPath ? duplicateProjectIdPaths.get(canonicalPath) : undefined
+    )
+  })
   const localOnlyEntries = realizations
     .filter(
       (realization) => !relationshipLocalPaths.has(realization.localProjectPath)
     )
-    .map(homeProjectEntryFromRealization)
+    .map((realization) =>
+      homeProjectEntryFromRealization(
+        realization,
+        duplicateProjectIdPaths.get(realization.localProjectPath)
+      )
+    )
 
   return [...relationshipEntries, ...localOnlyEntries]
 }
@@ -270,6 +325,13 @@ export function deriveHomeProjectEntryContributions({
 const homeProjectActions = defineRegistryItemFactory((ctx) => {
   const settings = ctx.services.signal(settingsService)
   const cloudSync = ctx.services.signal(cloudSyncService)
+  let zookeeperConversationStore: ZookeeperConversationStore | undefined
+  const getZookeeperConversationStore = () => {
+    zookeeperConversationStore ??= makeZookeeperConversationStore(
+      ctx.services.get(fileOperationsService)
+    )
+    return zookeeperConversationStore
+  }
 
   const getWasmPromise = () =>
     ctx.valueSpecs.get(wasmPromiseValueSpec) ??
@@ -403,6 +465,10 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
     )
 
   const serviceImpl: HomeProjectActionsService = {
+    watchRemoteThumbnail: (remoteProjectId) =>
+      ctx.services
+        .optional(cloudProjectRelationshipsService)
+        ?.watchRemoteThumbnail(remoteProjectId),
     canOpen: (project) =>
       Boolean(
         (project.readWriteAccess &&
@@ -431,6 +497,12 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
     canMoveToLibrary: (project) => getMoveToLibraryTargets(project).length > 0,
     canReviewDuplicateRealizations: (project) =>
       Boolean(project.duplicateRealizations?.length),
+    canSeparateProjectCopies: (project) =>
+      Boolean(
+        project.readWriteAccess &&
+          project.localProjectPath &&
+          project.duplicateProjectIdPaths?.length
+      ),
     open: async (project) => {
       const openProject = getProjectOperation(project, 'openProject')
       if (openProject && project.readWriteAccess && project.defaultFile) {
@@ -466,6 +538,7 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
       }
 
       const projectInfo = await getProjectInfo(
+        ctx.services.get(fileOperationsService),
         syncedProject.projectPath,
         await wasmInstancePromise
       )
@@ -485,7 +558,7 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         toast.success(result.message)
       }
     },
-    rename: async (project, requestedName) => {
+    rename: async (project, requestedName, options) => {
       const renameProject = getProjectOperation(project, 'renameProject')
       if (!serviceImpl.canRename(project) || !renameProject) {
         return
@@ -499,7 +572,9 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         })
       ) {
         const message = `Project with title "${requestedName}" already exists`
-        toast.error(message)
+        if (options?.notify !== false) {
+          toast.error(message)
+        }
         return Promise.reject(new Error(message))
       }
 
@@ -508,9 +583,11 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         project,
         requestedName,
       })
-      toast.success(
-        `Successfully renamed "${getHomeProjectDisplayName(project)}" to "${requestedName}"`
-      )
+      if (options?.notify !== false) {
+        toast.success(
+          `Successfully renamed "${getHomeProjectDisplayName(project)}" to "${requestedName}"`
+        )
+      }
     },
     delete: async (project) => {
       const deleteProject = getProjectOperation(project, 'deleteProject')
@@ -570,6 +647,7 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
       return result?.defaultFile
         ? {
             defaultFile: result.defaultFile,
+            localProjectPath: result.localProjectPath,
           }
         : undefined
     },
@@ -585,6 +663,37 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
       })
       invalidateProjectLibraryRealizations()
       toast.success('Deleted duplicate project copies.')
+    },
+    separateProjectCopies: async (project, keepProjectPath) => {
+      if (!serviceImpl.canSeparateProjectCopies(project)) {
+        return
+      }
+
+      const projectPaths = [
+        project.localProjectPath,
+        ...(project.duplicateProjectIdPaths ?? []),
+      ].filter((projectPath): projectPath is string => Boolean(projectPath))
+      const { sharedProjectId } = await separateProjectsSharingProjectId({
+        fileOperations: ctx.services.get(fileOperationsService),
+        projectPaths,
+        keepProjectPath,
+      })
+      try {
+        if (!keepProjectPath) {
+          await getZookeeperConversationStore().deleteProjectConversationId(
+            sharedProjectId
+          )
+        }
+      } finally {
+        // The project files have already been updated, so refresh Home even if
+        // cleaning up the now-orphaned conversation mapping fails.
+        invalidateProjectLibraryRealizations()
+      }
+      toast.success(
+        keepProjectPath
+          ? 'Separated project copies. The selected project kept its Zookeeper history.'
+          : 'Separated project copies and cleared their Zookeeper history.'
+      )
     },
   }
 

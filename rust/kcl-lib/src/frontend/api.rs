@@ -5,12 +5,6 @@
 pub use kcl_api::ObjectId;
 use kcl_api::UnitLength;
 use kcl_error::SourceRange;
-use kittycad_modeling_cmds::format::render_packet::RenderPacketBinarySections;
-use kittycad_modeling_cmds::format::render_packet::RenderPacketBodyMaterial;
-use kittycad_modeling_cmds::format::render_packet::RenderPacketEdge;
-use kittycad_modeling_cmds::format::render_packet::RenderPacketPrimitive;
-use kittycad_modeling_cmds::format::render_packet::RenderPacketRegion;
-use kittycad_modeling_cmds::format::render_packet::RenderPacketVertexLayout;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -65,61 +59,6 @@ pub struct SceneGraphDelta {
     pub new_objects: Vec<ObjectId>,
     pub invalidates_ids: bool,
     pub exec_outcome: ExecOutcome,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts")]
-#[serde(rename_all = "camelCase")]
-pub struct FrontendRenderPacket {
-    pub metadata: FrontendRenderPacketMetadata,
-    #[ts(type = "Uint8Array")]
-    pub data: Vec<u8>,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts")]
-#[serde(rename_all = "camelCase")]
-pub struct FrontendRenderPacketMetadata {
-    pub version: u32,
-    pub vertex_layout: RenderPacketVertexLayout,
-    pub sections: RenderPacketBinarySections,
-    pub body_materials: Vec<RenderPacketBodyMaterial>,
-    pub primitives: Vec<RenderPacketPrimitive>,
-    pub edges: Vec<RenderPacketEdge>,
-    pub sketches: Vec<FrontendRenderPacketSketchSegment>,
-    pub regions: Vec<RenderPacketRegion>,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts")]
-#[serde(rename_all = "camelCase")]
-pub struct FrontendRenderPacketSketchSegment {
-    /// First float32x3 point in the packet-wide sketch-point section.
-    pub first_point: u32,
-
-    /// Number of points in this sketch segment.
-    pub point_count: u32,
-
-    /// Stable engine scene object UUID for the sketch owner.
-    pub sketch_id: uuid::Uuid,
-
-    /// Stable engine scene curve UUID, when available.
-    pub segment_id: Option<uuid::Uuid>,
-
-    /// Curve index within the sketch path or hole loop.
-    pub segment_index: u32,
-
-    /// Hole index when this segment belongs to a hole loop.
-    pub hole_index: Option<u32>,
-
-    /// Whether the underlying curve is closed.
-    pub closed: bool,
-
-    /// Source range for the corresponding frontend sketch segment, when available.
-    pub source_range: Option<SourceRange>,
-
-    /// AST node path for the corresponding frontend sketch segment, when available.
-    pub node_path: Option<NodePath>,
 }
 
 impl SceneGraphDelta {

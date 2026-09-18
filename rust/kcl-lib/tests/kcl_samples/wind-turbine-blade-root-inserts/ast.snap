@@ -17058,7 +17058,7 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Construction",
+            "value": "Categories: Industrial & Manufacturing; Mechanical Components",
             "style": "line"
           }
         },
@@ -17074,6 +17074,7 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
         }
       ]
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

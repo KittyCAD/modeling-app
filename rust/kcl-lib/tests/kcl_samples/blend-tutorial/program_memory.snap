@@ -104,6 +104,8 @@ description: Variables in memory after executing blend-tutorial.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [],
       "sketch": {
@@ -120,6 +122,8 @@ description: Variables in memory after executing blend-tutorial.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -168,17 +172,17 @@ description: Variables in memory after executing blend-tutorial.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -236,6 +240,8 @@ description: Variables in memory after executing blend-tutorial.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -284,17 +290,17 @@ description: Variables in memory after executing blend-tutorial.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 9,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -352,6 +358,8 @@ description: Variables in memory after executing blend-tutorial.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -400,17 +408,17 @@ description: Variables in memory after executing blend-tutorial.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 18,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -479,10 +487,10 @@ description: Variables in memory after executing blend-tutorial.kcl
             -30.0
           ],
           "tag": {
-            "commentStart": 220,
-            "end": 225,
+            "commentStart": 234,
+            "end": 239,
             "moduleId": 0,
-            "start": 220,
+            "start": 234,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -495,17 +503,17 @@ description: Variables in memory after executing blend-tutorial.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -569,10 +577,10 @@ description: Variables in memory after executing blend-tutorial.kcl
             -30.0
           ],
           "tag": {
-            "commentStart": 579,
-            "end": 584,
+            "commentStart": 593,
+            "end": 598,
             "moduleId": 0,
-            "start": 579,
+            "start": 593,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -585,17 +593,17 @@ description: Variables in memory after executing blend-tutorial.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 9,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -659,10 +667,10 @@ description: Variables in memory after executing blend-tutorial.kcl
             -140.0
           ],
           "tag": {
-            "commentStart": 1291,
-            "end": 1296,
+            "commentStart": 1305,
+            "end": 1310,
             "moduleId": 0,
-            "start": 1291,
+            "start": 1305,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -675,17 +683,17 @@ description: Variables in memory after executing blend-tutorial.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 18,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -735,7 +743,6 @@ description: Variables in memory after executing blend-tutorial.kcl
   },
   "line1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line1"
   },
   "sketch001": {
@@ -755,17 +762,21 @@ description: Variables in memory after executing blend-tutorial.kcl
                       {
                         "n": -300.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -30.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -773,17 +784,21 @@ description: Variables in memory after executing blend-tutorial.kcl
                       {
                         "n": -150.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 30.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -880,10 +895,10 @@ description: Variables in memory after executing blend-tutorial.kcl
                     -30.0
                   ],
                   "tag": {
-                    "commentStart": 220,
-                    "end": 225,
+                    "commentStart": 234,
+                    "end": 239,
                     "moduleId": 0,
-                    "start": 220,
+                    "start": 234,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -896,17 +911,17 @@ description: Variables in memory after executing blend-tutorial.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -977,17 +992,21 @@ description: Variables in memory after executing blend-tutorial.kcl
                       {
                         "n": 600.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -30.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -995,17 +1014,21 @@ description: Variables in memory after executing blend-tutorial.kcl
                       {
                         "n": 300.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 30.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1102,10 +1125,10 @@ description: Variables in memory after executing blend-tutorial.kcl
                     -30.0
                   ],
                   "tag": {
-                    "commentStart": 579,
-                    "end": 584,
+                    "commentStart": 593,
+                    "end": 598,
                     "moduleId": 0,
-                    "start": 579,
+                    "start": 593,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -1118,17 +1141,17 @@ description: Variables in memory after executing blend-tutorial.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 9,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -1199,17 +1222,21 @@ description: Variables in memory after executing blend-tutorial.kcl
                       {
                         "n": 230.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -140.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1217,17 +1244,21 @@ description: Variables in memory after executing blend-tutorial.kcl
                       {
                         "n": 270.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -200.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1324,10 +1355,10 @@ description: Variables in memory after executing blend-tutorial.kcl
                     -140.0
                   ],
                   "tag": {
-                    "commentStart": 1291,
-                    "end": 1296,
+                    "commentStart": 1305,
+                    "end": 1310,
                     "moduleId": 0,
-                    "start": 1291,
+                    "start": 1305,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -1340,17 +1371,17 @@ description: Variables in memory after executing blend-tutorial.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 18,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -1412,6 +1443,8 @@ description: Variables in memory after executing blend-tutorial.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1460,17 +1493,17 @@ description: Variables in memory after executing blend-tutorial.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 18,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1528,6 +1561,8 @@ description: Variables in memory after executing blend-tutorial.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1576,17 +1611,17 @@ description: Variables in memory after executing blend-tutorial.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 18,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1646,8 +1681,10 @@ description: Variables in memory after executing blend-tutorial.kcl
     "value": 30.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   }
 }

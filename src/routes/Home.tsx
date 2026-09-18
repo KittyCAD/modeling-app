@@ -49,6 +49,8 @@ import {
 } from '@src/machines/systemIO/hooks'
 import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
+import { HOME_COMMAND_SCOPE } from '@src/registry/contracts/commands'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import {
   type HomeProjectActionsService,
   type HomeProjectEntry,
@@ -58,7 +60,6 @@ import {
 import { homeSidebarItemsValueSpec } from '@src/registry/contracts/homeSidebar'
 import {
   findKeymapItemForCommand,
-  HOME_KEYMAP_SCOPE,
   keymapKeystrokesDisplay,
   keymapScopesValueSpec,
   keymapService,
@@ -69,6 +70,7 @@ import {
   projectLibraryRealizationsService,
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import {
   filterStatusBarItemsForScopes,
   statusBarGlobalItemsValueSpec,
@@ -299,10 +301,10 @@ const Home = () => {
       return
     }
 
-    keymap.applyScope(HOME_KEYMAP_SCOPE)
+    keymap.applyScope(HOME_COMMAND_SCOPE)
 
     return () => {
-      keymap.removeScope(HOME_KEYMAP_SCOPE)
+      keymap.removeScope(HOME_COMMAND_SCOPE)
     }
   }, [keymap])
 
@@ -339,6 +341,7 @@ const Home = () => {
     )
     .join('|')
   const homeProjectActions = registry.get(homeProjectActionsService)
+  const session = registry.get(projectSession)
   const hasCloudSyncFeature = userFeatures.useHas(
     OPFS_CLOUD_FEATURE_FLAG,
     false
@@ -371,7 +374,7 @@ const Home = () => {
       ? findKeymapItemForCommand(
           keymap.keymap.value,
           APP_COMMAND_IDS.search.focusProjects,
-          [HOME_KEYMAP_SCOPE],
+          [HOME_COMMAND_SCOPE],
           registry.signal(keymapScopesValueSpec).value
         )?.keystrokes
       : undefined,
@@ -415,22 +418,21 @@ const Home = () => {
   }, [projectLibraryRealizations, projectLibraryWatchKey])
 
   useEffect(() => {
-    app.currentProjectLibraryIdSignal.value = selectedProjectLibraryId
+    session.setCurrentProjectLibraryId(selectedProjectLibraryId)
 
     return () => {
-      if (
-        app.currentProjectLibraryIdSignal.value === selectedProjectLibraryId
-      ) {
-        app.currentProjectLibraryIdSignal.value = undefined
+      if (session.getCurrentProjectLibraryId() === selectedProjectLibraryId) {
+        session.setCurrentProjectLibraryId(undefined)
       }
     }
-  }, [app, selectedProjectLibraryId])
+  }, [session, selectedProjectLibraryId])
 
   useEffect(() => {
     const { RouteTelemetryCommand, RouteSettingsCommand } = createRouteCommands(
       navigate,
       location,
-      ''
+      '',
+      [HOME_COMMAND_SCOPE]
     )
 
     commands.send({
@@ -684,6 +686,9 @@ const Home = () => {
                       name: 'create-a-sample',
                       argDefaultValues: {
                         source: 'kcl-samples',
+                        ...(selectedProjectLibrary
+                          ? { libraryId: selectedProjectLibrary.id }
+                          : {}),
                       },
                     },
                   })
@@ -768,6 +773,7 @@ const Home = () => {
             sort={sort}
             projectStatuses={projectStatuses}
             projectActions={homeProjectActions}
+            fileOperations={app.fileOperations}
             showCloudSyncUi={hasCloudSyncFeature}
             showSourceStatusBadges={false}
             onMoveToLibrary={moveProjectToLibrary}
@@ -784,6 +790,7 @@ const Home = () => {
             sort={sort}
             projectStatuses={projectStatuses}
             projectActions={homeProjectActions}
+            fileOperations={app.fileOperations}
             showCloudSyncUi={hasCloudSyncFeature}
             onMoveToLibrary={moveProjectToLibrary}
             projectLibraryDrag={projectLibraryDrag}
@@ -798,7 +805,6 @@ const Home = () => {
           ...defaultGlobalStatusBarItems({
             autoUpdateDownloadProgress,
             autoUpdateReady,
-            hasCloudSyncFeature,
             onRestartToUpdate: () => {
               window.electron?.appRestart()
             },
@@ -829,6 +835,7 @@ interface ProjectLibraryOverviewProps extends HTMLProps<HTMLDivElement> {
   sort: string
   projectStatuses: Map<string, ProjectStatus>
   projectActions: HomeProjectActionsService
+  fileOperations: FileOperationsRegistryService
   showCloudSyncUi: boolean
   onMoveToLibrary: (project: HomeProjectEntry) => void
   projectLibraryDrag?: ProjectLibraryDragController
@@ -853,6 +860,7 @@ function ProjectLibraryOverview({
   sort,
   projectStatuses,
   projectActions,
+  fileOperations,
   showCloudSyncUi,
   onMoveToLibrary,
   projectLibraryDrag,
@@ -907,6 +915,7 @@ function ProjectLibraryOverview({
                   query={query}
                   projectStatuses={projectStatuses}
                   projectActions={projectActions}
+                  fileOperations={fileOperations}
                   showCloudSyncUi={showCloudSyncUi}
                   onMoveToLibrary={onMoveToLibrary}
                   projectLibraryDrag={projectLibraryDrag}
@@ -972,6 +981,7 @@ interface ProjectGridProps extends HTMLProps<HTMLDivElement> {
   sort: string
   projectStatuses: Map<string, ProjectStatus>
   projectActions: HomeProjectActionsService
+  fileOperations: FileOperationsRegistryService
   showCloudSyncUi: boolean
   onMoveToLibrary: (project: HomeProjectEntry) => void
   showSourceStatusBadges?: boolean
@@ -986,6 +996,7 @@ function ProjectGrid({
   sort,
   projectStatuses,
   projectActions,
+  fileOperations,
   showCloudSyncUi,
   onMoveToLibrary,
   showSourceStatusBadges = true,
@@ -1011,6 +1022,7 @@ function ProjectGrid({
               projects={sortedSearchResults}
               projectStatuses={projectStatuses}
               projectActions={projectActions}
+              fileOperations={fileOperations}
               showCloudSyncUi={showCloudSyncUi}
               onMoveToLibrary={onMoveToLibrary}
               showSourceStatusBadges={showSourceStatusBadges}

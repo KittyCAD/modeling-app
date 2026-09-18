@@ -1,8 +1,8 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
-import type { MlCopilotFile } from '@kittycad/lib'
-import { FilesSnapshot } from '@src/components/Thinking'
+import type { MlCopilotFile, MlCopilotServerMessage } from '@kittycad/lib'
+import { FilesSnapshot, Thinking } from '@src/components/Thinking'
 
 // Mock a small valid PNG image (1x1 transparent pixel)
 const MOCK_PNG_DATA = [
@@ -31,7 +31,10 @@ describe('FilesSnapshot', () => {
   let revokeObjectURLMock: ReturnType<typeof vi.fn>
 
   beforeEach(() => {
-    createObjectURLMock = vi.fn((blob: Blob) => `blob:mock-url-${blob.type}`)
+    let nextUrl = 0
+    createObjectURLMock = vi.fn(
+      (blob: Blob) => `blob:mock-url-${blob.type}-${++nextUrl}`
+    )
     revokeObjectURLMock = vi.fn()
 
     global.URL.createObjectURL =
@@ -42,6 +45,206 @@ describe('FilesSnapshot', () => {
 
   afterEach(() => {
     vi.restoreAllMocks()
+  })
+
+  test('renders an unavailable replay attachment without offering a download', () => {
+    const files: MlCopilotFile[] = [
+      {
+        name: 'missing.png',
+        mimetype: 'image/png',
+        data: [],
+        metadata: {
+          zoo_replay_error: 'attachment_unavailable',
+        },
+      },
+    ]
+
+    render(<FilesSnapshot files={files} />)
+
+    expect(screen.getByText('Zookeeper File')).toBeInTheDocument()
+    expect(screen.getByText('missing.png')).toBeInTheDocument()
+    expect(screen.getByText('Attachment unavailable')).toBeInTheDocument()
+
+    expect(
+      screen.getByLabelText('missing.png: Attachment unavailable')
+    ).toBeInTheDocument()
+
+    expect(
+      screen.queryByTitle('Click to download missing.png')
+    ).not.toBeInTheDocument()
+
+    expect(createObjectURLMock).not.toHaveBeenCalled()
+  })
+
+  test('fetches a metadata-only attachment before rendering its contents', () => {
+    const attachmentRef = {
+      prompt_id: '00000000-0000-4000-8000-000000000001',
+      seq: 3,
+      index: 1,
+      content_hash:
+        'sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
+    }
+    const attachmentKey = `${attachmentRef.prompt_id}:${attachmentRef.seq}:${attachmentRef.index}`
+    const files: MlCopilotFile[] = [
+      {
+        name: 'reference.png',
+        mimetype: 'image/png',
+        data: [],
+        attachment_ref: attachmentRef,
+      },
+    ]
+    const onFetchAttachment = vi.fn()
+    const { rerender } = render(
+      <FilesSnapshot files={files} onFetchAttachment={onFetchAttachment} />
+    )
+
+    expect(createObjectURLMock).not.toHaveBeenCalled()
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'reference.png: Load attachment',
+      })
+    )
+    expect(onFetchAttachment).toHaveBeenCalledOnce()
+    expect(onFetchAttachment).toHaveBeenCalledWith(attachmentRef)
+
+    rerender(
+      <FilesSnapshot
+        files={files}
+        attachmentFetches={{
+          [attachmentKey]: { status: 'loading' },
+        }}
+        onFetchAttachment={onFetchAttachment}
+      />
+    )
+    expect(
+      screen.getByRole('button', {
+        name: 'reference.png: Loading attachment',
+      })
+    ).toBeDisabled()
+
+    rerender(
+      <FilesSnapshot
+        files={files}
+        attachmentFetches={{
+          [attachmentKey]: {
+            status: 'loaded',
+            file: { ...files[0], data: MOCK_PNG_DATA },
+          },
+        }}
+        onFetchAttachment={onFetchAttachment}
+      />
+    )
+
+    expect(screen.getByAltText('reference.png')).toBeInTheDocument()
+    expect(createObjectURLMock).toHaveBeenCalledOnce()
+  })
+
+  test('preserves image URLs when the reasoning parent rerenders', () => {
+    const file: MlCopilotFile = {
+      name: 'snapshot.png',
+      mimetype: 'image/png',
+      data: MOCK_PNG_DATA,
+    }
+    const view = () => (
+      <Thinking
+        thoughts={[{ files: { files: [{ ...file, data: [...file.data] }] } }]}
+        isDone={true}
+        onlyShowImmediateThought={false}
+      />
+    )
+    const { rerender } = render(view())
+    const image = screen.getByAltText(file.name)
+    const url = image.getAttribute('src')
+
+    rerender(view())
+    rerender(view())
+
+    expect(screen.getByAltText(file.name)).toBe(image)
+    expect(image).toHaveAttribute('src', url)
+    expect(createObjectURLMock).toHaveBeenCalledOnce()
+    expect(revokeObjectURLMock).not.toHaveBeenCalled()
+  })
+
+  test('only recreates URLs when an attachment finishes loading', () => {
+    const firstRef = {
+      prompt_id: 'prompt',
+      seq: 1,
+      index: 0,
+      content_hash: 'sha256:' + '0'.repeat(64),
+    }
+    const secondRef = { ...firstRef, index: 1 }
+    const first: MlCopilotFile = {
+      name: 'first.png',
+      mimetype: 'image/png',
+      data: [],
+      attachment_ref: firstRef,
+    }
+    const second = { ...first, name: 'second.png', attachment_ref: secondRef }
+    const loadedFirst = { ...first, data: MOCK_PNG_DATA }
+    const loadedSecond = { ...second, data: MOCK_PNG_DATA }
+    const onFetchAttachment = vi.fn()
+    const { rerender, unmount } = render(
+      <FilesSnapshot
+        files={[first, second]}
+        attachmentFetches={{
+          'prompt:1:0': { status: 'loaded', file: loadedFirst },
+        }}
+        onFetchAttachment={onFetchAttachment}
+      />
+    )
+    const firstUrl = screen.getByAltText(first.name).getAttribute('src')
+
+    fireEvent.click(screen.getByRole('button', { name: /second.png: Load/ }))
+    expect(onFetchAttachment).toHaveBeenCalledExactlyOnceWith(secondRef)
+    rerender(
+      <FilesSnapshot
+        files={[first, second]}
+        attachmentFetches={{
+          'prompt:1:0': { status: 'loaded', file: loadedFirst },
+          'prompt:1:1': { status: 'loading' },
+        }}
+        onFetchAttachment={onFetchAttachment}
+      />
+    )
+    expect(screen.getByAltText(first.name)).toHaveAttribute('src', firstUrl)
+    expect(createObjectURLMock).toHaveBeenCalledOnce()
+    expect(revokeObjectURLMock).not.toHaveBeenCalled()
+
+    rerender(
+      <FilesSnapshot
+        files={[first, second]}
+        attachmentFetches={{
+          'prompt:1:0': { status: 'loaded', file: loadedFirst },
+          'prompt:1:1': { status: 'loaded', file: loadedSecond },
+        }}
+        onFetchAttachment={onFetchAttachment}
+      />
+    )
+    expect(screen.getByAltText(first.name)).not.toHaveAttribute('src', firstUrl)
+    expect(screen.getByAltText(second.name)).toBeInTheDocument()
+    expect(createObjectURLMock).toHaveBeenCalledTimes(3)
+    expect(revokeObjectURLMock).toHaveBeenCalledExactlyOnceWith(firstUrl)
+    unmount()
+    expect(revokeObjectURLMock).toHaveBeenCalledTimes(3)
+  })
+
+  test.each([
+    { label: 'inline bytes', data: [3, 2, 1], mimetype: 'image/png' },
+    { label: 'MIME type', data: [1, 2, 3], mimetype: 'image/jpeg' },
+  ])('updates the URL when $label changes', ({ data, mimetype }) => {
+    const file: MlCopilotFile = {
+      name: 'snapshot.png',
+      mimetype: 'image/png',
+      data: [1, 2, 3],
+    }
+    const { rerender } = render(<FilesSnapshot files={[file]} />)
+    const oldUrl = screen.getByAltText(file.name).getAttribute('src')
+
+    rerender(<FilesSnapshot files={[{ ...file, data, mimetype }]} />)
+
+    expect(screen.getByAltText(file.name)).not.toHaveAttribute('src', oldUrl)
+    expect(createObjectURLMock).toHaveBeenCalledTimes(2)
+    expect(revokeObjectURLMock).toHaveBeenCalledExactlyOnceWith(oldUrl)
   })
 
   test('renders a single image file with correct filename', () => {
@@ -186,5 +389,45 @@ describe('FilesSnapshot', () => {
     const fileButton = screen.getByTitle('Click to download clickable-doc.pdf')
     expect(fileButton).toBeInTheDocument()
     expect(fileButton.tagName).toBe('BUTTON')
+  })
+})
+
+describe('Thinking', () => {
+  test('shows thinking after a tool status when markdown reasoning arrives', () => {
+    const thoughts: MlCopilotServerMessage[] = [
+      {
+        reasoning: {
+          type: 'text',
+          content: 'Checking Constraints',
+        },
+      },
+    ]
+    const view = () => (
+      <Thinking
+        thoughts={thoughts}
+        isDone={false}
+        onlyShowImmediateThought={true}
+      />
+    )
+    const { rerender } = render(view())
+
+    expect(screen.getByTestId('thinking-immediate')).toHaveTextContent(
+      'Checking Constraints'
+    )
+    expect(screen.queryByLabelText('brain')).not.toBeInTheDocument()
+
+    thoughts.push({
+      reasoning: {
+        type: 'markdown',
+        content: 'Inspecting the constraint relationships.',
+      },
+    })
+    rerender(view())
+
+    expect(screen.getByTestId('thinking-immediate')).toHaveTextContent(
+      'Thinking'
+    )
+    expect(screen.getByLabelText('brain')).toBeInTheDocument()
+    expect(screen.queryByText('Checking Constraints')).not.toBeInTheDocument()
   })
 })

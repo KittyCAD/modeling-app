@@ -8,6 +8,8 @@ import {
   loadCloudSyncProjectConflictInspection,
   type ProjectArchiveFile,
   resolveCloudSyncProjectConflict,
+  startCloudSyncProject,
+  syncCloudSyncProjectNow,
 } from '@src/lib/cloudSync'
 import {
   normalizeProjectArchiveFilesForCloudSync,
@@ -116,6 +118,10 @@ function installFetchMock({
       return jsonResponse([remoteProjectPayload(remoteRevision)])
     }
 
+    if (url === `${baseUrl}/user/projects` && method === 'POST') {
+      return jsonResponse(remoteProjectPayload('rev-1'))
+    }
+
     if (url === remoteProjectUrl && method === 'GET') {
       return jsonResponse(remoteProjectPayload(remoteRevision))
     }
@@ -163,6 +169,76 @@ describe('cloud sync live conflicts', () => {
     configureCloudSyncEngine({ enabled: false })
     vi.unstubAllGlobals()
     await deleteCloudSyncTestDatabase()
+  })
+
+  it('awaits initial project creation and exact API archive reconciliation', async () => {
+    const localProjectToml =
+      'title = "Demo"\ndefault_file = "main.kcl"\n\n[settings.app]\nunits = "mm"\n'
+    const remoteProjectToml = `${localProjectToml}\n[cloud."dev.zoo.dev"]\nproject_id = "${remoteProjectId}"\n`
+    const files = new Map([
+      [`${projectPath}/main.kcl`, 'base = 1\n'],
+      [`${projectPath}/${PROJECT_SETTINGS_FILE_NAME}`, localProjectToml],
+    ])
+    const cloudSyncFs = createCloudSyncTestFs(files, { projectDirectory })
+    const rm = vi.spyOn(cloudSyncFs, 'rm')
+    const writeFile = vi.spyOn(cloudSyncFs, 'writeFile')
+    configureCloudSyncLocalFileSystem(cloudSyncFs)
+    installFetchMock({
+      remoteFiles: [
+        { relativePath: 'main.kcl', contents: 'base = 1\n' },
+        {
+          relativePath: PROJECT_SETTINGS_FILE_NAME,
+          contents: remoteProjectToml,
+        },
+      ],
+    })
+    configureCloudSyncEngine({
+      enabled: true,
+      baseUrl,
+      environmentName: 'dev.zoo.dev',
+      cloudProjectDirectoryPaths: [projectDirectory],
+      autoEnrollCloudLibraryProjects: false,
+    })
+
+    await startCloudSyncProject(projectPath)
+    await expect(syncCloudSyncProjectNow(projectPath)).resolves.toEqual({
+      remoteProjectId,
+    })
+
+    await expect(
+      getCloudSyncProjectMetadata(projectPath)
+    ).resolves.toMatchObject({
+      remoteProjectId,
+      remoteRevision: 'rev-2',
+      conflict: undefined,
+      lastFailure: undefined,
+    })
+    expect(files.get(`${projectPath}/main.kcl`)).toBe('base = 1\n')
+    expect(files.get(`${projectPath}/${PROJECT_SETTINGS_FILE_NAME}`)).toBe(
+      remoteProjectToml
+    )
+    expect(rm).not.toHaveBeenCalledWith(
+      projectPath,
+      expect.objectContaining({ recursive: true })
+    )
+    expect(writeFile).not.toHaveBeenCalledWith(
+      `${projectPath}/main.kcl`,
+      expect.anything()
+    )
+    expect(
+      fetchMock.mock.calls.filter(
+        ([input, init]) =>
+          getFetchUrl(input) === `${baseUrl}/user/projects` &&
+          getFetchMethod(input, init) === 'POST'
+      )
+    ).toHaveLength(1)
+    expect(clientErrorsMock.reportClientError).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        code: expect.stringMatching(
+          /^cloud_sync_(?:conflict|untracked_local_changes)$/
+        ),
+      })
+    )
   })
 
   it('marks conflicts without creating persisted conflict-copy projects', async () => {

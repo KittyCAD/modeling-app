@@ -1,6 +1,6 @@
 // Gridfinity Baseplate With Magnets
 // A two-by-three Gridfinity baseplate profile, ready for magnetic bin retention.
-// Categories: Maker
+// Categories: Home & Lifestyle; 3D Printable; Parametric
 
 // Set units in millimeters (mm)
 @settings(defaultLengthUnit = mm, kclVersion = 2.0, experimentalFeatures = allow)

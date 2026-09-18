@@ -40,6 +40,8 @@ description: Variables in memory after executing delete_body.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -47,10 +49,10 @@ description: Variables in memory after executing delete_body.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 92,
-            "end": 99,
+            "commentStart": 80,
+            "end": 87,
             "moduleId": 0,
-            "start": 92,
+            "start": 80,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -78,10 +80,10 @@ description: Variables in memory after executing delete_body.kcl
             ],
             "radius": 1.118033988749895,
             "tag": {
-              "commentStart": 92,
-              "end": 99,
+              "commentStart": 80,
+              "end": 87,
               "moduleId": 0,
-              "start": 92,
+              "start": 80,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -94,17 +96,17 @@ description: Variables in memory after executing delete_body.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -148,8 +150,8 @@ description: Variables in memory after executing delete_body.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -174,17 +176,21 @@ description: Variables in memory after executing delete_body.kcl
                       {
                         "n": -2.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 1.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -192,17 +198,21 @@ description: Variables in memory after executing delete_body.kcl
                       {
                         "n": -1.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -305,10 +315,10 @@ description: Variables in memory after executing delete_body.kcl
                   ],
                   "radius": 1.118033988749895,
                   "tag": {
-                    "commentStart": 92,
-                    "end": 99,
+                    "commentStart": 80,
+                    "end": 87,
                     "moduleId": 0,
-                    "start": 92,
+                    "start": 80,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -321,17 +331,17 @@ description: Variables in memory after executing delete_body.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,

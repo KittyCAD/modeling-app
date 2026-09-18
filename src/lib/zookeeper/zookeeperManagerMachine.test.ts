@@ -1,13 +1,20 @@
-import type { ClientErrorReport } from '@kittycad/lib'
+import type {
+  AttachmentRef,
+  ClientErrorReport,
+  MlCopilotFile,
+} from '@kittycad/lib'
 import { resetReportedClientErrorsForTests } from '@src/lib/clientErrors'
 import type { FileMeta } from '@src/lib/types'
 import {
   type Conversation,
+  createZookeeperManagerActor,
   createZookeeperCorrelation,
+  getZookeeperAttachmentKey,
   hasBeenInterruptedOnLast,
   type MlCopilotModeOption,
   NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS,
   parseMlCopilotModesResult,
+  toMlCopilotFile,
   ZOOKEEPER_HEARTBEAT_INTERVAL_MS,
   ZOOKEEPER_HEARTBEAT_TIMEOUT_MS,
   ZOOKEEPER_SETUP_ATTEMPT_TIMEOUT_MS,
@@ -19,6 +26,7 @@ import {
   ZookeeperManagerTransitions,
   ZookeeperSetupErrors,
   zookeeperManagerMachine,
+  stopZookeeperManagerActor,
   ZOOKEEPER_RESUME_SUPERSEDED_CLOSE_CODE,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { S } from '@src/machines/utils'
@@ -117,6 +125,44 @@ type SetupActorInput = {
 
 const completedConversationStartedAt = new Date('2026-07-15T12:00:00.000Z')
 
+describe('toMlCopilotFile', () => {
+  it('turns missing attachment reads into an actionable privacy-safe error', async () => {
+    const file = {
+      name: 'private-customer-file.step',
+      type: 'application/step',
+      arrayBuffer: vi
+        .fn()
+        .mockRejectedValue(
+          new DOMException(
+            'A requested file could not be found',
+            'NotFoundError'
+          )
+        ),
+    } as unknown as File
+
+    const result = await toMlCopilotFile(file)
+
+    expect(result).toMatchObject({
+      name: 'ZookeeperAttachmentReadError',
+      message:
+        "We couldn't read the attachment. It may have been moved, deleted, or become unavailable. Reattach it and try again.",
+    })
+    expect(result).toBeInstanceOf(Error)
+    expect((result as Error).message).not.toContain(file.name)
+  })
+
+  it('preserves unexpected attachment read errors', async () => {
+    const readError = new Error('Unexpected read failure')
+    const file = {
+      name: 'attachment.step',
+      type: 'application/step',
+      arrayBuffer: vi.fn().mockRejectedValue(readError),
+    } as unknown as File
+
+    await expect(toMlCopilotFile(file)).resolves.toBe(readError)
+  })
+})
+
 describe('createZookeeperCorrelation', () => {
   it('creates a unique correlation ID and includes the Engine API call ID', () => {
     const first = createZookeeperCorrelation('engine-api-call-id')
@@ -199,7 +245,17 @@ describe('zookeeperManagerMachine', () => {
     ControllableSetupWebSocket.instances = []
   })
 
+  it('creates a started manager actor', () => {
+    const actor = createZookeeperManagerActor('api-token')
+
+    expect(actor.getSnapshot().status).toBe('active')
+    expect(actor.getSnapshot().context.apiToken).toBe('api-token')
+
+    stopZookeeperManagerActor(actor)
+  })
+
   afterEach(() => {
+    vi.useRealTimers()
     vi.restoreAllMocks()
     vi.unstubAllGlobals()
   })
@@ -604,6 +660,61 @@ describe('zookeeperManagerMachine', () => {
       expect(socket.close).toHaveBeenCalledOnce()
 
       actor.stop()
+    })
+
+    it('closes the socket and stops its heartbeat when stopped', async () => {
+      vi.useFakeTimers()
+      vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
+      const actor = createActor(zookeeperManagerMachine, {
+        input: {
+          apiToken: 'token',
+        },
+      }).start()
+
+      actor.send({
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+        refParentSend: vi.fn(),
+      })
+
+      const socket = ControllableSetupWebSocket.instances[0]
+      socket.open()
+      await vi.waitFor(() => {
+        expect(socket.sentPayloads).toContain(
+          JSON.stringify({ type: 'list_modes' })
+        )
+      })
+      socket.receive({
+        conversation_id: { conversation_id: 'conversation-id' },
+      })
+
+      await waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.WaitForContinueCheck)
+      )
+      actor.send({
+        type: ZookeeperManagerStates.ContinueCheck,
+        projectName: 'zoo-project',
+        projectFiles: [],
+      })
+      await waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.Ready)
+      )
+
+      expect(socket.readyState).toBe(ControllableSetupWebSocket.OPEN)
+      expect(socket.close).not.toHaveBeenCalled()
+
+      await vi.advanceTimersByTimeAsync(ZOOKEEPER_HEARTBEAT_INTERVAL_MS)
+      expect(socket.sentPayloads).toContain(JSON.stringify({ type: 'ping' }))
+      const sentBeforeStop = [...socket.sentPayloads]
+
+      stopZookeeperManagerActor(actor)
+
+      expect(socket.close).toHaveBeenCalledOnce()
+      expect(socket.readyState).toBe(ControllableSetupWebSocket.CLOSED)
+      expect(vi.getTimerCount()).toBe(0)
+
+      await vi.advanceTimersByTimeAsync(2 * ZOOKEEPER_HEARTBEAT_INTERVAL_MS)
+      expect(socket.sentPayloads).toEqual(sentBeforeStop)
+      expect(ControllableSetupWebSocket.instances).toHaveLength(1)
     })
 
     it('times out setup attempts instead of waiting forever', async () => {
@@ -1356,6 +1467,129 @@ describe('zookeeperManagerMachine', () => {
       expect(setupContext?.cachedSetup?.activeExchangeStartedAt).toBe(
         completedConversationStartedAt
       )
+
+      actor.stop()
+    })
+  })
+
+  describe('attachment fetching', () => {
+    const attachmentRef: AttachmentRef = {
+      prompt_id: '00000000-0000-4000-8000-000000000001',
+      seq: 3,
+      index: 1,
+      content_hash:
+        'sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
+    }
+
+    const loadedFile: MlCopilotFile = {
+      name: 'reference.png',
+      mimetype: 'image/png',
+      data: [1, 2, 3],
+      attachment_ref: attachmentRef,
+    }
+
+    const createReadyActor = async () => {
+      const ws: TestWebSocket = new TestSocket() as TestWebSocket
+      ws.readyState = WebSocket.OPEN
+      const machine = zookeeperManagerMachine.provide({
+        actors: {
+          [ZookeeperManagerStates.Setup]: fromPromise<
+            Partial<ZookeeperManagerContext>,
+            SetupActorInput
+          >(async () => ({
+            ws,
+            conversation: completedConversation,
+            conversationId: 'conversation-id',
+          })),
+        },
+      })
+      const actor = createActor(machine, {
+        input: { apiToken: 'token' },
+      }).start()
+
+      actor.send({
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+        refParentSend: vi.fn(),
+      })
+      await waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.WaitForContinueCheck)
+      )
+
+      actor.send({
+        type: ZookeeperManagerStates.ContinueCheck,
+        projectName: 'zoo-project',
+        projectFiles: [],
+      })
+      await waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.Ready)
+      )
+
+      return { actor, ws }
+    }
+
+    it('requests an attachment once and records its loading state', async () => {
+      const { actor, ws } = await createReadyActor()
+
+      actor.send({
+        type: ZookeeperManagerTransitions.AttachmentFetch,
+        attachmentRef,
+      })
+      actor.send({
+        type: ZookeeperManagerTransitions.AttachmentFetch,
+        attachmentRef,
+      })
+
+      expect(ws.sentPayloads).toHaveLength(1)
+      expect(JSON.parse(ws.sentPayloads[0])).toEqual({
+        type: 'fetch_attachments',
+        prompt_id: attachmentRef.prompt_id,
+        seq: attachmentRef.seq,
+        indices: [attachmentRef.index],
+      })
+      expect(
+        actor.getSnapshot().context.attachmentFetches[
+          getZookeeperAttachmentKey(attachmentRef)
+        ]
+      ).toEqual({ status: 'loading' })
+
+      actor.stop()
+    })
+
+    it('stores fetched bytes without changing conversation state', async () => {
+      const { actor } = await createReadyActor()
+      const before = actor.getSnapshot().context
+
+      actor.send({
+        type: ZookeeperManagerTransitions.AttachmentFetch,
+        attachmentRef,
+      })
+      actor.send({
+        type: ZookeeperManagerTransitions.ResponseReceive,
+        response: {
+          attachments: {
+            prompt_id: attachmentRef.prompt_id,
+            seq: attachmentRef.seq,
+            role: 'client',
+            files: [loadedFile],
+          },
+        },
+      })
+
+      await waitFor(
+        actor,
+        (state) =>
+          state.context.attachmentFetches[
+            getZookeeperAttachmentKey(attachmentRef)
+          ]?.status === 'loaded'
+      )
+
+      const after = actor.getSnapshot().context
+      expect(
+        after.attachmentFetches[getZookeeperAttachmentKey(attachmentRef)]
+      ).toEqual({ status: 'loaded', file: loadedFile })
+      expect(after.conversation).toBe(before.conversation)
+      expect(after.lastMessageId).toBe(before.lastMessageId)
+      expect(after.awaitingResponse).toBe(before.awaitingResponse)
 
       actor.stop()
     })

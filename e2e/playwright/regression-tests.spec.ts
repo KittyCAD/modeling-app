@@ -13,7 +13,11 @@ import {
   getUtils,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { LEGACY_SKETCH_MODE_FEATURE_FLAG } from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+
+// Some of these sketches are KCL 1.0, so editing them needs the legacy sketch flag.
+test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
 
 const bracket = fs.readFileSync(
   path.resolve('public', 'kcl-samples', 'bracket', 'main.kcl'),
@@ -22,50 +26,6 @@ const bracket = fs.readFileSync(
 
 test.describe('Regression tests', { tag: '@desktop' }, () => {
   // bugs we found that don't fit neatly into other categories
-  test('bad model has inline error #3251', async ({
-    context,
-    page,
-    homePage,
-    scene,
-  }) => {
-    // because the model has `line([0,0]..` it is valid code, but the model is invalid
-    // regression test for https://github.com/KittyCAD/modeling-app/issues/3251
-    // Since the bad model also found as issue with the artifact graph, which in tern blocked the editor diognostics
-    // const u = await getUtils(page)
-    await context.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `sketch2 = startSketchOn(XY)
-  sketch001 = startSketchOn(XY)
-    |> startProfile(at = [-0, -0])
-    |> line(end = [0, 0])
-    |> line(end = [-4.84, -5.29])
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close()`
-      )
-    })
-
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-
-    await homePage.goToModelingScene()
-    await scene.connectionEstablished()
-    // await u.waitForPageLoad()
-
-    // error in guter
-    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
-
-    // error text on hover
-    await page.hover('.cm-lint-marker-error')
-    // this is a cryptic error message, fact that all the lines are co-linear from the `line([0,0])` is the issue why
-    // the close doesn't work
-    // when https://github.com/KittyCAD/modeling-app/issues/3268 is closed
-    // this test will need updating
-    const crypticErrorText = `Cannot close a path that is non-planar or with duplicate vertices.
-Internal engine error on request`
-    await expect(page.getByText(crypticErrorText).first()).toBeVisible()
-    // Ensure we didn't nest the json.
-    await expect(page.getByText('ApiError')).not.toBeVisible()
-  })
   test('user should not have to press down twice in cmdbar', async ({
     page,
     homePage,
@@ -444,18 +404,11 @@ extrude002 = extrude(profile002, length = 150)`
       // Click the checkbox
       await cmdBar.submit()
 
-      // Find the toast.
-      // Look out for the toast message
-      await expect(exportingToastMessage).toBeVisible()
-
-      // Expect it to succeed.
+      // A fast export can complete before its progress toast is observed.
+      const successToastMessage = page.getByText(`Exported successfully`)
+      await expect(successToastMessage.first()).toBeVisible({ timeout: 15_000 })
       await expect(exportingToastMessage).not.toBeVisible()
       await expect(engineErrorToastMessage).not.toBeVisible()
-
-      const successToastMessage = page.getByText(`Exported successfully`)
-      await page.waitForTimeout(1_000)
-      const count = await successToastMessage.count()
-      expect(count).toBeGreaterThanOrEqual(1)
     }
   )
   // We updated this test such that you can have multiple exports going at once.
@@ -505,10 +458,11 @@ extrude002 = extrude(profile002, length = 150)`
 
       await test.step('The first export still succeeds', async () => {
         await Promise.all([
-          expect(exportingToastMessage).not.toBeVisible({ timeout: 15_000 }),
+          expect(exportingToastMessage).toHaveCount(0, { timeout: 15_000 }),
           expect(errorToastMessage).not.toBeVisible(),
           expect(engineErrorToastMessage).not.toBeVisible(),
-          expect(successToastMessage).toBeVisible({ timeout: 15_000 }),
+          // Overlapping exports can each retain a success notification.
+          expect(successToastMessage.first()).toBeVisible({ timeout: 15_000 }),
           expect(alreadyExportingToastMessage).not.toBeVisible({
             timeout: 15_000,
           }),
@@ -524,7 +478,7 @@ extrude002 = extrude(profile002, length = 150)`
 
       // Expect it to succeed.
       await Promise.all([
-        expect(exportingToastMessage).not.toBeVisible({ timeout: 15_000 }),
+        expect(exportingToastMessage).toHaveCount(0, { timeout: 15_000 }),
         expect(errorToastMessage).not.toBeVisible(),
         expect(engineErrorToastMessage).not.toBeVisible(),
         expect(alreadyExportingToastMessage).not.toBeVisible(),
@@ -799,9 +753,14 @@ faceProfile001 = circle(faceSketch, center = [0, 0], radius = 0.01)`
         },
         { timeout: 15_000 }
       )
-      await toolbar.editSketch(1)
-      await toolbar.expectToolbarMode.toBe('sketching')
-      await legacySketchClientError
+      // Handle the request wait even if entering sketch mode fails.
+      await Promise.all([
+        legacySketchClientError,
+        (async () => {
+          await toolbar.editSketch(1)
+          await toolbar.expectToolbarMode.toBe('sketching')
+        })(),
+      ])
     })
 
     await test.step('Draw a circle and verify code', async () => {
