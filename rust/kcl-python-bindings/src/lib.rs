@@ -2,6 +2,7 @@
 use std::future::Future;
 use std::path::Path;
 use std::path::PathBuf;
+use std::sync::Arc;
 
 use anyhow::Result;
 use kcl_api::UnitAngle;
@@ -79,7 +80,16 @@ where
 
 fn into_miette(error: kcl_lib::KclErrorWithOutputs, code: &str) -> PyErr {
     let retryable = error.is_retryable();
-    PyErr::new::<PyKclError, _>((render_miette(error, code), retryable))
+    let message = render_miette(error.clone(), code);
+    Python::attach(|py| -> PyResult<PyErr> {
+        let exception = PyErr::new::<PyKclError, _>((message, retryable));
+        exception.value(py).cast::<PyKclError>()?.borrow_mut().execution = Some(Arc::new(FailedExecution {
+            outputs: error,
+            code: code.to_owned(),
+        }));
+        Ok(exception)
+    })
+    .unwrap_or_else(|error| error)
 }
 
 fn render_miette(error: kcl_lib::KclErrorWithOutputs, code: &str) -> String {
@@ -185,6 +195,13 @@ fn into_kcl_exception(error: kcl_lib::KclError) -> PyErr {
 #[derive(Debug, Clone)]
 struct PyKclError {
     retryable: bool,
+    execution: Option<Arc<FailedExecution>>,
+}
+
+#[derive(Debug)]
+struct FailedExecution {
+    outputs: kcl_lib::KclErrorWithOutputs,
+    code: String,
 }
 
 #[pymethods]
@@ -192,11 +209,46 @@ impl PyKclError {
     #[new]
     #[pyo3(signature = (_message, retryable = false))]
     fn new(_message: &Bound<'_, PyAny>, retryable: bool) -> Self {
-        Self { retryable }
+        Self {
+            retryable,
+            execution: None,
+        }
     }
 
     fn is_retryable(&self) -> bool {
         self.retryable
+    }
+
+    /// Inspect sketches retained at the failure, without executing again.
+    /// None means execution never produced an outcome (for example, a parse error).
+    fn sketch_constraint_report(&self) -> Option<SketchConstraintReport> {
+        let execution = self.execution.as_ref()?;
+        let outputs = &execution.outputs;
+        let mut report: SketchConstraintReport = outputs.sketch_constraint_report().into();
+        add_execution_issues(&mut report, outputs.non_fatal.clone(), |issue| {
+            kcl_lib::render_compilation_issue_miette("", &execution.code, &outputs.source_files, issue)
+        });
+        report.is_complete = false;
+        report.kcl_error = Some(KclErrorInfo {
+            phase: "execution".to_owned(),
+            text: render_miette(outputs.clone(), &execution.code),
+        });
+        Some(report)
+    }
+
+    /// Render a completed sketch retained at the failure. This does not retry
+    /// execution or imply that the project succeeded. Selection matches the
+    /// constraint report on this error, not an earlier execution.
+    #[pyo3(signature = (sketch_name, *, instance_index=None))]
+    fn render_sketch_png(&self, sketch_name: &str, instance_index: Option<usize>) -> PyResult<Vec<u8>> {
+        let execution = self
+            .execution
+            .as_ref()
+            .ok_or_else(|| PyException::new_err("No execution output is available to render a sketch"))?;
+        execution
+            .outputs
+            .render_sketch_png_instance(sketch_name, instance_index)
+            .map_err(to_py_exception)
     }
 }
 

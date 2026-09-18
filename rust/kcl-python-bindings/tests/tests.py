@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 import asyncio
+import base64
+import json
 import os
 import sys
+from pathlib import Path
+
+import pytest
 
 import kcl
-import pytest
 from kcl import Point3d
 
 # Get the path to this script's parent directory.
@@ -276,6 +280,161 @@ async def test_duplicate_sketch_instances() -> None:
         outcome.render_sketch_png("profile", instance_index=2)
     with pytest.raises(OverflowError):
         outcome.render_sketch_png("profile", instance_index=-1)
+
+
+def sketch_statuses(
+    report: kcl.SketchConstraintReport,
+) -> list[tuple[str, int, str, int, int, int]]:
+    return sorted(
+        (
+            status.name,
+            status.instance_index,
+            str(status.status),
+            status.free_count,
+            status.conflict_count,
+            status.total_count,
+        )
+        for status in (
+            report.fully_constrained
+            + report.under_constrained
+            + report.over_constrained
+            + report.errors
+        )
+    )
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("live", [False, pytest.param(True, marks=requires_engine)])
+async def test_failed_execution_retains_sketches(live: bool) -> None:
+    execute = kcl.execute_code if live else kcl.mock_execute_code
+    source = named_sketches_all_statuses_code
+    baseline = await execute_with_retries(execute, source)
+    with pytest.raises(kcl.KclError, match="missing_value") as raised:
+        await execute_with_retries(execute, source + "\nlate = missing_value\n")
+    error = raised.value
+    original_args = error.args
+    assert not error.is_retryable()
+    report = error.sketch_constraint_report()
+    assert report is not None
+    assert report.is_complete is False
+    assert report.kcl_error is not None
+    assert report.kcl_error.phase == "execution"
+    assert report.kcl_error.text == original_args[0]
+    assert sketch_statuses(report) == sketch_statuses(
+        baseline.sketch_constraint_report()
+    )
+    for name in ("fixedSketch", "looseSketch", "conflictSketch"):
+        assert bytes(error.render_sketch_png(name)) == bytes(
+            baseline.render_sketch_png(name)
+        )
+    assert error.args == original_args
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("fixture", ["statuses.kcl", "imports.kcl"])
+async def test_failed_execution_preserves_instance_selection(
+    fixture: str, tmp_path: Path
+) -> None:
+    fixtures = Path(tests_dir) / "sketch_visualizer" / "duplicate_names"
+    for path in fixtures.glob("*.kcl"):
+        (tmp_path / path.name).write_bytes(path.read_bytes())
+    entrypoint = tmp_path / fixture
+    # A quote inside a single-quoted string must not hide later declarations.
+    source = entrypoint.read_text().replace("\n\n", "\n\nlabel = '\"'\n\n", 1)
+    entrypoint.write_text(source)
+    baseline = await kcl.mock_execute(str(entrypoint))
+    entrypoint.write_text(source + "\nlate = missing_value\n")
+    with pytest.raises(kcl.KclError, match="missing_value") as raised:
+        await kcl.mock_execute(str(entrypoint))
+    error = raised.value
+    report = error.sketch_constraint_report()
+    assert report is not None
+    assert sketch_statuses(report) == sketch_statuses(
+        baseline.sketch_constraint_report()
+    )
+    with pytest.raises(Exception, match="found 2 sketches named `profile`"):
+        error.render_sketch_png("profile")
+    for index in (0, 1):
+        assert bytes(error.render_sketch_png("profile", instance_index=index)) == bytes(
+            baseline.render_sketch_png("profile", instance_index=index)
+        )
+    with pytest.raises(Exception, match="out of range"):
+        error.render_sketch_png("profile", instance_index=2)
+    with pytest.raises(OverflowError):
+        error.render_sketch_png("profile", instance_index=-1)
+
+
+@pytest.mark.asyncio
+async def test_failed_execution_rejects_unfinished_sketches() -> None:
+    source = (
+        mixed_sketches_code
+        + """
+unfinished = sketch(on = XY) {
+  edge = line(start = [0mm, 0mm], end = [10mm, 0mm])
+  late = missing_value
+}
+"""
+    )
+    with pytest.raises(kcl.KclError, match="missing_value") as raised:
+        await kcl.mock_execute_code(source)
+    assert bytes(raised.value.render_sketch_png("s1")).startswith(b"\x89PNG\r\n\x1a\n")
+    with pytest.raises(Exception, match="no completed geometry"):
+        raised.value.render_sketch_png("unfinished")
+    with pytest.raises(Exception, match="no sketch named"):
+        raised.value.render_sketch_png("absent")
+
+
+@pytest.mark.asyncio
+async def test_parse_error_has_no_recoverable_sketches() -> None:
+    with pytest.raises(kcl.KclError) as raised:
+        await kcl.mock_execute_code(mixed_sketches_code + "\nincomplete = (")
+    assert raised.value.sketch_constraint_report() is None
+    with pytest.raises(Exception, match="No execution output"):
+        raised.value.render_sketch_png("s1")
+    assert kcl.KclError("manually constructed").sketch_constraint_report() is None
+
+
+@pytest.mark.asyncio
+async def test_failed_execution_keeps_original_import_assets(tmp_path: Path) -> None:
+    assets = tmp_path / "assets"
+    assets.mkdir()
+    gltf = json.loads((Path(tests_dir) / "inputs" / "cube.gltf").read_text())
+    buffer = gltf["buffers"][0]
+    (assets / "cube.bin").write_bytes(base64.b64decode(buffer["uri"].split(",", 1)[1]))
+    buffer["uri"] = "cube.bin"
+    (assets / "cube.gltf").write_text(json.dumps(gltf))
+    source = 'import "assets/cube.gltf" as cube\n' + mixed_sketches_code
+    entrypoint = tmp_path / "main.kcl"
+    entrypoint.write_text(source)
+    baseline = await kcl.mock_execute(str(entrypoint))
+    entrypoint.write_text(source + "\nlate = missing_value\n")
+    before = {p: p.read_bytes() for p in tmp_path.rglob("*") if p.is_file()}
+    with pytest.raises(kcl.KclError, match="missing_value") as raised:
+        await kcl.mock_execute(str(entrypoint))
+    assert all(p.read_bytes() == content for p, content in before.items())
+    # Rendering must use retained objects, not reread the project or its assets.
+    entrypoint.unlink()
+    (assets / "cube.bin").unlink()
+    assert bytes(raised.value.render_sketch_png("s1")) == bytes(
+        baseline.render_sketch_png("s1")
+    )
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_engine_error_retains_completed_sketch() -> None:
+    source = Path(engine_error_file).read_text()
+    baseline = await execute_with_retries(
+        kcl.execute_code, source.split("fillet001 =")[0]
+    )
+    with pytest.raises(kcl.KclError, match="engine") as raised:
+        await execute_with_retries(kcl.execute_code, source)
+    assert bytes(raised.value.render_sketch_png("sketch001")) == bytes(
+        baseline.render_sketch_png("sketch001")
+    )
+    # Recovery does not retain the failed connection or poison a new execution.
+    subsequent = await execute_with_retries(kcl.execute_code, mixed_sketches_code)
+    assert bytes(subsequent.render_sketch_png("s1")).startswith(b"\x89PNG\r\n\x1a\n")
 
 
 @pytest.mark.asyncio

@@ -6,6 +6,36 @@ Python bindings to the rust kcl-lib crate.
 
 The [tests.py](tests/tests.py) file contains examples of how to use the library.
 
+### Inspecting sketches after an execution error
+
+Execution still raises `KclError` when KCL fails. If a sketch completed before
+that failure, the error retains its geometry and constraint colours:
+
+```python
+try:
+    outcome = await kcl.execute("main.kcl")
+except kcl.KclError as error:
+    report = error.sketch_constraint_report()
+    # Keep reporting the original failure; a PNG is not project validation.
+    print(error)
+    if report is not None:
+        png = bytes(error.render_sketch_png("profile"))
+```
+
+For duplicate names, pass `instance_index` from **this error's** constraint
+report. The report has `is_complete=False` and retains the original KCL error.
+Rendering uses the saved scene after the engine connection closes. It neither
+re-executes nor changes/copies project files, including imported assets.
+
+Parse errors have no execution output (`sketch_constraint_report()` returns
+`None`). Missing, unfinished, and empty sketches cannot be recovered. A sketch
+whose constraints conflict can still render with its existing diagnostic colours;
+the PNG does not establish that those constraints are satisfied.
+
+This is recovery, not execution optimization: later operations still run until
+the failure. Rendering is synchronous, like `ExecOutcome.render_sketch_png`;
+this API does not add a timeout or promise preemptive cancellation of rendering.
+
 ## Development
 
 We use [maturin](https://github.com/PyO3/maturin) for this project.
