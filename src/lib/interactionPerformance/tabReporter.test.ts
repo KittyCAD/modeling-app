@@ -189,6 +189,7 @@ describe('interaction performance TAB publication', () => {
       '/api/results',
       '/api/results',
     ])
+    // Playwright can emit a separate spec entry for each repetition.
     const specs = result.report.suites.flatMap((suite) => suite.specs)
     const failedResults = specs
       .filter((spec) => spec.title === 'first scenario')
@@ -199,8 +200,12 @@ describe('interaction performance TAB publication', () => {
     ])
     expect(
       specs
-        .find((spec) => spec.title === 'last scored scenario')
-        ?.tests.flatMap((test) => test.results.map((attempt) => attempt.status))
+        .filter((spec) => spec.title === 'last scored scenario')
+        .flatMap((spec) =>
+          spec.tests.flatMap((test) =>
+            test.results.map((attempt) => attempt.status)
+          )
+        )
     ).toEqual(['passed', 'passed'])
     expect(result.requests[0]?.apiKey).toBe('local-test-key')
     expect(result.requests[0]?.body).toMatchObject({
