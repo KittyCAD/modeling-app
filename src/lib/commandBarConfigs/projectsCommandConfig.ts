@@ -18,11 +18,11 @@ import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { GLOBAL_COMMAND_SCOPES } from '@src/registry/contracts/commands'
 import type {
   HomeProjectActionsService,
   HomeProjectEntry,
 } from '@src/registry/contracts/homeProjects'
-import { GLOBAL_COMMAND_SCOPES } from '@src/registry/contracts/commands'
 import type {
   ProjectLibraryCreateProjectInput,
   ProjectLibraryOperation,
@@ -67,6 +67,7 @@ function defaultEnableProjectDirectoryCommands() {
 
 export function createProjectCommands({
   systemIOActor,
+  openProject,
   enableProjectDirectoryCommands = defaultEnableProjectDirectoryCommands(),
   getCurrentProjectDirectoryName,
   getCurrentProjectLibraryId,
@@ -75,6 +76,7 @@ export function createProjectCommands({
   getHomeProjectEntries,
 }: {
   systemIOActor: ActorRefFrom<typeof systemIOMachine>
+  openProject?: (target: string) => Promise<unknown>
   enableProjectDirectoryCommands?: boolean
   getCurrentProjectDirectoryName?: () => string | undefined
   getCurrentProjectLibraryId?: () => string | undefined
@@ -195,6 +197,11 @@ export function createProjectCommands({
   }
 
   const navigateToProjectFile = (filePath: string) => {
+    if (openProject) {
+      void openProject(filePath)
+      return
+    }
+
     if (typeof window === 'undefined') {
       return
     }

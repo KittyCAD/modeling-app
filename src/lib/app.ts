@@ -595,6 +595,8 @@ export class App implements AppSubsystems {
           ),
           ...createProjectCommands({
             systemIOActor: this.systemIOActor,
+            openProject: (target) =>
+              this.registry.get(appNavigationService).openProject({ target }),
             enableProjectDirectoryCommands,
             getCurrentProjectDirectoryName: () =>
               this.settings.actor.getSnapshot().context.currentProject?.name,

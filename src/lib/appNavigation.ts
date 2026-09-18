@@ -14,6 +14,11 @@ export interface AppNavigationDependencies {
     resolution: ResolvedProjectOpen,
     assertCurrent: () => void
   ) => Promise<Extract<OpenProjectOutcome, { kind: 'opened' }>>
+  projectOpened: (
+    outcome: Extract<OpenProjectOutcome, { kind: 'opened' }>,
+    request: OpenProjectRequest
+  ) => void
+  showHome: (openProject: AppNavigationService['openProject']) => Promise<void>
 }
 
 /**
@@ -38,7 +43,7 @@ export function createAppNavigationService(
     }
   }
 
-  return {
+  const service: AppNavigationService = {
     openProject: async (request) => {
       const assertCurrent = beginProjectOpen(request.signal)
       const resolution = await dependencies.resolveProjectOpen(
@@ -51,10 +56,18 @@ export function createAppNavigationService(
         return resolution
       }
 
-      return dependencies.openResolvedProject(resolution, assertCurrent)
+      const outcome = await dependencies.openResolvedProject(
+        resolution,
+        assertCurrent
+      )
+      dependencies.projectOpened(outcome, request)
+      return outcome
     },
+    showHome: () => dependencies.showHome(service.openProject),
     supersedeProjectOpen: (signal) => {
       beginProjectOpen(signal)()
     },
   }
+
+  return service
 }

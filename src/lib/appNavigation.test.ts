@@ -36,6 +36,8 @@ function navigationHarness(overrides: Partial<AppNavigationDependencies> = {}) {
         file: { ...resolution.file, children: [] },
       },
     })),
+    projectOpened: vi.fn(),
+    showHome: vi.fn(async () => undefined),
     ...overrides,
   }
 
@@ -64,18 +66,35 @@ describe('appNavigation', () => {
       navigation.openProject({ target: '/projects/bracket' })
     ).resolves.toEqual({ kind: 'redirect', to: '/file/canonical' })
     expect(dependencies.openResolvedProject).not.toHaveBeenCalled()
+    expect(dependencies.projectOpened).not.toHaveBeenCalled()
   })
 
-  test('opens a resolved project through the lifecycle operation', async () => {
+  test('opens a project before projecting its location', async () => {
     const { dependencies, navigation } = navigationHarness()
+    const request = { target: '/projects/bracket' }
 
-    await expect(
-      navigation.openProject({ target: '/projects/bracket' })
-    ).resolves.toMatchObject({ kind: 'opened' })
+    await expect(navigation.openProject(request)).resolves.toMatchObject({
+      kind: 'opened',
+    })
     expect(dependencies.openResolvedProject).toHaveBeenCalledWith(
       resolvedProject,
       expect.any(Function)
     )
+    expect(dependencies.projectOpened).toHaveBeenCalledWith(
+      expect.objectContaining({ kind: 'opened' }),
+      request
+    )
+    expect(dependencies.openResolvedProject).toHaveBeenCalledBefore(
+      vi.mocked(dependencies.projectOpened)
+    )
+  })
+
+  test('delegates showing Home with the same project-open command', async () => {
+    const { dependencies, navigation } = navigationHarness()
+
+    await navigation.showHome()
+
+    expect(dependencies.showHome).toHaveBeenCalledWith(navigation.openProject)
   })
 
   test('a newer intent supersedes an in-flight project open', async () => {

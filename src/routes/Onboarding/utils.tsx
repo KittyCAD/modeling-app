@@ -1,11 +1,3 @@
-import { useCallback, useEffect, useState, useSyncExternalStore } from 'react'
-import {
-  type NavigateFunction,
-  type useLocation,
-  useNavigate,
-} from 'react-router-dom'
-import { type ActorRefFrom, type SnapshotFrom, waitFor } from 'xstate'
-
 import onboardingWorkflowAiHeadset from '@src/assets/onboarding-workflow-ai-headset.png'
 import onboardingWorkflowKitt from '@src/assets/onboarding-workflow-kitt.png'
 import { ActionButton } from '@src/components/ActionButton'
@@ -26,16 +18,16 @@ import {
   setOpenPanes,
 } from '@src/lib/layout'
 import {
+  isOnboardingPath,
   type OnboardingPath,
   type OnboardingStatus,
-  isOnboardingPath,
   onboardingPaths,
   onboardingStartPath,
 } from '@src/lib/onboardingPaths'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import {
-  PATHS,
   joinRouterPaths,
+  PATHS,
   safeEncodeForRouterPaths,
 } from '@src/lib/paths'
 import {
@@ -46,7 +38,15 @@ import { waitForToastAnimationEnd } from '@src/lib/toast'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import { appNavigationService } from '@src/registry/contracts/appNavigation'
+import { useCallback, useEffect, useState, useSyncExternalStore } from 'react'
 import toast from 'react-hot-toast'
+import {
+  type NavigateFunction,
+  type useLocation,
+  useNavigate,
+} from 'react-router-dom'
+import { type ActorRefFrom, type SnapshotFrom, waitFor } from 'xstate'
 
 // Get the 1-indexed step number of the current onboarding step
 function getStepNumber(
@@ -135,8 +135,8 @@ export function useNextClick(newStatus: OnboardingStatus) {
 }
 
 export function useDismiss() {
-  const { settings } = useApp()
-  const navigate = useNavigate()
+  const app = useApp()
+  const { settings } = app
 
   const settingsCallback = useCallback(
     (
@@ -153,7 +153,7 @@ export function useDismiss() {
           return waitFor(settings.actor, (state) => state.matches('idle'))
         })
         .then(() => {
-          void navigate(PATHS.HOME, { replace: true })
+          void app.registry.get(appNavigationService).showHome()
           toast.success(
             'Click the question mark in the lower-right corner if you ever want to redo the tutorial!',
             {
@@ -163,7 +163,7 @@ export function useDismiss() {
         })
         .catch(reportRejection)
     },
-    [settings, navigate]
+    [app, settings]
   )
 
   return settingsCallback
@@ -317,7 +317,7 @@ export function OnboardingButtons({
 }
 
 export interface OnboardingUtilDeps {
-  app: Pick<App, 'getCreateProjectLibraryTargets'>
+  app: Pick<App, 'getCreateProjectLibraryTargets' | 'registry'>
   onboardingStatus: OnboardingStatus
   navigate: NavigateFunction
 }
@@ -388,6 +388,9 @@ async function createOnboardingProject(
     return Promise.reject(new Error('Unable to create the onboarding project.'))
   }
 
+  await deps.app.registry
+    .get(appNavigationService)
+    .openProject({ target: project.default_file })
   await deps.navigate(
     joinRouterPaths(
       PATHS.FILE,

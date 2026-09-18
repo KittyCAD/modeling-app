@@ -1,16 +1,15 @@
 /**
  * Route initialization, as plain functions.
  *
- * These used to be the bodies of the React Router loaders in `routeLoaders.ts`.
+ * These used to be the bodies of the React Router route loaders.
  * They were never really data loaders: nothing calls `useLoaderData`, so their
  * return values were computed and discarded, and the actual work was mutating
  * the `App` singleton and the XState actors. The only load-bearing thing they
  * got from React Router was `redirect()`.
  *
  * So they say what they want instead of performing it — a `redirect` outcome
- * rather than a `Response` — and the adapters in `routeLoaders.ts` translate.
- * That leaves the URL-to-state work callable without a router, which is what
- * the navigation contract needs.
+ * rather than a `Response`. That leaves the URL-to-state work callable without
+ * React or React Router, which is what the navigation contract needs.
  */
 
 import { projectSkeletonCreate } from '@src/lang/project'

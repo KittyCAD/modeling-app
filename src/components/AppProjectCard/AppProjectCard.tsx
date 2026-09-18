@@ -12,6 +12,7 @@ import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import { DeleteConfirmationDialog } from '@src/components/DeleteProjectDialog'
 import Tooltip from '@src/components/Tooltip'
 import type { ProjectStatus } from '@src/hooks/useProjectStatus'
+import { useApp } from '@src/lib/boot'
 import {
   getHomeProjectDeleteWarningMessage,
   getHomeProjectDisplayName,
@@ -20,6 +21,7 @@ import {
 import { PATHS } from '@src/lib/paths'
 import { reportRejection, trap } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
+import { appNavigationService } from '@src/registry/contracts/appNavigation'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import type {
   HomeProjectActionsService,
@@ -29,7 +31,7 @@ import type {
 import type { FormEvent, HTMLAttributes } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 type AppProjectCardProps = HTMLAttributes<HTMLLIElement> & {
   project: HomeProjectEntry
@@ -179,7 +181,7 @@ function AppProjectCard({
     }
   }, [isInView, remoteProjectId, hasLocalThumbnail, projectActions])
 
-  const navigate = useNavigate()
+  const app = useApp()
   useHotkeys('esc', () => setIsEditing(false))
   const [isEditing, setIsEditing] = useState(false)
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
@@ -628,9 +630,9 @@ function AppProjectCard({
           .open(project)
           .then((result) => {
             if (result?.defaultFile) {
-              void navigate(
-                `${PATHS.FILE}/${encodeURIComponent(result.defaultFile)}`
-              )
+              void app.registry
+                .get(appNavigationService)
+                .openProject({ target: result.defaultFile })
             }
           })
           .catch(reportRejection)
