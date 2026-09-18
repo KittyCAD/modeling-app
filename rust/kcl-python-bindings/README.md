@@ -15,22 +15,21 @@ that failure, the error retains its geometry and constraint colours:
 try:
     outcome = await kcl.execute("main.kcl")
 except kcl.KclError as error:
-    report = error.sketch_constraint_report()
     # Keep reporting the original failure; a PNG is not project validation.
     print(error)
-    if report is not None:
-        png = bytes(error.render_sketch_png("profile"))
+    png = bytes(error.render_sketch_png("profile"))
 ```
 
-For duplicate names, pass `instance_index` from **this error's** constraint
-report. The report has `is_complete=False` and retains the original KCL error.
+Use the existing `get_sketch_constraint_status` API for constraint reports.
+For duplicate names, pass `instance_index` from a fresh constraint report for
+the same entrypoint and source. Refresh indices after editing the project.
 Rendering uses the saved scene after the engine connection closes. It neither
 re-executes nor changes/copies project files, including imported assets.
 
-Parse errors have no execution output (`sketch_constraint_report()` returns
-`None`). Missing, unfinished, and empty sketches cannot be recovered. A sketch
-whose constraints conflict can still render with its existing diagnostic colours;
-the PNG does not establish that those constraints are satisfied.
+Parse errors have no execution output. Missing, unfinished, and empty sketches
+cannot be recovered; `render_sketch_png` raises an exception in these cases.
+A sketch whose constraints conflict can still render with its existing diagnostic
+colours; the PNG does not establish that those constraints are satisfied.
 
 This is recovery, not execution optimization: later operations still run until
 the failure. Rendering is synchronous, like `ExecOutcome.render_sketch_png`;

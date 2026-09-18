@@ -282,27 +282,6 @@ async def test_duplicate_sketch_instances() -> None:
         outcome.render_sketch_png("profile", instance_index=-1)
 
 
-def sketch_statuses(
-    report: kcl.SketchConstraintReport,
-) -> list[tuple[str, int, str, int, int, int]]:
-    return sorted(
-        (
-            status.name,
-            status.instance_index,
-            str(status.status),
-            status.free_count,
-            status.conflict_count,
-            status.total_count,
-        )
-        for status in (
-            report.fully_constrained
-            + report.under_constrained
-            + report.over_constrained
-            + report.errors
-        )
-    )
-
-
 @pytest.mark.asyncio
 @pytest.mark.parametrize("live", [False, pytest.param(True, marks=requires_engine)])
 async def test_failed_execution_retains_sketches(live: bool) -> None:
@@ -314,15 +293,6 @@ async def test_failed_execution_retains_sketches(live: bool) -> None:
     error = raised.value
     original_args = error.args
     assert not error.is_retryable()
-    report = error.sketch_constraint_report()
-    assert report is not None
-    assert report.is_complete is False
-    assert report.kcl_error is not None
-    assert report.kcl_error.phase == "execution"
-    assert report.kcl_error.text == original_args[0]
-    assert sketch_statuses(report) == sketch_statuses(
-        baseline.sketch_constraint_report()
-    )
     for name in ("fixedSketch", "looseSketch", "conflictSketch"):
         assert bytes(error.render_sketch_png(name)) == bytes(
             baseline.render_sketch_png(name)
@@ -347,11 +317,6 @@ async def test_failed_execution_preserves_instance_selection(
     with pytest.raises(kcl.KclError, match="missing_value") as raised:
         await kcl.mock_execute(str(entrypoint))
     error = raised.value
-    report = error.sketch_constraint_report()
-    assert report is not None
-    assert sketch_statuses(report) == sketch_statuses(
-        baseline.sketch_constraint_report()
-    )
     with pytest.raises(Exception, match="found 2 sketches named `profile`"):
         error.render_sketch_png("profile")
     for index in (0, 1):
@@ -388,10 +353,10 @@ unfinished = sketch(on = XY) {
 async def test_parse_error_has_no_recoverable_sketches() -> None:
     with pytest.raises(kcl.KclError) as raised:
         await kcl.mock_execute_code(mixed_sketches_code + "\nincomplete = (")
-    assert raised.value.sketch_constraint_report() is None
     with pytest.raises(Exception, match="No execution output"):
         raised.value.render_sketch_png("s1")
-    assert kcl.KclError("manually constructed").sketch_constraint_report() is None
+    with pytest.raises(Exception, match="No execution output"):
+        kcl.KclError("manually constructed").render_sketch_png("s1")
 
 
 @pytest.mark.asyncio
