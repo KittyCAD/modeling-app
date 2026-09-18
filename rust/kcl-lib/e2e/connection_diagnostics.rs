@@ -135,7 +135,12 @@ async fn connection_diagnostics_fixture() {
             )
             .await
             .unwrap();
-            assert!(result.unwrap_err().to_string().contains("websocket closed early"));
+            assert!(
+                result
+                    .unwrap_err()
+                    .to_string()
+                    .contains("Connection reset without closing handshake")
+            );
             let result = manager
                 .transport
                 .inner_fire_modeling_cmd(
@@ -145,7 +150,12 @@ async fn connection_diagnostics_fixture() {
                     HashMap::new(),
                 )
                 .await;
-            assert!(result.is_err());
+            assert!(
+                result
+                    .unwrap_err()
+                    .to_string()
+                    .contains("Connection reset without closing handshake")
+            );
         }
         assert!(manager.get_session_data().await.is_none());
         server.await.unwrap();
