@@ -1,5 +1,7 @@
+use std::fmt::Write;
 use std::hint::black_box;
 
+use criterion::BenchmarkId;
 use criterion::Criterion;
 use criterion::criterion_group;
 use criterion::criterion_main;
@@ -22,21 +24,20 @@ pub fn bench_parse(c: &mut Criterion) {
     }
 }
 
-/// This benchmarks the same sort of code that the ZDS app uses when users
-/// drag a point/line around in sketch mode. This benchmark should correlate with
-/// user-perceived latency in sketch mode.
+/// Measure how mock execution scales with the number of legacy line() calls.
+/// Generate and parse each program outside the timed loop to isolate execution.
 pub fn bench_mock(c: &mut Criterion) {
-    #[expect(clippy::single_element_loop)]
-    for (name, file) in [("mike_stress_test", MIKE_STRESS_TEST_PROGRAM)] {
-        let program = kcl_lib::Program::parse_no_errs(black_box(file)).unwrap();
-        c.bench_function(&format!("no_engine_mock_execute_{name}"), move |b| {
+    let mut group = c.benchmark_group("no_engine_mock_execute_mike_stress_test");
+    for n in [1000, 2000, 3000, 4000, 5000, 6000] {
+        let program = kcl_lib::Program::parse_no_errs(&mike_stress_test_program(n)).unwrap();
+        group.bench_with_input(BenchmarkId::from_parameter(n), &program, |b, program| {
             let rt = tokio::runtime::Runtime::new().unwrap();
             let ctx = rt.block_on(async { kcl_lib::ExecutorContext::new_mock(None).await });
             b.iter(|| {
                 if let Err(err) = rt.block_on(async {
                     // Subsequent runs set use_previous_memory to true, because that's what the app
                     // uses in production.
-                    ctx.run_mock(black_box(&program), &Default::default()).await?;
+                    ctx.run_mock(black_box(program), &Default::default()).await?;
                     ctx.close().await;
                     Ok::<(), anyhow::Error>(())
                 }) {
@@ -45,6 +46,26 @@ pub fn bench_mock(c: &mut Criterion) {
             })
         });
     }
+    group.finish();
+}
+
+fn mike_stress_test_program(n: usize) -> String {
+    // Intentionally exercise legacy sketch cloning, as in the original stress test.
+    let mut program =
+        String::from("@settings(kclVersion = \"1.0\")\npart001 = startSketchOn(XY)\n  |> startProfile(at = [1, 0])\n");
+    // Trace n edges of a regular polygon; close() supplies the final edge.
+    for i in 1..=n {
+        let angle = std::f64::consts::TAU * i as f64 / (n + 1) as f64;
+        writeln!(
+            program,
+            "  |> line(endAbsolute = [{}, {}])",
+            libm::cos(angle),
+            libm::sin(angle)
+        )
+        .unwrap();
+    }
+    program.push_str("  |> close(%)\n  |> extrude(length = 5)\n");
+    program
 }
 
 /// This benchmarks the same sort of code that the ZDS app uses when users
