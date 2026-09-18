@@ -12,8 +12,10 @@ description: Operations executed ball-bearing.kcl
         "value": 1.625,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -41,8 +43,10 @@ description: Operations executed ball-bearing.kcl
         "value": 0.25,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -70,8 +74,10 @@ description: Operations executed ball-bearing.kcl
         "value": 0.75,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -99,8 +105,10 @@ description: Operations executed ball-bearing.kcl
         "value": 0.313,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -128,8 +136,10 @@ description: Operations executed ball-bearing.kcl
         "value": 0.1,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -157,8 +167,10 @@ description: Operations executed ball-bearing.kcl
         "value": 0.3,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -186,8 +198,10 @@ description: Operations executed ball-bearing.kcl
         "value": 10.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -215,8 +229,10 @@ description: Operations executed ball-bearing.kcl
         "value": 0.125,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -244,8 +260,10 @@ description: Operations executed ball-bearing.kcl
         "value": 0.03125,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -273,8 +291,10 @@ description: Operations executed ball-bearing.kcl
         "value": 0.0625,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -311,8 +331,10 @@ description: Operations executed ball-bearing.kcl
             "value": -0.1565,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -372,18 +394,22 @@ description: Operations executed ball-bearing.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -398,18 +424,22 @@ description: Operations executed ball-bearing.kcl
                 "type": "SketchVar",
                 "value": 0.48,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -510,18 +540,22 @@ description: Operations executed ball-bearing.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -570,18 +604,22 @@ description: Operations executed ball-bearing.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -596,18 +634,22 @@ description: Operations executed ball-bearing.kcl
                 "type": "SketchVar",
                 "value": 0.3,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -708,18 +750,22 @@ description: Operations executed ball-bearing.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -811,8 +857,10 @@ description: Operations executed ball-bearing.kcl
             "value": 0.313,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -869,18 +917,22 @@ description: Operations executed ball-bearing.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -895,18 +947,22 @@ description: Operations executed ball-bearing.kcl
                 "type": "SketchVar",
                 "value": -0.34,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -921,18 +977,22 @@ description: Operations executed ball-bearing.kcl
                 "type": "SketchVar",
                 "value": 0.23,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -986,18 +1046,22 @@ description: Operations executed ball-bearing.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -1046,18 +1110,22 @@ description: Operations executed ball-bearing.kcl
                 "type": "SketchVar",
                 "value": 0.12,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.01,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1072,18 +1140,22 @@ description: Operations executed ball-bearing.kcl
                 "type": "SketchVar",
                 "value": -0.27,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1394,9 +1466,11 @@ description: Operations executed ball-bearing.kcl
             "type": "Number",
             "value": 360.0,
             "ty": {
-              "degrees": null,
               "type": "Known",
-              "type": "Angle"
+              "value": {
+                "type": "Angle",
+                "value": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1413,8 +1487,10 @@ description: Operations executed ball-bearing.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -1422,8 +1498,10 @@ description: Operations executed ball-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -1436,8 +1514,10 @@ description: Operations executed ball-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -1445,8 +1525,10 @@ description: Operations executed ball-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -1517,8 +1599,10 @@ description: Operations executed ball-bearing.kcl
             "value": 0.6,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1565,8 +1649,10 @@ description: Operations executed ball-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -1574,8 +1660,10 @@ description: Operations executed ball-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -1583,8 +1671,10 @@ description: Operations executed ball-bearing.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -1597,8 +1687,10 @@ description: Operations executed ball-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -1606,8 +1698,10 @@ description: Operations executed ball-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -1615,8 +1709,10 @@ description: Operations executed ball-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -1634,8 +1730,10 @@ description: Operations executed ball-bearing.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -1643,8 +1741,10 @@ description: Operations executed ball-bearing.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -1652,8 +1752,10 @@ description: Operations executed ball-bearing.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -1666,7 +1768,9 @@ description: Operations executed ball-bearing.kcl
             "value": 10.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -1723,18 +1827,22 @@ description: Operations executed ball-bearing.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1749,18 +1857,22 @@ description: Operations executed ball-bearing.kcl
                 "type": "SketchVar",
                 "value": -0.06,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.11,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1775,18 +1887,22 @@ description: Operations executed ball-bearing.kcl
                 "type": "SketchVar",
                 "value": 0.06,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.11,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1840,18 +1956,22 @@ description: Operations executed ball-bearing.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -1944,18 +2064,22 @@ description: Operations executed ball-bearing.kcl
                 "type": "SketchVar",
                 "value": -0.03,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.09,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1970,18 +2094,22 @@ description: Operations executed ball-bearing.kcl
                 "type": "SketchVar",
                 "value": -0.01,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.03,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2075,18 +2203,22 @@ description: Operations executed ball-bearing.kcl
                 "type": "SketchVar",
                 "value": 0.06,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.14,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2101,18 +2233,22 @@ description: Operations executed ball-bearing.kcl
                 "type": "SketchVar",
                 "value": -0.04,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.09,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2206,18 +2342,22 @@ description: Operations executed ball-bearing.kcl
                 "type": "SketchVar",
                 "value": 0.08,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.09,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2232,18 +2372,22 @@ description: Operations executed ball-bearing.kcl
                 "type": "SketchVar",
                 "value": 0.06,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.15,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2723,8 +2867,10 @@ description: Operations executed ball-bearing.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2732,8 +2878,10 @@ description: Operations executed ball-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -2746,8 +2894,10 @@ description: Operations executed ball-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2755,8 +2905,10 @@ description: Operations executed ball-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -2827,8 +2979,10 @@ description: Operations executed ball-bearing.kcl
             "value": 0.6,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2875,8 +3029,10 @@ description: Operations executed ball-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2884,8 +3040,10 @@ description: Operations executed ball-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2893,8 +3051,10 @@ description: Operations executed ball-bearing.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -2907,8 +3067,10 @@ description: Operations executed ball-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2916,8 +3078,10 @@ description: Operations executed ball-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2925,8 +3089,10 @@ description: Operations executed ball-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -2944,8 +3110,10 @@ description: Operations executed ball-bearing.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -2953,8 +3121,10 @@ description: Operations executed ball-bearing.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -2962,8 +3132,10 @@ description: Operations executed ball-bearing.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -2976,7 +3148,9 @@ description: Operations executed ball-bearing.kcl
             "value": 10.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -3033,18 +3207,22 @@ description: Operations executed ball-bearing.kcl
                 "type": "SketchVar",
                 "value": 0.6,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -3059,18 +3237,22 @@ description: Operations executed ball-bearing.kcl
                 "type": "SketchVar",
                 "value": 0.63,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -3127,18 +3309,22 @@ description: Operations executed ball-bearing.kcl
                 "type": "SketchVar",
                 "value": 0.6,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -3153,18 +3339,22 @@ description: Operations executed ball-bearing.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -3218,18 +3408,22 @@ description: Operations executed ball-bearing.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -3412,18 +3606,22 @@ description: Operations executed ball-bearing.kcl
                 "type": "SketchVar",
                 "value": 0.63,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -3438,18 +3636,22 @@ description: Operations executed ball-bearing.kcl
                 "type": "SketchVar",
                 "value": 0.6,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -3712,9 +3914,11 @@ description: Operations executed ball-bearing.kcl
             "type": "Number",
             "value": 14.0,
             "ty": {
-              "degrees": null,
               "type": "Known",
-              "type": "Angle"
+              "value": {
+                "type": "Angle",
+                "value": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3731,8 +3935,10 @@ description: Operations executed ball-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -3740,8 +3946,10 @@ description: Operations executed ball-bearing.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -3754,8 +3962,10 @@ description: Operations executed ball-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -3763,8 +3973,10 @@ description: Operations executed ball-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -3809,8 +4021,10 @@ description: Operations executed ball-bearing.kcl
             "value": 11.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3827,8 +4041,10 @@ description: Operations executed ball-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -3836,8 +4052,10 @@ description: Operations executed ball-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -3845,8 +4063,10 @@ description: Operations executed ball-bearing.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -3859,8 +4079,10 @@ description: Operations executed ball-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -3868,8 +4090,10 @@ description: Operations executed ball-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -3877,8 +4101,10 @@ description: Operations executed ball-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -3936,8 +4162,10 @@ description: Operations executed ball-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -3945,8 +4173,10 @@ description: Operations executed ball-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -3954,8 +4184,10 @@ description: Operations executed ball-bearing.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -3968,8 +4200,10 @@ description: Operations executed ball-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -3977,8 +4211,10 @@ description: Operations executed ball-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -3986,8 +4222,10 @@ description: Operations executed ball-bearing.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -4005,8 +4243,10 @@ description: Operations executed ball-bearing.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -4014,8 +4254,10 @@ description: Operations executed ball-bearing.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -4023,8 +4265,10 @@ description: Operations executed ball-bearing.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -4037,7 +4281,9 @@ description: Operations executed ball-bearing.kcl
             "value": 10.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -4076,8 +4322,10 @@ description: Operations executed ball-bearing.kcl
             "value": -0.1565,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -4137,18 +4385,22 @@ description: Operations executed ball-bearing.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4163,18 +4415,22 @@ description: Operations executed ball-bearing.kcl
                 "type": "SketchVar",
                 "value": 0.81,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4228,18 +4484,22 @@ description: Operations executed ball-bearing.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -4335,18 +4595,22 @@ description: Operations executed ball-bearing.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4361,18 +4625,22 @@ description: Operations executed ball-bearing.kcl
                 "type": "SketchVar",
                 "value": 0.71,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4426,18 +4694,22 @@ description: Operations executed ball-bearing.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -4576,8 +4848,10 @@ description: Operations executed ball-bearing.kcl
             "value": 0.313,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -4636,7 +4910,9 @@ description: Operations executed ball-bearing.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -4664,7 +4940,9 @@ description: Operations executed ball-bearing.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",

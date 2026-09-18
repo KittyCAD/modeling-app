@@ -53,16 +53,20 @@ description: Variables in memory after executing kcl_v2.kcl
                         "n": 0.0,
                         "ty": {
                           "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                          "value": {
+                            "len": "mm",
+                            "angle": "degrees"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
                           "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                          "value": {
+                            "len": "mm",
+                            "angle": "degrees"
+                          }
                         }
                       }
                     ],
@@ -71,16 +75,20 @@ description: Variables in memory after executing kcl_v2.kcl
                         "n": 4.0,
                         "ty": {
                           "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                          "value": {
+                            "len": "mm",
+                            "angle": "degrees"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
                           "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                          "value": {
+                            "len": "mm",
+                            "angle": "degrees"
+                          }
                         }
                       }
                     ],
@@ -173,16 +181,20 @@ description: Variables in memory after executing kcl_v2.kcl
                         "n": 4.0,
                         "ty": {
                           "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                          "value": {
+                            "len": "mm",
+                            "angle": "degrees"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
                           "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                          "value": {
+                            "len": "mm",
+                            "angle": "degrees"
+                          }
                         }
                       }
                     ],
@@ -191,16 +203,20 @@ description: Variables in memory after executing kcl_v2.kcl
                         "n": 4.0,
                         "ty": {
                           "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                          "value": {
+                            "len": "mm",
+                            "angle": "degrees"
+                          }
                         }
                       },
                       {
                         "n": 3.0,
                         "ty": {
                           "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                          "value": {
+                            "len": "mm",
+                            "angle": "degrees"
+                          }
                         }
                       }
                     ],
@@ -293,16 +309,20 @@ description: Variables in memory after executing kcl_v2.kcl
                         "n": 4.0,
                         "ty": {
                           "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                          "value": {
+                            "len": "mm",
+                            "angle": "degrees"
+                          }
                         }
                       },
                       {
                         "n": 3.0,
                         "ty": {
                           "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                          "value": {
+                            "len": "mm",
+                            "angle": "degrees"
+                          }
                         }
                       }
                     ],
@@ -311,16 +331,20 @@ description: Variables in memory after executing kcl_v2.kcl
                         "n": 0.0,
                         "ty": {
                           "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                          "value": {
+                            "len": "mm",
+                            "angle": "degrees"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
                           "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                          "value": {
+                            "len": "mm",
+                            "angle": "degrees"
+                          }
                         }
                       }
                     ],

@@ -17,7 +17,10 @@ import {
   projectLibrariesFromSettings,
 } from '@src/lib/projectLibraries'
 import { invalidateProjectLibraryRealizations } from '@src/lib/projectLibraries/registry/invalidation'
-import { zookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
+import {
+  makeZookeeperConversationStore,
+  type ZookeeperConversationStore,
+} from '@src/lib/zookeeper/zookeeperConversationStore'
 import {
   type CloudProjectRelationship,
   type CloudProjectRelationshipRealization,
@@ -25,6 +28,7 @@ import {
   cloudSyncService,
 } from '@src/registry/contracts/cloudSync'
 import { commandSystemService } from '@src/registry/contracts/commands'
+import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import {
   type HomeProjectActionsService,
   type HomeProjectDuplicateRealization,
@@ -321,6 +325,13 @@ export function deriveHomeProjectEntryContributions({
 const homeProjectActions = defineRegistryItemFactory((ctx) => {
   const settings = ctx.services.signal(settingsService)
   const cloudSync = ctx.services.signal(cloudSyncService)
+  let zookeeperConversationStore: ZookeeperConversationStore | undefined
+  const getZookeeperConversationStore = () => {
+    zookeeperConversationStore ??= makeZookeeperConversationStore(
+      ctx.services.get(fileOperationsService)
+    )
+    return zookeeperConversationStore
+  }
 
   const getWasmPromise = () =>
     ctx.valueSpecs.get(wasmPromiseValueSpec) ??
@@ -527,6 +538,7 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
       }
 
       const projectInfo = await getProjectInfo(
+        ctx.services.get(fileOperationsService),
         syncedProject.projectPath,
         await wasmInstancePromise
       )
@@ -662,12 +674,13 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         ...(project.duplicateProjectIdPaths ?? []),
       ].filter((projectPath): projectPath is string => Boolean(projectPath))
       const { sharedProjectId } = await separateProjectsSharingProjectId({
+        fileOperations: ctx.services.get(fileOperationsService),
         projectPaths,
         keepProjectPath,
       })
       try {
         if (!keepProjectPath) {
-          await zookeeperConversationStore.deleteProjectConversationId(
+          await getZookeeperConversationStore().deleteProjectConversationId(
             sharedProjectId
           )
         }

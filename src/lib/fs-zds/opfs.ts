@@ -500,7 +500,7 @@ const rename = async (
     await rm(sourcePath)
   } else {
     await mkdir(targetPath)
-    await cp(sourcePath, targetPath)
+    await cp(sourcePath, targetPath, { recursive: true })
     await rm(sourcePath, { recursive: true })
   }
   return undefined
@@ -509,14 +509,18 @@ const rename = async (
 // OPFS takes a very minimal approach to its API surface via primitives.
 // cp is not a primitive, since you can implement `cp` with `read` and `write`.
 // https://chromestatus.com/feature/5640802622504960
-const cp = async (
-  sourcePath: string,
-  targetPath: string
-): Promise<undefined> => {
+const cp: IZooDesignStudioFS['cp'] = async (
+  sourcePath,
+  targetPath,
+  options
+) => {
   const handleSource = await walk(sourcePath)
   if (handleSource === undefined) return Promise.reject('ENOENT')
 
   if (handleSource instanceof FileSystemFileHandle) {
+    if (options?.force === false && (await walk(targetPath)) !== undefined) {
+      return undefined
+    }
     const data = await readFile(sourcePath)
 
     if (typeof data === 'string') {
@@ -525,6 +529,7 @@ const cp = async (
       await writeFile(targetPath, Uint8Array.from(data))
     }
   } else {
+    if (options?.recursive !== true) return Promise.reject('EISDIR')
     await scan(sourcePath, async (cwd, handle) => {
       const relativePathToSourcePath = path.relative(sourcePath, cwd)
       const absolutePath = path.resolve(
@@ -535,6 +540,12 @@ const cp = async (
       if (handle[1] instanceof FileSystemDirectoryHandle) {
         await mkdir(absolutePath)
       } else {
+        if (
+          options.force === false &&
+          (await walk(absolutePath)) !== undefined
+        ) {
+          return
+        }
         const sourceFile = await handle[1].getFile()
         const data = await sourceFile.arrayBuffer()
         await writeFile(absolutePath, new Uint8Array(data))

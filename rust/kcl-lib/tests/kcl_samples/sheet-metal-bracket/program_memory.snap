@@ -69,41 +69,33 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
   },
   "arc12": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc12"
   },
   "arc14": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc14"
   },
   "arc16": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc16"
   },
   "arc18": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc18"
   },
   "arc2": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc2"
   },
   "arc4": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc4"
   },
   "arc6": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "arc6"
   },
   "arc8": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "arc8"
   },
@@ -111,9 +103,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "type": "Number",
     "value": 75.0,
     "ty": {
-      "degrees": null,
       "type": "Known",
-      "type": "Angle"
+      "value": {
+        "type": "Angle",
+        "value": "degrees"
+      }
     }
   },
   "bracketProfile": {
@@ -1132,56 +1126,45 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
   },
   "capEnd001": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "capEnd001"
   },
   "capStart001": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "capStart001"
   },
   "circle1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "circle1"
   },
   "circle2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "circle2"
   },
   "circle3": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "circle3"
   },
   "circle4": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "circle4"
   },
   "circle5": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "circle5"
   },
   "circle6": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "circle6"
   },
   "circle7": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "circle7"
   },
   "circle8": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "circle8"
   },
   "circle9": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "circle9"
   },
@@ -1190,8 +1173,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "value": 0.1875,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "componentBoltPatternX": {
@@ -1199,8 +1184,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "componentBoltPatternY": {
@@ -1208,8 +1195,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "value": 3.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "cutoutDiameter": {
@@ -1217,8 +1206,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "value": 1.1,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "exteriorBendRadius": {
@@ -1226,8 +1217,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "value": 0.25,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "extrude001": {
@@ -2644,8 +2637,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "value": 5.5,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "flangeLength": {
@@ -2653,8 +2648,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "value": 1.5,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "hatHeight": {
@@ -2662,8 +2659,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "value": 2.5,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "hidden001": {
@@ -3992,72 +3991,61 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "value": 0.125,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "line1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line1"
   },
   "line10": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line10"
   },
   "line11": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line11"
   },
   "line13": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line13"
   },
   "line15": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line15"
   },
   "line17": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line17"
   },
   "line19": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line19"
   },
   "line20": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line20"
   },
   "line21": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line21"
   },
   "line3": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line3"
   },
   "line5": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line5"
   },
   "line7": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line7"
   },
   "line9": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line9"
   },
@@ -4066,8 +4054,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "value": 0.25,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "mountingBoltPatternX": {
@@ -4075,8 +4065,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "value": 7.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "mountingBoltPatternY": {
@@ -4084,8 +4076,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "value": 4.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "overhang": {
@@ -4093,8 +4087,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "value": 0.75,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "region001": {
@@ -5948,17 +5944,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 2.628551369446989,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.2122202744068274,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5966,17 +5966,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 2.748846970998999,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.11995111734243757,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -5984,17 +5988,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 2.7488802720179533,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.24454660535156003,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6100,17 +6108,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 2.039699027405094,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.4061593996009645,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6118,17 +6130,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 1.8011562310456004,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.5891094039323397,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6136,17 +6152,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 1.801149183300005,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.3421109627129124,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6252,17 +6272,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -1.8007119360173978,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.5891094039323406,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6270,17 +6294,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -2.044152196353952,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.4020890145076934,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6288,17 +6316,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -1.8007290585542242,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.3371811252530925,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6404,17 +6436,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -2.7530968760791112,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.11235520515119049,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6422,17 +6458,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -2.6296131761601473,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.20724245793290652,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6440,17 +6480,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -2.753121655738352,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.2401802528263742,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6556,17 +6600,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -2.7531005343133947,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.0024970753819190178,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6574,17 +6622,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -2.507107094263187,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.18603628443568634,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6592,17 +6644,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -2.7525054450273445,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.25147607927881116,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6708,17 +6764,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -1.8026168608524167,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.472306894476203,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6726,17 +6786,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -1.921646114456993,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.3808828410104734,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6744,17 +6808,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -1.8026474534474755,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.349149815204167,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6860,17 +6928,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 1.9195206474865112,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.3800653585585767,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6878,17 +6950,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 1.7992513062105822,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.472306894476203,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -6896,17 +6972,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 1.799265686135754,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.347798144879135,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7012,17 +7092,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 2.508372989528406,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.18612623336443934,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7030,17 +7114,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 2.748846970998999,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0016586301349810848,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7048,17 +7136,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 2.7488627754626944,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.2506552882074232,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7164,17 +7256,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -4.202124928454492,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0007590310091685511,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7182,17 +7278,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -2.7531005343133947,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -0.002497075381919511,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7284,17 +7384,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 4.19787502337438,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0016586301349808266,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7302,17 +7406,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 4.19787502337438,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.11995111734243756,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7404,17 +7512,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 4.19787502337438,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.11995111734243756,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7422,17 +7534,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 2.748846970998999,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.11995111734243756,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7524,17 +7640,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 2.628551369446989,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.21222027440682736,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7542,17 +7662,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 2.039699027405095,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.406159399600965,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7644,17 +7768,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 1.8011562310456004,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.58910940393234,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7662,17 +7790,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -1.8007119360173978,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.58910940393234,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7764,17 +7896,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -2.0441521963539526,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.402089014507694,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7782,17 +7918,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -2.629613176160147,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.20724245793290638,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7884,17 +8024,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -2.7530968760791112,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.11235520515119028,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -7902,17 +8046,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -4.202124928454492,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.11235520515119028,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -8004,17 +8152,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -4.202124928454492,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.000759031009168551,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -8022,17 +8174,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 4.19787502337438,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0016586301349808266,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -8125,17 +8281,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -4.202124928454492,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.11235520515119028,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -8143,17 +8303,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -4.25,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.11235520515119028,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -8245,17 +8409,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -4.202124928454492,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.11235520515119028,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -8263,17 +8431,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -4.202124928454492,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.000759031009168551,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -8365,17 +8537,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -2.507107094263187,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.18603628443568632,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -8383,17 +8559,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -1.9216461144569927,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.3808828410104734,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -8485,17 +8665,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -1.8026168608524167,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.472306894476203,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -8503,17 +8687,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 1.7992513062105822,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.472306894476203,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -8605,17 +8793,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 1.9195206474865114,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.3800653585585767,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -8623,17 +8815,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 2.5083729895284055,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.18612623336443926,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -8725,17 +8921,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 2.748846970998999,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0016586301349808266,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -8743,17 +8943,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 4.19787502337438,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0016586301349808266,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -9674,17 +9878,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -3.25,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -9692,17 +9900,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -3.5,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -9794,17 +10006,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -3.25,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -9812,17 +10028,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -3.5,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -9914,17 +10134,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 3.75,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -9932,17 +10156,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 3.5,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10034,17 +10262,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 3.75,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10052,17 +10284,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 3.5,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10154,17 +10390,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 1.1875,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.5,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10172,17 +10412,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.5,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10274,17 +10518,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -0.8125,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.5,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10292,17 +10540,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.5,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10394,17 +10646,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -0.8125,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -1.5,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10412,17 +10668,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -1.5,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10514,17 +10774,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 1.1875,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -1.5,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10532,17 +10796,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -1.5,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10634,17 +10902,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 1.1,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10652,17 +10924,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10754,17 +11030,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -1.5,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10772,17 +11052,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -1.5,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10875,17 +11159,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10893,17 +11181,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 3.5,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -10996,17 +11288,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.5,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11014,17 +11310,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11117,17 +11417,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11135,17 +11439,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -1.5,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11238,17 +11546,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -1.5,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11256,17 +11568,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.5,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11359,17 +11675,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.5,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11377,17 +11697,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.5,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11480,17 +11804,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 1.5,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11498,17 +11826,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -1.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -1.5,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11601,17 +11933,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -3.5,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11619,17 +11955,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 3.5,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11722,17 +12062,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 3.5,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11740,17 +12084,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 3.5,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11843,17 +12191,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 3.5,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11861,17 +12213,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -3.5,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11964,17 +12320,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -3.5,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -11982,17 +12342,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -3.5,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": -2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -12085,17 +12449,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": -3.5,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 2.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -12103,17 +12471,21 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "in": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "in"
+                          }
                         }
                       }
                     ],
@@ -13723,8 +14095,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "n": 0.5,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -13737,8 +14111,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "n": 0.5,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -13751,8 +14127,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "n": 0.5,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -13765,8 +14143,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "n": 0.5,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -13782,8 +14162,10 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "value": 0.125,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   }
 }

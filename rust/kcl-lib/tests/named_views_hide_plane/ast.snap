@@ -95,11 +95,10 @@ description: Result of parsing named_views_hide_plane.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "// Pins that an offset plane is engine-addressable by the id hide() sends",
-          "// (a plane's engine id and artifact id are the same uuid; the client also",
-          "// drives default-plane visibility with this same command). The rendered",
-          "// snapshot must show the anchor box and at most ONE plane: the one at",
-          "// offset 20."
+          "// This test verifies that an offset plane is engine-addressable by the id that",
+          "// hide() sends. A plane's engine id and artifact id are the same UUID. The",
+          "// rendered snapshot must show the anchor box and at most one plane: the plane",
+          "// at offset 20."
         ],
         "start": 0,
         "type": "VariableDeclaration",
@@ -1700,10 +1699,326 @@ description: Result of parsing named_views_hide_plane.kcl
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "planeView",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "camera",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "arguments": [],
+                  "callee": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "oriented",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [
+                      {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "view",
+                        "start": 0,
+                        "type": "Identifier"
+                      }
+                    ],
+                    "start": 0,
+                    "type": "Name"
+                  },
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "CallExpressionKw",
+                  "type": "CallExpressionKw",
+                  "unlabeled": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "Isometric",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [
+                      {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "view",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "Orientation",
+                        "start": 0,
+                        "type": "Identifier"
+                      }
+                    ],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  }
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "baseline",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "Show",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "view",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "Visibility",
+                      "start": 0,
+                      "type": "Identifier"
+                    }
+                  ],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "except",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "commentStart": 0,
+                  "elements": [
+                    {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "planeHidden",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    }
+                  ],
+                  "end": 0,
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                }
+              }
+            ],
+            "callee": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "named",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "view",
+                  "start": 0,
+                  "type": "Identifier"
+                }
+              ],
+              "start": 0,
+              "type": "Name"
+            },
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "raw": "\"Near plane\"",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "Near plane"
+            }
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
       }
     ],
     "commentStart": 0,
     "end": 0,
+    "innerAttrs": [
+      {
+        "commentStart": 0,
+        "end": 0,
+        "moduleId": 0,
+        "name": {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "name": "settings",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "properties": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "key": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "kclVersion",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "moduleId": 0,
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "raw": "2.0",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 2.0,
+                "suffix": "None"
+              }
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "key": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "experimentalFeatures",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "moduleId": 0,
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "allow",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            }
+          }
+        ],
+        "start": 0,
+        "type": "Annotation"
+      }
+    ],
     "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
@@ -1744,6 +2059,18 @@ description: Result of parsing named_views_hide_plane.kcl
           }
         ],
         "3": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "4": [
           {
             "commentStart": 0,
             "end": 0,

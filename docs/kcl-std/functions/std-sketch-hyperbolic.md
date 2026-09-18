@@ -23,8 +23,10 @@ hyperbolic(
 ```
 
 This is part of sketch v1 and is soft deprecated in favor of
-[sketch-solve](/docs/kcl-std/modules/std-solver). The sketch-solve version
-of hyperbolic is still under development.
+[sketch-solve](/docs/kcl-std/modules/std-solver). Legacy sketch functions
+cannot be used with constraints; strongly prefer constraint-based sketch
+functions when possible. No constraint-based hyperbola is available yet;
+first try approximating the shape with one or more constrained arcs.
 
 ### Arguments
 

@@ -8,8 +8,10 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "value": 6.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "boreDiameter": {
@@ -17,8 +19,10 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "value": 1.5,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "extrude001": {
@@ -1241,8 +1245,10 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "value": 2.5,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "mountCenterToCenter": {
@@ -1250,8 +1256,10 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "value": 1.625,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "portCenterToCenter": {
@@ -1259,8 +1267,10 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "value": 3.875,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "profile001": {
@@ -2342,16 +2352,13 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
   },
   "rectangleSegmentA001": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "rectangleSegmentA001"
   },
   "rectangleSegmentA002": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "rectangleSegmentA002"
   },
   "rectangleSegmentA003": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "rectangleSegmentA003"
   },
@@ -2360,8 +2367,10 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "value": 0.625,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "rodThreadLength": {
@@ -2369,8 +2378,10 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "value": 0.75,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "rodThreadSize": {
@@ -2378,8 +2389,10 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "value": 0.438,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "sketch001": {
@@ -2555,8 +2568,10 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "width": {
@@ -2564,8 +2579,10 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "value": 2.5,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   }
 }

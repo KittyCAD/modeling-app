@@ -12,8 +12,10 @@ description: Operations executed gingerbread-man.kcl
         "value": 50.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -41,8 +43,10 @@ description: Operations executed gingerbread-man.kcl
         "value": 30.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -70,8 +74,10 @@ description: Operations executed gingerbread-man.kcl
         "value": 60.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -99,8 +105,10 @@ description: Operations executed gingerbread-man.kcl
         "value": 10.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -128,8 +136,10 @@ description: Operations executed gingerbread-man.kcl
         "value": 0.85,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -156,9 +166,11 @@ description: Operations executed gingerbread-man.kcl
         "type": "Number",
         "value": -1.0,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "default",
@@ -185,9 +197,11 @@ description: Operations executed gingerbread-man.kcl
         "type": "Number",
         "value": 401.0,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "default",
@@ -249,18 +263,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 549.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -275,18 +293,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -343,18 +365,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 57.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -369,18 +395,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -437,18 +467,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 77.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 57.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -463,18 +497,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 57.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -524,18 +562,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -88.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -112.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -550,18 +592,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -659,18 +705,22 @@ description: Operations executed gingerbread-man.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -763,18 +813,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -127.75,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -80.77,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -789,18 +843,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -88.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -112.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -815,18 +873,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -170.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -53.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -920,18 +982,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -77.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 57.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -946,18 +1012,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -170.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -53.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1051,18 +1121,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -77.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 213.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1077,18 +1151,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -77.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 57.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1182,18 +1260,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -187.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 130.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1208,18 +1290,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -77.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 213.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1313,18 +1399,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -210.83,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 161.58,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1339,18 +1429,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -187.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 130.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1365,18 +1459,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -232.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 195.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1470,18 +1568,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -108.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 290.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1496,18 +1598,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -232.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 195.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1601,18 +1707,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -36.89,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 197.18,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1627,18 +1737,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -108.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 290.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1653,18 +1767,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -59.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 312.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1758,18 +1876,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -59.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 335.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1784,18 +1906,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -59.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 312.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1889,18 +2015,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 0.6,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 433.7,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1915,18 +2045,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -59.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 335.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1941,18 +2075,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 549.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2090,18 +2228,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -0.6,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 433.7,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2116,18 +2258,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 549.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2142,18 +2288,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 59.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 335.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2247,18 +2397,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 59.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 312.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2273,18 +2427,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 59.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 335.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2378,18 +2536,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 36.89,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 197.18,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2404,18 +2566,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 59.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 312.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2430,18 +2596,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 108.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 290.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2535,18 +2705,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 232.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 195.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2561,18 +2735,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 108.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 290.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2666,18 +2844,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 210.83,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 161.58,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2692,18 +2874,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 232.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 195.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2718,18 +2904,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 187.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 130.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2823,18 +3013,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 77.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 213.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2849,18 +3043,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 187.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 130.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2954,18 +3152,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 77.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 57.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2980,18 +3182,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 77.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 213.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3129,18 +3335,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 170.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -53.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3155,18 +3365,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 77.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 57.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3260,18 +3474,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 127.75,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -80.77,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3286,18 +3504,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 170.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -53.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3312,18 +3534,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 88.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -112.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3417,18 +3643,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3443,18 +3673,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 88.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -112.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3596,18 +3830,22 @@ description: Operations executed gingerbread-man.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -4256,8 +4494,10 @@ description: Operations executed gingerbread-man.kcl
             "value": 50.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -4367,8 +4607,10 @@ description: Operations executed gingerbread-man.kcl
             "value": 50.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -4432,18 +4674,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 401.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4458,18 +4704,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4526,18 +4776,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 401.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4552,18 +4806,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -41.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 401.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4613,18 +4871,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -3.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 436.27,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4639,18 +4901,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 36.53,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 402.72,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4665,18 +4931,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -41.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 401.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4730,18 +5000,22 @@ description: Operations executed gingerbread-man.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -4878,18 +5152,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 43.77,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 395.13,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4904,18 +5182,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 36.53,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 402.72,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -4930,18 +5212,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 53.36,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 390.87,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5035,18 +5321,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -1.27,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 417.95,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5061,18 +5351,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 53.36,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 390.87,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5087,18 +5381,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -56.28,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 391.65,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5192,18 +5490,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -48.34,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 395.83,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5218,18 +5520,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -56.28,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 391.65,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5244,18 +5550,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -41.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 401.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5614,8 +5924,10 @@ description: Operations executed gingerbread-man.kcl
             "value": 10.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -5666,9 +5978,11 @@ description: Operations executed gingerbread-man.kcl
             "type": "Number",
             "value": 1.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -5678,9 +5992,11 @@ description: Operations executed gingerbread-man.kcl
             "type": "Number",
             "value": -401.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -5731,9 +6047,11 @@ description: Operations executed gingerbread-man.kcl
             "type": "Number",
             "value": -1.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -5743,9 +6061,11 @@ description: Operations executed gingerbread-man.kcl
             "type": "Number",
             "value": 401.0,
             "ty": {
-              "mm": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "mm"
+              }
             }
           },
           "sourceRange": []
@@ -5839,18 +6159,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 405.86,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5865,18 +6189,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5933,18 +6261,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 405.86,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5959,18 +6291,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -37.56,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 405.86,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6020,18 +6356,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -1.73,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 443.68,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6046,18 +6386,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 32.63,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 404.52,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6072,18 +6416,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -37.56,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 405.86,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6137,18 +6485,22 @@ description: Operations executed gingerbread-man.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -6285,18 +6637,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 43.64,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 395.07,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6311,18 +6667,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 32.63,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 404.52,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6337,18 +6697,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 56.91,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 389.24,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6442,18 +6806,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -1.57,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 414.93,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6468,18 +6836,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 56.91,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 389.24,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6494,18 +6866,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -60.97,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 391.45,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6599,18 +6975,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -46.34,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 393.9,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6625,18 +7005,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -60.97,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 391.45,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6651,18 +7035,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -37.56,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 405.86,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -7021,8 +7409,10 @@ description: Operations executed gingerbread-man.kcl
             "value": 10.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -7206,18 +7596,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 440.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -7232,18 +7626,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -7300,18 +7698,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 440.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -7326,18 +7728,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -55.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 440.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -7387,18 +7793,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -55.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 440.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -7413,18 +7823,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -40.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 440.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -7478,18 +7892,22 @@ description: Operations executed gingerbread-man.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -7882,8 +8300,10 @@ description: Operations executed gingerbread-man.kcl
             "value": 10.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -7972,8 +8392,10 @@ description: Operations executed gingerbread-man.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -7981,8 +8403,10 @@ description: Operations executed gingerbread-man.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -7990,8 +8414,10 @@ description: Operations executed gingerbread-man.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -8004,8 +8430,10 @@ description: Operations executed gingerbread-man.kcl
             "value": 110.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8016,7 +8444,9 @@ description: Operations executed gingerbread-man.kcl
             "value": 2.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -8110,18 +8540,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 250.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8136,18 +8570,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8197,18 +8635,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 250.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8223,18 +8665,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 30.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 250.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8288,18 +8734,22 @@ description: Operations executed gingerbread-man.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -8565,8 +9015,10 @@ description: Operations executed gingerbread-man.kcl
             "value": 10.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8655,8 +9107,10 @@ description: Operations executed gingerbread-man.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -8664,8 +9118,10 @@ description: Operations executed gingerbread-man.kcl
                 "value": -1.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -8673,8 +9129,10 @@ description: Operations executed gingerbread-man.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -8687,8 +9145,10 @@ description: Operations executed gingerbread-man.kcl
             "value": 75.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8699,7 +9159,9 @@ description: Operations executed gingerbread-man.kcl
             "value": 2.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -8793,18 +9255,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 503.47,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8819,18 +9285,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8887,18 +9357,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 503.47,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8913,18 +9387,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -37.9,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 503.47,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8974,18 +9452,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -45.82,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 476.53,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9000,18 +9482,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -73.02,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 483.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9026,18 +9512,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -37.9,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 503.47,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9091,18 +9581,22 @@ description: Operations executed gingerbread-man.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -9239,18 +9733,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -36.27,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 509.01,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9265,18 +9763,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -34.91,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 514.62,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9291,18 +9793,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -37.9,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 503.47,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9396,18 +9902,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -45.03,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 472.96,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9422,18 +9932,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -86.17,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 485.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9448,18 +9962,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -34.91,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 514.62,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9807,18 +10325,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -79.72,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 483.11,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9833,18 +10355,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -73.02,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 483.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9859,18 +10385,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -86.17,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 485.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10062,8 +10592,10 @@ description: Operations executed gingerbread-man.kcl
             "value": 10.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -10148,9 +10680,11 @@ description: Operations executed gingerbread-man.kcl
             "type": "Number",
             "value": 360.0,
             "ty": {
-              "degrees": null,
               "type": "Known",
-              "type": "Angle"
+              "value": {
+                "type": "Angle",
+                "value": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -10164,8 +10698,10 @@ description: Operations executed gingerbread-man.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -10173,8 +10709,10 @@ description: Operations executed gingerbread-man.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -10182,8 +10720,10 @@ description: Operations executed gingerbread-man.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -10199,8 +10739,10 @@ description: Operations executed gingerbread-man.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -10208,8 +10750,10 @@ description: Operations executed gingerbread-man.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -10217,8 +10761,10 @@ description: Operations executed gingerbread-man.kcl
                 "value": 55.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -10231,7 +10777,9 @@ description: Operations executed gingerbread-man.kcl
             "value": 2.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -10332,18 +10880,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10358,18 +10910,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -59.59,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 99.65,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10419,18 +10975,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -39.39,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 111.05,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10445,18 +11005,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -21.76,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 95.98,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10471,18 +11035,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -59.59,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 99.65,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10580,18 +11148,22 @@ description: Operations executed gingerbread-man.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -10640,18 +11212,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -1.82,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 76.97,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10666,18 +11242,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -21.76,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 95.98,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10692,18 +11272,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 17.69,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 96.41,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10797,18 +11381,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 38.3,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 105.84,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10823,18 +11411,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 59.1,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 96.85,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10849,18 +11441,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 17.69,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 96.41,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10954,18 +11550,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 63.86,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 93.67,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -10980,18 +11580,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 59.1,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 96.85,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11006,18 +11610,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 69.37,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 92.09,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11111,18 +11719,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 43.12,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 99.2,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11137,18 +11749,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 69.37,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 92.09,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11163,18 +11779,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 41.83,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 72.03,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11268,18 +11888,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 43.78,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 112.2,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11294,18 +11918,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 41.83,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 72.03,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11320,18 +11948,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 10.66,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 89.4,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11425,18 +12057,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -1.4,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 81.1,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11451,18 +12087,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -14.61,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 87.41,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11477,18 +12117,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 10.66,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 89.4,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11582,18 +12226,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -33.66,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 96.56,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11608,18 +12256,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -14.61,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 87.41,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11634,18 +12286,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -43.82,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 78.02,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11739,18 +12395,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -15.29,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 129.69,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11765,18 +12425,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -43.82,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 78.02,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11791,18 +12455,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -66.06,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 99.61,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11896,18 +12564,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -62.85,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 103.25,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11922,18 +12594,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -66.06,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 99.61,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11948,18 +12624,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -59.59,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 99.65,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -12314,8 +12994,10 @@ description: Operations executed gingerbread-man.kcl
             "value": 10.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -12400,9 +13082,11 @@ description: Operations executed gingerbread-man.kcl
             "type": "Number",
             "value": 360.0,
             "ty": {
-              "degrees": null,
               "type": "Known",
-              "type": "Angle"
+              "value": {
+                "type": "Angle",
+                "value": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -12416,8 +13100,10 @@ description: Operations executed gingerbread-man.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -12425,8 +13111,10 @@ description: Operations executed gingerbread-man.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -12434,8 +13122,10 @@ description: Operations executed gingerbread-man.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -12451,8 +13141,10 @@ description: Operations executed gingerbread-man.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -12460,8 +13152,10 @@ description: Operations executed gingerbread-man.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -12469,8 +13163,10 @@ description: Operations executed gingerbread-man.kcl
                 "value": 55.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -12483,7 +13179,9 @@ description: Operations executed gingerbread-man.kcl
             "value": 1.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -12584,18 +13282,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 184.88,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -12610,18 +13312,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -12678,18 +13384,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 184.88,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -12704,18 +13414,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -224.97,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 184.88,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -12765,18 +13479,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -209.07,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 183.37,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -12791,18 +13509,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -207.34,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 167.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -12817,18 +13539,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -224.97,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 184.88,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -12882,18 +13608,22 @@ description: Operations executed gingerbread-man.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -13030,18 +13760,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -205.3,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 150.17,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -13056,18 +13790,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -207.34,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 167.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -13082,18 +13820,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -189.21,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 143.41,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -13187,18 +13929,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -192.67,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 144.86,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -13213,18 +13959,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -189.21,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 143.41,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -13239,18 +13989,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -196.41,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 145.15,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -13344,18 +14098,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -208.6,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 146.08,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -13370,18 +14128,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -208.33,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 158.31,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -13396,18 +14158,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -196.41,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 145.15,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -13501,18 +14267,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -207.76,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 183.53,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -13527,18 +14297,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -208.33,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 158.31,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -13553,18 +14327,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -232.92,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 185.38,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -13658,18 +14436,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -228.95,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 185.09,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -13684,18 +14466,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -232.92,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 185.38,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -13710,18 +14496,22 @@ description: Operations executed gingerbread-man.kcl
                 "type": "SketchVar",
                 "value": -224.97,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 184.88,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -14123,8 +14913,10 @@ description: Operations executed gingerbread-man.kcl
             "value": 10.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -14209,9 +15001,11 @@ description: Operations executed gingerbread-man.kcl
             "type": "Number",
             "value": 360.0,
             "ty": {
-              "degrees": null,
               "type": "Known",
-              "type": "Angle"
+              "value": {
+                "type": "Angle",
+                "value": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -14225,8 +15019,10 @@ description: Operations executed gingerbread-man.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -14234,8 +15030,10 @@ description: Operations executed gingerbread-man.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -14243,8 +15041,10 @@ description: Operations executed gingerbread-man.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -14260,8 +15060,10 @@ description: Operations executed gingerbread-man.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -14269,8 +15071,10 @@ description: Operations executed gingerbread-man.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -14278,8 +15082,10 @@ description: Operations executed gingerbread-man.kcl
                 "value": 55.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -14292,7 +15098,9 @@ description: Operations executed gingerbread-man.kcl
             "value": 2.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -14388,7 +15196,9 @@ description: Operations executed gingerbread-man.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -14416,7 +15226,9 @@ description: Operations executed gingerbread-man.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",

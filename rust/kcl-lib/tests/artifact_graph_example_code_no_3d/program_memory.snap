@@ -5,16 +5,13 @@ description: Variables in memory after executing artifact_graph_example_code_no_
 {
   "rectangleSegmentA001": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "rectangleSegmentA001"
   },
   "rectangleSegmentB001": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "rectangleSegmentB001"
   },
   "rectangleSegmentC001": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "rectangleSegmentC001"
   },

@@ -52,7 +52,7 @@ example = extrude(sketch001, length = 10)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the mirror2d function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-mirror2d0_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-mirror2d0_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-transform-mirror2d0.png"
@@ -78,7 +78,7 @@ example = extrude(sketch001, length = 10)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the mirror2d function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-mirror2d1_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-mirror2d1_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-transform-mirror2d1.png"
@@ -124,18 +124,7 @@ sketch001 = startSketchOn(XZ)
 ```
 
 
-<model-viewer
-  class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the mirror2d function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-mirror2d3_output.gltf"
-  ar
-  environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-transform-mirror2d3.png"
-  shadow-intensity="1"
-  camera-controls
-  touch-action="pan-y"
->
-</model-viewer>
+![Rendered example of mirror2d 3](/kcl-test-outputs/serial_test_example_fn_std-transform-mirror2d3.png)
 
 ```kcl
 // Mirror an un-closed sketch across a custom axis.
@@ -156,7 +145,7 @@ example = extrude(sketch001, length = 10)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the mirror2d function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-mirror2d4_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-mirror2d4_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-transform-mirror2d4.png"
@@ -190,7 +179,7 @@ shell([sketch002], faces = [END], thickness = .1)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the mirror2d function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-mirror2d5_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-mirror2d5_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-transform-mirror2d5.png"

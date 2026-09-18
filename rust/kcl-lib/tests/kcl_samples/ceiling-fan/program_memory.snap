@@ -73,8 +73,10 @@ description: Variables in memory after executing ceiling-fan.kcl
     "value": 10.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "bladeCount": {
@@ -82,17 +84,21 @@ description: Variables in memory after executing ceiling-fan.kcl
     "value": 3.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "bladeNeckAngle": {
     "type": "Number",
     "value": 125.0,
     "ty": {
-      "degrees": null,
       "type": "Known",
-      "type": "Angle"
+      "value": {
+        "type": "Angle",
+        "value": "degrees"
+      }
     }
   },
   "bladeNeckHalfWidth": {
@@ -100,8 +106,10 @@ description: Variables in memory after executing ceiling-fan.kcl
     "value": 8.75,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "bladeNeckRise": {
@@ -109,8 +117,10 @@ description: Variables in memory after executing ceiling-fan.kcl
     "value": 12.496295058993502,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "bladeNeckY": {
@@ -118,8 +128,10 @@ description: Variables in memory after executing ceiling-fan.kcl
     "value": 22.599924769811953,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "bladePlane": {
@@ -172,17 +184,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 0.0000000000000000000055583092029221886,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.00000000000000000009849998117036657,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -190,17 +206,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 0.000000000000000000011116618405844376,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.103629710818451,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -293,17 +313,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 0.000000000000000000016674927608766567,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.103629710818451,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -311,17 +335,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 0.000000000000000000022233236811688757,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 22.599924769811953,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -414,17 +442,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 0.000000000000000047037981130717294,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 22.599924769811953,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -432,17 +464,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 0.00000000000000009405372902462291,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 116.76659143647862,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -535,17 +571,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 0.00000000000000009405372902462305,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 116.76659143647862,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -553,17 +593,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 0.00000000000000009405372902462315,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 122.59992476981195,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1016,17 +1060,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": -8.75,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 22.599924769811953,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1034,17 +1082,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": -0.00000000000000007142240384411607,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 22.599924769811953,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1137,17 +1189,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 0.00000000000000002445668073303675,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 22.599924769811953,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1155,17 +1211,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 8.75,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 22.599924769811953,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1258,17 +1318,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": -17.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.103629710818451,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1276,17 +1340,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 0.000000000000000000011116618405844376,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.103629710818451,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1379,17 +1447,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 0.000000000000000000011116618405844376,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.103629710818451,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1397,17 +1469,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 17.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.103629710818451,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1500,17 +1576,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": -8.75,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 22.599924769811953,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1518,17 +1598,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": -17.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.103629710818451,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1620,17 +1704,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 17.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.103629710818451,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1638,17 +1726,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 8.75,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 22.599924769811953,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1740,17 +1832,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": -17.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.103629710818451,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1758,17 +1854,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 0.0000000000000000000055583092029221886,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.00000000000000000009849998117036657,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1860,17 +1960,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 0.0000000000000000000055583092029221886,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.00000000000000000009849998117036657,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1878,17 +1982,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 17.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.103629710818451,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1980,17 +2088,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": -8.75,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 116.76685244457872,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1998,17 +2110,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": -8.75,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 22.599924769811953,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2100,17 +2216,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 8.75,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 22.599924769811953,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2118,17 +2238,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 8.75,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 116.76685244461545,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2220,17 +2344,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": -2.916692774441484,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 122.59992476981195,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2238,17 +2366,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": -8.750000000000002,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 116.76685244457872,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2256,17 +2388,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": -2.9166666666666665,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 116.76659143647862,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2372,17 +2508,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 8.75,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 116.76685244461545,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2390,17 +2530,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 2.9166927745968905,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 122.59992476981195,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2408,17 +2552,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 2.916666666666667,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 116.76659143647862,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2524,17 +2672,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": -2.9166666666666665,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 116.76659143647862,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2542,17 +2694,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 0.00000000000000016549748355525804,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 116.76659143647862,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2645,17 +2801,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 0.00000000000000006962572238789322,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 116.76659143647862,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2663,17 +2823,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 2.916666666666667,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 116.76659143647862,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2766,17 +2930,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 0.0000000000000000940537290246233,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 122.59992476981195,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2784,17 +2952,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": -2.916692774441484,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 122.59992476981195,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2886,17 +3058,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 2.9166927745968905,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 122.59992476981195,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2904,17 +3080,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 0.0000000000000000940537290246233,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 122.59992476981195,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -3354,8 +3534,10 @@ description: Variables in memory after executing ceiling-fan.kcl
     "value": 17.5,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "bladeRootWidth": {
@@ -3363,17 +3545,21 @@ description: Variables in memory after executing ceiling-fan.kcl
     "value": 35.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "bladeSeamAngle": {
     "type": "Number",
     "value": 30.0,
     "ty": {
-      "degrees": null,
       "type": "Known",
-      "type": "Angle"
+      "value": {
+        "type": "Angle",
+        "value": "degrees"
+      }
     }
   },
   "bladeSeamLength": {
@@ -3381,8 +3567,10 @@ description: Variables in memory after executing ceiling-fan.kcl
     "value": 20.207259421636902,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "bladeSeamRise": {
@@ -3390,8 +3578,10 @@ description: Variables in memory after executing ceiling-fan.kcl
     "value": 10.103629710818451,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "bladeSolid": {
@@ -3907,8 +4097,10 @@ description: Variables in memory after executing ceiling-fan.kcl
     "value": 100.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "bladeSpanTopY": {
@@ -3916,8 +4108,10 @@ description: Variables in memory after executing ceiling-fan.kcl
     "value": 116.76659143647862,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "bladeThickness": {
@@ -3925,8 +4119,10 @@ description: Variables in memory after executing ceiling-fan.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "bladeTipFlatHalfWidth": {
@@ -3934,8 +4130,10 @@ description: Variables in memory after executing ceiling-fan.kcl
     "value": 2.916666666666667,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "bladeTipRadius": {
@@ -3943,8 +4141,10 @@ description: Variables in memory after executing ceiling-fan.kcl
     "value": 5.833333333333333,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "bladeTipY": {
@@ -3952,17 +4152,21 @@ description: Variables in memory after executing ceiling-fan.kcl
     "value": 122.59992476981195,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "bladeTwistAngle": {
     "type": "Number",
     "value": 5.0,
     "ty": {
-      "degrees": null,
       "type": "Known",
-      "type": "Angle"
+      "value": {
+        "type": "Angle",
+        "value": "degrees"
+      }
     }
   },
   "bladeWidth": {
@@ -3970,8 +4174,10 @@ description: Variables in memory after executing ceiling-fan.kcl
     "value": 17.5,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "bladeWithVoidOne": {
@@ -4991,7 +5197,6 @@ description: Variables in memory after executing ceiling-fan.kcl
     }
   },
   "bottomEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "bottomEdge"
   },
@@ -8042,66 +8247,53 @@ description: Variables in memory after executing ceiling-fan.kcl
   },
   "innerArc": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "innerArc"
   },
   "outerEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "outerEdge"
   },
   "rootNeckLeft": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "rootNeckLeft"
   },
   "rootNeckRight": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "rootNeckRight"
   },
   "rootSeamLeft": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "rootSeamLeft"
   },
   "rootSeamRight": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "rootSeamRight"
   },
   "spanLeft": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "spanLeft"
   },
   "spanRight": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "spanRight"
   },
   "tipArcLeft": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "tipArcLeft"
   },
   "tipArcRight": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "tipArcRight"
   },
   "tipFlatLeft": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "tipFlatLeft"
   },
   "tipFlatRight": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "tipFlatRight"
   },
   "topEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "topEdge"
   },
@@ -8110,8 +8302,10 @@ description: Variables in memory after executing ceiling-fan.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "voidCutoutBottomRun": {
@@ -8119,8 +8313,10 @@ description: Variables in memory after executing ceiling-fan.kcl
     "value": 115.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "voidCutoutHeight": {
@@ -8128,8 +8324,10 @@ description: Variables in memory after executing ceiling-fan.kcl
     "value": 35.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "voidCutoutLength": {
@@ -8137,8 +8335,10 @@ description: Variables in memory after executing ceiling-fan.kcl
     "value": 150.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "voidCutoutOne": {
@@ -8646,8 +8846,10 @@ description: Variables in memory after executing ceiling-fan.kcl
     "value": 52.5,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "voidProfile": {
@@ -8667,17 +8869,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 1.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -8685,17 +8891,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 36.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -8788,17 +8998,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -8806,17 +9020,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 1.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -8909,17 +9127,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 150.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 1.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -8927,17 +9149,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 35.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 1.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -9029,17 +9255,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 36.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -9047,17 +9277,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 35.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 1.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -9065,17 +9299,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 35.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 36.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -9367,17 +9605,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 150.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 36.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -9385,17 +9627,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 150.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 1.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -9487,17 +9733,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 36.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -9505,17 +9755,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 35.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 36.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -9608,17 +9862,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 36.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -9626,17 +9884,21 @@ description: Variables in memory after executing ceiling-fan.kcl
                       {
                         "n": 150.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 36.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],

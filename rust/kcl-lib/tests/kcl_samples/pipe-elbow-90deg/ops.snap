@@ -12,8 +12,10 @@ description: Operations executed pipe-elbow-90deg.kcl
         "value": 90.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -41,8 +43,10 @@ description: Operations executed pipe-elbow-90deg.kcl
         "value": 80.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -70,8 +74,10 @@ description: Operations executed pipe-elbow-90deg.kcl
         "value": 94.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -99,8 +105,10 @@ description: Operations executed pipe-elbow-90deg.kcl
         "value": 11.5,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -128,8 +136,10 @@ description: Operations executed pipe-elbow-90deg.kcl
         "value": 130.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -157,8 +167,10 @@ description: Operations executed pipe-elbow-90deg.kcl
         "value": 20.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -186,8 +198,10 @@ description: Operations executed pipe-elbow-90deg.kcl
         "value": 16.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -215,8 +229,10 @@ description: Operations executed pipe-elbow-90deg.kcl
         "value": 12.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -244,8 +260,10 @@ description: Operations executed pipe-elbow-90deg.kcl
         "value": 112.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -273,8 +291,10 @@ description: Operations executed pipe-elbow-90deg.kcl
         "value": 71.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -302,8 +322,10 @@ description: Operations executed pipe-elbow-90deg.kcl
         "value": 71.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -358,18 +380,22 @@ description: Operations executed pipe-elbow-90deg.kcl
                 "type": "SketchVar",
                 "value": 63.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -384,18 +410,22 @@ description: Operations executed pipe-elbow-90deg.kcl
                 "type": "SketchVar",
                 "value": 107.34,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -15.97,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -452,18 +482,22 @@ description: Operations executed pipe-elbow-90deg.kcl
                 "type": "SketchVar",
                 "value": 63.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -478,18 +512,22 @@ description: Operations executed pipe-elbow-90deg.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -543,18 +581,22 @@ description: Operations executed pipe-elbow-90deg.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -730,18 +772,22 @@ description: Operations executed pipe-elbow-90deg.kcl
                 "type": "SketchVar",
                 "value": 62.79,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.22,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -756,18 +802,22 @@ description: Operations executed pipe-elbow-90deg.kcl
                 "type": "SketchVar",
                 "value": 93.57,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 17.89,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -982,8 +1032,10 @@ description: Operations executed pipe-elbow-90deg.kcl
             "value": -90.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1000,8 +1052,10 @@ description: Operations executed pipe-elbow-90deg.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -1009,8 +1063,10 @@ description: Operations executed pipe-elbow-90deg.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -1023,8 +1079,10 @@ description: Operations executed pipe-elbow-90deg.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -1032,8 +1090,10 @@ description: Operations executed pipe-elbow-90deg.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -1094,18 +1154,22 @@ description: Operations executed pipe-elbow-90deg.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 63.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1120,18 +1184,22 @@ description: Operations executed pipe-elbow-90deg.kcl
                 "type": "SketchVar",
                 "value": 66.34,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 51.18,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1188,18 +1256,22 @@ description: Operations executed pipe-elbow-90deg.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 63.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1214,18 +1286,22 @@ description: Operations executed pipe-elbow-90deg.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1279,18 +1355,22 @@ description: Operations executed pipe-elbow-90deg.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -1466,18 +1546,22 @@ description: Operations executed pipe-elbow-90deg.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 63.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1492,18 +1576,22 @@ description: Operations executed pipe-elbow-90deg.kcl
                 "type": "SketchVar",
                 "value": 37.73,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 77.31,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1718,8 +1806,10 @@ description: Operations executed pipe-elbow-90deg.kcl
             "value": -20.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1776,18 +1866,22 @@ description: Operations executed pipe-elbow-90deg.kcl
                 "type": "SketchVar",
                 "value": 53.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 63.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1802,18 +1896,22 @@ description: Operations executed pipe-elbow-90deg.kcl
                 "type": "SketchVar",
                 "value": 58.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 63.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1870,18 +1968,22 @@ description: Operations executed pipe-elbow-90deg.kcl
                 "type": "SketchVar",
                 "value": 53.5,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 63.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1896,18 +1998,22 @@ description: Operations executed pipe-elbow-90deg.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 63.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1964,18 +2070,22 @@ description: Operations executed pipe-elbow-90deg.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 63.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1990,18 +2100,22 @@ description: Operations executed pipe-elbow-90deg.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2099,18 +2213,22 @@ description: Operations executed pipe-elbow-90deg.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -2451,8 +2569,10 @@ description: Operations executed pipe-elbow-90deg.kcl
             "value": -20.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2499,8 +2619,10 @@ description: Operations executed pipe-elbow-90deg.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2508,8 +2630,10 @@ description: Operations executed pipe-elbow-90deg.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2517,8 +2641,10 @@ description: Operations executed pipe-elbow-90deg.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -2531,8 +2657,10 @@ description: Operations executed pipe-elbow-90deg.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2540,8 +2668,10 @@ description: Operations executed pipe-elbow-90deg.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2549,8 +2679,10 @@ description: Operations executed pipe-elbow-90deg.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -2568,8 +2700,10 @@ description: Operations executed pipe-elbow-90deg.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -2577,8 +2711,10 @@ description: Operations executed pipe-elbow-90deg.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -2586,8 +2722,10 @@ description: Operations executed pipe-elbow-90deg.kcl
                 "value": 80.0,
                 "ty": {
                   "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -2600,7 +2738,9 @@ description: Operations executed pipe-elbow-90deg.kcl
             "value": 16.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -2812,9 +2952,11 @@ description: Operations executed pipe-elbow-90deg.kcl
             "type": "Number",
             "value": -90.0,
             "ty": {
-              "degrees": null,
               "type": "Known",
-              "type": "Angle"
+              "value": {
+                "type": "Angle",
+                "value": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2831,8 +2973,10 @@ description: Operations executed pipe-elbow-90deg.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2840,8 +2984,10 @@ description: Operations executed pipe-elbow-90deg.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2849,8 +2995,10 @@ description: Operations executed pipe-elbow-90deg.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -2863,8 +3011,10 @@ description: Operations executed pipe-elbow-90deg.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2872,8 +3022,10 @@ description: Operations executed pipe-elbow-90deg.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2881,8 +3033,10 @@ description: Operations executed pipe-elbow-90deg.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -2937,9 +3091,11 @@ description: Operations executed pipe-elbow-90deg.kcl
             "type": "Number",
             "value": 180.0,
             "ty": {
-              "degrees": null,
               "type": "Known",
-              "type": "Angle"
+              "value": {
+                "type": "Angle",
+                "value": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2956,8 +3112,10 @@ description: Operations executed pipe-elbow-90deg.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2965,8 +3123,10 @@ description: Operations executed pipe-elbow-90deg.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2974,8 +3134,10 @@ description: Operations executed pipe-elbow-90deg.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -2988,8 +3150,10 @@ description: Operations executed pipe-elbow-90deg.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -2997,8 +3161,10 @@ description: Operations executed pipe-elbow-90deg.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -3006,8 +3172,10 @@ description: Operations executed pipe-elbow-90deg.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -3133,7 +3301,9 @@ description: Operations executed pipe-elbow-90deg.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -3161,7 +3331,9 @@ description: Operations executed pipe-elbow-90deg.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",

@@ -325,7 +325,9 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
         sandbox: false, // expose nodejs in preload
         preload: path.join(__dirname, './preload.js'),
       },
-      icon: path.resolve(process.cwd(), 'assets', 'icon.png'),
+      icon: app.isPackaged
+        ? path.join(process.resourcesPath, 'icon.png')
+        : path.resolve(process.cwd(), 'assets', 'icon.png'),
       frame: os.platform() !== 'darwin',
       titleBarStyle: 'hiddenInset',
       backgroundColor: nativeTheme.shouldUseDarkColors ? '#1C1C1C' : '#FCFCFC',

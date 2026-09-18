@@ -296,11 +296,9 @@ description: Variables in memory after executing extrude_to_edge_specifier.kcl
   },
   "facetag0": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "facetag0"
   },
   "facetag1": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "facetag1"
   },

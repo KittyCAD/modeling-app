@@ -2447,6 +2447,7 @@ extrude001 = extrude([sketch001.line1, sketch001.line2], length = 5, bodyType = 
         localStorage.setItem('persistCode', initialCode)
       }, initialCode)
       await page.setBodyDimensions({ width: 1500, height: 1000 })
+      await homePage.waitForAuthentication()
       await homePage.goToModelingScene()
       await scene.settled()
     })

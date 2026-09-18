@@ -8,8 +8,10 @@ description: Variables in memory after executing boolean_logical_multiple.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "ii": {
@@ -21,8 +23,10 @@ description: Variables in memory after executing boolean_logical_multiple.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "jj": {

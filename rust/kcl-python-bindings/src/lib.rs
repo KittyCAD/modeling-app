@@ -63,10 +63,18 @@ where
     T: Send + 'static,
     Fut: Future<Output = PyResult<T>> + Send + 'static,
 {
-    tokio()
-        .spawn(future)
-        .await
-        .map_err(|err| PyException::new_err(err.to_string()))?
+    struct AbortOnDrop(tokio::task::AbortHandle);
+
+    impl Drop for AbortOnDrop {
+        fn drop(&mut self) {
+            self.0.abort();
+        }
+    }
+
+    let task = tokio().spawn(future);
+    // Python cancellation drops this future; the native task must stop with it.
+    let _abort_on_drop = AbortOnDrop(task.abort_handle());
+    task.await.map_err(|err| PyException::new_err(err.to_string()))?
 }
 
 fn into_miette(error: kcl_lib::KclErrorWithOutputs, code: &str) -> PyErr {
@@ -305,9 +313,13 @@ impl ExecOutcome {
     }
 
     /// Render one sketch from this execution as a PNG, colored by solver
-    /// freedom.
-    fn render_sketch_png(&self, sketch_name: &str) -> PyResult<Vec<u8>> {
-        self.inner.render_sketch_png(sketch_name).map_err(to_py_exception)
+    /// freedom. For duplicate names, pass the zero-based instance_index
+    /// from the constraint report for this entrypoint and source.
+    #[pyo3(signature = (sketch_name, *, instance_index=None))]
+    fn render_sketch_png(&self, sketch_name: &str, instance_index: Option<usize>) -> PyResult<Vec<u8>> {
+        self.inner
+            .render_sketch_png_instance(sketch_name, instance_index)
+            .map_err(to_py_exception)
     }
 
     fn report_all(&self) -> Vec<String> {
@@ -1327,6 +1339,25 @@ define_stub_info_gatherer!(stub_info);
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[tokio::test]
+    async fn spawn_py_cancellation_drops_native_task() {
+        let (started_tx, started_rx) = tokio::sync::oneshot::channel();
+        let (dropped_tx, dropped_rx) = tokio::sync::oneshot::channel::<()>();
+        let caller = tokio::spawn(spawn_py(async move {
+            let _drop_signal = dropped_tx;
+            started_tx.send(()).unwrap();
+            std::future::pending::<PyResult<()>>().await
+        }));
+
+        started_rx.await.unwrap();
+        caller.abort();
+        assert!(caller.await.unwrap_err().is_cancelled());
+        tokio::time::timeout(std::time::Duration::from_secs(1), dropped_rx)
+            .await
+            .expect("native task remained alive after caller cancellation")
+            .expect_err("native task should drop its sender");
+    }
 
     #[test]
     fn executor_settings_preserve_default_edge_visibility_without_override() {
