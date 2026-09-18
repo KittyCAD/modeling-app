@@ -68,6 +68,8 @@ export async function enginelessExecutor(
   return await rustContext.executeMock(ast, settings, path, usePrevMemory)
 }
 
+// Tests reuse one manager per file, and a timeout does not cancel its pending
+// helper, so the next test can enter while the previous execution still runs.
 const artifactExecutions = new WeakMap<KclManager, Promise<undefined>>()
 
 export async function getAstAndArtifactGraph(
