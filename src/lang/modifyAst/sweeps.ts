@@ -15,6 +15,7 @@ import {
   createVariableExpressionsArray,
   insertRegionVariablesAndOffsetPathToNode,
   insertVariableAndOffsetPathToNode,
+  pathsReferToSamePipe,
   setCallInAst,
 } from '@src/lang/modifyAst'
 import { retrieveEdgeSelectionsFromSingleEdgeRef } from '@src/lang/modifyAst/edges'
@@ -39,9 +40,11 @@ import {
   getRegionSketchTagExprFromSourceSurface,
   getSketchSegmentName,
   getSketchSegmentNameFromSourceSurface,
+  getSketchVariableNameForSegment,
   getVariableExprsFromSelection,
   getVariableNameFromNodePath,
   isCallExprWithName,
+  stringifyPathToNode,
   valueOrVariable,
 } from '@src/lang/queryAst'
 import {
@@ -963,7 +966,7 @@ export function addRevolve({
 
 // Utilities
 
-function addHideCallsForRegionSketches({
+export function addHideCallsForRegionSketches({
   engineRegions,
   modifiedAst,
   artifactGraph,
@@ -1221,24 +1224,33 @@ export function retrieveBodyTypeFromOpArg(
   return new Error("Couldn't retrieve bodyType argument")
 }
 
-function getEdgeProfileExprsFromSelection({
+export function getEdgeProfileExprsFromSelection({
   selections,
   modifiedAst,
   artifactGraph,
   wasmInstance,
   nodeToEdit,
+  includeSegments = false,
+  preserveBodyContext = false,
 }: {
   selections: Selections
   modifiedAst: Node<Program>
   artifactGraph: ArtifactGraph
   wasmInstance: ModuleType
   nodeToEdit?: PathToNode
-}): Error | { modifiedAst: Node<Program>; exprs: Expr[] } {
+  includeSegments?: boolean
+  preserveBodyContext?: boolean
+}):
+  | Error
+  | { modifiedAst: Node<Program>; exprs: Expr[]; pathIfPipe?: PathToNode } {
   const exprs: Expr[] = []
+  let pathIfPipe: PathToNode | undefined
   const primitiveEdgeSelections = getPrimitiveEdgeSelections(selections)
   const unresolvedPrimitiveEdgeSelections: EnginePrimitiveSelection[] = []
   const edgeSelections = selections.graphSelections.filter(
-    (selection) => selection.artifact?.type === 'sweepEdge'
+    (selection) =>
+      selection.artifact?.type === 'sweepEdge' ||
+      (includeSegments && selection.artifact?.type === 'segment')
   )
   for (const primitiveEdgeSelection of primitiveEdgeSelections) {
     const artifact = artifactGraph.get(primitiveEdgeSelection.entityId)
@@ -1262,9 +1274,16 @@ function getEdgeProfileExprsFromSelection({
 
   for (const selection of edgeSelections) {
     const edgeArtifact = selection.artifact
-    if (!edgeArtifact || edgeArtifact.type !== 'sweepEdge') {
-      return new Error('Extrude edge profiles must be sweep edge selections.')
+    if (
+      !edgeArtifact ||
+      (edgeArtifact.type !== 'sweepEdge' && edgeArtifact.type !== 'segment')
+    ) {
+      return new Error(
+        'Edge profiles must be segment or sweep edge selections.'
+      )
     }
+    const segmentId =
+      edgeArtifact.type === 'segment' ? edgeArtifact.id : edgeArtifact.segId
 
     const edgeContext = resolveEdgeSelectionContext(
       modifiedAst,
@@ -1277,6 +1296,19 @@ function getEdgeProfileExprsFromSelection({
     if (err(edgeContext)) return edgeContext
     const sourceSurfaceArtifact = edgeContext.sourceSweep
     const sourceSurfaceExpr = edgeContext.selectedBodyExpr
+    if (preserveBodyContext && edgeContext.pathIfPipe) {
+      if (
+        pathIfPipe &&
+        stringifyPathToNode(pathIfPipe) !==
+          stringifyPathToNode(edgeContext.pathIfPipe) &&
+        !pathsReferToSamePipe(pathIfPipe, edgeContext.pathIfPipe)
+      ) {
+        return new Error(
+          'Assign variables to the selected bodies before combining their edges.'
+        )
+      }
+      pathIfPipe = structuredClone(edgeContext.pathIfPipe)
+    }
 
     const sourceSurfaceNode = getNodeFromPath<
       CallExpressionKw | VariableDeclaration
@@ -1334,22 +1366,33 @@ function getEdgeProfileExprsFromSelection({
       modifiedAst,
       wasmInstance
     )
-    if (!sketchSegmentName) {
+    if (
+      !sketchSegmentName &&
+      getSketchVariableNameForSegment(
+        modifiedAst,
+        segmentId,
+        artifactGraph,
+        wasmInstance
+      )
+    ) {
       sketchSegmentName = getSketchSegmentName(
         modifiedAst,
-        edgeArtifact.segId,
+        segmentId,
         artifactGraph,
         wasmInstance
       )
     }
-    const originalSegment = getOriginalSegmentArtifact(
-      edgeArtifact.segId,
-      artifactGraph
-    )
+    const originalSegment = getOriginalSegmentArtifact(segmentId, artifactGraph)
     if (
       !sketchSegmentName &&
       originalSegment &&
-      originalSegment.id !== edgeArtifact.segId
+      originalSegment.id !== segmentId &&
+      getSketchVariableNameForSegment(
+        modifiedAst,
+        originalSegment.id,
+        artifactGraph,
+        wasmInstance
+      )
     ) {
       sketchSegmentName = getSketchSegmentName(
         modifiedAst,
@@ -1394,7 +1437,18 @@ function getEdgeProfileExprsFromSelection({
       return new Error("Couldn't retrieve edge profile expression.")
     }
 
-    exprs.push(getEdgeTagCall(tagResult.exprs[0], edgeArtifact))
+    const tag = tagResult.exprs[0]
+    if (tag.type !== 'Name') {
+      return new Error("Couldn't retrieve the selected edge tag.")
+    }
+    exprs.push(
+      getEdgeTagCall(
+        preserveBodyContext
+          ? createSketchTagMemberExpression(sourceSurfaceExpr, tag.name.name)
+          : tag,
+        edgeArtifact
+      )
+    )
   }
 
   if (unresolvedPrimitiveEdgeSelections.length > 0) {
@@ -1419,5 +1473,5 @@ function getEdgeProfileExprsFromSelection({
     }
   }
 
-  return { modifiedAst, exprs }
+  return { modifiedAst, exprs, pathIfPipe }
 }
