@@ -75,14 +75,19 @@ export async function getAstAndArtifactGraph(
   instance: ModuleType,
   kclManager: KclManager
 ) {
+  const ast = assertParse(code, instance)
   const previous = artifactExecutions.get(kclManager)
   const completion = Promise.withResolvers<undefined>()
   artifactExecutions.set(kclManager, completion.promise)
   try {
     await previous
-    const ast = assertParse(code, instance)
     await kclManager.flushPendingEditorExecution()
-    await kclManager.executeAst({ ast })
+    await kclManager.executeAst({ ast }).catch((error) => {
+      if (kclManager.isExecuting) {
+        kclManager.executeAstCleanUp()
+      }
+      return Promise.reject(error)
+    })
     const {
       artifactGraph,
       execState: { operations },

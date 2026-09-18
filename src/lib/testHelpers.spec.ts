@@ -10,14 +10,6 @@ vi.mock('@src/lib/clientErrors', async (importOriginal) => ({
   reportClientError: vi.fn().mockResolvedValue(undefined),
 }))
 
-function deferred<T>() {
-  let resolve!: (value: T) => void
-  const promise = new Promise<T>((r) => {
-    resolve = r
-  })
-  return { promise, resolve }
-}
-
 afterEach(() => {
   vi.restoreAllMocks()
   vi.clearAllTimers()
@@ -28,9 +20,9 @@ afterEach(() => {
 it('serializes artifact helpers behind active work on the same manager', async () => {
   const { kclManager } = createKclManagerTestHarness('x = 1')
   const instance = await kclManager.wasmInstancePromise
-  const active = deferred<ReturnType<typeof emptyExecState>>()
-  const first = deferred<ReturnType<typeof emptyExecState>>()
-  const second = deferred<ReturnType<typeof emptyExecState>>()
+  const active = Promise.withResolvers<ReturnType<typeof emptyExecState>>()
+  const first = Promise.withResolvers<ReturnType<typeof emptyExecState>>()
+  const second = Promise.withResolvers<ReturnType<typeof emptyExecState>>()
   const firstState = emptyExecState()
   const secondState = emptyExecState()
   kclManager.engineCommandManager.started = true
@@ -64,18 +56,22 @@ it('serializes artifact helpers behind active work on the same manager', async (
   expect(secondResult.operations).toBe(secondState.operations)
 })
 
-it('releases the next artifact helper after a queued parse fails', async () => {
+it('releases the next artifact helper after execution fails', async () => {
   const { kclManager } = createKclManagerTestHarness('x = 1')
   const instance = await kclManager.wasmInstancePromise
-  const ownState = emptyExecState()
+  const executionError = new Error('execution failed')
   kclManager.engineCommandManager.started = true
-  const rustExecute = vi
-    .spyOn(kclManager.rustContext, 'execute')
-    .mockResolvedValue(ownState)
-  const invalidRead = getAstAndArtifactGraph('x =', instance, kclManager)
+  const executeAst = vi
+    .spyOn(kclManager, 'executeAst')
+    .mockImplementationOnce(async () => {
+      kclManager.isExecuting = true
+      throw executionError
+    })
+    .mockResolvedValueOnce()
+  const failedRead = getAstAndArtifactGraph('x = 1', instance, kclManager)
   const nextRead = getAstAndArtifactGraph('x = 2', instance, kclManager)
-  await expect(invalidRead).rejects.toBeDefined()
-  const result = await nextRead
-  expect(rustExecute).toHaveBeenCalledOnce()
-  expect(result.artifactGraph).toBe(ownState.artifactGraph)
+  await expect(failedRead).rejects.toBe(executionError)
+  await expect(nextRead).resolves.toBeDefined()
+  expect(executeAst).toHaveBeenCalledTimes(2)
+  expect(kclManager.isExecuting).toBe(false)
 })
