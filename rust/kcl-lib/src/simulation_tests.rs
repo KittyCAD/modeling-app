@@ -159,6 +159,7 @@ struct TestConfig {
     /// until we make the engine more deterministic.
     #[serde(default = "default_redact_uuids")]
     redact_uuids: bool,
+    #[serde(default)]
     test_graphics: TestGraphicsParams,
 }
 
@@ -196,7 +197,7 @@ impl TestConfig {
 
     fn write_file(&self, test_dir: &Path) {
         let test_config_path = test_dir.join("config.toml");
-        std::fs::write(test_config_path, toml::to_string(self).unwrap());
+        std::fs::write(test_config_path, toml::to_string(self).unwrap()).unwrap();
     }
 }
 
@@ -654,9 +655,7 @@ async fn unparse_test(test: &Test) {
 
 async fn execute(test_name: &str, render_to_png: bool) {
     let graphics = match render_to_png {
-        true => TestGraphicsParams::EngineRender {
-            reason: "legacy".to_string(),
-        },
+        true => TestGraphicsParams::ExportAndRender,
         false => TestGraphicsParams::None,
     };
     execute_test(&Test::new(test_name, Some(graphics))).await
