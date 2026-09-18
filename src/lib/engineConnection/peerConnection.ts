@@ -156,6 +156,7 @@ export function createOnIceCandidateError() {
 }
 
 type WebrtcDisconnectRoute =
+  | 'data-channel-closed'
   | 'peer-connection-failed'
   | 'peer-connection-disconnected'
   | 'peer-connection-closed'
@@ -427,6 +428,8 @@ export function createWebrtcStatsCollector({
 }
 
 export const createOnDataChannel = ({
+  connection,
+  peerConnection,
   setUnreliableDataChannel,
   dispatchEvent,
   trackListener,
@@ -435,6 +438,8 @@ export const createOnDataChannel = ({
   handleOnDataChannelMessage,
   tearDownManager,
 }: {
+  connection: Connection
+  peerConnection: RTCPeerConnection
   setUnreliableDataChannel: (channel: RTCDataChannel) => void
   dispatchEvent: (event: Event) => boolean
   trackListener: (
@@ -469,6 +474,8 @@ export const createOnDataChannel = ({
       handleOnDataChannelMessage,
     })
     const onDataChannelClose = createOnDataChannelClose({
+      connection,
+      peerConnection,
       unreliableDataChannel: event.channel,
       onDataChannelOpen,
       onDataChannelError,
@@ -591,12 +598,16 @@ export const createOnDataChannelMessage = ({
 }
 
 export const createOnDataChannelClose = ({
+  connection,
+  peerConnection,
   unreliableDataChannel,
   onDataChannelOpen,
   onDataChannelError,
   onDataChannelMessage,
   tearDownManager,
 }: {
+  connection: Connection
+  peerConnection: RTCPeerConnection
   unreliableDataChannel: RTCDataChannel
   onDataChannelOpen: (event: Event) => void
   onDataChannelError: (event: Event) => void
@@ -611,10 +622,18 @@ export const createOnDataChannelClose = ({
     unreliableDataChannel.removeEventListener('open', onDataChannelOpen)
     unreliableDataChannel.removeEventListener('error', onDataChannelError)
     unreliableDataChannel.removeEventListener('message', onDataChannelMessage)
-    tearDownManager({
+    const options: ManagerTearDown = {
       route: 'data-channel-closed',
       initiatedBy: 'unknown',
-    })
+    }
+    if (connection.recordShutdownTrigger(options)) {
+      void reportWebrtcDisconnect({
+        connection,
+        peerConnection,
+        route: 'data-channel-closed',
+      }).catch(reportRejection)
+    }
+    tearDownManager(options)
   }
   return onDataChannelClose
 }
