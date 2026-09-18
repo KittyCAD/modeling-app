@@ -3,6 +3,7 @@
 
 import builtins
 import enum
+import types
 import typing
 __all__ = [
     "AcisImportOptions",
@@ -472,6 +473,14 @@ class KclSession:
     Created after executing a KCL project.
     Lets you call follow-up methods, like exporting or snapshotting, without re-executing the KCL.
     """
+    async def __aenter__(self) -> KclSession:
+        r"""
+        Enter this session without executing KCL again.
+        """
+    async def __aexit__(self, exc_type: builtins.type[builtins.BaseException] | None, exc_value: builtins.BaseException | None, traceback: types.TracebackType | None) -> None:
+        r"""
+        Close the session, including when the context body raises an exception.
+        """
     async def close(self) -> None:
         r"""
         After calling this, calling any methods that use the connection will raise an exception.
@@ -481,7 +490,7 @@ class KclSession:
         Measure the active model's physical properties.
         Supports choosing any of the available properties, like volume, mass, bounding box, or any combination of them.
         """
-    async def snapshots(self, image_format: ImageFormat, snapshot_options: typing.Sequence[SnapshotOptions], zoom: builtins.bool) -> builtins.list[builtins.list[builtins.int]]:
+    async def snapshots(self, image_format: ImageFormat, snapshot_options: typing.Sequence[SnapshotOptions], *, zoom: builtins.bool = ...) -> builtins.list[builtins.list[builtins.int]]:
         r"""
         Get 2D images of the model.
         """
@@ -1449,14 +1458,14 @@ async def mock_execute_code(code: builtins.str) -> zooExecOutcome:
     Mock execute the kcl code.
     """
 
-async def new_kcl_session(path: builtins.str, mock: builtins.bool, highlight_edges: typing.Optional[builtins.bool]) -> zooKclSession:
+async def new_kcl_session(path: builtins.str, *, mock: builtins.bool = ..., highlight_edges: typing.Optional[builtins.bool] = None) -> KclSession:
     r"""
     Execute this KCL project.
     Return an executed KCL project with its connection still available.
     You can call follow-up methods, like exporting or snapshotting or measuring, on the returned session.
     """
 
-async def new_kcl_session_code(code: builtins.str, mock: builtins.bool, highlight_edges: typing.Optional[builtins.bool]) -> zooKclSession:
+async def new_kcl_session_code(code: builtins.str, *, mock: builtins.bool = ..., highlight_edges: typing.Optional[builtins.bool] = None) -> KclSession:
     r"""
     Execute this KCL source code string.
     Return an executed KCL project with its connection still available.

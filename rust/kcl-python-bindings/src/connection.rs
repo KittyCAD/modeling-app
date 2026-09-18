@@ -7,10 +7,12 @@ use kittycad_modeling_cmds::shared::FileExportFormat;
 use kittycad_modeling_cmds::websocket::RawFile;
 use pyo3::Py;
 use pyo3::PyResult;
+use pyo3::Python;
 use pyo3::exceptions::PyException;
 use pyo3::pyclass;
 use pyo3::pyfunction;
 use pyo3::pymethods;
+use pyo3::types::PyAny;
 
 use crate::ExecutedKcl;
 use crate::KclInput;
@@ -22,6 +24,7 @@ use crate::into_miette;
 use crate::load_and_parse;
 use crate::measure_model_properties;
 use crate::new_context_state;
+use crate::spawn_py;
 use crate::take_snaps;
 use crate::to_py_exception;
 
@@ -47,9 +50,48 @@ impl std::fmt::Debug for KclSession {
 #[pyo3_stub_gen::derive::gen_stub_pymethods]
 #[pymethods]
 impl KclSession {
+    // This is for entering a Python 'async with' context.
+    // See <https://docs.python.org/3/reference/datamodel.html#object.__aenter__>
+    /// Enter this session without executing KCL again.
+    #[gen_stub(override_return_type(type_repr = "KclSession"))]
+    async fn __aenter__(slf: Py<Self>) -> PyResult<Py<Self>> {
+        Python::attach(|py| {
+            if slf.try_borrow(py)?.is_closed {
+                return Err(PyException::new_err("Connection already closed"));
+            }
+            Ok(slf)
+        })
+    }
+
+    // This is for exiting a Python 'async with' context.
+    // See <https://docs.python.org/3/reference/datamodel.html#object.__aexit__>
+    /// Close the session, including when the context body raises an exception.
+    #[pyo3(signature = (exc_type, exc_value, traceback))]
+    async fn __aexit__(
+        &mut self,
+        #[gen_stub(override_type(type_repr = "builtins.type[builtins.BaseException] | None"))] exc_type: Option<
+            Py<PyAny>,
+        >,
+        #[gen_stub(override_type(type_repr = "builtins.BaseException | None"))] exc_value: Option<Py<PyAny>>,
+        #[gen_stub(override_type(type_repr = "types.TracebackType | None", imports = ("types")))] traceback: Option<
+            Py<PyAny>,
+        >,
+    ) -> PyResult<()> {
+        let _ = (exc_type, exc_value, traceback);
+        self.close().await
+    }
+
     /// After calling this, calling any methods that use the connection will raise an exception.
     pub async fn close(&mut self) -> PyResult<()> {
-        self.executed_kcl.ctx.close().await;
+        if self.is_closed {
+            return Ok(());
+        }
+        let executed_kcl = self.executed_kcl.clone();
+        spawn_py(async move {
+            executed_kcl.ctx.close().await;
+            Ok(())
+        })
+        .await?;
         self.is_closed = true;
         Ok(())
     }
@@ -60,10 +102,12 @@ impl KclSession {
         if self.is_closed {
             return Err(PyException::new_err("Connection already closed"));
         }
-        measure_model_properties(&self.executed_kcl.ctx, request).await
+        let executed_kcl = self.executed_kcl.clone();
+        spawn_py(async move { measure_model_properties(&executed_kcl.ctx, request).await }).await
     }
 
     /// Get 2D images of the model.
+    #[pyo3(signature = (image_format, snapshot_options, *, zoom=true))]
     pub async fn snapshots(
         &self,
         image_format: ImageFormat,
@@ -73,7 +117,8 @@ impl KclSession {
         if self.is_closed {
             return Err(PyException::new_err("Connection already closed"));
         }
-        take_snaps(&self.executed_kcl.ctx, image_format, snapshot_options, zoom).await
+        let executed_kcl = self.executed_kcl.clone();
+        spawn_py(async move { take_snaps(&executed_kcl.ctx, image_format, snapshot_options, zoom).await }).await
     }
 
     /// Get 3D files containing this model.
@@ -81,13 +126,17 @@ impl KclSession {
         if self.is_closed {
             return Err(PyException::new_err("Connection already closed"));
         }
-        crate::export_from_executed(
-            &self.executed_kcl.ctx,
-            &self.executed_kcl.program,
-            &self.executed_kcl.code,
-            &self.executed_kcl.filename,
-            export_format,
-        )
+        let executed_kcl = self.executed_kcl.clone();
+        spawn_py(async move {
+            crate::export_from_executed(
+                &executed_kcl.ctx,
+                &executed_kcl.program,
+                &executed_kcl.code,
+                &executed_kcl.filename,
+                export_format,
+            )
+            .await
+        })
         .await
     }
 }
@@ -96,20 +145,22 @@ impl KclSession {
 /// Return an executed KCL project with its connection still available.
 /// You can call follow-up methods, like exporting or snapshotting or measuring, on the returned session.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
+#[gen_stub(override_return_type(type_repr = "KclSession"))]
+#[pyfunction(signature = (path, *, mock=false, highlight_edges=None))]
 pub async fn new_kcl_session(path: String, mock: bool, highlight_edges: Option<bool>) -> PyResult<KclSession> {
     let input = KclInput::Path(path);
-    new_kcl_session_impl(input, mock, highlight_edges).await
+    spawn_py(async move { new_kcl_session_impl(input, mock, highlight_edges).await }).await
 }
 
 /// Execute this KCL source code string.
 /// Return an executed KCL project with its connection still available.
 /// You can call follow-up methods, like exporting or snapshotting or measuring, on the returned session.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
+#[gen_stub(override_return_type(type_repr = "KclSession"))]
+#[pyfunction(signature = (code, *, mock=false, highlight_edges=None))]
 pub async fn new_kcl_session_code(code: String, mock: bool, highlight_edges: Option<bool>) -> PyResult<KclSession> {
     let input = KclInput::Code(code);
-    new_kcl_session_impl(input, mock, highlight_edges).await
+    spawn_py(async move { new_kcl_session_impl(input, mock, highlight_edges).await }).await
 }
 
 /// Execute this KCL project.

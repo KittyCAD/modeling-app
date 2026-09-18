@@ -97,6 +97,91 @@ async def test_kcl_execute():
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("from_file", [False, True])
+async def test_kcl_session_context_manager(tmp_path, from_file):
+    code = "@settings(kclVersion = 2.0)\nvalue = 1"
+    if from_file:
+        source = tmp_path / "main.kcl"
+        source.write_text(code)
+        session = await kcl.new_kcl_session(str(source), mock=True)
+    else:
+        session = await kcl.new_kcl_session_code(code, mock=True)
+
+    async with session as entered:
+        assert entered is session
+
+    # Context exit closes the session, and repeated close is harmless.
+    await session.close()
+    with pytest.raises(Exception, match="Connection already closed"):
+        async with session:
+            pytest.fail("A closed session must not be entered")
+    with pytest.raises(Exception, match="Connection already closed"):
+        await session.measure(kcl.PhysicalPropertiesRequest())
+    with pytest.raises(Exception, match="Connection already closed"):
+        await session.snapshots(kcl.ImageFormat.Png, [])
+    with pytest.raises(Exception, match="Connection already closed"):
+        await session.export(kcl.FileExportFormat.Step)
+
+
+@pytest.mark.asyncio
+async def test_kcl_session_context_manager_propagates_exception():
+    session = await kcl.new_kcl_session_code(
+        "@settings(kclVersion = 2.0)\nvalue = 1", mock=True
+    )
+    error = ValueError("context body failed")
+    with pytest.raises(ValueError) as raised:
+        async with session:
+            raise error
+    assert raised.value is error
+    with pytest.raises(Exception, match="Connection already closed"):
+        await session.export(kcl.FileExportFormat.Step)
+
+
+@pytest.mark.asyncio
+async def test_kcl_session_explicit_close():
+    session = await kcl.new_kcl_session_code(
+        "@settings(kclVersion = 2.0)\nvalue = 1", mock=True
+    )
+    await session.close()
+    await session.close()
+    with pytest.raises(Exception, match="Connection already closed"):
+        await session.measure(kcl.PhysicalPropertiesRequest())
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_kcl_session_reuses_execution_for_tools(tmp_path):
+    source = tmp_path / "main.kcl"
+    source.write_text("""
+@settings(kclVersion = 2.0)
+profile = sketch(on = XY) {
+  circle001 = circle(center = [var 0mm, var 0mm], start = [var 5mm, var 0mm])
+}
+disk = region(point = [0mm, 0mm], sketch = profile)
+solid = extrude(disk, length = 10mm)
+""")
+    async with await execute_with_retries(
+        kcl.new_kcl_session, str(source), highlight_edges=False
+    ) as session:
+        # All three tools use the executed model after its source is removed.
+        source.unlink()
+        images = await session.snapshots(kcl.ImageFormat.Png, [])
+        assert len(images) == 1
+        assert bytes(images[0]).startswith(b"\x89PNG\r\n\x1a\n")
+
+        files = await session.export(kcl.FileExportFormat.Step)
+        assert files
+        assert b"ISO-10303-21" in bytes(files[0].contents)
+
+        request = kcl.PhysicalPropertiesRequest()
+        request.set_volume(kcl.UnitVolume.CubicMillimeters)
+        response = await session.measure(request)
+        # Allow the engine's approximation of the circular cross-section.
+        assert response.get_volume() == pytest.approx(785.398163, rel=0.002)
+        assert response.get_volume_unit() == kcl.UnitVolume.CubicMillimeters
+
+
+@pytest.mark.asyncio
 async def test_kcl_parse_with_exception():
     # Read from a file.
     try:

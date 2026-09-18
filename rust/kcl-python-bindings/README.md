@@ -6,6 +6,21 @@ Python bindings to the rust kcl-lib crate.
 
 The [tests.py](tests/tests.py) file contains examples of how to use the library.
 
+Execute KCL once, then reuse the session for snapshots, exports, and measurements:
+
+```python
+async with await kcl.new_kcl_session("main.kcl") as session:
+    images = await session.snapshots(kcl.ImageFormat.Png, [])
+    files = await session.export(kcl.FileExportFormat.Step)
+    request = kcl.PhysicalPropertiesRequest()
+    request.set_volume(kcl.UnitVolume.CubicMillimeters)
+    properties = await session.measure(request)
+```
+
+Use `new_kcl_session_code(code)` for a source string. The context manager closes
+the connection on exit, including when the body raises an exception. When managing
+the session yourself, call `await session.close()` when finished.
+
 ## Development
 
 We use [maturin](https://github.com/PyO3/maturin) for this project.
