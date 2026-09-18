@@ -237,6 +237,7 @@ export class ConnectionManager extends EventTarget {
       url,
       token,
       handleOnDataChannelMessage: this.handleOnDataChannelMessage.bind(this),
+      recordShutdownTrigger: this.recordShutdownTrigger.bind(this),
       tearDownManager: this.tearDown.bind(this),
       rejectPendingCommand: this.rejectPendingCommand.bind(this),
       callbackOnUnitTestingConnection,
@@ -1053,59 +1054,61 @@ export class ConnectionManager extends EventTarget {
     this.connection.send(resizeCmd)
   }
 
-  tearDown(options?: ManagerTearDown) {
-    const route = options?.route ?? 'unknown'
-    const initiatedBy = options?.initiatedBy ?? 'unknown'
+  recordShutdownTrigger(options: ManagerTearDown) {
+    if (this.shutdownReported) return false
+
+    this.shutdownReported = true
     const connection = this.connection
-    const isFirstShutdownTrigger = !this.shutdownReported
-    if (isFirstShutdownTrigger) {
-      this.shutdownReported = true
-    }
+
+    void reportClientError({
+      code: ClientErrorCode.EngineTeardown,
+      message: `Engine teardown called: ${options.route}.`,
+      extra: {
+        source: 'ConnectionManager',
+        shutdownRoute: options.route,
+        initiatedBy: options.initiatedBy,
+        sourceTime: new Date().toISOString(),
+        monotonicElapsedMs: Math.max(
+          0,
+          performance.now() - this.connectionStartedAt
+        ),
+        pendingCommandCount: Object.keys(this.pendingCommands).length,
+        hasConnection: Boolean(connection),
+        connectionId: connection?.id ?? null,
+        modelingApiCallId: connection?.apiCallId ?? null,
+        websocketCloseCode: options.code ?? null,
+        websocketCloseReason: options.reason ?? null,
+        reconnectRequested: options.reconnectRequested ?? false,
+        connectionConnected: connection?.connected ?? false,
+        websocketReadyState: connection?.websocket?.readyState ?? null,
+        peerConnectionState:
+          connection?.peerConnection?.connectionState ?? null,
+        iceConnectionState:
+          connection?.peerConnection?.iceConnectionState ?? null,
+        dataChannelReadyState:
+          connection?.unreliableDataChannel?.readyState ?? null,
+      },
+    })
+
+    return true
+  }
+
+  tearDown(options: ManagerTearDown) {
+    const connection = this.connection
+    const isFirstShutdownTrigger = this.recordShutdownTrigger(options)
 
     EngineDebugger.addLog({
       label: 'connectionManager',
       message: `invoked tearDown()`,
       metadata: {
         options,
-        route,
-        initiatedBy,
+        route: options.route,
+        initiatedBy: options.initiatedBy,
         isFirstShutdownTrigger,
         started: !!this.started,
         connection: !!connection,
       },
     })
-
-    if (isFirstShutdownTrigger) {
-      void reportClientError({
-        code: ClientErrorCode.EngineTeardown,
-        message: `Engine teardown called: ${route}.`,
-        extra: {
-          source: 'ConnectionManager',
-          shutdownRoute: route,
-          initiatedBy,
-          sourceTime: new Date().toISOString(),
-          monotonicElapsedMs: Math.max(
-            0,
-            performance.now() - this.connectionStartedAt
-          ),
-          pendingCommandCount: Object.keys(this.pendingCommands).length,
-          hasConnection: Boolean(connection),
-          connectionId: connection?.id ?? null,
-          modelingApiCallId: connection?.apiCallId ?? null,
-          websocketCloseCode: options?.code ?? null,
-          websocketCloseReason: options?.reason ?? null,
-          reconnectRequested: options?.reconnectRequested ?? false,
-          connectionConnected: connection?.connected ?? false,
-          websocketReadyState: connection?.websocket?.readyState ?? null,
-          peerConnectionState:
-            connection?.peerConnection?.connectionState ?? null,
-          iceConnectionState:
-            connection?.peerConnection?.iceConnectionState ?? null,
-          dataChannelReadyState:
-            connection?.unreliableDataChannel?.readyState ?? null,
-        },
-      })
-    }
 
     if (!this.started) {
       EngineDebugger.addLog({
@@ -1122,14 +1125,14 @@ export class ConnectionManager extends EventTarget {
       })
     }
 
-    if (options?.connectionError) {
+    if (options.connectionError) {
       this.lastConnectionError = options.connectionError
     }
 
     // It was torn down from a websocket close.
     if (
-      options?.route === 'websocket-closed' ||
-      options?.route === 'backend-shutdown'
+      options.route === 'websocket-closed' ||
+      options.route === 'backend-shutdown'
     ) {
       this.dispatchEvent(
         new CustomEvent<EngineDisconnectEventDetail>(
@@ -1143,22 +1146,22 @@ export class ConnectionManager extends EventTarget {
           }
         )
       )
-    } else if (options?.route === 'peer-connection-closed') {
+    } else if (options.route === 'peer-connection-closed') {
       this.dispatchEvent(
         new CustomEvent(EngineConnectionManagerEvents.peerConnectionClosed, {})
       )
-    } else if (options?.route === 'peer-connection-disconnected') {
+    } else if (options.route === 'peer-connection-disconnected') {
       this.dispatchEvent(
         new CustomEvent(
           EngineConnectionManagerEvents.peerConnectionDisconnected,
           {}
         )
       )
-    } else if (options?.route === 'peer-connection-failed') {
+    } else if (options.route === 'peer-connection-failed') {
       this.dispatchEvent(
         new CustomEvent(EngineConnectionManagerEvents.peerConnectionFailed, {})
       )
-    } else if (options?.route === 'data-channel-closed') {
+    } else if (options.route === 'data-channel-closed') {
       this.dispatchEvent(
         new CustomEvent(EngineConnectionManagerEvents.dataChannelClose, {})
       )

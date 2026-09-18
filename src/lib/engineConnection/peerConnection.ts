@@ -157,7 +157,7 @@ export function createOnConnectionStateChange({
 }: {
   dispatchEvent: (event: Event) => boolean
   connection: Connection
-  tearDownManager: (options?: ManagerTearDown) => void
+  tearDownManager: (options: ManagerTearDown) => void
 }) {
   // https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/connectionstatechange_event
   // Event type: generic Event type...
@@ -334,7 +334,7 @@ export const createOnDataChannel = ({
   startPingPong: () => void
   connectionPromiseResolve: (value: unknown) => void
   handleOnDataChannelMessage: (event: MessageEvent<any>) => void
-  tearDownManager: (options?: ManagerTearDown) => void
+  tearDownManager: (options: ManagerTearDown) => void
 }) => {
   const onDataChannel = (event: RTCDataChannelEvent) => {
     dispatchEvent(
@@ -491,7 +491,7 @@ export const createOnDataChannelClose = ({
   onDataChannelOpen: (event: Event) => void
   onDataChannelError: (event: Event) => void
   onDataChannelMessage: (event: MessageEvent<any>) => void
-  tearDownManager: (options?: ManagerTearDown) => void
+  tearDownManager: (options: ManagerTearDown) => void
 }) => {
   const onDataChannelClose = () => {
     EngineDebugger.addLog({

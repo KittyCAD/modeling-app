@@ -100,6 +100,7 @@ describe('ConnectionManager', () => {
         url: 'ws://localhost/modeling-test',
         token: 'test-token',
         handleOnDataChannelMessage: vi.fn(),
+        recordShutdownTrigger: manager.recordShutdownTrigger.bind(manager),
         tearDownManager: manager.tearDown.bind(manager),
         rejectPendingCommand: vi.fn(),
         handleMessage: vi.fn(),
@@ -127,6 +128,18 @@ describe('ConnectionManager', () => {
         'reconnect requested'
       )
       expect(closeDetails).toEqual([])
+      expect(reportClientError).toHaveBeenCalledOnce()
+      expect(reportClientError).toHaveBeenCalledWith(
+        expect.objectContaining({
+          extra: expect.objectContaining({
+            shutdownRoute: 'websocket-closed',
+            initiatedBy: 'api',
+            websocketCloseCode: '1000',
+            websocketCloseReason: 'reconnect requested',
+            reconnectRequested: true,
+          }),
+        })
+      )
 
       socket.finishClose(code)
       expect(closeDetails).toEqual([
@@ -135,6 +148,7 @@ describe('ConnectionManager', () => {
       expect(rejectPending).toHaveBeenCalledOnce()
       expect(manager.connection).toBeUndefined()
       expect(manager.started).toBe(false)
+      expect(reportClientError).toHaveBeenCalledOnce()
 
       // Stale events on the retired socket must not start another recovery.
       socket.finishClose(code)
