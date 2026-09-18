@@ -7,7 +7,8 @@ dropped input records fail CI. Runs have no retries or Test Analysis Bot overrid
 ## Registering an interaction
 
 `src/lib/interactionPerformance/definitions.ts` owns each interaction's identity,
-test ID, expected duration, and visible completion condition. Expectations must
+test ID, expected duration, and outcome description. `outcomes.ts` defines the
+visible completion checks for instrumented builds. Expectations must
 be positive and no greater than 150 ms. Use the same definition on the control:
 
 ```tsx
@@ -33,6 +34,12 @@ The initial outcomes are command-palette search becoming usable and the palette
 closing. Native menus, keyboard shortcuts, engine completion, and other controls
 need their own completion conditions and scenarios.
 
+Normal release builds exclude the recorder, completion checks, and measurement
+API. Test builds opt in with `VITE_INTERACTION_PERFORMANCE=1` while retaining
+production optimization and the real UI. Even there, the recorder loads and
+allocates state only when `start()` is explicitly called. Active samples stay in
+memory until the test exports them; this does not collect customer telemetry.
+
 ## Running measurements
 
 Prepare dependencies and matching Wasm artifacts using the normal repository
@@ -40,7 +47,7 @@ setup, then build and test the production Electron app:
 
 ```sh
 npm ci
-VITE_ZOO_BASE_DOMAIN=dev.zoo.dev npm run tronb:vite:prod
+VITE_INTERACTION_PERFORMANCE=1 VITE_ZOO_BASE_DOMAIN=dev.zoo.dev npm run tronb:vite:prod
 NODE_ENV=production TARGET=desktop VITE_ZOO_BASE_DOMAIN=dev.zoo.dev \
   npm exec -- playwright test --config=playwright.performance.config.ts
 ```
@@ -68,6 +75,13 @@ the recorder owns the measurement timestamps.
 The CI job summary shows every scenario's measurements and errors. Raw samples,
 environment metadata, coverage, and all warnings are also retained in
 `test-results/interaction-performance/` and `playwright-report/interaction-performance/`.
+GitHub retains these artifacts for 30 days. After all scenarios finish, the TAB
+reporter publishes one result per scenario containing every repetition, the
+measurement summaries, raw measurement JSON, and workflow run/attempt identifiers.
+TAB's duration field remains the total scenario runtime, not click latency.
+Earlier workflow attempts remain in history; TAB uses the latest as its current
+result. Its responses never override this workflow's collection failures.
+Publication failures are logged and leave the local reports and test result intact.
 Inspect the HTML report with:
 
 ```sh
@@ -87,6 +101,11 @@ Compare first-use and repeated-use separately: maxima, p50/p95, every warning,
 collection failures, and environment metadata. Investigate variation instead of
 adding retries or widening timeouts. The injected-delay probes must keep detecting
 the regression.
+
+For a confirmed runner or setup failure, use GitHub's **Re-run all jobs** on the
+same commit. Preserve the failed attempt and rerun the complete workflow, not
+individual tests or only failed jobs. A slow but valid sample is a measurement,
+not a reason to rerun until it disappears.
 
 Expand the interaction inventory and its scenarios first. Existing slow actions
 remain warnings while they are improved; there are no higher-budget exceptions.

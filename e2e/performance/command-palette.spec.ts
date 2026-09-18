@@ -12,11 +12,29 @@ const POLL_INTERVAL_MS = 10
 const INJECTED_HANDLER_MS = 250
 const MIN_INJECTED_DURATION_MS = INJECTED_HANDLER_MS - 50
 
+async function startCapture(page: Page) {
+  await page.evaluate(() => {
+    const recorder = window.app.interactionPerformance
+    if (!recorder) {
+      throw new Error('Build the app with VITE_INTERACTION_PERFORMANCE=1.')
+    }
+    return recorder.start()
+  })
+}
+
+function readCapture() {
+  const recorder = window.app.interactionPerformance
+  if (!recorder) {
+    throw new Error('Build the app with VITE_INTERACTION_PERFORMANCE=1.')
+  }
+  return recorder.snapshot()
+}
+
 async function waitForSample(page: Page, id: string, count: number) {
   await page.waitForFunction(
     ({ id, count }) =>
       window.app.interactionPerformance
-        .snapshot()
+        ?.snapshot()
         .samples.filter(
           (sample) => sample.id === id && sample.status === 'complete'
         ).length === count,
@@ -31,7 +49,7 @@ async function waitForInjectedDuration(page: Page) {
   await page.waitForFunction(
     (minimumDurationMs) =>
       window.app.interactionPerformance
-        .snapshot()
+        ?.snapshot()
         .samples.some(
           (sample) =>
             sample.eventTiming !== null &&
@@ -49,9 +67,13 @@ async function finishCapture(
   expected: Readonly<Record<string, number>>,
   tronApp: ElectronZoo | undefined
 ): Promise<InteractionReport> {
-  const snapshot = await page.evaluate(() =>
-    window.app.interactionPerformance.stop()
-  )
+  const snapshot = await page.evaluate(() => {
+    const recorder = window.app.interactionPerformance
+    if (!recorder) {
+      throw new Error('Build the app with VITE_INTERACTION_PERFORMANCE=1.')
+    }
+    return recorder.stop()
+  })
   const report = reportInteractions(snapshot, expected)
   if (!tronApp) throw new Error('Interaction measurements require Electron.')
   const runtime = await tronApp.electron.evaluate(() => ({
@@ -62,6 +84,8 @@ async function finishCapture(
     scenario,
     repeatIndex: testInfo.repeatEachIndex,
     commit: process.env.GITHUB_SHA ?? null,
+    runId: process.env.GITHUB_RUN_ID ?? null,
+    runAttempt: process.env.GITHUB_RUN_ATTEMPT ?? null,
     runner: process.env.RUNNER_NAME ?? 'local',
     platform: platform(),
     architecture: arch(),
@@ -136,7 +160,7 @@ for (const scenario of [
       await expect(page.getByTestId('command-bar-wrapper')).toBeHidden()
     }
 
-    await page.evaluate(() => window.app.interactionPerformance.start())
+    await startCapture(page)
     let report: InteractionReport
     try {
       for (let index = 1; index <= scenario.repetitions; index++) {
@@ -169,7 +193,7 @@ test('harness detects a delayed real command-palette click', async ({
   cmdBar,
   tronApp,
 }, testInfo) => {
-  await page.evaluate(() => window.app.interactionPerformance.start())
+  await startCapture(page)
   await page.evaluate((delayMs) => {
     document.addEventListener(
       'click',
@@ -221,7 +245,7 @@ test('harness detects a delayed pointerdown before the command-palette click', a
   cmdBar,
   tronApp,
 }, testInfo) => {
-  await page.evaluate(() => window.app.interactionPerformance.start())
+  await startCapture(page)
   await page.evaluate((delayMs) => {
     document.addEventListener(
       'pointerdown',
@@ -276,7 +300,7 @@ test('harness rejects a missing measurement', async ({
   page,
   tronApp,
 }, testInfo) => {
-  await page.evaluate(() => window.app.interactionPerformance.start())
+  await startCapture(page)
   const report = await finishCapture(
     page,
     testInfo,
@@ -293,13 +317,14 @@ test('recorder does not attribute secondary clicks and restart clears prior samp
   cmdBar,
   tronApp,
 }, testInfo) => {
-  await page.evaluate(() => window.app.interactionPerformance.start())
+  await startCapture(page)
   let report: InteractionReport
   try {
     await cmdBar.cmdBarOpenBtn.click({ button: 'right' })
     await page.waitForFunction(
       () => {
-        const { samples } = window.app.interactionPerformance.snapshot()
+        const samples =
+          window.app.interactionPerformance?.snapshot().samples ?? []
         return (
           samples.length > 0 &&
           samples.every((sample) => sample.status !== 'pending')
@@ -308,9 +333,7 @@ test('recorder does not attribute secondary clicks and restart clears prior samp
       undefined,
       { timeout: 10_000, polling: POLL_INTERVAL_MS }
     )
-    const discovery = await page.evaluate(() =>
-      window.app.interactionPerformance.snapshot()
-    )
+    const discovery = await page.evaluate(readCapture)
     const discoveryReport = reportInteractions(discovery, {})
     await testInfo.attach('secondary-click-discovery', {
       body: JSON.stringify(
@@ -327,10 +350,8 @@ test('recorder does not attribute secondary clicks and restart clears prior samp
     expect(discoveryReport.unattributed).toBeGreaterThan(0)
 
     await page.keyboard.press('Escape')
-    const restarted = await page.evaluate(() => {
-      window.app.interactionPerformance.start()
-      return window.app.interactionPerformance.snapshot()
-    })
+    await startCapture(page)
+    const restarted = await page.evaluate(readCapture)
     expect(restarted.samples).toEqual([])
     await cmdBar.cmdBarOpenBtn.click()
     await waitForSample(page, OPEN, 1)

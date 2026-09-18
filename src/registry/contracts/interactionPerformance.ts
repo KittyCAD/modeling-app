@@ -2,7 +2,7 @@ import { defineService } from '@kittycad/registry'
 import type { InteractionSnapshot } from '@src/lib/interactionPerformance/types'
 
 export interface InteractionPerformanceService {
-  start(): void
+  start(): Promise<void>
   snapshot(): InteractionSnapshot
   stop(): InteractionSnapshot
 }

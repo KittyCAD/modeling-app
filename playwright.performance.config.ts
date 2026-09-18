@@ -16,6 +16,7 @@ export default defineConfig({
   reporter: [
     ['list'],
     ['./e2e/performance/reporter.ts'],
+    ['./e2e/performance/tab-reporter.ts'],
     [
       'json',
       { outputFile: './test-results/interaction-performance/playwright.json' },
