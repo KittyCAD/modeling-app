@@ -135,6 +135,7 @@ struct Test {
     /// If set, redact the test's UUIDs.
     #[cfg_attr(feature = "snapshot-engine-responses", expect(dead_code))]
     redact_uuids: bool,
+    test_graphics_params: TestGraphicsParams,
 }
 
 const REPO_ROOT: &str = "../..";
@@ -150,7 +151,7 @@ fn is_writing() -> bool {
     matches!(std::env::var("ZOO_SIM_UPDATE").as_deref(), Ok("always"))
 }
 
-#[derive(Deserialize, Clone, Debug)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 #[serde(deny_unknown_fields)]
 struct TestConfig {
     /// Replace UUIDs with the string "[uuid]", because otherwise the tests
@@ -158,12 +159,14 @@ struct TestConfig {
     /// until we make the engine more deterministic.
     #[serde(default = "default_redact_uuids")]
     redact_uuids: bool,
+    test_graphics: TestGraphicsParams,
 }
 
 impl Default for TestConfig {
     fn default() -> Self {
         Self {
             redact_uuids: default_redact_uuids(),
+            test_graphics: TestGraphicsParams::default(),
         }
     }
 }
@@ -190,13 +193,27 @@ impl TestConfig {
         let config: TestConfig = toml::from_str(&config_str).unwrap();
         Some(config)
     }
+
+    fn write_file(&self, test_dir: &Path) {
+        let test_config_path = test_dir.join("config.toml");
+        std::fs::write(test_config_path, toml::to_string(self).unwrap());
+    }
 }
 
 impl Test {
-    fn new(name: &str) -> Self {
+    fn new(name: &str, derived_graphics_setting: Option<TestGraphicsParams>) -> Self {
         let test_dir = Path::new("tests").join(name);
-        let test_config = TestConfig::from_file(&test_dir).unwrap_or_default();
-        let TestConfig { redact_uuids } = test_config;
+        let mut test_config = TestConfig::from_file(&test_dir).unwrap_or_default();
+        if let Some(derived) = derived_graphics_setting {
+            test_config.test_graphics = derived;
+            test_config.write_file(&test_dir);
+        }
+
+        let TestConfig {
+            redact_uuids,
+            test_graphics,
+        } = test_config;
+
         Self {
             name: name.to_owned(),
             entry_point: test_dir.clone().join("input.kcl"),
@@ -206,6 +223,7 @@ impl Test {
             snapshot_physical_properties: true,
             expected_deprecation_warnings: None,
             redact_uuids,
+            test_graphics_params: test_graphics,
         }
     }
 
@@ -490,7 +508,7 @@ fn physical_properties_snapshot_preserves_insta_workflow() {
         (Some(1.0), 1.0 + 5e-13, true),
     ] {
         let directory = tempfile::tempdir().unwrap();
-        let mut test = Test::new("physical_properties_snapshot_workflow");
+        let mut test = Test::new("physical_properties_snapshot_workflow", None);
         test.output_dir = directory.path().to_owned();
         let snapshot_path = test.output_dir.join("physical_properties.snap");
         let properties = |value| serde_json::json!({"surface_area": {"unit": "mm2", "value": value}});
@@ -530,7 +548,7 @@ fn physical_properties_snapshot_preserves_insta_workflow() {
 #[test]
 fn physical_properties_snapshot_preserves_stored_decimal_text() {
     let directory = tempfile::tempdir().unwrap();
-    let mut test = Test::new("holes_cube");
+    let mut test = Test::new("holes_cube", None);
     test.output_dir = directory.path().to_owned();
     let snapshot_path = test.output_dir.join("physical_properties.snap");
     let original = include_str!("../tests/holes_cube/physical_properties.snap");
@@ -547,7 +565,7 @@ fn physical_properties_snapshot_preserves_stored_decimal_text() {
 }
 
 fn parse(test_name: &str) {
-    parse_test(&Test::new(test_name));
+    parse_test(&Test::new(test_name, None));
 }
 
 fn parse_test(test: &Test) {
@@ -580,7 +598,7 @@ fn parse_test(test: &Test) {
 }
 
 async fn unparse(test_name: &str) {
-    unparse_test(&Test::new(test_name)).await;
+    unparse_test(&Test::new(test_name, None)).await;
 }
 
 async fn unparse_test(test: &Test) {
@@ -641,7 +659,7 @@ async fn execute(test_name: &str, render_to_png: bool) {
         },
         false => TestGraphicsParams::None,
     };
-    execute_test(&Test::new(test_name), graphics).await
+    execute_test(&Test::new(test_name, Some(graphics))).await
 }
 
 async fn physical_properties(ctx: &ExecutorContext) -> Option<serde_json::Value> {
@@ -743,7 +761,7 @@ async fn physical_properties(ctx: &ExecutorContext) -> Option<serde_json::Value>
     }))
 }
 
-async fn execute_test(test: &Test, graphics: TestGraphicsParams) {
+async fn execute_test(test: &Test) {
     crate::set_kcl_runtime_flags(crate::KclRuntimeFlags {
         enable_z0006_lint: crate::RuntimeFlag::On,
         ..Default::default()
@@ -772,7 +790,7 @@ async fn execute_test(test: &Test, graphics: TestGraphicsParams) {
             Some(test.entry_point.clone()),
             test.expected_deprecation_warnings
                 .map(|_| KCL_SAMPLE_DEPRECATION_VERSION),
-            graphics.clone(),
+            test.test_graphics_params.clone(),
         )
     })
     .await;
