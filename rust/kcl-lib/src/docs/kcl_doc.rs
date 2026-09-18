@@ -847,8 +847,7 @@ impl DocCategory {
 
 #[derive(Debug, Clone)]
 pub struct Properties {
-    /// Constraint on the KCL version in which this item was added, e.g. "3.0".
-    /// Programs on earlier versions do not see the item at all.
+    /// KCL version in which this item was added, e.g. "3.0".
     pub added_in: Option<VersionConstraint>,
     pub deprecated: bool,
     /// Constraint on the KCL version at or after which this item is deprecated,

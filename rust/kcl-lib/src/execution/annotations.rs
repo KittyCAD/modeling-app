@@ -309,9 +309,8 @@ pub(super) fn expect_kcl_version(expr: &Expr) -> Result<String, KclError> {
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct FnAttrs {
     pub impl_: Impl,
-    /// Constraint marking the KCL version in which this item was added, e.g.
-    /// "3.0". A program on an earlier version skips the declaration entirely;
-    /// see `ExecutorContext::skip_if_not_yet_added`.
+    /// KCL version in which this item was added, e.g. "3.0". Programs on an
+    /// earlier version skip the declaration entirely.
     pub added_in: Option<VersionConstraint>,
     pub deprecated: bool,
     /// Constraint marking a KCL version at or after which this item is
@@ -390,8 +389,7 @@ pub(crate) fn version_ge(version: &str, constraint: &VersionConstraint) -> bool 
     parsed.0 >= constraint.0
 }
 
-/// Parse the value of a version attribute such as `added_in = "3.0"` into a
-/// [`VersionConstraint`], or fail with a semantic error naming `key`.
+/// Parse a version attribute value such as `"3.0"`, naming `key` in errors.
 fn version_property(p: &ObjectProperty, key: &str, source_range: SourceRange) -> Result<VersionConstraint, KclError> {
     let Some(s) = p.value.literal_str() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -407,11 +405,8 @@ fn version_property(p: &ObjectProperty, key: &str, source_range: SourceRange) ->
     })
 }
 
-/// The `added_in` version an item's attributes declare, if any.
-///
-/// This reads only that one attribute so that a declaration can be skipped
-/// before anything else about it is examined; [`get_fn_attrs`] validates the
-/// remaining attributes when the item does execute.
+/// The `added_in` version in `annotations`, if any. Reads only that attribute,
+/// so a declaration can be skipped before `get_fn_attrs` validates the rest.
 pub(super) fn added_in_version(
     annotations: &[Node<Annotation>],
     source_range: SourceRange,
@@ -511,8 +506,7 @@ pub(super) fn get_fn_attrs(
         }
     }
 
-    // An item may arrive already deprecated, but it cannot have been
-    // deprecated before it existed.
+    // May arrive already deprecated, but not deprecated before it existed.
     if let (Some(added), Some(since)) = (&fn_attrs.added_in, &fn_attrs.deprecated_since)
         && since.is_before(added)
     {

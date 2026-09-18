@@ -187,8 +187,8 @@ pub(crate) struct SketchModeState {
     pub constraint_state: IndexMap<ObjectId, IndexMap<ConstraintKey, ConstraintState>>,
     /// The scene objects.
     pub scene_objects: Vec<Object>,
-    /// See `GlobalState::std_not_yet_added`. Restored so that a run that reuses
-    /// this memory, and therefore skips the prelude, still has it.
+    /// See `GlobalState::std_not_yet_added`. Restored because a run reusing
+    /// this memory skips the prelude.
     pub std_not_yet_added: IndexMap<String, NotYetAdded>,
 }
 

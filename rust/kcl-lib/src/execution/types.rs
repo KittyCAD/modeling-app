@@ -130,8 +130,7 @@ pub(super) async fn resolve_named_type_def(
     }
 
     let type_value = type_value_named_by_segment(exec_state, &name.name, within.as_ref()).ok_or_else(|| {
-        // A declaration of this type may have been skipped because the
-        // program's KCL version predates it.
+        // The type may be a declaration skipped as not yet added.
         let key = format!("{}{}", memory::TYPE_PREFIX, name.name.name);
         match &within {
             Some(items) => exec_state.with_not_yet_added_hint_from(&items.not_yet_added, &[&key], unknown_type()),

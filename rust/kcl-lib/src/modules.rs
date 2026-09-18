@@ -152,15 +152,12 @@ pub struct ModuleExecutionOutcome {
     pub environment: EnvironmentRef,
     pub exports: Vec<String>,
     pub artifacts: ModuleArtifactState,
-    /// The module's exported declarations that were skipped because the
-    /// program's KCL version predates their `added_in`; see
-    /// [`crate::execution::NotYetAdded`].
+    /// Exported declarations skipped as not yet added; see [`crate::execution::NotYetAdded`].
     pub not_yet_added: IndexMap<String, NotYetAdded>,
 }
 
 impl ModuleExecutionOutcome {
-    /// What the module offers to code that imports from it or reaches into it
-    /// by path.
+    /// What importers and qualified paths see of the module.
     pub(crate) fn items(&self) -> ModuleItems {
         ModuleItems {
             environment: self.environment,
@@ -170,9 +167,7 @@ impl ModuleExecutionOutcome {
     }
 }
 
-/// A module's environment, exported names, and exported declarations skipped
-/// as not yet added, for code that imports from the module or reaches into it
-/// by path.
+/// A module's environment, exports, and exported not-yet-added records.
 #[derive(Debug, Clone)]
 pub(crate) struct ModuleItems {
     pub environment: EnvironmentRef,
