@@ -618,39 +618,8 @@ impl ExecOutcome {
         sketch_name: &str,
         instance_index: Option<usize>,
     ) -> std::result::Result<Vec<u8>, crate::tooling::sketch_visualizer::SketchVisualizationError> {
-        use crate::front::ObjectKind;
-        use crate::tooling::sketch_visualizer::SketchVisualizationError;
-
-        let sketches = self
-            .scene_objects
-            .iter()
-            .filter_map(|object| match &object.kind {
-                ObjectKind::Sketch(sketch) if object.label == sketch_name => Some(sketch),
-                _ => None,
-            })
-            .collect::<Vec<_>>();
-        let sketch = match (sketches.as_slice(), instance_index) {
-            ([], _) => {
-                return Err(SketchVisualizationError::SketchNotFound {
-                    name: sketch_name.to_owned(),
-                });
-            }
-            (_, Some(index)) => *sketches
-                .get(index)
-                .ok_or_else(|| SketchVisualizationError::InstanceNotFound {
-                    name: sketch_name.to_owned(),
-                    index,
-                    count: sketches.len(),
-                })?,
-            ([sketch], None) => *sketch,
-            (_, None) => {
-                return Err(SketchVisualizationError::AmbiguousSketchName {
-                    name: sketch_name.to_owned(),
-                    count: sketches.len(),
-                });
-            }
-        };
-
+        let sketch =
+            crate::tooling::sketch_visualizer::select_sketch(&self.scene_objects, sketch_name, instance_index)?;
         crate::tooling::sketch_visualizer::render_sketch_png(&self.scene_objects, sketch)
     }
 }

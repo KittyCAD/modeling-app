@@ -28,6 +28,8 @@ pub enum SketchVisualizationError {
     AmbiguousSketchName { name: String, count: usize },
     #[error("instance_index {index} is out of range for sketch `{name}`: found {count} instances (zero-based)")]
     InstanceNotFound { name: String, index: usize, count: usize },
+    #[error("sketch `{name}` has no completed geometry in the failed execution")]
+    SketchNotCompleted { name: String },
     #[error("object id {id} was missing from the execution scene objects")]
     MissingObject { id: usize },
     #[error("failed to encode sketch visualization PNG: {0}")]

@@ -12,4 +12,5 @@ mod types;
 mod tests;
 
 pub(crate) use api::render_sketch_png;
+pub(crate) use api::select_sketch;
 pub use types::SketchVisualizationError;

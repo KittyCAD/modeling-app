@@ -247,6 +247,28 @@ impl KclErrorWithOutputs {
         crate::execution::sketch_constraint_report_from_scene_objects(&self.scene_objects)
     }
 
+    /// Render geometry retained from a completed sketch without re-executing KCL.
+    /// Instance indices refer to this failed execution's constraint report.
+    pub fn render_sketch_png_instance(
+        &self,
+        sketch_name: &str,
+        instance_index: Option<usize>,
+    ) -> Result<Vec<u8>, crate::tooling::sketch_visualizer::SketchVisualizationError> {
+        use crate::tooling::sketch_visualizer::SketchVisualizationError;
+        use crate::tooling::sketch_visualizer::render_sketch_png;
+        use crate::tooling::sketch_visualizer::select_sketch;
+
+        let sketch = select_sketch(&self.scene_objects, sketch_name, instance_index)?;
+        // Sketch objects exist before their bodies run. Solved segments are
+        // attached only after the body and geometry construction complete.
+        if sketch.segments.is_empty() {
+            return Err(SketchVisualizationError::SketchNotCompleted {
+                name: sketch_name.to_owned(),
+            });
+        }
+        render_sketch_png(&self.scene_objects, sketch)
+    }
+
     pub fn into_miette_report_with_outputs(self, code: &str) -> anyhow::Result<ReportWithOutputs> {
         let source_ranges = self.error.source_ranges();
 

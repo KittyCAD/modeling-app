@@ -2,6 +2,7 @@
 use std::future::Future;
 use std::path::Path;
 use std::path::PathBuf;
+use std::sync::Arc;
 
 use anyhow::Result;
 use kcl_api::UnitAngle;
@@ -79,13 +80,27 @@ where
 
 fn into_miette(error: kcl_lib::KclErrorWithOutputs, code: &str) -> PyErr {
     let retryable = error.is_retryable();
-    PyErr::new::<PyKclError, _>((render_miette(error, code), retryable))
+    let (message, error) = match render_miette(error, code) {
+        Ok(result) => result,
+        Err(error) => return error,
+    };
+    Python::attach(|py| -> PyResult<PyErr> {
+        let exception = PyErr::new::<PyKclError, _>((message, retryable));
+        exception.value(py).cast::<PyKclError>()?.borrow_mut().execution = Some(Arc::new(error));
+        Ok(exception)
+    })
+    .unwrap_or_else(|error| error)
 }
 
-fn render_miette(error: kcl_lib::KclErrorWithOutputs, code: &str) -> String {
-    let report = error.into_miette_report_with_outputs(code).unwrap();
+fn render_miette(error: kcl_lib::KclErrorWithOutputs, code: &str) -> PyResult<(String, kcl_lib::KclErrorWithOutputs)> {
+    let report = error.into_miette_report_with_outputs(code).map_err(to_py_exception)?;
     let report = miette::Report::new(report);
-    format!("{report:?}")
+    let message = format!("{report:?}");
+    // Recover ownership after formatting instead of cloning the retained scene.
+    let report = report
+        .downcast::<kcl_lib::ReportWithOutputs>()
+        .map_err(to_py_exception)?;
+    Ok((message, report.error))
 }
 
 fn into_miette_for_parse(filename: &str, input: &str, error: kcl_lib::KclError) -> PyErr {
@@ -185,6 +200,7 @@ fn into_kcl_exception(error: kcl_lib::KclError) -> PyErr {
 #[derive(Debug, Clone)]
 struct PyKclError {
     retryable: bool,
+    execution: Option<Arc<kcl_lib::KclErrorWithOutputs>>,
 }
 
 #[pymethods]
@@ -192,11 +208,28 @@ impl PyKclError {
     #[new]
     #[pyo3(signature = (_message, retryable = false))]
     fn new(_message: &Bound<'_, PyAny>, retryable: bool) -> Self {
-        Self { retryable }
+        Self {
+            retryable,
+            execution: None,
+        }
     }
 
     fn is_retryable(&self) -> bool {
         self.retryable
+    }
+
+    /// Render a completed sketch retained at the failure. This does not retry
+    /// execution or imply that the project succeeded. Instance indices follow
+    /// creation order for the same entrypoint and source as the constraint check.
+    #[pyo3(signature = (sketch_name, *, instance_index=None))]
+    fn render_sketch_png(&self, sketch_name: &str, instance_index: Option<usize>) -> PyResult<Vec<u8>> {
+        let execution = self
+            .execution
+            .as_ref()
+            .ok_or_else(|| PyException::new_err("No execution output is available to render a sketch"))?;
+        execution
+            .render_sketch_png_instance(sketch_name, instance_index)
+            .map_err(to_py_exception)
     }
 }
 
@@ -439,7 +472,7 @@ async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstr
             if err.is_retryable() {
                 return Err(into_miette(err, &code));
             }
-            let error_text = render_miette(err.clone(), &code);
+            let (error_text, err) = render_miette(err, &code)?;
             let mut report: SketchConstraintReport = err.sketch_constraint_report().into();
             add_execution_issues(&mut report, err.non_fatal, |issue| {
                 kcl_lib::render_compilation_issue_miette(&filename, &code, &err.source_files, issue)
@@ -1379,6 +1412,29 @@ define_stub_info_gatherer!(stub_info);
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[tokio::test]
+    async fn error_formatting_preserves_message_and_scene_allocation() {
+        let code = format!(
+            "{}\nlate = missing_value\n",
+            include_str!("../../kcl-lib/tests/sketch_visualizer/duplicate_names/statuses.kcl")
+        );
+        let program = kcl_lib::Program::parse_no_errs(&code).unwrap();
+        let (ctx, mut state) = new_context_state(None, true, None, false).await.unwrap();
+        let error = ctx.run(&program, &mut state).await.unwrap_err();
+        ctx.close().await;
+        assert!(!error.scene_objects.is_empty());
+        let scene_allocation = error.scene_objects.as_ptr();
+        let expected = format!(
+            "{:?}",
+            miette::Report::new(error.clone().into_miette_report_with_outputs(&code).unwrap())
+        );
+
+        let (message, retained) = render_miette(error, &code).unwrap();
+
+        assert_eq!(message, expected);
+        assert_eq!(retained.scene_objects.as_ptr(), scene_allocation);
+    }
 
     #[tokio::test]
     async fn spawn_py_cancellation_drops_native_task() {
