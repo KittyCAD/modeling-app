@@ -107,6 +107,8 @@ export class ConnectionManager extends EventTarget {
 
   connection: Connection | undefined
   lastConnectionError: EngineConnectionError | undefined
+  private connectionStartedAt = performance.now()
+  private shutdownReported = false
 
   get apiCallId(): string | undefined {
     return this.connection?.apiCallId
@@ -218,6 +220,8 @@ export class ConnectionManager extends EventTarget {
     }
 
     this.lastConnectionError = undefined
+    this.connectionStartedAt = performance.now()
+    this.shutdownReported = false
     this.started = true
     this.rejectAllPendingCommands()
 
@@ -1050,15 +1054,59 @@ export class ConnectionManager extends EventTarget {
   }
 
   tearDown(options?: ManagerTearDown) {
+    const route = options?.route ?? 'unknown'
+    const initiatedBy = options?.initiatedBy ?? 'unknown'
+    const connection = this.connection
+    const isFirstShutdownTrigger = !this.shutdownReported
+    if (isFirstShutdownTrigger) {
+      this.shutdownReported = true
+    }
+
     EngineDebugger.addLog({
       label: 'connectionManager',
       message: `invoked tearDown()`,
       metadata: {
         options,
+        route,
+        initiatedBy,
+        isFirstShutdownTrigger,
         started: !!this.started,
-        connection: !!this.connection,
+        connection: !!connection,
       },
     })
+
+    if (isFirstShutdownTrigger) {
+      void reportClientError({
+        code: ClientErrorCode.EngineTeardown,
+        message: `Engine teardown called: ${route}.`,
+        extra: {
+          source: 'ConnectionManager',
+          shutdownRoute: route,
+          initiatedBy,
+          sourceTime: new Date().toISOString(),
+          monotonicElapsedMs: Math.max(
+            0,
+            performance.now() - this.connectionStartedAt
+          ),
+          pendingCommandCount: Object.keys(this.pendingCommands).length,
+          hasConnection: Boolean(connection),
+          connectionId: connection?.id ?? null,
+          modelingApiCallId: connection?.apiCallId ?? null,
+          websocketCloseCode: options?.code ?? null,
+          websocketCloseReason: options?.reason ?? null,
+          reconnectRequested: options?.reconnectRequested ?? false,
+          connectionConnected: connection?.connected ?? false,
+          websocketReadyState: connection?.websocket?.readyState ?? null,
+          peerConnectionState:
+            connection?.peerConnection?.connectionState ?? null,
+          iceConnectionState:
+            connection?.peerConnection?.iceConnectionState ?? null,
+          dataChannelReadyState:
+            connection?.unreliableDataChannel?.readyState ?? null,
+        },
+      })
+    }
+
     if (!this.started) {
       EngineDebugger.addLog({
         label: 'connectionManager',
@@ -1079,7 +1127,10 @@ export class ConnectionManager extends EventTarget {
     }
 
     // It was torn down from a websocket close.
-    if (options?.websocketClosed) {
+    if (
+      options?.route === 'websocket-closed' ||
+      options?.route === 'backend-shutdown'
+    ) {
       this.dispatchEvent(
         new CustomEvent<EngineDisconnectEventDetail>(
           EngineConnectionManagerEvents.WebsocketClosed,
@@ -1092,22 +1143,22 @@ export class ConnectionManager extends EventTarget {
           }
         )
       )
-    } else if (options?.peerConnectionClosed) {
+    } else if (options?.route === 'peer-connection-closed') {
       this.dispatchEvent(
         new CustomEvent(EngineConnectionManagerEvents.peerConnectionClosed, {})
       )
-    } else if (options?.peerConnectionDisconnected) {
+    } else if (options?.route === 'peer-connection-disconnected') {
       this.dispatchEvent(
         new CustomEvent(
           EngineConnectionManagerEvents.peerConnectionDisconnected,
           {}
         )
       )
-    } else if (options?.peerConnectionFailed) {
+    } else if (options?.route === 'peer-connection-failed') {
       this.dispatchEvent(
         new CustomEvent(EngineConnectionManagerEvents.peerConnectionFailed, {})
       )
-    } else if (options?.dataChannelClosed) {
+    } else if (options?.route === 'data-channel-closed') {
       this.dispatchEvent(
         new CustomEvent(EngineConnectionManagerEvents.dataChannelClose, {})
       )
@@ -1141,11 +1192,6 @@ export class ConnectionManager extends EventTarget {
 
     // Allow for restart!
     this.started = false
-
-    void reportClientError({
-      code: ClientErrorCode.EngineTeardown,
-      message: `Engine teardown called.`,
-    })
   }
 
   /**

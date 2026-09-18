@@ -182,15 +182,24 @@ export function createOnConnectionStateChange({
         break
       case 'failed':
         dispatchEvent(new CustomEvent(EngineConnectionEvents.Offline, {}))
-        tearDownManager({ peerConnectionFailed: true })
+        tearDownManager({
+          route: 'peer-connection-failed',
+          initiatedBy: 'unknown',
+        })
         break
       case 'disconnected':
         dispatchEvent(new CustomEvent(EngineConnectionEvents.Offline, {}))
-        tearDownManager({ peerConnectionDisconnected: true })
+        tearDownManager({
+          route: 'peer-connection-disconnected',
+          initiatedBy: 'unknown',
+        })
         break
       case 'closed':
         dispatchEvent(new CustomEvent(EngineConnectionEvents.Offline, {}))
-        tearDownManager({ peerConnectionClosed: true })
+        tearDownManager({
+          route: 'peer-connection-closed',
+          initiatedBy: 'unknown',
+        })
         break
       default:
         break
@@ -492,7 +501,10 @@ export const createOnDataChannelClose = ({
     unreliableDataChannel.removeEventListener('open', onDataChannelOpen)
     unreliableDataChannel.removeEventListener('error', onDataChannelError)
     unreliableDataChannel.removeEventListener('message', onDataChannelMessage)
-    tearDownManager({ dataChannelClosed: true })
+    tearDownManager({
+      route: 'data-channel-closed',
+      initiatedBy: 'unknown',
+    })
   }
   return onDataChannelClose
 }

@@ -157,7 +157,11 @@ export const createOnWebSocketMessage = ({
           terminal: true,
         }
         const connectionContext = getConnectionContext()
-        tearDownManager({ websocketClosed: true, connectionError })
+        tearDownManager({
+          route: 'backend-shutdown',
+          initiatedBy: 'unknown',
+          connectionError,
+        })
         const cloudProjectId = getCloudProjectId()
         void reportClientError({
           code: ClientErrorCode.EngineBackendDisconnect,
@@ -466,6 +470,7 @@ export const createOnWebSocketClose = ({
   getReconnectRequested: () => boolean
 }) => {
   const onDataChannelClose = (event: CloseEvent) => {
+    const reconnectRequested = getReconnectRequested()
     websocket.removeEventListener('open', onWebSocketOpen)
     websocket.removeEventListener('error', onWebSocketError)
     websocket.removeEventListener('message', onWebSocketMessage)
@@ -475,9 +480,11 @@ export const createOnWebSocketClose = ({
       })
     )
     tearDownManager({
-      websocketClosed: true,
+      route: 'websocket-closed',
+      initiatedBy: reconnectRequested ? 'client' : 'unknown',
       code: event.code.toString(),
-      reconnectRequested: getReconnectRequested(),
+      reason: event.reason,
+      reconnectRequested,
     })
   }
   return onDataChannelClose
