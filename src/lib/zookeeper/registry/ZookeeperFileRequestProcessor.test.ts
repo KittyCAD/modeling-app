@@ -109,7 +109,7 @@ function emitZookeeperFileRequest(
     path: '/workspace/demo/main.kcl',
   }
 ) {
-  processor.handleActorSnapshot({
+  const snapshot = {
     context: {
       conversation: {
         exchanges: [
@@ -132,7 +132,9 @@ function emitZookeeperFileRequest(
       lastMessageType: 'tool_output',
       projectNameCurrentlyOpened: 'demo',
     },
-  } as unknown as ReturnType<ZookeeperManagerActor['getSnapshot']>)
+  } as unknown as ReturnType<ZookeeperManagerActor['getSnapshot']>
+  processor.handleActorSnapshot(snapshot)
+  return snapshot
 }
 
 function createProcessor(
@@ -188,6 +190,23 @@ describe('ZookeeperFileRequestProcessor', () => {
       requestedCode: 'final code',
       requestedFileName: 'main.kcl',
     })
+  })
+
+  test('does not replay a retained tool output while reconnecting', async () => {
+    const processor = createProcessor()
+    const snapshot = emitZookeeperFileRequest(processor, 'updated code', 1)
+    processor.handleActorSnapshot({
+      ...snapshot,
+      context: {
+        ...snapshot.context,
+        lastMessageId: undefined,
+        lastMessageType: undefined,
+      },
+    })
+
+    expect(mocks.historyReserve).toHaveBeenCalledOnce()
+    expect(mocks.modelingSend).toHaveBeenCalledOnce()
+    await processor.reset()
   })
 
   test('waits for history when navigation fails after a successful write', async () => {

@@ -541,7 +541,10 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const onWindowOnlineOfflineParams = useMemo(
     () => ({
       close: () => {
-        setShowManualConnect(true)
+        // Keep terminal failures manually recoverable across offline events.
+        setShowManualConnect(
+          engineCommandManager.lastConnectionError?.terminal === true
+        )
         EngineDebugger.addLog({
           label: 'ConnectionStream.tsx',
           message: 'window offline, calling tearDown()',
@@ -552,7 +555,10 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         })
       },
       connect: () => {
-        if (engineCommandManager.lastConnectionError?.terminal) return
+        if (engineCommandManager.lastConnectionError?.terminal) {
+          setShowManualConnect(true)
+          return
+        }
         setShowManualConnect(false)
         tryConnecting({
           authToken: props.authToken || '',
@@ -618,6 +624,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       style={style}
       id="stream"
       data-testid="stream"
+      inert={isSceneReady && !isNetworkOkay && !showManualConnect}
       onMouseUp={handleMouseUp}
       onDoubleClick={enterEditModeForViewportSelection}
       onContextMenu={(e) => e.preventDefault()}

@@ -999,6 +999,66 @@ describe('ZookeeperConversation', () => {
     expect(within(attachments).queryByText('+ more')).not.toBeInTheDocument()
   })
 
+  test('keeps a completed transcript visible but inert while reconnecting', () => {
+    const conversation: Conversation = {
+      exchanges: [
+        {
+          request: {
+            type: 'user',
+            content: 'Keep this transcript visible',
+          },
+          responses: [
+            {
+              end_of_stream: {
+                whole_response: 'Done.',
+              },
+            },
+          ],
+          deltasAggregated: 'Done.',
+        },
+      ],
+    }
+    const reconnectProps = {
+      isLoading: false,
+      onProcess: vi.fn(),
+      onClickClearChat: vi.fn(),
+      onReconnect: vi.fn(),
+      onCancel: vi.fn(),
+      needsReconnect: true,
+      showManualConnect: true,
+      disabled: true,
+      hasPromptCompleted: true,
+      contexts: [],
+      isProcessing: false,
+      queue: [],
+      onRemoveFromQueue: vi.fn(),
+      onSteer: vi.fn(),
+    }
+    const { rerender } = render(
+      <ZookeeperConversation {...reconnectProps} conversation={conversation} />
+    )
+
+    expect(screen.getByText('Keep this transcript visible')).toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: /Reconnect/ })
+    ).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Clear chat/ })).toBeDisabled()
+    expect(
+      screen.getByTestId('ml-ephant-conversation-input').closest('[inert]')
+    ).not.toBeNull()
+
+    rerender(
+      <ZookeeperConversation
+        {...reconnectProps}
+        conversation={{ exchanges: [] }}
+      />
+    )
+
+    expect(
+      screen.getByRole('button', { name: /Reconnect/ })
+    ).toBeInTheDocument()
+  })
+
   test('expands and collapses user message attachments when there are more than two', () => {
     const conversation: Conversation = {
       exchanges: [

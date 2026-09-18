@@ -316,6 +316,7 @@ describe('ZookeeperConversationPane', () => {
     )
 
     expect(latestConversationProps().needsReconnect).toBe(false)
+    expect(latestConversationProps().disabled).toBe(false)
 
     act(() => {
       fake.manualConnectSignal.value = true
@@ -343,6 +344,13 @@ describe('ZookeeperConversationPane', () => {
         attachments: [],
       },
     ])
+
+    act(() => {
+      fake.manualConnectSignal.value = false
+      fake.setSnapshot({}, ZookeeperManagerStates.Setup)
+    })
+
+    expect(latestConversationProps().disabled).toBe(true)
   })
 
   test('delegates conversation actions to the session controller', () => {
