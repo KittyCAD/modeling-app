@@ -56,7 +56,13 @@ fn mike_stress_test_program(n: usize) -> String {
     // Trace n edges of a regular polygon; close() supplies the final edge.
     for i in 1..=n {
         let angle = std::f64::consts::TAU * i as f64 / (n + 1) as f64;
-        writeln!(program, "  |> line(endAbsolute = [{}, {}])", angle.cos(), angle.sin()).unwrap();
+        writeln!(
+            program,
+            "  |> line(endAbsolute = [{}, {}])",
+            libm::cos(angle),
+            libm::sin(angle)
+        )
+        .unwrap();
     }
     program.push_str("  |> close(%)\n  |> extrude(length = 5)\n");
     program
