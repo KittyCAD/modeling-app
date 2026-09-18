@@ -17,11 +17,25 @@ async with await kcl.new_kcl_session("main.kcl") as session:
     request.set_volume(kcl.UnitVolume.CubicMillimeters)
     properties = await session.measure(request)
     constraints = await session.sketch_constraint_report()
+    outcome = session.outcome
+
+# These saved results also work after the session closes.
+issues = outcome.issues()
+messages = outcome.report_all()
+# Render a sketch by its name from the constraint report:
+# png = bytes(outcome.render_sketch_png("profile"))
 ```
 
 Use `new_kcl_session_code(code)` for a source string. The context manager closes
 the connection on exit, including when the body raises an exception. When managing
 the session yourself, call `await session.close()` when finished.
+
+`session.outcome` is an `ExecOutcome` with the same diagnostics, constraint reports,
+and sketch rendering methods returned by `execute()`. Accessing it shares the
+saved result without copying the execution state or running KCL again. Use
+`outcome.report(issue)` to render an individual diagnostic, and
+`outcome.render_sketch_png(name, instance_index=...)` to select duplicate sketch
+names using the constraint report's instance index.
 
 ## Development
 

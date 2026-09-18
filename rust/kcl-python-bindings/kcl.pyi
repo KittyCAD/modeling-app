@@ -473,6 +473,12 @@ class KclSession:
     Created after executing a KCL project.
     Lets you call follow-up methods, like exporting or snapshotting, without re-executing the KCL.
     """
+    @property
+    def outcome(self) -> ExecOutcome:
+        r"""
+        Saved diagnostics, constraint reports, and sketch rendering from this execution.
+        Available after close(); accessing it neither re-executes KCL nor copies the execution state.
+        """
     async def __aenter__(self) -> KclSession:
         r"""
         Enter this session without executing KCL again.

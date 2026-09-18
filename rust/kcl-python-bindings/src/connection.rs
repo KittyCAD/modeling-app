@@ -15,7 +15,6 @@ use pyo3::pymethods;
 use pyo3::types::PyAny;
 
 use crate::ExecOutcome;
-use crate::ExecutedKcl;
 use crate::KclInput;
 use crate::KclProgram;
 use crate::SnapshotOptions;
@@ -36,14 +35,20 @@ use crate::to_py_exception;
 #[pyo3_stub_gen::derive::gen_stub_pyclass]
 #[pyclass(from_py_object)]
 pub struct KclSession {
-    executed_kcl: Arc<ExecutedKcl>,
+    executed_kcl: Arc<SessionState>,
     is_closed: bool,
+}
+
+struct SessionState {
+    ctx: kcl_lib::ExecutorContext,
+    program: kcl_lib::Program,
+    outcome: ExecOutcome,
 }
 
 impl std::fmt::Debug for KclSession {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Connection")
-            .field("executed_kcl.filename", &self.executed_kcl.filename)
+            .field("executed_kcl.filename", &self.executed_kcl.outcome.filename)
             .field("is_closed", &self.is_closed)
             .finish()
     }
@@ -52,6 +57,14 @@ impl std::fmt::Debug for KclSession {
 #[pyo3_stub_gen::derive::gen_stub_pymethods]
 #[pymethods]
 impl KclSession {
+    /// Saved diagnostics, constraint reports, and sketch rendering from this execution.
+    /// Available after close(); accessing it neither re-executes KCL nor copies the execution state.
+    #[getter]
+    #[gen_stub(override_return_type(type_repr = "ExecOutcome"))]
+    fn outcome(&self) -> ExecOutcome {
+        self.executed_kcl.outcome.clone()
+    }
+
     // This is for entering a Python 'async with' context.
     // See <https://docs.python.org/3/reference/datamodel.html#object.__aenter__>
     /// Enter this session without executing KCL again.
@@ -116,22 +129,8 @@ impl KclSession {
         if self.is_closed {
             return Err(PyException::new_err("Connection already closed"));
         }
-        let executed_kcl = self.executed_kcl.clone();
-        spawn_py(async move {
-            let inner = executed_kcl
-                .state
-                .clone()
-                .into_exec_outcome(executed_kcl.env_ref, &executed_kcl.ctx)
-                .await
-                .map_err(to_py_exception)?;
-            Ok(ExecOutcome {
-                inner,
-                code: executed_kcl.code.clone(),
-                filename: executed_kcl.filename.clone(),
-            }
-            .sketch_constraint_report())
-        })
-        .await
+        let outcome = self.outcome();
+        spawn_py(async move { Ok(outcome.sketch_constraint_report()) }).await
     }
 
     /// Get 2D images of the model.
@@ -161,8 +160,8 @@ impl KclSession {
             crate::export_from_executed(
                 &executed_kcl.ctx,
                 &executed_kcl.program,
-                &executed_kcl.code,
-                &executed_kcl.filename,
+                &executed_kcl.outcome.code,
+                &executed_kcl.outcome.filename,
                 export_format,
             )
             .await
@@ -213,14 +212,18 @@ pub async fn new_kcl_session_impl(input: KclInput, mock: bool, highlight_edges: 
             return Err(into_miette(err, &code));
         }
     };
-    let executed_kcl = Arc::new(ExecutedKcl {
-        ctx,
-        state,
-        env_ref,
-        program,
-        code,
-        filename,
-    });
+    let outcome = match state.into_exec_outcome(env_ref, &ctx).await {
+        Ok(inner) => ExecOutcome {
+            inner: Arc::new(inner),
+            code: code.into(),
+            filename: filename.into(),
+        },
+        Err(err) => {
+            ctx.close().await;
+            return Err(to_py_exception(err));
+        }
+    };
+    let executed_kcl = Arc::new(SessionState { ctx, program, outcome });
     Ok(KclSession {
         executed_kcl,
         is_closed: false,
