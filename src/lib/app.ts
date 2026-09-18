@@ -11,6 +11,7 @@ import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import { File, KclManager, ZDSProject } from '@src/lang/KclManager'
 import { lspService } from '@src/lang/lsp/registry/contract'
 import { createAppNavigationService } from '@src/lib/appNavigation'
+import { createAppNavigationDependencies } from '@src/lib/appNavigationRuntime'
 import { type BillingRegistryService, billingService } from '@src/lib/billing'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
@@ -815,7 +816,7 @@ export class App implements AppSubsystems {
           }),
           provideService(
             appNavigationService,
-            createAppNavigationService(this)
+            createAppNavigationService(createAppNavigationDependencies(this))
           ),
         ],
       }),
