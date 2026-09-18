@@ -134,6 +134,8 @@ struct Test {
     /// If set, redact the test's UUIDs.
     #[cfg_attr(feature = "snapshot-engine-responses", expect(dead_code))]
     redact_uuids: bool,
+    /// KCL versions to execute against. Empty means use the file as written.
+    kcl_versions: Vec<String>,
 }
 
 const REPO_ROOT: &str = "../..";
@@ -157,12 +159,15 @@ struct TestConfig {
     /// until we make the engine more deterministic.
     #[serde(default = "default_redact_uuids")]
     redact_uuids: bool,
+    #[serde(default)]
+    kcl_versions: Vec<String>,
 }
 
 impl Default for TestConfig {
     fn default() -> Self {
         Self {
             redact_uuids: default_redact_uuids(),
+            kcl_versions: Vec::new(),
         }
     }
 }
@@ -195,16 +200,27 @@ impl Test {
     fn new(name: &str) -> Self {
         let test_dir = Path::new("tests").join(name);
         let test_config = TestConfig::from_file(&test_dir).unwrap_or_default();
-        let TestConfig { redact_uuids } = test_config;
+        let TestConfig {
+            redact_uuids,
+            kcl_versions,
+        } = test_config;
+        let output_dir = if kcl_versions.is_empty() {
+            test_dir.clone()
+        } else {
+            let output_dir = test_dir.join("output");
+            std::fs::create_dir_all(&output_dir).unwrap();
+            output_dir
+        };
         Self {
             name: name.to_owned(),
             entry_point: test_dir.clone().join("input.kcl"),
-            input_dir: test_dir.clone(),
-            output_dir: test_dir,
+            input_dir: test_dir,
+            output_dir,
             skip_assert_artifact_graph: false,
             snapshot_physical_properties: true,
             expected_deprecation_warnings: None,
             redact_uuids,
+            kcl_versions,
         }
     }
 
@@ -637,6 +653,19 @@ async fn execute(test_name: &str, render_to_png: bool) {
     execute_test(&Test::new(test_name), render_to_png).await
 }
 
+async fn execute_test(test: &Test, render_to_png: bool) {
+    if test.kcl_versions.is_empty() {
+        execute_once(test, render_to_png, None).await;
+        return;
+    }
+    for version in &test.kcl_versions {
+        let mut run = test.clone();
+        run.output_dir = test.output_dir.join(format!("kcl-{version}"));
+        std::fs::create_dir_all(&run.output_dir).unwrap();
+        execute_once(&run, render_to_png, Some(version.as_str())).await;
+    }
+}
+
 async fn physical_properties(ctx: &ExecutorContext) -> Option<serde_json::Value> {
     // Ask for mass first because it returns "Nothing to export" without
     // closing the engine connection when a successful KCL program produces no
@@ -736,16 +765,20 @@ async fn physical_properties(ctx: &ExecutorContext) -> Option<serde_json::Value>
     }))
 }
 
-async fn execute_test(test: &Test, render_to_png: bool) {
+async fn execute_once(test: &Test, render_to_png: bool, kcl_version: Option<&str>) {
     crate::set_kcl_runtime_flags(crate::KclRuntimeFlags {
         enable_z0006_lint: crate::RuntimeFlag::On,
         ..Default::default()
     });
     let input = test.read();
-    let ast = crate::Program::parse_no_errs(&input).unwrap();
+    let mut ast = crate::Program::parse_no_errs(&input).unwrap();
     let program_to_lint = ast.clone();
     eprintln!("=========");
     eprintln!("Running test {}", test.name);
+    if let Some(kcl_version) = kcl_version {
+        eprintln!("\t kclVersion: {kcl_version}");
+        ast = ast.change_kcl_version(Some(kcl_version.to_owned())).unwrap();
+    }
     if test.input_dir != test.output_dir {
         eprintln!("\tInput dir: {}", test.input_dir.display());
         eprintln!("\tOutput dir: {}", test.output_dir.display());
@@ -899,10 +932,9 @@ async fn execute_test(test: &Test, render_to_png: bool) {
                     // Snapshot the KCL error with a fancy graphical report.
                     // This looks like a Cargo compile error, with arrows pointing
                     // to source code, underlines, etc.
-                    miette::set_hook(Box::new(|_| {
+                    let _ = miette::set_hook(Box::new(|_| {
                         Box::new(miette::MietteHandlerOpts::new().show_related_errors_as_nested().build())
-                    }))
-                    .unwrap();
+                    }));
                     let report = error.clone().into_miette_report_with_outputs(&input).unwrap();
                     let report = miette::Report::new(report);
                     if previously_passed {
