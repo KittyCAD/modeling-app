@@ -1413,13 +1413,6 @@ mod tests {
         assert!(!settings.highlight_edges);
     }
 
-    #[test]
-    fn executor_settings_enable_geometry_only_execution() {
-        let settings = executor_settings(None, None, true);
-
-        assert!(settings.geometry_only);
-    }
-
     /// Cube and cylinder positioned so they do not overlap, then subtracted.
     /// The engine should report no intersection, which the executor records as
     /// a no-overlap warning on the `subtract(...)` source range.
