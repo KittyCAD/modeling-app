@@ -809,6 +809,41 @@ cloned = clone(source)
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_clone_face_merged_solid() {
+        let code = r#"@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+baseSketch = sketch(on = XY) {
+  rim = circle(start = [10, 0], center = [0, 0])
+}
+base = extrude(region(segments = [baseSketch.rim]), length = 10)
+capSketch = sketch(on = faceOf(base, face = END)) {
+  rim = circle(start = [4, 0], center = [0, 0])
+}
+merged = extrude(region(segments = [capSketch.rim]), length = 5, method = MERGE)
+cloned = clone(merged)
+"#;
+        let ctx = crate::test_server::new_context_engine_graphics(true, None)
+            .await
+            .unwrap();
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let result = ctx.run_with_caching(program).await.unwrap();
+        let base = runtime_solid(&result, "base");
+        let merged = runtime_solid(&result, "merged");
+        let cloned = runtime_solid(&result, "cloned");
+
+        assert_eq!(merged.id, base.id);
+        assert_eq!(merged.topology_id(), base.id);
+        assert_ne!(merged.original_id(), merged.topology_id());
+        assert_ne!(cloned.id, merged.id);
+        assert_eq!(cloned.topology_id(), cloned.id);
+        assert!(!cloned.value.is_empty());
+        for surface in &cloned.value {
+            assert!(merged.value.iter().all(|source| source.face_id() != surface.face_id()));
+        }
+
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_clone_preserves_face_creator() {
         let code = r#"profile = startSketchOn(XY)
   |> startProfile(at = [0, 0])

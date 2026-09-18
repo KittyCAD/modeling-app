@@ -1313,7 +1313,12 @@ pub(crate) async fn do_post_extrude<'a>(
     let meta = sketch.meta.clone();
     let units = sketch.units;
     let id = sketch.id;
-    let topology_id = sketch.original_id;
+    // A face merge uses the parent body's topology, not the creator sketch's.
+    let topology_id = if extrude_method == ExtrudeMethod::Merge {
+        id
+    } else {
+        sketch.original_id
+    };
     let creator = match being_extruded {
         BeingExtruded::Sketch => SolidCreator::Sketch(sketch),
         BeingExtruded::Face { face_id, solid_id } => SolidCreator::Face(CreatorFace {
