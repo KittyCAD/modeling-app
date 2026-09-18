@@ -113,7 +113,7 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Download browser cache
         uses: actions/cache@v6.1.0
@@ -279,7 +279,7 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Download browser cache
         uses: actions/cache@v6.1.0
@@ -386,7 +386,7 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Download browser cache
         uses: actions/cache@v6.1.0
@@ -481,7 +481,7 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Download browser cache
         uses: actions/cache@v6.1.0

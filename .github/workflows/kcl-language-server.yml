@@ -57,7 +57,7 @@ jobs:
           node-version-file: .nvmrc
       - name: Install dependencies
         run: |
-          npm install
+          npm ci
       - name: Run tests
         run: |
           cd rust/kcl-language-server
@@ -175,7 +175,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd rust/kcl-language-server
-          npm install --ignore-scripts
+          npm ci --ignore-scripts
       - name: Package Extension (release)
         if: startsWith(github.event.ref, 'refs/tags/')
         run: |
@@ -273,7 +273,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd rust/kcl-language-server
-          npm install --ignore-scripts
+          npm ci --ignore-scripts
       - name: Package Extension (release)
         if: startsWith(github.event.ref, 'refs/tags/')
         run: |

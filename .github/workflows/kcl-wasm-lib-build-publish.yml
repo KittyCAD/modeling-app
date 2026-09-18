@@ -27,7 +27,7 @@ jobs:
           registry-url: "https://registry.npmjs.org/"
           cache: "npm"
 
-      - run: npm install
+      - run: npm ci
 
       - name: Use correct Rust toolchain
         shell: bash
