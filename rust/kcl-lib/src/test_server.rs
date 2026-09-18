@@ -157,11 +157,12 @@ impl TestGraphicsArtifact {
 }
 
 #[cfg(test)]
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, serde::Serialize, Debug, Clone, Default)]
 pub enum TestGraphicsParams {
     /// use the 3d engine scene to render an image
     EngineRender { reason: String },
     /// the model is exportable. export and CPU render
+    #[default]
     ExportAndRender,
     /// the model doesn't need any graphical test output
     None,
