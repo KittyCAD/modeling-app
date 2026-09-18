@@ -110,7 +110,7 @@ version = "1.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "40c48f72fd53cd289104fc64099abca73db4166ad86ea0b4341abe65af83dadc"
 dependencies = [
- "windows-sys 0.61.2",
+ "windows-sys 0.60.2",
 ]
 
 [[package]]
@@ -121,7 +121,7 @@ checksum = "291e6a250ff86cd4a820112fb8898808a366d8f9f58ce16d1f538353ad55747d"
 dependencies = [
  "anstyle",
  "once_cell_polyfill",
- "windows-sys 0.61.2",
+ "windows-sys 0.60.2",
 ]
 
 [[package]]
@@ -135,6 +135,15 @@ name = "approx"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "08abcc3b4e9339e33a3d0a5ed15d84a687350c05689d825e0f6655eef9e76a94"
+
+[[package]]
+name = "approx"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3f2a05fd1bd10b2527e20a2cd32d8873d115b8b39fe219ee25f42a8aca6ba278"
+dependencies = [
+ "num-traits 0.2.19",
+]
 
 [[package]]
 name = "approx"
@@ -359,7 +368,7 @@ dependencies = [
  "spin 0.10.1",
  "wasm-bindgen",
  "wasm-bindgen-futures",
- "windows-sys 0.61.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -609,6 +618,17 @@ dependencies = [
  "mint",
  "num-traits 0.1.43",
  "rand 0.4.6",
+]
+
+[[package]]
+name = "cgmath"
+version = "0.18.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1a98d30140e3296250832bbaaff83b27dcd6fa3cc70fb6f1f3e5c9c0023b5317"
+dependencies = [
+ "approx 0.4.0",
+ "mint",
+ "num-traits 0.2.19",
 ]
 
 [[package]]
@@ -1431,7 +1451,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "39cab71617ae0d63f51a36d69f866391735b51691dbda63cf6f96d042b63efeb"
 dependencies = [
  "libc",
- "windows-sys 0.61.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -1441,7 +1461,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3f19d11568a4a46aee488bdab3a2963e5e2c3cfd6091aa0abceaddcea82c0bc1"
 dependencies = [
  "approx 0.1.1",
- "cgmath",
+ "cgmath 0.16.1",
+]
+
+[[package]]
+name = "euler"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b12915a9b399434cddb6c36145895e71d2ba1511ed390fe6b2f7a0383140f21c"
+dependencies = [
+ "approx 0.4.0",
+ "cgmath 0.18.0",
 ]
 
 [[package]]
@@ -1935,7 +1965,7 @@ source = "git+https://github.com/KittyCAD/gltf-rs?rev=176933c96e36f9dc56566a7e98
 dependencies = [
  "approx 0.1.1",
  "byteorder",
- "euler",
+ "euler 0.4.1",
  "gltf-json 1.3.0",
  "lazy_static",
  "serde_json",
@@ -2538,7 +2568,7 @@ checksum = "3640c1c38b8e4e43584d8df18be5fc6b0aa314ce6ebf51b53313d4306cca8e46"
 dependencies = [
  "hermit-abi",
  "libc",
- "windows-sys 0.61.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -2672,7 +2702,7 @@ name = "kcl-api"
 version = "0.2.185"
 dependencies = [
  "arbitrary",
- "euler",
+ "euler 0.4.1",
  "indexmap 2.14.2",
  "kcl-error",
  "kittycad-measurements",
@@ -2991,9 +3021,8 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.232"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "34dbb766dcf2e5363a405f8b5abe43dd20e6e2741e6e5029926e3c822c9097d8"
+version = "0.2.233"
+source = "git+https://github.com/KittyCAD/modeling-api?rev=2e02395ec2702f466688cce9002ef0ab7542be26#2e02395ec2702f466688cce9002ef0ab7542be26"
 dependencies = [
  "anyhow",
  "bon",
@@ -3001,7 +3030,7 @@ dependencies = [
  "data-encoding",
  "enum-iterator",
  "enum-iterator-derive",
- "euler",
+ "euler 0.5.0",
  "http 1.5.0",
  "kittycad-measurements",
  "kittycad-modeling-cmds-macros",
@@ -3023,8 +3052,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros"
 version = "0.1.14"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "50c9f1366e47999291754861f2362774f1c98bf478819d3788e70b978381e230"
+source = "git+https://github.com/KittyCAD/modeling-api?rev=2e02395ec2702f466688cce9002ef0ab7542be26#2e02395ec2702f466688cce9002ef0ab7542be26"
 dependencies = [
  "kittycad-modeling-cmds-macros-impl",
  "proc-macro2",
@@ -3035,8 +3063,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros-impl"
 version = "0.1.15"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "101a9b33a3af1c80223b1e34d8d4a28c7e09b61b43fa8ad643efba35bd2cc10e"
+source = "git+https://github.com/KittyCAD/modeling-api?rev=2e02395ec2702f466688cce9002ef0ab7542be26#2e02395ec2702f466688cce9002ef0ab7542be26"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -3470,7 +3497,7 @@ version = "0.50.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7957b9740744892f114936ab4a57b3f487491bbeafaf8083688b16841a4240e5"
 dependencies = [
- "windows-sys 0.61.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -4730,7 +4757,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys 0.12.1",
- "windows-sys 0.61.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -4787,7 +4814,7 @@ dependencies = [
  "security-framework",
  "security-framework-sys",
  "webpki-root-certs",
- "windows-sys 0.61.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -5360,7 +5387,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3a766e1110788c36f4fa1c2b71b387a7815aa65f88ce0229841826633d93723e"
 dependencies = [
  "libc",
- "windows-sys 0.61.2",
+ "windows-sys 0.60.2",
 ]
 
 [[package]]
@@ -5571,10 +5598,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "32497e9a4c7b38532efcdebeef879707aa9f794296a4f0244f6f69e9bc8574bd"
 dependencies = [
  "fastrand",
- "getrandom 0.3.4",
+ "getrandom 0.4.3",
  "once_cell",
  "rustix 1.1.4",
- "windows-sys 0.61.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -5583,7 +5610,7 @@ version = "1.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d8c27177b12a6399ffc08b98f76f7c9a1f4fe9fc967c784c5a071fa8d93cf7e1"
 dependencies = [
- "windows-sys 0.61.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -6531,7 +6558,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.61.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
