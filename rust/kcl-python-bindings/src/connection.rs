@@ -13,6 +13,7 @@ use pyo3::pyclass;
 use pyo3::pyfunction;
 use pyo3::pymethods;
 use pyo3::types::PyAny;
+use tokio::sync::Mutex;
 
 use crate::ExecOutcome;
 use crate::KclInput;
@@ -36,20 +37,28 @@ use crate::to_py_exception;
 #[pyclass(from_py_object)]
 pub struct KclSession {
     executed_kcl: Arc<SessionState>,
-    is_closed: bool,
 }
 
 struct SessionState {
-    ctx: kcl_lib::ExecutorContext,
+    ctx: Mutex<Option<kcl_lib::ExecutorContext>>,
     program: kcl_lib::Program,
     outcome: ExecOutcome,
+}
+
+impl SessionState {
+    async fn context(&self) -> PyResult<kcl_lib::ExecutorContext> {
+        self.ctx
+            .lock()
+            .await
+            .clone()
+            .ok_or_else(|| PyException::new_err("Connection already closed"))
+    }
 }
 
 impl std::fmt::Debug for KclSession {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Connection")
             .field("executed_kcl.filename", &self.executed_kcl.outcome.filename)
-            .field("is_closed", &self.is_closed)
             .finish()
     }
 }
@@ -70,12 +79,9 @@ impl KclSession {
     /// Enter this session without executing KCL again.
     #[gen_stub(override_return_type(type_repr = "KclSession"))]
     async fn __aenter__(slf: Py<Self>) -> PyResult<Py<Self>> {
-        Python::attach(|py| {
-            if slf.try_borrow(py)?.is_closed {
-                return Err(PyException::new_err("Connection already closed"));
-            }
-            Ok(slf)
-        })
+        let executed_kcl = Python::attach(|py| -> PyResult<_> { Ok(slf.try_borrow(py)?.executed_kcl.clone()) })?;
+        executed_kcl.context().await?;
+        Ok(slf)
     }
 
     // This is for exiting a Python 'async with' context.
@@ -98,37 +104,34 @@ impl KclSession {
 
     /// After calling this, calling any methods that use the connection will raise an exception.
     pub async fn close(&mut self) -> PyResult<()> {
-        if self.is_closed {
+        let Some(ctx) = self.executed_kcl.ctx.lock().await.take() else {
             return Ok(());
-        }
-        let executed_kcl = self.executed_kcl.clone();
+        };
         spawn_py(async move {
-            executed_kcl.ctx.close().await;
+            ctx.close().await;
             Ok(())
         })
-        .await?;
-        self.is_closed = true;
-        Ok(())
+        .await
     }
 
     /// Measure the active model's physical properties.
     /// Supports choosing any of the available properties, like volume, mass, bounding box, or any combination of them.
     /// It is NOT safe to concurrently call methods on this object. Only call one of measure, export, etc at a time.
     pub async fn measure(&self, request: PhysicalPropertiesRequest) -> PyResult<PhysicalPropertiesResponse> {
-        if self.is_closed {
-            return Err(PyException::new_err("Connection already closed"));
-        }
-        let executed_kcl = self.executed_kcl.clone();
-        spawn_py(async move { measure_model_properties(&executed_kcl.ctx, request).await }).await
+        let ctx = self.executed_kcl.context().await?;
+        spawn_py(async move {
+            let result = measure_model_properties(&ctx, request).await;
+            ctx.engine.take_responses().await;
+            result
+        })
+        .await
     }
 
     /// Analyze the executed sketches and report their constraint status and execution issues.
     /// Uses the saved execution state without executing KCL again.
     /// It is NOT safe to concurrently call methods on this object. Only call one of measure, export, etc at a time.
     pub async fn sketch_constraint_report(&self) -> PyResult<SketchConstraintReport> {
-        if self.is_closed {
-            return Err(PyException::new_err("Connection already closed"));
-        }
+        self.executed_kcl.context().await?;
         let outcome = self.outcome();
         spawn_py(async move { Ok(outcome.sketch_constraint_report()) }).await
     }
@@ -142,29 +145,31 @@ impl KclSession {
         snapshot_options: Vec<SnapshotOptions>,
         zoom: bool,
     ) -> PyResult<Vec<Vec<u8>>> {
-        if self.is_closed {
-            return Err(PyException::new_err("Connection already closed"));
-        }
-        let executed_kcl = self.executed_kcl.clone();
-        spawn_py(async move { take_snaps(&executed_kcl.ctx, image_format, snapshot_options, zoom).await }).await
+        let ctx = self.executed_kcl.context().await?;
+        spawn_py(async move {
+            let result = take_snaps(&ctx, image_format, snapshot_options, zoom).await;
+            ctx.engine.take_responses().await;
+            result
+        })
+        .await
     }
 
     /// Get 3D files containing this model.
     /// It is NOT safe to concurrently call methods on this object. Only call one of measure, export, etc at a time.
     pub async fn export(&self, export_format: FileExportFormat) -> PyResult<Vec<RawFile>> {
-        if self.is_closed {
-            return Err(PyException::new_err("Connection already closed"));
-        }
         let executed_kcl = self.executed_kcl.clone();
+        let ctx = executed_kcl.context().await?;
         spawn_py(async move {
-            crate::export_from_executed(
-                &executed_kcl.ctx,
+            let result = crate::export_from_executed(
+                &ctx,
                 &executed_kcl.program,
                 &executed_kcl.outcome.code,
                 &executed_kcl.outcome.filename,
                 export_format,
             )
-            .await
+            .await;
+            ctx.engine.take_responses().await;
+            result
         })
         .await
     }
@@ -223,9 +228,34 @@ pub async fn new_kcl_session_impl(input: KclInput, mock: bool, highlight_edges: 
             return Err(to_py_exception(err));
         }
     };
-    let executed_kcl = Arc::new(SessionState { ctx, program, outcome });
-    Ok(KclSession {
-        executed_kcl,
-        is_closed: false,
-    })
+    let executed_kcl = Arc::new(SessionState {
+        ctx: Mutex::new(Some(ctx)),
+        program,
+        outcome,
+    });
+    Ok(KclSession { executed_kcl })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn follow_up_error_drains_responses_and_close_releases_context() {
+        let mut session = new_kcl_session_impl(
+            KclInput::Code("@settings(kclVersion = 2.0)\nvalue = 1".to_owned()),
+            true,
+            None,
+        )
+        .await
+        .unwrap();
+
+        assert!(session.snapshots(ImageFormat::Png, Vec::new(), true).await.is_err());
+        let ctx = session.executed_kcl.context().await.unwrap();
+        assert!(ctx.engine.take_responses().await.is_empty());
+
+        session.close().await.unwrap();
+        assert!(session.executed_kcl.context().await.is_err());
+        assert!(session.outcome().report_all().is_empty());
+    }
 }

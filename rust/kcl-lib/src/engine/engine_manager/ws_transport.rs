@@ -66,11 +66,13 @@ impl TcpRead {
 }
 
 type WebSocketTcpWrite = futures::stream::SplitSink<tokio_tungstenite::WebSocketStream<reqwest::Upgraded>, WsMsg>;
+const CLOSE_HANDSHAKE_TIMEOUT: Duration = Duration::from_secs(1);
 
 /// Sends requests to the engine over its Modeling API WebSocket.
 /// Used on native platforms, does not work in browser WASM sandbox.
 pub struct WebSocketTransport {
-    _tcp_read_handle: Arc<TcpReadHandle>,
+    tcp_read_handle: tokio::task::AbortHandle,
+    tcp_write_handle: tokio::task::AbortHandle,
     engine_req_tx: mpsc::Sender<ToEngineReq>,
     shutdown_tx: mpsc::Sender<()>,
     responses: ResponseInformation,
@@ -79,13 +81,10 @@ pub struct WebSocketTransport {
     socket_health: Arc<RwLock<SocketHealth>>,
 }
 
-pub struct TcpReadHandle {
-    handle: Arc<tokio::task::JoinHandle<Result<(), WebSocketReadError>>>,
-}
-
-impl Drop for TcpReadHandle {
+impl Drop for WebSocketTransport {
     fn drop(&mut self) {
-        self.handle.abort();
+        self.tcp_read_handle.abort();
+        self.tcp_write_handle.abort();
     }
 }
 
@@ -142,7 +141,7 @@ impl WebSocketTransport {
         let (tcp_write, tcp_read) = ws_stream.split();
         let (engine_req_tx, engine_req_rx) = mpsc::channel(10);
         let (shutdown_tx, shutdown_rx) = mpsc::channel(1);
-        tokio::task::spawn(Self::start_write_actor(
+        let tcp_write_handle = tokio::task::spawn(Self::start_write_actor(
             tcp_write,
             engine_req_rx,
             shutdown_rx,
@@ -155,7 +154,7 @@ impl WebSocketTransport {
         let session_data_for_read = session_data.clone();
         let pending_errors_for_read = pending_errors.clone();
         let socket_health_tcp_read = socket_health.clone();
-        let tcp_read_handle = tokio::spawn(async move {
+        let tcp_read_handle: tokio::task::JoinHandle<Result<(), WebSocketReadError>> = tokio::spawn(async move {
             // Get Websocket messages from API server
             loop {
                 match tcp_read.read().await {
@@ -272,9 +271,8 @@ impl WebSocketTransport {
             session_data,
             socket_health,
             engine_req_tx,
-            _tcp_read_handle: Arc::new(TcpReadHandle {
-                handle: Arc::new(tcp_read_handle),
-            }),
+            tcp_read_handle: tcp_read_handle.abort_handle(),
+            tcp_write_handle: tcp_write_handle.abort_handle(),
         }
     }
 
@@ -372,6 +370,24 @@ impl WebSocketTransport {
             .await
             .map_err(|e| anyhow!("could not send close over websocket: {e}"))?;
         Ok(())
+    }
+
+    async fn close_with_timeout(&self, timeout: Duration) {
+        let _ = self.shutdown_tx.try_send(());
+        let closed = tokio::time::timeout(timeout, async {
+            loop {
+                if *self.socket_health.read().await == SocketHealth::Inactive {
+                    return;
+                }
+                tokio::task::yield_now().await;
+            }
+        })
+        .await;
+        if closed.is_err() {
+            self.tcp_read_handle.abort();
+            self.tcp_write_handle.abort();
+            *self.socket_health.write().await = SocketHealth::Inactive;
+        }
     }
 }
 
@@ -506,14 +522,42 @@ impl EngineTransport for WebSocketTransport {
     }
 
     async fn close(&self) -> Result<(), TransportCloseError> {
-        let _ = self.shutdown_tx.send(()).await;
-        loop {
-            let guard = self.socket_health.read().await;
-            if *guard == SocketHealth::Inactive {
-                return Ok(());
-            }
-            drop(guard);
-            tokio::task::yield_now().await;
-        }
+        self.close_with_timeout(CLOSE_HANDSHAKE_TIMEOUT).await;
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn close_aborts_tasks_when_peer_does_not_close() {
+        let read = tokio::spawn(std::future::pending::<()>());
+        let write = tokio::spawn(std::future::pending::<()>());
+        let (engine_req_tx, _engine_req_rx) = mpsc::channel(1);
+        let (shutdown_tx, _shutdown_rx) = mpsc::channel(1);
+        let socket_health = Arc::new(RwLock::new(SocketHealth::Active));
+        let transport = WebSocketTransport {
+            tcp_read_handle: read.abort_handle(),
+            tcp_write_handle: write.abort_handle(),
+            engine_req_tx,
+            shutdown_tx,
+            responses: ResponseInformation::new(Arc::new(RwLock::new(Default::default()))),
+            pending_errors: Arc::new(RwLock::new(Vec::new())),
+            session_data: Arc::new(RwLock::new(None)),
+            socket_health: socket_health.clone(),
+        };
+
+        tokio::time::timeout(
+            Duration::from_secs(1),
+            transport.close_with_timeout(Duration::from_millis(1)),
+        )
+        .await
+        .expect("close should be bounded");
+
+        assert_eq!(*socket_health.read().await, SocketHealth::Inactive);
+        assert!(read.await.unwrap_err().is_cancelled());
+        assert!(write.await.unwrap_err().is_cancelled());
     }
 }
