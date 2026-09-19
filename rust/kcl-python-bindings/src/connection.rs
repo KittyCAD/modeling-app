@@ -250,12 +250,12 @@ mod tests {
         .await
         .unwrap();
 
-        assert!(session.snapshots(ImageFormat::Png, Vec::new(), true).await.is_err());
+        session.snapshots(ImageFormat::Png, Vec::new(), true).await.unwrap_err();
         let ctx = session.executed_kcl.context().await.unwrap();
         assert!(ctx.engine.take_responses().await.is_empty());
 
         session.close().await.unwrap();
-        assert!(session.executed_kcl.context().await.is_err());
+        session.executed_kcl.context().await.unwrap_err();
         assert!(session.outcome().report_all().is_empty());
     }
 }
