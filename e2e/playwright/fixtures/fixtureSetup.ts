@@ -145,6 +145,7 @@ export interface Fixtures {
 export class ElectronZoo {
   private disposed = false
   private disposal: Promise<void> | undefined
+  private launching: Promise<ElectronApplication> | undefined
   public rendererCrashed = false
   public available: boolean = true
   public electron!: ElectronApplication
@@ -160,7 +161,13 @@ export class ElectronZoo {
   async dispose(testInfo: TestInfo) {
     this.disposed = true
     this.available = false
-    // A launch can finish after the setup deadline, so allow a later disposal.
+    if (!this.electron && this.launching) {
+      try {
+        this.electron = await this.launching
+      } catch {
+        return
+      }
+    }
     if (!this.electron) return
     this.disposal ??= (async () => {
       await attachRendererCrashDiagnostics(this.electron, testInfo)
@@ -265,7 +272,8 @@ export class ElectronZoo {
 
     // Do this once and then reuse window on subsequent calls.
     if (!this.electron) {
-      this.electron = await electron.launch(options)
+      this.launching = electron.launch(options)
+      this.electron = await this.launching
       if (this.disposed) {
         await this.dispose(testInfo)
         throw new Error('Electron fixture setup was cancelled')
