@@ -79,8 +79,10 @@ impl KclSession {
     /// Enter this session without executing KCL again.
     #[gen_stub(override_return_type(type_repr = "KclSession"))]
     async fn __aenter__(slf: Py<Self>) -> PyResult<Py<Self>> {
-        let executed_kcl = Python::attach(|py| -> PyResult<_> { Ok(slf.try_borrow(py)?.executed_kcl.clone()) })?;
-        executed_kcl.context().await?;
+        // Get the context, so that we can check it's still there and hasn't been closed/taken yet.
+        Python::attach(|py| -> PyResult<_> { Ok(slf.try_borrow(py)?.executed_kcl.clone()) })?
+            .context()
+            .await?;
         Ok(slf)
     }
 
