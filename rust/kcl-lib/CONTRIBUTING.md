@@ -86,6 +86,12 @@ just new-sim-test foo_bar
 
 The `just` command will show the shell commands it ran, including the path to a new file `foo_bar/input.kcl`. Edit that with your KCL. If you need additional KCL or STEP files to import, include them in this directory, next to `input.kcl`.
 
+To execute the same program under multiple KCL versions, add a `config.toml` next to `input.kcl`:
+
+```toml
+kcl_versions = ["2.0", "3.0-preview"]
+```
+
 Then run it. First make sure you have `$ZOO_API_TOKEN` set, then:
 
 ```shell
