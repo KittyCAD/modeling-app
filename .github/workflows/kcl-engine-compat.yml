@@ -23,20 +23,8 @@ jobs:
     name: Engine accepts KCL release dependencies
     runs-on:
       - runs-on=${{ github.run_id }}
-      - family=g4dn.4xlarge
-      - image=ubuntu22-gpu-x64
+      - runner=16cpu-linux-x64
       - extras=s3-cache
-    container:
-      image: ghcr.io/kittycad/cuda:12.1.1-zoo-devel-ubuntu22.04-main
-      credentials:
-        username: ${{ github.repository_owner }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-      options: --runtime=nvidia --gpus all -v /tmp/.X11-unix:/tmp/.X11-unix
-      env:
-        NVIDIA_DISABLE_REQUIRE: "1"
-        NVIDIA_DRIVER_CAPABILITIES: "all"
-        VK_DRIVER_FILES: "/etc/vulkan/icd.d/nvidia_icd.json:/usr/share/vulkan/icd.d/lvp_icd.x86_64.json"
-        DISPLAY: ":99"
     steps:
       - uses: runs-on/action@v2.3.1
       - uses: actions/create-github-app-token@v3.2.0
@@ -57,21 +45,21 @@ jobs:
           submodules: recursive
           token: ${{ steps.app-token.outputs.token }}
           persist-credentials: false
-      - name: Install Rust
-        working-directory: engine
-        run: rustup toolchain install
-      - uses: Swatinem/rust-cache@v2.9.1
-        with:
-          prefix-key: v1-kcl-engine-compatibility
-          workspaces: engine -> target
-      - name: Use the KCL release candidate and latest Modeling API
-        working-directory: engine
+      - name: Check every modeling command is implemented
         run: |
+          echo "${{ steps.app-token.outputs.token }}" | docker login ghcr.io --username "${{ github.repository_owner }}" --password-stdin
+          docker run --rm --interactive \
+            --volume "${GITHUB_WORKSPACE}:/workspace" \
+            --workdir /workspace/engine \
+            --env GITHUB_WORKSPACE=/workspace \
+            ghcr.io/kittycad/cuda:12.1.1-zoo-devel-no-gpu-ubuntu22.04-main \
+            bash -euxo pipefail -s <<'SCRIPT'
+          git config --global --add safe.directory /workspace/engine
+          rustup toolchain install
           sed -i 's|^# kcl-lib = .*|kcl-lib = { path = "../rust/kcl-lib" }|' Cargo.toml
           grep -F 'kcl-lib = { path = "../rust/kcl-lib" }' Cargo.toml
           cargo update -p kcl-lib
           cargo update -p kittycad-modeling-cmds
-          cargo metadata --format-version 1 | grep -Fq "\"manifest_path\":\"${GITHUB_WORKSPACE}/rust/kcl-lib/Cargo.toml\""
-      - name: Check every modeling command is implemented
-        working-directory: engine
-        run: ENGINE_WORKING_DIR=$(pwd) cargo build --bin engine-api --features exhaustive-modeling-cmds
+          cargo metadata --format-version 1 | grep -Fq '"manifest_path":"/workspace/rust/kcl-lib/Cargo.toml"'
+          ENGINE_WORKING_DIR=$(pwd) cargo build --bin engine-api --features exhaustive-modeling-cmds
+          SCRIPT
