@@ -309,8 +309,12 @@ async fn new_context_state(
     mock: bool,
     highlight_edges: Option<bool>,
     geometry_only: bool,
+    video_res_width: Option<u32>,
+    video_res_height: Option<u32>,
 ) -> Result<(ExecutorContext, kcl_lib::ExecState)> {
-    let settings = executor_settings(current_file, highlight_edges, geometry_only);
+    let mut settings = executor_settings(current_file, highlight_edges, geometry_only);
+    settings.video_res_width = video_res_width;
+    settings.video_res_height = video_res_height;
     let ctx = if mock {
         ExecutorContext::new_mock(Some(settings)).await
     } else {
@@ -402,7 +406,7 @@ async fn run_kcl(
         filename,
     } = load_and_parse(input).await?;
 
-    let (ctx, mut state) = new_context_state(path, mock, highlight_edges, geometry_only)
+    let (ctx, mut state) = new_context_state(path, mock, highlight_edges, geometry_only, None, None)
         .await
         .map_err(to_py_exception)?;
     let (env_ref, _) = match ctx.run(&program, &mut state).await {
@@ -464,7 +468,7 @@ async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstr
         }
     };
 
-    let (ctx, mut state) = new_context_state(path, false, None, false)
+    let (ctx, mut state) = new_context_state(path, false, None, false, None, None)
         .await
         .map_err(to_py_exception)?;
     let result = match ctx.run(&program, &mut state).await {
@@ -733,7 +737,7 @@ async fn import_and_snapshot_views(
 ) -> PyResult<Vec<Vec<u8>>> {
     let zoom = zoom.unwrap_or(true);
     spawn_py(async move {
-        let (ctx, _state) = new_context_state(None, false, highlight_edges, false)
+        let (ctx, _state) = new_context_state(None, false, highlight_edges, false, None, None)
             .await
             .map_err(to_py_exception)?;
         if let Err(e) = import(&ctx, filepaths, format).await {
