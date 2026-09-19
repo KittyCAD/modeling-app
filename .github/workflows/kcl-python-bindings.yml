@@ -250,7 +250,7 @@ jobs:
           CI_STEP: setup
       - name: Install uv
         uses: astral-sh/setup-uv@v10.0.1
-      - uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
+      - uses: actions-rust-lang/setup-rust-toolchain@v2.0.0
         with:
           rust-src-dir: rust
           rustflags: '' # Use .cargo/config.toml
