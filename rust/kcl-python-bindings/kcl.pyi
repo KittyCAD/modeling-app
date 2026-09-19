@@ -1311,22 +1311,22 @@ async def default_units(path: builtins.str) -> zooDefaultUnits:
     Get the default length and angle units from a kcl file.
     """
 
-async def execute(path: builtins.str) -> zooExecOutcome:
+async def execute(path: builtins.str, *, geometry_only: builtins.bool = ...) -> zooExecOutcome:
     r"""
     Execute the kcl code from a file path.
     """
 
-async def execute_and_bounding_box(path: builtins.str, entity_ids: typing.Optional[typing.Sequence[builtins.str]] = None, output_unit: typing.Optional[UnitLength] = None) -> zooBoundingBoxResponse:
+async def execute_and_bounding_box(path: builtins.str, entity_ids: typing.Optional[typing.Sequence[builtins.str]] = None, output_unit: typing.Optional[UnitLength] = None, *, geometry_only: builtins.bool = ...) -> zooBoundingBoxResponse:
     r"""
     Execute a kcl file and return the model's bounding box.
     """
 
-async def execute_and_export(path: builtins.str, export_format: zooFileExportFormat) -> builtins.list[RawFile]:
+async def execute_and_export(path: builtins.str, export_format: zooFileExportFormat, *, geometry_only: builtins.bool = ...) -> builtins.list[RawFile]:
     r"""
     Execute a kcl file and export it to a specific file format.
     """
 
-async def execute_and_measure(path: builtins.str, request: zooPhysicalPropertiesRequest) -> zooPhysicalPropertiesResponse:
+async def execute_and_measure(path: builtins.str, request: zooPhysicalPropertiesRequest, *, geometry_only: builtins.bool = ...) -> zooPhysicalPropertiesResponse:
     r"""
     Execute a kcl file and measure physical properties of the resulting model.
     """
@@ -1338,22 +1338,22 @@ async def execute_and_snapshot(path: builtins.str, image_format: zooImageFormat,
 
 async def execute_and_snapshot_views(path: builtins.str, image_format: zooImageFormat, snapshot_options: typing.Sequence[SnapshotOptions], *, zoom: typing.Optional[builtins.bool] = None, highlight_edges: typing.Optional[builtins.bool] = None) -> builtins.list[builtins.list[builtins.int]]: ...
 
-async def execute_code(code: builtins.str) -> zooExecOutcome:
+async def execute_code(code: builtins.str, *, geometry_only: builtins.bool = ...) -> zooExecOutcome:
     r"""
     Execute the kcl code.
     """
 
-async def execute_code_and_bounding_box(code: builtins.str, entity_ids: typing.Optional[typing.Sequence[builtins.str]] = None, output_unit: typing.Optional[UnitLength] = None) -> zooBoundingBoxResponse:
+async def execute_code_and_bounding_box(code: builtins.str, entity_ids: typing.Optional[typing.Sequence[builtins.str]] = None, output_unit: typing.Optional[UnitLength] = None, *, geometry_only: builtins.bool = ...) -> zooBoundingBoxResponse:
     r"""
     Execute the kcl code and return the model's bounding box.
     """
 
-async def execute_code_and_export(code: builtins.str, export_format: zooFileExportFormat) -> builtins.list[RawFile]:
+async def execute_code_and_export(code: builtins.str, export_format: zooFileExportFormat, *, geometry_only: builtins.bool = ...) -> builtins.list[RawFile]:
     r"""
     Execute the kcl code and export it to a specific file format.
     """
 
-async def execute_code_and_measure(code: builtins.str, request: zooPhysicalPropertiesRequest) -> zooPhysicalPropertiesResponse:
+async def execute_code_and_measure(code: builtins.str, request: zooPhysicalPropertiesRequest, *, geometry_only: builtins.bool = ...) -> zooPhysicalPropertiesResponse:
     r"""
     Execute the kcl code and measure physical properties of the resulting model.
     """
