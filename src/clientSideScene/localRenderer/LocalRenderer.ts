@@ -886,16 +886,14 @@ function disposeObject3D(root: Object3D) {
       geometries.add(object.geometry)
     }
 
-    if ('material' in object && object.material) {
-      const objectMaterials = isArray(object.material)
-        ? object.material
-        : [object.material]
-      for (const material of objectMaterials) {
-        if (!(material instanceof Material)) continue
-        materials.add(material)
-        for (const value of Object.values(material)) {
-          if (value instanceof Texture) textures.add(value)
-        }
+    if (!('material' in object)) return
+    const objectMaterials = (
+      isArray(object.material) ? object.material : [object.material]
+    ).filter((material): material is Material => material instanceof Material)
+    for (const material of objectMaterials) {
+      materials.add(material)
+      for (const value of Object.values(material)) {
+        if (value instanceof Texture) textures.add(value)
       }
     }
   })
