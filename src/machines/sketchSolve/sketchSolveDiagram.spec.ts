@@ -84,7 +84,13 @@ function addConstraintLineHitObject(
   }
 }
 
-function createSketchSolveHarness(objects: ApiObject[] = []) {
+function createSketchSolveHarness(
+  objects: ApiObject[] = [],
+  geometryOnly = false,
+  transitionToSketch = vi
+    .fn<(sketch: Group, signal?: AbortSignal) => Promise<void>>()
+    .mockResolvedValue(undefined)
+) {
   const scene = new Group()
   const sketchSolveGroup = new Group()
   sketchSolveGroup.name = SKETCH_SOLVE_GROUP
@@ -98,7 +104,11 @@ function createSketchSolveHarness(objects: ApiObject[] = []) {
   camera.lookAt(0, 0, 0)
   const sceneInfra = {
     scene,
-    camControls: { camera },
+    camControls: {
+      camera,
+      transitionToSketch,
+      cancelSketchCameraTransition: vi.fn(),
+    },
     renderer: {
       domElement: { clientWidth: 800, clientHeight: 600 },
     },
@@ -111,6 +121,7 @@ function createSketchSolveHarness(objects: ApiObject[] = []) {
   }
   const rustContext = createMockRustContext()
   const kclManager = {
+    engineCommandManager: { geometryOnly },
     code: 'sketch001 = startSketchOn(XY)',
     editorView: {
       dispatch: vi.fn(),
@@ -121,6 +132,7 @@ function createSketchSolveHarness(objects: ApiObject[] = []) {
     sceneInfra,
     sceneEntitiesManager: {
       initSketchSolveEntityOrientation: vi.fn(),
+      sketchSolveGroup,
     },
     rustContext,
     setHighlightRange: vi.fn(),
@@ -151,8 +163,47 @@ function createSketchSolveHarness(objects: ApiObject[] = []) {
   ).start()
   startedActors.push(actor)
 
-  return { actor, getPlaneIntersectPoint, rustContext, scene }
+  return {
+    actor,
+    getPlaneIntersectPoint,
+    rustContext,
+    scene,
+    transitionToSketch,
+    sketchSolveGroup,
+  }
 }
+
+describe('sketchSolveMachine camera entry', () => {
+  it('waits for local framing before entering move and select', async () => {
+    const { actor, transitionToSketch, sketchSolveGroup } =
+      createSketchSolveHarness([], true)
+    expect(actor.getSnapshot().matches('positioning camera')).toBe(true)
+    expect(transitionToSketch).toHaveBeenCalledWith(
+      sketchSolveGroup,
+      expect.any(AbortSignal)
+    )
+    await vi.waitFor(() =>
+      expect(actor.getSnapshot().matches('move and select')).toBe(true)
+    )
+  })
+
+  it('does not schedule local framing for streamed mode', () => {
+    const { actor, transitionToSketch } = createSketchSolveHarness()
+    expect(actor.getSnapshot().matches('move and select')).toBe(true)
+    expect(transitionToSketch).not.toHaveBeenCalled()
+  })
+
+  it('aborts the local camera actor when the sketch actor is stopped', () => {
+    const transition = vi.fn<
+      (sketch: Group, signal?: AbortSignal) => Promise<void>
+    >(() => new Promise(() => {}))
+    const { actor } = createSketchSolveHarness([], true, transition)
+    const signal = transition.mock.calls[0][1]
+    expect(signal?.aborted).toBe(false)
+    actor.stop()
+    expect(signal?.aborted).toBe(true)
+  })
+})
 
 describe('sketchSolveMachine selection clearing', () => {
   it('clears the selection when an equipped child tool completes', () => {

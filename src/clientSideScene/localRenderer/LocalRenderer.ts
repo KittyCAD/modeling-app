@@ -283,14 +283,11 @@ export class LocalRenderer {
     this.previewCamera.layers.mask = sharedCamera.layers.mask
     this.previewCamera.position.copy(this.convertedSharedPosition)
     this.previewCamera.up.copy(this.convertedSharedUp)
-    this.previewCamera.near = Math.max(
-      sharedCamera.near * ENGINE_MILLIMETERS_TO_GLTF_METERS,
-      0.0001
-    )
-    this.previewCamera.far = Math.max(
-      sharedCamera.far * ENGINE_MILLIMETERS_TO_GLTF_METERS,
-      this.previewCamera.near + 0.0001
-    )
+    // Preserve the shared clip range, including a negative orthographic near plane.
+    this.previewCamera.near =
+      sharedCamera.near * ENGINE_MILLIMETERS_TO_GLTF_METERS
+    this.previewCamera.far =
+      sharedCamera.far * ENGINE_MILLIMETERS_TO_GLTF_METERS
     this.previewTarget.copy(this.convertedSharedTarget)
 
     if (

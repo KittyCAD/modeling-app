@@ -1,5 +1,6 @@
 import { useAppState } from '@src/AppState'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
+import { SKETCH_GROUP_SEGMENTS } from '@src/clientSideScene/sceneUtils'
 import { useMenuListener } from '@src/hooks/useMenu'
 import { useSketchModeMenuEnableDisable } from '@src/hooks/useSketchModeMenuEnableDisable'
 import useModelingMachineCommands from '@src/hooks/useStateMachineCommands'
@@ -322,9 +323,17 @@ export const ModelingMachineProvider = ({
       if (inSketchMode && targetId) {
         letEngineAnimateAndSyncCamAfter(
           kclManager.engineCommandManager,
-          targetId
+          targetId,
+          kclManager.sceneInfra.camControls,
+          modelingState.context.sketchDetails?.animateTargetIsFace
         )
-          .then(() => {})
+          .then(() =>
+            kclManager.sceneInfra.camControls.transitionToSketch(
+              kclManager.sceneInfra.scene.children.find(
+                (object) => object.userData.type === SKETCH_GROUP_SEGMENTS
+              ) ?? kclManager.sceneEntitiesManager.intersectionPlane
+            )
+          )
           .catch((e) => {
             console.error(
               'failed to sync engine and client scene after disabling allow orbit in sketch mode'

@@ -5,6 +5,7 @@ import {
   type Group,
   Mesh,
   MeshStandardMaterial,
+  OrthographicCamera,
   PerspectiveCamera,
   Scene,
   Vector3,
@@ -32,9 +33,18 @@ type RendererInternals = {
   currentModel: Group | null
   pendingModelRefresh: boolean
   modelLoadSettledAfterRender: boolean
+  previewCamera: PerspectiveCamera | OrthographicCamera | null
+  syncPreviewCameraFromShared(): void
 }
 
-function fixture() {
+function fixture(
+  camera: PerspectiveCamera | OrthographicCamera = new PerspectiveCamera(
+    45,
+    1,
+    0.1,
+    10000
+  )
+) {
   const manager = Object.assign(new EventTarget(), {
     isExecutingSignal: signal(false),
     get isExecuting() {
@@ -48,7 +58,7 @@ function fixture() {
     },
     sceneInfra: {
       camControls: {
-        camera: new PerspectiveCamera(45, 1, 0.1, 10000),
+        camera,
         target: new Vector3(),
         onCameraChange: vi.fn(),
       },
@@ -91,6 +101,37 @@ describe('local GLB loading', () => {
     vi.spyOn(prototype, 'scheduleRender').mockImplementation(() => {})
   })
   afterEach(() => vi.restoreAllMocks())
+
+  it('preserves orthographic negative near planes and tiny perspective near planes', () => {
+    const f = fixture()
+    f.state.previewCamera = new PerspectiveCamera()
+    f.manager.sceneInfra.camControls.camera = new OrthographicCamera(
+      -20,
+      20,
+      20,
+      -20,
+      -10000,
+      10000
+    )
+    f.manager.sceneInfra.camControls.camera.position.set(100, -100, 100)
+    f.state.syncPreviewCameraFromShared()
+    expect(f.state.previewCamera).toBeInstanceOf(OrthographicCamera)
+    expect(f.state.previewCamera.near).toBe(-10)
+    expect(f.state.previewCamera.far).toBe(10)
+
+    f.manager.sceneInfra.camControls.camera = new PerspectiveCamera(
+      45,
+      1,
+      0.001,
+      10
+    )
+    f.manager.sceneInfra.camControls.camera.position.set(0.1, -0.1, 0.1)
+    f.state.syncPreviewCameraFromShared()
+    expect(f.state.previewCamera).toBeInstanceOf(PerspectiveCamera)
+    expect(f.state.previewCamera.near).toBeCloseTo(0.000001, 10)
+    expect(f.state.previewCamera.far).toBe(0.01)
+    f.renderer.dispose()
+  })
 
   it('exports once after successful execution and loads standard geometry/materials', async () => {
     const f = fixture()

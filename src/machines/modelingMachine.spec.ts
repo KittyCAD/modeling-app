@@ -1593,6 +1593,7 @@ sketch001 = sketch(on = YZ) {
               animate: vi.fn(),
               resetMouseListeners: vi.fn(),
               camControls: {
+                cancelSketchCameraTransition: vi.fn(),
                 enablePan: true,
                 enableRotate: true,
                 syncDirection: 'engineToClient',
@@ -1657,6 +1658,7 @@ sketch001 = sketch(on = YZ) {
               stop: vi.fn(),
               resetMouseListeners: vi.fn(),
               camControls: {
+                cancelSketchCameraTransition: vi.fn(),
                 enablePan: true,
                 enableRotate: true,
                 syncDirection: 'engineToClient',

@@ -354,7 +354,8 @@ async function enterSketchSolveFromSketchBlockArtifact({
   await letEngineAnimateAndSyncCamAfter(
     engineCommandManager,
     id,
-    kclManager.sceneInfra.camControls
+    kclManager.sceneInfra.camControls,
+    planeData.type === 'extrudeFace'
   )
   kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
 
@@ -3211,7 +3212,8 @@ export const modelingMachine = setup({
           await letEngineAnimateAndSyncCamAfter(
             engineCommandManager,
             id,
-            kclManager.sceneInfra.camControls
+            kclManager.sceneInfra.camControls,
+            plane.type === 'extrudeFace'
           )
           kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
           return {
@@ -3221,6 +3223,8 @@ export const modelingMachine = setup({
             zAxis: plane.zAxis,
             yAxis: plane.yAxis,
             origin: plane.position,
+            animateTargetId: id,
+            animateTargetIsFace: plane.type === 'extrudeFace',
           }
         }
         const { modifiedAst, pathToNode } = startSketchOnDefault(
@@ -3526,7 +3530,8 @@ export const modelingMachine = setup({
         await letEngineAnimateAndSyncCamAfter(
           engineCommandManager,
           id,
-          kclManager.sceneInfra.camControls
+          kclManager.sceneInfra.camControls,
+          result.type === 'extrudeFace'
         )
 
         kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
@@ -3758,8 +3763,16 @@ export const modelingMachine = setup({
           // empty if its the first profile in a sketch, but we still need to tear down and cancel the current tool properly.
           kclManager.sceneInfra.resetMouseListeners()
           kclManager.sceneEntitiesManager.tearDownSketch({ removeAxis: false })
+          const plane = kclManager.sceneEntitiesManager.intersectionPlane
+          plane.quaternion.copy(
+            quaternionFromUpNForward(
+              new Vector3(...sketchDetails.yAxis),
+              new Vector3(...sketchDetails.zAxis)
+            )
+          )
+          plane.position.set(...sketchDetails.origin)
           await kclManager.sceneInfra.camControls.transitionToSketch(
-            kclManager.sceneEntitiesManager.intersectionPlane,
+            plane,
             signal
           )
           return
@@ -3900,7 +3913,8 @@ export const modelingMachine = setup({
         await letEngineAnimateAndSyncCamAfter(
           engineCommandManager,
           info?.sketchDetails?.faceId || '',
-          kclManager.sceneInfra.camControls
+          kclManager.sceneInfra.camControls,
+          sketch.value.on.type !== 'plane'
         )
 
         const sketchArtifact = kclManager.artifactGraph.get(mainPath)
@@ -3931,6 +3945,7 @@ export const modelingMachine = setup({
             (a) => a / kclManager.sceneInfra.baseUnitMultiplier
           ) as [number, number, number],
           animateTargetId: info?.sketchDetails?.faceId || '',
+          animateTargetIsFace: sketch.value.on.type !== 'plane',
         }
       }
     ),
@@ -5472,8 +5487,29 @@ export const modelingMachine = setup({
               target: 'SketchIdle',
               guard: 'is editing existing sketch',
             },
+            {
+              target: 'Position camera for new sketch',
+              guard: ({ context }) => context.engineCommandManager.geometryOnly,
+            },
             'Line tool',
           ],
+        },
+
+        'Position camera for new sketch': {
+          invoke: {
+            src: 'setup-client-side-sketch-segments',
+            input: ({ context }) => ({
+              sketchDetails: context.sketchDetails,
+              selectionRanges: context.selectionRanges,
+              kclManager: context.kclManager,
+              wasmInstance: context.wasmInstance,
+            }),
+            onDone: 'Line tool',
+            onError: {
+              target: 'undo startSketchOn',
+              actions: ({ event }) => reportRejection(event.error),
+            },
+          },
         },
 
         'Tangential arc to': {

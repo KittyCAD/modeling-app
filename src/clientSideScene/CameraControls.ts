@@ -4,14 +4,13 @@ import type {
   Point3d,
 } from '@kittycad/lib'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
-import { isArray, toSync } from '@src/lib/utils'
+import { isArray } from '@src/lib/utils'
+import { getSketchCameraFrame } from '@src/clientSideScene/sketchCamera'
 
 import * as TWEEN from '@tweenjs/tween.js'
 import Hammer from 'hammerjs'
-import type { Camera } from 'three'
+import type { Camera, Object3D } from 'three'
 import { Matrix4 } from 'three'
-import type { Object3D } from 'three'
-import { getSketchCameraFrame } from '@src/clientSideScene/sketchCamera'
 import {
   Euler,
   MathUtils,
@@ -116,13 +115,14 @@ export class CameraControls {
   engineCommandManager: ConnectionManager
   syncDirection: CameraSyncDirection = 'engineToClient'
   localCameraMode = false
-  private sketchCameraNeedsFit = false
+  private pendingSketchCamera: { faceId?: string } | undefined
   private cancelSketchTween: (() => void) | undefined
   camera: PerspectiveCamera | OrthographicCamera
   target: Vector3
   domElement: HTMLCanvasElement
   isDragging: boolean
   wasDragging: boolean
+  private orbitDragUpInverted = false
   hoverPickingDisabled = false
   mouseDownPosition: Vector2
   mouseNewPosition: Vector2
@@ -541,6 +541,10 @@ export class CameraControls {
     this.mouseDownPosition.set(event.clientX, event.clientY)
     this.worldDownPosition = this.screenToWorld(event).clone()
     this.cameraDown = this.camera.clone()
+    // Match engine camera drag: keep horizontal direction stable for the
+    // duration of the drag, even while crossing a pole.
+    this.orbitDragUpInverted =
+      new Vector3(0, 1, 0).applyQuaternion(this.camera.quaternion).z < 0
     let interaction = this.getInteractionType(event)
     if (interaction === 'none') return
     this.handleStart()
@@ -590,6 +594,12 @@ export class CameraControls {
         this.moveSender.send(() => {
           this.doMove(interaction, [event.clientX, event.clientY])
         })
+        return
+      }
+
+      if (this.effectiveCameraMode === 'local' && interaction === 'rotate') {
+        this.orbitLocalCamera(deltaMove)
+        this.update(true)
         return
       }
 
@@ -770,7 +780,12 @@ export class CameraControls {
     this.camera.position.set(px, py, pz)
     const distance = this.camera.position.distanceTo(this.target.clone())
     const fovFactor = 45 / this.lastPerspectiveFov
-    this.camera.zoom = (ZOOM_MAGIC_NUMBER * fovFactor * 0.8) / distance
+    this.camera.zoom =
+      this.effectiveCameraMode === 'local'
+        ? ORTHOGRAPHIC_CAMERA_SIZE /
+          (Math.max(distance, 0.001) *
+            viewHeightFactor(this.lastPerspectiveFov))
+        : (ZOOM_MAGIC_NUMBER * fovFactor * 0.8) / distance
 
     this.camera.quaternion.set(qx, qy, qz, qw)
     this.camera.updateProjectionMatrix()
@@ -1029,6 +1044,51 @@ export class CameraControls {
     }
 
     // damping would be implemented here in update if we choose to add it.
+  }
+
+  private orbitLocalCamera(delta: Vector2) {
+    // Match engine spherical orbit: canvas dragging can continue through
+    // both poles, unlike the cube gizmo's clamped rotation.
+    const rotation = this.camera.quaternion
+    const worldUp = new Vector3(0, 0, 1)
+    const back = new Vector3(0, 0, 1).applyQuaternion(rotation)
+    const up = new Vector3(0, 1, 0).applyQuaternion(rotation)
+    const distance = this.camera.position.distanceTo(this.target)
+
+    // Remove roll for spherical orbit while retaining the current up/down
+    // hemisphere. At a pole keep the existing orientation: lookAt is singular.
+    if (Math.abs(back.dot(worldUp)) < 1 - 1e-10) {
+      const upright = worldUp.clone().multiplyScalar(up.z < 0 ? -1 : 1)
+      rotation.setFromRotationMatrix(
+        new Matrix4().lookAt(back, new Vector3(), upright)
+      )
+    }
+
+    const right = new Vector3(1, 0, 0).applyQuaternion(rotation)
+    // Engine drag speeds are calibrated to a 1024 x 768 viewport.
+    const yaw = MathUtils.degToRad(
+      -delta.x *
+        0.25 *
+        (1024 / Math.max(this.domElement.clientWidth, 1)) *
+        (this.orbitDragUpInverted ? -1 : 1)
+    )
+    const pitch = MathUtils.degToRad(
+      -delta.y * 0.25 * (768 / Math.max(this.domElement.clientHeight, 1))
+    )
+    rotation
+      .premultiply(
+        new Quaternion()
+          .setFromAxisAngle(worldUp, yaw)
+          .multiply(new Quaternion().setFromAxisAngle(right, pitch))
+      )
+      .normalize()
+
+    this.camera.position
+      .set(0, 0, distance)
+      .applyQuaternion(rotation)
+      .add(this.target)
+    // The local renderer copies up as well as position; don't force Z-up here.
+    this.camera.up.set(0, 1, 0).applyQuaternion(rotation)
   }
 
   rotateCamera = (deltaX: number, deltaY: number) => {
@@ -1379,21 +1439,43 @@ export class CameraControls {
     })
   }
 
-  requestSketchCameraTransition() {
+  requestSketchCameraTransition(faceId?: string) {
     this.cancelSketchCameraTransition()
-    this.sketchCameraNeedsFit = true
+    this.pendingSketchCamera = { faceId }
   }
 
   cancelSketchCameraTransition() {
-    this.sketchCameraNeedsFit = false
+    this.pendingSketchCamera = undefined
     this.cancelSketchTween?.()
   }
 
-  /** Called once the editable sketch geometry has been constructed. */
+  /** Called once the sketch plane's world transform is available. */
   async transitionToSketch(sketch: Object3D, signal?: AbortSignal) {
-    if (!this.sketchCameraNeedsFit) return
-    this.sketchCameraNeedsFit = false
+    const request = this.pendingSketchCamera
+    if (!request) return
     if (signal?.aborted) return Promise.reject(signal.reason)
+
+    let faceCenter: Vector3 | undefined
+    if (request.faceId) {
+      const response = await this.engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: { type: 'face_get_center', object_id: request.faceId },
+      })
+      if (signal?.aborted) return Promise.reject(signal.reason)
+      if (this.pendingSketchCamera !== request) return
+      const single = isArray(response) ? response[0] : response
+      const result =
+        single && isModelingResponse(single)
+          ? single.resp.data.modeling_response
+          : undefined
+      if (result?.type !== 'face_get_center') {
+        return Promise.reject(new Error('Could not get the sketch face centre'))
+      }
+      const { pos } = result.data
+      faceCenter = new Vector3(pos.x, pos.y, pos.z)
+    }
+    this.pendingSketchCamera = undefined
 
     const camera = this.camera
     const distance = Math.max(camera.position.distanceTo(this.target), 0.001)
@@ -1401,11 +1483,14 @@ export class CameraControls {
       camera instanceof PerspectiveCamera
         ? distance * viewHeightFactor(camera.getEffectiveFOV())
         : (camera.top - camera.bottom) / (2 * camera.zoom)
-    const frame = getSketchCameraFrame(
-      sketch,
-      this.normalizedViewportAspect(),
-      halfHeight
-    )
+    const frame = getSketchCameraFrame(sketch, camera.position, faceCenter)
+    const targetHalfHeight =
+      frame.distance *
+      viewHeightFactor(
+        camera instanceof PerspectiveCamera
+          ? camera.getEffectiveFOV()
+          : this.lastPerspectiveFov
+      )
     this.pendingPan = null
     this.pendingRotation = null
     this.pendingZoom = null
@@ -1415,12 +1500,8 @@ export class CameraControls {
     this.camera.zoom = ORTHOGRAPHIC_CAMERA_SIZE / halfHeight
     this.camera.updateProjectionMatrix()
     await this._tweenCameraToQuaternion(frame.quaternion, frame.target, 500, {
-      zoom: ORTHOGRAPHIC_CAMERA_SIZE / frame.halfHeight,
-      distance:
-        frame.halfHeight /
-        viewHeightFactor(
-          this.perspectiveFovBeforeOrtho || this.lastPerspectiveFov
-        ),
+      zoom: ORTHOGRAPHIC_CAMERA_SIZE / targetHalfHeight,
+      distance: frame.distance,
       signal,
     })
     this.enableRotate = this._setting_allowOrbitInSketchMode
@@ -1604,8 +1685,34 @@ export class CameraControls {
   }, 200)
 
   onCameraChange = (forceUpdate = false) => {
-    const distance = this.target.distanceTo(this.camera.position)
-    if (this.camera.far / 2.1 < distance || this.camera.far / 1.9 > distance) {
+    let distance = this.target.distanceTo(this.camera.position)
+    if (this.effectiveCameraMode === 'local') {
+      if (this.camera instanceof OrthographicCamera) {
+        // Match engine orthographic zoom, derived from FOV and eye distance.
+        // Keep these in sync so entry/exit preserves zoom after wheel navigation.
+        distance =
+          (this.camera.top - this.camera.bottom) /
+          (2 * this.camera.zoom * viewHeightFactor(this.lastPerspectiveFov))
+        this.camera.position
+          .sub(this.target)
+          .setLength(distance)
+          .add(this.target)
+        this.camera.updateMatrixWorld()
+      }
+      const scale = getLocalCameraSceneScale(distance)
+      // Match engine clipping, including the mirrored orthographic near plane.
+      // Distances here are in mm.
+      const far = scale * 10000
+      const near = this.camera instanceof OrthographicCamera ? -far : scale
+      if (this.camera.near !== near || this.camera.far !== far) {
+        this.camera.near = near
+        this.camera.far = far
+        this.camera.updateProjectionMatrix()
+      }
+    } else if (
+      this.camera.far / 2.1 < distance ||
+      this.camera.far / 1.9 > distance
+    ) {
       this.camera.far = distance * 2
       this.camera.near = distance / 10
       this.camera.updateProjectionMatrix()
@@ -1831,6 +1938,18 @@ export class CameraControls {
 
 // Pure function helpers
 
+// Match the engine's distance-based clipping scale.
+// Camera-to-target distance is in mm; this scale sets clipping, not geometry size.
+function getLocalCameraSceneScale(distance: number) {
+  if (distance > 20000) return 1000
+  if (distance > 2000) return 100
+  if (distance > 200) return 10
+  if (distance > 20) return 1
+  if (distance > 2) return 0.1
+  if (distance > 0.2) return 0.01
+  return 0.001
+}
+
 function calculateNearFarFromFOV(fov: number) {
   // const nearFarRatio = (fov - 3) / (45 - 3)
   // const z_near = 0.1 + nearFarRatio * (5 - 0.1)
@@ -1918,9 +2037,12 @@ function _getInteractionType(
 export async function letEngineAnimateAndSyncCamAfter(
   engineCommandManager: ConnectionManager,
   entityId: string,
-  cameraControls: CameraControls
+  cameraControls: CameraControls,
+  onFace = false
 ) {
   const local = engineCommandManager.geometryOnly
+  if (local)
+    cameraControls.requestSketchCameraTransition(onFace ? entityId : undefined)
   await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
     cmd_id: uuidv4(),
@@ -1932,10 +2054,7 @@ export async function letEngineAnimateAndSyncCamAfter(
       entity_id: entityId,
     },
   })
-  if (local) {
-    cameraControls.requestSketchCameraTransition()
-    return
-  }
+  if (local) return
   // wait 600ms (animation takes 500, + 100 for safety)
   await new Promise((resolve) =>
     setTimeout(resolve, isReducedMotion() ? 100 : 600)

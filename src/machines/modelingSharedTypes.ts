@@ -131,6 +131,7 @@ export interface SketchDetails {
   origin: [number, number, number]
   // face id or plane id, both are strings
   animateTargetId?: string
+  animateTargetIsFace?: boolean
   // this is the expression that was added when as sketch tool was used but not completed
   // i.e first click for the center of the circle, but not the second click for the radius
   // we added a circle to editor, but they bailed out early so we should remove it, set to -1 to ignore
