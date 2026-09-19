@@ -514,6 +514,8 @@ export class Connection extends EventTarget {
 
     // Has a callback workflow that will create a unreliabledatachannel
     const onDataChannel = createOnDataChannel({
+      connection: this,
+      peerConnection: this.peerConnection,
       setUnreliableDataChannel: this.setUnreliableDataChannel.bind(this),
       dispatchEvent: this.dispatchEvent.bind(this),
       trackListener: this.trackListener.bind(this),
