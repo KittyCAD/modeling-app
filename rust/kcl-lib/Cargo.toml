@@ -184,3 +184,10 @@ required-features = ["dhat-heap"]
 name = "executor"
 path = "e2e/executor/main.rs"
 required-features = ["engine"]
+
+[[test]]
+name = "connection_diagnostics"
+path = "e2e/connection_diagnostics.rs"
+# Exercise the same non-test kcl-lib build used by the LSP. The workspace's LSP
+# dependency enables this feature in CI; standalone runs must enable it explicitly.
+required-features = ["engine", "disable-println"]
