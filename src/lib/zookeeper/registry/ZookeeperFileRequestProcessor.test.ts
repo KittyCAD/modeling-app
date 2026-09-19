@@ -178,7 +178,7 @@ describe('ZookeeperFileRequestProcessor', () => {
     expect(mocks.updateCodeEditor).toHaveBeenCalledWith('intermediate code', {
       shouldAddToHistory: false,
       shouldClearHistory: false,
-      shouldExecute: true,
+      shouldExecute: false,
       shouldResetCamera: true,
       shouldWriteToDisk: false,
     })
@@ -356,7 +356,7 @@ describe('ZookeeperFileRequestProcessor', () => {
       'completed while disabled',
       expect.objectContaining({
         shouldClearHistory: false,
-        shouldExecute: true,
+        shouldExecute: false,
       })
     )
     expect(mocks.historyComplete).toHaveBeenCalledOnce()

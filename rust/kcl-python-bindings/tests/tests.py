@@ -97,6 +97,172 @@ async def test_kcl_execute():
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("from_file", [False, True])
+async def test_kcl_session_context_manager(tmp_path, from_file):
+    code = "@settings(kclVersion = 2.0)\nvalue = 1"
+    if from_file:
+        source = tmp_path / "main.kcl"
+        source.write_text(code)
+        session = await kcl.new_kcl_session(str(source), mock=True)
+    else:
+        session = await kcl.new_kcl_session_code(code, mock=True)
+
+    async with session as entered:
+        assert entered is session
+        assert isinstance(session.outcome, kcl.ExecOutcome)
+        assert session.outcome.issues() == []
+        report = await session.sketch_constraint_report()
+        assert report.total_sketches() == 0
+        assert report.is_complete is True
+
+    # Context exit closes the session, and repeated close is harmless.
+    await session.close()
+    assert session.outcome.report_all() == []
+    with pytest.raises(Exception, match="Connection already closed"):
+        async with session:
+            pytest.fail("A closed session must not be entered")
+    with pytest.raises(Exception, match="Connection already closed"):
+        await session.measure(kcl.PhysicalPropertiesRequest())
+    with pytest.raises(Exception, match="Connection already closed"):
+        await session.snapshots(kcl.ImageFormat.Png, [])
+    with pytest.raises(Exception, match="Connection already closed"):
+        await session.export(kcl.FileExportFormat.Step)
+    with pytest.raises(Exception, match="Connection already closed"):
+        await session.sketch_constraint_report()
+
+
+@pytest.mark.asyncio
+async def test_kcl_session_context_manager_propagates_exception():
+    session = await kcl.new_kcl_session_code(
+        "@settings(kclVersion = 2.0)\nvalue = 1", mock=True
+    )
+    error = ValueError("context body failed")
+    with pytest.raises(ValueError) as raised:
+        async with session:
+            raise error
+    assert raised.value is error
+    with pytest.raises(Exception, match="Connection already closed"):
+        await session.export(kcl.FileExportFormat.Step)
+
+
+@pytest.mark.asyncio
+async def test_kcl_session_explicit_close():
+    session = await kcl.new_kcl_session_code(
+        "@settings(kclVersion = 2.0)\nvalue = 1", mock=True
+    )
+    await session.close()
+    await session.close()
+    with pytest.raises(Exception, match="Connection already closed"):
+        await session.measure(kcl.PhysicalPropertiesRequest())
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_kcl_session_reuses_execution_for_tools(tmp_path):
+    source = tmp_path / "main.kcl"
+    source.write_text("""
+@settings(kclVersion = 2.0)
+profile = sketch(on = XY) {
+  circle001 = circle(center = [var 0mm, var 0mm], start = [var 5mm, var 0mm])
+}
+disk = region(point = [0mm, 0mm], sketch = profile)
+solid = extrude(disk, length = 10mm)
+""")
+    async with await execute_with_retries(
+        kcl.new_kcl_session, str(source), highlight_edges=False
+    ) as session:
+        # All four tools use the executed model after its source is removed.
+        source.unlink()
+        report = await session.sketch_constraint_report()
+        assert report.total_sketches() == 1
+        assert report.under_constrained[0].name == "profile"
+        assert session.outcome.sketch_constraint_report().total_sketches() == 1
+        images = await session.snapshots(kcl.ImageFormat.Png, [])
+        assert len(images) == 1
+        assert bytes(images[0]).startswith(b"\x89PNG\r\n\x1a\n")
+
+        files = await session.export(kcl.FileExportFormat.Step)
+        assert files
+        assert b"ISO-10303-21" in bytes(files[0].contents)
+
+        request = kcl.PhysicalPropertiesRequest()
+        request.set_volume(kcl.UnitVolume.CubicMillimeters)
+        response = await session.measure(request)
+        # Allow the engine's approximation of the circular cross-section.
+        assert response.get_volume() == pytest.approx(785.398163, rel=0.002)
+        assert response.get_volume_unit() == kcl.UnitVolume.CubicMillimeters
+        # Reporting neither consumes the saved state nor closes the connection.
+        assert (await session.sketch_constraint_report()).total_sketches() == 1
+
+
+@pytest.mark.asyncio
+async def test_kcl_session_sketch_constraint_report(tmp_path):
+    source = tmp_path / "main.kcl"
+    source.write_text("""
+@settings(kclVersion = 2.0, experimentalFeatures = allow)
+fixedSketch = sketch(on = XY) {
+  edge = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  edge.start.at[0] == 0mm
+  edge.start.at[1] == 0mm
+  edge.end.at[0] == 10mm
+  edge.end.at[1] == 0mm
+}
+freeSketch = sketch(on = XY) {
+  edge = line(start = [var 0mm, var 0mm], end = [var 0mm, var 10mm])
+}
+""")
+    async with await kcl.new_kcl_session(str(source), mock=True) as session:
+        source.unlink()
+        for _ in range(2):
+            report = await session.sketch_constraint_report()
+            assert report.total_sketches() == 2
+            assert report.is_complete is True
+            assert report.kcl_error is None
+            assert report.errors == []
+            assert report.over_constrained == []
+            assert report.warnings == []
+            assert report.execution_errors == []
+            assert report.execution_fatals == []
+            (fixed,) = report.fully_constrained
+            assert fixed.name == "fixedSketch"
+            assert fixed.status == kcl.ConstraintKind.FullyConstrained
+            assert fixed.free_count == 0
+            (free,) = report.under_constrained
+            assert free.name == "freeSketch"
+            assert free.status == kcl.ConstraintKind.UnderConstrained
+            assert free.free_count > 0
+
+        outcome = session.outcome
+        png = bytes(outcome.render_sketch_png("fixedSketch"))
+        assert png.startswith(b"\x89PNG\r\n\x1a\n")
+
+    # Local results remain usable after the connection and source are gone.
+    assert session.outcome.sketch_constraint_report().total_sketches() == 2
+    del session
+    assert outcome.sketch_constraint_report().total_sketches() == 2
+    assert bytes(outcome.render_sketch_png("fixedSketch")) == png
+
+
+@pytest.mark.asyncio
+async def test_kcl_session_sketch_constraint_report_preserves_warnings():
+    async with await kcl.new_kcl_session_code(
+        warning_sketch_code, mock=True
+    ) as session:
+        report = await session.sketch_constraint_report()
+        assert report.total_sketches() == 1
+        assert report.warnings
+        assert any("angle" in warning for warning in report.warnings)
+        assert report.is_complete is True
+        outcome = session.outcome
+
+    issues = outcome.issues()
+    warnings = [outcome.report(issue) for issue in issues if issue.is_warning()]
+    assert warnings == report.warnings
+    assert outcome.report_all() == [outcome.report(issue) for issue in issues]
+    assert session.outcome.report_all() == outcome.report_all()
+
+
+@pytest.mark.asyncio
 async def test_kcl_parse_with_exception():
     # Read from a file.
     try:
@@ -117,6 +283,7 @@ async def test_kcl_parse():
 def test_kcl_error_is_retryable():
     assert kcl.KclError("retry me", True).is_retryable() is True
     assert kcl.KclError("do not retry").is_retryable() is False
+    assert kcl.KclError("do not retry").sketch_constraint_report is None
 
 
 @pytest.mark.asyncio
@@ -258,11 +425,16 @@ async def test_kcl_mock_execute():
 
 
 @pytest.mark.asyncio
-async def test_duplicate_sketch_instances() -> None:
+@pytest.mark.parametrize("use_session", [False, True])
+async def test_duplicate_sketch_instances(use_session) -> None:
     fixture = os.path.join(
         tests_dir, "sketch_visualizer", "duplicate_names", "input.kcl"
     )
-    outcome = await kcl.mock_execute(fixture)
+    if use_session:
+        async with await kcl.new_kcl_session(fixture, mock=True) as session:
+            outcome = session.outcome
+    else:
+        outcome = await kcl.mock_execute(fixture)
     report = outcome.sketch_constraint_report()
     assert [s.instance_index for s in report.fully_constrained] == [0, 1]
     with pytest.raises(Exception, match="found 2 sketches named `profile`"):
@@ -298,6 +470,13 @@ async def test_kcl_execute_code():
         assert code is not None
         assert len(code) > 0
         await execute_with_retries(kcl.execute_code, code)
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_kcl_execute_code_geometry_only():
+    outcome = await execute_with_retries(kcl.execute_code, box_code, geometry_only=True)
+    assert outcome.issues() == []
 
 
 @requires_engine
@@ -962,3 +1141,22 @@ async def test_sketch_constraint_status_execution_error_returns_partial_report()
     assert report.kcl_error is not None
     assert report.kcl_error.phase == "execution"
     assert "missing_sketch" in report.kcl_error.text
+
+
+@pytest.mark.asyncio
+async def test_primary_execution_error_carries_partial_constraint_report():
+    with pytest.raises(kcl.KclError) as raised:
+        await kcl.new_kcl_session_code(execution_error_after_sketch_code, mock=True)
+
+    report = raised.value.sketch_constraint_report
+    assert report is not None
+    assert report.total_sketches() == 1
+    assert len(report.fully_constrained) == 1
+    assert report.is_complete is False
+    assert report.kcl_error is not None
+    assert report.kcl_error.phase == "execution"
+    assert "missing_sketch" in report.kcl_error.text
+    assert "SketchConstraintReport" not in str(raised.value)
+    assert raised.value.args == (report.kcl_error.text, False)
+    assert raised.value.is_retryable() is False
+    assert str(raised.value) == str(kcl.KclError(report.kcl_error.text, False))

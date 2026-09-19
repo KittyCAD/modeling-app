@@ -1732,12 +1732,14 @@ export class KclManager extends File {
       newCode,
       shouldResetCamera,
       requestedUserDocumentVersion,
+      forceExecution = false,
     }: {
       newCode: string
       shouldResetCamera: boolean
       requestedUserDocumentVersion: number
+      forceExecution?: boolean
     }) => {
-      if (!this._automaticallyRenderEnabled) {
+      if (!forceExecution && !this._automaticallyRenderEnabled) {
         return
       }
 
@@ -1847,6 +1849,15 @@ export class KclManager extends File {
     },
     1000
   )
+
+  scheduleCurrentCodeExecution(shouldResetCamera: boolean) {
+    this.deferredExecution({
+      newCode: this.code,
+      shouldResetCamera,
+      requestedUserDocumentVersion: this._userDocumentVersion,
+      forceExecution: true,
+    })
+  }
 
   /**
    * Finish the latest direct editor execution before a workflow consumes the

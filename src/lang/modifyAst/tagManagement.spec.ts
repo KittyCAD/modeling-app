@@ -30,7 +30,10 @@ beforeEach(async () => {
   engineCommandManagerInThisFile = engineCommandManager
 })
 afterAll(() => {
-  engineCommandManagerInThisFile.tearDown()
+  engineCommandManagerInThisFile.tearDown({
+    route: 'user-requested',
+    initiatedBy: 'client',
+  })
 })
 
 const executeCode = async (
