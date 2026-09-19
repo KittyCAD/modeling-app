@@ -243,6 +243,63 @@ extrude002 = extrude(profile002, length = -1)`
       }
     )
 
+    it.each(['union', 'intersect'] as const)(
+      'should keep distinct variable-less bodies for %s',
+      async (operation) => {
+        const pipeCode = `@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [2, 0], center = [0, 0])
+}
+region(segments = [sketch001.circle1])
+  |> extrude(length = 2)
+
+sketch002 = sketch(on = XZ) {
+  circle1 = circle(start = [2, 0], center = [0, 0])
+}
+region(segments = [sketch002.circle1])
+  |> extrude(length = 2)`
+        const { ast, artifactGraph } = await getAstAndArtifactGraph(
+          pipeCode,
+          instanceInThisFile,
+          kclManagerInThisFile
+        )
+        const sweeps = Array.from(artifactGraph.values()).filter(
+          (artifact) => artifact.type === 'sweep'
+        )
+        expect(sweeps).toHaveLength(2)
+        const solids = createSelectionFromArtifacts(sweeps, artifactGraph)
+        const result =
+          operation === 'union'
+            ? addUnion({
+                ast,
+                artifactGraph,
+                solids,
+                wasmInstance: instanceInThisFile,
+              })
+            : addIntersect({
+                ast,
+                artifactGraph,
+                solids,
+                wasmInstance: instanceInThisFile,
+              })
+        if (err(result)) {
+          throw result
+        }
+
+        const output = recast(result.modifiedAst, instanceInThisFile)
+        expect(output).toContain(
+          'solid001 = region(segments = [sketch001.circle1])'
+        )
+        expect(output).toContain(
+          'solid002 = region(segments = [sketch002.circle1])'
+        )
+        expect(output).toContain(
+          `solid003 = ${operation}([solid001, solid002])`
+        )
+      }
+    )
+
     it.each(['subtract', 'split'] as const)(
       'should reject the same variable-less pipe in %s targets and tools',
       async (operation) => {
