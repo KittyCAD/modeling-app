@@ -1150,3 +1150,6 @@ async def test_primary_execution_error_carries_partial_constraint_report():
     assert report.kcl_error.phase == "execution"
     assert "missing_sketch" in report.kcl_error.text
     assert "SketchConstraintReport" not in str(raised.value)
+    assert raised.value.args == (report.kcl_error.text, False)
+    assert raised.value.is_retryable() is False
+    assert str(raised.value) == str(kcl.KclError(report.kcl_error.text, False))

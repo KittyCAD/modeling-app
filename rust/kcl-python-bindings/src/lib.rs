@@ -36,6 +36,7 @@ use pyo3::pyfunction;
 use pyo3::pymethods;
 use pyo3::pymodule;
 use pyo3::types::PyAny;
+use pyo3::types::PyAnyMethods;
 use pyo3::types::PyModule;
 use pyo3::wrap_pyfunction;
 use pyo3_stub_gen::define_stub_info_gatherer;
@@ -84,17 +85,19 @@ fn into_miette(error: kcl_lib::KclErrorWithOutputs, filename: &str, code: &str) 
     let retryable = error.is_retryable();
     let error_text = render_miette(error.clone(), code);
     let constraint_report = sketch_constraint_report_from_error(&error, filename, code, error_text.clone());
-    let py_error = PyErr::new::<PyKclError, _>((error_text, retryable));
-    Python::attach(|py| {
-        py_error
-            .value(py)
-            .as_any()
-            .cast::<PyKclError>()
-            .expect("PyKclError should contain PyKclError state")
-            .borrow_mut()
-            .sketch_constraint_report = Some(constraint_report);
-    });
-    py_error
+    Python::attach(|py| -> PyResult<PyErr> {
+        let exception = Bound::new(
+            py,
+            PyKclError {
+                retryable,
+                sketch_constraint_report: Some(constraint_report),
+            },
+        )?;
+        // Direct Rust construction bypasses the Python constructor's exception arguments.
+        exception.setattr("args", (error_text, retryable))?;
+        Ok(PyErr::from_value(exception.into_any()))
+    })
+    .unwrap_or_else(|error| error)
 }
 
 fn render_miette(error: kcl_lib::KclErrorWithOutputs, code: &str) -> String {
