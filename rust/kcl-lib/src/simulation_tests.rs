@@ -737,6 +737,18 @@ async fn physical_properties(ctx: &ExecutorContext) -> Option<serde_json::Value>
 }
 
 async fn execute_test(test: &Test, render_to_png: bool) {
+    execute_test_with_error_assertion(test, render_to_png, None).await
+}
+
+async fn execute_error_test(test: &Test, assert_error: fn(&crate::errors::ReportWithOutputs)) {
+    execute_test_with_error_assertion(test, true, Some(assert_error)).await
+}
+
+async fn execute_test_with_error_assertion(
+    test: &Test,
+    render_to_png: bool,
+    assert_error: Option<fn(&crate::errors::ReportWithOutputs)>,
+) {
     crate::set_kcl_runtime_flags(crate::KclRuntimeFlags {
         enable_z0006_lint: crate::RuntimeFlag::On,
         ..Default::default()
@@ -758,8 +770,16 @@ async fn execute_test(test: &Test, render_to_png: bool) {
     );
     eprintln!("=========");
 
-    // Run the program.
-    let exec_res = execute_with_retries(&RetryConfig::default(), || {
+    // Structured error contracts must observe the first attempt.
+    let retry_config = if assert_error.is_some() {
+        RetryConfig {
+            retries: 0,
+            ..Default::default()
+        }
+    } else {
+        RetryConfig::default()
+    };
+    let exec_res = execute_with_retries(&retry_config, || {
         crate::test_server::execute_and_snapshot_ast_no_close(
             ast.clone(),
             Some(test.entry_point.clone()),
@@ -794,6 +814,10 @@ async fn execute_test(test: &Test, render_to_png: bool) {
                 }
             }
             let fail_path = test.output_dir.join("execution_error.snap");
+            if assert_error.is_some() {
+                ctx.close().await;
+                panic!("{} was expected to fail, but passed", test.name);
+            }
             if std::fs::exists(&fail_path).unwrap() {
                 panic!(
                     "This test case is expected to fail, but it passed. If this is intended, and the test should actually be passing now, please delete kcl-lib/{}",
@@ -904,20 +928,23 @@ async fn execute_test(test: &Test, render_to_png: bool) {
                     }))
                     .unwrap();
                     let report = error.clone().into_miette_report_with_outputs(&input).unwrap();
-                    let report = miette::Report::new(report);
                     if previously_passed {
                         eprintln!(
                             "This test case failed, but it previously passed. If this is intended, and the test should actually be failing now, please delete kcl-lib/{} and other associated passing artifacts",
                             ok_path.to_string_lossy()
                         );
-                        panic!("{report:?}");
+                        panic!("{:?}", miette::Report::new(report));
                     }
-                    let report = format!("{report:?}");
 
                     let err_result = catch_unwind(AssertUnwindSafe(|| {
-                        assert_snapshot(test, "Error from executing", || {
-                            insta::assert_snapshot!("execution_error", report);
-                        })
+                        if let Some(assert_error) = assert_error {
+                            assert_error(&report);
+                        } else {
+                            let report = format!("{:?}", miette::Report::new(report));
+                            assert_snapshot(test, "Error from executing", || {
+                                insta::assert_snapshot!("execution_error", report);
+                            });
+                        }
                     }));
 
                     let responses = {
@@ -6925,27 +6952,7 @@ mod gdt_face_api_edge_specifier {
         super::execute(TEST_NAME, true).await
     }
 }
-mod error_large_fillet_radius {
-    const TEST_NAME: &str = "error_large_fillet_radius";
-
-    /// Test parsing KCL.
-    #[test]
-    fn parse() {
-        super::parse(TEST_NAME)
-    }
-
-    /// Test that parsing and unparsing KCL produces the original KCL input.
-    #[tokio::test(flavor = "multi_thread")]
-    async fn unparse() {
-        super::unparse(TEST_NAME).await
-    }
-
-    /// Test that KCL is executed correctly.
-    #[tokio::test(flavor = "multi_thread")]
-    async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
-    }
-}
+mod error_large_fillet_radius;
 mod clone_w_face_tags {
     const TEST_NAME: &str = "clone_w_face_tags";
 
