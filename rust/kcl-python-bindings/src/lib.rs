@@ -36,6 +36,7 @@ use pyo3::pyfunction;
 use pyo3::pymethods;
 use pyo3::pymodule;
 use pyo3::types::PyAny;
+use pyo3::types::PyAnyMethods;
 use pyo3::types::PyModule;
 use pyo3::wrap_pyfunction;
 use pyo3_stub_gen::define_stub_info_gatherer;
@@ -80,9 +81,23 @@ where
     task.await.map_err(|err| PyException::new_err(err.to_string()))?
 }
 
-fn into_miette(error: kcl_lib::KclErrorWithOutputs, code: &str) -> PyErr {
+fn into_miette(error: kcl_lib::KclErrorWithOutputs, filename: &str, code: &str) -> PyErr {
     let retryable = error.is_retryable();
-    PyErr::new::<PyKclError, _>((render_miette(error, code), retryable))
+    let error_text = render_miette(error.clone(), code);
+    let constraint_report = sketch_constraint_report_from_error(&error, filename, code, error_text.clone());
+    Python::attach(|py| -> PyResult<PyErr> {
+        let exception = Bound::new(
+            py,
+            PyKclError {
+                retryable,
+                sketch_constraint_report: Some(constraint_report),
+            },
+        )?;
+        // Direct Rust construction bypasses the Python constructor's exception arguments.
+        exception.setattr("args", (error_text, retryable))?;
+        Ok(PyErr::from_value(exception.into_any()))
+    })
+    .unwrap_or_else(|error| error)
 }
 
 fn render_miette(error: kcl_lib::KclErrorWithOutputs, code: &str) -> String {
@@ -123,6 +138,24 @@ fn add_execution_issues(
             report.warnings.push(rendered);
         }
     }
+}
+
+fn sketch_constraint_report_from_error(
+    error: &kcl_lib::KclErrorWithOutputs,
+    filename: &str,
+    code: &str,
+    error_text: String,
+) -> SketchConstraintReport {
+    let mut report: SketchConstraintReport = error.sketch_constraint_report().into();
+    add_execution_issues(&mut report, error.non_fatal.clone(), |issue| {
+        kcl_lib::render_compilation_issue_miette(filename, code, &error.source_files, issue)
+    });
+    report.is_complete = false;
+    report.kcl_error = Some(KclErrorInfo {
+        phase: "execution".to_string(),
+        text: error_text,
+    });
+    report
 }
 
 fn incomplete_sketch_constraint_report(phase: &str, text: String) -> SketchConstraintReport {
@@ -188,6 +221,8 @@ fn into_kcl_exception(error: kcl_lib::KclError) -> PyErr {
 #[derive(Debug, Clone)]
 struct PyKclError {
     retryable: bool,
+    #[pyo3(get)]
+    sketch_constraint_report: Option<SketchConstraintReport>,
 }
 
 #[pymethods]
@@ -195,7 +230,10 @@ impl PyKclError {
     #[new]
     #[pyo3(signature = (_message, retryable = false))]
     fn new(_message: &Bound<'_, PyAny>, retryable: bool) -> Self {
-        Self { retryable }
+        Self {
+            retryable,
+            sketch_constraint_report: None,
+        }
     }
 
     fn is_retryable(&self) -> bool {
@@ -371,7 +409,7 @@ async fn run_kcl(
         Ok(result) => result,
         Err(err) => {
             ctx.close().await;
-            return Err(into_miette(err, &code));
+            return Err(into_miette(err, &filename, &code));
         }
     };
     Ok(ExecutedKcl {
@@ -440,19 +478,10 @@ async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstr
         }
         Err(err) => {
             if err.is_retryable() {
-                return Err(into_miette(err, &code));
+                return Err(into_miette(err, &filename, &code));
             }
             let error_text = render_miette(err.clone(), &code);
-            let mut report: SketchConstraintReport = err.sketch_constraint_report().into();
-            add_execution_issues(&mut report, err.non_fatal, |issue| {
-                kcl_lib::render_compilation_issue_miette(&filename, &code, &err.source_files, issue)
-            });
-            report.is_complete = false;
-            report.kcl_error = Some(KclErrorInfo {
-                phase: "execution".to_string(),
-                text: error_text,
-            });
-            Ok(report)
+            Ok(sketch_constraint_report_from_error(&err, &filename, &code, error_text))
         }
     };
     ctx.close().await;
