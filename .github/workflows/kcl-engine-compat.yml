@@ -53,17 +53,10 @@ jobs:
         with:
           repository: KittyCAD/engine
           path: engine
-          lfs: false
+          lfs: true
           submodules: recursive
           token: ${{ steps.app-token.outputs.token }}
           persist-credentials: false
-      - name: Set up Engine LFS files
-        uses: KittyCAD/gha-actions/actions/git-lfs-cached-checkout@main
-        with:
-          token: ${{ steps.app-token.outputs.token }}
-          paths: |
-            engine
-            engine/format/hoops/sdk
       - name: Install Rust
         working-directory: engine
         run: rustup toolchain install
