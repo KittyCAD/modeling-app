@@ -5,7 +5,6 @@ import {
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
-import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { Themes } from '@src/lib/theme'
 
 const SCREENSHOT_SIZE = { width: 1200, height: 900 }
@@ -32,8 +31,6 @@ async function waitForThemeApplied(page: Page, mode: Themes) {
     )
     .toBe(expectDark)
 }
-
-test.use({ userFeatures: [OPFS_CLOUD_FEATURE_FLAG] })
 
 test(
   'Create a sketch in a new project: light theme',
