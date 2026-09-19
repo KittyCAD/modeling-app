@@ -108,22 +108,23 @@ describe('ConnectionManager', () => {
     expect(warn).toHaveBeenCalledExactlyOnceWith(rejection)
   })
 
-  it('logs one intentional interrupt without warning per pending command', async () => {
+  it('logs one intentional interrupt without reporting pending commands', async () => {
     const manager = createConnectionManager()
     manager.connection = { send: vi.fn() } as unknown as Connection
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {})
     const addLog = vi.spyOn(EngineDebugger, 'addLog')
-    const firstRejection = expect(
-      manager.sendModelingCommandFromWasm('command-1', '{}', '{}', '{}')
-    ).rejects.toContain('executionIsStale')
-    const secondRejection = expect(
+
+    manager.fireModelingCommandFromWasm('command-1', '{}', '{}', '{}')
+    const rejection = expect(
       manager.sendModelingCommandFromWasm('command-2', '{}', '{}', '{}')
     ).rejects.toContain('executionIsStale')
 
     manager.rejectAllModelingCommands(EXECUTE_AST_INTERRUPT_ERROR_MESSAGE)
-    await Promise.all([firstRejection, secondRejection])
+    await rejection
 
     expect(warn).not.toHaveBeenCalled()
+    expect(error).not.toHaveBeenCalled()
     expect(addLog).toHaveBeenCalledExactlyOnceWith({
       label: 'connectionManager',
       message: 'interrupting stale modeling execution',

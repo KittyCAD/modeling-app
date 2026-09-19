@@ -1402,7 +1402,13 @@ export class ConnectionManager extends EventTarget {
       command,
       range,
       idToRangeMap,
-    }).catch(reportRejection)
+    }).catch((e) => {
+      if (
+        getResponseErrorMessage(e, '') !== EXECUTE_AST_INTERRUPT_ERROR_MESSAGE
+      ) {
+        reportRejection(e)
+      }
+    })
   }
 
   /**
