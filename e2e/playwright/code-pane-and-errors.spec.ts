@@ -186,15 +186,17 @@ middle()`)
       await page.keyboard.press('ControlOrMeta+Shift+M')
     })
 
-    // The original error message is preserved, and import frames are
-    // labeled as imports (no call parens), innermost first.
-    await expect(
-      page.getByLabel('Diagnostics').getByText(`\`missingName\` is not defined
+    // The variable renders as inline code; import frames retain their labels
+    // (no call parens) and their innermost-first order.
+    const diagnostic = page
+      .getByLabel('Diagnostics')
+      .getByText(`missingName is not defined
 
 Backtrace:
 import broken.kcl
 import assembly.kcl`)
-    ).toBeVisible()
+    await expect(diagnostic).toBeVisible()
+    await expect(diagnostic.locator('code')).toHaveText('missingName')
     // The import frames are in other files and the top-level frame is the
     // error's own range, so there are no backtrace hint diagnostics.
     await expect(page.getByText('Part of the error backtrace')).toHaveCount(0)

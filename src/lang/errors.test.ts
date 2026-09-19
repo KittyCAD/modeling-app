@@ -1,6 +1,11 @@
 import type { BacktraceItem } from '@rust/kcl-lib/bindings/BacktraceItem'
 import type { KCLError } from '@src/lang/errors'
-import { kclErrorsToDiagnostics, toUtf8, toUtf16 } from '@src/lang/errors'
+import {
+  kclErrorsToDiagnostics,
+  renderDiagnosticMessage,
+  toUtf8,
+  toUtf16,
+} from '@src/lang/errors'
 import { defaultArtifactGraph } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
 import { emptyOperationsByModule } from '@src/lang/wasm'
@@ -30,6 +35,37 @@ describe('test UTF conversions', () => {
     const utf16Range: [number, number, number] = [actualStart, actualEnd, 0]
     const actualUtf8Range = toUtf8(utf16Range, sourceCode)
     expect(actualUtf8Range).toStrictEqual(utf8SourceRange)
+  })
+})
+
+describe('diagnostic message rendering', () => {
+  function render(message: string) {
+    const container = document.createElement('div')
+    container.append(renderDiagnosticMessage(message))
+    return container
+  }
+
+  it('renders paired backticks as inline code', () => {
+    const view = render('Use `startSketchOn` here')
+
+    expect(view.textContent).toBe('Use startSketchOn here')
+    expect(view.querySelector('code')?.textContent).toBe('startSketchOn')
+  })
+
+  it('keeps markup-like code content inert', () => {
+    const view = render('Unexpected `<img src=x onerror=alert(1)>`')
+
+    expect(view.querySelector('img')).toBeNull()
+    expect(view.querySelector('code')?.textContent).toBe(
+      '<img src=x onerror=alert(1)>'
+    )
+  })
+
+  it('leaves unmatched backticks as plain text', () => {
+    const view = render('Unexpected `value')
+
+    expect(view.textContent).toBe('Unexpected `value')
+    expect(view.querySelector('code')).toBeNull()
   })
 })
 
@@ -122,6 +158,7 @@ describe('test kclErrToDiagnostic', () => {
         to: 41,
         message:
           '`missingName` is not defined\n\nBacktrace:\nimport broken.kcl\nimport assembly.kcl',
+        renderMessage: expect.any(Function),
         severity: 'error',
       },
     ])
@@ -160,6 +197,7 @@ describe('test kclErrToDiagnostic', () => {
         from: 0,
         to: 32,
         message: '`missingName` is not defined\n\nBacktrace:\nimport part.kcl',
+        renderMessage: expect.any(Function),
         severity: 'error',
       },
     ])
@@ -241,6 +279,7 @@ describe('test kclErrToDiagnostic', () => {
         to: 41,
         message:
           '`missingName` is not defined\n\nBacktrace:\ninner()\nouter()\nimport assembly.kcl',
+        renderMessage: expect.any(Function),
         severity: 'error',
       },
     ])
