@@ -347,6 +347,10 @@ export const settingsMachine = setup({
 
       return newSettings
     }),
+    toastSettingsReset: ({ event }) => {
+      if (event.type !== 'Reset settings') return
+      toast.success(`Your ${event.level}-level settings were reset.`)
+    },
     setAllSettings: assign(({ event, context }) => {
       if ('settings' in event) return event.settings
       else if ('output' in event) return event.output || context
@@ -546,6 +550,7 @@ export const settingsMachine = setup({
 
           actions: [
             'resetSettings',
+            'toastSettingsReset',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
               type: 'update',

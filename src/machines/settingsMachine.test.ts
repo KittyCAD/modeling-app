@@ -9,8 +9,14 @@ import {
   settingsMachine,
   type SettingsMachineContext,
 } from '@src/machines/settingsMachine'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { createActor, fromCallback, fromPromise, waitFor } from 'xstate'
+
+const { mockToast } = vi.hoisted(() => ({
+  mockToast: { success: vi.fn() },
+}))
+
+vi.mock('react-hot-toast', () => ({ default: mockToast }))
 
 describe('settingsMachine', () => {
   it('keeps service dependencies out of settings values', () => {
@@ -40,10 +46,13 @@ describe('settingsMachine', () => {
   })
 
   it('serializes settings events received while persistence is pending', async () => {
+    mockToast.success.mockClear()
     const persistedUnits: Array<BaseUnit | undefined> = []
     const finishPersisting: Array<() => void> = []
     let activeWrites = 0
     let maximumActiveWrites = 0
+    const initialSettings = createSettings()
+    initialSettings.modeling.defaultUnit.user = 'in'
     const wasmInstancePromise = Promise.resolve({} as ModuleType)
     const commandBarActor = createActor(commandBarMachine, {
       input: {
@@ -55,7 +64,7 @@ describe('settingsMachine', () => {
     const actor = createActor(
       settingsMachine.provide({
         actors: {
-          loadUserSettings: fromPromise(async () => createSettings()),
+          loadUserSettings: fromPromise(async () => initialSettings),
           persistSettings: fromPromise(async ({ input }) => {
             persistedUnits.push(input.context.modeling.defaultUnit.project)
             activeWrites += 1
@@ -79,7 +88,7 @@ describe('settingsMachine', () => {
           projectLibrarySettingDefaultPolicies: [],
           extensionSettings: {},
           fileOperations: testFileOperations,
-          ...createSettings(),
+          ...initialSettings,
           wasmInstancePromise,
         },
       }
@@ -99,9 +108,13 @@ describe('settingsMachine', () => {
       type: 'set.modeling.defaultUnit',
       data: { level: 'project', value: 'cm' },
     })
+    actor.send({ type: 'Reset settings', level: 'user' })
 
-    expect(actor.getSnapshot().context.deferredEvents).toHaveLength(2)
+    expect(actor.getSnapshot().context.deferredEvents).toHaveLength(3)
     expect(persistedUnits).toEqual(['mm'])
+    expect(mockToast.success).not.toHaveBeenCalledWith(
+      'Your user-level settings were reset.'
+    )
 
     finishPersisting.shift()?.()
     await waitFor(
@@ -120,6 +133,17 @@ describe('settingsMachine', () => {
         snapshot.context.modeling.defaultUnit.project === 'cm'
     )
     expect(persistedUnits).toEqual(['mm', 'yd', 'cm'])
+
+    finishPersisting.shift()?.()
+    await waitFor(
+      actor,
+      (snapshot) =>
+        snapshot.matches('persisting settings') &&
+        snapshot.context.modeling.defaultUnit.user === undefined
+    )
+    expect(mockToast.success).toHaveBeenCalledWith(
+      'Your user-level settings were reset.'
+    )
 
     finishPersisting.shift()?.()
     await waitFor(actor, (snapshot) => snapshot.matches('idle'))
