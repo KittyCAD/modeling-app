@@ -1,0 +1,84 @@
+name: KCL Engine compatibility
+
+on:
+  pull_request:
+    paths:
+      - "rust/Cargo.toml"
+      - "rust/kcl-*/Cargo.toml"
+      - "rust/Cargo.lock"
+      - ".github/workflows/kcl-engine-compat.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  packages: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  engine-compatibility:
+    name: Engine accepts KCL release dependencies
+    runs-on:
+      - runs-on=${{ github.run_id }}
+      - family=g4dn.4xlarge
+      - image=ubuntu22-gpu-x64
+      - extras=s3-cache
+    container:
+      image: ghcr.io/kittycad/cuda:12.1.1-zoo-devel-ubuntu22.04-main
+      credentials:
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+      options: --runtime=nvidia --gpus all -v /tmp/.X11-unix:/tmp/.X11-unix
+      env:
+        NVIDIA_DISABLE_REQUIRE: "1"
+        NVIDIA_DRIVER_CAPABILITIES: "all"
+        VK_DRIVER_FILES: "/etc/vulkan/icd.d/nvidia_icd.json:/usr/share/vulkan/icd.d/lvp_icd.x86_64.json"
+        DISPLAY: ":99"
+    steps:
+      - uses: runs-on/action@v2.3.1
+      - uses: actions/create-github-app-token@v3.2.0
+        id: app-token
+        with:
+          app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
+          private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+      - uses: actions/checkout@v7.0.1
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          persist-credentials: false
+      - uses: actions/checkout@v7.0.1
+        with:
+          repository: KittyCAD/engine
+          path: engine
+          lfs: false
+          submodules: recursive
+          token: ${{ steps.app-token.outputs.token }}
+          persist-credentials: false
+      - name: Set up Engine LFS files
+        uses: KittyCAD/gha-actions/actions/git-lfs-cached-checkout@main
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          paths: |
+            engine
+            engine/format/hoops/sdk
+      - name: Install Rust
+        working-directory: engine
+        run: rustup toolchain install
+      - uses: Swatinem/rust-cache@v2.9.1
+        with:
+          prefix-key: v1-kcl-engine-compatibility
+          workspaces: engine -> target
+      - name: Use the KCL release candidate and latest Modeling API
+        working-directory: engine
+        run: |
+          sed -i 's|^# kcl-lib = .*|kcl-lib = { path = "../rust/kcl-lib" }|' Cargo.toml
+          grep -F 'kcl-lib = { path = "../rust/kcl-lib" }' Cargo.toml
+          cargo update -p kcl-lib
+          cargo update -p kittycad-modeling-cmds
+          cargo metadata --format-version 1 | grep -Fq "\"manifest_path\":\"${GITHUB_WORKSPACE}/rust/kcl-lib/Cargo.toml\""
+      - name: Check every modeling command is implemented
+        working-directory: engine
+        run: ENGINE_WORKING_DIR=$(pwd) cargo build --bin engine-api --features exhaustive-modeling-cmds
