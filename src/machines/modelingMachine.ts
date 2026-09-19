@@ -54,7 +54,10 @@ import {
 } from '@src/clientSideScene/sceneConstants'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { OnMoveCallbackArgs } from '@src/clientSideScene/sceneInfra'
-import { DRAFT_POINT } from '@src/clientSideScene/sceneUtils'
+import {
+  DRAFT_POINT,
+  SKETCH_GROUP_SEGMENTS,
+} from '@src/clientSideScene/sceneUtils'
 import { createProfileStartHandle } from '@src/clientSideScene/segments'
 import {
   applyConstraintEqualAngle,
@@ -348,7 +351,11 @@ async function enterSketchSolveFromSketchBlockArtifact({
 
   const id =
     planeData.type === 'extrudeFace' ? planeData.faceId : planeData.planeId
-  await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
+  await letEngineAnimateAndSyncCamAfter(
+    engineCommandManager,
+    id,
+    kclManager.sceneInfra.camControls
+  )
   kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
 
   const project = projectRef?.current
@@ -1548,6 +1555,7 @@ export const modelingMachine = setup({
     },
     'restore modeling camera controls': ({ context }) => {
       const camControls = context.kclManager.sceneInfra.camControls
+      camControls.cancelSketchCameraTransition()
       camControls.enablePan = true
       camControls.enableRotate = true
       camControls.syncDirection = 'engineToClient'
@@ -2242,6 +2250,7 @@ export const modelingMachine = setup({
       async (args: { input: { context: ModelingMachineContext } }) => {
         const context = args.input.context
         const { store, engineCommandManager, kclManager } = context
+        kclManager.sceneInfra.camControls.cancelSketchCameraTransition()
         try {
           // When cancelling the sketch mode we should disable sketch mode within the engine.
           await engineCommandManager.sendSceneCommand({
@@ -3199,7 +3208,11 @@ export const modelingMachine = setup({
           }
 
           const id = plane.type === 'extrudeFace' ? plane.faceId : plane.planeId
-          await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
+          await letEngineAnimateAndSyncCamAfter(
+            engineCommandManager,
+            id,
+            kclManager.sceneInfra.camControls
+          )
           kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
           return {
             sketchEntryNodePath: [],
@@ -3222,7 +3235,8 @@ export const modelingMachine = setup({
 
         await letEngineAnimateAndSyncCamAfter(
           engineCommandManager,
-          plane.planeId
+          plane.planeId,
+          kclManager.sceneInfra.camControls
         )
 
         return {
@@ -3509,7 +3523,11 @@ export const modelingMachine = setup({
 
         const id =
           result.type === 'extrudeFace' ? result.faceId : result.planeId
-        await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
+        await letEngineAnimateAndSyncCamAfter(
+          engineCommandManager,
+          id,
+          kclManager.sceneInfra.camControls
+        )
 
         kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
         kclManager.updateCodeEditor(
@@ -3723,7 +3741,9 @@ export const modelingMachine = setup({
     'setup-client-side-sketch-segments': fromPromise(
       async ({
         input: { sketchDetails, selectionRanges, kclManager },
+        signal,
       }: {
+        signal: AbortSignal
         input: {
           sketchDetails: SketchDetails | null
           selectionRanges: Selections
@@ -3738,6 +3758,10 @@ export const modelingMachine = setup({
           // empty if its the first profile in a sketch, but we still need to tear down and cancel the current tool properly.
           kclManager.sceneInfra.resetMouseListeners()
           kclManager.sceneEntitiesManager.tearDownSketch({ removeAxis: false })
+          await kclManager.sceneInfra.camControls.transitionToSketch(
+            kclManager.sceneEntitiesManager.intersectionPlane,
+            signal
+          )
           return
         }
         kclManager.sceneInfra.resetMouseListeners()
@@ -3751,6 +3775,16 @@ export const modelingMachine = setup({
           selectionRanges,
         })
         kclManager.sceneInfra.resetMouseListeners()
+
+        const sketchGroup = kclManager.sceneInfra.scene.children.find(
+          (object) => object.userData.type === SKETCH_GROUP_SEGMENTS
+        )
+        if (sketchGroup) {
+          await kclManager.sceneInfra.camControls.transitionToSketch(
+            sketchGroup,
+            signal
+          )
+        }
 
         kclManager.sceneEntitiesManager.setupSketchIdleCallbacks({
           sketchEntryNodePath: sketchDetails.sketchEntryNodePath,
@@ -3844,7 +3878,8 @@ export const modelingMachine = setup({
             )
             await letEngineAnimateAndSyncCamAfter(
               engineCommandManager,
-              artifact.id
+              artifact.id,
+              kclManager.sceneInfra.camControls
             )
             const normal = crossProduct(planeVar.xAxis, planeVar.yAxis)
             return {
@@ -3864,7 +3899,8 @@ export const modelingMachine = setup({
           )
         await letEngineAnimateAndSyncCamAfter(
           engineCommandManager,
-          info?.sketchDetails?.faceId || ''
+          info?.sketchDetails?.faceId || '',
+          kclManager.sceneInfra.camControls
         )
 
         const sketchArtifact = kclManager.artifactGraph.get(mainPath)

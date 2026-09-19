@@ -13,6 +13,7 @@ import {
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { roundOff } from '@src/lib/utils'
+import { reportRejection } from '@src/lib/trap'
 import {
   distance2d,
   distancePointToLine2d,
@@ -76,7 +77,14 @@ import { buildDraftLineConstraintPlan } from '@src/machines/sketchSolve/tools/dr
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
 import { resolveToolPickerSelection } from '@src/machines/sketchSolve/tools/toolPicker'
 import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
-import { assertEvent, assign, createMachine, sendParent, setup } from 'xstate'
+import {
+  assertEvent,
+  assign,
+  createMachine,
+  fromPromise,
+  sendParent,
+  setup,
+} from 'xstate'
 
 const DEFAULT_DISTANCE_FALLBACK = 5
 const constraintToolNameSet = new Set<string>(constraintToolNames)
@@ -455,6 +463,14 @@ export const sketchSolveMachine = setup({
     }),
   },
   actors: {
+    positionSketchCamera: fromPromise(
+      async ({ input, signal }: { input: KclManager; signal: AbortSignal }) => {
+        await input.sceneInfra.camControls.transitionToSketch(
+          input.sceneEntitiesManager.sketchSolveGroup,
+          signal
+        )
+      }
+    ),
     tearDownSketchSolve,
     moveToolActor: createMachine({
       /* ... */
@@ -488,7 +504,7 @@ export const sketchSolveMachine = setup({
     }
   },
   id: 'Sketch Solve Mode',
-  initial: 'move and select',
+  initial: 'initialize camera',
   on: {
     exit: {
       target: '#Sketch Solve Mode.exiting with cleanup',
@@ -937,6 +953,30 @@ export const sketchSolveMachine = setup({
     },
   },
   states: {
+    'initialize camera': {
+      always: [
+        {
+          guard: ({ context }) =>
+            context.kclManager.engineCommandManager.geometryOnly,
+          target: 'positioning camera',
+        },
+        { target: 'move and select' },
+      ],
+    },
+    'positioning camera': {
+      invoke: {
+        src: 'positionSketchCamera',
+        input: ({ context }) => context.kclManager,
+        onDone: 'move and select',
+        onError: {
+          target: 'exiting with cleanup',
+          actions: ({ event }) => reportRejection(event.error),
+        },
+      },
+      on: {
+        escape: 'exiting with cleanup',
+      },
+    },
     'move and select': {
       entry: ['setUpOnDragAndSelectionClickCallbacks'],
       on: {
@@ -1164,6 +1204,8 @@ export const sketchSolveMachine = setup({
   ],
 
   exit: [
+    ({ context }) =>
+      context.sceneInfra.camControls.cancelSketchCameraTransition(),
     ({ context }) =>
       toggleSketchExtension(context.kclManager.editorView, false),
   ],

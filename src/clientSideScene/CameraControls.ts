@@ -10,6 +10,8 @@ import * as TWEEN from '@tweenjs/tween.js'
 import Hammer from 'hammerjs'
 import type { Camera } from 'three'
 import { Matrix4 } from 'three'
+import type { Object3D } from 'three'
+import { getSketchCameraFrame } from '@src/clientSideScene/sketchCamera'
 import {
   Euler,
   MathUtils,
@@ -114,6 +116,8 @@ export class CameraControls {
   engineCommandManager: ConnectionManager
   syncDirection: CameraSyncDirection = 'engineToClient'
   localCameraMode = false
+  private sketchCameraNeedsFit = false
+  private cancelSketchTween: (() => void) | undefined
   camera: PerspectiveCamera | OrthographicCamera
   target: Vector3
   domElement: HTMLCanvasElement
@@ -1375,6 +1379,53 @@ export class CameraControls {
     })
   }
 
+  requestSketchCameraTransition() {
+    this.cancelSketchCameraTransition()
+    this.sketchCameraNeedsFit = true
+  }
+
+  cancelSketchCameraTransition() {
+    this.sketchCameraNeedsFit = false
+    this.cancelSketchTween?.()
+  }
+
+  /** Called once the editable sketch geometry has been constructed. */
+  async transitionToSketch(sketch: Object3D, signal?: AbortSignal) {
+    if (!this.sketchCameraNeedsFit) return
+    this.sketchCameraNeedsFit = false
+    if (signal?.aborted) return Promise.reject(signal.reason)
+
+    const camera = this.camera
+    const distance = Math.max(camera.position.distanceTo(this.target), 0.001)
+    const halfHeight =
+      camera instanceof PerspectiveCamera
+        ? distance * viewHeightFactor(camera.getEffectiveFOV())
+        : (camera.top - camera.bottom) / (2 * camera.zoom)
+    const frame = getSketchCameraFrame(
+      sketch,
+      this.normalizedViewportAspect(),
+      halfHeight
+    )
+    this.pendingPan = null
+    this.pendingRotation = null
+    this.pendingZoom = null
+    this.useOrthographicCamera()
+    if (!(this.camera instanceof OrthographicCamera)) return
+    // Preserve the visible scale when switching projection before the tween.
+    this.camera.zoom = ORTHOGRAPHIC_CAMERA_SIZE / halfHeight
+    this.camera.updateProjectionMatrix()
+    await this._tweenCameraToQuaternion(frame.quaternion, frame.target, 500, {
+      zoom: ORTHOGRAPHIC_CAMERA_SIZE / frame.halfHeight,
+      distance:
+        frame.halfHeight /
+        viewHeightFactor(
+          this.perspectiveFovBeforeOrtho || this.lastPerspectiveFov
+        ),
+      signal,
+    })
+    this.enableRotate = this._setting_allowOrbitInSketchMode
+  }
+
   async tweenCameraToQuaternion(
     targetQuaternion: Quaternion,
     targetPosition = new Vector3(),
@@ -1393,9 +1444,10 @@ export class CameraControls {
   _tweenCameraToQuaternion(
     targetQuaternion: Quaternion,
     targetPosition: Vector3,
-    duration = 500
+    duration = 500,
+    sketch?: { zoom: number; distance: number; signal?: AbortSignal }
   ): Promise<void> {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const camera = this.camera
       this._isCamMovingCallback(true, true)
       const initialQuaternion = camera.quaternion.clone()
@@ -1403,6 +1455,7 @@ export class CameraControls {
       let tweenEnd = 1
       const tempVec = new Vector3()
       const initialDistance = initialTarget.distanceTo(camera.position.clone())
+      const initialZoom = camera.zoom
       const tempQuaternion = new Quaternion()
       const cameraAtTime = (animationProgress: number /* 0 - 1 */) => {
         const currentQ = tempQuaternion.slerpQuaternions(
@@ -1425,36 +1478,66 @@ export class CameraControls {
         this.camera.position
           .set(0, 0, 1)
           .applyQuaternion(currentQ)
-          .multiplyScalar(initialDistance)
+          .multiplyScalar(
+            MathUtils.lerp(
+              initialDistance,
+              sketch?.distance ?? initialDistance,
+              animationProgress
+            )
+          )
           .add(currentTarget)
 
         this.camera.up.set(0, 1, 0).applyQuaternion(currentQ).normalize()
         this.camera.quaternion.copy(currentQ)
         this.target.copy(currentTarget)
+        if (sketch)
+          this.camera.zoom = MathUtils.lerp(
+            initialZoom,
+            sketch.zoom,
+            animationProgress
+          )
         this.camera.updateProjectionMatrix()
         this.update()
         this.onCameraChange()
       }
 
-      const onComplete = async () => {
+      const cleanup = () => {
+        sketch?.signal?.removeEventListener('abort', cancel)
+        if (sketch) this.cancelSketchTween = undefined
+        this._isCamMovingCallback(false, true)
+      }
+      const onComplete = () => {
         if (isReducedMotion()) {
           // Even if there is no animation we need to call cameraAtTime so camera values are updated
           cameraAtTime(1)
         }
         this.enableRotate = false
-        this._isCamMovingCallback(false, true)
+        cleanup()
         resolve()
       }
 
+      let tween: TWEEN.Tween<{ t: number }> | undefined
+      const cancel = () => {
+        tween?.stop()
+        cleanup()
+        reject(
+          sketch?.signal?.reason ??
+            new DOMException('Sketch camera transition cancelled', 'AbortError')
+        )
+      }
+      if (sketch) {
+        this.cancelSketchTween = cancel
+        sketch.signal?.addEventListener('abort', cancel, { once: true })
+      }
+
       if (isReducedMotion()) {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         onComplete()
       } else {
-        new TWEEN.Tween({ t: 0 })
+        tween = new TWEEN.Tween({ t: 0 })
           .to({ t: tweenEnd }, duration)
           .easing(TWEEN.Easing.Quadratic.InOut)
           .onUpdate(({ t }) => cameraAtTime(t))
-          .onComplete(toSync(onComplete, reportRejection))
+          .onComplete(onComplete)
           .start()
       }
     })
@@ -1834,19 +1917,25 @@ function _getInteractionType(
 
 export async function letEngineAnimateAndSyncCamAfter(
   engineCommandManager: ConnectionManager,
-  entityId: string
+  entityId: string,
+  cameraControls: CameraControls
 ) {
+  const local = engineCommandManager.geometryOnly
   await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
     cmd_id: uuidv4(),
     cmd: {
       type: 'enable_sketch_mode',
-      adjust_camera: true,
-      animated: !isReducedMotion(),
+      adjust_camera: !local,
+      animated: !local && !isReducedMotion(),
       ortho: true,
       entity_id: entityId,
     },
   })
+  if (local) {
+    cameraControls.requestSketchCameraTransition()
+    return
+  }
   // wait 600ms (animation takes 500, + 100 for safety)
   await new Promise((resolve) =>
     setTimeout(resolve, isReducedMotion() ? 100 : 600)
