@@ -374,7 +374,7 @@ impl WebSocketTransport {
 
     async fn close_with_timeout(&self, timeout: Duration) {
         let _ = self.shutdown_tx.try_send(());
-        let closed = tokio::time::timeout(timeout, async {
+        let _ = tokio::time::timeout(timeout, async {
             loop {
                 if *self.socket_health.read().await == SocketHealth::Inactive {
                     return;
@@ -383,11 +383,16 @@ impl WebSocketTransport {
             }
         })
         .await;
-        if closed.is_err() {
-            self.tcp_read_handle.abort();
-            self.tcp_write_handle.abort();
-            *self.socket_health.write().await = SocketHealth::Inactive;
-        }
+        // An inactive reader does not guarantee the writer has finished sending.
+        // It could have encountered an error.
+        // So, the graceful timeout request above may not have worked.
+        // So, we should abort here, in case it's still trying to send.
+        // Aborting a task that has already completed is a no-op.
+        // Aborting a task that's stuck or in-progress and didn't gracefully shutdown will
+        // accomplish our goal (stopping). So either way, we should abort.
+        self.tcp_read_handle.abort();
+        self.tcp_write_handle.abort();
+        *self.socket_health.write().await = SocketHealth::Inactive;
     }
 }
 
@@ -530,6 +535,41 @@ impl EngineTransport for WebSocketTransport {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[tokio::test]
+    async fn close_aborts_writer_when_reader_stops_before_timeout() {
+        let write = tokio::spawn(std::future::pending::<()>());
+        let (engine_req_tx, _engine_req_rx) = mpsc::channel(1);
+        let (shutdown_tx, mut shutdown_rx) = mpsc::channel(1);
+        let socket_health = Arc::new(RwLock::new(SocketHealth::Active));
+        let read_health = socket_health.clone();
+        let read = tokio::spawn(async move {
+            // Simulate the reader observing the peer's close after shutdown is requested.
+            shutdown_rx.recv().await.expect("shutdown should be requested");
+            *read_health.write().await = SocketHealth::Inactive;
+        });
+        let transport = WebSocketTransport {
+            tcp_read_handle: read.abort_handle(),
+            tcp_write_handle: write.abort_handle(),
+            engine_req_tx,
+            shutdown_tx,
+            responses: ResponseInformation::new(Arc::new(RwLock::new(Default::default()))),
+            pending_errors: Arc::new(RwLock::new(Vec::new())),
+            session_data: Arc::new(RwLock::new(None)),
+            socket_health: socket_health.clone(),
+        };
+
+        tokio::time::timeout(Duration::from_secs(1), async {
+            // The outer deadline ensures we exercise completion before the close timeout.
+            transport.close_with_timeout(Duration::from_secs(10)).await;
+            read.await.expect("reader should finish normally");
+            assert!(write.await.unwrap_err().is_cancelled());
+        })
+        .await
+        .expect("close should abort the writer even when the reader has stopped");
+
+        assert_eq!(*socket_health.read().await, SocketHealth::Inactive);
+    }
 
     #[tokio::test]
     async fn close_aborts_tasks_when_peer_does_not_close() {
