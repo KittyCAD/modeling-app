@@ -209,7 +209,7 @@ pub async fn new_kcl_session_impl(input: KclInput, mock: bool, highlight_edges: 
         filename,
     } = load_and_parse(input).await?;
 
-    let (ctx, mut state) = new_context_state(path, mock, highlight_edges)
+    let (ctx, mut state) = new_context_state(path, mock, highlight_edges, false)
         .await
         .map_err(to_py_exception)?;
     let env_ref = match ctx.run(&program, &mut state).await {
