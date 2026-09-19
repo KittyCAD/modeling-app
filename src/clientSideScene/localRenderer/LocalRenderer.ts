@@ -15,20 +15,24 @@ import { SelectionHighlightRenderer } from '@src/clientSideScene/localRenderer/S
 import type { KclExecutionDoneDetail, KclManager } from '@src/lang/KclManager'
 import { KclManagerEvents } from '@src/lang/KclManager'
 import { EngineDebugger } from '@src/lib/debugger'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { reportRejection } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import {
-  type Box3,
-  type Material,
+  Box3,
+  BufferGeometry,
+  Material,
   NeutralToneMapping,
   type Object3D,
   OrthographicCamera,
   PerspectiveCamera,
   Scene,
-  type Texture,
+  Sphere,
+  Texture,
   Vector2,
   Vector3,
 } from 'three'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { denoise } from 'three/examples/jsm/tsl/display/DenoiseNode.js'
 import { ao } from 'three/examples/jsm/tsl/display/GTAONode.js'
 import { mrt, normalView, output, pass, vec3, vec4 } from 'three/tsl'
@@ -88,6 +92,11 @@ export class LocalRenderer {
   private animationFrameId = -1
   private scheduledRenderAt = 0
   private currentModel: Object3D | null = null
+  private readonly gltfLoader = new GLTFLoader()
+  private modelLoadGeneration = 0
+  private pendingModelRefresh = false
+  private hasFittedModel = false
+  private unregisterExecutionListener: (() => void) | null = null
   private previewCamera: PerspectiveCamera | OrthographicCamera | null = null
   private readonly previewTarget = new Vector3()
   private readonly convertedSharedPosition = new Vector3()
@@ -119,6 +128,16 @@ export class LocalRenderer {
     this.kclManager.addEventListener(
       KclManagerEvents.ExecutionDone,
       this.onExecutionDone
+    )
+    this.unregisterExecutionListener = kclManager.isExecutingSignal.subscribe(
+      (isExecuting) => {
+        if (isExecuting) {
+          // A new execution invalidates any export or GLB parse still in flight.
+          this.modelLoadGeneration += 1
+          this.pendingModelRefresh = false
+          this.modelLoadSettledAfterRender = false
+        }
+      }
     )
     void this.initialize().catch(this.handleInitializationError)
   }
@@ -178,6 +197,8 @@ export class LocalRenderer {
     }
 
     this.disposed = true
+    this.unregisterExecutionListener?.()
+    this.unregisterExecutionListener = null
     this.kclManager.removeEventListener(
       KclManagerEvents.ExecutionDone,
       this.onExecutionDone
@@ -692,22 +713,132 @@ export class LocalRenderer {
 
     this.scheduleRender()
 
-    // Geometry loading is disconnected until the glTF loader is added.
     this.setVisible(true)
-    this.modelLoadSettledAfterRender = true
+    // Execution may finish while the GPU/environment is initializing, or before
+    // this renderer is mounted. Load that completed scene once, too.
+    if (
+      this.pendingModelRefresh ||
+      (!kclManager.isExecuting &&
+        kclManager.engineSceneGenerationSignal.peek() > 0 &&
+        !kclManager.hasErrors())
+    ) {
+      void this.refreshModel().catch(reportRejection)
+    } else if (!kclManager.isExecuting) {
+      this.modelLoadSettledAfterRender = true
+    }
   }
 
   private readonly onExecutionDone = (event: Event) => {
+    if (this.disposed || this.kclManager.isExecuting) return
+
     const { detail } = event as CustomEvent<KclExecutionDoneDetail>
+    this.modelLoadGeneration += 1
     if (!detail.successful) {
+      this.pendingModelRefresh = false
       logLocalWebGpuPreview('KCL execution failed', detail)
       this.onModelLoadSettled?.()
       return
     }
 
-    this.clearModel()
-    this.modelLoadSettledAfterRender = true
-    this.scheduleRender()
+    this.pendingModelRefresh = true
+    if (this.renderer) {
+      void this.refreshModel().catch(reportRejection)
+    }
+  }
+
+  private async refreshModel() {
+    this.pendingModelRefresh = false
+    const generation = ++this.modelLoadGeneration
+    const isCurrent = () =>
+      !this.disposed && generation === this.modelLoadGeneration
+    const startedAt = performance.now()
+    try {
+      // Like viewer2: one whole-scene binary glTF export, without UUID extras.
+      const files = await this.kclManager.rustContext.export(
+        { type: 'gltf', storage: 'binary', presentation: 'compact' },
+        jsAppSettings(this.kclManager.systemDeps.settings)
+      )
+      if (!isCurrent()) return
+
+      const exportRoundTripMs = performance.now() - startedAt
+      const file = files?.find((file) => file.name.endsWith('.glb'))
+      if (!file) {
+        this.handleModelLoadError(
+          new Error('Engine export returned no GLB file.')
+        )
+        return
+      }
+
+      const bytes = new Uint8Array(file.contents)
+      const gltf = await this.gltfLoader.parseAsync(bytes.buffer, '')
+      if (!isCurrent()) {
+        disposeObject3D(gltf.scene)
+        return
+      }
+
+      this.clearModel()
+      this.currentModel = gltf.scene
+      this.scene?.add(gltf.scene)
+      const bounds = new Box3().setFromObject(gltf.scene)
+      this.updateAmbientOcclusionScale(bounds)
+      if (!this.hasFittedModel && !bounds.isEmpty()) {
+        this.fitSharedCameraToModel(bounds)
+        this.hasFittedModel = true
+      }
+      this.modelLoadSettledAfterRender = true
+      this.invalidateBaseRender()
+      logLocalWebGpuPreview('GLB model loaded', {
+        exportRoundTripMs,
+        loadMs: performance.now() - startedAt - exportRoundTripMs,
+        payloadBytes: bytes.byteLength,
+      })
+    } catch (error) {
+      if (isCurrent()) this.handleModelLoadError(error)
+    }
+  }
+
+  private handleModelLoadError(error: unknown) {
+    console.error('[LocalWebGPUScene] GLB model load failed', error)
+    reportRejection(error)
+    this.onModelLoadSettled?.()
+  }
+
+  private fitSharedCameraToModel(bounds: Box3) {
+    const controls = this.kclManager.sceneInfra.camControls
+    const camera = controls.camera
+    const sphere = bounds.getBoundingSphere(new Sphere())
+    // glTF is Y-up in meters; the shared navigation camera is Z-up in mm.
+    const center = new Vector3(
+      sphere.center.x,
+      -sphere.center.z,
+      sphere.center.y
+    ).divideScalar(ENGINE_MILLIMETERS_TO_GLTF_METERS)
+    const radius = Math.max(
+      sphere.radius / ENGINE_MILLIMETERS_TO_GLTF_METERS,
+      0.001
+    )
+    const direction = camera.position.clone().sub(controls.target)
+    if (direction.lengthSq() === 0) direction.set(1, -1, 1)
+    direction.normalize()
+    let distance = radius * 3
+    if (camera instanceof PerspectiveCamera) {
+      const halfFovY = (camera.getEffectiveFOV() * Math.PI) / 360
+      const aspect =
+        Math.max(this.container.clientWidth, 1) /
+        Math.max(this.container.clientHeight, 1)
+      const halfFovX = Math.atan(Math.tan(halfFovY) * aspect)
+      distance = (radius * 1.2) / Math.sin(Math.min(halfFovX, halfFovY))
+    } else {
+      camera.zoom =
+        Math.min(camera.right - camera.left, camera.top - camera.bottom) /
+        (2 * radius * 1.2)
+    }
+    controls.target.copy(center)
+    camera.position.copy(center).addScaledVector(direction, distance)
+    camera.lookAt(center)
+    camera.updateProjectionMatrix()
+    camera.updateMatrixWorld(true)
+    controls.onCameraChange()
   }
 }
 
@@ -745,34 +876,32 @@ function captureRendererWork(renderer: WebGPURenderer) {
   }
 }
 
-function disposeMaterial(material: Material) {
-  for (const value of Object.values(material)) {
-    if (
-      value &&
-      typeof value === 'object' &&
-      'dispose' in value &&
-      typeof (value as { dispose?: unknown }).dispose === 'function'
-    ) {
-      ;(value as { dispose: () => void }).dispose()
-    }
-  }
-
-  material.dispose()
-}
-
 function disposeObject3D(root: Object3D) {
+  // GLTFLoader can share these resources between multiple nodes.
+  const geometries = new Set<BufferGeometry>()
+  const materials = new Set<Material>()
+  const textures = new Set<Texture>()
   root.traverse((object) => {
-    if ('geometry' in object && object.geometry) {
-      ;(object.geometry as { dispose: () => void }).dispose()
+    if ('geometry' in object && object.geometry instanceof BufferGeometry) {
+      geometries.add(object.geometry)
     }
 
     if ('material' in object && object.material) {
-      const materials = (
-        isArray(object.material) ? object.material : [object.material]
-      ) as Material[]
-      materials.forEach(disposeMaterial)
+      const objectMaterials = isArray(object.material)
+        ? object.material
+        : [object.material]
+      for (const material of objectMaterials) {
+        if (!(material instanceof Material)) continue
+        materials.add(material)
+        for (const value of Object.values(material)) {
+          if (value instanceof Texture) textures.add(value)
+        }
+      }
     }
   })
+  geometries.forEach((geometry) => geometry.dispose())
+  textures.forEach((texture) => texture.dispose())
+  materials.forEach((material) => material.dispose())
 }
 
 function convertEngineWorldVectorToGltfWorld(
