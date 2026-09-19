@@ -27,27 +27,28 @@ jobs:
       - extras=s3-cache
     steps:
       - uses: runs-on/action@v2.3.1
-      - uses: actions/create-github-app-token@v3.2.0
-        id: app-token
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: Create Engine repository token
+        uses: actions/create-github-app-token@v3.2.0
+        id: engine-token
         with:
           app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
           private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
-      - uses: actions/checkout@v7.0.1
-        with:
-          token: ${{ steps.app-token.outputs.token }}
-          persist-credentials: false
+          repositories: engine
       - uses: actions/checkout@v7.0.1
         with:
           repository: KittyCAD/engine
           path: engine
           lfs: true
           submodules: recursive
-          token: ${{ steps.app-token.outputs.token }}
+          token: ${{ steps.engine-token.outputs.token }}
           persist-credentials: false
       - name: Check every modeling command is implemented
         run: |
-          echo "${{ steps.app-token.outputs.token }}" | docker login ghcr.io --username "${{ github.repository_owner }}" --password-stdin
+          echo "${{ steps.engine-token.outputs.token }}" | docker login ghcr.io --username "${{ github.repository_owner }}" --password-stdin
           docker run --rm --interactive \
             --volume "${GITHUB_WORKSPACE}:/workspace" \
             --workdir /workspace/engine \
