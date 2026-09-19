@@ -214,7 +214,7 @@ pub async fn new_kcl_session_impl(input: KclInput, mock: bool, highlight_edges: 
         Ok((env_ref, _modeling_session_data)) => env_ref,
         Err(err) => {
             ctx.close().await;
-            return Err(into_miette(err, &code));
+            return Err(into_miette(err, &filename, &code));
         }
     };
     let outcome = match state.into_exec_outcome(env_ref, &ctx).await {

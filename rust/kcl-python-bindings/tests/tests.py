@@ -283,6 +283,7 @@ async def test_kcl_parse():
 def test_kcl_error_is_retryable():
     assert kcl.KclError("retry me", True).is_retryable() is True
     assert kcl.KclError("do not retry").is_retryable() is False
+    assert kcl.KclError("do not retry").sketch_constraint_report is None
 
 
 @pytest.mark.asyncio
@@ -1133,3 +1134,19 @@ async def test_sketch_constraint_status_execution_error_returns_partial_report()
     assert report.kcl_error is not None
     assert report.kcl_error.phase == "execution"
     assert "missing_sketch" in report.kcl_error.text
+
+
+@pytest.mark.asyncio
+async def test_primary_execution_error_carries_partial_constraint_report():
+    with pytest.raises(kcl.KclError) as raised:
+        await kcl.new_kcl_session_code(execution_error_after_sketch_code, mock=True)
+
+    report = raised.value.sketch_constraint_report
+    assert report is not None
+    assert report.total_sketches() == 1
+    assert len(report.fully_constrained) == 1
+    assert report.is_complete is False
+    assert report.kcl_error is not None
+    assert report.kcl_error.phase == "execution"
+    assert "missing_sketch" in report.kcl_error.text
+    assert "SketchConstraintReport" not in str(raised.value)
