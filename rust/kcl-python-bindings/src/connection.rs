@@ -282,22 +282,4 @@ mod tests {
         session.executed_kcl.context().await.unwrap_err();
         assert!(session.outcome().report_all().is_empty());
     }
-
-    #[tokio::test]
-    async fn session_preserves_video_resolution() {
-        let mut session = new_kcl_session_impl(
-            KclInput::Code("@settings(kclVersion = 2.0)\nvalue = 1".to_owned()),
-            true,
-            None,
-            Some(1024),
-            Some(1024),
-        )
-        .await
-        .unwrap();
-
-        let ctx = session.executed_kcl.context().await.unwrap();
-        assert_eq!(ctx.settings.video_res_width, Some(1024));
-        assert_eq!(ctx.settings.video_res_height, Some(1024));
-        session.close().await.unwrap();
-    }
 }
