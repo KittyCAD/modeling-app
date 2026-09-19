@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 
 const fsMocks = vi.hoisted(() => ({
   readFile: vi.fn(),
@@ -14,16 +15,18 @@ vi.mock('@src/lib/fs-zds', () => ({
     dirname: (path: string) => path.slice(0, path.lastIndexOf('/')),
     join: (...parts: string[]) =>
       parts.reduce((left, right) => (left ? `${left}/${right}` : right), ''),
-    readFile: fsMocks.readFile,
-    writeFile: fsMocks.writeFile,
   },
 }))
 
 import {
   jsonToZookeeperConversations,
-  zookeeperConversationStore,
+  makeZookeeperConversationStore,
   zookeeperConversationsToJson,
 } from '@src/lib/zookeeper/zookeeperConversationStore'
+
+const zookeeperConversationStore = makeZookeeperConversationStore(
+  fsMocks as unknown as FileOperationsRegistryService
+)
 
 function deferred<T>() {
   let resolve!: (value: T) => void
@@ -79,13 +82,16 @@ describe('zookeeperConversationStore', () => {
     const firstWrite = deferred<undefined>()
     let contents = '{}'
 
-    fsMocks.readFile.mockImplementation(async () => contents)
+    fsMocks.readFile.mockImplementation(async () =>
+      new TextEncoder().encode(contents)
+    )
     fsMocks.writeFile.mockImplementation(
-      async (_path: string, data: Uint8Array) => {
+      async (_path: string, data: string | Uint8Array) => {
         if (fsMocks.writeFile.mock.calls.length === 1) {
           await firstWrite.promise
         }
-        contents = new TextDecoder().decode(data)
+        contents =
+          typeof data === 'string' ? data : new TextDecoder().decode(data)
       }
     )
 

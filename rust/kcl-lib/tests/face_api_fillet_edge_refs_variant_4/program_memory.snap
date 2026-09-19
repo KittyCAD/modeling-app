@@ -1016,8 +1016,10 @@ description: Variables in memory after executing face_api_fillet_edge_refs_varia
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "yodawg": {

@@ -113,7 +113,7 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Download browser cache
         uses: actions/cache@v6.1.0
@@ -279,7 +279,7 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Download browser cache
         uses: actions/cache@v6.1.0
@@ -386,8 +386,7 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        id: deps-install
-        run: npm install
+        run: npm ci
 
       - name: Download browser cache
         uses: actions/cache@v6.1.0
@@ -406,6 +405,7 @@ jobs:
           OS_NAME: ${{ env.OS_NAME }}
 
       - name: Build app
+        id: build
         run: npm run tronb:vite:dev
 
       - name: Download test results from a previous workflow attempt
@@ -418,7 +418,7 @@ jobs:
 
       - name: npm run test:e2e:desktop
         id: retry
-        if: ${{ !cancelled() && steps.deps-install.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         uses: nick-fields/retry@v4.0.0
         with:
           shell: bash
@@ -481,7 +481,7 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Download browser cache
         uses: actions/cache@v6.1.0

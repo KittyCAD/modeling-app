@@ -474,13 +474,35 @@ export const WebSocketCloseCode = {
   AbnormalClosure: 1006,
 } as const
 
+export type ModelingShutdownRoute =
+  | 'command-timeout'
+  | 'pong-timeout'
+  | 'data-channel-closed'
+  | 'websocket-closed'
+  | 'peer-connection-failed'
+  | 'peer-connection-disconnected'
+  | 'peer-connection-closed'
+  | 'page-exit'
+  | 'window-offline'
+  | 'connection-attempt-failed'
+  | 'idle-timeout'
+  | 'service-disposed'
+  | 'backend-shutdown'
+  | 'user-requested'
+  | 'unknown'
+
+export type ModelingShutdownInitiator =
+  | 'client'
+  | 'api'
+  | 'engine'
+  | 'infrastructure'
+  | 'unknown'
+
 export interface ManagerTearDown {
-  websocketClosed?: boolean
-  peerConnectionFailed?: boolean
-  peerConnectionDisconnected?: boolean
-  peerConnectionClosed?: boolean
-  dataChannelClosed?: boolean
+  route: ModelingShutdownRoute
+  initiatedBy: ModelingShutdownInitiator
   code?: string
+  reason?: string
   connectionError?: EngineConnectionError
   reconnectRequested?: boolean
 }

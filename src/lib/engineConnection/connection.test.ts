@@ -23,6 +23,7 @@ function createUnitTestConnection({
     url: 'unused-by-unit-test-connection',
     token: 'token',
     handleOnDataChannelMessage: vi.fn(),
+    recordShutdownTrigger: vi.fn(() => true),
     tearDownManager: vi.fn(),
     rejectPendingCommand: vi.fn(),
     callbackOnUnitTestingConnection,

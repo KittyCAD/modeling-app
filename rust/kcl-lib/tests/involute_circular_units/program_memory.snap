@@ -8,17 +8,21 @@ description: Variables in memory after executing involute_circular_units.kcl
     "value": 0.5,
     "ty": {
       "type": "Default",
-      "len": "cm",
-      "angle": "degrees"
+      "value": {
+        "len": "cm",
+        "angle": "degrees"
+      }
     }
   },
   "angle001": {
     "type": "Number",
     "value": 6.0,
     "ty": {
-      "degrees": null,
       "type": "Known",
-      "type": "Angle"
+      "value": {
+        "type": "Angle",
+        "value": "degrees"
+      }
     }
   },
   "baseDiameter": {
@@ -26,8 +30,10 @@ description: Variables in memory after executing involute_circular_units.kcl
     "value": 9.866772518252038,
     "ty": {
       "type": "Default",
-      "len": "cm",
-      "angle": "degrees"
+      "value": {
+        "len": "cm",
+        "angle": "degrees"
+      }
     }
   },
   "deddendum": {
@@ -35,8 +41,10 @@ description: Variables in memory after executing involute_circular_units.kcl
     "value": 0.625,
     "ty": {
       "type": "Default",
-      "len": "cm",
-      "angle": "degrees"
+      "value": {
+        "len": "cm",
+        "angle": "degrees"
+      }
     }
   },
   "gearHeight": {
@@ -44,8 +52,10 @@ description: Variables in memory after executing involute_circular_units.kcl
     "value": 0.3,
     "ty": {
       "type": "Default",
-      "len": "cm",
-      "angle": "degrees"
+      "value": {
+        "len": "cm",
+        "angle": "degrees"
+      }
     }
   },
   "module": {
@@ -53,8 +63,10 @@ description: Variables in memory after executing involute_circular_units.kcl
     "value": 0.5,
     "ty": {
       "type": "Default",
-      "len": "cm",
-      "angle": "degrees"
+      "value": {
+        "len": "cm",
+        "angle": "degrees"
+      }
     }
   },
   "nTeeth": {
@@ -62,8 +74,10 @@ description: Variables in memory after executing involute_circular_units.kcl
     "value": 21.0,
     "ty": {
       "type": "Default",
-      "len": "cm",
-      "angle": "degrees"
+      "value": {
+        "len": "cm",
+        "angle": "degrees"
+      }
     }
   },
   "pitchDiameter": {
@@ -71,17 +85,21 @@ description: Variables in memory after executing involute_circular_units.kcl
     "value": 10.5,
     "ty": {
       "type": "Default",
-      "len": "cm",
-      "angle": "degrees"
+      "value": {
+        "len": "cm",
+        "angle": "degrees"
+      }
     }
   },
   "pressureAngle": {
     "type": "Number",
     "value": 20.0,
     "ty": {
-      "degrees": null,
       "type": "Known",
-      "type": "Angle"
+      "value": {
+        "type": "Angle",
+        "value": "degrees"
+      }
     }
   },
   "seg01": {
@@ -408,8 +426,10 @@ description: Variables in memory after executing involute_circular_units.kcl
     "value": 11.5,
     "ty": {
       "type": "Default",
-      "len": "cm",
-      "angle": "degrees"
+      "value": {
+        "len": "cm",
+        "angle": "degrees"
+      }
     }
   }
 }

@@ -75,6 +75,78 @@ pub(super) fn type_value_named_by_segment(
     }
 }
 
+/// Resolves a named type to the definition stored in the type environment.
+///
+/// Keeping the definition available lets a type alias preserve an enum's
+/// declaration handle rather than reducing it to an `EnumTypeId` and later
+/// attempting to recover declaration data from that identity.
+pub(super) async fn resolve_named_type_def(
+    name: &Node<Name>,
+    exec_state: &mut ExecState,
+    ctx: &ExecutorContext,
+    source_range: SourceRange,
+    suppress_warnings: bool,
+) -> Result<TypeDef, KclError> {
+    if name.abs_path {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            ABSOLUTE_PATHS_NOT_SUPPORTED.to_owned(),
+            vec![source_range],
+        )));
+    }
+
+    let unknown_type = || {
+        KclError::new_semantic(KclErrorDetails::new(
+            format!("Unknown type: {name}"),
+            vec![source_range],
+        ))
+    };
+
+    let mut within: Option<(EnvironmentRef, Vec<String>)> = None;
+    for segment in &name.path {
+        let key = format!("{}{}", memory::MODULE_PREFIX, segment.name);
+        let module = match &within {
+            Some((env, exports)) => {
+                if !exports.contains(&key) {
+                    return Err(unknown_type());
+                }
+                exec_state
+                    .stack()
+                    .memory
+                    .get_from_owned(&key, *env, segment.as_source_range(), 0)
+                    .map_err(|_| unknown_type())?
+            }
+            None => exec_state
+                .stack()
+                .get(&key, segment.as_source_range())
+                .map_err(|_| unknown_type())?,
+        };
+        let KclValue::Module { value: module_id, .. } = module else {
+            return Err(unknown_type());
+        };
+        within = Some(
+            ctx.exec_module_for_items(module_id, exec_state, segment.as_source_range())
+                .await?,
+        );
+    }
+
+    let type_value = type_value_named_by_segment(exec_state, &name.name, within.as_ref()).ok_or_else(unknown_type)?;
+    let KclValue::Type {
+        value, experimental, ..
+    } = type_value
+    else {
+        return Err(KclError::new_internal(KclErrorDetails::new(
+            format!("Type environment entry for `{name}` does not contain a type."),
+            vec![source_range],
+        )));
+    };
+
+    if experimental && !suppress_warnings {
+        exec_state.warn_experimental(&format!("the type `{name}`"), source_range);
+    }
+
+    Ok(value)
+}
+
 impl RuntimeType {
     pub fn any() -> Self {
         RuntimeType::Primitive(PrimitiveType::Any)
@@ -342,66 +414,11 @@ impl RuntimeType {
         source_range: SourceRange,
         suppress_warnings: bool,
     ) -> Result<Self, KclError> {
-        if name.abs_path {
-            return Err(KclError::new_semantic(KclErrorDetails::new(
-                ABSOLUTE_PATHS_NOT_SUPPORTED.to_owned(),
-                vec![source_range],
-            )));
-        }
-
-        let unknown_type = || {
-            KclError::new_semantic(KclErrorDetails::new(
-                format!("Unknown type: {name}"),
-                vec![source_range],
-            ))
-        };
-
-        let mut within: Option<(EnvironmentRef, Vec<String>)> = None;
-        for segment in &name.path {
-            let key = format!("{}{}", memory::MODULE_PREFIX, segment.name);
-            let module = match &within {
-                Some((env, exports)) => {
-                    if !exports.contains(&key) {
-                        return Err(unknown_type());
-                    }
-                    exec_state
-                        .stack()
-                        .memory
-                        .get_from_owned(&key, *env, segment.as_source_range(), 0)
-                        .map_err(|_| unknown_type())?
-                }
-                None => exec_state
-                    .stack()
-                    .get(&key, segment.as_source_range())
-                    .map_err(|_| unknown_type())?,
-            };
-            let KclValue::Module { value: module_id, .. } = module else {
-                return Err(unknown_type());
-            };
-            within = Some(
-                ctx.exec_module_for_items(module_id, exec_state, segment.as_source_range())
-                    .await?,
-            );
-        }
-
-        let ty_val = type_value_named_by_segment(exec_state, &name.name, within.as_ref()).ok_or_else(unknown_type)?;
-
-        Ok(match ty_val {
-            KclValue::Type {
-                value, experimental, ..
-            } => {
-                let result = match value {
-                    TypeDef::RustRepr(ty, _) => RuntimeType::Primitive(ty),
-                    TypeDef::Alias(ty) => ty,
-                    TypeDef::Enum(def) => RuntimeType::Enum(def.id().clone()),
-                };
-                if experimental && !suppress_warnings {
-                    exec_state.warn_experimental(&format!("the type `{name}`"), source_range);
-                }
-                result
-            }
-            _ => unreachable!(),
-        })
+        Ok(
+            resolve_named_type_def(name, exec_state, ctx, source_range, suppress_warnings)
+                .await?
+                .into_runtime_type(),
+        )
     }
 
     pub fn human_friendly_type(&self) -> String {

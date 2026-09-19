@@ -8,8 +8,10 @@ description: Variables in memory after executing parametric.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "bracket": {
@@ -235,8 +237,10 @@ description: Variables in memory after executing parametric.kcl
     "value": 6.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "leg1": {
@@ -244,8 +248,10 @@ description: Variables in memory after executing parametric.kcl
     "value": 5.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "leg2": {
@@ -253,8 +259,10 @@ description: Variables in memory after executing parametric.kcl
     "value": 8.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "p": {
@@ -262,8 +270,10 @@ description: Variables in memory after executing parametric.kcl
     "value": 150.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "sigmaAllow": {
@@ -271,8 +281,10 @@ description: Variables in memory after executing parametric.kcl
     "value": 35000.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "thickness": {
@@ -280,8 +292,10 @@ description: Variables in memory after executing parametric.kcl
     "value": 0.1851640199545103,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "width": {
@@ -289,8 +303,10 @@ description: Variables in memory after executing parametric.kcl
     "value": 9.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   }
 }

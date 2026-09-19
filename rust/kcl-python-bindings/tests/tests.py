@@ -3,9 +3,8 @@ import asyncio
 import os
 import sys
 
-import pytest
-
 import kcl
+import pytest
 from kcl import Point3d
 
 # Get the path to this script's parent directory.
@@ -259,6 +258,27 @@ async def test_kcl_mock_execute():
 
 
 @pytest.mark.asyncio
+async def test_duplicate_sketch_instances() -> None:
+    fixture = os.path.join(
+        tests_dir, "sketch_visualizer", "duplicate_names", "input.kcl"
+    )
+    outcome = await kcl.mock_execute(fixture)
+    report = outcome.sketch_constraint_report()
+    assert [s.instance_index for s in report.fully_constrained] == [0, 1]
+    with pytest.raises(Exception, match="found 2 sketches named `profile`"):
+        outcome.render_sketch_png("profile")
+    images = [
+        bytes(outcome.render_sketch_png("profile", instance_index=i)) for i in (0, 1)
+    ]
+    assert all(png.startswith(b"\x89PNG\r\n\x1a\n") for png in images)
+    assert images[0] != images[1]
+    with pytest.raises(Exception, match="out of range"):
+        outcome.render_sketch_png("profile", instance_index=2)
+    with pytest.raises(OverflowError):
+        outcome.render_sketch_png("profile", instance_index=-1)
+
+
+@pytest.mark.asyncio
 async def test_kcl_mock_execute_code():
     # Read from a file.
     with open(lego_file, "r") as f:
@@ -278,6 +298,13 @@ async def test_kcl_execute_code():
         assert code is not None
         assert len(code) > 0
         await execute_with_retries(kcl.execute_code, code)
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_kcl_execute_code_geometry_only():
+    outcome = await execute_with_retries(kcl.execute_code, box_code, geometry_only=True)
+    assert outcome.issues() == []
 
 
 @requires_engine
