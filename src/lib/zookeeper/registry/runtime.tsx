@@ -76,6 +76,7 @@ type ZookeeperSessionControllerModule = {
 
 type ZookeeperActivation = {
   apiToken: string
+  cloudProjectId?: string
   controller?: ZookeeperSessionController
   kclManager: KclManager
   project: ReadonlySignal<ZDSProject | undefined>
@@ -220,6 +221,7 @@ export function createZookeeperRuntime(
     const project = currentZdsProject.value
     const projectRef = project?.projectIORefSignal?.value
     const projectPath = projectRef?.path
+    const cloudProjectId = projectRef?.cloudProjectId
     const settingsProjectPath =
       settings?.actor.getSnapshot().context.currentProject?.path
     const settingsProjectId = settings?.current.value.meta.id.current
@@ -245,6 +247,7 @@ export function createZookeeperRuntime(
       activation &&
       (activation.projectPath !== projectPath ||
         activation.projectId !== projectId ||
+        activation.cloudProjectId !== cloudProjectId ||
         (kclManager !== null &&
           kclManager !== undefined &&
           activation.kclManager !== kclManager))
@@ -255,7 +258,8 @@ export function createZookeeperRuntime(
     if (
       currentActivation &&
       currentActivation.projectPath === projectPath &&
-      currentActivation.projectId === projectId
+      currentActivation.projectId === projectId &&
+      currentActivation.cloudProjectId === cloudProjectId
     ) {
       if (!isLoggedIn) {
         deactivate()
@@ -288,6 +292,7 @@ export function createZookeeperRuntime(
 
     const next: ZookeeperActivation = {
       apiToken,
+      cloudProjectId,
       kclManager,
       project: currentZdsProject,
       projectId,
@@ -302,6 +307,7 @@ export function createZookeeperRuntime(
 
         const controller = createZookeeperSessionController({
           apiToken: next.apiToken,
+          cloudProjectId: next.cloudProjectId,
           billing,
           conversationStore: makeZookeeperConversationStore(fileOperations),
           fileOperations,

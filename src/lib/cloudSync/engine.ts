@@ -146,6 +146,7 @@ const SYNC_RETRY_MAX_MS = 5 * 60 * 1000
 const PROJECT_API_THROTTLE_MS = 250
 const PROJECT_API_THROTTLE_JITTER_MS = 250
 const REMOTE_INDEX_INTERVAL_MS = 5 * 60 * 1000
+const OPEN_PROJECT_REFRESH_INTERVAL_MS = 5_000
 // A new project needs one upload pass and one API-archive reconciliation pass.
 // Leave room for an outbox mutation arriving between those operations.
 const SYNC_NOW_MAX_PASSES = 4
@@ -158,6 +159,7 @@ let config: CloudSyncConfig = {
   enabled: false,
 }
 let syncTimer: ReturnType<typeof setTimeout> | undefined
+let openProjectRefreshTimer: ReturnType<typeof setInterval> | undefined
 let syncInProgress = false
 const syncIdleWaiters = new Set<() => void>()
 let syncRetryAttempt = 0
@@ -3843,6 +3845,26 @@ function scheduleRemoteIndexSync(delay = 0) {
   scheduleSync(delay)
 }
 
+function updateOpenProjectRefreshTimer() {
+  if (openProjectRefreshTimer) {
+    clearInterval(openProjectRefreshTimer)
+    openProjectRefreshTimer = undefined
+  }
+  if (
+    !isConfiguredForCloud() ||
+    !syncScopeProjectPath ||
+    !syncScopeSyncable ||
+    (typeof document !== 'undefined' && document.visibilityState !== 'visible')
+  ) {
+    return
+  }
+
+  openProjectRefreshTimer = setInterval(
+    () => scheduleSync(0),
+    OPEN_PROJECT_REFRESH_INTERVAL_MS
+  )
+}
+
 // With no opened project, Home syncs the full cloud index. App.openProject()
 // passes ownership context so file-route status and retries stay project-local.
 export function setCloudSyncOpenedProject(
@@ -3861,6 +3883,7 @@ export function setCloudSyncOpenedProject(
 
   syncScopeProjectPath = nextSyncScopeProjectPath
   syncScopeSyncable = nextSyncScopeSyncable
+  updateOpenProjectRefreshTimer()
   void refreshScopedProjectCloudProjectId(nextScope)
   void refreshPendingCount()
 
@@ -4121,6 +4144,7 @@ function attachVisibilityChangeListener() {
   }
 
   const handleVisibilityChange = () => {
+    updateOpenProjectRefreshTimer()
     if (document.visibilityState === 'visible') {
       scheduleRemoteIndexSync()
     }
@@ -4438,6 +4462,10 @@ export function configureCloudSyncEngine(nextConfig: CloudSyncConfig) {
       clearTimeout(syncTimer)
       syncTimer = undefined
     }
+    if (openProjectRefreshTimer) {
+      clearInterval(openProjectRefreshTimer)
+      openProjectRefreshTimer = undefined
+    }
     detachVisibilityChangeListener?.()
     initialLocalScanComplete = false
     lastRemoteIndexSyncAt = 0
@@ -4463,6 +4491,7 @@ export function configureCloudSyncEngine(nextConfig: CloudSyncConfig) {
     cloudSyncStatus.value.state === 'disabled'
 
   attachVisibilityChangeListener()
+  updateOpenProjectRefreshTimer()
   updateStatus({
     enabled: true,
     ...(shouldResetEnabledStatus

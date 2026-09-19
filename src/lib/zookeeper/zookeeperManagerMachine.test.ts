@@ -418,6 +418,24 @@ describe('zookeeperManagerMachine', () => {
       actor.stop()
     })
 
+    it('binds the setup websocket to the opened cloud project', async () => {
+      vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
+      const actor = createZookeeperManagerActor('token', 'cloud-project-123')
+
+      actor.send({
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+        refParentSend: vi.fn(),
+      })
+
+      await vi.waitFor(() => {
+        expect(ControllableSetupWebSocket.instances).toHaveLength(1)
+      })
+      const url = new URL(ControllableSetupWebSocket.instances[0].url)
+      expect(url.searchParams.get('project_id')).toBe('cloud-project-123')
+
+      actor.stop()
+    })
+
     it('restarts an in-flight setup with a rotated auth token', async () => {
       vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
       const actor = createActor(zookeeperManagerMachine, {

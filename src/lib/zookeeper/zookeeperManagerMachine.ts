@@ -449,6 +449,7 @@ export const getZookeeperAttachmentKey = (
 
 export interface ZookeeperManagerContext {
   apiToken: string
+  cloudProjectId?: string
   ws?: WebSocket
   abruptlyClosed: boolean
   setupFailed: boolean
@@ -478,9 +479,11 @@ export interface ZookeeperManagerContext {
 export const zookeeperDefaultContext = (args: {
   input?: {
     apiToken?: string
+    cloudProjectId?: string
   } | null
 }): ZookeeperManagerContext => ({
   apiToken: args.input?.apiToken ?? '',
+  cloudProjectId: args.input?.cloudProjectId,
   ws: undefined,
   abruptlyClosed: false,
   setupFailed: false,
@@ -796,7 +799,7 @@ type XSInput<T> = {
 export const zookeeperManagerMachine = setup({
   types: {
     context: {} as ZookeeperManagerContext,
-    input: {} as Pick<ZookeeperManagerContext, 'apiToken'>,
+    input: {} as Pick<ZookeeperManagerContext, 'apiToken' | 'cloudProjectId'>,
     events: {} as ZookeeperManagerEvents,
   },
   guards: {
@@ -1100,6 +1103,9 @@ export const zookeeperManagerMachine = setup({
       const theRefParentSend = args.input.event.refParentSend
 
       const queryParams = new URLSearchParams()
+      if (args.input.context.cloudProjectId) {
+        queryParams.set('project_id', args.input.context.cloudProjectId)
+      }
       if (maybeConversationId) {
         queryParams.set('conversation_id', maybeConversationId)
         queryParams.set('replay', 'true')
@@ -2206,10 +2212,11 @@ export const zookeeperManagerMachine = setup({
 export type ZookeeperManagerActor = ActorRefFrom<typeof zookeeperManagerMachine>
 
 export function createZookeeperManagerActor(
-  apiToken: string
+  apiToken: string,
+  cloudProjectId?: string
 ): ZookeeperManagerActor {
   return createActor(zookeeperManagerMachine, {
-    input: { apiToken },
+    input: { apiToken, cloudProjectId },
   }).start()
 }
 

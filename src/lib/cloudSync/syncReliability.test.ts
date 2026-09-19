@@ -581,4 +581,63 @@ describe('cloud sync reliability', () => {
     expect(files.get(`${projectPath}/main.kcl`)).toBe('local = 3\n')
     await expect(getAllOutboxEntries()).resolves.toHaveLength(1)
   })
+
+  it('refreshes a visible open project after its remote revision changes', async () => {
+    const files = new Map([
+      [`${projectPath}/main.kcl`, 'base = 1\n'],
+      [`${projectPath}/${PROJECT_SETTINGS_FILE_NAME}`, projectToml],
+    ])
+    configureCloudSyncLocalFileSystem(
+      createCloudSyncTestFs(files, { projectDirectory })
+    )
+    await seedSyncedProject([
+      projectFile('main.kcl', 'base = 1\n'),
+      projectFile(PROJECT_SETTINGS_FILE_NAME, projectToml),
+    ])
+
+    let revision = remoteRevision
+    fetchMock.mockImplementation(async (input, init) => {
+      const url = getFetchUrl(input)
+      const method = getFetchMethod(input, init)
+      if (url === remoteProjectUrl && method === 'GET') {
+        return jsonResponse(remoteProject(revision))
+      }
+      if (url === remoteDownloadUrl && method === 'GET') {
+        return jsonResponse({
+          files: [
+            { relativePath: 'main.kcl', contents: 'remote = 2\n' },
+            {
+              relativePath: PROJECT_SETTINGS_FILE_NAME,
+              contents: projectToml,
+            },
+          ],
+        })
+      }
+      return jsonResponse(
+        { message: `Unexpected fetch: ${method} ${url}` },
+        500
+      )
+    })
+    vi.stubGlobal('fetch', fetchMock)
+    vi.useFakeTimers()
+    setCloudSyncOpenedProject({
+      projectPath,
+      libraryPath: projectDirectory,
+      libraryType: CLOUD_PROJECT_LIBRARY_TYPE,
+    })
+    configureCloudSyncEngine({
+      enabled: true,
+      baseUrl,
+      environmentName,
+      cloudProjectDirectoryPaths: [projectDirectory],
+      autoEnrollCloudLibraryProjects: true,
+    })
+
+    await vi.advanceTimersByTimeAsync(0)
+    expect(files.get(`${projectPath}/main.kcl`)).toBe('base = 1\n')
+
+    revision = updatedRemoteRevision
+    await vi.advanceTimersByTimeAsync(5_000)
+    expect(files.get(`${projectPath}/main.kcl`)).toBe('remote = 2\n')
+  })
 })

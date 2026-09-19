@@ -33,6 +33,7 @@ import type { SnapshotFrom, Subscription } from 'xstate'
 
 export interface ZookeeperSessionControllerDependencies {
   apiToken: string
+  cloudProjectId?: string
   billing: BillingRegistryService
   conversationStore: ZookeeperConversationStore
   fileOperations: FileOperationsRegistryService
@@ -124,7 +125,9 @@ class SessionController implements ZookeeperSessionController {
     this.apiToken = deps.apiToken
     this.projectId = deps.projectId
     this.projectPath = deps.projectPath
-    this.actor = createZookeeperManagerActor(deps.apiToken)
+    this.actor = deps.cloudProjectId
+      ? createZookeeperManagerActor(deps.apiToken, deps.cloudProjectId)
+      : createZookeeperManagerActor(deps.apiToken)
     this.history = new ZookeeperEditPatchHistory(
       deps.kclManager,
       deps.fileOperations

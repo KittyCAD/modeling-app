@@ -150,6 +150,26 @@ function createControllerLoader(
 }
 
 describe('Zookeeper runtime', () => {
+  it('binds the controller to the opened cloud project', async () => {
+    const { projectFixture, services } = createServices()
+    projectFixture.project.projectIORefSignal.value = {
+      ...projectFixture.project.projectIORefSignal.value,
+      cloudProjectId: 'cloud-project-id',
+    }
+    const { createZookeeperSessionController, loadController } =
+      createControllerLoader()
+    const runtime = createZookeeperRuntime(services, loadController)
+
+    await vi.waitFor(() => {
+      expect(createZookeeperSessionController).toHaveBeenCalledOnce()
+    })
+    expect(createZookeeperSessionController).toHaveBeenCalledWith(
+      expect.objectContaining({ cloudProjectId: 'cloud-project-id' })
+    )
+
+    await runtime.dispose()
+  })
+
   it('starts without waiting for the pane once auth is hydrated', async () => {
     const { services, token } = createServices({ apiToken: '' })
     const { createZookeeperSessionController, loadController } =
