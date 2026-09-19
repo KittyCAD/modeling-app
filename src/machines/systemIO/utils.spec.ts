@@ -222,6 +222,20 @@ describe('System IO Utils', () => {
       fsZds.join(projectPath, 'dist', 'ignored.kcl'),
       new TextEncoder().encode('ignored = 1')
     )
+    await fsZds.mkdir(fsZds.join(projectPath, 'zookeeper', 'attachments'), {
+      recursive: true,
+    })
+    await fsZds.mkdir(fsZds.join(projectPath, 'zookeeper', 'downloads'), {
+      recursive: true,
+    })
+    await fsZds.writeFile(
+      fsZds.join(projectPath, 'zookeeper', 'attachments', 'reference.step'),
+      new TextEncoder().encode('attachment bytes')
+    )
+    await fsZds.writeFile(
+      fsZds.join(projectPath, 'zookeeper', 'downloads', 'snapshot.png'),
+      new TextEncoder().encode('download bytes')
+    )
 
     try {
       const projectFiles = await collectProjectFiles({

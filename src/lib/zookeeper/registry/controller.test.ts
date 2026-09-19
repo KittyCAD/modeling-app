@@ -380,7 +380,7 @@ describe('Zookeeper session controller', () => {
     }
   )
 
-  it('submits a queued prompt when the persistent actor becomes ready', async () => {
+  it('does not send queued attachments through the websocket actor', async () => {
     const { actor, controller, kclManager, project } = createHarness({
       actorContext: { awaitingResponse: true },
     })
@@ -406,14 +406,13 @@ describe('Zookeeper session controller', () => {
       selectedFileContents: kclManager.code,
       selectedFilePath: kclManager.path,
     })
-    expect(
-      sentEvents(actor, ZookeeperManagerTransitions.MessageSend)[0]
-    ).toMatchObject({
-      additionalFiles: [attachment],
+    const event = sentEvents(actor, ZookeeperManagerTransitions.MessageSend)[0]
+    expect(event).toMatchObject({
       prompt: 'add two holes',
       projectFiles: [],
       type: ZookeeperManagerTransitions.MessageSend,
     })
+    expect(event).not.toHaveProperty('additionalFiles')
   })
 
   it('retains a prompt through a same-project editor readiness gap', async () => {

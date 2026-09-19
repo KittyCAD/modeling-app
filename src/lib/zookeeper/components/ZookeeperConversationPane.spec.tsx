@@ -292,6 +292,7 @@ describe('ZookeeperConversationPane', () => {
     expect(props.isClearingChat).toBe(true)
     expect(props.loadingMessage).toBe('Connecting to Zookeeper...')
     expect(props.disabled).toBe(true)
+    expect(props.attachmentsDisabled).toBe(true)
     expect(props.hasPromptCompleted).toBe(false)
     expect(props.isProcessing).toBe(true)
     expect(props.queue).toEqual([queuedMessage])

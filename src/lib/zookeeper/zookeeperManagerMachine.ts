@@ -13,7 +13,7 @@ import {
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { getKclVersion } from '@src/lib/kclVersion'
 import { Socket, SocketConnectionError } from '@src/lib/socket'
-import { cleanErrs, isErr } from '@src/lib/trap'
+import { isErr } from '@src/lib/trap'
 import { isArray, isRecord, uuidv4 } from '@src/lib/utils'
 import { withZookeeperWebSocketURL } from '@src/lib/withBaseURL'
 import { S, transitions, xstateEventError } from '@src/machines/utils'
@@ -363,7 +363,6 @@ export type ZookeeperManagerEvents =
       engineCommandManager: ConnectionManager
       wasmInstance: ModuleType
       mode?: MlCopilotModeId
-      additionalFiles?: File[]
     }
   | {
       type: ZookeeperManagerStates.ContinueCheck
@@ -629,38 +628,6 @@ function isAttachmentsLoadedMessage(
     response !== null &&
     'attachments_loaded' in response
   )
-}
-
-const ZOOKEEPER_ATTACHMENT_READ_ERROR_MESSAGE =
-  "We couldn't read the attachment. It may have been moved, deleted, or become unavailable. Reattach it and try again."
-
-class ZookeeperAttachmentReadError extends Error {
-  constructor(cause: unknown) {
-    super(ZOOKEEPER_ATTACHMENT_READ_ERROR_MESSAGE, { cause })
-    this.name = 'ZookeeperAttachmentReadError'
-  }
-}
-
-export async function toMlCopilotFile(
-  file: File
-): Promise<MlCopilotFile | Error> {
-  let data: ArrayBuffer
-  try {
-    data = await file.arrayBuffer()
-  } catch (error) {
-    if (isErr(error) && error.name === 'NotFoundError') {
-      return new ZookeeperAttachmentReadError(error)
-    }
-    return isErr(error)
-      ? error
-      : new Error('Unknown attachment read error', { cause: error })
-  }
-
-  return {
-    name: file.name,
-    mimetype: file.type || 'application/octet-stream',
-    data: Array.from(new Uint8Array(data)),
-  }
 }
 
 export const ZookeeperConversationToMarkdown = (
@@ -1549,16 +1516,6 @@ export const zookeeperManagerMachine = setup({
         )
       }
 
-      let additionalFiles: MlCopilotFile[] | undefined
-      if (event.additionalFiles && event.additionalFiles.length > 0) {
-        const [, convertedFiles, conversionErrors] = cleanErrs(
-          await Promise.all(event.additionalFiles.map(toMlCopilotFile))
-        )
-        const conversionError = conversionErrors[0]
-        if (conversionError) return Promise.reject(conversionError)
-        additionalFiles = convertedFiles
-      }
-
       const request: MlCopilotUserRequest = {
         type: 'user',
         ...createZookeeperCorrelation(event.engineCommandManager.apiCallId),
@@ -1572,7 +1529,6 @@ export const zookeeperManagerMachine = setup({
           ? { active_file: requestData.activeFile }
           : {}),
         ...(event.mode ? { mode: event.mode } : {}),
-        ...(additionalFiles ? { additional_files: additionalFiles } : {}),
       }
 
       context.ws.send(JSON.stringify(request))
@@ -1592,8 +1548,7 @@ export const zookeeperManagerMachine = setup({
         conversation,
         fileFocusedOnInEditor: event.fileSelectedDuringPrompting.entry,
         projectNameCurrentlyOpened: requestData.body.project_name,
-        attachmentsLoadedForCurrentPrompt:
-          !event.additionalFiles || event.additionalFiles.length === 0,
+        attachmentsLoadedForCurrentPrompt: true,
       }
     }),
     [ZookeeperManagerStates.ContinueCheck]: fromPromise(async function (

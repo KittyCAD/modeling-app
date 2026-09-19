@@ -260,6 +260,13 @@ export const determineProjectFilePathFromPrompt = (
 
 const normalizeRelativePath = (filePath: string) => filePath.replace(/\\/g, '/')
 
+const isZookeeperArtifactPath = (filePath: string) => {
+  const normalized = normalizeRelativePath(filePath)
+  return ['zookeeper/attachments', 'zookeeper/downloads'].some(
+    (root) => normalized === root || normalized.startsWith(`${root}/`)
+  )
+}
+
 const normalizePathForComparison = (filePath: string) => {
   const normalized = normalizeRelativePath(fsZds.resolve(filePath))
   return fsZds.sep === '\\' ? normalized.toLowerCase() : normalized
@@ -399,6 +406,9 @@ export const collectProjectFiles = async (args: {
         const relativePath = (
           fsZds.relative(basePath, absolutePathToFileNameWithExtension) ?? ''
         ).replace(/\\/g, '/')
+        if (isZookeeperArtifactPath(relativePath)) {
+          continue
+        }
         const isDirectory =
           (await args.fileOperations.stat(absolutePathToFileNameWithExtension))
             .kind === 'directory'

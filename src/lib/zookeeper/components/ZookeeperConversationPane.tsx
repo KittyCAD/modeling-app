@@ -146,6 +146,7 @@ export const ZookeeperConversationPane = (props: {
     <ZookeeperConversation
       isLoading={conversation === undefined}
       isLoadingAttachments={isLoadingAttachments}
+      attachmentsDisabled={true}
       contexts={[{ type: 'selections', data: props.selectionRanges }]}
       conversation={conversation}
       attachmentFetches={attachmentFetches}

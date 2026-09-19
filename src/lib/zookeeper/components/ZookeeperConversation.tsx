@@ -64,6 +64,7 @@ export interface ZookeeperConversationProps {
   isClearingChat?: boolean
   loadingMessage?: string
   disabled?: boolean
+  attachmentsDisabled?: boolean
   needsReconnect: boolean
   hasPromptCompleted: boolean
   userAvatarSrc?: string
@@ -271,6 +272,7 @@ interface ZookeeperConversationInputProps {
   onCancel: ZookeeperConversationProps['onCancel']
   hasPromptCompleted: ZookeeperConversationProps['hasPromptCompleted']
   disabled?: boolean
+  attachmentsDisabled?: boolean
   needsReconnect: boolean
   defaultPrompt?: string
   hasAlreadySentPrompts: boolean
@@ -298,6 +300,7 @@ export const ZookeeperConversationInput = (
   const [attachments, setAttachments] = useState<File[]>([])
   const [isDraggingOver, setIsDraggingOver] = useState(false)
   const [isZoodleActive, setIsZoodleActive] = useState(false)
+  const attachmentsDisabled = props.disabled || props.attachmentsDisabled
 
   const stopZoodleRuntimeExtension = useCallback(() => {
     setIsZoodleActive(false)
@@ -408,12 +411,12 @@ export const ZookeeperConversationInput = (
   }
 
   const onAttachFiles = () => {
-    if (props.disabled) return
+    if (attachmentsDisabled) return
     fileInputRef.current?.click()
   }
 
   const onCaptureScreenshot = () => {
-    if (props.disabled) return
+    if (attachmentsDisabled) return
     try {
       const dataUrl = takeViewportScreenshot()
       if (!dataUrl) return
@@ -429,7 +432,7 @@ export const ZookeeperConversationInput = (
       return
     }
 
-    if (props.disabled) return
+    if (attachmentsDisabled) return
     try {
       const dataUrl = takeViewportScreenshot()
       if (!dataUrl) return
@@ -452,6 +455,7 @@ export const ZookeeperConversationInput = (
   }
 
   const onFileInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (attachmentsDisabled) return
     const files = Array.from(event.target.files ?? [])
     if (!files.length) return
 
@@ -472,7 +476,7 @@ export const ZookeeperConversationInput = (
   const handleDragEnter = (e: React.DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    if (props.disabled) return
+    if (attachmentsDisabled) return
     if (isExternalFileDrag(e)) {
       setIsDraggingOver(true)
     }
@@ -494,7 +498,7 @@ export const ZookeeperConversationInput = (
     e.preventDefault()
     e.stopPropagation()
     setIsDraggingOver(false)
-    if (props.disabled) return
+    if (attachmentsDisabled) return
 
     const files = Array.from(e.dataTransfer.files)
     if (!files.length) return
@@ -505,7 +509,7 @@ export const ZookeeperConversationInput = (
   const handlePaste = (e: React.ClipboardEvent) => {
     const files = Array.from(e.clipboardData.files)
     if (!files.length) return
-    if (props.disabled) return
+    if (attachmentsDisabled) return
 
     // Prevent default only if we have files to handle
     e.preventDefault()
@@ -534,6 +538,7 @@ export const ZookeeperConversationInput = (
           type="file"
           multiple
           onChange={onFileInputChange}
+          disabled={attachmentsDisabled}
           className="hidden"
         />
         <textarea
@@ -597,7 +602,7 @@ export const ZookeeperConversationInput = (
             onAttachFiles={onAttachFiles}
             onCaptureScreenshot={onCaptureScreenshot}
             onAnnotateScreenshot={onAnnotateScreenshot}
-            attachmentsDisabled={props.disabled}
+            attachmentsDisabled={attachmentsDisabled}
             isZoodleActive={isZoodleActive}
             modeOptions={props.modeOptions}
           />
@@ -834,6 +839,7 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
           <div className="border-t b-4">
             <ZookeeperConversationInput
               disabled={props.disabled || props.isLoading}
+              attachmentsDisabled={props.attachmentsDisabled}
               hasPromptCompleted={props.hasPromptCompleted}
               needsReconnect={props.needsReconnect}
               onProcess={props.onProcess}

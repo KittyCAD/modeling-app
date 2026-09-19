@@ -458,7 +458,6 @@ class SessionController implements ZookeeperSessionController {
   private async process(
     prompt: string,
     mode: MlCopilotModeId | undefined,
-    attachments: File[],
     isCurrent = () => true
   ): Promise<boolean> {
     const zdsProject = this.getReadyZdsProject()
@@ -533,7 +532,6 @@ class SessionController implements ZookeeperSessionController {
       engineCommandManager: kclManager.engineCommandManager,
       wasmInstance,
       mode,
-      additionalFiles: attachments,
     })
     return true
   }
@@ -859,7 +857,6 @@ class SessionController implements ZookeeperSessionController {
     void this.process(
       next.text,
       next.mode,
-      next.attachments,
       () =>
         this.activeSubmission === submission &&
         !this.isClearingChatSignal.peek() &&
