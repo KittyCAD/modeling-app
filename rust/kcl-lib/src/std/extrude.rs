@@ -449,11 +449,11 @@ async fn inner_extrude(
             .count();
         if parentless_sketches > 0 {
             let message = if parentless_sketches == 1 {
-                "This plane-based sketch has no parent body for `method = MERGE`, so it will create a separate solid. Sketch on an existing face or use `union` if one body is intended."
+                "This plane-based sketch has no parent body for `method = MERGE`, so it will create a separate body. Sketch on an existing face or use `union` if one body is intended."
                     .to_owned()
             } else {
                 format!(
-                    "{parentless_sketches} plane-based sketches have no parent body for `method = MERGE`, so each will create a separate solid. Sketch on an existing face or use `union` if one body is intended."
+                    "{parentless_sketches} plane-based sketches have no parent body for `method = MERGE`, so each will create a separate body. Sketch on an existing face or use `union` if one body is intended."
                 )
             };
             exec_state.warn(
@@ -1643,9 +1643,9 @@ extrude(defaultRegion, length = 1mm)
 
         assert_eq!(warnings.len(), 1, "expected one warning, got {warnings:#?}");
         assert!(
-            warnings[0]
-                .message
-                .contains("2 plane-based sketches have no parent body"),
+            warnings[0].message.contains(
+                "2 plane-based sketches have no parent body for `method = MERGE`, so each will create a separate body"
+            ),
             "{}",
             warnings[0].message
         );
