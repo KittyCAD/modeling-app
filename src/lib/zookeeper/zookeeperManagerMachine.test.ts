@@ -3,6 +3,7 @@ import type {
   ClientErrorReport,
   MlCopilotFile,
 } from '@kittycad/lib'
+import { encode as msgpackEncode } from '@msgpack/msgpack'
 import { resetReportedClientErrorsForTests } from '@src/lib/clientErrors'
 import type { FileMeta } from '@src/lib/types'
 import {
@@ -340,6 +341,77 @@ describe('zookeeperManagerMachine', () => {
   describe('Setup', () => {
     beforeEach(() => {
       stubClientErrorFetch()
+    })
+
+    it('restores replay pages across turn boundaries before becoming ready', async () => {
+      vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
+      const actor = createActor(zookeeperManagerMachine, {
+        input: { apiToken: 'token' },
+      }).start()
+      try {
+        actor.send({
+          type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+          refParentSend: vi.fn(),
+          conversationId: 'conversation-id',
+        })
+        const socket = ControllableSetupWebSocket.instances[0]
+        socket.open()
+        await vi.waitFor(() => {
+          expect(socket.sentPayloads).toContain(
+            JSON.stringify({ type: 'list_modes' })
+          )
+        })
+        const messages = [
+          { type: 'user', content: 'First request', current_files: {} },
+          { end_of_stream: { whole_response: 'First answer' } },
+          { type: 'user', content: 'Second request', current_files: {} },
+          { end_of_stream: { whole_response: 'Second answer: α' } },
+        ]
+        for (const page of [
+          messages.slice(0, 1),
+          messages.slice(1, 3),
+          messages.slice(3),
+        ]) {
+          socket.dispatchEvent(
+            new MessageEvent('message', {
+              data: msgpackEncode({
+                replay: {
+                  messages: page.map((message) =>
+                    Array.from(
+                      new TextEncoder().encode(JSON.stringify(message))
+                    )
+                  ),
+                },
+              }).slice().buffer,
+            })
+          )
+          expect(
+            actor.getSnapshot().matches(ZookeeperManagerStates.Setup)
+          ).toBe(true)
+        }
+        socket.receive({
+          conversation_id: { conversation_id: 'conversation-id' },
+        })
+        await waitFor(actor, (state) =>
+          state.matches(ZookeeperManagerStates.WaitForContinueCheck)
+        )
+        expect(
+          actor.getSnapshot().context.conversation?.exchanges
+        ).toMatchObject([
+          {
+            request: messages[0],
+            responses: [messages[1]],
+            deltasAggregated: 'First answer',
+          },
+          {
+            request: messages[2],
+            responses: [messages[3]],
+            deltasAggregated: 'Second answer: α',
+          },
+        ])
+      } finally {
+        actor.stop()
+      }
     })
 
     it('waits for auth hydration before opening the setup websocket', async () => {
