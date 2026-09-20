@@ -2617,6 +2617,63 @@ function projectArchiveFileMap(files: ProjectArchiveFile[]) {
   return filesByPath
 }
 
+async function remoteArchiveMatchesUploadedManifest(
+  metadata: ProjectMetadata,
+  remoteFiles: ProjectArchiveFile[],
+  uploadedManifest = metadata.baseManifest
+) {
+  const environmentName = getEnvironmentName()
+  const remoteProjectId = metadata.remoteProjectId
+  if (!environmentName || !remoteProjectId || !uploadedManifest) {
+    return false
+  }
+
+  const projectToml = remoteFiles.find(
+    (file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME
+  )
+  if (!projectToml) {
+    return false
+  }
+  const remoteContents = new TextDecoder().decode(projectToml.data)
+  if (
+    getCloudProjectIdFromProjectTomlContents(
+      remoteContents,
+      environmentName
+    ) !== remoteProjectId
+  ) {
+    return false
+  }
+
+  const serverStamp = `\n[cloud."${environmentName}"]\nproject_id = "${remoteProjectId}"\n`
+  const candidates = [
+    remoteContents,
+    removeCloudProjectIdFromProjectTomlContents(
+      remoteContents,
+      environmentName
+    ),
+  ]
+  if (remoteContents.endsWith(serverStamp)) {
+    candidates.push(remoteContents.slice(0, -serverStamp.length))
+  }
+
+  for (const contents of new Set(candidates)) {
+    const candidateFiles = remoteFiles.map((file) =>
+      file === projectToml
+        ? { ...file, data: new TextEncoder().encode(contents) }
+        : file
+    )
+    if (
+      projectManifestsEqual(
+        await projectManifestFromFiles(candidateFiles),
+        uploadedManifest
+      )
+    ) {
+      return true
+    }
+  }
+  return false
+}
+
 /**
  * Builds a whole-project snapshot when local and remote changed independent
  * paths from the last synced base. This is intentionally file-level only: when
@@ -3207,7 +3264,6 @@ async function syncProject(
       await parseProjectArchive(remoteArchive)
     )
     const remoteManifest = await projectManifestFromFiles(remoteFiles)
-
     const localMatchesRemote = projectManifestsEqual(
       localManifest,
       remoteManifest
@@ -3216,6 +3272,95 @@ async function syncProject(
       metadata.baseManifest &&
         projectManifestsEqual(localManifest, metadata.baseManifest)
     )
+
+    // The API adds its cloud id to project.toml before the create response
+    // returns. If that is the only remote change, use its current revision as
+    // a guarded base for local work that arrived during the create request.
+    if (
+      !localClean &&
+      !metadata.remoteRevision &&
+      remoteRevision &&
+      (!metadata.conflict?.remoteRevision ||
+        metadata.conflict.remoteRevision === remoteRevision) &&
+      (await remoteArchiveMatchesUploadedManifest(metadata, remoteFiles))
+    ) {
+      const replacementAttempt = await createProjectReplacementAttempt({
+        projectPath: metadata.localProjectPath,
+        project: remoteProject,
+        files: localFiles,
+        syncBase: {
+          revision: remoteRevision,
+          manifest: remoteManifest,
+        },
+      })
+      const updated = await submitProjectReplacement(
+        metadata,
+        replacementAttempt,
+        throttleProjectApiRequest
+      )
+      if (!updated) {
+        return
+      }
+
+      const updatedRevision = getRevision(updated)
+      const updatedRemoteFiles = filterCloudSyncProjectFilesForSync(
+        await parseProjectArchive(
+          await runCloudSyncProjectApiRequest(throttleProjectApiRequest, () =>
+            downloadRemoteProjectArchive(config, remoteProjectId)
+          )
+        )
+      )
+      const currentRemoteProject = await runCloudSyncProjectApiRequest(
+        throttleProjectApiRequest,
+        () => getRemoteProject(config, remoteProjectId)
+      )
+      const currentRemoteRevision = getRevision(currentRemoteProject)
+      const downloadedArchiveMatchesReplacement =
+        await remoteArchiveMatchesUploadedManifest(
+          metadata,
+          updatedRemoteFiles,
+          replacementAttempt.manifest
+        )
+      if (
+        !updatedRevision ||
+        !currentRemoteRevision ||
+        currentRemoteRevision !== updatedRevision ||
+        !downloadedArchiveMatchesReplacement
+      ) {
+        await markProjectConflict(
+          metadata,
+          currentRemoteRevision,
+          getRemoteUpdatedAt(currentRemoteProject)
+        )
+        return
+      }
+
+      const updatedRemoteManifest =
+        await projectManifestFromFiles(updatedRemoteFiles)
+      if (
+        await projectSyncCheckpointIsCurrent(
+          metadata.localProjectPath,
+          syncCheckpoint
+        )
+      ) {
+        await replaceLocalProjectWithFiles(
+          metadata.localProjectPath,
+          updatedRemoteFiles
+        )
+        await clearOutboxEntriesForProjectAtGeneration(
+          metadata.localProjectPath,
+          syncCheckpoint.outboxGeneration
+        )
+      }
+      await markProjectSynced(
+        metadata,
+        updatedRemoteManifest,
+        remoteSyncMetadata(currentRemoteProject, {
+          useNowAsUpdatedAtFallback: true,
+        })
+      )
+      return
+    }
     const autoReconciledFiles =
       syncBase && remoteRevision && !localMatchesRemote && !localClean
         ? getCloudSyncAutoReconciledProjectFiles({

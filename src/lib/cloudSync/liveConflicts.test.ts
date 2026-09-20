@@ -3,9 +3,12 @@ import type * as ClientErrorsModule from '@src/lib/clientErrors'
 import {
   configureCloudSyncEngine,
   configureCloudSyncLocalFileSystem,
+  disableCloudSyncEngineForTest,
   getCloudSyncProjectMetadata,
   isCloudSyncConflictRevisionChangedError,
   loadCloudSyncProjectConflictInspection,
+  notifyCloudSyncRemoveMutation,
+  notifyCloudSyncWriteLikeMutation,
   type ProjectArchiveFile,
   resolveCloudSyncProjectConflict,
   startCloudSyncProject,
@@ -17,6 +20,7 @@ import {
 } from '@src/lib/cloudSync/projectArchive'
 import {
   appendOutboxEntry,
+  getAllOutboxEntries,
   putProjectMetadata,
 } from '@src/lib/cloudSync/syncDb'
 import {
@@ -139,6 +143,132 @@ function installFetchMock({
   })
 }
 
+function installInitialUploadRecoveryFetchMock({
+  onCreate,
+  remoteRevision = 'rev-1',
+  remoteFiles,
+}: {
+  onCreate?: () => Promise<void>
+  remoteRevision?: string
+  remoteFiles: RemoteArchivePayloadFile[]
+}) {
+  let currentRemoteRevision = remoteRevision
+  let currentRemoteFiles = remoteFiles
+  let replacementCount = 0
+
+  fetchMock.mockImplementation(async (input, init) => {
+    const url = getFetchUrl(input)
+    const method = getFetchMethod(input, init)
+    if (url === `${baseUrl}/user/projects` && method === 'POST') {
+      await onCreate?.()
+      return jsonResponse(remoteProjectPayload(currentRemoteRevision))
+    }
+    if (url === remoteProjectUrl && method === 'GET') {
+      return jsonResponse(remoteProjectPayload(currentRemoteRevision))
+    }
+    if (url === remoteDownloadUrl && method === 'GET') {
+      return jsonResponse({ files: currentRemoteFiles })
+    }
+    if (url.startsWith(remoteProjectUrl) && method === 'PUT') {
+      replacementCount += 1
+      const formData = init?.body as FormData
+      currentRemoteFiles = await Promise.all(
+        Array.from(formData.entries())
+          .filter(([relativePath]) => relativePath !== 'body')
+          .map(async ([relativePath, value]) => ({
+            relativePath,
+            contents:
+              relativePath === PROJECT_SETTINGS_FILE_NAME
+                ? `${await (value as Blob).text()}\n[cloud."dev.zoo.dev"]\nproject_id = "${remoteProjectId}"\n`
+                : await (value as Blob).text(),
+          }))
+      )
+      currentRemoteRevision = 'rev-2'
+      return jsonResponse(remoteProjectPayload(currentRemoteRevision))
+    }
+    return jsonResponse({ message: `Unexpected fetch: ${method} ${url}` }, 500)
+  })
+
+  return {
+    replacementCount: () => replacementCount,
+    remoteFiles: () => currentRemoteFiles,
+  }
+}
+
+async function putInterruptedInitialUploadMetadata({
+  baseFiles,
+  conflictRemoteRevision = 'rev-1',
+}: {
+  baseFiles: ProjectArchiveFile[]
+  conflictRemoteRevision?: string
+}) {
+  await putProjectMetadata({
+    schemaVersion: 1,
+    localProjectPath: projectPath,
+    projectName: 'demo',
+    remoteProjectId,
+    baseManifest: await projectManifestFromFiles(baseFiles),
+    conflict: {
+      remoteRevision: conflictRemoteRevision,
+      remoteUpdatedAt,
+      createdAt: '2026-07-17T12:01:00.000Z',
+    },
+    lastFailure: {
+      message: 'Cloud sync conflict: local and remote both changed.',
+      at: '2026-07-17T12:01:00.000Z',
+    },
+  })
+  await appendOutboxEntry({
+    projectPath,
+    kind: 'upsert',
+    targetPath: projectPath,
+    createdAt: '2026-07-17T12:02:00.000Z',
+  })
+}
+
+async function configurePersistedInitialUploadConflict({
+  remoteMain = 'base = 1\n',
+  remoteRevision = 'rev-1',
+}: {
+  remoteMain?: string
+  remoteRevision?: string
+} = {}) {
+  const uploadedProjectToml = 'title = "Demo"\ndefault_file = "main.kcl"\n'
+  const editedProjectToml = `${uploadedProjectToml}\n[settings.app]\nunits = "in"\n`
+  const files = new Map([
+    [`${projectPath}/main.kcl`, 'local = 2\n'],
+    [`${projectPath}/${PROJECT_SETTINGS_FILE_NAME}`, editedProjectToml],
+    [`${projectPath}/notes.txt`, 'keep me\n'],
+  ])
+  configureCloudSyncLocalFileSystem(
+    createCloudSyncTestFs(files, { projectDirectory })
+  )
+  await putInterruptedInitialUploadMetadata({
+    baseFiles: [
+      projectFile('main.kcl', 'base = 1\n'),
+      projectFile(PROJECT_SETTINGS_FILE_NAME, uploadedProjectToml),
+    ],
+  })
+  const server = installInitialUploadRecoveryFetchMock({
+    remoteRevision,
+    remoteFiles: [
+      { relativePath: 'main.kcl', contents: remoteMain },
+      {
+        relativePath: PROJECT_SETTINGS_FILE_NAME,
+        contents: `${uploadedProjectToml}\n[cloud."dev.zoo.dev"]\nproject_id = "${remoteProjectId}"\n`,
+      },
+    ],
+  })
+  configureCloudSyncEngine({
+    enabled: true,
+    baseUrl,
+    environmentName: 'dev.zoo.dev',
+    cloudProjectDirectoryPaths: [projectDirectory],
+    autoEnrollCloudLibraryProjects: false,
+  })
+  return { editedProjectToml, files, server }
+}
+
 async function putConflictedProjectMetadata() {
   await putProjectMetadata({
     schemaVersion: 1,
@@ -239,6 +369,163 @@ describe('cloud sync live conflicts', () => {
         ),
       })
     )
+  })
+
+  it('preserves local edits made while the initial upload is being acknowledged', async () => {
+    const uploadedProjectToml = 'title = "Demo"\ndefault_file = "main.kcl"\n'
+    const editedProjectToml = `${uploadedProjectToml}\n[settings.app]\nunits = "in"\n`
+    const stampedProjectToml = `${uploadedProjectToml}\n[cloud."dev.zoo.dev"]\nproject_id = "${remoteProjectId}"\n`
+    const files = new Map([
+      [`${projectPath}/main.kcl`, 'base = 1\n'],
+      [`${projectPath}/${PROJECT_SETTINGS_FILE_NAME}`, uploadedProjectToml],
+      [`${projectPath}/remove-me.txt`, 'temporary\n'],
+    ])
+    configureCloudSyncLocalFileSystem(
+      createCloudSyncTestFs(files, { projectDirectory })
+    )
+
+    let markCreateStarted!: () => void
+    let releaseCreate!: () => void
+    const createStarted = new Promise<void>((resolve) => {
+      markCreateStarted = resolve
+    })
+    const createGate = new Promise<void>((resolve) => {
+      releaseCreate = resolve
+    })
+    const server = installInitialUploadRecoveryFetchMock({
+      onCreate: async () => {
+        markCreateStarted()
+        await createGate
+      },
+      remoteFiles: [
+        { relativePath: 'main.kcl', contents: 'base = 1\n' },
+        { relativePath: 'remove-me.txt', contents: 'temporary\n' },
+        {
+          relativePath: PROJECT_SETTINGS_FILE_NAME,
+          contents: stampedProjectToml,
+        },
+      ],
+    })
+    configureCloudSyncEngine({
+      enabled: true,
+      baseUrl,
+      environmentName: 'dev.zoo.dev',
+      cloudProjectDirectoryPaths: [projectDirectory],
+      autoEnrollCloudLibraryProjects: false,
+    })
+
+    await startCloudSyncProject(projectPath)
+    const sync = syncCloudSyncProjectNow(projectPath)
+    await createStarted
+    files.set(`${projectPath}/main.kcl`, 'local = 2\n')
+    files.set(`${projectPath}/${PROJECT_SETTINGS_FILE_NAME}`, editedProjectToml)
+    files.set(`${projectPath}/notes.txt`, 'keep me\n')
+    files.delete(`${projectPath}/remove-me.txt`)
+    await notifyCloudSyncWriteLikeMutation(`${projectPath}/main.kcl`)
+    await notifyCloudSyncRemoveMutation(`${projectPath}/remove-me.txt`)
+    releaseCreate()
+
+    await expect(sync).resolves.toEqual({ remoteProjectId })
+    expect(server.replacementCount()).toBe(1)
+    expect(files.get(`${projectPath}/main.kcl`)).toBe('local = 2\n')
+    expect(files.get(`${projectPath}/notes.txt`)).toBe('keep me\n')
+    expect(files.has(`${projectPath}/remove-me.txt`)).toBe(false)
+    expect(
+      server.remoteFiles().some((file) => file.relativePath === 'remove-me.txt')
+    ).toBe(false)
+    expect(files.get(`${projectPath}/${PROJECT_SETTINGS_FILE_NAME}`)).toBe(
+      `${editedProjectToml}\n[cloud."dev.zoo.dev"]\nproject_id = "${remoteProjectId}"\n`
+    )
+    await expect(getAllOutboxEntries()).resolves.toEqual([])
+    await expect(
+      getCloudSyncProjectMetadata(projectPath)
+    ).resolves.toMatchObject({
+      remoteRevision: 'rev-2',
+      conflict: undefined,
+      lastFailure: undefined,
+    })
+
+    await disableCloudSyncEngineForTest()
+    configureCloudSyncLocalFileSystem(
+      createCloudSyncTestFs(files, { projectDirectory })
+    )
+    configureCloudSyncEngine({
+      enabled: true,
+      baseUrl,
+      environmentName: 'dev.zoo.dev',
+      cloudProjectDirectoryPaths: [projectDirectory],
+      autoEnrollCloudLibraryProjects: false,
+    })
+    await expect(syncCloudSyncProjectNow(projectPath)).resolves.toEqual({
+      remoteProjectId,
+    })
+    expect(server.replacementCount()).toBe(1)
+  })
+
+  it('repairs a persisted initial-upload conflict and remains converged after restart', async () => {
+    const { editedProjectToml, files, server } =
+      await configurePersistedInitialUploadConflict()
+
+    await expect(syncCloudSyncProjectNow(projectPath)).resolves.toEqual({
+      remoteProjectId,
+    })
+    expect(files.get(`${projectPath}/main.kcl`)).toBe('local = 2\n')
+    expect(files.get(`${projectPath}/notes.txt`)).toBe('keep me\n')
+    expect(files.get(`${projectPath}/${PROJECT_SETTINGS_FILE_NAME}`)).toBe(
+      `${editedProjectToml}\n[cloud."dev.zoo.dev"]\nproject_id = "${remoteProjectId}"\n`
+    )
+    await expect(getAllOutboxEntries()).resolves.toEqual([])
+    await expect(
+      getCloudSyncProjectMetadata(projectPath)
+    ).resolves.toMatchObject({
+      remoteRevision: 'rev-2',
+      conflict: undefined,
+      lastFailure: undefined,
+    })
+
+    await disableCloudSyncEngineForTest()
+    configureCloudSyncLocalFileSystem(
+      createCloudSyncTestFs(files, { projectDirectory })
+    )
+    configureCloudSyncEngine({
+      enabled: true,
+      baseUrl,
+      environmentName: 'dev.zoo.dev',
+      cloudProjectDirectoryPaths: [projectDirectory],
+      autoEnrollCloudLibraryProjects: false,
+    })
+    await expect(syncCloudSyncProjectNow(projectPath)).resolves.toEqual({
+      remoteProjectId,
+    })
+    expect(server.replacementCount()).toBe(1)
+  })
+
+  it('retains a persisted conflict when the remote archive genuinely diverged', async () => {
+    const { files, server } = await configurePersistedInitialUploadConflict({
+      remoteMain: 'cloud = 3\n',
+    })
+
+    await syncCloudSyncProjectNow(projectPath).catch(() => undefined)
+    const metadata = await getCloudSyncProjectMetadata(projectPath)
+    expect(metadata?.remoteRevision).toBeUndefined()
+    expect(metadata?.conflict?.remoteRevision).toBe('rev-1')
+    expect(files.get(`${projectPath}/main.kcl`)).toBe('local = 2\n')
+    await expect(getAllOutboxEntries()).resolves.toHaveLength(1)
+    expect(server.replacementCount()).toBe(0)
+  })
+
+  it('retains a persisted conflict when the remote revision changed', async () => {
+    const { files, server } = await configurePersistedInitialUploadConflict({
+      remoteRevision: 'rev-2',
+    })
+
+    await syncCloudSyncProjectNow(projectPath).catch(() => undefined)
+    const metadata = await getCloudSyncProjectMetadata(projectPath)
+    expect(metadata?.remoteRevision).toBeUndefined()
+    expect(metadata?.conflict?.remoteRevision).toBe('rev-2')
+    expect(files.get(`${projectPath}/main.kcl`)).toBe('local = 2\n')
+    await expect(getAllOutboxEntries()).resolves.toHaveLength(1)
+    expect(server.replacementCount()).toBe(0)
   })
 
   it('marks conflicts without creating persisted conflict-copy projects', async () => {
