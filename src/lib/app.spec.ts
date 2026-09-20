@@ -1024,7 +1024,7 @@ describe('project system', () => {
         const project = await app.openProject(mockProject)
         const { kclManager: editor } = app.singletons
         const wasm = await editor.wasmInstancePromise
-        vi.spyOn(project, 'getAllKclFiles').mockResolvedValue([])
+        vi.spyOn(editor, 'read').mockResolvedValue(code)
         const execute = vi
           .spyOn(editor, 'executeCode')
           .mockImplementation(async (code) => {
