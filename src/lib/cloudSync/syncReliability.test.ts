@@ -620,7 +620,8 @@ describe('cloud sync reliability', () => {
       )
     })
     vi.stubGlobal('fetch', fetchMock)
-    vi.useFakeTimers()
+    // Keep IndexedDB and the sync work real; only control the polling clock.
+    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval'] })
     setCloudSyncOpenedProject({
       projectPath,
       libraryPath: projectDirectory,
@@ -635,15 +636,25 @@ describe('cloud sync reliability', () => {
       onProjectHydrated,
     })
 
-    await vi.advanceTimersByTimeAsync(0)
+    await vi.waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledTimes(1)
+      expect(cloudSyncStatus.value.state).toBe('idle')
+    })
     expect(files.get(`${projectPath}/main.kcl`)).toBe('base = 1\n')
     expect(onProjectHydrated).not.toHaveBeenCalled()
 
     revision = updatedRemoteRevision
     await vi.advanceTimersByTimeAsync(5_000)
+    await vi.waitFor(() => {
+      expect(onProjectHydrated).toHaveBeenCalledExactlyOnceWith(projectPath)
+      expect(cloudSyncStatus.value.state).toBe('idle')
+    })
     expect(files.get(`${projectPath}/main.kcl`)).toBe('remote = 2\n')
-    expect(onProjectHydrated).toHaveBeenCalledExactlyOnceWith(projectPath)
     await vi.advanceTimersByTimeAsync(5_000)
+    await vi.waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledTimes(4)
+      expect(cloudSyncStatus.value.state).toBe('idle')
+    })
     expect(onProjectHydrated).toHaveBeenCalledTimes(1)
   })
 })
