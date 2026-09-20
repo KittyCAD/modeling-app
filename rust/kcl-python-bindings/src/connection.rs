@@ -182,10 +182,17 @@ impl KclSession {
 /// You can call follow-up methods, like exporting or snapshotting or measuring, on the returned session.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[gen_stub(override_return_type(type_repr = "KclSession"))]
-#[pyfunction(signature = (path, *, mock=false, highlight_edges=None))]
-pub async fn new_kcl_session(path: String, mock: bool, highlight_edges: Option<bool>) -> PyResult<KclSession> {
+#[pyfunction(signature = (path, *, mock=false, highlight_edges=None, video_res_width=None, video_res_height=None))]
+pub async fn new_kcl_session(
+    path: String,
+    mock: bool,
+    highlight_edges: Option<bool>,
+    video_res_width: Option<u32>,
+    video_res_height: Option<u32>,
+) -> PyResult<KclSession> {
     let input = KclInput::Path(path);
-    spawn_py(async move { new_kcl_session_impl(input, mock, highlight_edges).await }).await
+    spawn_py(async move { new_kcl_session_impl(input, mock, highlight_edges, video_res_width, video_res_height).await })
+        .await
 }
 
 /// Execute this KCL source code string.
@@ -193,15 +200,28 @@ pub async fn new_kcl_session(path: String, mock: bool, highlight_edges: Option<b
 /// You can call follow-up methods, like exporting or snapshotting or measuring, on the returned session.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[gen_stub(override_return_type(type_repr = "KclSession"))]
-#[pyfunction(signature = (code, *, mock=false, highlight_edges=None))]
-pub async fn new_kcl_session_code(code: String, mock: bool, highlight_edges: Option<bool>) -> PyResult<KclSession> {
+#[pyfunction(signature = (code, *, mock=false, highlight_edges=None, video_res_width=None, video_res_height=None))]
+pub async fn new_kcl_session_code(
+    code: String,
+    mock: bool,
+    highlight_edges: Option<bool>,
+    video_res_width: Option<u32>,
+    video_res_height: Option<u32>,
+) -> PyResult<KclSession> {
     let input = KclInput::Code(code);
-    spawn_py(async move { new_kcl_session_impl(input, mock, highlight_edges).await }).await
+    spawn_py(async move { new_kcl_session_impl(input, mock, highlight_edges, video_res_width, video_res_height).await })
+        .await
 }
 
 /// Execute this KCL project.
 /// Return an executed KCL project with its connection still available.
-pub async fn new_kcl_session_impl(input: KclInput, mock: bool, highlight_edges: Option<bool>) -> PyResult<KclSession> {
+pub async fn new_kcl_session_impl(
+    input: KclInput,
+    mock: bool,
+    highlight_edges: Option<bool>,
+    video_res_width: Option<u32>,
+    video_res_height: Option<u32>,
+) -> PyResult<KclSession> {
     let KclProgram {
         code,
         program,
@@ -209,7 +229,7 @@ pub async fn new_kcl_session_impl(input: KclInput, mock: bool, highlight_edges: 
         filename,
     } = load_and_parse(input).await?;
 
-    let (ctx, mut state) = new_context_state(path, mock, highlight_edges, false)
+    let (ctx, mut state) = new_context_state(path, mock, highlight_edges, false, video_res_width, video_res_height)
         .await
         .map_err(to_py_exception)?;
     let env_ref = match ctx.run(&program, &mut state).await {
@@ -247,6 +267,8 @@ mod tests {
         let mut session = new_kcl_session_impl(
             KclInput::Code("@settings(kclVersion = 2.0)\nvalue = 1".to_owned()),
             true,
+            None,
+            None,
             None,
         )
         .await
