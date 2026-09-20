@@ -16,6 +16,7 @@ import {
   cloudSyncProjectLibraryType,
   getCloudSyncStatusBarPresentation,
 } from '@src/lib/cloudSync/registry/plugin'
+import type { CloudSyncProjectNowResult } from '@src/lib/cloudSync/types'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import fsZds from '@src/lib/fs-zds'
@@ -254,7 +255,11 @@ function createCloudSyncService(): CloudSyncRegistryService {
     retry: vi.fn(),
     setOpenedProject: vi.fn(),
     startProjectSync: vi.fn().mockResolvedValue(undefined),
-    syncNow: vi.fn().mockResolvedValue({ remoteProjectId: 'remote-123' }),
+    syncNow: vi.fn().mockResolvedValue({
+      remoteProjectId: 'remote-123',
+      revision: 'rev-1',
+      manifest: { files: {} },
+    }),
     disconnectProjectSync: vi.fn().mockResolvedValue(undefined),
     deleteRemoteProject: vi.fn().mockResolvedValue(undefined),
     deleteLocalProjectRealizations: vi.fn().mockResolvedValue(undefined),
@@ -1122,7 +1127,7 @@ describe('cloud sync project library', () => {
   test('waits for the first cloud reconciliation before opening a new project', async () => {
     const registry = new Registry()
     const cloudSync = createCloudSyncService()
-    const synced = Promise.withResolvers<{ remoteProjectId: string }>()
+    const synced = Promise.withResolvers<CloudSyncProjectNowResult>()
     vi.mocked(cloudSync.syncNow).mockReturnValue(synced.promise)
     vi.spyOn(
       projectLibraryOperations,
@@ -1161,7 +1166,11 @@ describe('cloud sync project library', () => {
         projectWellFormed.path
       )
       expect(returned).not.toHaveBeenCalled()
-      synced.resolve({ remoteProjectId: 'remote-123' })
+      synced.resolve({
+        remoteProjectId: 'remote-123',
+        revision: 'rev-1',
+        manifest: { files: {} },
+      })
       await pending
       expect(returned).toHaveBeenCalledWith(projectWellFormed)
     } finally {
