@@ -1,6 +1,7 @@
 use kittycad_modeling_cmds::ModelingCmd;
 use kittycad_modeling_cmds::each_cmd as mcmd;
 use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
+use kittycad_modeling_cmds::output::BoundingBox;
 use kittycad_modeling_cmds::units::UnitLength;
 use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
 use uuid::Uuid;
@@ -10,27 +11,7 @@ use crate::ExecutorContext;
 use crate::Program;
 use crate::SourceRange;
 
-const TEST_NAME: &str = "import_async";
-
-/// Test parsing KCL.
-#[test]
-fn parse() {
-    super::parse(TEST_NAME)
-}
-
-/// Test that parsing and unparsing KCL produces the original KCL input.
-#[tokio::test(flavor = "multi_thread")]
-async fn unparse() {
-    super::unparse(TEST_NAME).await
-}
-
-/// Test that KCL is executed correctly.
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_execute() {
-    super::execute(TEST_NAME, true).await
-}
-
-async fn bounds(ctx: &ExecutorContext) -> kittycad_modeling_cmds::output::BoundingBox {
+async fn bounds(ctx: &ExecutorContext) -> BoundingBox {
     let response = ctx
         .engine
         .send_modeling_cmd(
@@ -54,17 +35,7 @@ async fn bounds(ctx: &ExecutorContext) -> kittycad_modeling_cmds::output::Boundi
     bounds
 }
 
-fn assert_close(actual: f64, expected: f64) {
-    // Mesh coordinates use float32. These cuboids have 12 triangles each, so
-    // allow for accumulation while still rejecting missing or stale bounds.
-    let tolerance = 1e-9 + 64.0 * f64::from(f32::EPSILON) * expected.abs();
-    assert!(
-        actual.is_finite() && (actual - expected).abs() <= tolerance,
-        "expected {expected}, got {actual} (absolute tolerance {tolerance})"
-    );
-}
-
-fn assert_bounds(actual: &kittycad_modeling_cmds::output::BoundingBox, center: [f64; 3], dimensions: [f64; 3]) {
+fn assert_bounds(actual: &BoundingBox, center: [f64; 3], dimensions: [f64; 3]) {
     for (actual, expected) in [actual.center.x, actual.center.y, actual.center.z]
         .into_iter()
         .zip(center)
@@ -74,7 +45,12 @@ fn assert_bounds(actual: &kittycad_modeling_cmds::output::BoundingBox, center: [
                 .zip(dimensions),
         )
     {
-        assert_close(actual, expected);
+        approx::assert_relative_eq!(
+            actual,
+            expected,
+            epsilon = 1e-9,
+            max_relative = 64.0 * f64::from(f32::EPSILON)
+        );
     }
 }
 
@@ -85,7 +61,9 @@ fn assert_bounds(actual: &kittycad_modeling_cmds::output::BoundingBox, center: [
 async fn kcl_test_completed_import_bounds() {
     let path = std::path::PathBuf::from("tests/import_async/completion.kcl");
     let program = Program::parse_no_errs(&std::fs::read_to_string(&path).unwrap()).unwrap();
-    let ctx = crate::test_server::new_context(true, Some(path)).await.unwrap();
+    let ctx = crate::test_server::new_context_engine_graphics(true, Some(path))
+        .await
+        .unwrap();
     let mut exec_state = ExecState::new(&ctx);
     let result = ctx.run(&program, &mut exec_state).await;
     if let Err(error) = result {
@@ -101,25 +79,12 @@ async fn kcl_test_completed_import_bounds() {
     // at x=110..112, and demand fresh bounds as soon as its response arrives.
     // This forces a cache invalidation check independently of import timing
     // relative to the native extrude in the KCL program above.
-    let import_id = Uuid::new_v4();
     let obj = include_str!("../../tests/import_async/completion.obj")
-        .lines()
-        .map(|line| {
-            if let Some(vertex) = line.strip_prefix("v ") {
-                let xyz = vertex
-                    .split_whitespace()
-                    .map(|s| s.parse::<f64>().unwrap())
-                    .collect::<Vec<_>>();
-                format!("v {} {} {}", xyz[0] + 100.0, xyz[1], xyz[2])
-            } else {
-                line.to_owned()
-            }
-        })
-        .collect::<Vec<_>>()
-        .join("\n");
+        .replace("v 10 ", "v 110 ")
+        .replace("v 12 ", "v 112 ");
     ctx.engine
         .async_modeling_cmd(
-            import_id,
+            Uuid::new_v4(),
             SourceRange::default(),
             &ModelingCmd::from(
                 mcmd::ImportFiles::builder()

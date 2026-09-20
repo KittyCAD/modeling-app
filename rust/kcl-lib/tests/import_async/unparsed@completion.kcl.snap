@@ -2,19 +2,19 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing tests/import_async/completion.kcl
 ---
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 @(lengthUnit = mm)
 import "completion.obj" as imported
 
 // A native 2 x 3 x 4 mm cuboid, disjoint from the imported one.
-native = startSketchOn(XY)
-  |> startProfile(at = [0, 0])
-  |> xLine(length = 2)
-  |> yLine(length = 3)
-  |> xLine(length = -2)
-  |> close()
-  |> extrude(length = 4)
+nativeSketch = sketch(on = XY) {
+  bottom = line(start = [var 0, var 0], end = [var 2, var 0])
+  right = line(start = [var 2, var 0], end = [var 2, var 3])
+  top = line(start = [var 2, var 3], end = [var 0, var 3])
+  left = line(start = [var 0, var 3], end = [var 0, var 0])
+}
+native = extrude(region(point = [1, 1], sketch = nativeSketch), length = 4)
 
 // No transform or other command that has to wait for this import. Completion
 // of the whole KCL program must still wait for the imported geometry.
