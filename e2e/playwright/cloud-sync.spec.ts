@@ -55,17 +55,40 @@ test(
       files: {},
     }
     const remoteProjects: CloudProject[] = []
+    const remoteArchives = new Map<string, Buffer>()
+    const acceptUpload = async (postData: string) => {
+      const boundary = postData.match(/^--([^\r\n]+)/)?.[1]
+      expect(boundary).toBeTruthy()
+      const formData = await new Response(postData, {
+        headers: {
+          'Content-Type': `multipart/form-data; boundary=${boundary}`,
+        },
+      }).formData()
+      createdProject.files = {}
+      for (const [path, value] of formData) {
+        if (path !== 'body' && typeof value !== 'string') {
+          createdProject.files[path] = await value.text()
+        }
+      }
+      remoteArchives.set(
+        createdProject.id,
+        await zipProject(createdProject.files)
+      )
+    }
     const { calls: apiCalls } = await routeCloudProjects(context, {
       remoteProjects,
-      createProject: () => {
+      remoteArchives,
+      createProject: async (postData) => {
+        await acceptUpload(postData)
         remoteProjects.push(createdProject)
         return createdProject
       },
-      updateProject: ({ projectId }) => {
+      updateProject: async ({ projectId, postData }) => {
         if (projectId !== createdProject.id) {
           return undefined
         }
 
+        await acceptUpload(postData)
         createdProject.revision = 'created-sample-rev-2'
         return { status: 200, body: cloudProjectResponse(createdProject) }
       },
@@ -100,6 +123,7 @@ test(
       main: `${PROJECT_DIR}/artificial-heart/main.kcl`,
     })
     expect(files.main).toContain('import "housing.kcl" as housing')
+    expect(apiCalls.downloads).toContain(createdProject.id)
     await expect(
       page.getByText('Unable to determine the project directory.')
     ).toHaveCount(0)
