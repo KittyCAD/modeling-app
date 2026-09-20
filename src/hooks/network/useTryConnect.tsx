@@ -98,7 +98,10 @@ const attemptToConnectToEngine = async ({
             label: 'ConnectionStream.tsx',
             message: 'Unable to reference the video. Calling tearDown()',
           })
-          engineCommandManager.tearDown()
+          engineCommandManager.tearDown({
+            route: 'connection-attempt-failed',
+            initiatedBy: 'client',
+          })
           return reject('Unable to reference the video, calling tearDown()')
         }
 
@@ -107,7 +110,10 @@ const attemptToConnectToEngine = async ({
             label: 'ConnectionStream.tsx',
             message: 'Unable to reference the mediaStream, calling tearDown()',
           })
-          engineCommandManager.tearDown()
+          engineCommandManager.tearDown({
+            route: 'connection-attempt-failed',
+            initiatedBy: 'client',
+          })
           return reject(
             'Unable to reference the mediaStream, calling tearDown()'
           )
@@ -204,7 +210,7 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
  * a single safe location to connect to the engine.
  */
 export async function tryConnecting({
-  onConnected,
+  abnormalCloseRetries,
   isConnecting,
   numberOfConnectionAttempts,
   authToken,
@@ -220,7 +226,7 @@ export async function tryConnecting({
   kclManager,
   rustContext,
 }: {
-  onConnected?: () => void
+  abnormalCloseRetries: React.RefObject<number>
   isConnecting: React.RefObject<boolean>
   numberOfConnectionAttempts: React.RefObject<number>
   authToken: string
@@ -286,7 +292,7 @@ export async function tryConnecting({
             )
           }
 
-          onConnected?.()
+          abnormalCloseRetries.current = 0
           isConnecting.current = false
           setAppState({ isStreamAcceptingInput: true })
           numberOfConnectionAttempts.current = 0
@@ -313,7 +319,10 @@ export async function tryConnecting({
             setShowManualConnect(true)
             return reject(terminalConnectionError)
           }
-          engineCommandManager.tearDown()
+          engineCommandManager.tearDown({
+            route: 'connection-attempt-failed',
+            initiatedBy: 'client',
+          })
           if (numberOfConnectionAttempts.current >= NUMBER_OF_ENGINE_RETRIES) {
             isConnecting.current = false
             numberOfConnectionAttempts.current = 0
@@ -327,13 +336,17 @@ export async function tryConnecting({
   })
   return connection
 }
-export const useTryConnect = (onConnected: () => void) => {
+export const useTryConnect = () => {
   const { kclManager } = useSingletons()
   const isConnecting = useRef(false)
   const numberOfConnectionAttempts = useRef(0)
+  const abnormalCloseRetries = useRef(0)
   type TryConnectingArgs = Omit<
     Parameters<typeof tryConnecting>[0],
-    'engineCommandManager' | 'kclManager' | 'rustContext' | 'onConnected'
+    | 'engineCommandManager'
+    | 'kclManager'
+    | 'rustContext'
+    | 'abnormalCloseRetries'
   >
 
   return {
@@ -343,9 +356,10 @@ export const useTryConnect = (onConnected: () => void) => {
         engineCommandManager: kclManager.engineCommandManager,
         kclManager,
         rustContext: kclManager.rustContext,
-        onConnected,
+        abnormalCloseRetries,
       }),
     isConnecting,
     numberOfConnectionAttempts,
+    abnormalCloseRetries,
   }
 }

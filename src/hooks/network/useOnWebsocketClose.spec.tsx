@@ -16,6 +16,7 @@ describe('useOnWebsocketClose', () => {
         await buildTheWorldAndNoEngineConnection(true)
       const { unmount } = renderHook(() =>
         useOnWebsocketClose({
+          abnormalCloseRetries: { current: 0 },
           callback,
           infiniteDetectionLoopCallback: infiniteLoopCallback,
           engineCommandManager,
@@ -34,6 +35,7 @@ describe('useOnWebsocketClose', () => {
       const spyRemove = vi.spyOn(engineCommandManager, 'removeEventListener')
       const { unmount } = renderHook(() =>
         useOnWebsocketClose({
+          abnormalCloseRetries: { current: 0 },
           callback,
           infiniteDetectionLoopCallback: infiniteLoopCallback,
           engineCommandManager,
@@ -50,6 +52,7 @@ describe('useOnWebsocketClose', () => {
         await buildTheWorldAndNoEngineConnection(true)
       const { unmount } = renderHook(() =>
         useOnWebsocketClose({
+          abnormalCloseRetries: { current: 0 },
           callback,
           infiniteDetectionLoopCallback: infiniteLoopCallback,
           engineCommandManager,
@@ -71,13 +74,15 @@ describe('useOnWebsocketClose', () => {
           await buildTheWorldAndNoEngineConnection(true)
         const { unmount } = renderHook(() =>
           useOnWebsocketClose({
+            abnormalCloseRetries: { current: 0 },
             callback,
             infiniteDetectionLoopCallback: infiniteLoopCallback,
             engineCommandManager,
           })
         )
         engineCommandManager.tearDown({
-          websocketClosed: true,
+          route: 'websocket-closed',
+          initiatedBy: 'unknown',
           code,
           reconnectRequested: true,
         })
@@ -94,24 +99,31 @@ describe('useOnWebsocketClose', () => {
         await buildTheWorldAndNoEngineConnection(true)
       const { unmount } = renderHook(() =>
         useOnWebsocketClose({
+          abnormalCloseRetries: { current: 0 },
           callback,
           infiniteDetectionLoopCallback: infiniteLoopCallback,
           engineCommandManager,
         })
       )
-      engineCommandManager.tearDown({ websocketClosed: true, code: '1000' })
+      engineCommandManager.tearDown({
+        route: 'websocket-closed',
+        initiatedBy: 'unknown',
+        code: '1000',
+      })
       expect(callback).toHaveBeenCalledExactlyOnceWith('1000', false)
       expect(infiniteLoopCallback).not.toHaveBeenCalled()
       unmount()
     })
 
     test('requires manual recovery after three abnormal closes', async () => {
+      const abnormalCloseRetries = { current: 0 }
       const callback = vi.fn(() => 1)
       const infiniteLoopCallback = vi.fn(() => 1)
       const { engineCommandManager } =
         await buildTheWorldAndNoEngineConnection(true)
-      const { result, rerender, unmount } = renderHook(() =>
+      const { rerender, unmount } = renderHook(() =>
         useOnWebsocketClose({
+          abnormalCloseRetries,
           callback,
           infiniteDetectionLoopCallback: infiniteLoopCallback,
           engineCommandManager,
@@ -135,7 +147,7 @@ describe('useOnWebsocketClose', () => {
       expect(callback).toHaveBeenCalledTimes(3)
       expect(infiniteLoopCallback).toHaveBeenCalledTimes(1)
       expect(infiniteLoopCallback).toHaveBeenCalledWith('1006')
-      result.current.current = 0
+      abnormalCloseRetries.current = 0
       engineCommandManager.dispatchEvent(infiniteEvent)
       expect(callback).toHaveBeenCalledTimes(4)
       expect(infiniteLoopCallback).toHaveBeenCalledTimes(1)
@@ -151,6 +163,7 @@ describe('useOnWebsocketClose', () => {
           await buildTheWorldAndNoEngineConnection(true)
         const { unmount } = renderHook(() =>
           useOnWebsocketClose({
+            abnormalCloseRetries: { current: 0 },
             callback,
             infiniteDetectionLoopCallback: infiniteLoopCallback,
             terminalErrorCallback,
@@ -164,7 +177,8 @@ describe('useOnWebsocketClose', () => {
         }
 
         engineCommandManager.tearDown({
-          websocketClosed: true,
+          route: 'backend-shutdown',
+          initiatedBy: 'unknown',
           code: '1011',
           connectionError,
           reconnectRequested,

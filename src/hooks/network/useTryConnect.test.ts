@@ -45,6 +45,7 @@ describe('tryConnecting', () => {
 
     await expect(
       tryConnecting({
+        abnormalCloseRetries: { current: 0 },
         isConnecting: { current: false },
         numberOfConnectionAttempts,
         authToken: 'token',

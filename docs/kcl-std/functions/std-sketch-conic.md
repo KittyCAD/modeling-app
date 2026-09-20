@@ -24,8 +24,10 @@ conic(
 ```
 
 This is part of sketch v1 and is soft deprecated in favor of
-[sketch-solve](/docs/kcl-std/modules/std-solver). The sketch-solve version
-of conic is still under development.
+[sketch-solve](/docs/kcl-std/modules/std-solver). Legacy sketch functions
+cannot be used with constraints; strongly prefer constraint-based sketch
+functions when possible. No constraint-based conic is available yet; first
+try approximating the shape with one or more constrained arcs.
 
 ### Arguments
 
@@ -68,7 +70,7 @@ example = extrude(exampleSketch, length = 10)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the conic function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-conic0_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-conic0_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-conic0.png"

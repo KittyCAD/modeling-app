@@ -19,7 +19,10 @@ import type {
   Program,
 } from '@src/lang/wasm'
 import { emptyExecState, kclLint } from '@src/lang/wasm'
-import { EXECUTE_AST_INTERRUPT_ERROR_STRING } from '@src/lib/constants'
+import {
+  ENABLE_Z0006_LINT_FLAG,
+  EXECUTE_AST_INTERRUPT_ERROR_STRING,
+} from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { isArray } from '@src/lib/utils'
@@ -28,8 +31,6 @@ import { REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE } from '@src/lib/engineConnection/
 import type { EditorView } from 'codemirror'
 export type { ToolTip } from '@src/lang/toolTips'
 export { isToolTip, toolTips } from '@src/lang/toolTips'
-
-const ENABLE_Z0006_LINT_FLAG = 'enable_z0006_lint'
 
 function userHasFeature(featureFlagId: string, defaultValue: boolean): boolean {
   return (

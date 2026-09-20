@@ -11,6 +11,7 @@ fn gdt_annotation_artifacts_get_node_paths() {
     let mut artifact = Artifact::GdtAnnotation(GdtAnnotationArtifact {
         id: ArtifactId::new(Uuid::new_v4()),
         code_ref: CodeRef::placeholder(source_range),
+        consumed: false,
     });
 
     fill_in_node_paths(&mut artifact, &programs, 0, &AHashMap::default());
@@ -20,6 +21,7 @@ fn gdt_annotation_artifacts_get_node_paths() {
     };
     assert_eq!(annotation.code_ref.range, source_range);
     assert!(!annotation.code_ref.node_path.is_empty());
+    assert!(!annotation.consumed);
 }
 
 /// A named view value carrying `camera`. The name takes no part in what any of
@@ -301,6 +303,7 @@ fn import_files_creates_imported_geometry_artifact() {
     assert_eq!(imported_geometry.id, ArtifactId::new(cmd_id));
     assert_eq!(imported_geometry.code_ref.range, source_range);
     assert!(!imported_geometry.code_ref.node_path.is_empty());
+    assert!(!imported_geometry.consumed);
 }
 
 #[test]
@@ -313,6 +316,7 @@ fn entity_clone_remaps_imported_geometry_artifact() {
         Artifact::ImportedGeometry(ImportedGeometryArtifact {
             id: source_id,
             code_ref: source_code_ref,
+            consumed: true,
         }),
     );
 
@@ -353,6 +357,73 @@ fn entity_clone_remaps_imported_geometry_artifact() {
     assert_eq!(imported_geometry.id, ArtifactId::new(cmd_id));
     assert_eq!(imported_geometry.code_ref.range, source_range);
     assert!(!imported_geometry.code_ref.node_path.is_empty());
+    assert!(!imported_geometry.consumed);
+}
+
+fn mark_deleted_artifact_consumed(artifact: Artifact) -> Artifact {
+    let artifact_id = artifact.id();
+    let mut artifacts = IndexMap::from([(artifact_id, artifact)]);
+    let object_ids = std::collections::HashSet::from([Uuid::from(artifact_id)]);
+    let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
+    let programs = crate::execution::ProgramLookup::new(ast, Default::default());
+    let artifact_command = ArtifactCommand {
+        cmd_id: Uuid::new_v4(),
+        range: SourceRange::default(),
+        command: ModelingCmd::from(kcmc::RemoveSceneObjects::builder().object_ids(object_ids).build()),
+        entity_clone_info: None,
+        omit_from_graph: false,
+    };
+
+    let updates = artifacts_to_update(
+        &artifacts,
+        &artifact_command,
+        &AHashMap::default(),
+        &AHashMap::default(),
+        &AHashMap::default(),
+        &programs,
+        0,
+        &IndexMap::default(),
+        &AHashMap::default(),
+    )
+    .unwrap();
+    assert_eq!(updates.len(), 1);
+    for update in updates {
+        merge_artifact_into_map(&mut artifacts, update);
+    }
+
+    artifacts
+        .swap_remove(&artifact_id)
+        .expect("the deleted artifact remains in the graph with updated lifecycle state")
+}
+
+#[test]
+fn remove_scene_objects_marks_imported_geometry_consumed() {
+    let artifact_id = ArtifactId::new(Uuid::new_v4());
+    let artifact = Artifact::ImportedGeometry(ImportedGeometryArtifact {
+        id: artifact_id,
+        code_ref: CodeRef::placeholder(SourceRange::synthetic()),
+        consumed: false,
+    });
+
+    let Artifact::ImportedGeometry(imported_geometry) = mark_deleted_artifact_consumed(artifact) else {
+        panic!("Expected imported geometry after applying its deletion update");
+    };
+    assert!(imported_geometry.consumed);
+}
+
+#[test]
+fn remove_scene_objects_marks_gdt_annotation_consumed() {
+    let artifact_id = ArtifactId::new(Uuid::new_v4());
+    let artifact = Artifact::GdtAnnotation(GdtAnnotationArtifact {
+        id: artifact_id,
+        code_ref: CodeRef::placeholder(SourceRange::synthetic()),
+        consumed: false,
+    });
+
+    let Artifact::GdtAnnotation(annotation) = mark_deleted_artifact_consumed(artifact) else {
+        panic!("Expected GD&T annotation after applying its deletion update");
+    };
+    assert!(annotation.consumed);
 }
 
 #[test]

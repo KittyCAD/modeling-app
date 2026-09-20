@@ -2,6 +2,8 @@
 
 mod lsp;
 
+pub(crate) use kcl_lib::CompilationIssue;
+pub(crate) use kcl_lib::KclErrorWithOutputs;
 pub(crate) use kcl_lib::ModuleId;
 pub(crate) use kcl_lib::Program;
 pub(crate) use kcl_lib::SourceRange;

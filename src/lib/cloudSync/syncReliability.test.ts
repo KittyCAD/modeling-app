@@ -9,6 +9,7 @@ import {
   notifyCloudSyncWriteLikeMutation,
   type ProjectArchiveFile,
   setCloudSyncOpenedProject,
+  syncCloudSyncProjectNow,
 } from '@src/lib/cloudSync'
 import { projectManifestFromFiles } from '@src/lib/cloudSync/projectArchive'
 import {
@@ -35,6 +36,7 @@ const remoteProjectId = 'remote-project-123'
 const remoteRevision = 'revision-123'
 const updatedRemoteRevision = 'revision-124'
 const remoteProjectUrl = `${baseUrl}/user/projects/${remoteProjectId}`
+const remoteDownloadUrl = `${remoteProjectUrl}/download?format=zip`
 const encoder = new TextEncoder()
 const projectToml = `title = "Bracket"\n\n[cloud."${environmentName}"]\nproject_id = "${remoteProjectId}"\n`
 
@@ -246,7 +248,7 @@ describe('cloud sync reliability', () => {
     await expect(getAllOutboxEntries()).resolves.toEqual([])
   })
 
-  it('declares observed local file deletions in a replacement upload', async () => {
+  it('derives replacement deletions from the acknowledged base manifest', async () => {
     const deletedFilePath = `${projectPath}/obsolete.kcl`
     const files = new Map([
       [`${projectPath}/main.kcl`, 'base = 1\n'],
@@ -264,7 +266,6 @@ describe('cloud sync reliability', () => {
       projectPath,
       kind: 'upsert',
       targetPath: deletedFilePath,
-      deletedPaths: ['obsolete.kcl'],
       createdAt: '2026-08-24T12:00:00.000Z',
     })
     let uploadedDeletedPaths: string[] | undefined
@@ -298,5 +299,286 @@ describe('cloud sync reliability', () => {
       ).toHaveLength(1)
     })
     expect(uploadedDeletedPaths).toEqual(['obsolete.kcl'])
+  })
+
+  it('blocks a rejected replacement without discarding local state or outbox work', async () => {
+    const deletedFilePath = `${projectPath}/obsolete.kcl`
+    const files = new Map([
+      [`${projectPath}/main.kcl`, 'local = 2\n'],
+      [`${projectPath}/${PROJECT_SETTINGS_FILE_NAME}`, projectToml],
+    ])
+    configureCloudSyncLocalFileSystem(
+      createCloudSyncTestFs(files, { projectDirectory })
+    )
+    const baseFiles = [
+      projectFile('main.kcl', 'base = 1\n'),
+      projectFile('obsolete.kcl', 'obsolete = 1\n'),
+      projectFile(PROJECT_SETTINGS_FILE_NAME, projectToml),
+    ]
+    await seedSyncedProject(baseFiles)
+    await appendOutboxEntry({
+      projectPath,
+      kind: 'upsert',
+      targetPath: deletedFilePath,
+      createdAt: '2026-08-24T12:00:00.000Z',
+    })
+
+    let projectReads = 0
+    fetchMock.mockImplementation(async (input, init) => {
+      const url = getFetchUrl(input)
+      const method = getFetchMethod(input, init)
+      if (url === remoteProjectUrl && method === 'GET') {
+        projectReads += 1
+        return jsonResponse(
+          remoteProject(
+            projectReads === 1 ? remoteRevision : updatedRemoteRevision
+          )
+        )
+      }
+      if (url.startsWith(remoteProjectUrl) && method === 'PUT') {
+        return jsonResponse(
+          {
+            message:
+              'Project replacement does not match the declared file deletions. Reload and retry the mutation.',
+          },
+          409
+        )
+      }
+      if (url.endsWith('/user/client-errors') && method === 'POST') {
+        return jsonResponse({})
+      }
+      return jsonResponse(
+        { message: `Unexpected fetch: ${method} ${url}` },
+        500
+      )
+    })
+    vi.stubGlobal('fetch', fetchMock)
+    setCloudSyncOpenedProject({
+      projectPath,
+      libraryPath: projectDirectory,
+      libraryType: CLOUD_PROJECT_LIBRARY_TYPE,
+    })
+
+    configureCloudSyncEngine({
+      enabled: true,
+      baseUrl,
+      environmentName,
+      cloudProjectDirectoryPaths: [projectDirectory],
+      autoEnrollCloudLibraryProjects: true,
+    })
+
+    await vi.waitFor(() => {
+      expect(cloudSyncStatus.value.state).toBe('conflict')
+    })
+    expect(projectReads).toBe(2)
+    expect(files.get(`${projectPath}/main.kcl`)).toBe('local = 2\n')
+    await expect(getAllOutboxEntries()).resolves.toHaveLength(1)
+    await expect(
+      getCloudSyncProjectMetadata(projectPath)
+    ).resolves.toMatchObject({
+      remoteRevision,
+      baseManifest: await projectManifestFromFiles(baseFiles),
+      conflict: {
+        remoteRevision: updatedRemoteRevision,
+        reason: 'remote-replacement-rejected',
+      },
+      lastFailure: {
+        kind: 'remote-replacement-rejected',
+      },
+    })
+  })
+
+  it('preserves a rejected replacement when the project is reopened', async () => {
+    const deletedFilePath = `${projectPath}/obsolete.kcl`
+    const files = new Map([
+      [`${projectPath}/main.kcl`, 'local = 2\n'],
+      [`${projectPath}/${PROJECT_SETTINGS_FILE_NAME}`, projectToml],
+    ])
+    configureCloudSyncLocalFileSystem(
+      createCloudSyncTestFs(files, { projectDirectory })
+    )
+    const baseFiles = [
+      projectFile('main.kcl', 'base = 1\n'),
+      projectFile('obsolete.kcl', 'obsolete = 1\n'),
+      projectFile(PROJECT_SETTINGS_FILE_NAME, projectToml),
+    ]
+    await seedSyncedProject(baseFiles)
+    await appendOutboxEntry({
+      projectPath,
+      kind: 'upsert',
+      targetPath: deletedFilePath,
+      createdAt: '2026-08-24T12:00:00.000Z',
+    })
+
+    let projectReads = 0
+    let remoteArchiveReads = 0
+    fetchMock.mockImplementation(async (input, init) => {
+      const url = getFetchUrl(input)
+      const method = getFetchMethod(input, init)
+      if (url === remoteProjectUrl && method === 'GET') {
+        projectReads += 1
+        return jsonResponse(
+          remoteProject(
+            projectReads === 1 ? remoteRevision : updatedRemoteRevision
+          )
+        )
+      }
+      if (url.startsWith(remoteProjectUrl) && method === 'PUT') {
+        return jsonResponse(
+          {
+            message:
+              'Project replacement does not match the declared file deletions. Reload and retry the mutation.',
+          },
+          409
+        )
+      }
+      if (url === remoteDownloadUrl && method === 'GET') {
+        remoteArchiveReads += 1
+        return jsonResponse({
+          files: [
+            { relativePath: 'main.kcl', contents: 'remote = 3\n' },
+            {
+              relativePath: PROJECT_SETTINGS_FILE_NAME,
+              contents: projectToml,
+            },
+          ],
+        })
+      }
+      if (url.endsWith('/user/client-errors') && method === 'POST') {
+        return jsonResponse({})
+      }
+      return jsonResponse(
+        { message: `Unexpected fetch: ${method} ${url}` },
+        500
+      )
+    })
+    vi.stubGlobal('fetch', fetchMock)
+    setCloudSyncOpenedProject({
+      projectPath,
+      libraryPath: projectDirectory,
+      libraryType: CLOUD_PROJECT_LIBRARY_TYPE,
+    })
+    const config = {
+      enabled: true,
+      baseUrl,
+      environmentName,
+      cloudProjectDirectoryPaths: [projectDirectory],
+      autoEnrollCloudLibraryProjects: true,
+    }
+    configureCloudSyncEngine(config)
+
+    await vi.waitFor(() => {
+      expect(cloudSyncStatus.value.state).toBe('conflict')
+      expect(cloudSyncStatus.value.lastFailureKind).toBe(
+        'remote-replacement-rejected'
+      )
+    })
+
+    // Recreate the runtime boundaries while retaining the durable filesystem
+    // and IndexedDB state that a new application session would observe.
+    await disableCloudSyncEngineForTest()
+    setCloudSyncOpenedProject(undefined)
+    configureCloudSyncLocalFileSystem(
+      createCloudSyncTestFs(files, { projectDirectory })
+    )
+    setCloudSyncOpenedProject({
+      projectPath,
+      libraryPath: projectDirectory,
+      libraryType: CLOUD_PROJECT_LIBRARY_TYPE,
+    })
+    configureCloudSyncEngine(config)
+
+    await vi.waitFor(() => {
+      expect(remoteArchiveReads).toBe(1)
+      expect(cloudSyncStatus.value.state).toBe('conflict')
+    })
+    expect(files.get(`${projectPath}/main.kcl`)).toBe('local = 2\n')
+    await expect(getAllOutboxEntries()).resolves.toMatchObject([
+      {
+        projectPath,
+        kind: 'upsert',
+        targetPath: deletedFilePath,
+      },
+    ])
+    await expect(
+      getCloudSyncProjectMetadata(projectPath)
+    ).resolves.toMatchObject({
+      remoteRevision,
+      baseManifest: await projectManifestFromFiles(baseFiles),
+      conflict: {
+        remoteRevision: updatedRemoteRevision,
+      },
+    })
+  })
+
+  it('does not hydrate over a local mutation made during the remote fetch', async () => {
+    const files = new Map([
+      [`${projectPath}/main.kcl`, 'base = 1\n'],
+      [`${projectPath}/${PROJECT_SETTINGS_FILE_NAME}`, projectToml],
+    ])
+    configureCloudSyncLocalFileSystem(
+      createCloudSyncTestFs(files, { projectDirectory })
+    )
+    await seedSyncedProject([
+      projectFile('main.kcl', 'base = 1\n'),
+      projectFile(PROJECT_SETTINGS_FILE_NAME, projectToml),
+    ])
+
+    let markDownloadStarted!: () => void
+    let releaseDownload!: () => void
+    const downloadStarted = new Promise<void>((resolve) => {
+      markDownloadStarted = resolve
+    })
+    const downloadGate = new Promise<void>((resolve) => {
+      releaseDownload = resolve
+    })
+    fetchMock.mockImplementation(async (input, init) => {
+      const url = getFetchUrl(input)
+      const method = getFetchMethod(input, init)
+      if (url === remoteProjectUrl && method === 'GET') {
+        return jsonResponse(remoteProject(updatedRemoteRevision))
+      }
+      if (url === remoteDownloadUrl && method === 'GET') {
+        markDownloadStarted()
+        await downloadGate
+        return jsonResponse({
+          files: [
+            { relativePath: 'main.kcl', contents: 'remote = 2\n' },
+            {
+              relativePath: PROJECT_SETTINGS_FILE_NAME,
+              contents: projectToml,
+            },
+          ],
+        })
+      }
+      if (url.endsWith('/user/client-errors') && method === 'POST') {
+        return jsonResponse({})
+      }
+      return jsonResponse(
+        { message: `Unexpected fetch: ${method} ${url}` },
+        500
+      )
+    })
+    vi.stubGlobal('fetch', fetchMock)
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+    configureCloudSyncEngine({
+      enabled: true,
+      baseUrl,
+      environmentName,
+      cloudProjectDirectoryPaths: [projectDirectory],
+      autoEnrollCloudLibraryProjects: true,
+    })
+
+    const sync = syncCloudSyncProjectNow(projectPath)
+    await downloadStarted
+    files.set(`${projectPath}/main.kcl`, 'local = 3\n')
+    await notifyCloudSyncWriteLikeMutation(`${projectPath}/main.kcl`)
+    releaseDownload()
+
+    await expect(sync).rejects.toThrow(
+      'Cloud sync found conflicting local and remote changes.'
+    )
+    expect(files.get(`${projectPath}/main.kcl`)).toBe('local = 3\n')
+    await expect(getAllOutboxEntries()).resolves.toHaveLength(1)
   })
 })

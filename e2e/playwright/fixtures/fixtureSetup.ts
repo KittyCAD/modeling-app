@@ -16,6 +16,10 @@ import fsp from 'fs/promises'
 
 import type { Settings } from '@rust/kcl-lib/bindings/Settings'
 
+import {
+  attachRendererCrashDiagnostics,
+  startRendererCrashDiagnostics,
+} from '@e2e/playwright/fixtures/electronCrashDiagnostics'
 import { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import { CopilotFixture } from '@e2e/playwright/fixtures/copilotFixture'
 import { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
@@ -164,7 +168,10 @@ export class ElectronZoo {
           return resolve(undefined)
         }
 
-        window.engineCommandManager.tearDown()
+        window.engineCommandManager.tearDown({
+          route: 'user-requested',
+          initiatedBy: 'client',
+        })
 
         // Keep polling (per js event tick) until state is Disconnected.
         const timeA = Date.now()
@@ -285,6 +292,7 @@ export class ElectronZoo {
       }
     }
 
+    await startRendererCrashDiagnostics(this.electron)
     await this.context.tracing.startChunk()
 
     await this.page.evaluate(
@@ -555,8 +563,14 @@ const fixturesBasedOnProcessEnvPlatform = {
     await use(ret)
   },
   _globalAfterEach: [
-    async ({ page }: { page: Page }, use: FnUse, testInfo: TestInfo) => {
+    async (
+      { page, tronApp }: { page: Page; tronApp?: ElectronZoo },
+      use: FnUse,
+      testInfo: TestInfo
+    ) => {
       await use() // <-- runs the actual test
+
+      await attachRendererCrashDiagnostics(tronApp?.electron, testInfo)
 
       const engineLogs: ILog[] = await page
         .evaluate(() => window.engineDebugger?.logs || [])

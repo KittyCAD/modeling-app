@@ -214,21 +214,17 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
     "value": {
       "line1": {
         "type": "TagIdentifier",
-        "type": "TagIdentifier",
         "value": "line1"
       },
       "line2": {
-        "type": "TagIdentifier",
         "type": "TagIdentifier",
         "value": "line2"
       },
       "line3": {
         "type": "TagIdentifier",
-        "type": "TagIdentifier",
         "value": "line3"
       },
       "line4": {
-        "type": "TagIdentifier",
         "type": "TagIdentifier",
         "value": "line4"
       }
@@ -278,15 +274,21 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
                       {
                         "n": 125.8,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -296,15 +298,21 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
                       {
                         "n": -29.28,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -394,15 +402,21 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
                       {
                         "n": 100.13,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 117.07,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -412,15 +426,21 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
                       {
                         "n": 99.31,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -22.51,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -510,15 +530,21 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
                       {
                         "n": -24.16,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 100.24,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -528,15 +554,21 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
                       {
                         "n": 134.91,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 99.22,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -626,15 +658,21 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -28.12,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -644,15 +682,21 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 111.97,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],

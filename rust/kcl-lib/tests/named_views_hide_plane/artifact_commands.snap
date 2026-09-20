@@ -236,7 +236,8 @@ description: Artifact commands named_views_hide_plane.kcl
         "query_point": {
           "x": 25.0,
           "y": 5.0
-        }
+        },
+        "version": "V1"
       }
     },
     {

@@ -630,15 +630,21 @@ description: Variables in memory after executing consumed_solid_join_surfaces_co
                       {
                         "n": 30.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -648,15 +654,21 @@ description: Variables in memory after executing consumed_solid_join_surfaces_co
                       {
                         "n": 20.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -746,15 +758,21 @@ description: Variables in memory after executing consumed_solid_join_surfaces_co
                       {
                         "n": 20.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -764,15 +782,21 @@ description: Variables in memory after executing consumed_solid_join_surfaces_co
                       {
                         "n": 20.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1042,15 +1066,21 @@ description: Variables in memory after executing consumed_solid_join_surfaces_co
                       {
                         "n": 30.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1060,15 +1090,21 @@ description: Variables in memory after executing consumed_solid_join_surfaces_co
                       {
                         "n": 30.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1158,15 +1194,21 @@ description: Variables in memory after executing consumed_solid_join_surfaces_co
                       {
                         "n": 20.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1176,15 +1218,21 @@ description: Variables in memory after executing consumed_solid_join_surfaces_co
                       {
                         "n": 30.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1524,15 +1572,21 @@ description: Variables in memory after executing consumed_solid_join_surfaces_co
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1542,15 +1596,21 @@ description: Variables in memory after executing consumed_solid_join_surfaces_co
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1640,15 +1700,21 @@ description: Variables in memory after executing consumed_solid_join_surfaces_co
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1658,15 +1724,21 @@ description: Variables in memory after executing consumed_solid_join_surfaces_co
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1936,15 +2008,21 @@ description: Variables in memory after executing consumed_solid_join_surfaces_co
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1954,15 +2032,21 @@ description: Variables in memory after executing consumed_solid_join_surfaces_co
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2052,15 +2136,21 @@ description: Variables in memory after executing consumed_solid_join_surfaces_co
                       {
                         "n": -10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2070,15 +2160,21 @@ description: Variables in memory after executing consumed_solid_join_surfaces_co
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2418,15 +2514,21 @@ description: Variables in memory after executing consumed_solid_join_surfaces_co
                       {
                         "n": 2.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -2.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2436,15 +2538,21 @@ description: Variables in memory after executing consumed_solid_join_surfaces_co
                       {
                         "n": -2.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -2.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2534,15 +2642,21 @@ description: Variables in memory after executing consumed_solid_join_surfaces_co
                       {
                         "n": -2.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -2.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2552,15 +2666,21 @@ description: Variables in memory after executing consumed_solid_join_surfaces_co
                       {
                         "n": -2.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 2.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2830,15 +2950,21 @@ description: Variables in memory after executing consumed_solid_join_surfaces_co
                       {
                         "n": 2.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 2.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2848,15 +2974,21 @@ description: Variables in memory after executing consumed_solid_join_surfaces_co
                       {
                         "n": 2.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -2.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2946,15 +3078,21 @@ description: Variables in memory after executing consumed_solid_join_surfaces_co
                       {
                         "n": -2.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 2.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -2964,15 +3102,21 @@ description: Variables in memory after executing consumed_solid_join_surfaces_co
                       {
                         "n": 2.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 2.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],

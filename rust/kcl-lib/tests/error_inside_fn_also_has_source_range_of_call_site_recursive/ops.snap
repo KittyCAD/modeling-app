@@ -116,7 +116,9 @@ description: Operations executed error_inside_fn_also_has_source_range_of_call_s
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -144,7 +146,9 @@ description: Operations executed error_inside_fn_also_has_source_range_of_call_s
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",

@@ -237,7 +237,6 @@ description: Variables in memory after executing sketch_on_face_union.kcl
   },
   "bottomFace": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "bottomFace"
   },
   "height": {
@@ -245,8 +244,10 @@ description: Variables in memory after executing sketch_on_face_union.kcl
     "value": 120.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "leg001": {
@@ -1866,7 +1867,6 @@ description: Variables in memory after executing sketch_on_face_union.kcl
   },
   "tag001": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "tag001"
   },
   "thickness": {
@@ -1874,8 +1874,10 @@ description: Variables in memory after executing sketch_on_face_union.kcl
     "value": 4.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "trussSupportAngle": {
@@ -1883,8 +1885,10 @@ description: Variables in memory after executing sketch_on_face_union.kcl
     "value": 15.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   }
 }

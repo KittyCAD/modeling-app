@@ -21,8 +21,10 @@ description: Operations executed subtract_self.kcl
                   "value": 0.0,
                   "ty": {
                     "type": "Default",
-                    "len": "mm",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "mm",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -30,8 +32,10 @@ description: Operations executed subtract_self.kcl
                   "value": 0.0,
                   "ty": {
                     "type": "Default",
-                    "len": "mm",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "mm",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -44,8 +48,10 @@ description: Operations executed subtract_self.kcl
               "value": 10.0,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -128,8 +134,10 @@ description: Operations executed subtract_self.kcl
             "value": 20.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -249,7 +257,9 @@ description: Operations executed subtract_self.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -277,7 +287,9 @@ description: Operations executed subtract_self.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",

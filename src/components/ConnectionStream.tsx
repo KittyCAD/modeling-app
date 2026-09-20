@@ -11,7 +11,6 @@ import {
   type EngineDisconnectEvent,
   useOnPeerConnectionClose,
 } from '@src/hooks/network/useOnPeerConnectionClose'
-import { useOnPingPongTimeout } from '@src/hooks/network/useOnPingPongTimeout'
 import { useOnVitestEngineOnline } from '@src/hooks/network/useOnVitestEngineOnline'
 import { useOnWebsocketClose } from '@src/hooks/network/useOnWebsocketClose'
 import { useOnWindowOnlineOffline } from '@src/hooks/network/useOnWindowOnlineOffline'
@@ -70,7 +69,14 @@ interface ConnectionStreamProps {
 }
 
 export const ConnectionStream = (props: ConnectionStreamProps) => {
-  const { settings, project, wasmPromise, commands, userFeatures } = useApp()
+  const {
+    settings,
+    project,
+    wasmPromise,
+    commands,
+    userFeatures,
+    fileOperations,
+  } = useApp()
   const hasLegacySketchMode = userFeatures.useHas(
     LEGACY_SKETCH_MODE_FEATURE_FLAG,
     false
@@ -97,10 +103,12 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const isNetworkOkay =
     overallState === NetworkHealthState.Ok ||
     overallState === NetworkHealthState.Weak
-  const { tryConnecting, isConnecting, numberOfConnectionAttempts } =
-    useTryConnect(() => {
-      abnormalCloseRetries.current = 0
-    })
+  const {
+    tryConnecting,
+    isConnecting,
+    numberOfConnectionAttempts,
+    abnormalCloseRetries,
+  } = useTryConnect()
   const safariObjectFitClass = useMemo(() => {
     // on safari we want to apply object-fit: fill to fix video resize bug
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
@@ -127,6 +135,8 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
             .length,
           hasConnection: Boolean(connection),
           connectionId: connection?.id,
+          websocketBufferedAmount: connection?.websocket?.bufferedAmount,
+          modelingApiCallId: connection?.apiCallId ?? null,
           connectionConnected: connection?.connected,
           peerConnectionState: connection?.peerConnection?.connectionState,
           iceConnectionState: connection?.peerConnection?.iceConnectionState,
@@ -320,6 +330,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
             // Take a screen shot after the page mounts and zoom to fit runs
             if (projectIORef && projectIORef.path) {
               createThumbnailPNGOnDesktop({
+                fileOperations,
                 projectDirectoryWithoutEndingSlash: projectIORef.path,
               })
             }
@@ -450,6 +461,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         setShowManualConnect(true)
       },
       engineCommandManager,
+      abnormalCloseRetries,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
@@ -458,9 +470,10 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       props.authToken,
       reportEngineDisconnect,
       settings,
+      abnormalCloseRetries,
     ]
   )
-  const abnormalCloseRetries = useOnWebsocketClose(onWebSocketCloseParams)
+  useOnWebsocketClose(onWebSocketCloseParams)
 
   const onVitestEngineOnline = useMemo(
     () => ({
@@ -525,41 +538,6 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   )
   useOnPeerConnectionClose(onPeerConnectionCloseParams)
 
-  const onPingPongTimeout = useMemo(
-    () => ({
-      callback: (eventType: EngineDisconnectEvent) => {
-        reportEngineDisconnect(eventType)
-        setShowManualConnect(false)
-        tryConnecting({
-          authToken: props.authToken || '',
-          videoWrapperRef,
-          setAppState,
-          videoRef,
-          setIsSceneReady,
-          isConnecting,
-          numberOfConnectionAttempts,
-          timeToConnect: TIME_TO_CONNECT,
-          setShowManualConnect,
-          sceneInfra,
-          settingsActor: settings.actor,
-        }).catch((e) => {
-          console.warn(e)
-          setShowManualConnect(true)
-        })
-      },
-      engineCommandManager,
-    }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      isConnecting,
-      numberOfConnectionAttempts,
-      props.authToken,
-      reportEngineDisconnect,
-      settings,
-    ]
-  )
-  useOnPingPongTimeout(onPingPongTimeout)
-
   const onWindowOnlineOfflineParams = useMemo(
     () => ({
       close: () => {
@@ -568,7 +546,10 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           label: 'ConnectionStream.tsx',
           message: 'window offline, calling tearDown()',
         })
-        engineCommandManager.tearDown()
+        engineCommandManager.tearDown({
+          route: 'window-offline',
+          initiatedBy: 'client',
+        })
       },
       connect: () => {
         if (engineCommandManager.lastConnectionError?.terminal) return
