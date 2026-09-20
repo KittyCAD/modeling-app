@@ -227,10 +227,10 @@ async function putInterruptedInitialUploadMetadata({
 }
 
 async function configurePersistedInitialUploadConflict({
-  remoteMain = 'base = 1\n',
+  remoteProjectTomlPrefix = '',
   remoteRevision = 'rev-1',
 }: {
-  remoteMain?: string
+  remoteProjectTomlPrefix?: string
   remoteRevision?: string
 } = {}) {
   const uploadedProjectToml = 'title = "Demo"\ndefault_file = "main.kcl"\n'
@@ -252,10 +252,10 @@ async function configurePersistedInitialUploadConflict({
   const server = installInitialUploadRecoveryFetchMock({
     remoteRevision,
     remoteFiles: [
-      { relativePath: 'main.kcl', contents: remoteMain },
+      { relativePath: 'main.kcl', contents: 'base = 1\n' },
       {
         relativePath: PROJECT_SETTINGS_FILE_NAME,
-        contents: `${uploadedProjectToml}\n[cloud."dev.zoo.dev"]\nproject_id = "${remoteProjectId}"\n`,
+        contents: `${remoteProjectTomlPrefix}${uploadedProjectToml}\n[cloud."dev.zoo.dev"]\nproject_id = "${remoteProjectId}"\n`,
       },
     ],
   })
@@ -380,9 +380,9 @@ describe('cloud sync live conflicts', () => {
       [`${projectPath}/${PROJECT_SETTINGS_FILE_NAME}`, uploadedProjectToml],
       [`${projectPath}/remove-me.txt`, 'temporary\n'],
     ])
-    configureCloudSyncLocalFileSystem(
-      createCloudSyncTestFs(files, { projectDirectory })
-    )
+    const cloudSyncFs = createCloudSyncTestFs(files, { projectDirectory })
+    const writeFile = vi.spyOn(cloudSyncFs, 'writeFile')
+    configureCloudSyncLocalFileSystem(cloudSyncFs)
 
     let markCreateStarted!: () => void
     let releaseCreate!: () => void
@@ -434,8 +434,9 @@ describe('cloud sync live conflicts', () => {
       server.remoteFiles().some((file) => file.relativePath === 'remove-me.txt')
     ).toBe(false)
     expect(files.get(`${projectPath}/${PROJECT_SETTINGS_FILE_NAME}`)).toBe(
-      `${editedProjectToml}\n[cloud."dev.zoo.dev"]\nproject_id = "${remoteProjectId}"\n`
+      editedProjectToml
     )
+    expect(writeFile).not.toHaveBeenCalled()
     await expect(getAllOutboxEntries()).resolves.toEqual([])
     await expect(
       getCloudSyncProjectMetadata(projectPath)
@@ -472,7 +473,7 @@ describe('cloud sync live conflicts', () => {
     expect(files.get(`${projectPath}/main.kcl`)).toBe('local = 2\n')
     expect(files.get(`${projectPath}/notes.txt`)).toBe('keep me\n')
     expect(files.get(`${projectPath}/${PROJECT_SETTINGS_FILE_NAME}`)).toBe(
-      `${editedProjectToml}\n[cloud."dev.zoo.dev"]\nproject_id = "${remoteProjectId}"\n`
+      editedProjectToml
     )
     await expect(getAllOutboxEntries()).resolves.toEqual([])
     await expect(
@@ -502,7 +503,7 @@ describe('cloud sync live conflicts', () => {
 
   it('retains a persisted conflict when the remote archive genuinely diverged', async () => {
     const { files, server } = await configurePersistedInitialUploadConflict({
-      remoteMain: 'cloud = 3\n',
+      remoteProjectTomlPrefix: '# remote-only note\n',
     })
 
     await syncCloudSyncProjectNow(projectPath).catch(() => undefined)

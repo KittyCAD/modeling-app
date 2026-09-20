@@ -2645,13 +2645,7 @@ async function remoteArchiveMatchesUploadedManifest(
   }
 
   const serverStamp = `\n[cloud."${environmentName}"]\nproject_id = "${remoteProjectId}"\n`
-  const candidates = [
-    remoteContents,
-    removeCloudProjectIdFromProjectTomlContents(
-      remoteContents,
-      environmentName
-    ),
-  ]
+  const candidates = [remoteContents]
   if (remoteContents.endsWith(serverStamp)) {
     candidates.push(remoteContents.slice(0, -serverStamp.length))
   }
@@ -3335,18 +3329,11 @@ async function syncProject(
         return
       }
 
-      const updatedRemoteManifest =
-        await projectManifestFromFiles(updatedRemoteFiles)
-      if (
-        await projectSyncCheckpointIsCurrent(
-          metadata.localProjectPath,
-          syncCheckpoint
-        )
-      ) {
-        await replaceLocalProjectWithFiles(
-          metadata.localProjectPath,
-          updatedRemoteFiles
-        )
+      const checkpointCurrent = await projectSyncCheckpointIsCurrent(
+        metadata.localProjectPath,
+        syncCheckpoint
+      )
+      if (checkpointCurrent) {
         await clearOutboxEntriesForProjectAtGeneration(
           metadata.localProjectPath,
           syncCheckpoint.outboxGeneration
@@ -3354,7 +3341,9 @@ async function syncProject(
       }
       await markProjectSynced(
         metadata,
-        updatedRemoteManifest,
+        checkpointCurrent
+          ? replacementAttempt.manifest
+          : await projectManifestFromFiles(updatedRemoteFiles),
         remoteSyncMetadata(currentRemoteProject, {
           useNowAsUpdatedAtFallback: true,
         })
