@@ -582,6 +582,76 @@ describe('cloud sync reliability', () => {
     await expect(getAllOutboxEntries()).resolves.toHaveLength(1)
   })
 
+  it('preserves Retry-After while polling an open project', async () => {
+    const baseFiles = [
+      projectFile('main.kcl', 'base = 1\n'),
+      projectFile(PROJECT_SETTINGS_FILE_NAME, projectToml),
+    ]
+    configureCloudSyncLocalFileSystem(
+      createCloudSyncTestFs(
+        new Map(
+          baseFiles.map((file) => [
+            `${projectPath}/${file.relativePath}`,
+            new TextDecoder().decode(file.data),
+          ])
+        ),
+        { projectDirectory }
+      )
+    )
+    await seedSyncedProject(baseFiles)
+    const projectReadTimes: number[] = []
+    fetchMock.mockImplementation(async (input, init) => {
+      if (
+        getFetchUrl(input) === remoteProjectUrl &&
+        getFetchMethod(input, init) === 'GET'
+      ) {
+        projectReadTimes.push(Date.now())
+        return projectReadTimes.length === 1
+          ? new Response(JSON.stringify({ message: 'Rate limited' }), {
+              status: 429,
+              headers: { 'Retry-After': '60' },
+            })
+          : jsonResponse(remoteProject())
+      }
+      return jsonResponse({})
+    })
+    vi.stubGlobal('fetch', fetchMock)
+    vi.useFakeTimers({
+      toFake: [
+        'Date',
+        'setTimeout',
+        'clearTimeout',
+        'setInterval',
+        'clearInterval',
+      ],
+    })
+    setCloudSyncOpenedProject({
+      projectPath,
+      libraryPath: projectDirectory,
+      libraryType: CLOUD_PROJECT_LIBRARY_TYPE,
+    })
+    configureCloudSyncEngine({
+      enabled: true,
+      baseUrl,
+      environmentName,
+      cloudProjectDirectoryPaths: [projectDirectory],
+      autoEnrollCloudLibraryProjects: true,
+    })
+
+    await vi.waitFor(() => {
+      expect(projectReadTimes).toHaveLength(1)
+      expect(cloudSyncStatus.value.state).toBe('failed')
+    })
+    await vi.advanceTimersByTimeAsync(60_000)
+    await vi.waitFor(() => {
+      expect(projectReadTimes.length).toBeGreaterThanOrEqual(2)
+      expect(cloudSyncStatus.value.state).toBe('idle')
+    })
+    expect(projectReadTimes[1] - projectReadTimes[0]).toBeGreaterThanOrEqual(
+      60_000
+    )
+  })
+
   it('refreshes a visible open project after its remote revision changes', async () => {
     const onProjectHydrated = vi.fn()
     const files = new Map([

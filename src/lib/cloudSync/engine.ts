@@ -3860,10 +3860,10 @@ function updateOpenProjectRefreshTimer() {
     return
   }
 
-  openProjectRefreshTimer = setInterval(
-    () => scheduleSync(0),
-    OPEN_PROJECT_REFRESH_INTERVAL_MS
-  )
+  openProjectRefreshTimer = setInterval(() => {
+    // Poll only when idle; preserve mutation debounce and failure backoff.
+    if (!syncTimer && !syncInProgress) scheduleSync(0)
+  }, OPEN_PROJECT_REFRESH_INTERVAL_MS)
 }
 
 // With no opened project, Home syncs the full cloud index. App.openProject()
