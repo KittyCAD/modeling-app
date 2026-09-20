@@ -3,6 +3,7 @@ import {
   type FileExplorerEntry,
   addPlaceHoldersForNewFileAndFolder,
 } from '@src/components/Explorer/utils'
+import { app } from '@src/lib/boot'
 import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -11,6 +12,7 @@ import {
   defaultKeymap,
 } from '@src/registry/extensions/keymap/defaultKeymap'
 import {
+  act,
   cleanup,
   fireEvent,
   render,
@@ -543,6 +545,9 @@ describe('ProjectExplorer', () => {
         'outline-primary'
       )
     })
+
+    // Background feature loading refreshes app commands while the tree is focused.
+    act(() => app.syncAppCommands())
 
     fireEvent.keyDown(window, { key: 'ArrowLeft' })
 
