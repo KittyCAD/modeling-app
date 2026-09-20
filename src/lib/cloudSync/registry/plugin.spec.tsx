@@ -1132,7 +1132,9 @@ describe('cloud sync project library', () => {
       fileOperationsTestItem,
       defineRegistryItem({
         id: 'test-cloud-project-creation',
-        provides: [provide(wasmPromiseValueSpec, {} as ModuleType)],
+        provides: [
+          provide(wasmPromiseValueSpec, Promise.resolve({} as ModuleType)),
+        ],
         providesServices: [provideService(cloudSyncService, cloudSync)],
       }),
       cloudSyncProjectLibraryType,
@@ -1145,13 +1147,13 @@ describe('cloud sync project library', () => {
         .get(CLOUD_PROJECT_LIBRARY_TYPE)?.operations?.createProject
       assert(create)
       const returned = vi.fn()
-      const pending = create
-        .run({
+      const pending = Promise.resolve(
+        create.run({
           library: { ...getDefaultCloudProjectLibrarySetting(), id: 'cloud' },
           requestedProjectName: projectWellFormed.name,
           requestedProjectTitle: projectWellFormed.title,
         })
-        .then(returned)
+      ).then(returned)
       await waitFor(() =>
         expect(cloudSync.syncNow).toHaveBeenCalledWith(projectWellFormed.path)
       )
