@@ -1558,7 +1558,7 @@ export const zookeeperManagerMachine = setup({
     }),
     [ZookeeperManagerTransitions.MessageSend]: fromPromise(async function (
       args: XSInput<ZookeeperManagerTransitions.MessageSend>
-    ): Promise<Partial<ZookeeperManagerContext>> {
+    ) {
       const { context, event } = args.input
       if (!isPresent<WebSocket>(context.ws))
         return Promise.reject(new Error('WebSocket not present'))
@@ -1617,19 +1617,15 @@ export const zookeeperManagerMachine = setup({
 
       context.ws.send(JSON.stringify(request))
 
-      const conversation: Conversation = {
-        exchanges: Array.from(context.conversation.exchanges),
-      }
-
-      conversation.exchanges.push({
+      const exchange: Exchange = {
         request,
         responses: [],
         deltasAggregated: '',
         startedAt: new Date(),
-      })
+      }
 
       return {
-        conversation,
+        exchange,
         fileFocusedOnInEditor: event.fileSelectedDuringPrompting.entry,
         projectNameCurrentlyOpened: requestData.body.project_name,
         attachmentsLoadedForCurrentPrompt:
@@ -2185,14 +2181,22 @@ export const zookeeperManagerMachine = setup({
                 onDone: {
                   target: S.Await,
                   actions: [
-                    assign(({ event, context }) => ({
-                      ...event.output,
-                      awaitingResponse: true,
-                      attachmentsLoadedForCurrentPrompt:
-                        event.output.attachmentsLoadedForCurrentPrompt ??
-                        context.attachmentsLoadedForCurrentPrompt,
-                      pendingBackendShutdown: context.pendingBackendShutdown,
-                    })),
+                    assign(({ event, context }) => {
+                      const { exchange, ...updates } = event.output
+                      return {
+                        ...updates,
+                        // Edit acknowledgements can compact earlier exchanges
+                        // while this prompt is being prepared.
+                        conversation: {
+                          ...context.conversation,
+                          exchanges: [
+                            ...(context.conversation?.exchanges ?? []),
+                            exchange,
+                          ],
+                        },
+                        awaitingResponse: true,
+                      }
+                    }),
                   ],
                 },
                 onError: { target: S.Await, actions: ['toastError'] },

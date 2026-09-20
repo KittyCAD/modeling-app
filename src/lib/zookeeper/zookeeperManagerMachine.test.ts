@@ -30,9 +30,21 @@ import {
   stopZookeeperManagerActor,
   ZOOKEEPER_RESUME_SUPERSEDED_CLOSE_CODE,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
+import * as zookeeperPromptRequest from '@src/lib/zookeeper/zookeeperPromptRequest'
 import { S } from '@src/machines/utils'
+import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createActor, fromPromise, waitFor } from 'xstate'
+
+// Prompt construction is stubbed in the race test, so these dependencies are
+// only forwarded by the manager. Avoid loading the editor or Wasm for them.
+vi.mock('@src/unitTestUtils', () => ({
+  buildTheWorldAndNoEngineConnection: vi.fn(async () => ({
+    kclManager: {},
+    engineCommandManager: { apiCallId: 'engine-api-call-id' },
+    instance: {},
+  })),
+}))
 
 function stubClientErrorFetch() {
   resetReportedClientErrorsForTests()
@@ -130,6 +142,7 @@ describe('completed live edit retention', () => {
   const actors: ReturnType<typeof createZookeeperManagerActor>[] = []
   afterEach(() => {
     for (const actor of actors.splice(0)) actor.stop()
+    vi.restoreAllMocks()
   })
 
   const edit = (code = 'width = 25'): MlCopilotServerMessage => ({
@@ -236,6 +249,87 @@ describe('completed live edit retention', () => {
       awaitingResponse: before.awaitingResponse,
     })
     expect(before.conversation?.exchanges[0].responses).toEqual([result, final])
+  })
+
+  it('preserves cleanup acknowledged while the next prompt is preparing', async () => {
+    const { actor, receive, applied, exchange } = await ready()
+    const result = edit()
+    const final = answer('First turn complete')
+    receive(result)
+    receive(final)
+    expect(exchange()?.responses).toEqual([result, final])
+
+    let finishPreparation!: (
+      request: zookeeperPromptRequest.ZookeeperUserPromptRequest
+    ) => void
+    const preparation =
+      new Promise<zookeeperPromptRequest.ZookeeperUserPromptRequest>(
+        (resolve) => {
+          finishPreparation = resolve
+        }
+      )
+    const prepare = vi
+      .spyOn(zookeeperPromptRequest, 'constructZookeeperUserPromptRequest')
+      .mockReturnValueOnce(preparation)
+    const { kclManager, engineCommandManager, instance } =
+      await buildTheWorldAndNoEngineConnection(true)
+    const currentFile = {
+      entry: { name: 'main.kcl', path: '/demo/main.kcl', children: null },
+      content: 'width = 25',
+    }
+    actor.send({
+      type: ZookeeperManagerTransitions.MessageSend,
+      prompt: 'Next turn',
+      projectForPromptOutput: {
+        name: 'demo',
+        path: '/demo',
+        children: [currentFile.entry],
+        default_file: currentFile.entry.path,
+        directory_count: 0,
+        kcl_file_count: 1,
+        metadata: null,
+        readWriteAccess: true,
+      },
+      applicationProjectDirectory: '/',
+      fileSelectedDuringPrompting: currentFile,
+      projectFiles: [],
+      selections: null,
+      artifactGraph: new Map(),
+      kclManager,
+      engineCommandManager,
+      wasmInstance: instance,
+    })
+    await vi.waitFor(() => expect(prepare).toHaveBeenCalledOnce())
+    applied(result)
+    expect(exchange()?.responses).toEqual([final])
+
+    finishPreparation({
+      body: { prompt: 'Next turn', project_name: 'demo' },
+      files: [],
+    })
+    await waitFor(actor, (state) =>
+      state.matches({
+        [ZookeeperManagerStates.Ready]: {
+          [ZookeeperManagerStates.Request]: S.Await,
+        },
+      })
+    )
+    expect.soft(exchange()?.responses).toEqual([final])
+    expect(actor.getSnapshot().context.conversation?.exchanges).toHaveLength(2)
+    expect(
+      actor.getSnapshot().context.conversation?.exchanges[1]
+    ).toMatchObject({
+      request: { type: 'user', content: 'Next turn', project_name: 'demo' },
+      responses: [],
+    })
+
+    const nextFinal = answer('Second turn complete')
+    receive(nextFinal)
+    expect.soft(exchange()?.responses).toEqual([final])
+    expect(exchange()?.appliedEditResponses).toBeUndefined()
+    expect(
+      actor.getSnapshot().context.conversation?.exchanges[1].responses
+    ).toEqual([nextFinal])
   })
 
   it.each([undefined, '', ' \n '])(
