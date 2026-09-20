@@ -11,9 +11,11 @@ description: Operations executed cassette.kcl
         "type": "Number",
         "value": 0.25,
         "ty": {
-          "in": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "in"
+          }
         }
       },
       "visibility": "default",
@@ -40,9 +42,11 @@ description: Operations executed cassette.kcl
         "type": "Number",
         "value": 0.09375,
         "ty": {
-          "in": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "in"
+          }
         }
       },
       "visibility": "default",
@@ -69,9 +73,11 @@ description: Operations executed cassette.kcl
         "type": "Number",
         "value": 0.065,
         "ty": {
-          "in": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "in"
+          }
         }
       },
       "visibility": "default",
@@ -98,9 +104,11 @@ description: Operations executed cassette.kcl
         "type": "Number",
         "value": 0.185,
         "ty": {
-          "in": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "in"
+          }
         }
       },
       "visibility": "default",
@@ -127,9 +135,11 @@ description: Operations executed cassette.kcl
         "type": "Number",
         "value": 12.0,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "default",
@@ -156,9 +166,11 @@ description: Operations executed cassette.kcl
         "type": "Number",
         "value": 6.0,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "default",
@@ -185,9 +197,11 @@ description: Operations executed cassette.kcl
         "type": "Number",
         "value": 5.746,
         "ty": {
-          "mm": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "mm"
+          }
         }
       },
       "visibility": "default",
@@ -214,9 +228,11 @@ description: Operations executed cassette.kcl
         "type": "Number",
         "value": 0.046875,
         "ty": {
-          "in": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "in"
+          }
         }
       },
       "visibility": "default",
@@ -244,8 +260,10 @@ description: Operations executed cassette.kcl
         "value": 7.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -281,9 +299,11 @@ description: Operations executed cassette.kcl
             "type": "Number",
             "value": -0.65625,
             "ty": {
-              "in": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "in"
+              }
             }
           },
           "sourceRange": []
@@ -343,18 +363,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -369,18 +393,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 5.908846518073248,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 1.041889066001582,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -395,18 +423,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 6.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -456,18 +488,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 5.658705348808148,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.9977824288741818,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -482,18 +518,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 5.908846518073248,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 1.041889066001582,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -543,18 +583,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -569,18 +613,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 5.39947379903583,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 1.9652477435492925,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -595,18 +643,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 5.658705348808148,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.9977824288741818,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -656,18 +708,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 5.638155724715451,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 2.0521208599540124,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -682,18 +738,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 5.39947379903583,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 1.9652477435492925,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -789,9 +849,11 @@ description: Operations executed cassette.kcl
             "type": "Number",
             "value": 0.65625,
             "ty": {
-              "in": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "in"
+              }
             }
           },
           "sourceRange": []
@@ -825,8 +887,10 @@ description: Operations executed cassette.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -838,8 +902,10 @@ description: Operations executed cassette.kcl
               "value": 11.0,
               "ty": {
                 "type": "Default",
-                "len": "in",
-                "angle": "degrees"
+                "value": {
+                  "len": "in",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -869,9 +935,11 @@ description: Operations executed cassette.kcl
         "type": "Number",
         "value": 32.72727272727273,
         "ty": {
-          "degrees": null,
           "type": "Known",
-          "type": "Angle"
+          "value": {
+            "type": "Angle",
+            "value": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -911,9 +979,11 @@ description: Operations executed cassette.kcl
         "type": "Number",
         "value": 0.44368319161052794,
         "ty": {
-          "in": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "in"
+          }
         }
       },
       "visibility": "default",
@@ -953,9 +1023,11 @@ description: Operations executed cassette.kcl
         "type": "Number",
         "value": 122.72727272727272,
         "ty": {
-          "degrees": null,
           "type": "Known",
-          "type": "Angle"
+          "value": {
+            "type": "Angle",
+            "value": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -995,9 +1067,11 @@ description: Operations executed cassette.kcl
         "type": "Number",
         "value": 60.72727272727273,
         "ty": {
-          "degrees": null,
           "type": "Known",
-          "type": "Angle"
+          "value": {
+            "type": "Angle",
+            "value": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -1046,9 +1120,11 @@ description: Operations executed cassette.kcl
             "type": "Number",
             "value": -0.09375,
             "ty": {
-              "in": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "in"
+              }
             }
           },
           "sourceRange": []
@@ -1134,18 +1210,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.3085229872466286,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.2103133832077953,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1160,18 +1240,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.4698988792858837,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.1198544341284771,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1186,18 +1270,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.4085415384759141,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.054681479634026794,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1260,18 +1348,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1286,18 +1378,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.4601022915155603,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.15321854808252586,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1312,18 +1408,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.4698988792858837,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.1198544341284771,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1386,18 +1486,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.37325005240017056,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -0.010126756596375658,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1412,18 +1516,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.37325005240017056,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.17487324340362434,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1438,18 +1546,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.4601022915155603,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.15321854808252586,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1512,18 +1624,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.3732500524001705,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.23987324340362434,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1545,18 +1661,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.31412397270212683,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.266875219248747,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1571,18 +1691,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.37325005240017056,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.17487324340362434,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1704,9 +1828,11 @@ description: Operations executed cassette.kcl
             "type": "Number",
             "value": 0.046875,
             "ty": {
-              "in": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "in"
+              }
             }
           },
           "sourceRange": []
@@ -1851,9 +1977,11 @@ description: Operations executed cassette.kcl
             "type": "Number",
             "value": -0.046875,
             "ty": {
-              "in": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "in"
+              }
             }
           },
           "sourceRange": []
@@ -1939,18 +2067,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -1965,18 +2097,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 7.800000000000001,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2039,18 +2175,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2065,18 +2205,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 6.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -2194,9 +2338,11 @@ description: Operations executed cassette.kcl
             "type": "Number",
             "value": 0.046875,
             "ty": {
-              "in": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "in"
+              }
             }
           },
           "sourceRange": []
@@ -2382,8 +2528,10 @@ description: Operations executed cassette.kcl
             "value": 2.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2395,8 +2543,10 @@ description: Operations executed cassette.kcl
               "value": 15.0,
               "ty": {
                 "type": "Default",
-                "len": "in",
-                "angle": "degrees"
+                "value": {
+                  "len": "in",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -2426,9 +2576,11 @@ description: Operations executed cassette.kcl
         "type": "Number",
         "value": 24.0,
         "ty": {
-          "degrees": null,
           "type": "Known",
-          "type": "Angle"
+          "value": {
+            "type": "Angle",
+            "value": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -2468,9 +2620,11 @@ description: Operations executed cassette.kcl
         "type": "Number",
         "value": 0.6012167930930165,
         "ty": {
-          "in": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "in"
+          }
         }
       },
       "visibility": "default",
@@ -2510,9 +2664,11 @@ description: Operations executed cassette.kcl
         "type": "Number",
         "value": 114.0,
         "ty": {
-          "degrees": null,
           "type": "Known",
-          "type": "Angle"
+          "value": {
+            "type": "Angle",
+            "value": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -2552,9 +2708,11 @@ description: Operations executed cassette.kcl
         "type": "Number",
         "value": 52.0,
         "ty": {
-          "degrees": null,
           "type": "Known",
-          "type": "Angle"
+          "value": {
+            "type": "Angle",
+            "value": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -2603,9 +2761,11 @@ description: Operations executed cassette.kcl
             "type": "Number",
             "value": -0.1875,
             "ty": {
-              "in": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "in"
+              }
             }
           },
           "sourceRange": []
@@ -2691,18 +2851,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.4995326323240664,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.22838636441065022,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2717,18 +2881,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.6453146217413099,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.11448899147540344,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2743,18 +2911,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.5747789112930894,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.05938045474676906,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2817,18 +2989,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2843,18 +3019,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.6360911095039664,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.15788220486235288,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2869,18 +3049,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.6453146217413099,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.11448899147540344,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2943,18 +3127,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.5492388703885767,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -0.00546309981654855,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2969,18 +3157,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.5492388703885767,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.17953690018345142,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2995,18 +3187,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.6360911095039664,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.15788220486235288,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -3069,18 +3265,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.5492388703885765,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.24453690018345142,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -3102,18 +3302,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.500934456732546,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.28803038959677724,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -3128,18 +3332,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.5492388703885767,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.17953690018345142,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -3261,9 +3469,11 @@ description: Operations executed cassette.kcl
             "type": "Number",
             "value": 0.046875,
             "ty": {
-              "in": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "in"
+              }
             }
           },
           "sourceRange": []
@@ -3408,9 +3618,11 @@ description: Operations executed cassette.kcl
             "type": "Number",
             "value": -0.140625,
             "ty": {
-              "in": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "in"
+              }
             }
           },
           "sourceRange": []
@@ -3496,18 +3708,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3522,18 +3738,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 7.800000000000001,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3596,18 +3816,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3622,18 +3846,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 6.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -3751,9 +3979,11 @@ description: Operations executed cassette.kcl
             "type": "Number",
             "value": 0.046875,
             "ty": {
-              "in": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "in"
+              }
             }
           },
           "sourceRange": []
@@ -3939,8 +4169,10 @@ description: Operations executed cassette.kcl
             "value": 3.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3952,8 +4184,10 @@ description: Operations executed cassette.kcl
               "value": 19.0,
               "ty": {
                 "type": "Default",
-                "len": "in",
-                "angle": "degrees"
+                "value": {
+                  "len": "in",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -3983,9 +4217,11 @@ description: Operations executed cassette.kcl
         "type": "Number",
         "value": 18.94736842105263,
         "ty": {
-          "degrees": null,
           "type": "Known",
-          "type": "Angle"
+          "value": {
+            "type": "Angle",
+            "value": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -4025,9 +4261,11 @@ description: Operations executed cassette.kcl
         "type": "Number",
         "value": 0.7594417276217825,
         "ty": {
-          "in": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "in"
+          }
         }
       },
       "visibility": "default",
@@ -4067,9 +4305,11 @@ description: Operations executed cassette.kcl
         "type": "Number",
         "value": 108.94736842105263,
         "ty": {
-          "degrees": null,
           "type": "Known",
-          "type": "Angle"
+          "value": {
+            "type": "Angle",
+            "value": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -4109,9 +4349,11 @@ description: Operations executed cassette.kcl
         "type": "Number",
         "value": 46.94736842105263,
         "ty": {
-          "degrees": null,
           "type": "Known",
-          "type": "Angle"
+          "value": {
+            "type": "Angle",
+            "value": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -4160,9 +4402,11 @@ description: Operations executed cassette.kcl
             "type": "Number",
             "value": -0.28125,
             "ty": {
-              "in": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "in"
+              }
             }
           },
           "sourceRange": []
@@ -4248,18 +4492,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.6782668603206117,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.23645431042515866,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4274,18 +4522,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.8134513392825702,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.11016038084901558,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4300,18 +4552,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.7383362621234781,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.061478120710541255,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4374,18 +4630,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4400,18 +4660,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.8051453191669887,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.15993563052958204,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4426,18 +4690,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.8134513392825702,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.11016038084901558,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4500,18 +4768,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.718293080051599,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -0.0034096741493193916,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4526,18 +4798,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.7182930800515991,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.18159032585068058,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4552,18 +4828,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.8051453191669887,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.15993563052958204,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4626,18 +4906,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.718293080051599,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.24659032585068058,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4659,18 +4943,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.6783692537267706,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.29788445896144616,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4685,18 +4973,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.7182930800515991,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.18159032585068058,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4818,9 +5110,11 @@ description: Operations executed cassette.kcl
             "type": "Number",
             "value": 0.046875,
             "ty": {
-              "in": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "in"
+              }
             }
           },
           "sourceRange": []
@@ -4965,9 +5259,11 @@ description: Operations executed cassette.kcl
             "type": "Number",
             "value": -0.234375,
             "ty": {
-              "in": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "in"
+              }
             }
           },
           "sourceRange": []
@@ -5053,18 +5349,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5079,18 +5379,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 7.800000000000001,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5153,18 +5457,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5179,18 +5487,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 6.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -5308,9 +5620,11 @@ description: Operations executed cassette.kcl
             "type": "Number",
             "value": 0.046875,
             "ty": {
-              "in": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "in"
+              }
             }
           },
           "sourceRange": []
@@ -5496,8 +5810,10 @@ description: Operations executed cassette.kcl
             "value": 4.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -5509,8 +5825,10 @@ description: Operations executed cassette.kcl
               "value": 23.0,
               "ty": {
                 "type": "Default",
-                "len": "in",
-                "angle": "degrees"
+                "value": {
+                  "len": "in",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -5540,9 +5858,11 @@ description: Operations executed cassette.kcl
         "type": "Number",
         "value": 15.652173913043478,
         "ty": {
-          "degrees": null,
           "type": "Known",
-          "type": "Angle"
+          "value": {
+            "type": "Angle",
+            "value": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -5582,9 +5902,11 @@ description: Operations executed cassette.kcl
         "type": "Number",
         "value": 0.917992774512989,
         "ty": {
-          "in": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "in"
+          }
         }
       },
       "visibility": "default",
@@ -5624,9 +5946,11 @@ description: Operations executed cassette.kcl
         "type": "Number",
         "value": 105.65217391304348,
         "ty": {
-          "degrees": null,
           "type": "Known",
-          "type": "Angle"
+          "value": {
+            "type": "Angle",
+            "value": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -5666,9 +5990,11 @@ description: Operations executed cassette.kcl
         "type": "Number",
         "value": 43.65217391304348,
         "ty": {
-          "degrees": null,
           "type": "Known",
-          "type": "Angle"
+          "value": {
+            "type": "Angle",
+            "value": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -5717,9 +6043,11 @@ description: Operations executed cassette.kcl
             "type": "Number",
             "value": -0.375,
             "ty": {
-              "in": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "in"
+              }
             }
           },
           "sourceRange": []
@@ -5805,18 +6133,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.8505435817237329,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.24072932183694984,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -5831,18 +6163,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.9782451399988344,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.10687375783563219,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -5857,18 +6193,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.9004559843877824,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.06258962367760695,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -5931,18 +6271,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -5957,18 +6301,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.9708033513543172,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.16101679118798418,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -5983,18 +6331,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.9782451399988344,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.10687375783563219,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -6057,18 +6409,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.8839511122389273,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -0.0023285134909173666,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -6083,18 +6439,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.8839511122389274,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.18267148650908266,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -6109,18 +6469,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.9708033513543172,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.16101679118798418,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -6183,18 +6547,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.8839511122389274,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.2476714865090827,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -6216,18 +6584,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.8501781554866241,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.30320874780460444,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -6242,18 +6614,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.8839511122389274,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.18267148650908266,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -6375,9 +6751,11 @@ description: Operations executed cassette.kcl
             "type": "Number",
             "value": 0.046875,
             "ty": {
-              "in": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "in"
+              }
             }
           },
           "sourceRange": []
@@ -6522,9 +6900,11 @@ description: Operations executed cassette.kcl
             "type": "Number",
             "value": -0.328125,
             "ty": {
-              "in": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "in"
+              }
             }
           },
           "sourceRange": []
@@ -6610,18 +6990,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6636,18 +7020,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 7.800000000000001,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6710,18 +7098,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6736,18 +7128,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 6.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -6865,9 +7261,11 @@ description: Operations executed cassette.kcl
             "type": "Number",
             "value": 0.046875,
             "ty": {
-              "in": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "in"
+              }
             }
           },
           "sourceRange": []
@@ -7053,8 +7451,10 @@ description: Operations executed cassette.kcl
             "value": 5.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -7066,8 +7466,10 @@ description: Operations executed cassette.kcl
               "value": 27.0,
               "ty": {
                 "type": "Default",
-                "len": "in",
-                "angle": "degrees"
+                "value": {
+                  "len": "in",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -7097,9 +7499,11 @@ description: Operations executed cassette.kcl
         "type": "Number",
         "value": 13.333333333333334,
         "ty": {
-          "degrees": null,
           "type": "Known",
-          "type": "Angle"
+          "value": {
+            "type": "Angle",
+            "value": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -7139,9 +7543,11 @@ description: Operations executed cassette.kcl
         "type": "Number",
         "value": 1.0767237685597384,
         "ty": {
-          "in": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "in"
+          }
         }
       },
       "visibility": "default",
@@ -7181,9 +7587,11 @@ description: Operations executed cassette.kcl
         "type": "Number",
         "value": 103.33333333333333,
         "ty": {
-          "degrees": null,
           "type": "Known",
-          "type": "Angle"
+          "value": {
+            "type": "Angle",
+            "value": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -7223,9 +7631,11 @@ description: Operations executed cassette.kcl
         "type": "Number",
         "value": 41.333333333333336,
         "ty": {
-          "degrees": null,
           "type": "Known",
-          "type": "Angle"
+          "value": {
+            "type": "Angle",
+            "value": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -7274,9 +7684,11 @@ description: Operations executed cassette.kcl
             "type": "Number",
             "value": -0.46875,
             "ty": {
-              "in": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "in"
+              }
             }
           },
           "sourceRange": []
@@ -7362,18 +7774,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 1.0190698008741284,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.24326121764495595,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -7388,18 +7804,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 1.1412509463139449,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.1043484115433786,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -7414,18 +7834,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 1.0617337369614799,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.06324791658768855,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -7488,18 +7912,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -7514,18 +7942,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 1.1345527791438206,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.16165489411438724,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -7540,18 +7972,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 1.1412509463139449,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.1043484115433786,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -7614,18 +8050,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 1.0477005400284307,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -0.0016904105645142442,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -7640,18 +8080,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 1.047700540028431,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.18330958943548575,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -7666,18 +8110,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 1.1345527791438206,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.16165489411438724,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -7740,18 +8188,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 1.0477005400284307,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.24830958943548573,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -7773,18 +8225,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 1.018528593315401,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.30639571105650754,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -7799,18 +8255,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 1.047700540028431,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.18330958943548575,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -7932,9 +8392,11 @@ description: Operations executed cassette.kcl
             "type": "Number",
             "value": 0.046875,
             "ty": {
-              "in": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "in"
+              }
             }
           },
           "sourceRange": []
@@ -8079,9 +8541,11 @@ description: Operations executed cassette.kcl
             "type": "Number",
             "value": -0.421875,
             "ty": {
-              "in": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "in"
+              }
             }
           },
           "sourceRange": []
@@ -8167,18 +8631,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8193,18 +8661,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 7.800000000000001,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8267,18 +8739,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8293,18 +8769,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 6.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -8422,9 +8902,11 @@ description: Operations executed cassette.kcl
             "type": "Number",
             "value": 0.046875,
             "ty": {
-              "in": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "in"
+              }
             }
           },
           "sourceRange": []
@@ -8610,8 +9092,10 @@ description: Operations executed cassette.kcl
             "value": 6.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -8623,8 +9107,10 @@ description: Operations executed cassette.kcl
               "value": 31.0,
               "ty": {
                 "type": "Default",
-                "len": "in",
-                "angle": "degrees"
+                "value": {
+                  "len": "in",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -8654,9 +9140,11 @@ description: Operations executed cassette.kcl
         "type": "Number",
         "value": 11.612903225806452,
         "ty": {
-          "degrees": null,
           "type": "Known",
-          "type": "Angle"
+          "value": {
+            "type": "Angle",
+            "value": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -8696,9 +9184,11 @@ description: Operations executed cassette.kcl
         "type": "Number",
         "value": 1.2355646267962057,
         "ty": {
-          "in": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "in"
+          }
         }
       },
       "visibility": "default",
@@ -8738,9 +9228,11 @@ description: Operations executed cassette.kcl
         "type": "Number",
         "value": 101.61290322580645,
         "ty": {
-          "degrees": null,
           "type": "Known",
-          "type": "Angle"
+          "value": {
+            "type": "Angle",
+            "value": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -8780,9 +9272,11 @@ description: Operations executed cassette.kcl
         "type": "Number",
         "value": 39.61290322580645,
         "ty": {
-          "degrees": null,
           "type": "Known",
-          "type": "Angle"
+          "value": {
+            "type": "Angle",
+            "value": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -8831,9 +9325,11 @@ description: Operations executed cassette.kcl
             "type": "Number",
             "value": -0.5625,
             "ty": {
-              "in": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "in"
+              }
             }
           },
           "sourceRange": []
@@ -8919,18 +9415,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 1.1852399967740406,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.24488248531312362,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -8945,18 +9445,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 1.3031955335476801,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.10236409581744282,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -8971,18 +9475,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 1.2224802229904428,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.06366944618141215,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -9045,18 +9553,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -9071,18 +9583,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 1.2971247854147372,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.16206263552687528,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -9097,18 +9613,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 1.3031955335476801,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.10236409581744282,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -9171,18 +9691,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 1.2102725462993476,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -0.001282669152026239,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -9197,18 +9721,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 1.2102725462993478,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.18371733084797376,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -9223,18 +9751,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 1.2971247854147372,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.16206263552687528,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -9297,18 +9829,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 1.2102725462993476,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.2487173308479738,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -9330,18 +9866,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 1.184639415716982,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.3084495886032888,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -9356,18 +9896,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 1.2102725462993478,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.18371733084797376,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -9489,9 +10033,11 @@ description: Operations executed cassette.kcl
             "type": "Number",
             "value": 0.046875,
             "ty": {
-              "in": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "in"
+              }
             }
           },
           "sourceRange": []
@@ -9636,9 +10182,11 @@ description: Operations executed cassette.kcl
             "type": "Number",
             "value": -0.515625,
             "ty": {
-              "in": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "in"
+              }
             }
           },
           "sourceRange": []
@@ -9724,18 +10272,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9750,18 +10302,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 7.800000000000001,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9824,18 +10380,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9850,18 +10410,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 6.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -9979,9 +10543,11 @@ description: Operations executed cassette.kcl
             "type": "Number",
             "value": 0.046875,
             "ty": {
-              "in": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "in"
+              }
             }
           },
           "sourceRange": []
@@ -10167,8 +10733,10 @@ description: Operations executed cassette.kcl
             "value": 7.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -10180,8 +10748,10 @@ description: Operations executed cassette.kcl
               "value": 36.0,
               "ty": {
                 "type": "Default",
-                "len": "in",
-                "angle": "degrees"
+                "value": {
+                  "len": "in",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -10211,9 +10781,11 @@ description: Operations executed cassette.kcl
         "type": "Number",
         "value": 10.0,
         "ty": {
-          "degrees": null,
           "type": "Known",
-          "type": "Angle"
+          "value": {
+            "type": "Angle",
+            "value": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -10253,9 +10825,11 @@ description: Operations executed cassette.kcl
         "type": "Number",
         "value": 1.434214155708732,
         "ty": {
-          "in": null,
           "type": "Known",
-          "type": "Length"
+          "value": {
+            "type": "Length",
+            "value": "in"
+          }
         }
       },
       "visibility": "default",
@@ -10295,9 +10869,11 @@ description: Operations executed cassette.kcl
         "type": "Number",
         "value": 100.0,
         "ty": {
-          "degrees": null,
           "type": "Known",
-          "type": "Angle"
+          "value": {
+            "type": "Angle",
+            "value": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -10337,9 +10913,11 @@ description: Operations executed cassette.kcl
         "type": "Number",
         "value": 38.0,
         "ty": {
-          "degrees": null,
           "type": "Known",
-          "type": "Angle"
+          "value": {
+            "type": "Angle",
+            "value": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -10388,9 +10966,11 @@ description: Operations executed cassette.kcl
             "type": "Number",
             "value": -0.65625,
             "ty": {
-              "in": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "in"
+              }
             }
           },
           "sourceRange": []
@@ -10476,18 +11056,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 1.3908021112919995,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.246201938253052,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -10502,18 +11086,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 1.5046994842272463,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.10041994883580846,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -10528,18 +11116,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 1.4229270241603815,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.06401250394579353,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -10602,18 +11194,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -10628,18 +11224,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 1.4992774591372073,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.16239397920183787,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -10654,18 +11254,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 1.5046994842272463,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.10041994883580846,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -10728,18 +11332,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 1.4124252200218175,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": -0.0009513254770635859,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -10754,18 +11362,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 1.4124252200218173,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.18404867452293638,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -10780,18 +11392,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 1.4992774591372073,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.16239397920183787,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -10854,18 +11470,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 1.4124252200218175,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.2490486745229364,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -10887,18 +11507,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 1.390193910705649,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.3101286948740204,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -10913,18 +11537,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 1.4124252200218173,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.18404867452293638,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -11046,9 +11674,11 @@ description: Operations executed cassette.kcl
             "type": "Number",
             "value": 0.046875,
             "ty": {
-              "in": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "in"
+              }
             }
           },
           "sourceRange": []
@@ -11193,9 +11823,11 @@ description: Operations executed cassette.kcl
             "type": "Number",
             "value": -0.609375,
             "ty": {
-              "in": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "in"
+              }
             }
           },
           "sourceRange": []
@@ -11281,18 +11913,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11307,18 +11943,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 7.800000000000001,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11381,18 +12021,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11407,18 +12051,22 @@ description: Operations executed cassette.kcl
                 "type": "Number",
                 "value": 6.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               },
               {
                 "type": "Number",
                 "value": 0.0,
                 "ty": {
-                  "mm": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "mm"
+                  }
                 }
               }
             ]
@@ -11536,9 +12184,11 @@ description: Operations executed cassette.kcl
             "type": "Number",
             "value": 0.046875,
             "ty": {
-              "in": null,
               "type": "Known",
-              "type": "Length"
+              "value": {
+                "type": "Length",
+                "value": "in"
+              }
             }
           },
           "sourceRange": []
@@ -11801,7 +12451,9 @@ description: Operations executed cassette.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -11829,7 +12481,9 @@ description: Operations executed cassette.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",

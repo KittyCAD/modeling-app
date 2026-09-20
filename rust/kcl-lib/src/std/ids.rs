@@ -173,14 +173,15 @@ async fn inner_edge_id(
         };
         let edge_id = inner_resp.edge_id;
 
-        if let Ok(meta) = edge::get_refactor_meta_for_edge(
-            exec_state,
-            edge_id,
-            &args,
-            args.source_range,
-            EdgeRefactorStdlibFn::EdgeId,
-        )
-        .await
+        if crate::runtime_flags::z0006_refactor_metadata_enabled()
+            && let Ok(meta) = edge::get_refactor_meta_for_edge(
+                exec_state,
+                edge_id,
+                &args,
+                args.source_range,
+                EdgeRefactorStdlibFn::EdgeId,
+            )
+            .await
         {
             exec_state.record_edge_refactor_meta(meta);
         }
@@ -237,14 +238,15 @@ async fn inner_edge_id_by_point(
             )));
         };
 
-        if let Ok(meta) = edge::get_refactor_meta_for_edge(
-            exec_state,
-            edge_id,
-            &args,
-            args.source_range,
-            EdgeRefactorStdlibFn::EdgeId,
-        )
-        .await
+        if crate::runtime_flags::z0006_refactor_metadata_enabled()
+            && let Ok(meta) = edge::get_refactor_meta_for_edge(
+                exec_state,
+                edge_id,
+                &args,
+                args.source_range,
+                EdgeRefactorStdlibFn::EdgeId,
+            )
+            .await
         {
             exec_state.record_edge_refactor_meta(meta);
         }

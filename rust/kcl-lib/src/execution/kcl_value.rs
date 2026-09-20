@@ -17,6 +17,7 @@ use crate::execution::BoundedEdge;
 use crate::execution::CameraView;
 use crate::execution::EnvironmentRef;
 use crate::execution::ExecState;
+use crate::execution::ExecutorContext;
 use crate::execution::Face;
 use crate::execution::GdtAnnotation;
 use crate::execution::Geometry;
@@ -414,13 +415,17 @@ impl FunctionSource {
     /// and perform no name resolution of their own. A name that does not
     /// resolve is an error at the declaration, and an experimental type warns
     /// here, once, rather than at every call.
-    pub(crate) fn resolve_signature_types(&mut self, exec_state: &mut ExecState) -> Result<(), KclError> {
+    pub(crate) async fn resolve_signature_types(
+        &mut self,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<(), KclError> {
         for param in &self.ast.params {
             let Some(ty) = &param.param_type else {
                 continue;
             };
-            let resolved = RuntimeType::from_parsed(ty.inner.clone(), exec_state, ty.as_source_range(), false, false)
-                .map_err(|e| KclError::new_semantic(e.into()))?;
+            let resolved =
+                RuntimeType::from_parsed(ty.inner.clone(), exec_state, ctx, ty.as_source_range(), false, false).await?;
             if param.labeled {
                 if let Some(named) = self.named_args.get_mut(&param.identifier.name) {
                     named.resolved_ty = Some(resolved);
@@ -432,8 +437,15 @@ impl FunctionSource {
 
         if let Some(ret_ty) = &self.return_type {
             self.resolved_return_ty = Some(
-                RuntimeType::from_parsed(ret_ty.inner.clone(), exec_state, ret_ty.as_source_range(), false, false)
-                    .map_err(|e| KclError::new_semantic(e.into()))?,
+                RuntimeType::from_parsed(
+                    ret_ty.inner.clone(),
+                    exec_state,
+                    ctx,
+                    ret_ty.as_source_range(),
+                    false,
+                    false,
+                )
+                .await?,
             );
         }
 
@@ -458,6 +470,19 @@ pub enum TypeDef {
     /// one declaration object, and so that reading the type out of memory,
     /// which clones the `KclValue`, does not copy the variant list.
     Enum(Arc<EnumTypeDef>),
+}
+
+impl TypeDef {
+    /// Converts a stored type definition into the type used for runtime checks.
+    /// Enum definitions reduce to their nominal identity, so callers that need
+    /// constructor metadata must retain the `Enum` definition instead.
+    pub(super) fn into_runtime_type(self) -> RuntimeType {
+        match self {
+            Self::RustRepr(ty, _) => RuntimeType::Primitive(ty),
+            Self::Alias(ty) => ty,
+            Self::Enum(def) => RuntimeType::Enum(def.id().clone()),
+        }
+    }
 }
 
 /// The nominal identity of an enum.

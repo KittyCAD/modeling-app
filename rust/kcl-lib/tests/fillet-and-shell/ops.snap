@@ -12,8 +12,10 @@ description: Operations executed fillet-and-shell.kcl
         "value": 30.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -41,8 +43,10 @@ description: Operations executed fillet-and-shell.kcl
         "value": 65.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -70,8 +74,10 @@ description: Operations executed fillet-and-shell.kcl
         "value": 1.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -99,8 +105,10 @@ description: Operations executed fillet-and-shell.kcl
         "value": 4.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -128,8 +136,10 @@ description: Operations executed fillet-and-shell.kcl
         "value": 4.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -157,8 +167,10 @@ description: Operations executed fillet-and-shell.kcl
         "value": 38.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -186,8 +198,10 @@ description: Operations executed fillet-and-shell.kcl
         "value": 73.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -215,8 +229,10 @@ description: Operations executed fillet-and-shell.kcl
         "value": 8.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -244,8 +260,10 @@ description: Operations executed fillet-and-shell.kcl
         "value": 23.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -273,8 +291,10 @@ description: Operations executed fillet-and-shell.kcl
         "value": 58.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -302,8 +322,10 @@ description: Operations executed fillet-and-shell.kcl
         "value": 12.4,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -331,8 +353,10 @@ description: Operations executed fillet-and-shell.kcl
         "value": 41.4,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -360,8 +384,10 @@ description: Operations executed fillet-and-shell.kcl
         "value": 54.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -389,8 +415,10 @@ description: Operations executed fillet-and-shell.kcl
         "value": 11.2,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -418,8 +446,10 @@ description: Operations executed fillet-and-shell.kcl
         "value": 7.4,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -447,8 +477,10 @@ description: Operations executed fillet-and-shell.kcl
         "value": 4.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -549,8 +581,10 @@ description: Operations executed fillet-and-shell.kcl
             "value": 8.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -595,8 +629,10 @@ description: Operations executed fillet-and-shell.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -660,8 +696,10 @@ description: Operations executed fillet-and-shell.kcl
               "value": 4.0,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -672,8 +710,10 @@ description: Operations executed fillet-and-shell.kcl
               "value": 7.5,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -684,8 +724,10 @@ description: Operations executed fillet-and-shell.kcl
               "value": 7.5,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -824,8 +866,10 @@ description: Operations executed fillet-and-shell.kcl
             "value": 4.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -881,8 +925,10 @@ description: Operations executed fillet-and-shell.kcl
               "value": 4.0,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -893,8 +939,10 @@ description: Operations executed fillet-and-shell.kcl
               "value": 7.5,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -905,8 +953,10 @@ description: Operations executed fillet-and-shell.kcl
               "value": 65.5,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -1045,8 +1095,10 @@ description: Operations executed fillet-and-shell.kcl
             "value": 4.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1102,8 +1154,10 @@ description: Operations executed fillet-and-shell.kcl
               "value": 4.0,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -1114,8 +1168,10 @@ description: Operations executed fillet-and-shell.kcl
               "value": 30.5,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -1126,8 +1182,10 @@ description: Operations executed fillet-and-shell.kcl
               "value": 65.5,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -1266,8 +1324,10 @@ description: Operations executed fillet-and-shell.kcl
             "value": 4.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1323,8 +1383,10 @@ description: Operations executed fillet-and-shell.kcl
               "value": 4.0,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -1335,8 +1397,10 @@ description: Operations executed fillet-and-shell.kcl
               "value": 30.5,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -1347,8 +1411,10 @@ description: Operations executed fillet-and-shell.kcl
               "value": 7.5,
               "ty": {
                 "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
+                "value": {
+                  "len": "mm",
+                  "angle": "degrees"
+                }
               }
             },
             "sourceRange": []
@@ -1487,8 +1553,10 @@ description: Operations executed fillet-and-shell.kcl
             "value": 4.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1561,8 +1629,10 @@ description: Operations executed fillet-and-shell.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1618,7 +1688,9 @@ description: Operations executed fillet-and-shell.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -1646,7 +1718,9 @@ description: Operations executed fillet-and-shell.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",

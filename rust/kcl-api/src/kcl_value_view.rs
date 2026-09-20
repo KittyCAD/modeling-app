@@ -57,7 +57,9 @@ pub enum KclValueView {
         value: KclObjectFields,
         constrainable: bool,
     },
-    TagIdentifier(TagIdentifierView),
+    TagIdentifier {
+        value: String,
+    },
     TagDeclarator {
         value: String,
     },

@@ -8,4 +8,4 @@ import type { RuntimeFlag } from "./RuntimeFlag";
  * so a sender built before a flag existed falls back to Rust-side defaults
  * instead of failing to parse.
  */
-export type KclRuntimeFlags = { use_cek_executor: RuntimeFlag, use_new_lexer_parser: RuntimeFlag, };
+export type KclRuntimeFlags = { enable_z0006_lint: RuntimeFlag, use_cek_executor: RuntimeFlag, use_new_lexer_parser: RuntimeFlag, };

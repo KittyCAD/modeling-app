@@ -1295,6 +1295,7 @@ const OperationItem = ({
       return
     }
     exportSketchToDxf(item, {
+      fileOperations: app.fileOperations,
       engineCommandManager,
       kclManager,
       toast,

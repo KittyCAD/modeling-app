@@ -1779,7 +1779,6 @@ description: Variables in memory after executing multi_target_csg.kcl
   },
   "hole001": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "hole001"
   },
   "sketch002": {
