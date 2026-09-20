@@ -2,6 +2,7 @@ import type {
   AttachmentRef,
   ClientErrorReport,
   MlCopilotFile,
+  MlCopilotServerMessage,
 } from '@kittycad/lib'
 import { resetReportedClientErrorsForTests } from '@src/lib/clientErrors'
 import type { FileMeta } from '@src/lib/types'
@@ -124,6 +125,253 @@ type SetupActorInput = {
 }
 
 const completedConversationStartedAt = new Date('2026-07-15T12:00:00.000Z')
+
+describe('completed live edit retention', () => {
+  const actors: ReturnType<typeof createZookeeperManagerActor>[] = []
+  afterEach(() => {
+    for (const actor of actors.splice(0)) actor.stop()
+  })
+
+  const edit = (code = 'width = 25'): MlCopilotServerMessage => ({
+    tool_output: {
+      result: {
+        type: 'edit_kcl_code',
+        status_code: 200,
+        outputs: { 'main.kcl': code },
+        zookeeper_edit_patch: {
+          run_id: 'run-1',
+          changed_files: [
+            { status: 'created', path: 'main.kcl', contents: code },
+          ],
+        },
+      },
+    },
+  })
+  const answer = (text = 'Done'): MlCopilotServerMessage => ({
+    end_of_stream: { whole_response: text },
+  })
+
+  async function ready() {
+    const ws: TestWebSocket = new TestSocket() as TestWebSocket
+    ws.readyState = WebSocket.OPEN
+    const machine = zookeeperManagerMachine.provide({
+      actors: {
+        [ZookeeperManagerStates.Setup]: fromPromise<
+          Partial<ZookeeperManagerContext>,
+          SetupActorInput
+        >(async () => ({
+          ws,
+          conversationId: 'conversation-id',
+          conversation: {
+            exchanges: [{ responses: [], deltasAggregated: '' }],
+          },
+        })),
+      },
+    })
+    const actor = createActor(machine, { input: { apiToken: 'token' } }).start()
+    actors.push(actor)
+    actor.send({
+      type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+      refParentSend: (event) => actor.send(event),
+    })
+    await waitFor(actor, (state) =>
+      state.matches(ZookeeperManagerStates.WaitForContinueCheck)
+    )
+    actor.send({
+      type: ZookeeperManagerStates.ContinueCheck,
+      projectName: 'demo',
+      projectFiles: [],
+    })
+    await waitFor(actor, (state) => state.matches(ZookeeperManagerStates.Ready))
+    return {
+      actor,
+      receive: (response: MlCopilotServerMessage) =>
+        actor.send({
+          type: ZookeeperManagerTransitions.ResponseReceive,
+          response,
+        }),
+      applied: (response: MlCopilotServerMessage) =>
+        actor.send({ type: ZookeeperManagerTransitions.EditApplied, response }),
+      exchange: () => actor.getSnapshot().context.conversation?.exchanges[0],
+    }
+  }
+
+  it('releases applied snapshots at the final answer without changing visible messages or the worker payload', async () => {
+    const { receive, applied, exchange } = await ready()
+    const result = edit()
+    const original = JSON.stringify(result)
+    const reasoning: MlCopilotServerMessage = {
+      reasoning: { type: 'markdown', content: 'Keep this reasoning' },
+    }
+    const files: MlCopilotServerMessage = {
+      files: {
+        files: [{ name: 'part.step', mimetype: 'application/step', data: [] }],
+      },
+    }
+    const final = answer()
+    receive(reasoning)
+    receive(result)
+    applied(result)
+    receive(files)
+    expect(exchange()?.responses).toContain(result)
+    receive(final)
+    expect(exchange()?.responses).toEqual([reasoning, files, final])
+    expect(exchange()?.appliedEditResponses).toBeUndefined()
+    expect(JSON.stringify(result)).toBe(original)
+  })
+
+  it('waits for an acknowledgement after EOS without advancing live message state', async () => {
+    const { actor, receive, applied, exchange } = await ready()
+    const result = edit()
+    const final = answer()
+    receive(result)
+    receive(final)
+    const before = actor.getSnapshot().context
+    expect(exchange()?.responses).toEqual([result, final])
+    applied(result)
+    expect(exchange()?.responses).toEqual([final])
+    expect(actor.getSnapshot().context).toMatchObject({
+      lastMessageId: before.lastMessageId,
+      lastMessageType: before.lastMessageType,
+      awaitingResponse: before.awaitingResponse,
+    })
+    expect(before.conversation?.exchanges[0].responses).toEqual([result, final])
+  })
+
+  it.each([undefined, '', ' \n '])(
+    'keeps applied edits when the final answer is %j',
+    async (text) => {
+      const { receive, applied, exchange } = await ready()
+      const result = edit()
+      receive(result)
+      applied(result)
+      receive({ end_of_stream: { whole_response: text } })
+      expect(exchange()?.responses).toContain(result)
+    }
+  )
+
+  it('keeps failed tools, even if mistakenly acknowledged', async () => {
+    const { receive, applied, exchange } = await ready()
+    const failures: MlCopilotServerMessage[] = [
+      {
+        tool_output: {
+          result: {
+            type: 'edit_kcl_code',
+            status_code: 500,
+            outputs: { 'main.kcl': 'keep' },
+          },
+        },
+      },
+      {
+        tool_output: {
+          result: {
+            type: 'edit_kcl_code',
+            status_code: 200,
+            error: 'failed locally',
+            outputs: { 'main.kcl': 'keep' },
+          },
+        },
+      },
+    ]
+    for (const result of failures) {
+      receive(result)
+      applied(result)
+    }
+    receive(answer())
+    expect(exchange()?.responses.slice(0, 2)).toEqual(failures)
+    expect(exchange()?.appliedEditResponses).toBeUndefined()
+  })
+
+  it('does not use an earlier final answer to discard an interrupted tail', async () => {
+    const { receive, applied, exchange } = await ready()
+    const completed = edit('completed')
+    const unfinished = edit('unfinished')
+    receive(completed)
+    receive(answer())
+    receive(unfinished)
+    applied(unfinished)
+    applied(completed)
+    receive({ error: { detail: 'Interrupted' } })
+    expect(exchange()?.responses).toEqual([answer(), unfinished])
+    expect(exchange()?.appliedEditResponses).toEqual([unfinished])
+  })
+
+  it.each<
+    | ZookeeperManagerTransitions.AbruptClose
+    | ZookeeperManagerTransitions.ConversationClose
+  >([
+    ZookeeperManagerTransitions.AbruptClose,
+    ZookeeperManagerTransitions.ConversationClose,
+  ])(
+    'ignores stale acknowledgements after %s replaces the transcript',
+    async (type) => {
+      const { actor, receive, applied, exchange } = await ready()
+      const previous = edit()
+      receive(previous)
+      receive(answer())
+      actor.send({ type })
+      await waitFor(actor, (state) => state.matches(S.Await))
+      actor.send({
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+        refParentSend: (event) => actor.send(event),
+      })
+      await waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.WaitForContinueCheck)
+      )
+      actor.send({
+        type: ZookeeperManagerStates.ContinueCheck,
+        projectName: 'demo',
+        projectFiles: [],
+      })
+      await waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.Ready)
+      )
+      const current = edit()
+      receive(current)
+      receive(answer())
+      applied(previous)
+      expect(exchange()?.responses).toEqual([current, answer()])
+      expect(exchange()?.appliedEditResponses).toBeUndefined()
+      applied(current)
+      expect(exchange()?.responses).toEqual([answer()])
+    }
+  )
+
+  it.each<
+    ZookeeperManagerTransitions.Cancel | ZookeeperManagerTransitions.Interrupt
+  >([
+    ZookeeperManagerTransitions.Cancel,
+    ZookeeperManagerTransitions.Interrupt,
+  ])('keeps applied edits after %s without a final answer', async (type) => {
+    const { actor, receive, applied, exchange } = await ready()
+    const result = edit()
+    receive(result)
+    applied(result)
+    actor.send({ type })
+    await waitFor(actor, (state) =>
+      state.matches({
+        [ZookeeperManagerStates.Ready]: {
+          [ZookeeperManagerStates.Request]: S.Await,
+        },
+      })
+    )
+    expect(exchange()?.responses).toEqual([result])
+  })
+
+  it('does not retain large applied outputs or acknowledgement references across completed runs', async () => {
+    const { receive, applied, exchange } = await ready()
+    for (let run = 0; run < 20; run++) {
+      const result = edit('x'.repeat(1_000_000))
+      receive(result)
+      applied(result)
+      expect(JSON.stringify(exchange()).length).toBeGreaterThan(2_000_000)
+      receive(answer(`Completed ${run}`))
+      expect(JSON.stringify(exchange()).length).toBeLessThan(5_000)
+      expect(exchange()?.appliedEditResponses).toBeUndefined()
+    }
+    expect(exchange()?.responses).toHaveLength(20)
+  })
+})
 
 describe('toMlCopilotFile', () => {
   it('turns missing attachment reads into an actionable privacy-safe error', async () => {

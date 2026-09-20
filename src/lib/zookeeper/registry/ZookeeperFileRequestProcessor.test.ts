@@ -1,9 +1,16 @@
-import type { MlToolResult } from '@kittycad/lib'
+import type { MlCopilotServerMessage, MlToolResult } from '@kittycad/lib'
 import type { KclManager } from '@src/lang/KclManager'
 import type { Project } from '@src/lib/project'
 import type { ZookeeperEditPatchHistory } from '@src/lib/zookeeper/registry/ZookeeperEditPatchHistory'
 import { ZookeeperFileRequestProcessor } from '@src/lib/zookeeper/registry/ZookeeperFileRequestProcessor'
-import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
+import {
+  type ZookeeperManagerActor,
+  type ZookeeperManagerContext,
+  type ZookeeperManagerEvents,
+  ZookeeperManagerStates,
+  ZookeeperManagerTransitions,
+  zookeeperManagerMachine,
+} from '@src/lib/zookeeper/zookeeperManagerMachine'
 import type * as SystemIOUtils from '@src/machines/systemIO/utils'
 import {
   type SystemIOActor,
@@ -11,15 +18,19 @@ import {
 } from '@src/machines/systemIO/utils'
 import { waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
+import { createActor, fromPromise, waitFor as waitForActor } from 'xstate'
 
 const mocks = vi.hoisted(() => ({
   historyBegin: vi.fn(async () => undefined),
   historyCancel: vi.fn(),
-  historyComplete: vi.fn(async () => undefined),
+  historyComplete: vi.fn<ZookeeperEditPatchHistory['complete']>(
+    async () => undefined
+  ),
   historyReserve: vi.fn(),
   modelingSend: vi.fn(),
   systemIOSend: vi.fn(),
   updateCodeEditor: vi.fn(),
+  onEditApplied: vi.fn(),
 }))
 
 vi.mock('@src/lib/wasm_lib_wrapper', () => ({}))
@@ -67,7 +78,9 @@ const systemIOActor = {
   send: mocks.systemIOSend,
 } as unknown as SystemIOActor
 
-function patchBackedZookeeperEdit(code: string): MlToolResult {
+function patchBackedZookeeperEdit(
+  code: string
+): Extract<MlToolResult, { type: 'edit_kcl_code' }> {
   return {
     type: 'edit_kcl_code',
     status_code: 201,
@@ -146,6 +159,7 @@ function createProcessor(
     isSessionCurrent,
     kclManager,
     systemIOActor,
+    onEditApplied: mocks.onEditApplied,
   })
 }
 
@@ -189,6 +203,143 @@ describe('ZookeeperFileRequestProcessor', () => {
       requestedFileName: 'main.kcl',
     })
   })
+
+  test('retains queued live edits through EOS until files and history finish, then releases only the applied edit', async () => {
+    const machine = zookeeperManagerMachine.provide({
+      actors: {
+        [ZookeeperManagerStates.Setup]: fromPromise<
+          Partial<ZookeeperManagerContext>,
+          {
+            context: ZookeeperManagerContext
+            event: Extract<
+              ZookeeperManagerEvents,
+              { type: ZookeeperManagerStates.Setup }
+            >
+          }
+        >(async () => ({
+          conversation: {
+            exchanges: [{ responses: [], deltasAggregated: '' }],
+          },
+          conversationId: 'conversation-id',
+          projectNameCurrentlyOpened: 'demo',
+        })),
+        [ZookeeperManagerStates.ContinueCheck]: fromPromise(async () => ({})),
+      },
+    })
+    const actor = createActor(machine, { input: { apiToken: 'token' } }).start()
+    const processor = new ZookeeperFileRequestProcessor({
+      getProject: () => project,
+      history,
+      isSessionCurrent: () => true,
+      isEditorCurrent: () => true,
+      kclManager,
+      systemIOActor,
+      onEditApplied: (response) =>
+        actor.send({ type: ZookeeperManagerTransitions.EditApplied, response }),
+    })
+    const subscription = actor.subscribe((snapshot) =>
+      processor.handleActorSnapshot(snapshot)
+    )
+    try {
+      actor.send({
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+        refParentSend: (event) => actor.send(event),
+      })
+      await waitForActor(actor, (snapshot) =>
+        snapshot.matches(ZookeeperManagerStates.WaitForContinueCheck)
+      )
+      actor.send({
+        type: ZookeeperManagerStates.ContinueCheck,
+        projectName: 'demo',
+        projectFiles: [],
+      })
+      await waitForActor(actor, (snapshot) =>
+        snapshot.matches(ZookeeperManagerStates.Ready)
+      )
+
+      const first: MlCopilotServerMessage = {
+        tool_output: { result: patchBackedZookeeperEdit('first contents') },
+      }
+      const second: MlCopilotServerMessage = {
+        tool_output: { result: patchBackedZookeeperEdit('second contents') },
+      }
+      const final: MlCopilotServerMessage = {
+        end_of_stream: { whole_response: 'Finished' },
+      }
+      for (const response of [first, second, final]) {
+        actor.send({
+          type: ZookeeperManagerTransitions.ResponseReceive,
+          response,
+        })
+      }
+      const responses = () =>
+        actor.getSnapshot().context.conversation?.exchanges[0].responses
+      await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
+      expect(responses()).toEqual([first, second, final])
+
+      let finishHistory: () => void = () => undefined
+      mocks.historyComplete.mockImplementationOnce(
+        () =>
+          new Promise<undefined>((resolve) => {
+            finishHistory = () => resolve(undefined)
+          })
+      )
+      const firstWrite = mocks.systemIOSend.mock.calls[0][0].data
+      firstWrite.onFileSystemSuccess()
+      firstWrite.onSuccess()
+      expect(responses()).toContain(first)
+      finishHistory()
+      await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(2))
+      expect(responses()).toEqual([second, final])
+      expect(mocks.historyComplete.mock.calls[0][0].patch).toEqual(
+        patchBackedZookeeperEdit('first contents').zookeeper_edit_patch
+      )
+
+      const secondWrite = mocks.systemIOSend.mock.calls[1][0].data
+      expect(secondWrite.files[0].requestedCode).toBe('second contents')
+      secondWrite.onFileSystemSuccess()
+      secondWrite.onSuccess()
+      await waitFor(() => expect(responses()).toEqual([final]))
+      expect(mocks.historyComplete).toHaveBeenCalledTimes(2)
+      expect(mocks.systemIOSend).toHaveBeenCalledTimes(2)
+    } finally {
+      subscription.unsubscribe()
+      actor.stop()
+      await processor.dispose()
+    }
+  })
+
+  test.each(['filesystem', 'history'])(
+    'does not acknowledge a failed %s write',
+    async (failure) => {
+      const log = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      const processor = createProcessor()
+      try {
+        emitZookeeperFileRequest(processor, 'keep failed payload', 1)
+        await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
+        const request = mocks.systemIOSend.mock.calls[0][0].data
+        if (failure === 'filesystem') {
+          request.onFileSystemError()
+        } else {
+          mocks.historyComplete.mockRejectedValueOnce(
+            new Error('History failed')
+          )
+          request.onFileSystemSuccess()
+          request.onSuccess()
+          await waitFor(() => expect(log).toHaveBeenCalled())
+        }
+        // A second request proves the first has settled without suppressing a
+        // legitimate acknowledgement through reset/disposal.
+        emitZookeeperFileRequest(processor, 'next edit', 2)
+        await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(2))
+        expect(mocks.onEditApplied).not.toHaveBeenCalled()
+        mocks.systemIOSend.mock.calls[1][0].data.onFileSystemError()
+      } finally {
+        await processor.dispose()
+        log.mockRestore()
+      }
+    }
+  )
 
   test('waits for history when navigation fails after a successful write', async () => {
     let finishHistory: () => void = () => undefined
@@ -352,6 +503,7 @@ describe('ZookeeperFileRequestProcessor', () => {
     request.onSuccess()
     await disposal
 
+    expect(mocks.onEditApplied).not.toHaveBeenCalled()
     expect(mocks.updateCodeEditor).toHaveBeenCalledWith(
       'completed while disabled',
       expect.objectContaining({
@@ -434,6 +586,7 @@ describe('ZookeeperFileRequestProcessor', () => {
     request.onSuccess()
     await reset
 
+    expect(mocks.onEditApplied).not.toHaveBeenCalled()
     expect(mocks.historyCancel).not.toHaveBeenCalled()
     expect(mocks.historyComplete).toHaveBeenCalledOnce()
     expect(mocks.updateCodeEditor).toHaveBeenCalledWith(
