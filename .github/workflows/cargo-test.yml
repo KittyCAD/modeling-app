@@ -244,7 +244,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: kcl-snapshot-mismatches-${{ matrix.partitionIndex }}
+          name: kcl-snapshot-mismatches-${{ matrix.partitionIndex }}-${{ github.run_attempt }}
           path: rust/**/artifacts/**/*.png
           if-no-files-found: ignore
       - name: Track teardown
