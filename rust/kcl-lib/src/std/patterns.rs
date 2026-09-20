@@ -683,7 +683,7 @@ mod tests {
             .join("tests")
             .join("inputs")
             .join("main.kcl");
-        let ctx = crate::test_server::new_context_engine_graphics(true, Some(current_file))
+        let ctx = crate::test_server::new_context(true, Some(current_file), true)
             .await
             .unwrap();
         let program = crate::Program::parse_no_errs(code).unwrap();

@@ -601,12 +601,16 @@ export const settingsMachine = setup({
       },
     },
     reloadingSettings: {
+      on: {
+        '*': { actions: ['deferEventUntilSettingsPersist'] },
+      },
       invoke: {
         src: 'reloadSettings',
         onDone: {
           target: 'idle',
           actions: [
             'setAllSettings',
+            'flushDeferredSettingsEvents',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
               type: 'update',
@@ -617,9 +621,12 @@ export const settingsMachine = setup({
         },
         onError: {
           target: 'idle',
-          actions: ({ event }) => {
-            console.error('Error reloading settings', event)
-          },
+          actions: [
+            ({ event }) => {
+              console.error('Error reloading settings', event)
+            },
+            'flushDeferredSettingsEvents',
+          ],
         },
         input: ({ context }) => ({
           fileOperations: context.fileOperations,
