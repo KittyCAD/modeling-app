@@ -1,6 +1,7 @@
 //! The executor for the AST.
 
 use std::collections::BTreeMap;
+use std::future::Future;
 use std::sync::Arc;
 
 use anyhow::Result;
@@ -1500,6 +1501,16 @@ impl ExecutorContext {
 
     pub async fn run_with_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         assert!(!self.is_mock());
+        let result = self
+            .with_engine_execution(Box::pin(self.run_with_caching_inner(program)))
+            .await;
+        if result.is_err() {
+            cache::bust_cache().await;
+        }
+        result
+    }
+
+    async fn run_with_caching_inner(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         let grid_scale = if self.settings.fixed_size_grid {
             GridScaleBehavior::Fixed(program.meta_settings().ok().flatten().map(|s| s.default_length_units))
         } else {
@@ -1677,7 +1688,7 @@ impl ExecutorContext {
                             .map_err(KclErrorWithOutputs::no_outputs)?;
 
                         let result = self
-                            .run_concurrent(
+                            .run_concurrent_inner(
                                 &program,
                                 &mut new_exec_state,
                                 Some((new_universe, new_universe_map)),
@@ -1697,7 +1708,7 @@ impl ExecutorContext {
                             .map_err(KclErrorWithOutputs::no_outputs)?;
 
                         let result = self
-                            .run_concurrent(&program, &mut exec_state, None, PreserveMem::Normal)
+                            .run_concurrent_inner(&program, &mut exec_state, None, PreserveMem::Normal)
                             .await;
 
                         (exec_state, result)
@@ -1710,7 +1721,7 @@ impl ExecutorContext {
                             .map_err(KclErrorWithOutputs::no_outputs)?;
 
                         let result = self
-                            .run_concurrent(&program, &mut exec_state, None, PreserveMem::Always)
+                            .run_concurrent_inner(&program, &mut exec_state, None, PreserveMem::Always)
                             .await;
 
                         (exec_state, result)
@@ -1726,16 +1737,12 @@ impl ExecutorContext {
                     .map_err(KclErrorWithOutputs::no_outputs)?;
 
                 let result = self
-                    .run_concurrent(&program, &mut exec_state, None, PreserveMem::Normal)
+                    .run_concurrent_inner(&program, &mut exec_state, None, PreserveMem::Normal)
                     .await;
 
                 (program, exec_state, result)
             }
         };
-
-        if result.is_err() {
-            cache::bust_cache().await;
-        }
 
         // Throw the error.
         let result = result?;
@@ -1781,25 +1788,55 @@ impl ExecutorContext {
         universe_info: Option<(Universe, UniverseMap)>,
         preserve_mem: PreserveMem,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
-        // Tell the engine we're about to execute a lot of modeling commands.
-        let enable_render = true;
-        exec_state
-            .begin_execution(self, enable_render)
-            .await
-            .map_err(KclErrorWithOutputs::no_outputs)?;
+        self.with_engine_execution(Box::pin(self.run_concurrent_inner(
+            program,
+            exec_state,
+            universe_info,
+            preserve_mem,
+        )))
+        .await
+    }
 
-        // Execute the program, which executes modeling commands.
-        let exec_res = self
-            .run_concurrent_inner(program, exec_state, universe_info, preserve_mem)
+    /// Enclose the entire execution, including scene setup and cached settings updates.
+    async fn with_engine_execution<T>(
+        &self,
+        execution: impl Future<Output = Result<T, KclErrorWithOutputs>>,
+    ) -> Result<T, KclErrorWithOutputs> {
+        self.send_execution_boundary(ModelingCmd::from(
+            mcmd::BeginExecution::builder().enable_render(true).build(),
+        ))
+        .await
+        .map_err(KclErrorWithOutputs::no_outputs)?;
+
+        let exec_res = execution.await;
+        let flush_res = self.engine.ensure_async_commands_completed(&self.engine_batch).await;
+        if flush_res.is_err() {
+            // Do not carry unexecuted commands from a failed flush into the next execution.
+            self.engine.clear_queues(&self.engine_batch).await;
+        }
+        // Always end execution, even when evaluation or the final flush failed.
+        let end_res = self
+            .send_execution_boundary(ModelingCmd::from(mcmd::EndExecution::default()))
             .await;
-
-        // Tell the engine we're done.
-        let end_exec_res = exec_state.end_execution(self).await;
-        match (exec_res, end_exec_res) {
+        match (exec_res, flush_res.and(end_res)) {
             (Ok(res), Ok(())) => Ok(res),
             (Err(e), _) => Err(e),
             (Ok(_), Err(e)) => Err(KclErrorWithOutputs::no_outputs(e)),
         }
+    }
+
+    async fn send_execution_boundary(&self, cmd: ModelingCmd) -> Result<(), KclError> {
+        // A separate, empty queue keeps these commands outside all modeling batches.
+        // Their IDs must not consume or collide with the model's stable artifact IDs.
+        self.engine
+            .send_modeling_cmd(
+                &EngineBatchContext::new(),
+                uuid::Uuid::new_v4(),
+                SourceRange::synthetic(),
+                &cmd,
+            )
+            .await
+            .map(|_| ())
     }
 
     async fn run_concurrent_inner(
