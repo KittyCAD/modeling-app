@@ -1,5 +1,4 @@
 import {
-  TEST_SETTINGS,
   TEST_SETTINGS_CORRUPTED,
   TEST_SETTINGS_DEFAULT_THEME,
   TEST_SETTINGS_KEY,
@@ -21,7 +20,6 @@ import {
   SETTINGS_FILE_NAME,
 } from '@src/lib/constants'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
-import { Themes } from '@src/lib/theme'
 import { isArray, uuidv4 } from '@src/lib/utils'
 import * as fsp from 'fs/promises'
 import path, { join } from 'path'
@@ -714,17 +712,7 @@ test.describe(
     test(
       `Changing system theme preferences should not override fixed light theme`,
       { tag: ['@macos', '@windows'] },
-      async ({ page, homePage, tronApp }) => {
-        if (!tronApp) throwTronAppMissing()
-
-        await tronApp.cleanProjectDir({
-          ...TEST_SETTINGS,
-          app: {
-            ...TEST_SETTINGS.app,
-            appearance: { theme: Themes.Light },
-          },
-        })
-
+      async ({ page, homePage }) => {
         const u = await getUtils(page)
 
         const lightBackgroundCss = 'oklch(0.9911 0 264.48)'
@@ -760,6 +748,10 @@ test.describe(
           await page.setBodyDimensions({ width: 1200, height: 500 })
           await homePage.goToModelingScene()
           await u.waitForPageLoad()
+          await page.keyboard.press('ControlOrMeta+K')
+          await page.getByRole('option', { name: 'theme' }).click()
+          await page.getByRole('option', { name: 'light' }).click()
+          await expect(page.getByText('theme to "light"')).toBeVisible()
           await page.waitForTimeout(1000)
           await expect(toolbar).toBeVisible()
         })
