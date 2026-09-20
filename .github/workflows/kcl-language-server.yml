@@ -40,8 +40,6 @@ env:
 jobs:
   test:
     name: kcl-language-server (vscode tests)
-    env:
-      __KCL_LSP_SERVER_DEBUG: ${{ github.workspace }}/rust/target/debug/kcl-language-server${{ runner.os == 'Windows' && '.exe' || '' }}
     strategy:
       fail-fast: false
       matrix:

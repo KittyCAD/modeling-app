@@ -20,6 +20,13 @@ export async function runVSCodeTests(launchVSCode = runTests) {
     // the manifest is four levels up. Pointing anywhere inside dist/ leaves the
     // extension unloaded and vscode.extensions.getExtension returning undefined.
     const extensionDevelopmentPath = path.resolve(__dirname, '../../../../')
+    const serverPath = path.resolve(
+      extensionDevelopmentPath,
+      '../target/debug',
+      process.platform === 'win32'
+        ? 'kcl-language-server.exe'
+        : 'kcl-language-server'
+    )
 
     // The path to the extension test runner script
     // Passed to --extensionTestsPath
@@ -29,7 +36,10 @@ export async function runVSCodeTests(launchVSCode = runTests) {
     await launchVSCode({
       extensionDevelopmentPath,
       extensionTestsPath,
-      extensionTestsEnv: { KCL_VSCODE_TEST_COMPLETION: completionPath },
+      extensionTestsEnv: {
+        KCL_VSCODE_TEST_COMPLETION: completionPath,
+        __KCL_LSP_SERVER_DEBUG: serverPath,
+      },
       launchArgs: [
         `--user-data-dir=${path.join(vscodeProfileDir, 'user-data')}`,
         `--extensions-dir=${path.join(vscodeProfileDir, 'extensions')}`,
