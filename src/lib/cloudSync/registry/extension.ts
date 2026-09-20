@@ -43,7 +43,7 @@ import {
   type ProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
 import { invalidateProjectLibraryRealizations } from '@src/lib/projectLibraries/registry/invalidation'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/events'
 import { authService } from '@src/registry/contracts/auth'
 import { runtimeService } from '@src/registry/contracts/runtime'
 import {
