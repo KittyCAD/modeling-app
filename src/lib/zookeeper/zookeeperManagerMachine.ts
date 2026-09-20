@@ -115,6 +115,31 @@ type MlCopilotProjectContextRequest = Extract<
   cloud_project_revision?: CloudProjectRevision
 }
 
+function serializeProjectRequest(
+  request: MlCopilotUserRequest | MlCopilotProjectContextRequest
+): string | Error {
+  const serialized = JSON.stringify(request)
+  const bytes = new Blob([serialized]).size
+  if (request.cloud_project_revision && bytes > 256 * 1024) {
+    return new Error(
+      'Cloud prompt exceeds the 256 KiB control-message limit. Shorten the prompt or selection and try again.'
+    )
+  }
+  console.debug('[zookeeper-transport]', {
+    event: 'serialized_project_request',
+    type: request.type,
+    bytes,
+    source: request.cloud_project_revision ? 'cloud_revision' : 'inline',
+    inline_file_count: Object.keys(request.current_files ?? {}).length,
+    inline_attachment_count:
+      'additional_files' in request
+        ? (request.additional_files?.length ?? 0)
+        : 0,
+    correlation_id: request.correlation_id,
+  })
+  return serialized
+}
+
 type MlCopilotClientMessageWithDiscoveredMode =
   | Exclude<MlCopilotClientMessage, { type: 'user' }>
   | MlCopilotUserRequest
@@ -1536,7 +1561,9 @@ export const zookeeperManagerMachine = setup({
         ...(event.mode ? { mode: event.mode } : {}),
       }
 
-      context.ws.send(JSON.stringify(request))
+      const serialized = serializeProjectRequest(request)
+      if (isErr(serialized)) return Promise.reject(serialized)
+      context.ws.send(serialized)
 
       const conversation: Conversation = {
         exchanges: Array.from(context.conversation.exchanges),
@@ -1601,8 +1628,10 @@ export const zookeeperManagerMachine = setup({
         command: 'continue',
       }
 
+      const serialized = serializeProjectRequest(requestProjectContext)
+      if (isErr(serialized)) return Promise.reject(serialized)
       context.ws.send(JSON.stringify(requestContinue))
-      context.ws.send(JSON.stringify(requestProjectContext))
+      context.ws.send(serialized)
 
       return {
         awaitingResponse: true,

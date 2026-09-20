@@ -931,9 +931,15 @@ describe('zookeeperManagerMachine', () => {
   })
 
   describe('ContinueCheck', () => {
-    it.each([false, true])(
-      'sends continue requests when interrupted (cloud: %s)',
-      async (cloud) => {
+    it.each([
+      { cloud: false, oversized: false },
+      { cloud: true, oversized: false },
+      { cloud: true, oversized: true },
+    ])(
+      'bounds continue requests (cloud: $cloud, oversized: $oversized)',
+      async ({ cloud, oversized }) => {
+        const log = vi.spyOn(console, 'debug').mockImplementation(() => {})
+        const failure = vi.fn()
         const cloudProjectRevision = cloud
           ? {
               project_id: '11111111-1111-4111-8111-111111111111',
@@ -974,7 +980,19 @@ describe('zookeeperManagerMachine', () => {
             data: new Blob(['notes']),
           },
         ]
+        const attachment = new Blob([new Uint8Array(10 * 1024 * 1024)])
+        const readAttachment = vi.spyOn(attachment, 'arrayBuffer')
+        if (cloud) {
+          for (const name of ['first.pdf', 'second.pdf', 'third.pdf']) {
+            projectFiles.push({
+              type: 'other',
+              relPath: `zookeeper/attachments/${name}`,
+              data: attachment,
+            })
+          }
+        }
         const machine = zookeeperManagerMachine.provide({
+          actions: { toastError: failure },
           actors: {
             [ZookeeperManagerStates.Setup]: fromPromise<
               Partial<ZookeeperManagerContext>,
@@ -1004,12 +1022,21 @@ describe('zookeeperManagerMachine', () => {
 
         actor.send({
           type: ZookeeperManagerStates.ContinueCheck,
-          projectName: 'zoo-project',
+          projectName: oversized ? '\u96ea'.repeat(90_000) : 'zoo-project',
           projectFiles,
           cloudProjectRevision,
           activeFile: 'newFile.kcl',
           engineApiCallId: 'engine-api-call-id',
         })
+
+        if (oversized) {
+          await waitFor(actor, (state) => state.matches(S.Await))
+          expect(failure).toHaveBeenCalledOnce()
+          expect(ws.sentPayloads).toHaveLength(0)
+          readAttachment.mockRestore()
+          actor.stop()
+          return
+        }
 
         await waitFor(actor, (state) =>
           state.matches(ZookeeperManagerStates.Ready)
@@ -1041,7 +1068,19 @@ describe('zookeeperManagerMachine', () => {
               }),
           active_file: 'newFile.kcl',
         })
+        expect(new Blob([ws.sentPayloads[1]]).size).toBeLessThan(256 * 1024)
+        expect(log).toHaveBeenCalledWith('[zookeeper-transport]', {
+          event: 'serialized_project_request',
+          type: 'project_context',
+          bytes: new Blob([ws.sentPayloads[1]]).size,
+          source: cloud ? 'cloud_revision' : 'inline',
+          inline_file_count: cloud ? 0 : 2,
+          inline_attachment_count: 0,
+          correlation_id: expect.any(String),
+        })
+        expect(readAttachment).not.toHaveBeenCalled()
 
+        readAttachment.mockRestore()
         actor.stop()
       }
     )
