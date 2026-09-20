@@ -25,7 +25,7 @@ pub struct RequestBody {
 
 /// Executes a KCL program. Only returns success or error.
 pub async fn execute(code: &str, current_file: Option<PathBuf>) -> Result<(), ExecError> {
-    let ctx = new_context_engine_graphics(true, current_file).await?;
+    let ctx = new_context(true, current_file, true).await?;
     let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
     let res = do_execute(&ctx, program, None)
         .await
@@ -382,7 +382,7 @@ pub async fn execute_and_export_step(
     ),
     ExecErrorWithState,
 > {
-    let ctx = new_context_engine_graphics(true, current_file).await?;
+    let ctx = new_context(true, current_file, true).await?;
     let mut exec_state = ExecState::new(&ctx);
     let program = Program::parse_no_errs(code).map_err(|err| {
         ExecErrorWithState::new(KclErrorWithOutputs::no_outputs(err).into(), exec_state.clone(), None)

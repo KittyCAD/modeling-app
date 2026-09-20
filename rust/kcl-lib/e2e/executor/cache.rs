@@ -490,7 +490,9 @@ async fn kcl_test_cache_empty_file_pop_cache_empty_file_planes_work() {
     // Get the current working directory.
     let code = "";
 
-    let ctx = kcl_lib::ExecutorContext::new_with_default_client().await.unwrap();
+    let ctx = kcl_lib::ExecutorContext::new_geometry_only_with_default_client()
+        .await
+        .unwrap();
     let program = kcl_lib::Program::parse_no_errs(code).unwrap();
     let outcome = ctx.run_with_caching(program).await.unwrap();
 
@@ -1022,7 +1024,9 @@ view002 = view::named(
 "#
     );
 
-    let ctx = kcl_lib::ExecutorContext::new_with_default_client().await.unwrap();
+    let ctx = kcl_lib::ExecutorContext::new_geometry_only_with_default_client()
+        .await
+        .unwrap();
     bust_cache().await;
 
     ctx.run_with_caching(kcl_lib::Program::parse_no_errs(first).unwrap())

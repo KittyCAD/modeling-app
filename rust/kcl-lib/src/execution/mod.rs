@@ -1309,6 +1309,20 @@ impl ExecutorContext {
         Ok(ctx)
     }
 
+    /// Create a geometry-only executor context with the default client.
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn new_geometry_only_with_default_client() -> Result<Self> {
+        Self::new_with_client(
+            ExecutorSettings {
+                geometry_only: true,
+                ..Default::default()
+            },
+            None,
+            None,
+        )
+        .await
+    }
+
     /// For executing unit tests.
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new_for_unit_test(engine_addr: Option<String>) -> Result<Self> {
@@ -1357,7 +1371,12 @@ impl ExecutorContext {
         exec_state.global.artifacts.clear();
 
         self.engine
-            .clear_scene(&self.engine_batch, &mut exec_state.mod_local.id_generator, source_range)
+            .clear_scene(
+                &self.engine_batch,
+                &mut exec_state.mod_local.id_generator,
+                source_range,
+                self.settings.geometry_only,
+            )
             .await?;
         // The engine errors out if you toggle OIT with SSAO off.
         // So ignore OIT settings if SSAO is off.
@@ -4526,9 +4545,7 @@ w = f() + f()
 )
 "#;
 
-        let ctx = crate::test_server::new_context_engine_graphics(true, None)
-            .await
-            .unwrap();
+        let ctx = crate::test_server::new_context(true, None, true).await.unwrap();
         let old_program = crate::Program::parse_no_errs(code).unwrap();
 
         // Execute the program.
@@ -4581,9 +4598,7 @@ w = f() + f()
 )
 "#;
 
-        let mut ctx = crate::test_server::new_context_engine_graphics(true, None)
-            .await
-            .unwrap();
+        let mut ctx = crate::test_server::new_context(true, None, true).await.unwrap();
         let old_program = crate::Program::parse_no_errs(code).unwrap();
 
         // Execute the program.
@@ -4621,7 +4636,7 @@ w = f() + f()
 
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_after_not_mock() {
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let program = crate::Program::parse_no_errs("x = 2").unwrap();
         let result = ctx.run_with_caching(program).await.unwrap();
         assert_number_variable(&result.variables, "x", 2.0);
@@ -4884,7 +4899,7 @@ solid7 = extrude(r7, length = width)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn sim_sketch_mode_real_mock_real() {
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let code = r#"sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> line(end = [10, 0])
@@ -7048,7 +7063,7 @@ fillet(solid001, radius = 0.1, tags = yoyo)
 
     async fn run_constraint_report(kcl: &str) -> SketchConstraintReport {
         let program = crate::Program::parse_no_errs(kcl).unwrap();
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
         let mut exec_state = ExecState::new(&ctx);
         let (env_ref, _) = ctx.run(&program, &mut exec_state).await.unwrap();
         let outcome = exec_state
