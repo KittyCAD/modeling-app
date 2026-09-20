@@ -41,7 +41,10 @@ beforeEach(async () => {
   rustContextInThisFile = rustContext
 })
 afterAll(() => {
-  engineCommandManagerInThisFile.tearDown()
+  engineCommandManagerInThisFile.tearDown({
+    route: 'user-requested',
+    initiatedBy: 'client',
+  })
 })
 
 describe('geometry.test.ts', () => {

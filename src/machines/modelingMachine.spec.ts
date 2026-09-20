@@ -80,7 +80,10 @@ function useEngineWorld() {
   })
 
   afterAll(() => {
-    engineCommandManagerInThisFile.tearDown()
+    engineCommandManagerInThisFile.tearDown({
+      route: 'user-requested',
+      initiatedBy: 'client',
+    })
     setTestWorld(worldWithoutEngine)
   })
 }

@@ -105,8 +105,10 @@ description: Variables in memory after executing linear-shelf-system.kcl
     "value": 1.93,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "baseBlock": {
@@ -358,8 +360,10 @@ description: Variables in memory after executing linear-shelf-system.kcl
     "value": 0.37,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "baseHeight": {
@@ -367,8 +371,10 @@ description: Variables in memory after executing linear-shelf-system.kcl
     "value": 0.05,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "baseInset": {
@@ -376,8 +382,10 @@ description: Variables in memory after executing linear-shelf-system.kcl
     "value": 0.03,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "baseProfile": {
@@ -397,17 +405,21 @@ description: Variables in memory after executing linear-shelf-system.kcl
                       {
                         "n": -0.18,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.37,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -415,17 +427,21 @@ description: Variables in memory after executing linear-shelf-system.kcl
                       {
                         "n": 0.18,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.37,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -517,17 +533,21 @@ description: Variables in memory after executing linear-shelf-system.kcl
                       {
                         "n": -0.18,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -535,17 +555,21 @@ description: Variables in memory after executing linear-shelf-system.kcl
                       {
                         "n": -0.18,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.37,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -817,17 +841,21 @@ description: Variables in memory after executing linear-shelf-system.kcl
                       {
                         "n": -0.18,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -835,17 +863,21 @@ description: Variables in memory after executing linear-shelf-system.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -938,17 +970,21 @@ description: Variables in memory after executing linear-shelf-system.kcl
                       {
                         "n": 0.18,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.37,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -956,17 +992,21 @@ description: Variables in memory after executing linear-shelf-system.kcl
                       {
                         "n": 0.18,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -1058,17 +1098,21 @@ description: Variables in memory after executing linear-shelf-system.kcl
                       {
                         "n": 0.18,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -1076,17 +1120,21 @@ description: Variables in memory after executing linear-shelf-system.kcl
                       {
                         "n": -0.18,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -1346,8 +1394,10 @@ description: Variables in memory after executing linear-shelf-system.kcl
     "value": 0.36000000000000004,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "bottomEdge": {
@@ -1648,17 +1698,21 @@ description: Variables in memory after executing linear-shelf-system.kcl
                       {
                         "n": -0.18,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.4,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -1666,17 +1720,21 @@ description: Variables in memory after executing linear-shelf-system.kcl
                       {
                         "n": 0.18,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.4,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -1768,17 +1826,21 @@ description: Variables in memory after executing linear-shelf-system.kcl
                       {
                         "n": -0.18,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -1786,17 +1848,21 @@ description: Variables in memory after executing linear-shelf-system.kcl
                       {
                         "n": -0.18,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.4,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -2068,17 +2134,21 @@ description: Variables in memory after executing linear-shelf-system.kcl
                       {
                         "n": -0.18,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -2086,17 +2156,21 @@ description: Variables in memory after executing linear-shelf-system.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -2189,17 +2263,21 @@ description: Variables in memory after executing linear-shelf-system.kcl
                       {
                         "n": 0.18,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.4,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -2207,17 +2285,21 @@ description: Variables in memory after executing linear-shelf-system.kcl
                       {
                         "n": 0.18,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -2309,17 +2391,21 @@ description: Variables in memory after executing linear-shelf-system.kcl
                       {
                         "n": 0.18,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -2327,17 +2413,21 @@ description: Variables in memory after executing linear-shelf-system.kcl
                       {
                         "n": -0.18,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -13586,8 +13676,10 @@ description: Variables in memory after executing linear-shelf-system.kcl
     "value": 0.02,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "rightEdge": {
@@ -13599,8 +13691,10 @@ description: Variables in memory after executing linear-shelf-system.kcl
     "value": 5.0,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "shelfDepth": {
@@ -13608,8 +13702,10 @@ description: Variables in memory after executing linear-shelf-system.kcl
     "value": 0.4,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "shelfSpacing": {
@@ -13617,8 +13713,10 @@ description: Variables in memory after executing linear-shelf-system.kcl
     "value": 0.386,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "shelfStartZ": {
@@ -13626,8 +13724,10 @@ description: Variables in memory after executing linear-shelf-system.kcl
     "value": 0.05,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "shelfThickness": {
@@ -13635,8 +13735,10 @@ description: Variables in memory after executing linear-shelf-system.kcl
     "value": 0.02,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "shelfWidth": {
@@ -13644,8 +13746,10 @@ description: Variables in memory after executing linear-shelf-system.kcl
     "value": 0.36000000000000004,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "shelves": {
@@ -15366,8 +15470,10 @@ description: Variables in memory after executing linear-shelf-system.kcl
     "value": 0.38,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "sidePanelProfile": {
@@ -15387,17 +15493,21 @@ description: Variables in memory after executing linear-shelf-system.kcl
                       {
                         "n": -0.2,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.4,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -15405,17 +15515,21 @@ description: Variables in memory after executing linear-shelf-system.kcl
                       {
                         "n": -0.18,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.4,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -15507,17 +15621,21 @@ description: Variables in memory after executing linear-shelf-system.kcl
                       {
                         "n": -0.2,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -15525,17 +15643,21 @@ description: Variables in memory after executing linear-shelf-system.kcl
                       {
                         "n": -0.2,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.4,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -15807,17 +15929,21 @@ description: Variables in memory after executing linear-shelf-system.kcl
                       {
                         "n": -0.2,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -15825,17 +15951,21 @@ description: Variables in memory after executing linear-shelf-system.kcl
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -15928,17 +16058,21 @@ description: Variables in memory after executing linear-shelf-system.kcl
                       {
                         "n": -0.18,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": -0.4,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -15946,17 +16080,21 @@ description: Variables in memory after executing linear-shelf-system.kcl
                       {
                         "n": -0.18,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -16048,17 +16186,21 @@ description: Variables in memory after executing linear-shelf-system.kcl
                       {
                         "n": -0.18,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -16066,17 +16208,21 @@ description: Variables in memory after executing linear-shelf-system.kcl
                       {
                         "n": -0.2,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "m": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "m"
+                          }
                         }
                       }
                     ],
@@ -16833,8 +16979,10 @@ description: Variables in memory after executing linear-shelf-system.kcl
     "value": 6.0,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "unitCount": {
@@ -16842,8 +16990,10 @@ description: Variables in memory after executing linear-shelf-system.kcl
     "value": 5.0,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "unitDepth": {
@@ -16851,8 +17001,10 @@ description: Variables in memory after executing linear-shelf-system.kcl
     "value": 0.4,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "unitHeight": {
@@ -16860,8 +17012,10 @@ description: Variables in memory after executing linear-shelf-system.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   },
   "unitWidth": {
@@ -16869,8 +17023,10 @@ description: Variables in memory after executing linear-shelf-system.kcl
     "value": 0.4,
     "ty": {
       "type": "Default",
-      "len": "m",
-      "angle": "degrees"
+      "value": {
+        "len": "m",
+        "angle": "degrees"
+      }
     }
   }
 }

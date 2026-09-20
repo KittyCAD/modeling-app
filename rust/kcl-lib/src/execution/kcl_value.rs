@@ -472,6 +472,19 @@ pub enum TypeDef {
     Enum(Arc<EnumTypeDef>),
 }
 
+impl TypeDef {
+    /// Converts a stored type definition into the type used for runtime checks.
+    /// Enum definitions reduce to their nominal identity, so callers that need
+    /// constructor metadata must retain the `Enum` definition instead.
+    pub(super) fn into_runtime_type(self) -> RuntimeType {
+        match self {
+            Self::RustRepr(ty, _) => RuntimeType::Primitive(ty),
+            Self::Alias(ty) => ty,
+            Self::Enum(def) => RuntimeType::Enum(def.id().clone()),
+        }
+    }
+}
+
 /// The nominal identity of an enum.
 ///
 /// Two enums are the same type only if they come from the same `type`

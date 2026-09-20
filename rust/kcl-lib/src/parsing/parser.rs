@@ -298,7 +298,7 @@ impl ParseContext {
                     let _ = ctxt.as_mut().unwrap().settings.update_from_annotation(attr);
                 });
             }
-            Some(annotations::WARNINGS) => {
+            Some(annotations::WARNINGS) | Some(annotations::DIAGNOSTICS) => {
                 // TODO https://github.com/KittyCAD/modeling-app/issues/8021
             }
             _ => {}

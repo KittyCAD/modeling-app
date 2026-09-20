@@ -511,6 +511,30 @@ describe('KclManager diagnostics', () => {
     expect(executeCodeSpy).toHaveBeenCalledWith('abc')
   })
 
+  it('coalesces scheduled project reloads and executes with automatic rendering disabled', async () => {
+    vi.useFakeTimers()
+
+    const { kclManager } = createKclManagerTestHarness('first')
+    const executeCodeSpy = vi
+      .spyOn(kclManager, 'executeCode')
+      .mockResolvedValue(undefined)
+    kclManager.setEditorAutomaticallyRender(false)
+
+    kclManager.scheduleCurrentCodeExecution(false)
+    kclManager.updateCodeEditor('latest', {
+      shouldExecute: false,
+      shouldResetCamera: false,
+      shouldWriteToDisk: false,
+    })
+    kclManager.scheduleCurrentCodeExecution(false)
+
+    await vi.advanceTimersByTimeAsync(999)
+    expect(executeCodeSpy).not.toHaveBeenCalled()
+
+    await vi.advanceTimersByTimeAsync(1)
+    expect(executeCodeSpy).toHaveBeenCalledExactlyOnceWith('latest')
+  })
+
   it('flushes a pending direct editor execution before starting a sketch', async () => {
     vi.useFakeTimers()
 

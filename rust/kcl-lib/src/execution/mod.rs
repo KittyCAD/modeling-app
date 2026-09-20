@@ -437,10 +437,11 @@ pub struct SketchConstraintStatus {
     /// - The same name for two sketches, when a function body declares the
     ///   sketch and is called more than once.
     ///
-    /// This name is accepted by [`ExecOutcome::render_sketch_png`]. Because
-    /// the report carries no other sketch identifier, rendering returns an
-    /// ambiguity error when multiple sketches share a name.
+    /// This name is accepted by [`ExecOutcome::render_sketch_png_instance`].
     pub name: String,
+    /// Zero-based creation order among sketches with this name, independent of
+    /// constraint-status grouping. Not stable across edits.
+    pub instance_index: usize,
     /// Overall constraint status derived from per-segment freedom.
     pub status: ConstraintKind,
     /// Number of segments that are under-constrained (free to move).
@@ -538,6 +539,7 @@ pub(crate) fn sketch_constraint_status_for_sketch(
 
     Some(SketchConstraintStatus {
         name: sketch_obj.label.clone(),
+        instance_index: 0,
         status,
         free_count,
         conflict_count,
@@ -550,10 +552,14 @@ pub(crate) fn sketch_constraint_report_from_scene_objects(scene_objects: &[Objec
     let mut under_constrained = Vec::new();
     let mut over_constrained = Vec::new();
     let mut errors = Vec::new();
+    let mut instance_counts = std::collections::HashMap::new();
     for obj in scene_objects {
-        let Some(entry) = sketch_constraint_status_for_sketch(scene_objects, obj) else {
+        let Some(mut entry) = sketch_constraint_status_for_sketch(scene_objects, obj) else {
             continue;
         };
+        let count = instance_counts.entry(entry.name.clone()).or_insert(0);
+        entry.instance_index = *count;
+        *count += 1;
         match entry.status {
             ConstraintKind::FullyConstrained => fully_constrained.push(entry),
             ConstraintKind::UnderConstrained => under_constrained.push(entry),
@@ -602,6 +608,16 @@ impl ExecOutcome {
         &self,
         sketch_name: &str,
     ) -> std::result::Result<Vec<u8>, crate::tooling::sketch_visualizer::SketchVisualizationError> {
+        self.render_sketch_png_instance(sketch_name, None)
+    }
+
+    /// Render a named sketch using an optional instance index from its report.
+    /// Without an index, the name must be unique.
+    pub fn render_sketch_png_instance(
+        &self,
+        sketch_name: &str,
+        instance_index: Option<usize>,
+    ) -> std::result::Result<Vec<u8>, crate::tooling::sketch_visualizer::SketchVisualizationError> {
         use crate::front::ObjectKind;
         use crate::tooling::sketch_visualizer::SketchVisualizationError;
 
@@ -613,14 +629,21 @@ impl ExecOutcome {
                 _ => None,
             })
             .collect::<Vec<_>>();
-        let sketch = match sketches.as_slice() {
-            [] => {
+        let sketch = match (sketches.as_slice(), instance_index) {
+            ([], _) => {
                 return Err(SketchVisualizationError::SketchNotFound {
                     name: sketch_name.to_owned(),
                 });
             }
-            [sketch] => *sketch,
-            _ => {
+            (_, Some(index)) => *sketches
+                .get(index)
+                .ok_or_else(|| SketchVisualizationError::InstanceNotFound {
+                    name: sketch_name.to_owned(),
+                    index,
+                    count: sketches.len(),
+                })?,
+            ([sketch], None) => *sketch,
+            (_, None) => {
                 return Err(SketchVisualizationError::AmbiguousSketchName {
                     name: sketch_name.to_owned(),
                     count: sketches.len(),
@@ -974,6 +997,17 @@ pub struct ExecutorSettings {
     /// If not, defaults to whatever the engine's default is.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub default_backface_color: Option<String>,
+    /// If given, sets a custom engine pool.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pool: Option<String>,
+    /// If given, sets the Engine video width in pixels.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub video_res_width: Option<u32>,
+    /// If given, sets the Engine video height in pixels.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub video_res_height: Option<u32>,
+    /// asks the engine for geometry only mode - no video stream
+    pub geometry_only: bool,
 }
 
 fn is_false(b: &bool) -> bool {
@@ -993,6 +1027,10 @@ impl Default for ExecutorSettings {
             skip_artifact_graph: false,
             heartbeats: None,
             default_backface_color: None,
+            pool: None,
+            video_res_width: None,
+            video_res_height: None,
+            geometry_only: false,
         }
     }
 }
@@ -1017,6 +1055,10 @@ impl From<crate::settings::types::Settings> for ExecutorSettings {
             skip_artifact_graph: false,
             heartbeats: None,
             default_backface_color: modeling_settings.backface_color.map(|color| color.0),
+            pool: None,
+            video_res_width: None,
+            video_res_height: None,
+            geometry_only: false,
         }
     }
 }
@@ -1040,6 +1082,10 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
             skip_artifact_graph: false,
             heartbeats: None,
             default_backface_color: modeling.backface_color.map(|color| color.0),
+            pool: None,
+            video_res_width: None,
+            video_res_height: None,
+            geometry_only: false,
         }
     }
 }
@@ -1057,6 +1103,10 @@ impl From<crate::settings::types::project::ProjectModelingSettings> for Executor
             skip_artifact_graph: false,
             heartbeats: None,
             default_backface_color: None,
+            pool: None,
+            video_res_width: None,
+            video_res_height: None,
+            geometry_only: false,
         }
     }
 }
@@ -1136,14 +1186,18 @@ impl ExecutorContext {
                 },
                 replay: settings.replay.clone(),
                 show_grid: if settings.show_grid { Some(true) } else { None },
-                pool: None,
-                geometry_only: None,
+                pool: if settings.geometry_only {
+                    Some("cpu".to_string())
+                } else {
+                    settings.pool.clone()
+                },
+                geometry_only: Some(settings.geometry_only),
                 kcl_version: None,
                 pr,
                 unlocked_framerate: None,
                 webrtc: Some(false),
-                video_res_width: None,
-                video_res_height: None,
+                video_res_width: settings.video_res_width,
+                video_res_height: settings.video_res_height,
             })
             .await?;
 
@@ -1265,6 +1319,10 @@ impl ExecutorContext {
                 skip_artifact_graph: false,
                 heartbeats: None,
                 default_backface_color: None,
+                pool: None,
+                video_res_width: None,
+                video_res_height: None,
+                geometry_only: false,
             },
             None,
             engine_addr,
@@ -2441,6 +2499,7 @@ mod tests {
     use crate::ModuleId;
     use crate::errors::KclErrorDetails;
     use crate::errors::Severity;
+    use crate::execution::kcl_value::TypeDef;
     use crate::execution::memory::Stack;
     use crate::execution::types::RuntimeType;
 
@@ -4462,7 +4521,9 @@ w = f() + f()
 )
 "#;
 
-        let ctx = crate::test_server::new_context(true, None).await.unwrap();
+        let ctx = crate::test_server::new_context_engine_graphics(true, None)
+            .await
+            .unwrap();
         let old_program = crate::Program::parse_no_errs(code).unwrap();
 
         // Execute the program.
@@ -4515,7 +4576,9 @@ w = f() + f()
 )
 "#;
 
-        let mut ctx = crate::test_server::new_context(true, None).await.unwrap();
+        let mut ctx = crate::test_server::new_context_engine_graphics(true, None)
+            .await
+            .unwrap();
         let old_program = crate::Program::parse_no_errs(code).unwrap();
 
         // Execute the program.
@@ -5015,6 +5078,54 @@ startSketchOn(XY)
                 );
             } else {
                 assert_eq!(variable_f64(&result.unwrap(), "x"), 1.0);
+            }
+        }
+    }
+
+    /// The attribute name recognized in an imported file follows the effective
+    /// kclVersion: the entry point's when it declares KCL 3.0, otherwise the
+    /// imported file's own (undeclared here, so 1.0). The imported file
+    /// declares no kclVersion because a KCL 3.0 entry point rejects an import
+    /// declaring a different one.
+    ///
+    /// Warnings raised while an imported file runs aren't observable here (it
+    /// runs on a clone of the execution state), so this checks the gate with
+    /// an unknown diagnostic name: a fatal error when the attribute is
+    /// recognized, and an unknown annotation otherwise.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn diagnostics_attribute_in_import_uses_effective_kcl_version() {
+        let dep = "@diagnostics(allow = bogus)\nexport x = 1\n";
+        for version in ["1.0", "2.0", "\"3.0-preview\""] {
+            let main = format!("@settings(kclVersion = {version})\nimport x from \"dep.kcl\"\n");
+            let result = execute_with_modules(&main, &[("dep.kcl", dep)]).await;
+            if version == "\"3.0-preview\"" {
+                let error = result.unwrap_err();
+                let message = error.message();
+                assert!(
+                    message.starts_with("Unexpected diagnostic value: `bogus`; accepted values: "),
+                    "main={main}, message={message}"
+                );
+            } else {
+                assert_eq!(variable_f64(&result.unwrap(), "x"), 1.0, "main={main}");
+            }
+        }
+
+        // The old `@warnings` name follows the same version: recognized, and
+        // so validated, before KCL 3.0, and an ignored attribute with a
+        // non-fatal error under KCL 3.0.
+        let dep = "@warnings(allow = bogus)\nexport x = 1\n";
+        for version in ["1.0", "2.0", "\"3.0-preview\""] {
+            let main = format!("@settings(kclVersion = {version})\nimport x from \"dep.kcl\"\n");
+            let result = execute_with_modules(&main, &[("dep.kcl", dep)]).await;
+            if version == "\"3.0-preview\"" {
+                assert_eq!(variable_f64(&result.unwrap(), "x"), 1.0, "main={main}");
+            } else {
+                let error = result.unwrap_err();
+                let message = error.message();
+                assert!(
+                    message.starts_with("Unexpected warning value: `bogus`; accepted values: "),
+                    "main={main}, message={message}"
+                );
             }
         }
     }
@@ -7425,10 +7536,11 @@ x = m + 1
 
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_rejects_name_clash_with_module() {
-        // One rule reached four ways: by declaring the enum second, by importing
-        // the module second, and by importing the enum itself either by name or
-        // through a glob, which arrive by different code paths because a glob
-        // copies exported keys with their namespace prefix intact.
+        // One rule reached six ways: by declaring the enum or an enum alias
+        // second, by importing the module after either one, and by importing the
+        // enum itself either by name or through a glob. A glob arrives by a
+        // different code path because it copies exported keys with their
+        // namespace prefix intact.
         let plain_module = ("Color.kcl", "export x = 1\n");
         let enum_module = (
             "enums.kcl",
@@ -7456,6 +7568,16 @@ x = m + 1
                 "@settings(experimentalFeatures = allow)\nimport \"Color.kcl\"\nimport * from 'enums.kcl'\n",
                 vec![plain_module, enum_module],
             ),
+            (
+                "module then enum alias",
+                "@settings(experimentalFeatures = allow)\ntype Base { | Red }\nimport \"Color.kcl\"\ntype Color = Base\n",
+                vec![plain_module],
+            ),
+            (
+                "enum alias then module",
+                "@settings(experimentalFeatures = allow)\ntype Base { | Red }\ntype Color = Base\nimport \"Color.kcl\"\n",
+                vec![plain_module],
+            ),
         ] {
             let err = execute_with_modules(main, &modules).await.unwrap_err();
             assert_eq!(
@@ -7464,6 +7586,28 @@ x = m + 1
                 "case: {case}"
             );
         }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_alias_can_shadow_module_from_outer_scope() {
+        let main = r#"@settings(experimentalFeatures = allow)
+type Color { | Red }
+import "Shade.kcl"
+
+fn pick(): Color {
+  type Shade = Color
+  return Shade::Red
+}
+
+result = pick()
+"#;
+        let result = execute_with_modules(main, &[("Shade.kcl", "export value = 1\n")])
+            .await
+            .unwrap();
+        let KclValue::Enum { value } = mem_get_json(result.exec_state.stack(), result.mem_env, "result") else {
+            panic!("`result` should hold an enum value");
+        };
+        assert_eq!(value.qualified_name(), "Color::Red");
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -7508,6 +7652,146 @@ x = m + 1
             };
             assert_eq!(value.qualified_name(), "Color::Red", "case: {case}");
         }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_aliases_preserve_the_original_declaration() {
+        let code = r#"@settings(experimentalFeatures = allow)
+type Color { | Red | Green }
+type C = Color
+type D = C
+
+original = Color::Red
+directAlias = C::Red
+chainedAlias = D::Red
+directEqualsOriginal = directAlias == original
+chainEqualsOriginal = chainedAlias == original
+
+fn passThroughAlias(@color: C): Color {
+  return color
+}
+
+passed = passThroughAlias(D::Green)
+"#;
+
+        let result = parse_execute(code).await.unwrap();
+        let memory = result.exec_state.stack();
+
+        let KclValue::Type {
+            value: TypeDef::Enum(original_def),
+            ..
+        } = mem_get_json(memory, result.mem_env, &format!("{}Color", memory::TYPE_PREFIX))
+        else {
+            panic!("`Color` should hold an enum definition");
+        };
+        for alias in ["C", "D"] {
+            let KclValue::Type {
+                value: TypeDef::Enum(alias_def),
+                ..
+            } = mem_get_json(memory, result.mem_env, &format!("{}{alias}", memory::TYPE_PREFIX))
+            else {
+                panic!("`{alias}` should hold an enum definition");
+            };
+            assert!(Arc::ptr_eq(&original_def, &alias_def), "alias: {alias}");
+        }
+
+        for name in ["directEqualsOriginal", "chainEqualsOriginal"] {
+            let KclValue::Bool { value, .. } = mem_get_json(memory, result.mem_env, name) else {
+                panic!("`{name}` should hold a boolean");
+            };
+            assert!(value, "comparison: {name}");
+        }
+
+        let KclValue::Enum { value: passed } = mem_get_json(memory, result.mem_env, "passed") else {
+            panic!("`passed` should hold an enum value");
+        };
+        assert_eq!(passed.enum_id(), original_def.id());
+        assert_eq!(passed.variant(), "Green");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_aliases_survive_qualified_imports_and_reexports() {
+        let main = r#"@settings(experimentalFeatures = allow)
+import "colors.kcl"
+import "aliases.kcl"
+import "tones.kcl"
+import Paint as Finish from "aliases.kcl"
+import * from "aliases.kcl"
+
+original = colors::Color::Red
+qualifiedAlias = aliases::Paint::Red
+namedImportAlias = Finish::Green
+globImportAlias = Paint::Red
+namedTargetAlias = tones::Tint::Green
+aliasesEqualOriginal = qualifiedAlias == original
+
+fn throughAlias(@color: Finish): colors::Color {
+  return color
+}
+
+fn throughOriginal(@color: colors::Color): Finish {
+  return color
+}
+
+fromAlias = throughAlias(Finish::Green)
+originalIntoAlias = throughAlias(colors::Color::Green)
+fromOriginal = throughOriginal(colors::Color::Red)
+"#;
+        let modules = [
+            (
+                "colors.kcl",
+                "@settings(experimentalFeatures = allow)\nexport type Color { | Red | Green }\n",
+            ),
+            (
+                "palette.kcl",
+                "@settings(experimentalFeatures = allow)\nimport \"colors.kcl\" as swatches\nexport type Shade = swatches::Color\n",
+            ),
+            (
+                "aliases.kcl",
+                "@settings(experimentalFeatures = allow)\nimport \"palette.kcl\"\nexport type Paint = palette::Shade\n",
+            ),
+            (
+                "tones.kcl",
+                "@settings(experimentalFeatures = allow)\nimport Color from \"colors.kcl\"\nexport type Tint = Color\n",
+            ),
+        ];
+
+        let result = execute_with_modules(main, &modules).await.unwrap();
+        let memory = result.exec_state.stack();
+        let KclValue::Enum { value: original } = mem_get_json(memory, result.mem_env, "original") else {
+            panic!("`original` should hold an enum value");
+        };
+        let original_id = original.enum_id();
+
+        for (name, variant) in [
+            ("qualifiedAlias", "Red"),
+            ("namedImportAlias", "Green"),
+            ("globImportAlias", "Red"),
+            ("namedTargetAlias", "Green"),
+            ("fromAlias", "Green"),
+            ("originalIntoAlias", "Green"),
+            ("fromOriginal", "Red"),
+        ] {
+            let KclValue::Enum { value } = mem_get_json(memory, result.mem_env, name) else {
+                panic!("`{name}` should hold an enum value");
+            };
+            assert_eq!(value.enum_id(), original_id, "value: {name}");
+            assert_eq!(value.variant(), variant, "value: {name}");
+        }
+
+        let KclValue::Bool { value, .. } = mem_get_json(memory, result.mem_env, "aliasesEqualOriginal") else {
+            panic!("`aliasesEqualOriginal` should hold a boolean");
+        };
+        assert!(value);
+
+        let KclValue::Type {
+            value: TypeDef::Enum(finish_def),
+            ..
+        } = mem_get_json(memory, result.mem_env, &format!("{}Finish", memory::TYPE_PREFIX))
+        else {
+            panic!("`Finish` should hold an enum definition");
+        };
+        assert_eq!(finish_def.id(), original_id);
     }
 
     // The next five tests pin lexical resolution of signature types: a type
@@ -7711,6 +7995,12 @@ front = view::Orientation::Front: view::Orientation
                 "`Blue` is not a variant of enum `Color`. Its variants are: Red, Green.",
             ),
             (
+                "unknown variant through an alias",
+                format!("{allow}type Color {{ | Red | Green }}\ntype Paint = Color\nx = Paint::Blue\n"),
+                vec![],
+                "`Blue` is not a variant of enum `Color`. Its variants are: Red, Green.",
+            ),
+            (
                 "enum with no variants",
                 format!("{allow}type Empty {{ | }}\nx = Empty::Red\n"),
                 vec![],
@@ -7738,12 +8028,31 @@ front = view::Orientation::Front: view::Orientation
                 "Item Color not found in module's exported items",
             ),
             (
-                // The alias exemption seen from the use site: a type alias is not
-                // an enum, so the segment is resolved as a module and fails.
-                "a type alias cannot head a path",
+                "a non-enum type alias cannot head a path",
                 format!("{allow}type T = number(_)\nx = T::foo\n"),
                 vec![],
-                "`T` is not defined",
+                "`T` is a type that does not resolve to an enum, so it cannot be used as the head of a `::` path.",
+            ),
+            (
+                "a chained non-enum type alias cannot head a path",
+                format!("{allow}type T = number(_)\ntype U = T\nx = U::foo\n"),
+                vec![],
+                "`U` is a type that does not resolve to an enum, so it cannot be used as the head of a `::` path.",
+            ),
+            (
+                "a qualified non-enum type alias cannot head a path",
+                format!("{allow}import \"types.kcl\"\nx = types::T::foo\n"),
+                vec![(
+                    "types.kcl",
+                    "@settings(experimentalFeatures = allow)\nexport type T = number(_)\n",
+                )],
+                "`T` is a type that does not resolve to an enum, so it cannot be used as the head of a `::` path.",
+            ),
+            (
+                "an alias containing an enum is not an enum alias",
+                format!("{allow}type Color {{ | Red }}\ntype T = Color | string\nx = T::Red\n"),
+                vec![],
+                "`T` is a type that does not resolve to an enum, so it cannot be used as the head of a `::` path.",
             ),
             (
                 // The other half of allowing a value and an enum to share a name:
@@ -7946,6 +8255,12 @@ y = A::Red == B::Green
                 "`Shade` is a type, not a value. Use one of its variants, such as `Shade::Red`.",
             ),
             (
+                "suggestion uses the type alias",
+                format!("{allow}type Color {{ | Red | Green }}\ntype Paint = Color\nx = Paint\n"),
+                vec![],
+                "`Paint` is a type, not a value. Use one of its variants, such as `Paint::Red`.",
+            ),
+            (
                 "enum with no variants suggests nothing",
                 format!("{allow}type Empty {{ | }}\nx = Empty\n"),
                 vec![],
@@ -7973,33 +8288,47 @@ y = A::Red == B::Green
 
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_use_gated_by_consuming_module() {
-        // The declaring module allows experimental features; the consuming one
-        // does not, so using the imported enum is what trips the gate. Pins that
-        // the gate follows the consumer's settings rather than the declaration's.
+        // The declaring modules allow experimental features; the consuming one
+        // does not, so constructing the imported enum is what trips the gate.
+        // The gate follows the consumer's settings through both the original
+        // binding and a re-exported type alias.
         //
         // Experimental use is reported as a compilation issue rather than by
         // aborting the run, which is how `RuntimeType::from_alias` reports it too,
         // so execution succeeds and the diagnostic is what carries the complaint.
-        let main = r#"import "colors.kcl"
-x = colors::Color::Red
-"#;
-        let result = execute_with_modules(
-            main,
-            &[(
-                "colors.kcl",
-                "@settings(experimentalFeatures = allow)\nexport type Color { | Red }\n",
-            )],
-        )
-        .await
-        .unwrap();
-
-        let issues = &result.exec_state.global.issues;
-        assert_eq!(issues.len(), 1, "issues: {issues:?}");
-        assert_eq!(
-            issues[0].message,
-            "Use of the enum `Color` is experimental and may change or be removed."
+        let colors = (
+            "colors.kcl",
+            "@settings(experimentalFeatures = allow)\nexport type Color { | Red }\n",
         );
-        assert_eq!(issues[0].severity, Severity::Error);
+        let aliases = (
+            "aliases.kcl",
+            "@settings(experimentalFeatures = allow)\nimport \"colors.kcl\"\nexport type Shade = colors::Color\n",
+        );
+
+        for (case, main, modules) in [
+            (
+                "original binding",
+                "import \"colors.kcl\"\nx = colors::Color::Red\n",
+                vec![colors],
+            ),
+            (
+                "re-exported alias",
+                "import \"aliases.kcl\"\nx = aliases::Shade::Red\n",
+                vec![colors, aliases],
+            ),
+        ] {
+            let result = execute_with_modules(main, &modules)
+                .await
+                .unwrap_or_else(|err| panic!("case: {case}: {}", err.message()));
+
+            let issues = &result.exec_state.global.issues;
+            assert_eq!(issues.len(), 1, "case: {case}: issues: {issues:?}");
+            assert_eq!(
+                issues[0].message, "Use of the enum `Color` is experimental and may change or be removed.",
+                "case: {case}"
+            );
+            assert_eq!(issues[0].severity, Severity::Error, "case: {case}");
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -8023,15 +8352,16 @@ x = Color::Red
         // Pins two deliberate exemptions from the clash rule above, so that
         // tightening it later has to be a decision rather than an accident.
         //
-        // Only an enum or a module can head a `Color::Red` path, so only those two
-        // can be ambiguous. A type alias cannot head a `::` path, and an ordinary
-        // value is never looked up for a path head at all.
+        // Only a module or a type binding that resolves to an enum can head a
+        // `Color::Red` path, so only those two can be ambiguous. A non-enum type
+        // alias cannot head a `::` path, and an ordinary value is never looked up
+        // for a path head at all.
         for (case, main, modules) in [
             (
                 // The module arrives second, which is the path carrying the
                 // "only `TypeDef::Enum` conflicts" guard.
                 "an alias may share a name with a module",
-                "@settings(experimentalFeatures = allow)\ntype Temperature = number(_)\nimport \"Temperature.kcl\"\n",
+                "@settings(experimentalFeatures = allow)\ntype Temperature = number(_)\nimport \"Temperature.kcl\"\nx = Temperature::x\n",
                 vec![("Temperature.kcl", "export x = 1\n")],
             ),
             (
@@ -8245,10 +8575,19 @@ type Color { | Green }
         let header = r#"
             @settings(experimentalFeatures = allow)
             type Color { | Red | Green }
+            type Paint = Color
             type Shade { | Red }
         "#;
 
         for (case, body, expected) in [
+            (
+                "an alias parameter accepts the original enum",
+                r#"
+                    fn paint(@c: Paint) { return c }
+                    x = paint(Color::Red) == Paint::Red
+                "#,
+                None,
+            ),
             (
                 "an unlabeled parameter",
                 r#"
@@ -8308,6 +8647,16 @@ type Color { | Green }
                     x = either("plain") == "plain"
                 "#,
                 None,
+            ),
+            (
+                "an alias parameter rejects a different enum",
+                r#"
+                    fn paint(@c: Paint) { return c }
+                    x = paint(Shade::Red) == Shade::Red
+                "#,
+                Some(
+                    "The input argument of `paint` requires a value with type `Paint`, but found a value of enum `Shade` (with type `Shade`).",
+                ),
             ),
             (
                 "another declaration at the same boundary",

@@ -40,7 +40,10 @@ beforeEach(async () => {
 })
 
 afterAll(() => {
-  engineCommandManagerInThisFile.tearDown()
+  engineCommandManagerInThisFile.tearDown({
+    route: 'user-requested',
+    initiatedBy: 'client',
+  })
 })
 
 // testing helper function
