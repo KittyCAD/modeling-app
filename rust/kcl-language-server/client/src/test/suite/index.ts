@@ -13,22 +13,22 @@ export async function run(): Promise<void> {
   const testsRoot = path.resolve(__dirname, '..')
 
   const files: string[] = await glob('**/**.test.js', { cwd: testsRoot })
-  if (files.length === 0) {
-    throw new Error('No VS Code extension tests found')
-  }
   for (const file of files) {
     mocha.addFile(path.resolve(testsRoot, file))
   }
 
-  await new Promise<void>((resolve, reject) => {
-    mocha.run((failures: number) => {
+  const passingTests = await new Promise<number>((resolve, reject) => {
+    const runner = mocha.run((failures: number) => {
       if (failures > 0) {
         reject(new Error(`${failures} tests failed.`))
       } else {
-        resolve()
+        resolve(runner.stats?.passes ?? 0)
       }
     })
   })
+  if (passingTests === 0) {
+    throw new Error('No VS Code extension tests passed')
+  }
 
   const completionPath = process.env['KCL_VSCODE_TEST_COMPLETION']
   if (!completionPath) {
