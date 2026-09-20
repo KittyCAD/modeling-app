@@ -269,6 +269,11 @@ test(
     }
     const publicProjectArchive = await zipProject(publicProjectFiles)
     let publicProjectDownloads = 0
+    let releasePersonalCloudDownload!: () => void
+    const personalCloudDownloadGate = new Promise<void>((resolve) => {
+      releasePersonalCloudDownload = resolve
+    })
+    let personalCloudDownloadStarted = false
     await context.route(
       `**/projects/public/${publicProjectId}**`,
       async (route) => {
@@ -306,6 +311,14 @@ test(
       listedProjects: [],
       createProject: () => personalCloudProject,
     })
+    await context.route(
+      `**/user/projects/${personalCloudProject.id}/download**`,
+      async (route) => {
+        personalCloudDownloadStarted = true
+        await personalCloudDownloadGate
+        await route.fallback()
+      }
+    )
 
     await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG], {
       cloudSyncEnabled: true,
@@ -315,13 +328,21 @@ test(
     await page.goto(`/?project-id=${publicProjectId}&ask-open-desktop=true`)
     await page.getByTestId('continue-to-web-app-button').click()
 
-    await expectProjectFileRoute(page)
-    expect(publicProjectDownloads).toBe(1)
     await expect
       .poll(() => apiCalls.creates.length, {
         timeout: CLOUD_SYNC_E2E_TIMEOUT,
       })
       .toBe(1)
+    expect(publicProjectDownloads).toBe(1)
+    await expect
+      .poll(() => personalCloudDownloadStarted, {
+        timeout: CLOUD_SYNC_E2E_TIMEOUT,
+      })
+      .toBe(true)
+    await expect(page).not.toHaveURL(/\/file\//)
+    releasePersonalCloudDownload()
+
+    await expectProjectFileRoute(page)
     await expect
       .poll(() =>
         opfsPathExists(
