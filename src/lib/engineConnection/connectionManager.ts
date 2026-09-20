@@ -186,7 +186,8 @@ export class ConnectionManager extends EventTarget {
     token,
     setStreamIsReady,
     callbackOnUnitTestingConnection,
-    unitTestGeometryOnly,
+    unitTestWebrtc,
+    unitTestPool,
     rustContext,
   }: {
     width: number
@@ -194,7 +195,8 @@ export class ConnectionManager extends EventTarget {
     token: string
     setStreamIsReady: (setStreamIsReady: boolean) => void
     callbackOnUnitTestingConnection?: (message: string) => void
-    unitTestGeometryOnly?: boolean
+    unitTestWebrtc?: boolean
+    unitTestPool?: 'cpu'
     rustContext?: RustContext
   }) {
     EngineDebugger.addLog({
@@ -242,7 +244,8 @@ export class ConnectionManager extends EventTarget {
       tearDownManager: this.tearDown.bind(this),
       rejectPendingCommand: this.rejectPendingCommand.bind(this),
       callbackOnUnitTestingConnection,
-      unitTestGeometryOnly,
+      unitTestWebrtc,
+      unitTestPool,
       handleMessage,
       getCloudProjectId: () =>
         this.systemDeps.settingsActor.getSnapshot().context.currentProject
