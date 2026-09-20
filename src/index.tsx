@@ -17,6 +17,7 @@ import { initializeElectronLifecycleClientReporting } from '@src/lib/electronLif
 import { initializeWindowExceptionHandler } from '@src/lib/exceptions'
 import monkeyPatchForBrowserTranslation from '@src/lib/monkeyPatchBrowserTranslate'
 import { markOnce } from '@src/lib/performance'
+import { initializePreloadRecovery } from '@src/lib/preloadRecovery'
 import { reportRejection } from '@src/lib/trap'
 import reportWebVitals from '@src/reportWebVitals'
 
@@ -37,6 +38,7 @@ function initSingletonBehavior(app: App) {
   const { singletons } = app
   markOnce('code/willAuth')
   initializeWindowExceptionHandler(singletons.kclManager)
+  initializePreloadRecovery(singletons.kclManager)
 
   // Don't start the app machine until all these singletons
   // are initialized, and the wasm module is loaded.
