@@ -4,6 +4,9 @@ import * as path from 'node:path'
 
 const Mocha = require('mocha')
 const { glob } = require('glob')
+// Hardcoded inventory: 1 extension sample, 1 profile cleanup, 2 diagnostics tests.
+// Keep this independent of discovery so missing tests cannot lower the target.
+// Update it when adding or removing tests from the extension-host suite.
 const EXPECTED_PASSES = 4
 
 export async function run(): Promise<void> {
