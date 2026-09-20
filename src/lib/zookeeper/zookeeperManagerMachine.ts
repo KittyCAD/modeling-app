@@ -125,18 +125,21 @@ function serializeProjectRequest(
       'Cloud prompt exceeds the 256 KiB control-message limit. Shorten the prompt or selection and try again.'
     )
   }
-  console.debug('[zookeeper-transport]', {
-    event: 'serialized_project_request',
-    type: request.type,
-    bytes,
-    source: request.cloud_project_revision ? 'cloud_revision' : 'inline',
-    inline_file_count: Object.keys(request.current_files ?? {}).length,
-    inline_attachment_count:
-      'additional_files' in request
-        ? (request.additional_files?.length ?? 0)
-        : 0,
-    correlation_id: request.correlation_id,
-  })
+  console.debug(
+    '[zookeeper-transport]',
+    JSON.stringify({
+      event: 'serialized_project_request',
+      type: request.type,
+      bytes,
+      source: request.cloud_project_revision ? 'cloud_revision' : 'inline',
+      inline_file_count: Object.keys(request.current_files ?? {}).length,
+      inline_attachment_count:
+        'additional_files' in request
+          ? (request.additional_files?.length ?? 0)
+          : 0,
+      correlation_id: request.correlation_id,
+    })
+  )
   return serialized
 }
 

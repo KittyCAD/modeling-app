@@ -1069,7 +1069,11 @@ describe('zookeeperManagerMachine', () => {
           active_file: 'newFile.kcl',
         })
         expect(new Blob([ws.sentPayloads[1]]).size).toBeLessThan(256 * 1024)
-        expect(log).toHaveBeenCalledWith('[zookeeper-transport]', {
+        expect(log).toHaveBeenCalledWith(
+          '[zookeeper-transport]',
+          expect.any(String)
+        )
+        expect(JSON.parse(log.mock.calls[0][1])).toEqual({
           event: 'serialized_project_request',
           type: 'project_context',
           bytes: new Blob([ws.sentPayloads[1]]).size,
