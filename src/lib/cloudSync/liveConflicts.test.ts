@@ -201,8 +201,9 @@ describe('cloud sync live conflicts', () => {
     })
 
     await startCloudSyncProject(projectPath)
-    await expect(syncCloudSyncProjectNow(projectPath)).resolves.toEqual({
+    await expect(syncCloudSyncProjectNow(projectPath)).resolves.toMatchObject({
       remoteProjectId,
+      revision: 'rev-2',
     })
 
     await expect(

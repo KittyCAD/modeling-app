@@ -4026,7 +4026,11 @@ export async function syncCloudSyncProjectNow(
           lastFailureAt: undefined,
           lastSyncedAt: metadata.lastSyncedAt,
         })
-        return { remoteProjectId: metadata.remoteProjectId }
+        return {
+          remoteProjectId: metadata.remoteProjectId,
+          revision: metadata.remoteRevision,
+          manifest: metadata.baseManifest,
+        }
       }
     }
 

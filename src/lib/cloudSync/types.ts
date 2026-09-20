@@ -33,7 +33,7 @@ export type ProjectArchiveFile = {
 }
 
 /** Result of synchronizing one explicitly enrolled project to convergence. */
-export type CloudSyncProjectNowResult = {
+export type CloudSyncProjectNowResult = AcknowledgedSyncBase & {
   remoteProjectId: string
 }
 

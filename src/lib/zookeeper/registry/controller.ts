@@ -7,6 +7,12 @@ import {
 import type { KclManager, ZDSProject } from '@src/lang/KclManager'
 import { BillingTransition } from '@src/lib/billing'
 import type { BillingRegistryService } from '@src/lib/billing/registry/contract'
+import { syncCloudSyncProjectNow } from '@src/lib/cloudSync'
+import { isCloudSyncExcludedPath } from '@src/lib/cloudSync/paths'
+import {
+  projectManifestFromFiles,
+  projectManifestsEqual,
+} from '@src/lib/cloudSync/projectArchive'
 import { getParentAbsolutePath } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import { reportRejection, trap } from '@src/lib/trap'
@@ -15,6 +21,7 @@ import { ZookeeperFileRequestProcessor } from '@src/lib/zookeeper/registry/Zooke
 import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import {
   createZookeeperManagerActor,
+  type CloudProjectRevision,
   hasBeenInterruptedOnLast,
   type MlCopilotModeId,
   stopZookeeperManagerActor,
@@ -24,7 +31,10 @@ import {
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { activeFileRelativeToProject } from '@src/lib/zookeeper/zookeeperPromptRequest'
 import { zookeeperPromptRunningSignal } from '@src/lib/zookeeper/zookeeperPromptState'
-import { collectProjectFiles } from '@src/machines/systemIO/utils'
+import {
+  collectProjectFiles,
+  isZookeeperArtifactPath,
+} from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
 import type { SystemIORegistryService } from '@src/registry/contracts/systemIO'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
@@ -455,6 +465,71 @@ class SessionController implements ZookeeperSessionController {
     return this.getZdsProject()?.projectIORefSignal.value
   }
 
+  private async collectPromptProjectFiles(
+    project: Project,
+    editorCode: string,
+    editorPath: string
+  ) {
+    if (
+      this.deps.cloudProjectId &&
+      !(await this.deps.kclManager.flushWriteToFile())
+    ) {
+      return Promise.reject(
+        new Error(
+          'Save the current edits before sending a cloud-backed prompt.'
+        )
+      )
+    }
+    const projectFiles = await collectProjectFiles({
+      fileOperations: this.deps.fileOperations,
+      selectedFileContents: editorCode,
+      selectedFilePath: editorPath,
+      fileNames: this.deps.kclManager.execState.filenames,
+      projectContext: project,
+      ...(this.deps.cloudProjectId ? { skipUnreadableFiles: false } : {}),
+    })
+    if (!this.deps.cloudProjectId) return { projectFiles }
+
+    const [committed, promptManifest] = await Promise.all([
+      syncCloudSyncProjectNow(project.path),
+      Promise.all(
+        projectFiles
+          .filter((file) => !isCloudSyncExcludedPath(file.relPath))
+          .map(async (file) => ({
+            relativePath: file.relPath,
+            data:
+              file.type === 'kcl'
+                ? new TextEncoder().encode(file.fileContents)
+                : new Uint8Array(await file.data.arrayBuffer()),
+          }))
+      ).then(projectManifestFromFiles),
+    ])
+    const committedSources = {
+      files: Object.fromEntries(
+        Object.entries(committed.manifest.files).filter(
+          ([path]) => !isZookeeperArtifactPath(path)
+        )
+      ),
+    }
+    if (
+      committed.remoteProjectId !== this.deps.cloudProjectId ||
+      !projectManifestsEqual(promptManifest, committedSources)
+    ) {
+      return Promise.reject(
+        new Error(
+          'The cloud project changed while preparing this prompt. Review the synced files and retry.'
+        )
+      )
+    }
+    return {
+      projectFiles,
+      cloudProjectRevision: {
+        project_id: committed.remoteProjectId,
+        revision: committed.revision,
+      },
+    }
+  }
+
   private async process(
     prompt: string,
     mode: MlCopilotModeId | undefined,
@@ -472,19 +547,15 @@ class SessionController implements ZookeeperSessionController {
     const editorPath = kclManager.path
     const selections = kclManager.modelingState?.context.selectionRanges ?? null
     let projectFiles: Awaited<ReturnType<typeof collectProjectFiles>>
+    let cloudProjectRevision: CloudProjectRevision | undefined
     let wasmInstance: Awaited<KclManager['wasmInstancePromise']>
     try {
       const promptInputs = await Promise.all([
-        collectProjectFiles({
-          fileOperations: this.deps.fileOperations,
-          selectedFileContents: editorCode,
-          selectedFilePath: editorPath,
-          fileNames: kclManager.execState.filenames,
-          projectContext: project,
-        }),
+        this.collectPromptProjectFiles(project, editorCode, editorPath),
         kclManager.wasmInstancePromise,
       ])
-      projectFiles = promptInputs[0]
+      projectFiles = promptInputs[0].projectFiles
+      cloudProjectRevision = promptInputs[0].cloudProjectRevision
       wasmInstance = promptInputs[1]
     } catch (error: unknown) {
       if (
@@ -526,6 +597,7 @@ class SessionController implements ZookeeperSessionController {
         content: editorCode,
       },
       projectFiles,
+      cloudProjectRevision,
       selections,
       artifactGraph: kclManager.artifactGraph,
       kclManager,
@@ -736,14 +808,8 @@ class SessionController implements ZookeeperSessionController {
     const editorCode = kclManager.code
     const editorPath = kclManager.path
     this.isResumingInterruptedTurnSignal.value = resumeInterruptedTurn
-    void collectProjectFiles({
-      fileOperations: this.deps.fileOperations,
-      selectedFileContents: editorCode,
-      selectedFilePath: editorPath,
-      fileNames: kclManager.execState.filenames,
-      projectContext: project,
-    })
-      .then((projectFiles) => {
+    void this.collectPromptProjectFiles(project, editorCode, editorPath)
+      .then(({ projectFiles, cloudProjectRevision }) => {
         if (
           !this.active ||
           this.continueCheckGeneration !== generation ||
@@ -764,6 +830,7 @@ class SessionController implements ZookeeperSessionController {
           type: ZookeeperManagerStates.ContinueCheck,
           projectName: project.name,
           projectFiles,
+          cloudProjectRevision,
           engineApiCallId: kclManager.engineCommandManager.apiCallId,
           activeFile: activeFileRelativeToProject({
             currentFileEntry: loaderFile,

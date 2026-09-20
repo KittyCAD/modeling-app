@@ -931,106 +931,120 @@ describe('zookeeperManagerMachine', () => {
   })
 
   describe('ContinueCheck', () => {
-    it('sends continue requests when the last exchange was interrupted', async () => {
-      const ws: TestWebSocket = new TestSocket() as TestWebSocket
-      const interruptedConversation: Conversation = {
-        exchanges: [
-          {
-            request: {
-              type: 'user',
-              content: 'make me a sandwich',
-            },
-            responses: [
-              {
-                reasoning: {
-                  type: 'text',
-                  content: 'still working',
-                },
+    it.each([false, true])(
+      'sends continue requests when interrupted (cloud: %s)',
+      async (cloud) => {
+        const cloudProjectRevision = cloud
+          ? {
+              project_id: '11111111-1111-4111-8111-111111111111',
+              revision: '22222222-2222-4222-8222-222222222222',
+            }
+          : undefined
+        const ws: TestWebSocket = new TestSocket() as TestWebSocket
+        const interruptedConversation: Conversation = {
+          exchanges: [
+            {
+              request: {
+                type: 'user',
+                content: 'make me a sandwich',
               },
-            ],
-            deltasAggregated: '',
+              responses: [
+                {
+                  reasoning: {
+                    type: 'text',
+                    content: 'still working',
+                  },
+                },
+              ],
+              deltasAggregated: '',
+            },
+          ],
+        }
+        const projectFiles: FileMeta[] = [
+          {
+            type: 'kcl',
+            relPath: 'main.kcl',
+            absPath: '/tmp/main.kcl',
+            fileContents: 'cube()',
+            execStateFileNamesIndex: 0,
           },
-        ],
+          {
+            type: 'other',
+            relPath: 'notes.txt',
+            data: new Blob(['notes']),
+          },
+        ]
+        const machine = zookeeperManagerMachine.provide({
+          actors: {
+            [ZookeeperManagerStates.Setup]: fromPromise<
+              Partial<ZookeeperManagerContext>,
+              SetupActorInput
+            >(async () => ({
+              ws,
+              conversation: interruptedConversation,
+            })),
+          },
+        })
+        const actor = createActor(machine, {
+          input: {
+            apiToken: 'token',
+          },
+        }).start()
+
+        actor.send({
+          type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+          refParentSend: vi.fn(),
+        })
+
+        await waitFor(actor, (state) =>
+          state.matches(ZookeeperManagerStates.WaitForContinueCheck)
+        )
+
+        expect(ws.sentPayloads).toHaveLength(0)
+
+        actor.send({
+          type: ZookeeperManagerStates.ContinueCheck,
+          projectName: 'zoo-project',
+          projectFiles,
+          cloudProjectRevision,
+          activeFile: 'newFile.kcl',
+          engineApiCallId: 'engine-api-call-id',
+        })
+
+        await waitFor(actor, (state) =>
+          state.matches(ZookeeperManagerStates.Ready)
+        )
+
+        expect(actor.getSnapshot().context.awaitingResponse).toBe(true)
+        expect(actor.getSnapshot().context.projectNameCurrentlyOpened).toBe(
+          'zoo-project'
+        )
+        expect(ws.sentPayloads).toHaveLength(2)
+        expect(JSON.parse(ws.sentPayloads[0])).toStrictEqual({
+          type: 'system',
+          command: 'continue',
+        })
+        expect(JSON.parse(ws.sentPayloads[1])).toStrictEqual({
+          type: 'project_context',
+          correlation_id: expect.stringMatching(
+            /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
+          ),
+          engine_api_call_id: 'engine-api-call-id',
+          project_name: 'zoo-project',
+          ...(cloudProjectRevision
+            ? { cloud_project_revision: cloudProjectRevision }
+            : {
+                current_files: {
+                  'main.kcl': Array.from(new TextEncoder().encode('cube()')),
+                  'notes.txt': Array.from(new TextEncoder().encode('notes')),
+                },
+              }),
+          active_file: 'newFile.kcl',
+        })
+
+        actor.stop()
       }
-      const projectFiles: FileMeta[] = [
-        {
-          type: 'kcl',
-          relPath: 'main.kcl',
-          absPath: '/tmp/main.kcl',
-          fileContents: 'cube()',
-          execStateFileNamesIndex: 0,
-        },
-        {
-          type: 'other',
-          relPath: 'notes.txt',
-          data: new Blob(['notes']),
-        },
-      ]
-      const machine = zookeeperManagerMachine.provide({
-        actors: {
-          [ZookeeperManagerStates.Setup]: fromPromise<
-            Partial<ZookeeperManagerContext>,
-            SetupActorInput
-          >(async () => ({
-            ws,
-            conversation: interruptedConversation,
-          })),
-        },
-      })
-      const actor = createActor(machine, {
-        input: {
-          apiToken: 'token',
-        },
-      }).start()
-
-      actor.send({
-        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
-        refParentSend: vi.fn(),
-      })
-
-      await waitFor(actor, (state) =>
-        state.matches(ZookeeperManagerStates.WaitForContinueCheck)
-      )
-
-      expect(ws.sentPayloads).toHaveLength(0)
-
-      actor.send({
-        type: ZookeeperManagerStates.ContinueCheck,
-        projectName: 'zoo-project',
-        projectFiles,
-        activeFile: 'newFile.kcl',
-        engineApiCallId: 'engine-api-call-id',
-      })
-
-      await waitFor(actor, (state) =>
-        state.matches(ZookeeperManagerStates.Ready)
-      )
-
-      expect(actor.getSnapshot().context.awaitingResponse).toBe(true)
-      expect(actor.getSnapshot().context.projectNameCurrentlyOpened).toBe(
-        'zoo-project'
-      )
-      expect(ws.sentPayloads).toHaveLength(2)
-      expect(JSON.parse(ws.sentPayloads[0])).toStrictEqual({
-        type: 'system',
-        command: 'continue',
-      })
-      expect(JSON.parse(ws.sentPayloads[1])).toStrictEqual({
-        type: 'project_context',
-        correlation_id: expect.stringMatching(
-          /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
-        ),
-        engine_api_call_id: 'engine-api-call-id',
-        project_name: 'zoo-project',
-        current_files: {
-          'main.kcl': Array.from(new TextEncoder().encode('cube()')),
-          'notes.txt': Array.from(new TextEncoder().encode('notes')),
-        },
-        active_file: 'newFile.kcl',
-      })
-
-      actor.stop()
-    })
+    )
 
     it('stores file responses in the current exchange', async () => {
       const ws: TestWebSocket = new TestSocket() as TestWebSocket

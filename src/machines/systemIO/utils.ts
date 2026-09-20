@@ -260,7 +260,7 @@ export const determineProjectFilePathFromPrompt = (
 
 const normalizeRelativePath = (filePath: string) => filePath.replace(/\\/g, '/')
 
-const isZookeeperArtifactPath = (filePath: string) => {
+export const isZookeeperArtifactPath = (filePath: string) => {
   const normalized = normalizeRelativePath(filePath)
   return ['zookeeper/attachments', 'zookeeper/downloads'].some(
     (root) => normalized === root || normalized.startsWith(`${root}/`)

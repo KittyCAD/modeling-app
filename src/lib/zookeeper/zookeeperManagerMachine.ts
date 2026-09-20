@@ -30,10 +30,7 @@ import type { ConnectionManager } from '@src/lib/engineConnection/connectionMana
 import type { FileEntry, Project } from '@src/lib/project'
 import type { FileMeta } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import {
-  constructZookeeperUserPromptRequest,
-  type KittyCadLibFile,
-} from '@src/lib/zookeeper/zookeeperPromptRequest'
+import { constructZookeeperUserPromptRequest } from '@src/lib/zookeeper/zookeeperPromptRequest'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 
 import toast from 'react-hot-toast'
@@ -86,6 +83,8 @@ function isMlCopilotAccessDeniedMessage(
 type MlCopilotListModesRequest = { type: 'list_modes' }
 export type MlCopilotModeId = string
 
+export type CloudProjectRevision = { project_id: string; revision: string }
+
 type MlCopilotUserRequest = Omit<
   Extract<MlCopilotClientMessage, { type: 'user' }>,
   'mode'
@@ -96,6 +95,7 @@ type MlCopilotUserRequest = Omit<
   active_file?: string
   correlation_id?: string
   engine_api_call_id?: string
+  cloud_project_revision?: CloudProjectRevision
 }
 
 export const createZookeeperCorrelation = (
@@ -112,6 +112,7 @@ type MlCopilotProjectContextRequest = Extract<
   active_file?: string
   correlation_id?: string
   engine_api_call_id?: string
+  cloud_project_revision?: CloudProjectRevision
 }
 
 type MlCopilotClientMessageWithDiscoveredMode =
@@ -357,6 +358,7 @@ export type ZookeeperManagerEvents =
       applicationProjectDirectory: string
       fileSelectedDuringPrompting: { entry: FileEntry; content: string }
       projectFiles: FileMeta[]
+      cloudProjectRevision?: CloudProjectRevision
       selections: Selections | null
       artifactGraph: ArtifactGraph
       kclManager: KclManager
@@ -368,6 +370,7 @@ export type ZookeeperManagerEvents =
       type: ZookeeperManagerStates.ContinueCheck
       projectName: string
       projectFiles: FileMeta[]
+      cloudProjectRevision?: CloudProjectRevision
       activeFile?: string
       engineApiCallId?: string
     }
@@ -1510,7 +1513,7 @@ export const zookeeperManagerMachine = setup({
 
       const filesAsByteArrays: Record<string, number[]> = {}
 
-      for (let file of requestData.files) {
+      for (let file of event.cloudProjectRevision ? [] : requestData.files) {
         filesAsByteArrays[file.name] = Array.from(
           new Uint8Array(await file.data.arrayBuffer())
         )
@@ -1524,7 +1527,9 @@ export const zookeeperManagerMachine = setup({
         ...(requestData.body.source_ranges !== undefined
           ? { source_ranges: requestData.body.source_ranges }
           : {}),
-        current_files: filesAsByteArrays,
+        ...(event.cloudProjectRevision
+          ? { cloud_project_revision: event.cloudProjectRevision }
+          : { current_files: filesAsByteArrays }),
         ...(requestData.activeFile
           ? { active_file: requestData.activeFile }
           : {}),
@@ -1568,25 +1573,13 @@ export const zookeeperManagerMachine = setup({
       }
 
       const filesAsByteArrays: Record<string, number[]> = {}
-      const files: KittyCadLibFile[] = []
-
-      event.projectFiles.forEach((file) => {
-        let data: Blob
-        if (file.type === 'other') {
-          data = file.data
-        } else {
-          // file.type === 'kcl'
-          data = new Blob([file.fileContents], { type: 'text/kcl' })
-        }
-        files.push({
-          name: file.relPath,
-          data,
-        })
-      })
-
-      for (let file of files) {
-        filesAsByteArrays[file.name] = Array.from(
-          new Uint8Array(await file.data.arrayBuffer())
+      for (const file of event.cloudProjectRevision ? [] : event.projectFiles) {
+        const data =
+          file.type === 'other'
+            ? file.data
+            : new Blob([file.fileContents], { type: 'text/kcl' })
+        filesAsByteArrays[file.relPath] = Array.from(
+          new Uint8Array(await data.arrayBuffer())
         )
       }
 
@@ -1594,7 +1587,9 @@ export const zookeeperManagerMachine = setup({
         type: 'project_context',
         ...createZookeeperCorrelation(event.engineApiCallId),
         project_name: event.projectName,
-        current_files: filesAsByteArrays,
+        ...(event.cloudProjectRevision
+          ? { cloud_project_revision: event.cloudProjectRevision }
+          : { current_files: filesAsByteArrays }),
         ...(event.activeFile ? { active_file: event.activeFile } : {}),
       }
 

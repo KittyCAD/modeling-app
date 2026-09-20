@@ -1,4 +1,6 @@
 import { signal } from '@preact/signals-core'
+import { projectManifestFromFiles } from '@src/lib/cloudSync/projectArchive'
+import type { CloudSyncProjectNowResult } from '@src/lib/cloudSync/types'
 import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import type * as ZookeeperManagerMachineModule from '@src/lib/zookeeper/zookeeperManagerMachine'
 import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
@@ -14,6 +16,11 @@ const managerMocks = vi.hoisted(() => ({
 
 const projectFilesMocks = vi.hoisted(() => ({
   collect: vi.fn(),
+  sync: vi.fn(),
+}))
+
+vi.mock('@src/lib/cloudSync', () => ({
+  syncCloudSyncProjectNow: projectFilesMocks.sync,
 }))
 
 const workerMocks = vi.hoisted(() => ({
@@ -189,12 +196,14 @@ function createHarness({
   actorContext,
   apiToken = 'initial-token',
   initialProjectId = projectId,
+  cloudProjectId,
   storeGet = Promise.resolve(undefined),
 }: {
   actorState?: TestState
   actorContext?: Partial<SnapshotContext>
   apiToken?: string
   initialProjectId?: string | undefined
+  cloudProjectId?: string
   storeGet?: Promise<string | undefined>
 } = {}) {
   const actor = new TestActor()
@@ -233,6 +242,7 @@ function createHarness({
     execState: { filenames: {} },
     modelingState: { context: { selectionRanges: null } },
     path: loaderFile.path,
+    flushWriteToFile: vi.fn().mockResolvedValue(true),
     wasmInstancePromise: Promise.resolve({}),
     get wasmInstance(): never {
       throw new Error('Attempted to get wasmInstance before initialization')
@@ -248,6 +258,7 @@ function createHarness({
   const projectSignal = signal<ZDSProject | undefined>(zdsProject)
   const dependencies = {
     apiToken,
+    cloudProjectId,
     billing: { send: billingSend },
     conversationStore,
     fileOperations: {
@@ -435,6 +446,104 @@ describe('Zookeeper session controller', () => {
     })
     expect(controller.queue.value).toHaveLength(0)
   })
+
+  it.each(['prompt', 'resume'] as const)(
+    'waits for a committed cloud revision before %s',
+    async (kind) => {
+      const sync = deferred<CloudSyncProjectNowResult>()
+      projectFilesMocks.sync.mockReturnValue(sync.promise)
+      const { actor, controller, kclManager } = createHarness({
+        actorState: 'ready-await',
+        cloudProjectId: projectId,
+      })
+      const source = '// committed source\n'
+      const binary = new Uint8Array([0, 255, 32])
+      projectFilesMocks.collect.mockResolvedValue([
+        {
+          type: 'kcl',
+          relPath: 'main.kcl',
+          absPath: `${projectPath}/main.kcl`,
+          fileContents: source,
+          execStateFileNamesIndex: 0,
+        },
+        { type: 'other', relPath: 'import.glb', data: new Blob([binary]) },
+      ])
+      const manifest = await projectManifestFromFiles([
+        { relativePath: 'main.kcl', data: new TextEncoder().encode(source) },
+        { relativePath: 'import.glb', data: binary },
+        {
+          relativePath: 'zookeeper/downloads/result.txt',
+          data: new TextEncoder().encode('not source'),
+        },
+      ])
+      if (kind === 'resume') {
+        actor.emit('wait-for-continue-check', {
+          conversation: interruptedConversation,
+        })
+        controller.resumeInterruptedTurn()
+      } else {
+        controller.sendOrQueue('read cloud source', undefined, [])
+      }
+      await vi.waitFor(() =>
+        expect(projectFilesMocks.sync).toHaveBeenCalledWith(projectPath)
+      )
+      expect(kclManager.flushWriteToFile).toHaveBeenCalledOnce()
+      const eventType =
+        kind === 'resume'
+          ? ZookeeperManagerStates.ContinueCheck
+          : ZookeeperManagerTransitions.MessageSend
+      expect(sentEvents(actor, eventType)).toHaveLength(0)
+      sync.resolve({
+        remoteProjectId: projectId,
+        revision: 'committed-revision',
+        manifest,
+      })
+      await vi.waitFor(() =>
+        expect(sentEvents(actor, eventType)).toHaveLength(1)
+      )
+      expect(sentEvents(actor, eventType)[0]).toMatchObject({
+        cloudProjectRevision: {
+          project_id: projectId,
+          revision: 'committed-revision',
+        },
+      })
+    }
+  )
+
+  it.each(['unsaved', 'conflict', 'changed', 'other-project'] as const)(
+    'keeps the cloud prompt queued on %s instead of sending stale source',
+    async (failure) => {
+      vi.spyOn(console, 'error').mockImplementation(() => {})
+      const { actor, controller, kclManager } = createHarness({
+        actorState: 'ready-await',
+        cloudProjectId: projectId,
+      })
+      kclManager.flushWriteToFile.mockResolvedValue(failure !== 'unsaved')
+      projectFilesMocks.sync.mockResolvedValue({
+        remoteProjectId:
+          failure === 'other-project' ? 'other-project' : projectId,
+        revision: 'committed-revision',
+        manifest: {
+          files:
+            failure === 'changed'
+              ? { 'main.kcl': { byteSize: 1, sha256: 'changed' } }
+              : {},
+        },
+      })
+      if (failure === 'conflict')
+        projectFilesMocks.sync.mockRejectedValue(
+          new Error('Cloud sync found conflicting local and remote changes.')
+        )
+      controller.sendOrQueue('do not send stale files', undefined, [])
+      await vi.waitFor(() => expect(console.error).toHaveBeenCalled())
+      expect(controller.queue.value).toHaveLength(1)
+      expect(
+        sentEvents(actor, ZookeeperManagerTransitions.MessageSend)
+      ).toHaveLength(0)
+      if (failure === 'unsaved')
+        expect(projectFilesMocks.sync).not.toHaveBeenCalled()
+    }
+  )
 
   it('does not submit a queued prompt removed during project collection', async () => {
     const collectedFiles = deferred<[]>()
@@ -931,7 +1040,9 @@ describe('Zookeeper session controller', () => {
         projectName: 'bracket',
       }),
     ])
-    expect(controller.isResumingInterruptedTurn.value).toBe(false)
+    await vi.waitFor(() =>
+      expect(controller.isResumingInterruptedTurn.value).toBe(false)
+    )
   })
 
   it('invalidates a pending resume after leaving the continue state', async () => {
