@@ -42,12 +42,15 @@ import {
   mergeProjectLibrarySettings,
   type ProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
+import { invalidateProjectLibraryRealizations } from '@src/lib/projectLibraries/registry/invalidation'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { authService } from '@src/registry/contracts/auth'
 import { runtimeService } from '@src/registry/contracts/runtime'
 import {
   type SettingsRegistryService,
   settingsService,
 } from '@src/registry/contracts/settings'
+import { systemIOService } from '@src/registry/contracts/systemIO'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 
 type SettingsSnapshot = ReturnType<
@@ -150,6 +153,7 @@ export const cloudSyncExtension = defineRegistryItemFactory((ctx) => {
   const auth = ctx.services.signal(authService)
   const userFeatures = ctx.services.signal(userFeaturesService)
   const plugins = ctx.valueSpecs.signal(pluginsValueSpec)
+  const systemIO = ctx.services.signal(systemIOService)
   const settingsSnapshot = signal<SettingsSnapshot | undefined>(undefined)
   let settingsRegistry: SettingsRegistryService | undefined
   let disposed = false
@@ -211,6 +215,12 @@ export const cloudSyncExtension = defineRegistryItemFactory((ctx) => {
         configureCloudSync({
           ...runtimePolicy,
           cloudProjectDirectoryPaths: policyCloudProjectDirectoryPaths,
+          onProjectHydrated: () => {
+            systemIO.peek()?.actor.send({
+              type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+            })
+            invalidateProjectLibraryRealizations()
+          },
         })
       )
     })

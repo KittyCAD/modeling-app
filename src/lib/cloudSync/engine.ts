@@ -1388,6 +1388,7 @@ async function replaceLocalProjectWithFiles(
       new Uint8Array(toArrayBuffer(file.data))
     )
   }
+  config.onProjectHydrated?.(projectPath)
 }
 
 function archiveFileContentsEqual(

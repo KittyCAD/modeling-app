@@ -583,6 +583,7 @@ describe('cloud sync reliability', () => {
   })
 
   it('refreshes a visible open project after its remote revision changes', async () => {
+    const onProjectHydrated = vi.fn()
     const files = new Map([
       [`${projectPath}/main.kcl`, 'base = 1\n'],
       [`${projectPath}/${PROJECT_SETTINGS_FILE_NAME}`, projectToml],
@@ -631,13 +632,18 @@ describe('cloud sync reliability', () => {
       environmentName,
       cloudProjectDirectoryPaths: [projectDirectory],
       autoEnrollCloudLibraryProjects: true,
+      onProjectHydrated,
     })
 
     await vi.advanceTimersByTimeAsync(0)
     expect(files.get(`${projectPath}/main.kcl`)).toBe('base = 1\n')
+    expect(onProjectHydrated).not.toHaveBeenCalled()
 
     revision = updatedRemoteRevision
     await vi.advanceTimersByTimeAsync(5_000)
     expect(files.get(`${projectPath}/main.kcl`)).toBe('remote = 2\n')
+    expect(onProjectHydrated).toHaveBeenCalledExactlyOnceWith(projectPath)
+    await vi.advanceTimersByTimeAsync(5_000)
+    expect(onProjectHydrated).toHaveBeenCalledTimes(1)
   })
 })

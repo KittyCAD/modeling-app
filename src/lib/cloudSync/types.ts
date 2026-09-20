@@ -130,6 +130,8 @@ export type CloudSyncConfig = {
   /** Local materialization paths for configured cloud-type project libraries. */
   cloudProjectDirectoryPaths?: string[]
   autoEnrollCloudLibraryProjects?: boolean
+  /** Refresh local file views after a remote snapshot has been applied. */
+  onProjectHydrated?: (projectPath: string) => void
 }
 
 /** Currently opened project context used to scope status and retry behavior. */

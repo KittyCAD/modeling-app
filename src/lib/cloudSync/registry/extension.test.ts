@@ -13,6 +13,10 @@ import type { RuntimeInfo } from '@src/registry/contracts/runtime'
 import { runtimeService } from '@src/registry/contracts/runtime'
 import type { SettingsRegistryService } from '@src/registry/contracts/settings'
 import { settingsService } from '@src/registry/contracts/settings'
+import {
+  type SystemIORegistryService,
+  systemIOService,
+} from '@src/registry/contracts/systemIO'
 import type { UserFeaturesRegistryService } from '@src/registry/contracts/userFeatures'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -70,6 +74,15 @@ describe('cloud sync extension', () => {
   })
 
   it('uses cloud project library materialization directories for runtime policy', async () => {
+    const send = vi.fn()
+    const systemIO = defineRegistryItem({
+      id: 'test.system-io',
+      providesServices: [
+        provideService(systemIOService, {
+          actor: { send },
+        } as unknown as SystemIORegistryService),
+      ],
+    })
     const settings = signal(
       createSettingsSnapshot({
         cloudSyncEnabled: true,
@@ -110,6 +123,7 @@ describe('cloud sync extension', () => {
 
     registry = new Registry()
     registry.configure([
+      systemIO,
       settingsRegistryItem,
       runtimeRegistryItem,
       cloudSyncExtension,
@@ -128,7 +142,14 @@ describe('cloud sync extension', () => {
         baseUrl: 'https://api.dev.zoo.dev',
         environmentName: 'dev.zoo.dev',
         cloudProjectDirectoryPaths: ['/cloud-personal'],
+        onProjectHydrated: expect.any(Function),
       })
+    })
+    cloudSyncMocks.configureCloudSync.mock.lastCall?.[0].onProjectHydrated(
+      '/cloud-personal/project'
+    )
+    expect(send).toHaveBeenCalledExactlyOnceWith({
+      type: 'read folders from project directory',
     })
     const resolvedCloudLibrary =
       cloudSyncPathMocks.getCloudProjectLibraryMaterializationDirectoryPath.mock.calls.at(
@@ -158,6 +179,7 @@ describe('cloud sync extension', () => {
         baseUrl: 'https://api.dev.zoo.dev',
         environmentName: 'dev.zoo.dev',
         cloudProjectDirectoryPaths: ['/team-cloud', '/org-cloud'],
+        onProjectHydrated: expect.any(Function),
       })
     })
     expect(
@@ -287,6 +309,7 @@ describe('cloud sync extension', () => {
         baseUrl: 'https://api.dev.zoo.dev',
         environmentName: 'dev.zoo.dev',
         cloudProjectDirectoryPaths: ['/cloud-personal'],
+        onProjectHydrated: expect.any(Function),
       })
     })
 
