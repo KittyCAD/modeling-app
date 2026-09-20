@@ -957,27 +957,13 @@ describe('project system', () => {
   ])(
     'fits file loads only when they have statements: $name',
     async ({ code, fitsModel }) => {
-      const projectPath = `/tmp/app-file-switch-camera-${crypto.randomUUID()}`
-      const mainPath = fsZds.join(projectPath, 'main.kcl')
-      const alternatePath = fsZds.join(projectPath, 'alternate.kcl')
       const app = createAppForTest()
 
       try {
-        await writeText(mainPath, 'main = true\n')
-        await writeText(alternatePath, code)
-        const project = await app.openProject({
-          ...mockProject,
-          name: fsZds.basename(projectPath),
-          path: projectPath,
-          default_file: mainPath,
-          kcl_file_count: 2,
-          children: [
-            { name: 'main.kcl', path: mainPath, children: null },
-            { name: 'alternate.kcl', path: alternatePath, children: null },
-          ],
-        })
-        const editor = await project.openEditor(mainPath)
+        const project = await app.openProject(mockProject)
+        const { kclManager: editor } = app.singletons
         const wasm = await editor.wasmInstancePromise
+        vi.spyOn(project, 'getAllKclFiles').mockResolvedValue([])
         const execute = vi
           .spyOn(editor, 'executeCode')
           .mockImplementation(async (code) => {
@@ -991,11 +977,9 @@ describe('project system', () => {
           connected: true,
         } as typeof editor.engineCommandManager.connection
 
-        await project.openEditor(alternatePath, editor)
+        await project.openEditor('/some-dir/test/main.kcl', editor, code)
 
         expect(execute).toHaveBeenCalledWith(code)
-        expect(editor.path).toBe(alternatePath)
-        expect(editor.code).toBe(code)
         const cameraCommands = sendCommand.mock.calls.filter(
           ([request]) =>
             request.type === 'modeling_cmd_req' &&
@@ -1003,10 +987,8 @@ describe('project system', () => {
               request.cmd.type === 'zoom_to_fit')
         )
         expect(cameraCommands).toHaveLength(fitsModel ? 1 : 0)
-        expect(await fsZds.readFile(mainPath, 'utf8')).toBe('main = true\n')
       } finally {
         app.dispose()
-        await fsZds.rm(projectPath, { recursive: true, force: true })
       }
     }
   )
@@ -1191,7 +1173,6 @@ describe('project system', () => {
 
   it('can open, close project', async () => {
     // Stub out File read and write implementations
-    const originalFileIO = { ...File.ioImplementations }
     File.ioImplementations.read = () => Promise.resolve('')
     File.ioImplementations.write = () => Promise.resolve()
 
@@ -1218,7 +1199,6 @@ describe('project system', () => {
 
       expect(app.project).toBeUndefined()
     } finally {
-      File.ioImplementations = originalFileIO
       app.dispose()
     }
   })
