@@ -358,8 +358,8 @@ async fn new_context_with_heartbeats(
         heartbeats,
         default_backface_color: Some("#00D5FF".to_owned()),
         pool: None,
-        video_res_width: (!geometry_only).then_some(1280),
-        video_res_height: (!geometry_only).then_some(720),
+        video_res_width: None,
+        video_res_height: None,
         geometry_only,
     };
     if let Some(current_file) = current_file {
