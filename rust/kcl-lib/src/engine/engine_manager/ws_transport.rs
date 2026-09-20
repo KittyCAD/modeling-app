@@ -1,12 +1,7 @@
 use std::collections::HashMap;
-use std::io::Write;
 use std::sync::Arc;
-use std::sync::atomic::AtomicBool;
-use std::sync::atomic::Ordering;
 use std::time::Duration;
 use std::time::Instant;
-use std::time::SystemTime;
-use std::time::UNIX_EPOCH;
 
 use anyhow::anyhow;
 use futures::SinkExt;
@@ -35,52 +30,6 @@ use crate::SourceRange;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::log::logln;
-
-/// Native transport diagnostics, including builds that disable ordinary KCL logging.
-/// Capture the upgrade ID before starting either actor: session data can arrive too late.
-struct ConnectionDiagnostics {
-    enabled: bool,
-    request_id: Option<String>,
-    local_close_requested: AtomicBool,
-}
-
-impl ConnectionDiagnostics {
-    fn new(request_id: Option<String>) -> Self {
-        Self {
-            enabled: std::env::var("ZOO_ENGINE_CONNECTION_DIAGNOSTICS").as_deref() == Ok("1"),
-            request_id,
-            local_close_requested: AtomicBool::new(false),
-        }
-    }
-
-    fn request_close(&self) {
-        self.local_close_requested.store(true, Ordering::Relaxed);
-    }
-
-    fn error(&self, operation: &str, error: impl std::fmt::Debug) {
-        if !self.enabled {
-            return;
-        }
-
-        let record = serde_json::json!({
-            "event": "engine_connection_error",
-            "timestamp_ms": SystemTime::now().duration_since(UNIX_EPOCH).unwrap_or_default().as_millis(),
-            "request_id": self.request_id,
-            "operation": operation,
-            // This records local intent, not proof that local teardown caused the error.
-            "local_close_requested": self.local_close_requested.load(Ordering::Relaxed),
-            "error": format!("{error:?}"),
-        });
-        // Deliberately bypass disable-println, but only with the explicit diagnostic opt-in.
-        // A logging failure must not change transport behavior.
-        let _ = writeln!(std::io::stderr().lock(), "{record}");
-    }
-}
-
-pub(super) fn upgrade_request_id(headers: &reqwest::header::HeaderMap) -> Option<String> {
-    // Never dump the response headers or select names by substring.
-    headers.get("x-request-id")?.to_str().ok().map(str::to_owned)
-}
 
 pub struct TcpRead {
     stream: futures::stream::SplitStream<tokio_tungstenite::WebSocketStream<reqwest::Upgraded>>,
@@ -117,27 +66,26 @@ impl TcpRead {
 }
 
 type WebSocketTcpWrite = futures::stream::SplitSink<tokio_tungstenite::WebSocketStream<reqwest::Upgraded>, WsMsg>;
+const CLOSE_HANDSHAKE_TIMEOUT: Duration = Duration::from_secs(1);
 
 /// Sends requests to the engine over its Modeling API WebSocket.
 /// Used on native platforms, does not work in browser WASM sandbox.
 pub struct WebSocketTransport {
-    _tcp_read_handle: Arc<TcpReadHandle>,
+    tcp_read_handle: tokio::task::AbortHandle,
+    tcp_write_handle: tokio::task::AbortHandle,
     engine_req_tx: mpsc::Sender<ToEngineReq>,
     shutdown_tx: mpsc::Sender<()>,
     responses: ResponseInformation,
     pending_errors: Arc<RwLock<Vec<String>>>,
     session_data: Arc<RwLock<Option<ModelingSessionData>>>,
     socket_health: Arc<RwLock<SocketHealth>>,
-    diagnostics: Arc<ConnectionDiagnostics>,
+    upgrade_request_id: Option<String>,
 }
 
-pub struct TcpReadHandle {
-    handle: Arc<tokio::task::JoinHandle<Result<(), WebSocketReadError>>>,
-}
-
-impl Drop for TcpReadHandle {
+impl Drop for WebSocketTransport {
     fn drop(&mut self) {
-        self.handle.abort();
+        self.tcp_read_handle.abort();
+        self.tcp_write_handle.abort();
     }
 }
 
@@ -167,7 +115,7 @@ struct ToEngineReq {
 }
 
 impl WebSocketTransport {
-    /// Start the native WebSocket reader and writer actors.
+    /// Start a long-lived actor that reads from
     pub async fn spawn(
         // Passed via EngineManager from elsewhere
         ws: reqwest::Upgraded,
@@ -178,9 +126,8 @@ impl WebSocketTransport {
         session_data: Arc<RwLock<Option<ModelingSessionData>>>,
         pending_errors: Arc<RwLock<Vec<String>>>,
         socket_health: Arc<RwLock<SocketHealth>>,
-        request_id: Option<String>,
+        upgrade_request_id: Option<String>,
     ) -> Self {
-        let diagnostics = Arc::new(ConnectionDiagnostics::new(request_id));
         let wsconfig = tokio_tungstenite::tungstenite::protocol::WebSocketConfig::default()
             // 4294967296 bytes, which is around 4.2 GB.
             .max_message_size(Some(usize::MAX))
@@ -196,12 +143,11 @@ impl WebSocketTransport {
         let (tcp_write, tcp_read) = ws_stream.split();
         let (engine_req_tx, engine_req_rx) = mpsc::channel(10);
         let (shutdown_tx, shutdown_rx) = mpsc::channel(1);
-        tokio::task::spawn(Self::start_write_actor(
+        let tcp_write_handle = tokio::task::spawn(Self::start_write_actor(
             tcp_write,
             engine_req_rx,
             shutdown_rx,
             heartbeats,
-            diagnostics.clone(),
         ));
 
         let mut tcp_read = TcpRead { stream: tcp_read };
@@ -210,8 +156,7 @@ impl WebSocketTransport {
         let session_data_for_read = session_data.clone();
         let pending_errors_for_read = pending_errors.clone();
         let socket_health_tcp_read = socket_health.clone();
-        let diagnostics_for_read = diagnostics.clone();
-        let tcp_read_handle = tokio::spawn(async move {
+        let tcp_read_handle: tokio::task::JoinHandle<Result<(), WebSocketReadError>> = tokio::spawn(async move {
             // Get Websocket messages from API server
             loop {
                 match tcp_read.read().await {
@@ -311,14 +256,8 @@ impl WebSocketTransport {
                     }
                     Err(e) => {
                         let msg = match &e {
-                            WebSocketReadError::Read(e) => {
-                                diagnostics_for_read.error("read", e);
-                                e.to_string()
-                            }
-                            WebSocketReadError::Deser(e) => {
-                                diagnostics_for_read.error("read_or_decode", e);
-                                e.to_string()
-                            }
+                            WebSocketReadError::Read(e) => e.to_string(),
+                            WebSocketReadError::Deser(e) => e.to_string(),
                         };
                         pending_errors_for_read.write().await.push(msg);
                         *socket_health_tcp_read.write().await = SocketHealth::Inactive;
@@ -328,16 +267,25 @@ impl WebSocketTransport {
             }
         });
         Self {
-            diagnostics,
             shutdown_tx,
             responses: response_information,
             pending_errors,
             session_data,
             socket_health,
+            upgrade_request_id,
             engine_req_tx,
-            _tcp_read_handle: Arc::new(TcpReadHandle {
-                handle: Arc::new(tcp_read_handle),
-            }),
+            tcp_read_handle: tcp_read_handle.abort_handle(),
+            tcp_write_handle: tcp_write_handle.abort_handle(),
+        }
+    }
+
+    fn connection_id_message(&self, session: Option<&ModelingSessionData>) -> String {
+        if let Some(session) = session {
+            format!(" (API call ID: {})", session.api_call_id)
+        } else if let Some(id) = &self.upgrade_request_id {
+            format!(" (Engine upgrade request ID: {id})")
+        } else {
+            " (No API call ID: session data empty)".to_string()
         }
     }
 
@@ -370,7 +318,6 @@ impl WebSocketTransport {
         mut engine_req_rx: mpsc::Receiver<ToEngineReq>,
         mut shutdown_rx: mpsc::Receiver<()>,
         heartbeats: Option<u64>,
-        diagnostics: Arc<ConnectionDiagnostics>,
     ) {
         let heartbeats = heartbeats.unwrap_or_default();
         let send_heartbeats = heartbeats != 0;
@@ -397,10 +344,6 @@ impl WebSocketTransport {
                                 Self::inner_send_to_engine(req, &mut tcp_write).await
                             };
 
-                            if let Err(e) = &res {
-                                diagnostics.error("send", e);
-                            }
-
                             // Let the caller know we’ve sent the request (ok or error).
                             let _ = request_sent.send(res);
                         }
@@ -412,24 +355,25 @@ impl WebSocketTransport {
                     }
                 },
 
-                _ = shutdown_rx.recv() => break,
+                // If we get a shutdown signal, close the engine immediately and return.
+                _ = shutdown_rx.recv() => {
+                    let _ = Self::inner_close_engine(&mut tcp_write).await;
+                    return;
+                }
 
                 // Send heartbeats periodically.
                 _ = heartbeats_stream.tick(), if send_heartbeats => {
                     // Send a heartbeat.
                     let res = Self::inner_send_to_engine(WebSocketRequest::Ping {}, &mut tcp_write).await;
                     // We don't really care if a heartbeat fails, we'll just try again soon.
-                    if let Err(e) = &res {
-                        diagnostics.error("heartbeat", e);
-                    }
+                    let _ = res;
                 }
             }
         }
 
-        diagnostics.request_close();
-        if let Err(e) = Self::inner_close_engine(&mut tcp_write).await {
-            diagnostics.error("close", e);
-        }
+        // If we exit the loop (e.g. engine_req_rx was closed),
+        // still gracefully close the engine before returning.
+        let _ = Self::inner_close_engine(&mut tcp_write).await;
     }
 
     /// Send the given `request` to the engine via the WebSocket connection `tcp_write`.
@@ -439,6 +383,29 @@ impl WebSocketTransport {
             .await
             .map_err(|e| anyhow!("could not send close over websocket: {e}"))?;
         Ok(())
+    }
+
+    async fn close_with_timeout(&self, timeout: Duration) {
+        let _ = self.shutdown_tx.try_send(());
+        let _ = tokio::time::timeout(timeout, async {
+            loop {
+                if *self.socket_health.read().await == SocketHealth::Inactive {
+                    return;
+                }
+                tokio::task::yield_now().await;
+            }
+        })
+        .await;
+        // An inactive reader does not guarantee the writer has finished sending.
+        // It could have encountered an error.
+        // So, the graceful timeout request above may not have worked.
+        // So, we should abort here, in case it's still trying to send.
+        // Aborting a task that has already completed is a no-op.
+        // Aborting a task that's stuck or in-progress and didn't gracefully shutdown will
+        // accomplish our goal (stopping). So either way, we should abort.
+        self.tcp_read_handle.abort();
+        self.tcp_write_handle.abort();
+        *self.socket_health.write().await = SocketHealth::Inactive;
     }
 }
 
@@ -453,16 +420,7 @@ impl EngineTransport for WebSocketTransport {
     ) -> Result<(), KclError> {
         let (tx, rx) = oneshot::channel();
 
-        let api_call_id_msg = {
-            // Get the API call ID from session data if available. Drop it as
-            // soon as we're done.
-            let session_data = self.session_data.read().await;
-            if let Some(session) = session_data.as_ref() {
-                format!(" (API call ID: {})", session.api_call_id)
-            } else {
-                " (No API call ID: session data empty)".to_string()
-            }
-        };
+        let api_call_id_msg = self.connection_id_message(self.session_data.read().await.as_ref());
 
         // Send the request to the engine, via the actor.
         self.engine_req_tx
@@ -528,11 +486,7 @@ impl EngineTransport for WebSocketTransport {
                 // Get the API call ID from session data if available
                 let session_data = self.session_data.read().await;
                 let api_call_id = session_data.as_ref().map(|session| session.api_call_id.to_string());
-                let api_call_id_msg = if let Some(ref id) = api_call_id {
-                    format!(" (API call ID: {})", id)
-                } else {
-                    String::new()
-                };
+                let api_call_id_msg = self.connection_id_message(session_data.as_ref());
 
                 // Check if we have any pending errors.
                 let pe = self.pending_errors.read().await;
@@ -559,12 +513,7 @@ impl EngineTransport for WebSocketTransport {
         }
 
         // Get the API call ID from session data if available for timeout error
-        let session_data = self.session_data.read().await;
-        let api_call_id_msg = if let Some(session) = session_data.as_ref() {
-            format!(" (API call ID: {})", session.api_call_id)
-        } else {
-            String::new()
-        };
+        let api_call_id_msg = self.connection_id_message(self.session_data.read().await.as_ref());
 
         Err(KclError::new_engine(KclErrorDetails::new(
             format!("Modeling command timed out `{cmd_id}`{}", api_call_id_msg),
@@ -573,16 +522,8 @@ impl EngineTransport for WebSocketTransport {
     }
 
     async fn close(&self) -> Result<(), TransportCloseError> {
-        self.diagnostics.request_close();
-        let _ = self.shutdown_tx.send(()).await;
-        loop {
-            let guard = self.socket_health.read().await;
-            if *guard == SocketHealth::Inactive {
-                return Ok(());
-            }
-            drop(guard);
-            tokio::task::yield_now().await;
-        }
+        self.close_with_timeout(CLOSE_HANDSHAKE_TIMEOUT).await;
+        Ok(())
     }
 }
 
@@ -590,18 +531,127 @@ impl EngineTransport for WebSocketTransport {
 mod tests {
     use super::*;
 
-    #[test]
-    fn upgrade_request_id_uses_only_the_exact_header() {
-        let mut headers = reqwest::header::HeaderMap::new();
-        headers.insert("x-other-request-id", "unrelated".parse().unwrap());
-        headers.insert("set-cookie", "private-cookie".parse().unwrap());
-        assert_eq!(upgrade_request_id(&headers), None);
-        headers.insert("x-request-id", "early-request-id".parse().unwrap());
-        assert_eq!(upgrade_request_id(&headers).as_deref(), Some("early-request-id"));
-        headers.insert(
-            "x-request-id",
-            reqwest::header::HeaderValue::from_bytes(&[0xff]).unwrap(),
-        );
-        assert_eq!(upgrade_request_id(&headers), None);
+    #[tokio::test]
+    async fn early_connection_errors_include_upgrade_request_id() {
+        for send_fails in [false, true] {
+            let (engine_req_tx, mut engine_req_rx) = mpsc::channel::<ToEngineReq>(1);
+            let (shutdown_tx, _) = mpsc::channel(1);
+            let read = tokio::spawn(async {});
+            let write = tokio::spawn(async move {
+                while let Some(request) = engine_req_rx.recv().await {
+                    let result = if send_fails {
+                        Err(anyhow!("closed connection"))
+                    } else {
+                        Ok(())
+                    };
+                    request.request_sent.send(result).unwrap();
+                }
+            });
+            let transport = WebSocketTransport {
+                tcp_read_handle: read.abort_handle(),
+                tcp_write_handle: write.abort_handle(),
+                engine_req_tx,
+                shutdown_tx,
+                responses: ResponseInformation::new(Arc::new(RwLock::new(Default::default()))),
+                pending_errors: Arc::new(RwLock::new(vec!["original read error".into()])),
+                session_data: Arc::new(RwLock::new(None)),
+                socket_health: Arc::new(RwLock::new(SocketHealth::Inactive)),
+                upgrade_request_id: Some("upgrade-id".into()),
+            };
+
+            for session in [
+                None,
+                Some(ModelingSessionData {
+                    api_call_id: "session-id".into(),
+                }),
+            ] {
+                let expected_id = if session.is_some() {
+                    "API call ID: session-id"
+                } else {
+                    "Engine upgrade request ID: upgrade-id"
+                };
+                *transport.session_data.write().await = session;
+                let error = transport
+                    .inner_send_modeling_cmd(
+                        Uuid::nil(),
+                        SourceRange::default(),
+                        WebSocketRequest::Ping {},
+                        HashMap::new(),
+                    )
+                    .await
+                    .unwrap_err()
+                    .to_string();
+                assert!(error.contains("original read error"), "{error}");
+                assert!(error.contains(expected_id), "{error}");
+                assert!(!error.contains("API call ID: upgrade-id"), "{error}");
+            }
+        }
+    }
+
+    #[tokio::test]
+    async fn close_aborts_writer_when_reader_stops_before_timeout() {
+        let write = tokio::spawn(std::future::pending::<()>());
+        let (engine_req_tx, _engine_req_rx) = mpsc::channel(1);
+        let (shutdown_tx, mut shutdown_rx) = mpsc::channel(1);
+        let socket_health = Arc::new(RwLock::new(SocketHealth::Active));
+        let read_health = socket_health.clone();
+        let read = tokio::spawn(async move {
+            // Simulate the reader observing the peer's close after shutdown is requested.
+            shutdown_rx.recv().await.expect("shutdown should be requested");
+            *read_health.write().await = SocketHealth::Inactive;
+        });
+        let transport = WebSocketTransport {
+            tcp_read_handle: read.abort_handle(),
+            tcp_write_handle: write.abort_handle(),
+            engine_req_tx,
+            shutdown_tx,
+            responses: ResponseInformation::new(Arc::new(RwLock::new(Default::default()))),
+            pending_errors: Arc::new(RwLock::new(Vec::new())),
+            session_data: Arc::new(RwLock::new(None)),
+            socket_health: socket_health.clone(),
+            upgrade_request_id: None,
+        };
+
+        tokio::time::timeout(Duration::from_secs(1), async {
+            // The outer deadline ensures we exercise completion before the close timeout.
+            transport.close_with_timeout(Duration::from_secs(10)).await;
+            read.await.expect("reader should finish normally");
+            assert!(write.await.unwrap_err().is_cancelled());
+        })
+        .await
+        .expect("close should abort the writer even when the reader has stopped");
+
+        assert_eq!(*socket_health.read().await, SocketHealth::Inactive);
+    }
+
+    #[tokio::test]
+    async fn close_aborts_tasks_when_peer_does_not_close() {
+        let read = tokio::spawn(std::future::pending::<()>());
+        let write = tokio::spawn(std::future::pending::<()>());
+        let (engine_req_tx, _engine_req_rx) = mpsc::channel(1);
+        let (shutdown_tx, _shutdown_rx) = mpsc::channel(1);
+        let socket_health = Arc::new(RwLock::new(SocketHealth::Active));
+        let transport = WebSocketTransport {
+            tcp_read_handle: read.abort_handle(),
+            tcp_write_handle: write.abort_handle(),
+            engine_req_tx,
+            shutdown_tx,
+            responses: ResponseInformation::new(Arc::new(RwLock::new(Default::default()))),
+            pending_errors: Arc::new(RwLock::new(Vec::new())),
+            session_data: Arc::new(RwLock::new(None)),
+            socket_health: socket_health.clone(),
+            upgrade_request_id: None,
+        };
+
+        tokio::time::timeout(
+            Duration::from_secs(1),
+            transport.close_with_timeout(Duration::from_millis(1)),
+        )
+        .await
+        .expect("close should be bounded");
+
+        assert_eq!(*socket_health.read().await, SocketHealth::Inactive);
+        assert!(read.await.unwrap_err().is_cancelled());
+        assert!(write.await.unwrap_err().is_cancelled());
     }
 }

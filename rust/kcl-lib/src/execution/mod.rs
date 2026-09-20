@@ -1000,6 +1000,12 @@ pub struct ExecutorSettings {
     /// If given, sets a custom engine pool.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pool: Option<String>,
+    /// If given, sets the Engine video width in pixels.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub video_res_width: Option<u32>,
+    /// If given, sets the Engine video height in pixels.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub video_res_height: Option<u32>,
     /// asks the engine for geometry only mode - no video stream
     pub geometry_only: bool,
 }
@@ -1022,6 +1028,8 @@ impl Default for ExecutorSettings {
             heartbeats: None,
             default_backface_color: None,
             pool: None,
+            video_res_width: None,
+            video_res_height: None,
             geometry_only: false,
         }
     }
@@ -1048,6 +1056,8 @@ impl From<crate::settings::types::Settings> for ExecutorSettings {
             heartbeats: None,
             default_backface_color: modeling_settings.backface_color.map(|color| color.0),
             pool: None,
+            video_res_width: None,
+            video_res_height: None,
             geometry_only: false,
         }
     }
@@ -1073,6 +1083,8 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
             heartbeats: None,
             default_backface_color: modeling.backface_color.map(|color| color.0),
             pool: None,
+            video_res_width: None,
+            video_res_height: None,
             geometry_only: false,
         }
     }
@@ -1092,6 +1104,8 @@ impl From<crate::settings::types::project::ProjectModelingSettings> for Executor
             heartbeats: None,
             default_backface_color: None,
             pool: None,
+            video_res_width: None,
+            video_res_height: None,
             geometry_only: false,
         }
     }
@@ -1182,12 +1196,17 @@ impl ExecutorContext {
                 pr,
                 unlocked_framerate: None,
                 webrtc: Some(false),
-                video_res_width: None,
-                video_res_height: None,
+                video_res_width: settings.video_res_width,
+                video_res_height: settings.video_res_height,
             })
             .await?;
 
-        let engine_conn = EngineManager::new_websocket_transport_with_headers(ws, settings.heartbeats, &headers).await;
+        let request_id = headers
+            .get("x-request-id")
+            .and_then(|id| id.to_str().ok())
+            .map(str::to_owned);
+        let engine_conn =
+            EngineManager::new_websocket_transport_with_request_id(ws, settings.heartbeats, request_id).await;
         let engine = Arc::new(engine_conn);
 
         Ok(Self::new_with_engine(engine, settings))
@@ -1306,6 +1325,8 @@ impl ExecutorContext {
                 heartbeats: None,
                 default_backface_color: None,
                 pool: None,
+                video_res_width: None,
+                video_res_height: None,
                 geometry_only: false,
             },
             None,

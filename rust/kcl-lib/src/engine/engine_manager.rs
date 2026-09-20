@@ -134,14 +134,14 @@ impl EngineManager {
 
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new_websocket_transport(ws: reqwest::Upgraded, heartbeats: Option<u64>) -> Self {
-        Self::new_websocket_transport_with_headers(ws, heartbeats, &reqwest::header::HeaderMap::new()).await
+        Self::new_websocket_transport_with_request_id(ws, heartbeats, None).await
     }
 
     #[cfg(not(target_arch = "wasm32"))]
-    pub(crate) async fn new_websocket_transport_with_headers(
+    pub(crate) async fn new_websocket_transport_with_request_id(
         ws: reqwest::Upgraded,
         heartbeats: Option<u64>,
-        headers: &reqwest::header::HeaderMap,
+        request_id: Option<String>,
     ) -> Self {
         use crate::engine::engine_manager::ws_transport::WebSocketTransport;
 
@@ -160,7 +160,7 @@ impl EngineManager {
             Arc::clone(&session_data),
             Arc::clone(&pending_errors),
             Arc::clone(&socket_health),
-            ws_transport::upgrade_request_id(headers),
+            request_id,
         )
         .await;
 
