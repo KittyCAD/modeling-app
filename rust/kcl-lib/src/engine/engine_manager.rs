@@ -205,6 +205,7 @@ impl EngineManager {
         batch_context: &EngineBatchContext,
         id_generator: &mut IdGenerator,
         source_range: SourceRange,
+        geometry_only: bool,
     ) -> Result<(), crate::errors::KclError> {
         // Clear any batched commands leftover from previous scenes.
         self.clear_queues(batch_context).await;
@@ -222,7 +223,7 @@ impl EngineManager {
         self.flush_batch(batch_context, false, source_range).await?;
 
         // Do the after clear scene hook.
-        self.clear_scene_post_hook(batch_context, id_generator, source_range)
+        self.clear_scene_post_hook(batch_context, id_generator, source_range, geometry_only)
             .await?;
 
         Ok(())
@@ -667,24 +668,15 @@ impl EngineManager {
         batch_context: &EngineBatchContext,
         id_generator: &mut IdGenerator,
         source_range: SourceRange,
+        geometry_only: bool,
     ) -> Result<DefaultPlanes, KclError> {
         let plane_opacity = 0.1;
+        let plane_color =
+            |red, green, blue| (!geometry_only).then(|| Color::from_rgba(red, green, blue, plane_opacity));
         let plane_settings: Vec<(PlaneName, Uuid, Option<Color>)> = vec![
-            (
-                PlaneName::Xy,
-                id_generator.next_uuid(),
-                Some(Color::from_rgba(0.7, 0.28, 0.28, plane_opacity)),
-            ),
-            (
-                PlaneName::Yz,
-                id_generator.next_uuid(),
-                Some(Color::from_rgba(0.28, 0.7, 0.28, plane_opacity)),
-            ),
-            (
-                PlaneName::Xz,
-                id_generator.next_uuid(),
-                Some(Color::from_rgba(0.28, 0.28, 0.7, plane_opacity)),
-            ),
+            (PlaneName::Xy, id_generator.next_uuid(), plane_color(0.7, 0.28, 0.28)),
+            (PlaneName::Yz, id_generator.next_uuid(), plane_color(0.28, 0.7, 0.28)),
+            (PlaneName::Xz, id_generator.next_uuid(), plane_color(0.28, 0.28, 0.7)),
             (PlaneName::NegXy, id_generator.next_uuid(), None),
             (PlaneName::NegYz, id_generator.next_uuid(), None),
             (PlaneName::NegXz, id_generator.next_uuid(), None),
@@ -925,10 +917,11 @@ impl EngineManager {
         batch_context: &EngineBatchContext,
         id_generator: &mut IdGenerator,
         source_range: SourceRange,
+        geometry_only: bool,
     ) -> Result<(), KclError> {
         // Remake the default planes, since they would have been removed after the scene was cleared.
         let new_planes = self
-            .new_default_planes(batch_context, id_generator, source_range)
+            .new_default_planes(batch_context, id_generator, source_range, geometry_only)
             .await?;
         *self.default_planes.write().await = Some(new_planes);
 
