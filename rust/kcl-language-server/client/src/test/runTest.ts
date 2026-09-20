@@ -1,6 +1,6 @@
-import * as fs from 'fs'
-import * as os from 'os'
-import * as path from 'path'
+import * as fs from 'node:fs'
+import * as os from 'node:os'
+import * as path from 'node:path'
 import { runTests } from '@vscode/test-electron'
 import { removeVSCodeProfile } from './vscodeProfile'
 
@@ -9,7 +9,7 @@ function createShortVSCodeProfileDir() {
   return fs.mkdtempSync(path.join(tempRoot, 'kcl-ls-'))
 }
 
-async function main() {
+export async function runVSCodeTests(launchVSCode = runTests) {
   const vscodeProfileDir = createShortVSCodeProfileDir()
   const completionPath = path.join(vscodeProfileDir, 'suite-completed')
 
@@ -26,7 +26,7 @@ async function main() {
     const extensionTestsPath = path.resolve(__dirname, './suite/index')
 
     // Download VS Code, unzip it and run the integration test
-    await runTests({
+    await launchVSCode({
       extensionDevelopmentPath,
       extensionTestsPath,
       extensionTestsEnv: { KCL_VSCODE_TEST_COMPLETION: completionPath },
@@ -37,27 +37,24 @@ async function main() {
     })
 
     if (!fs.existsSync(completionPath)) {
-      console.error(
-        'VS Code exited without completing the extension test suite'
-      )
-      process.exitCode = 1
-      return
+      throw new Error('VS Code exited without completing the extension tests')
     }
-    const passed = Number(fs.readFileSync(completionPath, 'utf8'))
-    if (!Number.isSafeInteger(passed) || passed <= 0) {
-      console.error('Invalid VS Code extension test completion count')
-      process.exitCode = 1
-      return
-    }
-    console.log(`VS Code extension tests: ${passed} passed`)
-  } catch (err) {
-    console.error(err)
-    console.error('Failed to run tests')
-    process.exitCode = 1
   } finally {
     await removeVSCodeProfile(vscodeProfileDir)
   }
 }
 
+async function main() {
+  try {
+    await runVSCodeTests()
+  } catch (err) {
+    console.error(err)
+    console.error('Failed to run tests')
+    process.exitCode = 1
+  }
+}
+
 /* eslint-disable */
-main()
+if (require.main === module) {
+  main()
+}

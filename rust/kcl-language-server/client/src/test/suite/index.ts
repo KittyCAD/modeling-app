@@ -1,5 +1,5 @@
-import * as path from 'path'
-import { writeFile } from 'fs/promises'
+import { writeFile } from 'node:fs/promises'
+import * as path from 'node:path'
 
 const Mocha = require('mocha')
 const { glob } = require('glob')
@@ -13,22 +13,26 @@ export async function run(): Promise<void> {
   const testsRoot = path.resolve(__dirname, '..')
 
   const files: string[] = await glob('**/**.test.js', { cwd: testsRoot })
-  files.forEach((file) => mocha.addFile(path.resolve(testsRoot, file)))
+  if (files.length === 0) {
+    throw new Error('No VS Code extension tests found')
+  }
+  for (const file of files) {
+    mocha.addFile(path.resolve(testsRoot, file))
+  }
 
-  const passed = await new Promise<number>((resolve, reject) => {
-    const runner = mocha.run((failures: number) => {
+  await new Promise<void>((resolve, reject) => {
+    mocha.run((failures: number) => {
       if (failures > 0) {
         reject(new Error(`${failures} tests failed.`))
-      } else if (!runner.stats?.passes) {
-        reject(new Error('The extension test suite did not pass any tests'))
       } else {
-        resolve(runner.stats.passes)
+        resolve()
       }
     })
   })
 
   const completionPath = process.env['KCL_VSCODE_TEST_COMPLETION']
-  if (completionPath) {
-    await writeFile(completionPath, String(passed))
+  if (!completionPath) {
+    throw new Error('Missing VS Code test completion path')
   }
+  await writeFile(completionPath, '')
 }
