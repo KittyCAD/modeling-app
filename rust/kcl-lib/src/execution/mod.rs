@@ -1378,9 +1378,8 @@ impl ExecutorContext {
                 self.settings.geometry_only,
             )
             .await?;
-        // The engine errors out if you toggle OIT with SSAO off.
-        // So ignore OIT settings if SSAO is off.
-        if self.settings.enable_ssao {
+        // OIT requires a graphical context with SSAO enabled.
+        if !self.settings.geometry_only && self.settings.enable_ssao {
             let cmd_id = exec_state.next_uuid();
             exec_state
                 .batch_modeling_cmd(
