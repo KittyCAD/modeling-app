@@ -11,6 +11,7 @@ function createShortVSCodeProfileDir() {
 
 async function main() {
   const vscodeProfileDir = createShortVSCodeProfileDir()
+  const completionPath = path.join(vscodeProfileDir, 'suite-completed')
 
   try {
     // The folder containing the Extension Manifest package.json
@@ -28,11 +29,27 @@ async function main() {
     await runTests({
       extensionDevelopmentPath,
       extensionTestsPath,
+      extensionTestsEnv: { KCL_VSCODE_TEST_COMPLETION: completionPath },
       launchArgs: [
         `--user-data-dir=${path.join(vscodeProfileDir, 'user-data')}`,
         `--extensions-dir=${path.join(vscodeProfileDir, 'extensions')}`,
       ],
     })
+
+    if (!fs.existsSync(completionPath)) {
+      console.error(
+        'VS Code exited without completing the extension test suite'
+      )
+      process.exitCode = 1
+      return
+    }
+    const passed = Number(fs.readFileSync(completionPath, 'utf8'))
+    if (!Number.isSafeInteger(passed) || passed <= 0) {
+      console.error('Invalid VS Code extension test completion count')
+      process.exitCode = 1
+      return
+    }
+    console.log(`VS Code extension tests: ${passed} passed`)
   } catch (err) {
     console.error(err)
     console.error('Failed to run tests')
