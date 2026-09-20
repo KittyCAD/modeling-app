@@ -79,6 +79,7 @@ pub struct WebSocketTransport {
     pending_errors: Arc<RwLock<Vec<String>>>,
     session_data: Arc<RwLock<Option<ModelingSessionData>>>,
     socket_health: Arc<RwLock<SocketHealth>>,
+    upgrade_request_id: Option<String>,
 }
 
 impl Drop for WebSocketTransport {
@@ -125,6 +126,7 @@ impl WebSocketTransport {
         session_data: Arc<RwLock<Option<ModelingSessionData>>>,
         pending_errors: Arc<RwLock<Vec<String>>>,
         socket_health: Arc<RwLock<SocketHealth>>,
+        upgrade_request_id: Option<String>,
     ) -> Self {
         let wsconfig = tokio_tungstenite::tungstenite::protocol::WebSocketConfig::default()
             // 4294967296 bytes, which is around 4.2 GB.
@@ -270,9 +272,20 @@ impl WebSocketTransport {
             pending_errors,
             session_data,
             socket_health,
+            upgrade_request_id,
             engine_req_tx,
             tcp_read_handle: tcp_read_handle.abort_handle(),
             tcp_write_handle: tcp_write_handle.abort_handle(),
+        }
+    }
+
+    fn connection_id_message(&self, session: Option<&ModelingSessionData>) -> String {
+        if let Some(session) = session {
+            format!(" (API call ID: {})", session.api_call_id)
+        } else if let Some(id) = &self.upgrade_request_id {
+            format!(" (Engine upgrade request ID: {id})")
+        } else {
+            " (No API call ID: session data empty)".to_string()
         }
     }
 
@@ -407,16 +420,7 @@ impl EngineTransport for WebSocketTransport {
     ) -> Result<(), KclError> {
         let (tx, rx) = oneshot::channel();
 
-        let api_call_id_msg = {
-            // Get the API call ID from session data if available. Drop it as
-            // soon as we're done.
-            let session_data = self.session_data.read().await;
-            if let Some(session) = session_data.as_ref() {
-                format!(" (API call ID: {})", session.api_call_id)
-            } else {
-                " (No API call ID: session data empty)".to_string()
-            }
-        };
+        let api_call_id_msg = self.connection_id_message(self.session_data.read().await.as_ref());
 
         // Send the request to the engine, via the actor.
         self.engine_req_tx
@@ -482,11 +486,7 @@ impl EngineTransport for WebSocketTransport {
                 // Get the API call ID from session data if available
                 let session_data = self.session_data.read().await;
                 let api_call_id = session_data.as_ref().map(|session| session.api_call_id.to_string());
-                let api_call_id_msg = if let Some(ref id) = api_call_id {
-                    format!(" (API call ID: {})", id)
-                } else {
-                    String::new()
-                };
+                let api_call_id_msg = self.connection_id_message(session_data.as_ref());
 
                 // Check if we have any pending errors.
                 let pe = self.pending_errors.read().await;
@@ -513,12 +513,7 @@ impl EngineTransport for WebSocketTransport {
         }
 
         // Get the API call ID from session data if available for timeout error
-        let session_data = self.session_data.read().await;
-        let api_call_id_msg = if let Some(session) = session_data.as_ref() {
-            format!(" (API call ID: {})", session.api_call_id)
-        } else {
-            String::new()
-        };
+        let api_call_id_msg = self.connection_id_message(self.session_data.read().await.as_ref());
 
         Err(KclError::new_engine(KclErrorDetails::new(
             format!("Modeling command timed out `{cmd_id}`{}", api_call_id_msg),
@@ -557,6 +552,7 @@ mod tests {
             pending_errors: Arc::new(RwLock::new(Vec::new())),
             session_data: Arc::new(RwLock::new(None)),
             socket_health: socket_health.clone(),
+            upgrade_request_id: None,
         };
 
         tokio::time::timeout(Duration::from_secs(1), async {
@@ -587,6 +583,7 @@ mod tests {
             pending_errors: Arc::new(RwLock::new(Vec::new())),
             session_data: Arc::new(RwLock::new(None)),
             socket_health: socket_health.clone(),
+            upgrade_request_id: None,
         };
 
         tokio::time::timeout(

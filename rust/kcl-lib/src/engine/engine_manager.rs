@@ -134,6 +134,15 @@ impl EngineManager {
 
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new_websocket_transport(ws: reqwest::Upgraded, heartbeats: Option<u64>) -> Self {
+        Self::new_websocket_transport_with_request_id(ws, heartbeats, None).await
+    }
+
+    #[cfg(not(target_arch = "wasm32"))]
+    pub(crate) async fn new_websocket_transport_with_request_id(
+        ws: reqwest::Upgraded,
+        heartbeats: Option<u64>,
+        request_id: Option<String>,
+    ) -> Self {
         use crate::engine::engine_manager::ws_transport::WebSocketTransport;
 
         let session_data: Arc<RwLock<Option<ModelingSessionData>>> = Arc::new(RwLock::new(None));
@@ -151,6 +160,7 @@ impl EngineManager {
             Arc::clone(&session_data),
             Arc::clone(&pending_errors),
             Arc::clone(&socket_health),
+            request_id,
         )
         .await;
 
