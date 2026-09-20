@@ -64,12 +64,16 @@ test(
           'Content-Type': `multipart/form-data; boundary=${boundary}`,
         },
       }).formData()
-      createdProject.files = {}
-      for (const [path, value] of formData) {
-        if (path !== 'body' && typeof value !== 'string') {
-          createdProject.files[path] = await value.text()
-        }
-      }
+      // WebKit interception omits Blob bodies. Build the mock download from the
+      // uploaded paths in the local replica, before acknowledging the upload.
+      createdProject.files = await readOpfsTextFiles(
+        page,
+        Object.fromEntries(
+          [...formData.keys()]
+            .filter((path) => path !== 'body')
+            .map((path) => [path, `${PROJECT_DIR}/artificial-heart/${path}`])
+        )
+      )
       remoteArchives.set(
         createdProject.id,
         await zipProject(createdProject.files)
