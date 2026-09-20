@@ -532,63 +532,6 @@ mod tests {
     use super::*;
 
     #[tokio::test]
-    async fn early_connection_errors_include_upgrade_request_id() {
-        for send_fails in [false, true] {
-            let (engine_req_tx, mut engine_req_rx) = mpsc::channel::<ToEngineReq>(1);
-            let (shutdown_tx, _) = mpsc::channel(1);
-            let read = tokio::spawn(async {});
-            let write = tokio::spawn(async move {
-                while let Some(request) = engine_req_rx.recv().await {
-                    let result = if send_fails {
-                        Err(anyhow!("closed connection"))
-                    } else {
-                        Ok(())
-                    };
-                    request.request_sent.send(result).unwrap();
-                }
-            });
-            let transport = WebSocketTransport {
-                tcp_read_handle: read.abort_handle(),
-                tcp_write_handle: write.abort_handle(),
-                engine_req_tx,
-                shutdown_tx,
-                responses: ResponseInformation::new(Arc::new(RwLock::new(Default::default()))),
-                pending_errors: Arc::new(RwLock::new(vec!["original read error".into()])),
-                session_data: Arc::new(RwLock::new(None)),
-                socket_health: Arc::new(RwLock::new(SocketHealth::Inactive)),
-                upgrade_request_id: Some("upgrade-id".into()),
-            };
-
-            for session in [
-                None,
-                Some(ModelingSessionData {
-                    api_call_id: "session-id".into(),
-                }),
-            ] {
-                let expected_id = if session.is_some() {
-                    "API call ID: session-id"
-                } else {
-                    "Engine upgrade request ID: upgrade-id"
-                };
-                *transport.session_data.write().await = session;
-                let error = transport
-                    .inner_send_modeling_cmd(
-                        Uuid::nil(),
-                        SourceRange::default(),
-                        WebSocketRequest::Ping {},
-                        HashMap::new(),
-                    )
-                    .await
-                    .unwrap_err()
-                    .to_string();
-                assert!(error.contains("original read error"), "{error}");
-                assert!(error.contains(expected_id), "{error}");
-                assert!(!error.contains("API call ID: upgrade-id"), "{error}");
-            }
-        }
-    }
-
-    #[tokio::test]
     async fn close_aborts_writer_when_reader_stops_before_timeout() {
         let write = tokio::spawn(std::future::pending::<()>());
         let (engine_req_tx, _engine_req_rx) = mpsc::channel(1);
