@@ -1,4 +1,5 @@
 mod cache;
+mod execution_order;
 
 use kcl_lib::BacktraceItem;
 use kcl_lib::BacktraceItemKind;
