@@ -1,19 +1,21 @@
 import { reportRejection } from '@src/lib/trap'
 import { refreshPage } from '@src/lib/utils'
 
-const RECOVERY_KEY = 'zoo-preload-recovery-revision'
+const RECOVERY_KEY = 'zoo-preload-recovery-deployment'
 
 export function initializePreloadRecovery(kclManager: {
   flushWriteToFile: () => Promise<boolean>
 }) {
-  window.addEventListener('vite:preloadError', (event) => {
-    const revision = import.meta.env.MODELING_APP_COMMIT_SHA ?? 'development'
-    if (window.sessionStorage.getItem(RECOVERY_KEY) === revision) {
+  window.addEventListener('vite:preloadError', () => {
+    const deployment =
+      import.meta.env.MODELING_APP_DEPLOYMENT_ID ??
+      import.meta.env.MODELING_APP_COMMIT_SHA ??
+      'development'
+    if (window.sessionStorage.getItem(RECOVERY_KEY) === deployment) {
       return
     }
 
-    window.sessionStorage.setItem(RECOVERY_KEY, revision)
-    event.preventDefault()
+    window.sessionStorage.setItem(RECOVERY_KEY, deployment)
 
     kclManager
       .flushWriteToFile()

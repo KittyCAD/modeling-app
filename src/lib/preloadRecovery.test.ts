@@ -11,7 +11,7 @@ vi.mock('@src/lib/trap', () => ({ reportRejection: mocks.reportRejection }))
 import { initializePreloadRecovery } from '@src/lib/preloadRecovery'
 
 describe('initializePreloadRecovery', () => {
-  it('saves edits and reloads at most once per revision', async () => {
+  it('saves edits and reloads at most once per deployment', async () => {
     window.sessionStorage.clear()
     const flushWriteToFile = vi.fn().mockResolvedValue(true)
     initializePreloadRecovery({ flushWriteToFile })
@@ -19,7 +19,7 @@ describe('initializePreloadRecovery', () => {
     const firstFailure = new Event('vite:preloadError', { cancelable: true })
     window.dispatchEvent(firstFailure)
 
-    expect(firstFailure.defaultPrevented).toBe(true)
+    expect(firstFailure.defaultPrevented).toBe(false)
     await vi.waitFor(() => {
       expect(flushWriteToFile).toHaveBeenCalledOnce()
       expect(mocks.refreshPage).toHaveBeenCalledWith('Stale app version')

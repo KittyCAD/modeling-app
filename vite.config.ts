@@ -16,6 +16,9 @@ export default defineConfig(({ command, mode }) => {
       'import.meta.env.MODELING_APP_COMMIT_SHA': JSON.stringify(
         process.env.VERCEL_GIT_COMMIT_SHA
       ),
+      'import.meta.env.MODELING_APP_DEPLOYMENT_ID': JSON.stringify(
+        process.env.VERCEL_DEPLOYMENT_ID
+      ),
     },
     server: {
       open: true,
