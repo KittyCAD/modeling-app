@@ -2,6 +2,7 @@ use std::cell::Cell;
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::collections::VecDeque;
+use std::convert::Infallible;
 use std::ops::ControlFlow;
 
 use indexmap::IndexMap;
@@ -99,6 +100,7 @@ use crate::walk::Visitable;
 use crate::walk::traverse::MutateBodyItem;
 use crate::walk::traverse::TraversalReturn;
 use crate::walk::traverse::Visitor;
+use crate::walk::traverse::delete_body_item_preserving_pre_comments;
 use crate::walk::traverse::dfs_mut;
 
 pub(crate) mod api;
@@ -932,8 +934,12 @@ impl SketchApi for FrontendState {
         };
 
         // Modify the AST to remove the sketch.
-        self.mutate_ast(&mut new_ast, sketch_id, AstMutateCommand::DeleteNode)
+        let (_, delete_return) = self
+            .mutate_ast(&mut new_ast, sketch_id, AstMutateCommand::DeleteNode)
             .map_err(KclErrorWithOutputs::no_outputs)?;
+        if let AstMutateCommandReturn::Name(name) = delete_return {
+            delete_dependent_body_items(&mut new_ast, &name);
+        }
 
         self.execute_after_delete_sketch(ctx, &mut new_ast).await
     }
@@ -6009,9 +6015,13 @@ fn filter_and_process(
             if let AstMutateCommand::DeleteNode = &ctx.command {
                 // We found the variable declaration. Delete the variable along
                 // with the segment.
+                let deleted_name = var_decl.name().to_owned();
                 return TraversalReturn {
                     mutate_body_item: MutateBodyItem::Delete,
-                    control_flow: ControlFlow::Break(Ok((AstNodeRef::from(&*ctx), AstMutateCommandReturn::None))),
+                    control_flow: ControlFlow::Break(Ok((
+                        AstNodeRef::from(&*ctx),
+                        AstMutateCommandReturn::Name(deleted_name),
+                    ))),
                 };
             }
         }
@@ -6551,9 +6561,14 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
             }
         }
         AstMutateCommand::DeleteNode => {
+            let command_return = if let NodeMut::VariableDeclaration(var_decl) = &node {
+                AstMutateCommandReturn::Name(var_decl.name().to_owned())
+            } else {
+                AstMutateCommandReturn::None
+            };
             return TraversalReturn {
                 mutate_body_item: MutateBodyItem::Delete,
-                control_flow: ControlFlow::Break(Ok(AstMutateCommandReturn::None)),
+                control_flow: ControlFlow::Break(Ok(command_return)),
             };
         }
     }
@@ -6737,6 +6752,80 @@ fn format_compilation_issues(prefix: &str, issues: &[CompilationIssue]) -> Strin
     } else {
         format!("{prefix}: {message}")
     }
+}
+
+fn delete_dependent_body_items(program: &mut ast::Node<ast::Program>, deleted_name: &str) {
+    let mut deleted_names = HashSet::from([deleted_name.to_owned()]);
+    let mut index = 0;
+    while index < program.body.len() {
+        if body_item_references_any(&program.body[index], &deleted_names) {
+            if let Some(name) = body_item_declared_name(&program.body[index]) {
+                deleted_names.insert(name.to_owned());
+            }
+            delete_body_item_preserving_pre_comments(&mut program.inner.body, &mut program.inner.non_code_meta, index);
+            continue;
+        }
+
+        if let Some(name) = body_item_declared_name(&program.body[index])
+            && deleted_names.contains(name)
+        {
+            // A later independent declaration shadows the deleted name.
+            deleted_names.remove(name);
+        }
+
+        index += 1;
+    }
+}
+
+fn body_item_declared_name(item: &ast::BodyItem) -> Option<&str> {
+    match item {
+        ast::BodyItem::VariableDeclaration(declaration) => Some(declaration.name()),
+        _ => None,
+    }
+}
+
+struct FindNameReferences<'a> {
+    names: &'a HashSet<String>,
+    found: Cell<bool>,
+}
+
+impl<'tree> crate::walk::Visitor<'tree> for &FindNameReferences<'_> {
+    type Error = Infallible;
+
+    fn visit_node(&self, node: crate::walk::Node<'tree>) -> Result<bool, Self::Error> {
+        if let crate::walk::Node::Name(name) = node
+            && name.local_ident().is_some_and(|name| self.names.contains(name.inner))
+        {
+            self.found.set(true);
+            return Ok(false);
+        }
+
+        if matches!(node, crate::walk::Node::FunctionExpression(_)) {
+            return Ok(true);
+        }
+
+        let children = match node {
+            crate::walk::Node::MemberExpression(member) if !member.computed => {
+                vec![crate::walk::Node::from(&member.object)]
+            }
+            _ => node.children(),
+        };
+        for child in children {
+            if !child.visit(*self)? {
+                return Ok(false);
+            }
+        }
+        Ok(true)
+    }
+}
+
+fn body_item_references_any(item: &ast::BodyItem, names: &HashSet<String>) -> bool {
+    let find = FindNameReferences {
+        names,
+        found: Cell::new(false),
+    };
+    let _ = crate::walk::Node::from(item).visit(&find);
+    find.found.get()
 }
 
 fn source_from_ast(ast: &ast::Node<ast::Program>) -> String {
@@ -8667,6 +8756,33 @@ bad = missing_name
         );
         assert_eq!(scene_delta.new_graph.objects.len(), 0);
 
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_delete_sketch_with_generated_dependents() {
+        let initial_source = "\
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [-2.6mm, 2.85mm], end = [2.6mm, 2.85mm])
+  line2 = line(start = [2.6mm, 2.85mm], end = [2.6mm, -2.85mm])
+  line3 = line(start = [2.6mm, -2.85mm], end = [-2.6mm, -2.85mm])
+  line4 = line(start = [-2.6mm, -2.85mm], end = [-2.6mm, 2.85mm])
+}
+hidden001 = hide(sketch001)
+region001 = region(segments = [sketch001.line1, sketch001.line2], direction = CW)
+extrude001 = extrude(region001, length = 5mm)
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let ctx = ExecutorContext::new_with_engine(sync::Arc::new(EngineManager::new_mock()), Default::default());
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_id = find_first_sketch_object(&frontend.scene_graph).unwrap().id;
+        let (src_delta, scene_delta) = frontend.delete_sketch(&ctx, Version(0), sketch_id).await.unwrap();
+
+        assert!(src_delta.text.trim().is_empty(), "{}", src_delta.text);
+        assert_eq!(scene_delta.new_graph.objects.len(), 0);
         ctx.close().await;
     }
 
