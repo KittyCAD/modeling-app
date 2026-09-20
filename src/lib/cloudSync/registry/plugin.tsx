@@ -1405,9 +1405,11 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
           refreshLocalCloudProjectEntries()
 
           if (cloudSyncStatus.value.enabled) {
-            await ctx.services
-              .get(cloudSyncService)
-              .startProjectSync(project.path)
+            const cloudSync = ctx.services.get(cloudSyncService)
+            await cloudSync.startProjectSync(project.path)
+            // Opening adds local settings. First accept the API's cloud binding
+            // so those writes do not race the initial archive reconciliation.
+            await cloudSync.syncNow(project.path)
           }
 
           return project

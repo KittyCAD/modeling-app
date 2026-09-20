@@ -31,6 +31,8 @@ import {
   type ProjectLibrarySetting,
   projectLibrariesFromSettings,
 } from '@src/lib/projectLibraries'
+import * as projectLibraryOperations from '@src/lib/projectLibraries/operations'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
 import type { CloudSyncRegistryService } from '@src/registry/contracts/cloudSync'
 import {
@@ -55,11 +57,12 @@ import {
   type UserFeaturesRegistryService,
   userFeaturesService,
 } from '@src/registry/contracts/userFeatures'
+import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import type * as ReactModule from 'react'
 import type { ReactNode } from 'react'
 import { BrowserRouter } from 'react-router-dom'
-import { afterEach, describe, expect, test, vi } from 'vitest'
+import { afterEach, assert, describe, expect, test, vi } from 'vitest'
 import { createActor, createMachine } from 'xstate'
 
 const cloudConflictDialogMocks = vi.hoisted(
@@ -1111,6 +1114,54 @@ describe('cloud sync project library', () => {
           .get(projectLibraryTypesValueSpec)
           .has(CLOUD_PROJECT_LIBRARY_TYPE)
       ).toBe(true)
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
+  test('waits for the first cloud reconciliation before opening a new project', async () => {
+    const registry = new Registry()
+    const cloudSync = createCloudSyncService()
+    const synced = Promise.withResolvers<{ remoteProjectId: string }>()
+    vi.mocked(cloudSync.syncNow).mockReturnValue(synced.promise)
+    vi.spyOn(
+      projectLibraryOperations,
+      'createProjectInLocalDirectory'
+    ).mockResolvedValue(projectWellFormed)
+    registry.configure([
+      fileOperationsTestItem,
+      defineRegistryItem({
+        id: 'test-cloud-project-creation',
+        provides: [provide(wasmPromiseValueSpec, {} as ModuleType)],
+        providesServices: [provideService(cloudSyncService, cloudSync)],
+      }),
+      cloudSyncProjectLibraryType,
+    ])
+    cloudSyncStatus.value = { enabled: true, state: 'idle', pendingCount: 0 }
+
+    try {
+      const create = registry
+        .get(projectLibraryTypesValueSpec)
+        .get(CLOUD_PROJECT_LIBRARY_TYPE)?.operations?.createProject
+      assert(create)
+      const returned = vi.fn()
+      const pending = create
+        .run({
+          library: { ...getDefaultCloudProjectLibrarySetting(), id: 'cloud' },
+          requestedProjectName: projectWellFormed.name,
+          requestedProjectTitle: projectWellFormed.title,
+        })
+        .then(returned)
+      await waitFor(() =>
+        expect(cloudSync.syncNow).toHaveBeenCalledWith(projectWellFormed.path)
+      )
+      expect(cloudSync.startProjectSync).toHaveBeenCalledWith(
+        projectWellFormed.path
+      )
+      expect(returned).not.toHaveBeenCalled()
+      synced.resolve({ remoteProjectId: 'remote-123' })
+      await pending
+      expect(returned).toHaveBeenCalledWith(projectWellFormed)
     } finally {
       registry[Symbol.dispose]()
     }
