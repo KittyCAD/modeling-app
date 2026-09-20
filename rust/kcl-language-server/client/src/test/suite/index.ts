@@ -3,6 +3,7 @@ import * as path from 'node:path'
 
 const Mocha = require('mocha')
 const { glob } = require('glob')
+const EXPECTED_PASSES = 4
 
 export async function run(): Promise<void> {
   // Create the mocha test
@@ -17,18 +18,21 @@ export async function run(): Promise<void> {
     mocha.addFile(path.resolve(testsRoot, file))
   }
 
-  const passingTests = await new Promise<number>((resolve, reject) => {
+  await new Promise<void>((resolve, reject) => {
     const runner = mocha.run((failures: number) => {
       if (failures > 0) {
         reject(new Error(`${failures} tests failed.`))
+      } else if (runner.stats?.passes !== EXPECTED_PASSES) {
+        reject(
+          new Error(
+            `Expected ${EXPECTED_PASSES} passing VS Code extension tests, found ${runner.stats?.passes ?? 0}`
+          )
+        )
       } else {
-        resolve(runner.stats?.passes ?? 0)
+        resolve()
       }
     })
   })
-  if (passingTests === 0) {
-    throw new Error('No VS Code extension tests passed')
-  }
 
   const completionPath = process.env['KCL_VSCODE_TEST_COMPLETION']
   if (!completionPath) {

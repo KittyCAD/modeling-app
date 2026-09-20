@@ -40,6 +40,8 @@ env:
 jobs:
   test:
     name: kcl-language-server (vscode tests)
+    env:
+      __KCL_LSP_SERVER_DEBUG: ${{ github.workspace }}/rust/target/debug/kcl-language-server${{ runner.os == 'Windows' && '.exe' || '' }}
     strategy:
       fail-fast: false
       matrix:
@@ -55,6 +57,17 @@ jobs:
         uses: actions/setup-node@v7.0.0
         with:
           node-version-file: .nvmrc
+      - name: Select Rust toolchain
+        shell: bash
+        run: cp rust/rust-toolchain.toml rust-toolchain.toml
+      - name: Install Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
+        with:
+          cache-workspaces: rust
+          rustflags: ""
+      - name: Build language server
+        working-directory: rust
+        run: cargo build -p kcl-language-server
       - name: Install dependencies
         run: |
           npm ci
