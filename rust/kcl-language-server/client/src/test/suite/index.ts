@@ -1,3 +1,4 @@
+/* eslint suggest-no-throw/suggest-no-throw: 0 */
 import { writeFile } from 'node:fs/promises'
 import * as path from 'node:path'
 

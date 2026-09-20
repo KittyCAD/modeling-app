@@ -1,3 +1,4 @@
+/* eslint suggest-no-throw/suggest-no-throw: 0 */
 import * as fs from 'node:fs'
 import * as os from 'node:os'
 import * as path from 'node:path'
