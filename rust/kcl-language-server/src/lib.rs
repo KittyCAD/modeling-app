@@ -1,5 +1,8 @@
 //! Language Server Protocol implementations used by KCL editors.
 
+// Shared KCL objects deepen Send/Sync trait checks for LSP futures.
+#![recursion_limit = "256"]
+
 mod lsp;
 
 pub(crate) use kcl_lib::CompilationIssue;

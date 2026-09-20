@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 pub use kcl_api::kcl_value_view::*;
 use serde::Serialize;
 
@@ -352,7 +354,7 @@ impl From<KclValue> for KclValueView {
             KclValue::Object {
                 value, constrainable, ..
             } => {
-                let mut fields: Vec<_> = value.into_iter().collect();
+                let mut fields: Vec<_> = Arc::unwrap_or_clone(value).into_iter().collect();
                 fields.sort_unstable_by(|(left, _), (right, _)| left.cmp(right));
                 Self::Object {
                     value: fields
@@ -575,13 +577,17 @@ mod tests {
             value: std::collections::HashMap::from([
                 ("zeta".to_owned(), number(2.0)),
                 ("alpha".to_owned(), number(1.0)),
-            ]),
+            ])
+            .into(),
             constrainable: false,
             object_kind: Default::default(),
             meta: Vec::new(),
         };
 
-        let KclValueView::Object { value, .. } = KclValueView::from(runtime_value) else {
+        let shared_view = KclValueView::from(runtime_value.clone());
+        let owned_view = KclValueView::from(runtime_value);
+        assert_eq!(shared_view, owned_view);
+        let KclValueView::Object { value, .. } = owned_view else {
             panic!("expected object view");
         };
 

@@ -3149,7 +3149,7 @@ impl Node<SketchBlock> {
             source_range: SourceRange::from(self),
         };
         let return_value = KclValue::Object {
-            value: properties,
+            value: properties.into(),
             constrainable: Default::default(),
             object_kind: KclObjectKind::Default,
             meta: vec![metadata],
@@ -3225,7 +3225,7 @@ impl Node<SketchBlock> {
         let mut meta_map = HashMap::with_capacity(1);
         meta_map.insert(SKETCH_OBJECT_META_SKETCH.to_owned(), sketch_value);
         let meta_value = KclValue::Object {
-            value: meta_map,
+            value: meta_map.into(),
             constrainable: false,
             object_kind: KclObjectKind::Default,
             meta: vec![Metadata {
@@ -4513,7 +4513,8 @@ impl Node<MemberExpression> {
                         .faces
                         .iter()
                         .map(|(k, tag)| (k.to_owned(), KclValue::TagIdentifier(Box::new(tag.to_owned()))))
-                        .collect(),
+                        .collect::<HashMap<_, _>>()
+                        .into(),
                     constrainable: false,
                     object_kind: KclObjectKind::Default,
                 }
@@ -4537,7 +4538,8 @@ impl Node<MemberExpression> {
                     .tags
                     .iter()
                     .map(|(k, tag)| (k.to_owned(), KclValue::TagIdentifier(Box::new(tag.to_owned()))))
-                    .collect(),
+                    .collect::<HashMap<_, _>>()
+                    .into(),
                 constrainable: false,
                 object_kind: KclObjectKind::SketchTags {
                     deprecated_solid_tag_names: sk
@@ -6620,7 +6622,7 @@ impl Node<UnaryExpression> {
                         };
 
                         let mut value = values.clone();
-                        value.insert("direction".to_owned(), direction);
+                        Arc::make_mut(&mut value).insert("direction".to_owned(), direction);
                         Ok(KclValue::Object {
                             value,
                             meta: meta.clone(),
@@ -6890,7 +6892,7 @@ impl Node<ObjectExpression> {
         }
 
         Ok(KclValue::Object {
-            value: object,
+            value: object.into(),
             meta: vec![Metadata {
                 source_range: self.into(),
             }],

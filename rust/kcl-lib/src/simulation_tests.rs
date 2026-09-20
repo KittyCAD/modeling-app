@@ -3,6 +3,7 @@ use std::panic::AssertUnwindSafe;
 use std::panic::catch_unwind;
 use std::path::Path;
 use std::path::PathBuf;
+use std::sync::Arc;
 
 use indexmap::IndexMap;
 use kittycad_modeling_cmds::ModelingCmd;
@@ -101,7 +102,7 @@ impl From<KclValue> for ProgramMemoryValueSnapshot {
                 value, constrainable, ..
             } => RuntimeProgramMemoryValueSnapshot::Object {
                 value: Box::new(
-                    value
+                    Arc::unwrap_or_clone(value)
                         .into_iter()
                         .map(|(name, value)| (name, Self::from(value)))
                         .collect(),

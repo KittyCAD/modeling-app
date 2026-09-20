@@ -97,7 +97,7 @@ schemars = { version = "0.8.17", features = [
   "uuid1",
   "preserve_order",
 ] }
-serde = { workspace = true }
+serde = { workspace = true, features = ["rc"] }
 serde_json = { workspace = true }
 sha2 = "0.11.0"
 tempfile = "3.27"

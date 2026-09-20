@@ -136,7 +136,8 @@ pub enum KclValue {
         ty: RuntimeType,
     },
     Object {
-        value: KclObjectFields,
+        // Share fields across value copies; use Arc::make_mut when changing an existing object.
+        value: Arc<KclObjectFields>,
         constrainable: bool,
         #[serde(default, skip_serializing_if = "KclObjectKind::is_default")]
         object_kind: KclObjectKind,
@@ -1148,7 +1149,7 @@ impl KclValue {
         }
     }
 
-    pub fn into_object(self) -> Option<KclObjectFields> {
+    pub fn into_object(self) -> Option<Arc<KclObjectFields>> {
         match self {
             KclValue::Object { value, .. } => Some(value),
             _ => None,
@@ -1445,6 +1446,43 @@ impl From<Vec<GeometryWithImportedGeometry>> for KclValue {
 mod tests {
     use super::*;
     use crate::exec::UnitType;
+
+    #[test]
+    fn object_clones_share_fields_and_preserve_serialization() {
+        let original = KclValue::Object {
+            value: HashMap::from([(
+                "enabled".to_owned(),
+                KclValue::Bool {
+                    value: true,
+                    meta: Vec::new(),
+                },
+            )])
+            .into(),
+            constrainable: false,
+            object_kind: KclObjectKind::Default,
+            meta: Vec::new(),
+        };
+        let cloned = original.clone();
+        let (
+            KclValue::Object {
+                value: original_fields, ..
+            },
+            KclValue::Object {
+                value: cloned_fields, ..
+            },
+        ) = (&original, &cloned)
+        else {
+            panic!("expected objects");
+        };
+        assert!(Arc::ptr_eq(original_fields, cloned_fields));
+        let expected = serde_json::json!({
+            "type": "Object",
+            "value": { "enabled": { "type": "Bool", "value": true } },
+            "constrainable": false,
+        });
+        assert_eq!(serde_json::to_value(&original).unwrap(), expected);
+        assert_eq!(serde_json::to_value(&cloned).unwrap(), expected);
+    }
 
     #[test]
     fn tag_declaration_bindings_do_not_overwrite_each_other() {
