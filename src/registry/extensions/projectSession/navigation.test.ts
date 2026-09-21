@@ -60,7 +60,7 @@ beforeEach(() => {
 })
 
 describe('resolveProjectOpenRequest', () => {
-  test('canonicalizes a project URL to its default file', async () => {
+  test('resolves a project URL to its default file and canonical URL', async () => {
     const dependencies = resolverHarness()
 
     const result = await resolveProjectOpenRequest(
@@ -72,14 +72,20 @@ describe('resolveProjectOpenRequest', () => {
       throwIfSuperseded
     )
 
-    expect(result).toEqual({
-      kind: 'redirect',
-      to: `http://localhost${PATHS.FILE}/%2Flibrary%2Fproj%2Fmain.kcl?pool=alpha`,
+    expect(result).toMatchObject({
+      kind: 'resolved',
+      file: {
+        name: 'main.kcl',
+        path: '/library/proj/main.kcl',
+      },
+      canonicalUrl: `http://localhost${PATHS.FILE}/%2Flibrary%2Fproj%2Fmain.kcl?pool=alpha`,
     })
-    expect(dependencies.setProjectDirectory).not.toHaveBeenCalled()
+    expect(dependencies.setProjectDirectory).toHaveBeenCalledWith(
+      '/library/proj'
+    )
   })
 
-  test('redirects a missing file while preserving the query string', async () => {
+  test('resolves a missing file to the default and preserves URL state', async () => {
     const dependencies = resolverHarness({
       stat: vi.fn(() => Promise.reject(new Error('ENOENT'))),
     })
@@ -93,9 +99,15 @@ describe('resolveProjectOpenRequest', () => {
       throwIfSuperseded
     )
 
-    expect(result).toEqual({
-      kind: 'redirect',
-      to: `${PATHS.FILE}/${encodeURIComponent('/library/proj/main.kcl')}?pool=alpha`,
+    expect(result).toMatchObject({
+      kind: 'resolved',
+      file: {
+        name: 'main.kcl',
+        path: '/library/proj/main.kcl',
+      },
+      canonicalUrl: `${PATHS.FILE}/${encodeURIComponent(
+        '/library/proj/main.kcl'
+      )}?pool=alpha`,
     })
   })
 
@@ -207,21 +219,9 @@ function navigationHarness(
 }
 
 describe('project.open navigation contribution', () => {
-  test('returns a canonical redirect without opening a project', async () => {
-    const { dependencies, navigation } = navigationHarness({
-      resolveProjectOpen: vi.fn<
-        ProjectNavigationDependencies['resolveProjectOpen']
-      >(async () => ({ kind: 'redirect', to: '/file/canonical' })),
-    })
-
-    await expect(
-      navigation.dispatch(openProjectIntent, { target: '/projects/bracket' })
-    ).resolves.toEqual({ kind: 'redirect', to: '/file/canonical' })
-    expect(dependencies.openResolvedProject).not.toHaveBeenCalled()
-  })
-
-  test('opens a resolved project through the lifecycle operation', async () => {
+  test('opens a project before projecting its location', async () => {
     const { dependencies, navigation } = navigationHarness()
+    const request = { target: '/projects/bracket' }
 
     await expect(
       navigation.dispatch(openProjectIntent, { target: '/projects/bracket' })
@@ -232,7 +232,11 @@ describe('project.open navigation contribution', () => {
     )
     expect(dependencies.projectOpened).toHaveBeenCalledWith(
       expect.objectContaining({ kind: 'opened' }),
-      { target: '/projects/bracket' }
+      resolvedProject,
+      request
+    )
+    expect(dependencies.openResolvedProject).toHaveBeenCalledBefore(
+      vi.mocked(dependencies.projectOpened)
     )
   })
 
