@@ -78,7 +78,31 @@ describe('appNavigation', () => {
     )
   })
 
-  test('a newer intent supersedes an in-flight project open', async () => {
+  test('a newer project open aborts the in-flight open', async () => {
+    let finishResolution: () => void = () => undefined
+    const resolutionStarted = new Promise<void>((resolve) => {
+      finishResolution = resolve
+    })
+    const { navigation } = navigationHarness({
+      resolveProjectOpen: vi
+        .fn<AppNavigationDependencies['resolveProjectOpen']>()
+        .mockImplementationOnce(async () => {
+          await resolutionStarted
+          return resolvedProject
+        })
+        .mockResolvedValueOnce(resolvedProject),
+    })
+
+    const firstOpen = navigation.openProject({ target: '/projects/bracket' })
+    await expect(
+      navigation.openProject({ target: '/projects/gear' })
+    ).resolves.toMatchObject({ kind: 'opened' })
+    finishResolution()
+
+    await expect(firstOpen).rejects.toMatchObject({ name: 'AbortError' })
+  })
+
+  test('explicit supersession aborts the in-flight project open', async () => {
     let finishResolution: () => void = () => undefined
     const resolutionStarted = new Promise<void>((resolve) => {
       finishResolution = resolve
@@ -95,5 +119,28 @@ describe('appNavigation', () => {
     finishResolution()
 
     await expect(firstOpen).rejects.toMatchObject({ name: 'AbortError' })
+  })
+
+  test('a caller abort signal aborts the project open', async () => {
+    let finishResolution: () => void = () => undefined
+    const resolutionStarted = new Promise<void>((resolve) => {
+      finishResolution = resolve
+    })
+    const { navigation } = navigationHarness({
+      resolveProjectOpen: vi.fn(async () => {
+        await resolutionStarted
+        return resolvedProject
+      }),
+    })
+    const controller = new AbortController()
+
+    const open = navigation.openProject({
+      target: '/projects/bracket',
+      signal: controller.signal,
+    })
+    controller.abort()
+    finishResolution()
+
+    await expect(open).rejects.toMatchObject({ name: 'AbortError' })
   })
 })
