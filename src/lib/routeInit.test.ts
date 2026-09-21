@@ -8,9 +8,9 @@ import {
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
 /**
- * These pin the *decisions* the route-init functions make — above all the exact
- * redirect strings, because the Playwright suite asserts URLs literally and
- * byte-identical URLs are what makes it a safety net for this refactor.
+ * These pin the typed startup transitions and their canonical paths. The
+ * Playwright suite asserts URLs literally, so byte-identical projections are
+ * the safety net for this refactor.
  *
  * This logic had no unit coverage at all while it lived inside React Router
  * loaders, because reaching it needed a mounted data router.
@@ -106,17 +106,21 @@ describe('initIndexRoute', () => {
     const result = await initIndexRoute(fakeApp(), {
       requestUrl: 'http://localhost/?pool=alpha',
     })
-    expect(result).toEqual({ kind: 'redirect', to: `${PATHS.HOME}?pool=alpha` })
+    expect(result).toEqual({
+      kind: 'transition',
+      destination: { type: 'home' },
+      canonicalPath: `${PATHS.HOME}?pool=alpha`,
+    })
   })
 
-  test('defers to the open-in-desktop handler rather than redirecting', async () => {
+  test('defers to the open-in-desktop handler rather than continuing', async () => {
     setDesktop(false)
     const result = await initIndexRoute(fakeApp(), {
       requestUrl: 'http://localhost/?ask-open-desktop=true',
     })
-    // Returning without a redirect is what lets OpenInDesktopAppHandler show
-    // its modal; redirecting here would dead-end that flow.
-    expect(result).toEqual({ kind: 'ok', data: undefined })
+    // Finishing here lets OpenInDesktopAppHandler show its modal; continuing
+    // to another destination would dead-end that flow.
+    expect(result).toEqual({ kind: 'ready', data: undefined })
     expect(mocks.webHomeRouteEnabled).not.toHaveBeenCalled()
   })
 
@@ -126,7 +130,11 @@ describe('initIndexRoute', () => {
     const result = await initIndexRoute(fakeApp(), {
       requestUrl: 'http://localhost/?pool=alpha',
     })
-    expect(result).toEqual({ kind: 'redirect', to: `${PATHS.HOME}?pool=alpha` })
+    expect(result).toEqual({
+      kind: 'transition',
+      destination: { type: 'home' },
+      canonicalPath: `${PATHS.HOME}?pool=alpha`,
+    })
   })
 
   test('unflagged web opens the existing default project file', async () => {
@@ -141,8 +149,14 @@ describe('initIndexRoute', () => {
     })
 
     expect(result).toEqual({
-      kind: 'redirect',
-      to: `${PATHS.FILE}/${encodeURIComponent('/library/demo-project/main.kcl')}`,
+      kind: 'transition',
+      destination: {
+        type: 'project',
+        target: '/library/demo-project/main.kcl',
+      },
+      canonicalPath: `${PATHS.FILE}/${encodeURIComponent(
+        '/library/demo-project/main.kcl'
+      )}`,
     })
     expect(mocks.projectSkeletonCreate).not.toHaveBeenCalled()
   })
@@ -158,8 +172,14 @@ describe('initIndexRoute', () => {
 
     expect(mocks.projectSkeletonCreate).toHaveBeenCalledTimes(1)
     expect(result).toEqual({
-      kind: 'redirect',
-      to: `${PATHS.FILE}/${encodeURIComponent('/library/demo-project/main.kcl')}`,
+      kind: 'transition',
+      destination: {
+        type: 'project',
+        target: '/library/demo-project/main.kcl',
+      },
+      canonicalPath: `${PATHS.FILE}/${encodeURIComponent(
+        '/library/demo-project/main.kcl'
+      )}`,
     })
   })
 })
@@ -173,16 +193,21 @@ describe('initFileRoute', () => {
     })
     // The one genuinely routing-shaped case left here: a legacy URL shape with
     // no meaning as application state, so it never reaches `OpenProject`.
-    expect(result).toEqual({ kind: 'redirect', to: PATHS.HOME })
+    expect(result).toEqual({
+      kind: 'transition',
+      destination: { type: 'home' },
+      canonicalPath: PATHS.HOME,
+    })
     expect(mocks.supersedeProjectOpen).toHaveBeenCalledWith(expect.anything())
     expect(mocks.openProject).not.toHaveBeenCalled()
   })
 
-  test('hands everything else to OpenProject and passes its redirect through', async () => {
+  test('hands everything else to OpenProject', async () => {
     setDesktop(false)
+    const data = { code: 'x = 1' }
     mocks.openProject.mockResolvedValue({
-      kind: 'redirect',
-      to: '/file/elsewhere',
+      kind: 'opened',
+      data,
     })
 
     const result = await initFileRoute(fakeApp(), {
@@ -195,7 +220,7 @@ describe('initFileRoute', () => {
       requestUrl: 'http://localhost/file/%2Flibrary%2Fproj',
       signal: expect.anything(),
     })
-    expect(result).toEqual({ kind: 'redirect', to: '/file/elsewhere' })
+    expect(result).toEqual({ kind: 'ready', data })
   })
 
   test('passes an opened file back as loader data', async () => {
@@ -208,23 +233,27 @@ describe('initFileRoute', () => {
       requestUrl: 'http://localhost/file/%2Flibrary%2Fproj%2Fmain.kcl',
     })
 
-    expect(result).toEqual({ kind: 'ok', data })
+    expect(result).toEqual({ kind: 'ready', data })
   })
 })
 
 describe('initHomeRoute', () => {
-  test('unflagged web bounces out to the index', async () => {
+  test('unflagged web continues through the index policy', async () => {
     setDesktop(false)
     mocks.webHomeRouteEnabled.mockResolvedValue(false)
     const result = await initHomeRoute(fakeApp())
-    expect(result).toEqual({ kind: 'redirect', to: PATHS.INDEX })
+    expect(result).toEqual({
+      kind: 'transition',
+      destination: { type: 'index' },
+      canonicalPath: PATHS.INDEX,
+    })
     expect(mocks.loadHomeProjects).not.toHaveBeenCalled()
   })
 
   test('desktop clears the open project and lists folders', async () => {
     setDesktop(true)
     const result = await initHomeRoute(fakeApp())
-    expect(result).toEqual({ kind: 'ok', data: {} })
+    expect(result).toEqual({ kind: 'ready', data: {} })
     expect(mocks.loadHomeProjects).toHaveBeenCalledTimes(1)
   })
 
@@ -232,7 +261,7 @@ describe('initHomeRoute', () => {
     setDesktop(false)
     mocks.webHomeRouteEnabled.mockResolvedValue(true)
     const result = await initHomeRoute(fakeApp())
-    expect(result).toEqual({ kind: 'ok', data: {} })
+    expect(result).toEqual({ kind: 'ready', data: {} })
     expect(mocks.loadHomeProjects).toHaveBeenCalledTimes(1)
   })
 })

@@ -52,23 +52,6 @@ beforeEach(() => {
 })
 
 describe('appNavigation', () => {
-  test('returns a canonical redirect without opening a project', async () => {
-    const { dependencies, navigation } = navigationHarness({
-      resolveProjectOpen: vi.fn<
-        AppNavigationDependencies['resolveProjectOpen']
-      >(async () => ({
-        kind: 'redirect',
-        to: '/file/canonical',
-      })),
-    })
-
-    await expect(
-      navigation.openProject({ target: '/projects/bracket' })
-    ).resolves.toEqual({ kind: 'redirect', to: '/file/canonical' })
-    expect(dependencies.openResolvedProject).not.toHaveBeenCalled()
-    expect(dependencies.projectOpened).not.toHaveBeenCalled()
-  })
-
   test('opens a project before projecting its location', async () => {
     const { dependencies, navigation } = navigationHarness()
     const request = { target: '/projects/bracket' }
@@ -82,6 +65,7 @@ describe('appNavigation', () => {
     )
     expect(dependencies.projectOpened).toHaveBeenCalledWith(
       expect.objectContaining({ kind: 'opened' }),
+      resolvedProject,
       request
     )
     expect(dependencies.openResolvedProject).toHaveBeenCalledBefore(

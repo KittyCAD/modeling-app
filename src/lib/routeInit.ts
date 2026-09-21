@@ -1,17 +1,10 @@
 /**
  * Route initialization, as plain functions.
  *
- * These used to be the bodies of the React Router route loaders.
- * They were never really data loaders: nothing calls `useLoaderData`, so their
- * return values were computed and discarded, and the actual work was mutating
- * the `App` singleton and the XState actors. The only load-bearing thing they
- * got from React Router was `redirect()`.
- *
- * So they say what they want instead of performing it — a `redirect` outcome
- * rather than a `Response`. This transitional characterization seam leaves the
- * URL-to-state work callable without React or React Router until the final
- * inversion replaces it with typed application transitions and later URL
- * projection.
+ * These began as extracted React Router loader bodies. They now return typed
+ * application transitions when one startup destination resolves to another.
+ * The startup coordinator follows those transitions directly and projects the
+ * canonical URL only after the resulting application state is ready.
  */
 
 import { projectSkeletonCreate } from '@src/lang/project'
@@ -37,21 +30,23 @@ import { loadRouteSettings } from '@src/lib/routeSettings'
 import type { AppSettings } from '@src/lib/settings/settingsUtils'
 import type { FileLoaderData, HomeLoaderData } from '@src/lib/types'
 import { appNavigationService } from '@src/registry/contracts/appNavigation'
+import type { AppDestination } from '@src/registry/contracts/appUrl'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 
 export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
 
 /**
- * What a route wants to happen, said rather than done.
- *
- * The redirect alternative is transitional while loaders consume this result.
- * `to` is whatever the loader would have passed to `redirect()`, so it is
- * sometimes a path and sometimes a whole URL — preserved exactly, because the
- * URLs are the contract with the Playwright suite.
+ * A startup step either establishes its state or selects the next typed
+ * application destination. `canonicalPath` is projected only after that
+ * destination has been established.
  */
 export type RouteInitResult<T> =
-  | { kind: 'ok'; data: T }
-  | { kind: 'redirect'; to: string }
+  | { kind: 'ready'; data: T }
+  | {
+      kind: 'transition'
+      destination: AppDestination
+      canonicalPath: string
+    }
 
 type CanonicalWebProjectLibrary = {
   library: ProjectLibrarySetting
@@ -130,21 +125,29 @@ export async function initIndexRoute(
     Boolean(window.electron)
   )
 
-  // Desktop, redirect and return early
+  // Desktop starts at Home.
   if (window.electron) {
-    return { kind: 'redirect', to: PATHS.HOME + routerSearch }
+    return {
+      kind: 'transition',
+      destination: { type: 'home' },
+      canonicalPath: PATHS.HOME + routerSearch,
+    }
   }
 
   // Let another part of the system handle the "open with web/desktop"...
   if (url.searchParams.has('ask-open-desktop')) {
-    return { kind: 'ok', data: undefined }
+    return { kind: 'ready', data: undefined }
   }
 
   if (await webHomeRouteEnabled(app)) {
-    return { kind: 'redirect', to: PATHS.HOME + routerSearch }
+    return {
+      kind: 'transition',
+      destination: { type: 'home' },
+      canonicalPath: PATHS.HOME + routerSearch,
+    }
   }
 
-  // Web, make a default project and redirect to it.
+  // Web without Home creates or opens its default project.
   const wasmInstance = await app.singletons.kclManager.wasmInstancePromise
 
   const { settings } = await loadRouteSettings(app, wasmInstance)
@@ -167,8 +170,9 @@ export async function initIndexRoute(
   }
 
   return {
-    kind: 'redirect',
-    to: fileRoutePath(defaultFilePath, routerSearch),
+    kind: 'transition',
+    destination: { type: 'project', target: defaultFilePath },
+    canonicalPath: fileRoutePath(defaultFilePath, routerSearch),
   }
 }
 
@@ -201,9 +205,12 @@ export async function initFileRoute(
     // can call openProject, so the loader-era implementation must explicitly
     // invalidate an earlier file loader. Startup inversion removes this call.
     app.registry.get(appNavigationService).supersedeProjectOpen(requestSignal)
-    // Pop us back home, which will cause a default project to be
-    // created.
-    return { kind: 'redirect', to: PATHS.HOME }
+    // Continue at Home, which may select the default web project.
+    return {
+      kind: 'transition',
+      destination: { type: 'home' },
+      canonicalPath: PATHS.HOME,
+    }
   }
 
   const outcome = await app.registry.get(appNavigationService).openProject({
@@ -211,25 +218,27 @@ export async function initFileRoute(
     requestUrl,
     signal: requestSignal,
   })
-  return outcome.kind === 'redirect'
-    ? { kind: 'redirect', to: outcome.to }
-    : { kind: 'ok', data: outcome.data }
+  return { kind: 'ready', data: outcome.data }
 }
 
 /**
  * Initialization for `/home` and `/library/:libraryId`.
  *
- * Unflagged web has no home, so it bounces to `/`, which will redirect on to a
- * project. Otherwise this clears the currently-open project — the projects
- * listed there may be stale.
+ * Unflagged web has no home, so startup continues through the index policy to
+ * its default project. Otherwise this clears the currently-open project — the
+ * projects listed there may be stale.
  */
 export async function initHomeRoute(
   app: App
 ): Promise<RouteInitResult<HomeLoaderData>> {
-  // If on unflagged web, bump out to root, which will redirect to a project.
+  // Unflagged web continues through the index startup policy.
   if (!window.electron && !(await webHomeRouteEnabled(app))) {
-    return { kind: 'redirect', to: PATHS.INDEX }
+    return {
+      kind: 'transition',
+      destination: { type: 'index' },
+      canonicalPath: PATHS.INDEX,
+    }
   }
 
-  return { kind: 'ok', data: loadHomeProjects(app) }
+  return { kind: 'ready', data: loadHomeProjects(app) }
 }
