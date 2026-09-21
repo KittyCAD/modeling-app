@@ -29,10 +29,10 @@ export const projectSessionExtension = defineRegistryItemFactory(() => {
 
   const openProject = async (input: OpenProjectSessionInput) => {
     const activeRuntime = await getRuntime()
-    const assertCurrent = input.assertCurrent ?? (() => undefined)
+    const throwIfSuperseded = input.throwIfSuperseded ?? (() => undefined)
     const openedProject = await activeRuntime.openProject(
       input.project,
-      assertCurrent
+      throwIfSuperseded
     )
     const editor = input.initialEditor
       ? await openedProject.openEditor(
@@ -40,10 +40,10 @@ export const projectSessionExtension = defineRegistryItemFactory(() => {
           input.initialEditor.providedEditor,
           input.initialEditor.providedCode,
           input.initialEditor.isExecuting ?? true,
-          assertCurrent
+          throwIfSuperseded
         )
       : undefined
-    assertCurrent()
+    throwIfSuperseded()
 
     return { project: openedProject, editor }
   }

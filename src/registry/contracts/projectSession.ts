@@ -3,7 +3,17 @@ import type { Signal } from '@preact/signals-core'
 import type { KclManager, ZDSProject } from '@src/lang/KclManager'
 import type { Project } from '@src/lib/project'
 
-export type AssertCurrentProjectOpen = () => void
+/**
+ * Transitional guard against an older asynchronous project open publishing
+ * state after a newer application intent.
+ *
+ * Remove this callback once projectSession owns ZDSProject and KclManager
+ * construction, can build each candidate without mutating shared runtime
+ * state, and atomically publishes or discards that candidate at one boundary.
+ * Until then, callers must invoke it after asynchronous work and before
+ * committing project or editor state.
+ */
+export type ThrowIfProjectOpenSuperseded = () => void
 
 /**
  * A resolved request to enter a project session.
@@ -20,7 +30,7 @@ export interface OpenProjectSessionInput {
     providedCode?: string
     isExecuting?: boolean
   }
-  assertCurrent?: AssertCurrentProjectOpen
+  throwIfSuperseded?: ThrowIfProjectOpenSuperseded
 }
 
 export interface OpenProjectSessionResult {
@@ -32,7 +42,7 @@ export interface OpenProjectSessionResult {
 export interface ProjectSessionRuntime {
   openProject(
     project: Project,
-    assertCurrent: AssertCurrentProjectOpen
+    throwIfSuperseded: ThrowIfProjectOpenSuperseded
   ): Promise<ZDSProject>
   closeProject(): void
 }

@@ -27,17 +27,17 @@ import { waitFor } from 'xstate'
 async function openResolvedProject(
   app: App,
   resolution: ResolvedProjectOpen,
-  assertCurrent: () => void
+  throwIfSuperseded: () => void
 ) {
   const settingsActor = app.settings.actor
   await waitFor(settingsActor, (state) => state.matches('idle'))
-  assertCurrent()
+  throwIfSuperseded()
   settingsActor.send({
     type: 'load.project',
     project: resolution.project,
   })
   await waitFor(settingsActor, (state) => state.matches('idle'))
-  assertCurrent()
+  throwIfSuperseded()
 
   const { project: projectRef, editor } = await app.registry
     .get(projectSession)
@@ -52,9 +52,9 @@ async function openResolvedProject(
             : undefined,
         isExecuting: true,
       },
-      assertCurrent,
+      throwIfSuperseded,
     })
-  assertCurrent()
+  throwIfSuperseded()
   if (!editor) {
     return Promise.reject(new Error('Project opened without an initial editor'))
   }
@@ -111,7 +111,7 @@ export function createAppNavigationDependencies(
   const fileOperations = app.registry.get(fileOperationsService)
 
   return {
-    resolveProjectOpen: (request, assertCurrent) =>
+    resolveProjectOpen: (request, throwIfSuperseded) =>
       resolveProjectOpenRequest(
         {
           wasmInstancePromise: app.singletons.kclManager.wasmInstancePromise,
@@ -130,9 +130,9 @@ export function createAppNavigationDependencies(
           isDesktop: () => Boolean(window.electron),
         },
         request,
-        assertCurrent
+        throwIfSuperseded
       ),
-    openResolvedProject: (resolution, assertCurrent) =>
-      openResolvedProject(app, resolution, assertCurrent),
+    openResolvedProject: (resolution, throwIfSuperseded) =>
+      openResolvedProject(app, resolution, throwIfSuperseded),
   }
 }

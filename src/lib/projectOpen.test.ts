@@ -49,7 +49,7 @@ function resolverHarness(
   return dependencies
 }
 
-const assertCurrent = vi.fn()
+const throwIfSuperseded = vi.fn()
 
 beforeEach(() => {
   vi.clearAllMocks()
@@ -65,7 +65,7 @@ describe('resolveProjectOpenRequest', () => {
         target: '/library/proj',
         requestUrl: `http://localhost${PATHS.FILE}/%2Flibrary%2Fproj?pool=alpha`,
       },
-      assertCurrent
+      throwIfSuperseded
     )
 
     expect(result).toEqual({
@@ -86,7 +86,7 @@ describe('resolveProjectOpenRequest', () => {
         target: '/library/proj/nope.kcl',
         requestUrl: `http://localhost${PATHS.FILE}/%2Flibrary%2Fproj%2Fnope.kcl?pool=alpha`,
       },
-      assertCurrent
+      throwIfSuperseded
     )
 
     expect(result).toEqual({
@@ -104,7 +104,7 @@ describe('resolveProjectOpenRequest', () => {
         target: '/library/proj',
         requestUrl: `http://localhost${PATHS.FILE}/%2Flibrary%2Fproj/settings`,
       },
-      assertCurrent
+      throwIfSuperseded
     )
 
     expect(result).toMatchObject({
@@ -120,7 +120,7 @@ describe('resolveProjectOpenRequest', () => {
       resolveProjectOpenRequest(
         dependencies,
         { target: undefined, requestUrl: 'http://localhost/file' },
-        assertCurrent
+        throwIfSuperseded
       )
     ).rejects.toThrow('bug: projectPathData undefined')
   })
@@ -131,7 +131,7 @@ describe('resolveProjectOpenRequest', () => {
     const result = await resolveProjectOpenRequest(
       dependencies,
       { target: '/library/proj' },
-      assertCurrent
+      throwIfSuperseded
     )
 
     expect(result).toMatchObject({
@@ -149,7 +149,7 @@ describe('resolveProjectOpenRequest', () => {
     const result = await resolveProjectOpenRequest(
       dependencies,
       { target: '/library/proj/part.kcl' },
-      assertCurrent
+      throwIfSuperseded
     )
 
     expect(result).toMatchObject({

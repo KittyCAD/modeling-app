@@ -13,11 +13,11 @@ export interface AppNavigationDependencies {
    */
   resolveProjectOpen: (
     request: OpenProjectRequest,
-    assertCurrent: () => void
+    throwIfSuperseded: () => void
   ) => Promise<{ kind: 'redirect'; to: string } | ResolvedProjectOpen>
   openResolvedProject: (
     resolution: ResolvedProjectOpen,
-    assertCurrent: () => void
+    throwIfSuperseded: () => void
   ) => Promise<Extract<OpenProjectOutcome, { kind: 'opened' }>>
 }
 
@@ -43,7 +43,7 @@ export function createAppNavigationService(
       : controller.signal
 
     return {
-      assertCurrent: () => signal.throwIfAborted(),
+      throwIfSuperseded: () => signal.throwIfAborted(),
       finish: () => {
         if (activeProjectOpen === controller) {
           activeProjectOpen = undefined
@@ -55,12 +55,12 @@ export function createAppNavigationService(
   const openProject: AppNavigationService['openProject'] = async (request) => {
     const projectOpen = beginProjectOpen(request.signal)
     try {
-      projectOpen.assertCurrent()
+      projectOpen.throwIfSuperseded()
       const resolution = await dependencies.resolveProjectOpen(
         request,
-        projectOpen.assertCurrent
+        projectOpen.throwIfSuperseded
       )
-      projectOpen.assertCurrent()
+      projectOpen.throwIfSuperseded()
 
       if (resolution.kind === 'redirect') {
         return resolution
@@ -68,7 +68,7 @@ export function createAppNavigationService(
 
       return dependencies.openResolvedProject(
         resolution,
-        projectOpen.assertCurrent
+        projectOpen.throwIfSuperseded
       )
     } finally {
       projectOpen.finish()
