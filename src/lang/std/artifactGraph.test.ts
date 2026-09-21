@@ -143,6 +143,9 @@ describe('getSweepBodyArtifact', () => {
 
       expect(getSweepBodyArtifact(first.sweep, artifactGraph)).toBe(base.sweep)
       expect(getSweepBodyArtifact(second.sweep, artifactGraph)).toBe(base.sweep)
+      expect(getSweepBodyArtifact(first.sweep, artifactGraph, false)).toBe(
+        first.sweep
+      )
     }
   )
 
@@ -183,6 +186,9 @@ describe('getSweepBodyArtifact', () => {
       path.compositeSolidId = composite.id
 
       expect(getSweepBodyArtifact(first.sweep, artifactGraph)).toBe(composite)
+      expect(getSweepBodyArtifact(first.sweep, artifactGraph, false)).toBe(
+        location === 'selected' ? composite : first.sweep
+      )
     }
   )
 

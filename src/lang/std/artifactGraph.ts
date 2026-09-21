@@ -383,7 +383,8 @@ export function getSweepFromSuspectedSweepSurface(
 /** Resolve face-merged extrusions back to their shared body. */
 export function getSweepBodyArtifact(
   sweep: Extract<Artifact, { type: 'sweep' }>,
-  artifactGraph: ArtifactGraph
+  artifactGraph: ArtifactGraph,
+  followFaceMerges = true
 ): Extract<Artifact, { type: 'sweep' | 'compositeSolid' }> | Error {
   const visited = new Set<ArtifactId>()
   let current = sweep
@@ -403,6 +404,7 @@ export function getSweepBodyArtifact(
     // Loft, sweep and twist artifacts default to "merge" without establishing
     // shared body identity. Only follow explicit extrusion merges.
     if (
+      !followFaceMerges ||
       current.subType !== 'extrusion' ||
       current.method !== 'merge' ||
       current.sourceSweepId

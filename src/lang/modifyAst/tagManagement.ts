@@ -244,7 +244,12 @@ function resolveSweepSelectionContext(
     return sourceSweep
   }
 
-  const selectedBody = getSweepBodyArtifact(selectedSweep, artifactGraph)
+  // Direct profile lookups need the sketch owner, not the shared merge body.
+  const selectedBody = getSweepBodyArtifact(
+    selectedSweep,
+    artifactGraph,
+    lastChildLookup
+  )
   if (err(selectedBody)) {
     return selectedBody
   }
