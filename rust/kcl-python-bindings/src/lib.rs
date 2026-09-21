@@ -1464,7 +1464,7 @@ mod tests {
             include_str!("../../kcl-lib/tests/sketch_visualizer/duplicate_names/statuses.kcl")
         );
         let program = kcl_lib::Program::parse_no_errs(&code).unwrap();
-        let (ctx, mut state) = new_context_state(None, true, None, false).await.unwrap();
+        let (ctx, mut state) = new_context_state(None, true, None, false, None, None).await.unwrap();
         let error = ctx.run(&program, &mut state).await.unwrap_err();
         ctx.close().await;
         assert!(!error.scene_objects.is_empty());

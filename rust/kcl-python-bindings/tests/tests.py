@@ -465,6 +465,14 @@ async def test_failed_execution_retains_sketches(live: bool) -> None:
     error = raised.value
     original_args = error.args
     assert not error.is_retryable()
+    report = error.sketch_constraint_report
+    assert report is not None
+    assert (
+        report.total_sketches() == baseline.sketch_constraint_report().total_sketches()
+    )
+    assert report.is_complete is False
+    assert report.kcl_error is not None
+    assert "missing_value" in report.kcl_error.text
     for name in ("fixedSketch", "looseSketch", "conflictSketch"):
         assert bytes(error.render_sketch_png(name)) == bytes(
             baseline.render_sketch_png(name)
@@ -1284,3 +1292,4 @@ async def test_primary_execution_error_carries_partial_constraint_report():
     assert raised.value.args == (report.kcl_error.text, False)
     assert raised.value.is_retryable() is False
     assert str(raised.value) == str(kcl.KclError(report.kcl_error.text, False))
+    assert bytes(raised.value.render_sketch_png("s1")).startswith(b"\x89PNG\r\n\x1a\n")
