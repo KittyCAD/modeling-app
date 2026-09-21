@@ -1,0 +1,15 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing diagnostics_attribute_v3.kcl
+---
+KCL Semantic error
+
+  × semantic: Multiplying numbers which have unknown or incompatible units.
+  │ You can probably fix this error by specifying the units using type
+  │ ascription, e.g., `len: number(mm)` or `(a * b): number(deg)`.
+   ╭─[6:5]
+ 5 │ 
+ 6 │ a = PI * 2
+   ·     ───┬──
+   ·        ╰── main
+   ╰────

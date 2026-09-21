@@ -118,6 +118,9 @@ clonedComposite = clone(source)`
       name: { name: 'clonedComposite' },
     })
   } finally {
-    engineCommandManager.tearDown()
+    engineCommandManager.tearDown({
+      route: 'user-requested',
+      initiatedBy: 'client',
+    })
   }
 })

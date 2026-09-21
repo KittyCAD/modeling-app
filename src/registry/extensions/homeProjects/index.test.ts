@@ -8,6 +8,7 @@ import {
 import { signal } from '@preact/signals-core'
 import type * as ClientErrors from '@src/lib/clientErrors'
 import { CLOUD_SYNC_PLUGIN_ID } from '@src/lib/cloudSync/registry/constants'
+import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import fsZds from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import type { Project } from '@src/lib/project'
@@ -29,6 +30,7 @@ import {
   cloudProjectRelationshipsService,
   cloudSyncService,
 } from '@src/registry/contracts/cloudSync'
+import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import {
   type HomeProjectEntry,
   homeProjectActionsService,
@@ -89,7 +91,7 @@ vi.mock('@src/lib/clientErrors', async (importOriginal) => {
 vi.mock('@src/lib/projectIdentity', () => projectIdentityMocks)
 
 vi.mock('@src/lib/zookeeper/zookeeperConversationStore', () => ({
-  zookeeperConversationStore: conversationStoreMocks,
+  makeZookeeperConversationStore: vi.fn(() => conversationStoreMocks),
 }))
 
 const fsZdsMocks = vi.hoisted(() => {
@@ -125,12 +127,18 @@ const fsZdsMocks = vi.hoisted(() => {
   return {
     basename: vi.fn((path: string) => path.slice(path.lastIndexOf('/') + 1)),
     dirname: vi.fn(dirname),
+    access: vi.fn().mockResolvedValue(undefined),
+    cp: vi.fn().mockResolvedValue(undefined),
     join: vi.fn(join),
+    mkdir: vi.fn().mockResolvedValue(undefined),
+    readFile: vi.fn(),
     readdir: vi.fn(),
     rename: vi.fn(),
+    resolve: vi.fn((path: string) => path),
     rm: vi.fn(),
     sep: '/',
     stat: vi.fn(),
+    writeFile: vi.fn().mockResolvedValue(undefined),
   }
 })
 
@@ -216,6 +224,11 @@ function createSystemIOService() {
     send,
   }
 }
+
+const fileOperationsTestItem = defineRegistryItem({
+  id: 'test.file-operations',
+  providesServices: [provideService(fileOperationsService, testFileOperations)],
+})
 
 function createCloudSyncService(
   overrides: Partial<CloudSyncRegistryService> = {}
@@ -572,6 +585,7 @@ describe('home project actions', () => {
 
     registry = new Registry()
     registry.configure([
+      fileOperationsTestItem,
       defineRegistryItem({
         id: 'test.settings',
         providesServices: [provideService(settingsService, settings.service)],
@@ -601,6 +615,7 @@ describe('home project actions', () => {
       ])
     )
     expect(desktopMocks.getProjectInfo).toHaveBeenCalledWith(
+      expect.objectContaining({ readFile: expect.any(Function) }),
       '/projects/local-project',
       await wasmPromise
     )
@@ -639,7 +654,7 @@ describe('home project actions', () => {
       mode: fsZdsConstants.S_IFDIR,
       mtimeMs: 100,
     })
-    desktopMocks.getProjectInfo.mockImplementation(async (projectPath) => {
+    desktopMocks.getProjectInfo.mockImplementation(async (_, projectPath) => {
       const project = projects.find((entry) => entry.path === projectPath)
       if (!project) {
         throw new Error(`Unexpected project path: ${String(projectPath)}`)
@@ -649,6 +664,7 @@ describe('home project actions', () => {
 
     registry = new Registry()
     registry.configure([
+      fileOperationsTestItem,
       defineRegistryItem({
         id: 'test.settings',
         providesServices: [provideService(settingsService, settings.service)],
@@ -705,6 +721,7 @@ describe('home project actions', () => {
 
     registry = new Registry()
     registry.configure([
+      fileOperationsTestItem,
       defineRegistryItem({
         id: 'test.settings',
         providesServices: [provideService(settingsService, settings.service)],
@@ -734,6 +751,10 @@ describe('home project actions', () => {
     expect(
       projectIdentityMocks.separateProjectsSharingProjectId
     ).toHaveBeenCalledWith({
+      fileOperations: expect.objectContaining({
+        readFile: expect.any(Function),
+        writeFile: expect.any(Function),
+      }),
       projectPaths: ['/projects/original', '/projects/copy'],
       keepProjectPath: '/projects/copy',
     })
@@ -760,6 +781,7 @@ describe('home project actions', () => {
 
     registry = new Registry()
     registry.configure([
+      fileOperationsTestItem,
       defineRegistryItem({
         id: 'test.settings',
         providesServices: [provideService(settingsService, settings.service)],
@@ -816,6 +838,7 @@ describe('home project actions', () => {
 
     registry = new Registry()
     registry.configure([
+      fileOperationsTestItem,
       defineRegistryItem({
         id: 'test.settings',
         providesServices: [
@@ -853,9 +876,12 @@ describe('home project actions', () => {
       .get(projectLibraryTypesValueSpec)
       .get(DIRECTORY_PROJECT_LIBRARY_TYPE)?.operations?.deleteProject
     expect(deleteProject).toBeDefined()
-    await expect(deleteProject?.run({ library, project })).rejects.toBe(
-      deleteError
-    )
+    await expect(
+      deleteProject?.run({ library, project })
+    ).rejects.toMatchObject({
+      _tag: 'FileIoFailure',
+      cause: deleteError,
+    })
 
     expect(removeSpy).toHaveBeenCalledWith('/projects/at-risk', {
       recursive: true,
@@ -863,7 +889,7 @@ describe('home project actions', () => {
     expect(clientErrorMocks.reportClientError).toHaveBeenCalledWith(
       expect.objectContaining({
         code: 'system_io_error',
-        errorName: 'Error',
+        errorName: 'FileIoFailure',
         message: 'SystemIO destructive operation failed during delete project.',
         extra: expect.objectContaining({
           source: 'DirectoryProjectLibrary',
@@ -890,6 +916,7 @@ describe('home project actions', () => {
 
     registry = new Registry()
     registry.configure([
+      fileOperationsTestItem,
       defineRegistryItem({
         id: 'test.settings',
         providesServices: [
@@ -969,6 +996,7 @@ describe('home project actions', () => {
 
     registry = new Registry()
     registry.configure([
+      fileOperationsTestItem,
       defineRegistryItem({
         id: 'test.settings',
         providesServices: [provideService(settingsService, settings.service)],
@@ -1056,6 +1084,7 @@ describe('home project actions', () => {
 
     registry = new Registry()
     registry.configure([
+      fileOperationsTestItem,
       defineRegistryItem({
         id: 'test.settings',
         providesServices: [
@@ -1115,6 +1144,7 @@ describe('home project actions', () => {
       '/cloud-projects'
     )
     expect(desktopMocks.getProjectInfo).toHaveBeenCalledWith(
+      expect.objectContaining({ readFile: expect.any(Function) }),
       '/cloud-projects/remote-title',
       wasmInstance
     )
@@ -1142,6 +1172,7 @@ describe('home project actions', () => {
 
     registry = new Registry()
     registry.configure([
+      fileOperationsTestItem,
       defineRegistryItem({
         id: 'test.settings',
         providesServices: [
@@ -1223,6 +1254,7 @@ describe('home project actions', () => {
 
     registry = new Registry()
     registry.configure([
+      fileOperationsTestItem,
       defineRegistryItem({
         id: 'test.settings',
         providesServices: [

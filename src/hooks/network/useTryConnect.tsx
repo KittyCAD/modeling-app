@@ -98,7 +98,10 @@ const attemptToConnectToEngine = async ({
             label: 'ConnectionStream.tsx',
             message: 'Unable to reference the video. Calling tearDown()',
           })
-          engineCommandManager.tearDown()
+          engineCommandManager.tearDown({
+            route: 'connection-attempt-failed',
+            initiatedBy: 'client',
+          })
           return reject('Unable to reference the video, calling tearDown()')
         }
 
@@ -107,7 +110,10 @@ const attemptToConnectToEngine = async ({
             label: 'ConnectionStream.tsx',
             message: 'Unable to reference the mediaStream, calling tearDown()',
           })
-          engineCommandManager.tearDown()
+          engineCommandManager.tearDown({
+            route: 'connection-attempt-failed',
+            initiatedBy: 'client',
+          })
           return reject(
             'Unable to reference the mediaStream, calling tearDown()'
           )
@@ -313,7 +319,10 @@ export async function tryConnecting({
             setShowManualConnect(true)
             return reject(terminalConnectionError)
           }
-          engineCommandManager.tearDown()
+          engineCommandManager.tearDown({
+            route: 'connection-attempt-failed',
+            initiatedBy: 'client',
+          })
           if (numberOfConnectionAttempts.current >= NUMBER_OF_ENGINE_RETRIES) {
             isConnecting.current = false
             numberOfConnectionAttempts.current = 0

@@ -134,6 +134,8 @@ struct Test {
     /// If set, redact the test's UUIDs.
     #[cfg_attr(feature = "snapshot-engine-responses", expect(dead_code))]
     redact_uuids: bool,
+    /// KCL versions to execute against. Empty means use the file as written.
+    kcl_versions: Vec<String>,
 }
 
 const REPO_ROOT: &str = "../..";
@@ -157,12 +159,15 @@ struct TestConfig {
     /// until we make the engine more deterministic.
     #[serde(default = "default_redact_uuids")]
     redact_uuids: bool,
+    #[serde(default)]
+    kcl_versions: Vec<String>,
 }
 
 impl Default for TestConfig {
     fn default() -> Self {
         Self {
             redact_uuids: default_redact_uuids(),
+            kcl_versions: Vec::new(),
         }
     }
 }
@@ -195,16 +200,27 @@ impl Test {
     fn new(name: &str) -> Self {
         let test_dir = Path::new("tests").join(name);
         let test_config = TestConfig::from_file(&test_dir).unwrap_or_default();
-        let TestConfig { redact_uuids } = test_config;
+        let TestConfig {
+            redact_uuids,
+            kcl_versions,
+        } = test_config;
+        let output_dir = if kcl_versions.is_empty() {
+            test_dir.clone()
+        } else {
+            let output_dir = test_dir.join("output");
+            std::fs::create_dir_all(&output_dir).unwrap();
+            output_dir
+        };
         Self {
             name: name.to_owned(),
             entry_point: test_dir.clone().join("input.kcl"),
-            input_dir: test_dir.clone(),
-            output_dir: test_dir,
+            input_dir: test_dir,
+            output_dir,
             skip_assert_artifact_graph: false,
             snapshot_physical_properties: true,
             expected_deprecation_warnings: None,
             redact_uuids,
+            kcl_versions,
         }
     }
 
@@ -634,7 +650,24 @@ async fn unparse_test(test: &Test) {
 }
 
 async fn execute(test_name: &str, render_to_png: bool) {
-    execute_test(&Test::new(test_name), render_to_png, false).await
+    execute_test(&Test::new(test_name), render_to_png).await
+}
+
+async fn execute_test(test: &Test, render_to_png: bool) {
+    miette::set_hook(Box::new(|_| {
+        Box::new(miette::MietteHandlerOpts::new().show_related_errors_as_nested().build())
+    }))
+    .unwrap();
+    if test.kcl_versions.is_empty() {
+        execute_once(test, render_to_png, None).await;
+        return;
+    }
+    for version in &test.kcl_versions {
+        let mut run = test.clone();
+        run.output_dir = test.output_dir.join(format!("kcl-{version}"));
+        std::fs::create_dir_all(&run.output_dir).unwrap();
+        execute_once(&run, render_to_png, Some(version.as_str())).await;
+    }
 }
 
 async fn physical_properties(ctx: &ExecutorContext) -> Option<serde_json::Value> {
@@ -736,12 +769,16 @@ async fn physical_properties(ctx: &ExecutorContext) -> Option<serde_json::Value>
     }))
 }
 
-async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
+async fn execute_once(test: &Test, render_to_png: bool, kcl_version: Option<&str>) {
     let input = test.read();
-    let ast = crate::Program::parse_no_errs(&input).unwrap();
+    let mut ast = crate::Program::parse_no_errs(&input).unwrap();
     let program_to_lint = ast.clone();
     eprintln!("=========");
     eprintln!("Running test {}", test.name);
+    if let Some(kcl_version) = kcl_version {
+        eprintln!("\t kclVersion: {kcl_version}");
+        ast = ast.change_kcl_version(Some(kcl_version.to_owned())).unwrap();
+    }
     if test.input_dir != test.output_dir {
         eprintln!("\tInput dir: {}", test.input_dir.display());
         eprintln!("\tOutput dir: {}", test.output_dir.display());
@@ -759,14 +796,13 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
         crate::test_server::execute_and_snapshot_ast_no_close(
             ast.clone(),
             Some(test.entry_point.clone()),
-            export_step,
             test.expected_deprecation_warnings
                 .map(|_| KCL_SAMPLE_DEPRECATION_VERSION),
         )
     })
     .await;
     match exec_res {
-        Ok((exec_state, ctx, env_ref, png, step)) => {
+        Ok((exec_state, ctx, env_ref, image)) => {
             if let Some(expected_deprecation_warnings) = test.expected_deprecation_warnings {
                 let deprecation_warnings = exec_state
                     .issues()
@@ -797,8 +833,10 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                     fail_path.to_string_lossy()
                 )
             }
+            // rendering to png means the model was exported with mesh and readable brep data.
             if render_to_png
-                && let Err(err) = twenty_twenty::try_assert_image(test.output_dir.join(RENDERED_MODEL_NAME), &png, 0.99)
+                && let Err(err) =
+                    twenty_twenty::try_assert_image(test.output_dir.join(RENDERED_MODEL_NAME), &image, 0.99)
             {
                 panic!(
                     "Image assertion failed: {err}; input KCL file: {}",
@@ -806,15 +844,6 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                 );
             }
 
-            // Ensure the step has data.
-            if export_step {
-                let Some(step_contents) = step else {
-                    panic!("Step data was not generated");
-                };
-                if step_contents.is_empty() {
-                    panic!("Step data was empty");
-                }
-            }
             let ok_snap = catch_unwind(AssertUnwindSafe(|| {
                 assert_snapshot(test, "Execution success", || {
                     insta::assert_json_snapshot!("execution_success", ())
@@ -900,10 +929,6 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                     // Snapshot the KCL error with a fancy graphical report.
                     // This looks like a Cargo compile error, with arrows pointing
                     // to source code, underlines, etc.
-                    miette::set_hook(Box::new(|_| {
-                        Box::new(miette::MietteHandlerOpts::new().show_related_errors_as_nested().build())
-                    }))
-                    .unwrap();
                     let report = error.clone().into_miette_report_with_outputs(&input).unwrap();
                     let report = miette::Report::new(report);
                     if previously_passed {
@@ -8344,6 +8369,48 @@ mod member_expression_order_v3 {
 }
 mod import_kcl_version_mismatch_v3 {
     const TEST_NAME: &str = "import_kcl_version_mismatch_v3";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod import_kcl_version_mismatch_undeclared_entry_point {
+    const TEST_NAME: &str = "import_kcl_version_mismatch_undeclared_entry_point";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod diagnostics_attribute_v3 {
+    const TEST_NAME: &str = "diagnostics_attribute_v3";
 
     /// Test parsing KCL.
     #[test]

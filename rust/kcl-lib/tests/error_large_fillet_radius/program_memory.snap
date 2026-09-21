@@ -37,7 +37,6 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
   },
   "capEnd001": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "capEnd001"
   },
   "edgeForSurface": {
@@ -585,8 +584,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
             "n": 13.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -773,21 +774,17 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
   },
   "line1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line1"
   },
   "line2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line2"
   },
   "line3": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line3"
   },
   "line4": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line4"
   },
@@ -1012,15 +1009,21 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
                       {
                         "n": 2.5,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1030,15 +1033,21 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
                       {
                         "n": -2.5,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1128,15 +1137,21 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
                       {
                         "n": 2.5,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 2.5,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1146,15 +1161,21 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
                       {
                         "n": 2.5,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1244,15 +1265,21 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
                       {
                         "n": -2.5,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 2.5,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1262,15 +1289,21 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
                       {
                         "n": 2.5,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 2.5,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1360,15 +1393,21 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
                       {
                         "n": -2.5,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1378,15 +1417,21 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
                       {
                         "n": -2.5,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 2.5,
                         "ty": {
-                          "mm": null,
-                          "type": "Length"
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],

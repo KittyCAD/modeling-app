@@ -115,7 +115,8 @@ description: Artifact commands delete_body.kcl
         "query_point": {
           "x": -1.0,
           "y": 0.5
-        }
+        },
+        "version": "V1"
       }
     },
     {

@@ -568,6 +568,8 @@ pub struct Helix {
 pub struct ImportedGeometryArtifact {
     pub id: ArtifactId,
     pub code_ref: CodeRef,
+    #[serde(default)]
+    pub consumed: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, Eq, ts_rs::TS)]
@@ -576,6 +578,8 @@ pub struct ImportedGeometryArtifact {
 pub struct GdtAnnotationArtifact {
     pub id: ArtifactId,
     pub code_ref: CodeRef,
+    #[serde(default)]
+    pub consumed: bool,
 }
 
 /// A named view declared in KCL by `view::named`: a display name, camera intent

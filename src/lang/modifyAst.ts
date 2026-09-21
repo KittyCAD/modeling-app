@@ -1387,6 +1387,7 @@ export function setCallInAst({
   pathToEdit,
   pathIfNewPipe,
   variableIfNewDecl,
+  variableIfNewPipe,
   labeledSelectionArgNames,
   wasmInstance,
 }: {
@@ -1395,6 +1396,7 @@ export function setCallInAst({
   pathToEdit?: PathToNode
   pathIfNewPipe?: PathToNode
   variableIfNewDecl?: string
+  variableIfNewPipe?: string
   labeledSelectionArgNames?: readonly string[]
   wasmInstance: ModuleType
 }): Error | PathToNode {
@@ -1420,7 +1422,7 @@ export function setCallInAst({
     replaceCallInPlace(result.node, call, labeledSelectionArgNames)
     pathToNode = pathToEdit
   } else if (pathIfNewPipe) {
-    const pipe = getNodeFromPath<PipeExpression>(
+    const pipe = getNodeFromPath<Node<PipeExpression> | Node<CallExpressionKw>>(
       ast,
       pathIfNewPipe,
       wasmInstance,
@@ -1429,8 +1431,10 @@ export function setCallInAst({
     if (err(pipe)) {
       return pipe
     }
+    let pipeExpression: Node<PipeExpression>
     if (pipe.node.type === 'PipeExpression') {
       pipe.node.body.push(call)
+      pipeExpression = pipe.node
     } else if (pipe.node.type === 'CallExpressionKw') {
       const expression = getNodeFromPath<ExpressionStatement>(
         ast,
@@ -1442,16 +1446,48 @@ export function setCallInAst({
         return new Error('Could not retrieve ExpressionStatement')
       }
 
-      expression.node.expression = createPipeExpression([
-        expression.node.expression,
-        call,
-      ])
+      pipeExpression = createPipeExpression([expression.node.expression, call])
+      expression.node.expression = pipeExpression
     } else {
       return new Error(
         'Expected pipeIfPipe to be a PipeExpression or CallExpressionKw'
       )
     }
-    pathToNode = pathIfNewPipe
+    if (variableIfNewPipe) {
+      const expression = getNodeFromPath<ExpressionStatement>(
+        ast,
+        pathIfNewPipe,
+        wasmInstance,
+        'ExpressionStatement'
+      )
+      if (err(expression) || expression.node.type !== 'ExpressionStatement') {
+        return new Error('Could not retrieve ExpressionStatement')
+      }
+      const bodyIndex = getBodyIndex(expression.shallowPath)
+      if (err(bodyIndex)) {
+        return bodyIndex
+      }
+      const sourceStatement = ast.body[bodyIndex]
+      if (!sourceStatement) {
+        return new Error('Could not find source statement')
+      }
+      const declaration = createVariableDeclaration(
+        variableIfNewPipe,
+        pipeExpression
+      )
+      declaration.preComments = sourceStatement.preComments
+      ast.body[bodyIndex] = declaration
+      pathToNode = [
+        ['body', ''],
+        [bodyIndex, 'index'],
+        ['declaration', 'VariableDeclaration'],
+        ['init', 'VariableDeclarator'],
+        ['body', 'PipeExpression'],
+        [pipeExpression.body.length - 1, 'index'],
+      ]
+    } else {
+      pathToNode = pathIfNewPipe
+    }
   } else if (variableIfNewDecl) {
     const name = findUniqueName(ast, variableIfNewDecl)
     const declaration = createVariableDeclaration(name, call)

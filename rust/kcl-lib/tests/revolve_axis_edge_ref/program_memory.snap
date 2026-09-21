@@ -150,7 +150,6 @@ description: Variables in memory after executing revolve_axis_edge_ref.kcl
   },
   "axisSide": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "axisSide"
   },
   "axisSketch": {
@@ -401,7 +400,6 @@ description: Variables in memory after executing revolve_axis_edge_ref.kcl
     }
   },
   "axisStart": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "axisStart"
   },

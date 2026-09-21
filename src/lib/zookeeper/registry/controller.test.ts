@@ -250,6 +250,9 @@ function createHarness({
     apiToken,
     billing: { send: billingSend },
     conversationStore,
+    fileOperations: {
+      readFile: vi.fn(async () => new Uint8Array()),
+    },
     kclManager,
     project: projectSignal,
     projectId: initialProjectId,
@@ -396,6 +399,9 @@ describe('Zookeeper session controller', () => {
     expect(controller.queue.value).toHaveLength(0)
     expect(projectFilesMocks.collect).toHaveBeenCalledWith({
       fileNames: kclManager.execState.filenames,
+      fileOperations: expect.objectContaining({
+        readFile: expect.any(Function),
+      }),
       projectContext: project,
       selectedFileContents: kclManager.code,
       selectedFilePath: kclManager.path,

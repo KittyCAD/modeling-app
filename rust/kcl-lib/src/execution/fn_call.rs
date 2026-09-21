@@ -848,14 +848,20 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
             }
         }
         KclValue::Solid { value } => {
-            let surfaces = value.value.clone();
-            if value.sketch_mut().is_none() {
+            if value.sketch().is_none() {
                 // If the solid isn't based on a sketch, then it doesn't have a tag container,
                 // so there's nothing to do here.
                 return Ok(());
             };
-            // Now that we know there's work to do (because there's a tag container),
-            // run some clones.
+            // Only tagged surfaces need solid snapshots. Copying the entire solid for every
+            // untagged surface would take quadratic time and memory in the number of surfaces.
+            let surfaces: Vec<_> = value
+                .value
+                .iter()
+                .filter(|surface| surface.get_tag().is_some())
+                .cloned()
+                .collect();
+            // Capture all snapshots before updating tags so they refer to the same original solid.
             let solid_copies: Vec<Box<Solid>> = surfaces.iter().map(|_| value.clone()).collect();
             // Get the tag container. We expect it to always succeed because we already checked
             // for a tag container above.

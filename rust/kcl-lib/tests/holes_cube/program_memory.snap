@@ -5,11 +5,9 @@ description: Variables in memory after executing holes_cube.kcl
 {
   "a": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "a"
   },
   "b": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "b"
   },
@@ -261,8 +259,10 @@ description: Variables in memory after executing holes_cube.kcl
             "n": 1.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -275,8 +275,10 @@ description: Variables in memory after executing holes_cube.kcl
             "n": 1.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -289,8 +291,10 @@ description: Variables in memory after executing holes_cube.kcl
             "n": 1.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -303,8 +307,10 @@ description: Variables in memory after executing holes_cube.kcl
             "n": 1.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -317,8 +323,10 @@ description: Variables in memory after executing holes_cube.kcl
             "n": 1.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -331,8 +339,10 @@ description: Variables in memory after executing holes_cube.kcl
             "n": 1.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -345,8 +355,10 @@ description: Variables in memory after executing holes_cube.kcl
             "n": 1.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -359,8 +371,10 @@ description: Variables in memory after executing holes_cube.kcl
             "n": 1.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -373,8 +387,10 @@ description: Variables in memory after executing holes_cube.kcl
             "n": 1.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -387,8 +403,10 @@ description: Variables in memory after executing holes_cube.kcl
             "n": 1.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -401,8 +419,10 @@ description: Variables in memory after executing holes_cube.kcl
             "n": 1.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -415,8 +435,10 @@ description: Variables in memory after executing holes_cube.kcl
             "n": 1.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -429,7 +451,6 @@ description: Variables in memory after executing holes_cube.kcl
   },
   "c": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "c"
   },
   "cubeLen": {
@@ -437,12 +458,13 @@ description: Variables in memory after executing holes_cube.kcl
     "value": 20.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "d": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "d"
   }

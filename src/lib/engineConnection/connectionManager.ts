@@ -44,6 +44,7 @@ import {
   EngineConnectionEvents,
   EngineConnectionManagerEvents,
   EngineConnectionStateType,
+  getResponseErrorMessage,
   REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE,
   validateStreamDimensions,
   type EngineDisconnectEventDetail,
@@ -73,6 +74,7 @@ import {
 } from '@src/lib/utils'
 import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 
 export type ConnectionSystemDeps = {
   settingsActor: SettingsActorType
@@ -106,6 +108,8 @@ export class ConnectionManager extends EventTarget {
 
   connection: Connection | undefined
   lastConnectionError: EngineConnectionError | undefined
+  private connectionStartedAt = performance.now()
+  private shutdownReported = false
 
   get apiCallId(): string | undefined {
     return this.connection?.apiCallId
@@ -182,7 +186,8 @@ export class ConnectionManager extends EventTarget {
     token,
     setStreamIsReady,
     callbackOnUnitTestingConnection,
-    unitTestGeometryOnly,
+    unitTestWebrtc,
+    unitTestPool,
     rustContext,
   }: {
     width: number
@@ -190,7 +195,8 @@ export class ConnectionManager extends EventTarget {
     token: string
     setStreamIsReady: (setStreamIsReady: boolean) => void
     callbackOnUnitTestingConnection?: (message: string) => void
-    unitTestGeometryOnly?: boolean
+    unitTestWebrtc?: boolean
+    unitTestPool?: 'cpu'
     rustContext?: RustContext
   }) {
     EngineDebugger.addLog({
@@ -217,6 +223,8 @@ export class ConnectionManager extends EventTarget {
     }
 
     this.lastConnectionError = undefined
+    this.connectionStartedAt = performance.now()
+    this.shutdownReported = false
     this.started = true
     this.rejectAllPendingCommands()
 
@@ -232,10 +240,12 @@ export class ConnectionManager extends EventTarget {
       url,
       token,
       handleOnDataChannelMessage: this.handleOnDataChannelMessage.bind(this),
+      recordShutdownTrigger: this.recordShutdownTrigger.bind(this),
       tearDownManager: this.tearDown.bind(this),
       rejectPendingCommand: this.rejectPendingCommand.bind(this),
       callbackOnUnitTestingConnection,
-      unitTestGeometryOnly,
+      unitTestWebrtc,
+      unitTestPool,
       handleMessage,
       getCloudProjectId: () =>
         this.systemDeps.settingsActor.getSnapshot().context.currentProject
@@ -1046,16 +1056,62 @@ export class ConnectionManager extends EventTarget {
     this.connection.send(resizeCmd)
   }
 
-  tearDown(options?: ManagerTearDown) {
+  recordShutdownTrigger(options: ManagerTearDown) {
+    if (this.shutdownReported) return false
+
+    this.shutdownReported = true
+    const connection = this.connection
+
+    void reportClientError({
+      code: ClientErrorCode.EngineTeardown,
+      message: `Engine teardown called: ${options.route}.`,
+      extra: {
+        source: 'ConnectionManager',
+        shutdownRoute: options.route,
+        initiatedBy: options.initiatedBy,
+        sourceTime: new Date().toISOString(),
+        monotonicElapsedMs: Math.max(
+          0,
+          performance.now() - this.connectionStartedAt
+        ),
+        pendingCommandCount: Object.keys(this.pendingCommands).length,
+        hasConnection: Boolean(connection),
+        connectionId: connection?.id ?? null,
+        modelingApiCallId: connection?.apiCallId ?? null,
+        websocketCloseCode: options.code ?? null,
+        websocketCloseReason: options.reason ?? null,
+        reconnectRequested: options.reconnectRequested ?? false,
+        connectionConnected: connection?.connected ?? false,
+        websocketReadyState: connection?.websocket?.readyState ?? null,
+        peerConnectionState:
+          connection?.peerConnection?.connectionState ?? null,
+        iceConnectionState:
+          connection?.peerConnection?.iceConnectionState ?? null,
+        dataChannelReadyState:
+          connection?.unreliableDataChannel?.readyState ?? null,
+      },
+    })
+
+    return true
+  }
+
+  tearDown(options: ManagerTearDown) {
+    const connection = this.connection
+    const isFirstShutdownTrigger = this.recordShutdownTrigger(options)
+
     EngineDebugger.addLog({
       label: 'connectionManager',
       message: `invoked tearDown()`,
       metadata: {
         options,
+        route: options.route,
+        initiatedBy: options.initiatedBy,
+        isFirstShutdownTrigger,
         started: !!this.started,
-        connection: !!this.connection,
+        connection: !!connection,
       },
     })
+
     if (!this.started) {
       EngineDebugger.addLog({
         label: 'connectionManager',
@@ -1071,12 +1127,15 @@ export class ConnectionManager extends EventTarget {
       })
     }
 
-    if (options?.connectionError) {
+    if (options.connectionError) {
       this.lastConnectionError = options.connectionError
     }
 
     // It was torn down from a websocket close.
-    if (options?.websocketClosed) {
+    if (
+      options.route === 'websocket-closed' ||
+      options.route === 'backend-shutdown'
+    ) {
       this.dispatchEvent(
         new CustomEvent<EngineDisconnectEventDetail>(
           EngineConnectionManagerEvents.WebsocketClosed,
@@ -1089,26 +1148,22 @@ export class ConnectionManager extends EventTarget {
           }
         )
       )
-    } else if (options?.pingPongTimeout) {
-      this.dispatchEvent(
-        new CustomEvent(EngineConnectionManagerEvents.pingPongTimeout, {})
-      )
-    } else if (options?.peerConnectionClosed) {
+    } else if (options.route === 'peer-connection-closed') {
       this.dispatchEvent(
         new CustomEvent(EngineConnectionManagerEvents.peerConnectionClosed, {})
       )
-    } else if (options?.peerConnectionDisconnected) {
+    } else if (options.route === 'peer-connection-disconnected') {
       this.dispatchEvent(
         new CustomEvent(
           EngineConnectionManagerEvents.peerConnectionDisconnected,
           {}
         )
       )
-    } else if (options?.peerConnectionFailed) {
+    } else if (options.route === 'peer-connection-failed') {
       this.dispatchEvent(
         new CustomEvent(EngineConnectionManagerEvents.peerConnectionFailed, {})
       )
-    } else if (options?.dataChannelClosed) {
+    } else if (options.route === 'data-channel-closed') {
       this.dispatchEvent(
         new CustomEvent(EngineConnectionManagerEvents.dataChannelClose, {})
       )
@@ -1195,7 +1250,7 @@ export class ConnectionManager extends EventTarget {
       label: 'connectionManager',
       message: 'offline, calling tearDown()',
     })
-    this.tearDown()
+    this.tearDown({ route: 'window-offline', initiatedBy: 'client' })
   }
 
   // VITEST ONLY
@@ -1348,7 +1403,13 @@ export class ConnectionManager extends EventTarget {
       command,
       range,
       idToRangeMap,
-    }).catch(reportRejection)
+    }).catch((e) => {
+      if (
+        getResponseErrorMessage(e, '') !== EXECUTE_AST_INTERRUPT_ERROR_MESSAGE
+      ) {
+        reportRejection(e)
+      }
+    })
   }
 
   /**
@@ -1390,22 +1451,20 @@ export class ConnectionManager extends EventTarget {
       })
       return msgpackEncode(resp[0])
     } catch (e) {
-      console.warn(e)
-      if (isArray(e) && e.length > 0) {
+      const isExecutionInterrupt =
+        getResponseErrorMessage(e, '') === EXECUTE_AST_INTERRUPT_ERROR_MESSAGE
+      const error = isArray(e) && e.length > 0 ? e[0] : e
+
+      if (!isExecutionInterrupt) {
+        console.warn(e)
         EngineDebugger.addLog({
           label: 'sendCommand',
           message: 'error',
-          metadata: { e: JSON.stringify(e[0]) },
+          metadata: { e: JSON.stringify(error) },
         })
-        return Promise.reject(JSON.stringify(e[0]))
       }
 
-      EngineDebugger.addLog({
-        label: 'sendCommand',
-        message: 'error',
-        metadata: { e: JSON.stringify(e) },
-      })
-      return Promise.reject(JSON.stringify(e))
+      return Promise.reject(JSON.stringify(error))
     }
   }
 
@@ -1443,6 +1502,15 @@ export class ConnectionManager extends EventTarget {
    * to the engine
    */
   rejectAllModelingCommands(rejectionMessage: string) {
+    const pendingCommandCount = Object.values(this.pendingCommands).filter(
+      (pending) => !pending.isSceneCommand
+    ).length
+    EngineDebugger.addLog({
+      label: 'connectionManager',
+      message: 'interrupting stale modeling execution',
+      metadata: { pendingCommandCount },
+    })
+
     for (const [cmdId, pending] of Object.entries(this.pendingCommands)) {
       if (!pending.isSceneCommand) {
         pending.reject([

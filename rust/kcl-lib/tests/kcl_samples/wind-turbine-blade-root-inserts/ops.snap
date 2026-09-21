@@ -12,8 +12,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
         "value": 1.5,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -41,8 +43,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
         "value": 52.0,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -70,8 +74,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
         "value": 0.2,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -126,18 +132,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -152,18 +162,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.75,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -213,18 +227,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -239,18 +257,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.55,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -346,8 +368,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -404,18 +428,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.65,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -430,18 +458,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.7,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -537,8 +569,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "value": 0.75,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -578,9 +612,11 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "type": "Number",
             "value": 360.0,
             "ty": {
-              "degrees": null,
               "type": "Known",
-              "type": "Angle"
+              "value": {
+                "type": "Angle",
+                "value": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -597,8 +633,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -606,8 +644,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -615,8 +655,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -629,8 +671,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -638,8 +682,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -647,8 +693,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -666,8 +714,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "m",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "m",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -675,8 +725,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "m",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "m",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -684,8 +736,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "m",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "m",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -698,7 +752,9 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "value": 16.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -896,18 +952,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.725,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -922,18 +982,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.7,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -983,18 +1047,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": -0.005,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.725,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1009,18 +1077,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.725,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1114,18 +1186,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": -0.005,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.695,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1140,18 +1216,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": -0.005,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.725,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1245,18 +1325,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.595,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.695,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1271,18 +1355,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": -0.005,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.695,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1376,18 +1464,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.595,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.7,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1402,18 +1494,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.595,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.695,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1507,18 +1603,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.7,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1533,18 +1633,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.595,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.7,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1742,8 +1846,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "m",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "m",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -1751,8 +1857,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "m",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "m",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -1765,8 +1873,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "m",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "m",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -1774,8 +1884,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                     "value": 0.65,
                     "ty": {
                       "type": "Default",
-                      "len": "m",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "m",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -1823,9 +1935,11 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "type": "Number",
             "value": 360.0,
             "ty": {
-              "degrees": null,
               "type": "Known",
-              "type": "Angle"
+              "value": {
+                "type": "Angle",
+                "value": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1842,8 +1956,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -1851,8 +1967,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -1860,8 +1978,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -1874,8 +1994,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -1883,8 +2005,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -1892,8 +2016,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -1911,8 +2037,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "m",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "m",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -1920,8 +2048,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "m",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "m",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -1929,8 +2059,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "m",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "m",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -1943,7 +2075,9 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "value": 16.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -2147,18 +2281,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.09,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.695,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2173,18 +2311,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.695,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2234,18 +2376,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.09,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -1.42625,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2260,18 +2406,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.09,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.695,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2286,18 +2436,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.5,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.655,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2391,18 +2545,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.5,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.6505,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2417,18 +2575,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.5,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.655,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2522,18 +2684,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": -0.23,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.6505,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2548,18 +2714,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.5,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.6505,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2653,18 +2823,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": -0.23,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.6685,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2679,18 +2853,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": -0.23,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.6505,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2784,18 +2962,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": -0.03,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.6685,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2810,18 +2992,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": -0.23,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.6685,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2915,18 +3101,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.695,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2941,18 +3131,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": -0.03,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.6685,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -3150,8 +3344,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "m",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "m",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -3159,8 +3355,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "m",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "m",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -3173,8 +3371,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "m",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "m",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -3182,8 +3382,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                     "value": 0.65,
                     "ty": {
                       "type": "Default",
-                      "len": "m",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "m",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -3231,9 +3433,11 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "type": "Number",
             "value": 360.0,
             "ty": {
-              "degrees": null,
               "type": "Known",
-              "type": "Angle"
+              "value": {
+                "type": "Angle",
+                "value": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3250,8 +3454,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -3259,8 +3465,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -3268,8 +3476,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -3282,8 +3492,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -3291,8 +3503,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -3300,8 +3514,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -3319,8 +3535,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "m",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "m",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -3328,8 +3546,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "m",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "m",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -3337,8 +3557,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "m",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "m",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -3351,7 +3573,9 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "value": 16.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -3401,8 +3625,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3462,18 +3688,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -3488,18 +3718,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.75,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -3556,8 +3790,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3617,18 +3853,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -3643,18 +3883,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.55,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -3779,8 +4023,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "value": 17.333333333333332,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3840,18 +4086,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.94452276,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.10186633,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -3866,18 +4116,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 1.175,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.0351597,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -3927,18 +4181,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -3953,18 +4211,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.94452276,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.10186633,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -3979,18 +4241,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": -0.32491914,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.89270799,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4084,18 +4350,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": -1.40944659,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 3.87242268,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4110,18 +4380,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 1.175,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.0351597,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4136,18 +4410,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": -0.32491914,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.89270799,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4292,8 +4570,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "value": 17.333333333333332,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -4353,18 +4633,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.73953238,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.12486734,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4379,18 +4663,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 1.075,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.86195462,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4440,18 +4728,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4466,18 +4758,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.73953238,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.12486734,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4492,18 +4788,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": -0.25651511,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.70476947,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4597,18 +4897,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": -1.0985889,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 3.0183482,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4623,18 +4927,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 1.075,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.86195462,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4649,18 +4957,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": -0.25651511,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.70476947,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4889,8 +5201,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "value": 51.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -4950,18 +5264,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.86291008,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.39734897,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -4976,18 +5294,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.46172719,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.26858504,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5037,18 +5359,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5063,18 +5389,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.86291008,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.39734897,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5089,18 +5419,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": -0.475,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.82272413,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5194,18 +5528,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 2.79680392,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -4.84420648,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5220,18 +5558,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": -0.475,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.82272413,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5246,18 +5588,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.46172719,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.26858504,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5402,8 +5748,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "value": 51.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -5463,18 +5811,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.70155661,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.26517601,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5489,18 +5841,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.39332316,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.08064651,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5550,18 +5906,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5576,18 +5936,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.70155661,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.26517601,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5602,18 +5966,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": -0.375,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.64951905,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5707,18 +6075,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 17.60196587,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -30.48749919,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5733,18 +6105,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": -0.375,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.64951905,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -5759,18 +6135,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.39332316,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.08064651,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6197,8 +6577,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "value": 51.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -6258,18 +6640,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.86291008,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.39734897,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6284,18 +6670,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.46172719,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.26858504,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6345,18 +6735,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6371,18 +6765,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.86291008,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.39734897,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6397,18 +6795,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": -0.475,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.82272413,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6502,18 +6904,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 2.79680392,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -4.84420648,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6528,18 +6934,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": -0.475,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.82272413,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6554,18 +6964,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.46172719,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.26858504,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6752,8 +7166,10 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "value": 52.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -6813,18 +7229,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.2446628,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.12555921,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6839,18 +7259,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.12825755,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.35238473,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6900,18 +7324,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6926,18 +7354,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.2446628,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.12555921,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -6952,18 +7384,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": -0.1375,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.23815699,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -7057,18 +7493,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.47857957,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.82892413,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -7083,18 +7523,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": -0.1375,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.23815699,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -7109,18 +7553,22 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
                 "type": "SketchVar",
                 "value": 0.12825755,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.35238473,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -7724,7 +8172,9 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -7752,7 +8202,9 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",

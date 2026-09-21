@@ -1,5 +1,5 @@
-import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { LabeledArg } from '@rust/kcl-lib/bindings/LabeledArg'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
 import {
   createArrayExpression,
   createCallExpressionStdLibKw,

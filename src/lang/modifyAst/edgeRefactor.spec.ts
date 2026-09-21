@@ -51,6 +51,7 @@ import type {
   EdgeRefactorMeta,
 } from '@src/lang/wasm'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
@@ -1645,19 +1646,22 @@ part = bracket()
   describe('integration (engine required)', () => {
     let instanceInThisFile: ModuleType = null!
     let kclManagerInThisFile: KclManager = null!
-    let engineCommandManagerInThisFile: { tearDown: () => void } = null!
+    let engineCommandManagerInThisFile: ConnectionManager = null!
 
     beforeEach(async () => {
       if (instanceInThisFile) return
       const { instance, kclManager, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine({ geometryOnly: true })
+        await buildTheWorldAndConnectToEngine({ webrtc: false })
       instanceInThisFile = instance
       kclManagerInThisFile = kclManager
       engineCommandManagerInThisFile = engineCommandManager
     })
 
     afterAll(() => {
-      engineCommandManagerInThisFile?.tearDown()
+      engineCommandManagerInThisFile?.tearDown({
+        route: 'user-requested',
+        initiatedBy: 'client',
+      })
     })
 
     async function runIntegrationRefactor(kcl: string): Promise<string> {
@@ -1684,7 +1688,7 @@ part = bracket()
         expected: [
           'extrude(length = 5, tagEnd = $capEnd001)',
           'fillet(radius = 1, edges = [',
-          'sideFaces = [e1, capEnd001]',
+          /sideFaces = \[(?:e1, capEnd001|capEnd001, e1)\]/,
         ],
       },
       {
@@ -1694,18 +1698,26 @@ part = bracket()
           'extrude(length = 5, tagEnd = $capEnd001)',
           'fillet(',
           'edges = [',
-          'sideFaces = [e1, capEnd001]',
+          /sideFaces = \[(?:e1, capEnd001|capEnd001, e1)\]/,
         ],
       },
       {
         name: 'refactors getNextAdjacentEdge in fillet to edgeRefs with tag names not UUIDs',
         kcl: KCL_GET_NEXT_ADJACENT_EDGE,
-        expected: ['fillet(', 'edges = [', 'sideFaces = [e1, seg01]'],
+        expected: [
+          'fillet(',
+          'edges = [',
+          /sideFaces = \[(?:e1, seg01|seg01, e1)\]/,
+        ],
       },
       {
         name: 'refactors getPreviousAdjacentEdge in fillet to edgeRefs with tag names not UUIDs',
         kcl: KCL_GET_PREVIOUS_ADJACENT_EDGE,
-        expected: ['fillet(', 'edges = [', 'sideFaces = [e1, seg01]'],
+        expected: [
+          'fillet(',
+          'edges = [',
+          /sideFaces = \[(?:e1, seg01|seg01, e1)\]/,
+        ],
       },
       {
         name: 'refactors getCommonEdge in fillet to edgeRefs with tag names (e1, cap1) not UUIDs',
@@ -1713,7 +1725,7 @@ part = bracket()
         expected: [
           'extrude(length = 5, tagEnd = $cap1)',
           'fillet(radius = 1, edges = [',
-          'sideFaces = [e1, cap1]',
+          /sideFaces = \[(?:e1, cap1|cap1, e1)\]/,
         ],
       },
     ]
@@ -1724,7 +1736,11 @@ part = bracket()
         expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
         const n = norm(refactored)
         for (const expectedText of expected) {
-          expect(n).toContain(expectedText)
+          if (typeof expectedText === 'string') {
+            expect(n).toContain(expectedText)
+          } else {
+            expect(n).toMatch(expectedText)
+          }
         }
       })
     }

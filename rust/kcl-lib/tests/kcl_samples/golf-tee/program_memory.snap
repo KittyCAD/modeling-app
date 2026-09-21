@@ -37,7 +37,6 @@ description: Variables in memory after executing golf-tee.kcl
   },
   "axisEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "axisEdge"
   },
   "cupDepth": {
@@ -45,8 +44,10 @@ description: Variables in memory after executing golf-tee.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "cupDiameter": {
@@ -54,8 +55,10 @@ description: Variables in memory after executing golf-tee.kcl
     "value": 14.6,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "cupHeight": {
@@ -63,12 +66,13 @@ description: Variables in memory after executing golf-tee.kcl
     "value": 14.6,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "cupLipArc": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "cupLipArc"
   },
@@ -77,12 +81,13 @@ description: Variables in memory after executing golf-tee.kcl
     "value": 7.3,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "flareEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "flareEdge"
   },
@@ -369,12 +374,13 @@ description: Variables in memory after executing golf-tee.kcl
     "value": 4.5,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "shaftEdge": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "shaftEdge"
   },
@@ -383,8 +389,10 @@ description: Variables in memory after executing golf-tee.kcl
     "value": 2.25,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "teeHeight": {
@@ -392,8 +400,10 @@ description: Variables in memory after executing golf-tee.kcl
     "value": 70.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "teeProfile": {
@@ -413,17 +423,21 @@ description: Variables in memory after executing golf-tee.kcl
                       {
                         "n": 0.000000000000000000005455259571673045,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 67.99999999999999,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -431,17 +445,21 @@ description: Variables in memory after executing golf-tee.kcl
                       {
                         "n": 0.000000000000000000003636839697167271,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.00000000000000016292313617582649,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -533,17 +551,21 @@ description: Variables in memory after executing golf-tee.kcl
                       {
                         "n": 0.000000000000000000007273682310089934,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 68.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -551,17 +573,21 @@ description: Variables in memory after executing golf-tee.kcl
                       {
                         "n": 0.00000000000000029722437374624574,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 82.32249999999995,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -654,17 +680,21 @@ description: Variables in memory after executing golf-tee.kcl
                       {
                         "n": 0.0000000000000000000054552567151682616,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 67.99999999999999,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -672,17 +702,21 @@ description: Variables in memory after executing golf-tee.kcl
                       {
                         "n": 7.3,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 70.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -690,17 +724,21 @@ description: Variables in memory after executing golf-tee.kcl
                       {
                         "n": 0.0000000000000005944396494492563,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 82.32249999999995,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -806,17 +844,21 @@ description: Variables in memory after executing golf-tee.kcl
                       {
                         "n": 2.25,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 55.39999999999999,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -824,17 +866,21 @@ description: Variables in memory after executing golf-tee.kcl
                       {
                         "n": 7.3,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 70.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1140,17 +1186,21 @@ description: Variables in memory after executing golf-tee.kcl
                       {
                         "n": 2.25,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1158,17 +1208,21 @@ description: Variables in memory after executing golf-tee.kcl
                       {
                         "n": 2.25,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 55.39999999999999,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1260,17 +1314,21 @@ description: Variables in memory after executing golf-tee.kcl
                       {
                         "n": 0.00000000000000000000181841984734925,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": -0.00000000000000008146231795298792,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1278,17 +1336,21 @@ description: Variables in memory after executing golf-tee.kcl
                       {
                         "n": 2.25,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 10.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
@@ -1579,7 +1641,6 @@ description: Variables in memory after executing golf-tee.kcl
   },
   "tipEdge": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "tipEdge"
   },
   "tipHeight": {
@@ -1587,8 +1648,10 @@ description: Variables in memory after executing golf-tee.kcl
     "value": 10.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   }
 }

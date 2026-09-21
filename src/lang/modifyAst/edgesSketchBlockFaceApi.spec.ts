@@ -35,7 +35,10 @@ beforeAll(async () => {
 }, 60_000)
 
 afterAll(() => {
-  engineCommandManagerInThisFile?.tearDown()
+  engineCommandManagerInThisFile?.tearDown({
+    route: 'user-requested',
+    initiatedBy: 'client',
+  })
 })
 
 const sketchBlockBooleanFilletFaceApi = `startX = 2

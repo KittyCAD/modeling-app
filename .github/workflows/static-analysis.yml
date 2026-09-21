@@ -33,7 +33,7 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
-      - run: npm install
+      - run: npm ci
       - run: npm run fmt:check
 
   build-wasm:
@@ -51,7 +51,7 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
-      - run: npm install
+      - run: npm ci
 
       - name: Download all artifacts
         uses: actions/download-artifact@v8
@@ -83,7 +83,7 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
-      - run: npm install
+      - run: npm ci
 
       - name: Download all artifacts
         uses: actions/download-artifact@v8
@@ -117,7 +117,7 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
-      - run: npm install
+      - run: npm ci
 
       - name: Download all artifacts
         uses: actions/download-artifact@v8
@@ -143,4 +143,4 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7.0.1
       - name: Run typos
-        uses: crate-ci/typos@v1.49.0
+        uses: crate-ci/typos@v1.50.1

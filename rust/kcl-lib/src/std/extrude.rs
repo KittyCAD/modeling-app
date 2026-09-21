@@ -464,6 +464,38 @@ async fn inner_extrude(
         }
     };
 
+    if matches!(method.as_deref(), Some("merge" | "MERGE")) {
+        let parentless_sketches = extrudables
+            .iter()
+            .filter(|extrudable| {
+                matches!(extrudable, Extrudable::Sketch(sketch) if matches!(sketch.on, SketchSurface::Plane(_)))
+            })
+            .count();
+        if parentless_sketches > 0 {
+            let message = if parentless_sketches == 1 {
+                "This plane-based sketch has no parent body for `method = MERGE`, so it will create a separate body. Sketch on an existing face or use `union` if one body is intended."
+                    .to_owned()
+            } else {
+                format!(
+                    "{parentless_sketches} plane-based sketches have no parent body for `method = MERGE`, so each will create a separate body. Sketch on an existing face or use `union` if one body is intended."
+                )
+            };
+            exec_state.warn(
+                crate::CompilationIssue {
+                    source_range: args
+                        .labeled
+                        .get("method")
+                        .map_or(args.source_range, |arg| arg.source_range),
+                    message,
+                    suggestion: None,
+                    severity: crate::errors::Severity::Warning,
+                    tag: crate::errors::Tag::Unnecessary,
+                },
+                annotations::WARN_PARENTLESS_MERGE,
+            );
+        }
+    }
+
     if symmetric.unwrap_or(false) && bidirectional_length.is_some() {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "You cannot give both `symmetric` and `bidirectional` params, you have to choose one or the other"
@@ -1619,6 +1651,42 @@ extrude(profile001, length = 1, bidirectionalLength = -1)
             .expect("expected an extrude command");
 
         assert_eq!(extrude.opposite, Opposite::Other(LengthUnit(-1.0)));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn explicit_merge_warns_for_plane_based_sketches() {
+        let code = r#"
+@settings(kclVersion = 2.0)
+
+profiles = sketch(on = XY) {
+  circle1 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
+  circle2 = circle(start = [var 4mm, var 0mm], center = [var 3mm, var 0mm])
+  circle3 = circle(start = [var 7mm, var 0mm], center = [var 6mm, var 0mm])
+}
+
+leftRegion = region(segments = [profiles.circle1])
+rightRegion = region(segments = [profiles.circle2])
+extrude([leftRegion, rightRegion], length = 1mm, method = MERGE)
+
+defaultRegion = region(segments = [profiles.circle3])
+extrude(defaultRegion, length = 1mm)
+"#;
+
+        let result = parse_execute(code).await.unwrap();
+        let warnings: Vec<_> = result
+            .issues()
+            .iter()
+            .filter(|issue| issue.severity == crate::errors::Severity::Warning)
+            .collect();
+
+        assert_eq!(warnings.len(), 1, "expected one warning, got {warnings:#?}");
+        assert!(
+            warnings[0].message.contains(
+                "2 plane-based sketches have no parent body for `method = MERGE`, so each will create a separate body"
+            ),
+            "{}",
+            warnings[0].message
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]

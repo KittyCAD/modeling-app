@@ -75,7 +75,7 @@ part001 = startSketchOn(XY)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the revolve function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve0_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve0_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-revolve0.png"
@@ -97,7 +97,7 @@ sketch001 = startSketchOn(XY)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the revolve function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve1_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve1_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-revolve1.png"
@@ -126,7 +126,7 @@ part001 = startSketchOn(XY)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the revolve function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve2_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve2_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-revolve2.png"
@@ -163,7 +163,7 @@ part002 = startSketchOn(part001, face = END)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the revolve function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve3_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve3_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-revolve3.png"
@@ -192,7 +192,7 @@ sketch001 = startSketchOn(box, face = END)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the revolve function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve4_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve4_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-revolve4.png"
@@ -221,7 +221,7 @@ sketch001 = startSketchOn(box, face = END)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the revolve function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve5_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve5_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-revolve5.png"
@@ -250,7 +250,7 @@ sketch001 = startSketchOn(box, face = END)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the revolve function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve6_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve6_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-revolve6.png"
@@ -282,7 +282,7 @@ part001 = revolve(
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the revolve function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve7_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve7_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-revolve7.png"
@@ -318,7 +318,7 @@ revolve([profile001, profile002], axis = X)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the revolve function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve8_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve8_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-revolve8.png"
@@ -348,7 +348,7 @@ sketch001 = startSketchOn(XY)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the revolve function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve9_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve9_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-revolve9.png"
@@ -376,7 +376,7 @@ sketch001 = startSketchOn(XY)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the revolve function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve10_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve10_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-revolve10.png"
@@ -404,7 +404,7 @@ sketch001 = startSketchOn(XY)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the revolve function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve11_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve11_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-revolve11.png"
@@ -432,7 +432,7 @@ sketch001 = startSketchOn(XY)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the revolve function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve12_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve12_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-revolve12.png"
@@ -476,7 +476,7 @@ closedShell = revolve(
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the revolve function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve13_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve13_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-revolve13.png"
@@ -507,7 +507,7 @@ ring = revolve(ringRegion, axis = Y)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the revolve function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve14_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve14_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-revolve14.png"
@@ -546,7 +546,7 @@ revolve(
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the revolve function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve15_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve15_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-revolve15.png"
@@ -582,7 +582,7 @@ revolve001 = revolve(region001, angle = 36deg, axis = sketch001.line5)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the revolve function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve16_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve16_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-revolve16.png"
