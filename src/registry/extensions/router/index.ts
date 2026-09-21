@@ -19,7 +19,7 @@ import {
   type NavigateOptions,
   type To,
 } from 'react-router-dom'
-import { parseInitialUrl } from './initialUrl'
+import { formatAppUrl, parseInitialUrl } from './initialUrl'
 
 const initialLocation: Location = {
   pathname: '/',
@@ -162,6 +162,8 @@ export const createAppUrlService = ({
         navigationIntents: getPreloadedNavigationIntents(),
         usesHashRouter,
       }),
+    formatUrl: (projection) =>
+      formatAppUrl(projection, getPreloadedNavigationIntents()),
     getLocation: () => location.value,
     setLocation: (nextLocation) => {
       location.value = nextLocation

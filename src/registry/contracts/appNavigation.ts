@@ -4,6 +4,7 @@ import {
   defineService,
 } from '@kittycad/registry'
 import type { IndexLoaderData } from '@src/lib/types'
+import type { AppUrlState } from '@src/registry/contracts/appUrl'
 
 declare const appNavigationIntentInput: unique symbol
 declare const appNavigationIntentOutput: unique symbol
@@ -51,8 +52,9 @@ export function defineAppNavigationIntentContribution<Input, Output>(
  * and optional initial editor is the coordinator's responsibility.
  */
 export interface OpenProjectRequest {
-  target?: string
-  requestUrl?: string
+  target: string
+  /** Parsed URL-owned state, present only while restoring cold startup. */
+  startup?: AppUrlState
   /**
    * Transitional React Router loader cancellation. Once startup is no longer
    * loader-owned, appNavigation keeps latest-intent cancellation private.

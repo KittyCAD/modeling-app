@@ -3,6 +3,7 @@ import type {
   AppDestination,
   AppDestinationKind,
   AppNavigationUrlContribution,
+  AppUrlProjection,
   InitialUrlIntent,
 } from '@src/registry/contracts/appUrl'
 
@@ -35,6 +36,51 @@ function decodeSegment(segment: string): string | undefined {
   } catch {
     return undefined
   }
+}
+
+function formatDestination(destination: AppDestination): string {
+  switch (destination.type) {
+    case 'index':
+      return PATHS.INDEX
+    case 'home':
+      return destination.libraryId
+        ? joinRouterPaths(
+            PATHS.LIBRARY,
+            encodeURIComponent(destination.libraryId)
+          )
+        : PATHS.HOME
+    case 'project':
+      return joinRouterPaths(PATHS.FILE, encodeURIComponent(destination.target))
+    case 'sign-in':
+      return PATHS.SIGN_IN
+  }
+}
+
+/** Format application state through the capability contributions that own it. */
+export function formatAppUrl(
+  projection: AppUrlProjection,
+  navigationIntents: readonly AppNavigationUrlContribution[]
+): string {
+  const destinationPath = formatDestination(projection.destination)
+  const additionalIntent = projection.additionalIntents?.[0]
+  if (!additionalIntent) {
+    return `${destinationPath}${projection.search}${projection.hash}`
+  }
+
+  const contribution = navigationIntents.find(
+    ({ intent }) => intent.id === additionalIntent.intent.id
+  )
+  if (!contribution) {
+    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+    throw new Error(
+      `Missing application navigation URL contribution: ${additionalIntent.intent.id}`
+    )
+  }
+
+  const intentUrl = contribution.format(additionalIntent.input)
+  return `${joinRouterPaths(destinationPath, intentUrl.path)}${
+    intentUrl.search ?? projection.search
+  }${intentUrl.hash ?? projection.hash}`
 }
 
 function parseDestination(pathname: string):
