@@ -85,7 +85,6 @@ export class DefaultPlaneRenderer {
         color: borderColor,
         linewidth: 2,
         worldUnits: false,
-        depthWrite: false,
         toneMapped: false,
       })
       const border = new LineSegments2(this.borderGeometry, borderMaterial)
@@ -157,7 +156,6 @@ export class DefaultPlaneRenderer {
     const material = new MeshBasicNodeMaterial({
       map: texture,
       side: DoubleSide,
-      depthWrite: false,
       toneMapped: false,
       polygonOffset: true,
       polygonOffsetFactor: -2,

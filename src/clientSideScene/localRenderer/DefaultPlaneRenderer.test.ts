@@ -56,7 +56,7 @@ describe('DefaultPlaneRenderer', () => {
     planes.dispose()
   })
 
-  it('uses translucent unlit fills and opaque 2px borders', () => {
+  it('uses translucent fills and depth-writing opaque borders and labels', () => {
     const { root, planes } = fixture()
     const colors = [
       new Color(0.7, 0.28, 0.28),
@@ -77,11 +77,21 @@ describe('DefaultPlaneRenderer', () => {
       }
       expect(fill.material.color).toEqual(colors[index])
       expect(fill.material.opacity).toBe(0.1)
+      expect(fill.material.depthTest).toBe(true)
       expect(fill.material.depthWrite).toBe(false)
       expect(fill.material.forceSinglePass).toBe(true)
       expect(fill.material.toneMapped).toBe(false)
       expect(border.material.linewidth).toBe(2)
       expect(border.material.transparent).toBe(false)
+      expect(border.material.depthTest).toBe(true)
+      expect(border.material.depthWrite).toBe(true)
+      for (const label of plane.children.slice(2)) {
+        if (!(label instanceof Mesh) || !(label.material instanceof Material))
+          throw new Error('Missing plane label')
+        expect(label.material.transparent).toBe(false)
+        expect(label.material.depthTest).toBe(true)
+        expect(label.material.depthWrite).toBe(true)
+      }
       expect(border.geometry.instanceCount).toBe(4)
       const starts = border.geometry.getAttribute('instanceStart')
       const ends = border.geometry.getAttribute('instanceEnd')
