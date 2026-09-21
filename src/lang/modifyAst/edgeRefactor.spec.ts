@@ -979,6 +979,30 @@ function norm(s: string): string {
   return s.replace(/\s+/g, ' ').trim()
 }
 
+async function executeAndRefactor(
+  kcl: string,
+  instance: ModuleType,
+  kclManager: KclManager
+): Promise<string> {
+  const ast = assertParse(kcl, instance)
+  await kclManager.executeAst({ ast })
+  expect(kclManager.errors).toEqual([])
+  const execState = kclManager.execState
+  expect(execState.artifactGraph.size).toBeGreaterThan(0)
+  const refactored = refactorZ0006Unified(
+    ast,
+    execState.edgeRefactorMetadata ?? [],
+    execState.directTagFilletMetadata ?? [],
+    execState.artifactGraph,
+    instance
+  )
+  expect(err(refactored)).toBe(false)
+  if (err(refactored)) {
+    throw refactored
+  }
+  return refactored
+}
+
 describe('refactorZ0006Unified', () => {
   let wasmInstance: ModuleType
 
@@ -1603,7 +1627,7 @@ part = bracket()
     })
   })
 
-  describe('integration (engine required)', () => {
+  describe('integration (CPU Engine)', () => {
     let instanceInThisFile: ModuleType = null!
     let kclManagerInThisFile: KclManager = null!
     let engineCommandManagerInThisFile: ConnectionManager = null!
@@ -1611,7 +1635,10 @@ part = bracket()
     beforeEach(async () => {
       if (instanceInThisFile) return
       const { instance, kclManager, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine({ webrtc: false })
+        await buildTheWorldAndConnectToEngine({
+          webrtc: false,
+          pool: 'cpu',
+        })
       instance.set_kcl_runtime_flags(
         JSON.stringify({ enable_z0006_lint: 'On' })
       )
@@ -1628,21 +1655,7 @@ part = bracket()
     })
 
     async function runIntegrationRefactor(kcl: string): Promise<string> {
-      const ast = assertParse(kcl, instanceInThisFile)
-      await kclManagerInThisFile.executeAst({ ast })
-      expect(kclManagerInThisFile.errors).toEqual([])
-      const execState = kclManagerInThisFile.execState
-      expect(execState.artifactGraph.size).toBeGreaterThan(0)
-      const refactored = refactorZ0006Unified(
-        ast,
-        execState.edgeRefactorMetadata ?? [],
-        execState.directTagFilletMetadata ?? [],
-        execState.artifactGraph,
-        instanceInThisFile
-      )
-      expect(err(refactored)).toBe(false)
-      if (err(refactored)) throw refactored
-      return refactored
+      return executeAndRefactor(kcl, instanceInThisFile, kclManagerInThisFile)
     }
 
     const deprecatedFilletCases = [
@@ -2089,28 +2102,6 @@ surface001 = extrude(
     )
 
     it(
-      'refactors mixed direct sketch tags and deprecated helper tags',
-      { timeout: 30_000 },
-      async () => {
-        const refactored = await runIntegrationRefactor(
-          KCL_MIXED_SKETCH_TAGS_AND_DEPRECATED_HELPERS
-        )
-        expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
-        expect(refactored).not.toContain('tag = $seg')
-        const n = norm(refactored)
-        expect(n).toContain('edges = [')
-        expect(n).not.toContain('tags = [')
-        expect(n).not.toContain('getOppositeEdge')
-        expect(n).not.toContain('getNextAdjacentEdge')
-        expect(n).not.toContain('getPreviousAdjacentEdge')
-        expect(n).toContain('bodyBoxRaw.sketch.tags.b1')
-        expect(n).toContain('bodyBoxRaw.sketch.tags.b2')
-        expect(n).toContain('bodyBoxRaw.sketch.tags.b3')
-        expect(n).toContain('bodyBoxRaw.sketch.tags.b4')
-      }
-    )
-
-    it(
       'refactors member-style direct sketch tags without deprecated helpers',
       { timeout: 30_000 },
       async () => {
@@ -2506,6 +2497,54 @@ surface001 = extrude(
           .length
         expect(sideFaceCount).toBe(2)
         expect(n).not.toContain('tags = [')
+      }
+    )
+  })
+
+  describe('GPU-only integration (#14071)', () => {
+    let gpuInstance: ModuleType = null!
+    let gpuKclManager: KclManager = null!
+    let gpuEngineCommandManager: ConnectionManager = null!
+
+    beforeAll(async () => {
+      const { instance, kclManager, engineCommandManager } =
+        await buildTheWorldAndConnectToEngine({ webrtc: false })
+      instance.set_kcl_runtime_flags(
+        JSON.stringify({ enable_z0006_lint: 'On' })
+      )
+      gpuInstance = instance
+      gpuKclManager = kclManager
+      gpuEngineCommandManager = engineCommandManager
+    })
+
+    afterAll(() => {
+      gpuEngineCommandManager?.tearDown({
+        route: 'user-requested',
+        initiatedBy: 'client',
+      })
+    })
+
+    it(
+      'refactors mixed direct sketch tags and deprecated helper tags',
+      { timeout: 30_000 },
+      async () => {
+        const refactored = await executeAndRefactor(
+          KCL_MIXED_SKETCH_TAGS_AND_DEPRECATED_HELPERS,
+          gpuInstance,
+          gpuKclManager
+        )
+        expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
+        expect(refactored).not.toContain('tag = $seg')
+        const n = norm(refactored)
+        expect(n).toContain('edges = [')
+        expect(n).not.toContain('tags = [')
+        expect(n).not.toContain('getOppositeEdge')
+        expect(n).not.toContain('getNextAdjacentEdge')
+        expect(n).not.toContain('getPreviousAdjacentEdge')
+        expect(n).toContain('bodyBoxRaw.sketch.tags.b1')
+        expect(n).toContain('bodyBoxRaw.sketch.tags.b2')
+        expect(n).toContain('bodyBoxRaw.sketch.tags.b3')
+        expect(n).toContain('bodyBoxRaw.sketch.tags.b4')
       }
     )
   })
