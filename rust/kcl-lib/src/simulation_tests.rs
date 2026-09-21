@@ -660,20 +660,20 @@ async fn execute(test_name: &str, _render_to_png: bool) {
     execute_test(&Test::new(test_name)).await
 }
 
-async fn execute_test(test: &Test, render_to_png: bool) {
+async fn execute_test(test: &Test) {
     miette::set_hook(Box::new(|_| {
         Box::new(miette::MietteHandlerOpts::new().show_related_errors_as_nested().build())
     }))
     .unwrap();
     if test.kcl_versions.is_empty() {
-        execute_once(test, render_to_png, None).await;
+        execute_once(test, None).await;
         return;
     }
     for version in &test.kcl_versions {
         let mut run = test.clone();
         run.output_dir = test.output_dir.join(format!("kcl-{version}"));
         std::fs::create_dir_all(&run.output_dir).unwrap();
-        execute_once(&run, render_to_png, Some(version.as_str())).await;
+        execute_once(&run, Some(version.as_str())).await;
     }
 }
 
