@@ -68,6 +68,31 @@ fn mike_stress_test_program(n: usize) -> String {
     program
 }
 
+/// Measure how mock execution scales with the Koch snowflake's iteration count.
+/// Parameterize and parse the existing L-system program outside the timed loop.
+pub fn bench_mock_koch_snowflake(c: &mut Criterion) {
+    let mut group = c.benchmark_group("no_engine_mock_execute_koch_snowflake");
+    assert!(LSYSTEM_KOCH_SNOWFLAKE_PROGRAM.contains("iterations = 1,"));
+    for iterations in [1, 2, 3, 4] {
+        let source = LSYSTEM_KOCH_SNOWFLAKE_PROGRAM.replace("iterations = 1,", &format!("iterations = {iterations},"));
+        let program = kcl_lib::Program::parse_no_errs(&source).unwrap();
+        group.bench_with_input(BenchmarkId::from_parameter(iterations), &program, |b, program| {
+            let rt = tokio::runtime::Runtime::new().unwrap();
+            let ctx = rt.block_on(async { kcl_lib::ExecutorContext::new_mock(None).await });
+            b.iter(|| {
+                if let Err(err) = rt.block_on(async {
+                    ctx.run_mock(black_box(program), &Default::default()).await?;
+                    ctx.close().await;
+                    Ok::<(), anyhow::Error>(())
+                }) {
+                    panic!("Failed to execute program: {err}");
+                }
+            })
+        });
+    }
+    group.finish();
+}
+
 /// This benchmarks the same sort of code that the ZDS app uses when users
 /// drag a point/line around in sketch mode. This benchmark should correlate with
 /// user-perceived latency in sketch mode.
@@ -115,7 +140,14 @@ pub fn recast(c: &mut Criterion) {
     }
 }
 
-criterion_group!(benches, bench_parse, bench_mock, bench_mock_warmed_up, recast);
+criterion_group!(
+    benches,
+    bench_parse,
+    bench_mock,
+    bench_mock_koch_snowflake,
+    bench_mock_warmed_up,
+    recast
+);
 criterion_main!(benches);
 
 const KITT_PROGRAM: &str = include_str!("../e2e/executor/inputs/kittycad_svg.kcl");

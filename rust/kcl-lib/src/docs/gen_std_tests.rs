@@ -862,7 +862,7 @@ async fn run_example_with_retries(text: &str) -> Result<()> {
 }
 
 async fn run_example(program: &crate::Program) -> Result<(), ExecErrorWithState> {
-    let ctx = ExecutorContext::new_with_default_client()
+    let ctx = ExecutorContext::new_geometry_only_with_default_client()
         .await
         .map_err(ConnectionError::CouldNotMakeClient)?;
     let mut exec_state = crate::execution::ExecState::new(&ctx);
