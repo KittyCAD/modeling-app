@@ -210,9 +210,8 @@ function navigationHarness(
   const projectOpen = createOpenProjectIntentContribution(dependencies)
   return {
     dependencies,
-    navigation: createAppNavigationService([projectOpen.contribution], {
-      supersedeProjectOpen: projectOpen.supersedeProjectOpen,
-    }),
+    projectOpen,
+    navigation: createAppNavigationService([projectOpen.contribution]),
   }
 }
 
@@ -264,12 +263,12 @@ describe('project.open navigation contribution', () => {
     await expect(firstOpen).rejects.toMatchObject({ name: 'AbortError' })
   })
 
-  test('explicit supersession aborts the in-flight project open', async () => {
+  test('leaving a project intent aborts the in-flight project open', async () => {
     let finishResolution: () => void = () => undefined
     const resolutionStarted = new Promise<void>((resolve) => {
       finishResolution = resolve
     })
-    const { navigation } = navigationHarness({
+    const { navigation, projectOpen } = navigationHarness({
       resolveProjectOpen: vi.fn(async () => {
         await resolutionStarted
         return resolvedProject
@@ -279,32 +278,9 @@ describe('project.open navigation contribution', () => {
     const firstOpen = navigation.dispatch(openProjectIntent, {
       target: '/projects/bracket',
     })
-    navigation.supersedeProjectOpen()
+    projectOpen.cancelProjectOpen()
     finishResolution()
 
     await expect(firstOpen).rejects.toMatchObject({ name: 'AbortError' })
-  })
-
-  test('a caller abort signal aborts the project open', async () => {
-    let finishResolution: () => void = () => undefined
-    const resolutionStarted = new Promise<void>((resolve) => {
-      finishResolution = resolve
-    })
-    const { navigation } = navigationHarness({
-      resolveProjectOpen: vi.fn(async () => {
-        await resolutionStarted
-        return resolvedProject
-      }),
-    })
-    const controller = new AbortController()
-
-    const open = navigation.dispatch(openProjectIntent, {
-      target: '/projects/bracket',
-      signal: controller.signal,
-    })
-    controller.abort()
-    finishResolution()
-
-    await expect(open).rejects.toMatchObject({ name: 'AbortError' })
   })
 })

@@ -13,12 +13,10 @@ import type {
 export function createAppNavigationService(
   contributions: readonly AppNavigationIntentContribution[],
   {
-    supersedeProjectOpen,
     showHome,
   }: {
-    supersedeProjectOpen: AppNavigationService['supersedeProjectOpen']
     showHome?: AppNavigationService['showHome']
-  }
+  } = {}
 ): AppNavigationService {
   const contributionsById = new Map<string, AppNavigationIntentContribution>()
   const duplicateIntentIds = new Set<string>()
@@ -52,6 +50,5 @@ export function createAppNavigationService(
   return {
     dispatch,
     showHome: showHome ?? (async () => undefined),
-    supersedeProjectOpen,
   }
 }

@@ -195,21 +195,23 @@ export function createOpenProjectIntentContribution(
   dependencies: ProjectNavigationDependencies
 ): {
   contribution: AppNavigationIntentContribution
-  supersedeProjectOpen: (signal?: AbortSignal) => void
+  cancelProjectOpen: () => void
 } {
   let activeProjectOpen: AbortController | undefined
 
-  const beginProjectOpen = (requestSignal?: AbortSignal) => {
+  const cancelActiveProjectOpen = () => {
     activeProjectOpen?.abort()
+    activeProjectOpen = undefined
+  }
+
+  const beginProjectOpen = () => {
+    cancelActiveProjectOpen()
 
     const controller = new AbortController()
     activeProjectOpen = controller
-    const signal = requestSignal
-      ? AbortSignal.any([requestSignal, controller.signal])
-      : controller.signal
 
     return {
-      throwIfSuperseded: () => signal.throwIfAborted(),
+      throwIfSuperseded: () => controller.signal.throwIfAborted(),
       finish: () => {
         if (activeProjectOpen === controller) {
           activeProjectOpen = undefined
@@ -221,7 +223,7 @@ export function createOpenProjectIntentContribution(
   const openProject = async (
     request: OpenProjectRequest
   ): Promise<OpenProjectOutcome> => {
-    const projectOpen = beginProjectOpen(request.signal)
+    const projectOpen = beginProjectOpen()
     try {
       projectOpen.throwIfSuperseded()
       const resolution = await dependencies.resolveProjectOpen(
@@ -246,10 +248,6 @@ export function createOpenProjectIntentContribution(
       openProjectIntent,
       openProject
     ),
-    supersedeProjectOpen: (signal) => {
-      activeProjectOpen?.abort()
-      activeProjectOpen = undefined
-      signal?.throwIfAborted()
-    },
+    cancelProjectOpen: cancelActiveProjectOpen,
   }
 }

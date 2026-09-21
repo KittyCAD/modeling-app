@@ -17,11 +17,6 @@ export interface OpenProjectRequest {
   target: string
   /** Parsed URL-owned state, present only while restoring cold startup. */
   startup?: AppUrlState
-  /**
-   * Transitional React Router loader cancellation. Once startup is no longer
-   * loader-owned, projectSession keeps latest-intent cancellation private.
-   */
-  signal?: AbortSignal
 }
 
 export type OpenProjectOutcome = { kind: 'opened'; data: IndexLoaderData }

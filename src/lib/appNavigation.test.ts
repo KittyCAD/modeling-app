@@ -16,9 +16,7 @@ describe('appNavigation', () => {
       openSettingsIntent,
       openSettings
     )
-    const navigation = createAppNavigationService([settingsContribution], {
-      supersedeProjectOpen: vi.fn(),
-    })
+    const navigation = createAppNavigationService([settingsContribution])
 
     await navigation.dispatch(openSettingsIntent, { tab: 'project' })
 
@@ -37,9 +35,7 @@ describe('appNavigation', () => {
       intent,
       async () => undefined
     )
-    const navigation = createAppNavigationService([first, second], {
-      supersedeProjectOpen: vi.fn(),
-    })
+    const navigation = createAppNavigationService([first, second])
 
     await expect(navigation.dispatch(intent, {})).rejects.toThrow(
       'Multiple application navigation intents handle duplicate.intent.'

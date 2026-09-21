@@ -54,11 +54,6 @@ export interface AppNavigationService {
     input: Input
   ) => Promise<Output>
   showHome: () => Promise<void>
-  /**
-   * Transitional escape hatch for a legacy file route that returns before it
-   * can call openProject. Remove it with the effectful loader integration.
-   */
-  supersedeProjectOpen: (signal?: AbortSignal) => void
 }
 
 export const appNavigationContract = defineContract({
