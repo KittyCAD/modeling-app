@@ -212,11 +212,18 @@ export async function deleteFromSelection(
   const varDecNode =
     varDec.node.type === 'VariableDeclarator' ? varDec.node : null
   const varDecNodeInit = varDecNode?.init ?? null
+  const selectedCall = getNodeFromPath<CallExpressionKw>(
+    ast,
+    selection.codeRef.pathToNode,
+    wasmInstance,
+    'CallExpressionKw'
+  )
+  if (err(selectedCall)) return selectedCall
   const selectedCallExpression =
     varDecNodeInit?.type === 'CallExpressionKw'
       ? varDecNodeInit
-      : varDec.node.type === 'CallExpressionKw'
-        ? varDec.node
+      : selectedCall.node.type === 'CallExpressionKw'
+        ? selectedCall.node
         : null
   const selectedCallName = selectedCallExpression?.callee.name.name ?? null
   const isSweepLikePathSelection =

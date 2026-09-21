@@ -521,12 +521,12 @@ async fn coerce_planar_surface_target(
         curves.push(CurveType::from(synthetic_sketch));
     }
 
-    validate_single_closed_region(&curves, source_range)?;
+    prepare_single_closed_region(&mut curves, source_range)?;
 
     Ok(curves)
 }
 
-fn validate_single_closed_region(curves: &[CurveType], source_range: crate::SourceRange) -> Result<(), KclError> {
+fn prepare_single_closed_region(curves: &mut Vec<CurveType>, source_range: crate::SourceRange) -> Result<(), KclError> {
     let sketches = curves
         .iter()
         .filter_map(|curve| match curve {
@@ -557,17 +557,17 @@ fn validate_single_closed_region(curves: &[CurveType], source_range: crate::Sour
     // as an undirected cycle so declaration order and edge direction do not
     // reject a closed boundary. The engine still validates the resulting faces.
     let mut vertices: Vec<[f64; 2]> = Vec::new();
-    let mut neighbors: Vec<Vec<usize>> = Vec::new();
+    let mut neighbors: Vec<Vec<(usize, usize)>> = Vec::new();
+    let mut path_ids = Vec::new();
     for path in &sketch.paths {
         if sketch.synthetic_jump_path_ids.contains(&path.get_id()) {
             continue;
         }
         let [from, to] = [path.get_from(), path.get_to()].map(|point| {
             let point = point.map(|coordinate| coordinate.to_mm());
-            if let Some(index) = vertices
-                .iter()
-                .position(|vertex| (vertex[0] - point[0]).hypot(vertex[1] - point[1]) <= SOLVER_CONVERGENCE_TOLERANCE)
-            {
+            if let Some(index) = vertices.iter().position(|vertex| {
+                libm::hypot(vertex[0] - point[0], vertex[1] - point[1]) <= SOLVER_CONVERGENCE_TOLERANCE
+            }) {
                 index
             } else {
                 vertices.push(point);
@@ -575,9 +575,11 @@ fn validate_single_closed_region(curves: &[CurveType], source_range: crate::Sour
                 vertices.len() - 1
             }
         });
+        let path_index = path_ids.len();
+        path_ids.push(path.get_id());
         // A closed circle contributes both ends to the same vertex.
-        neighbors[from].push(to);
-        neighbors[to].push(from);
+        neighbors[from].push((to, path_index));
+        neighbors[to].push((from, path_index));
     }
 
     if neighbors.is_empty() || neighbors.iter().any(|edges| edges.len() != 2) {
@@ -587,18 +589,31 @@ fn validate_single_closed_region(curves: &[CurveType], source_range: crate::Sour
         )));
     }
 
-    let mut visited = HashSet::new();
-    let mut pending = vec![0];
-    while let Some(index) = pending.pop() {
-        if visited.insert(index) {
-            pending.extend(&neighbors[index]);
+    let mut ordered_path_ids = Vec::with_capacity(path_ids.len());
+    let mut vertex = 0;
+    let mut previous_path = None;
+    while let Some(&(next_vertex, path_index)) = neighbors[vertex]
+        .iter()
+        .find(|(_, path_index)| Some(*path_index) != previous_path)
+    {
+        ordered_path_ids.push(path_ids[path_index]);
+        previous_path = Some(path_index);
+        vertex = next_vertex;
+        if vertex == 0 {
+            break;
         }
     }
-    if visited.len() != vertices.len() {
+    if ordered_path_ids.len() != path_ids.len() {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "A sketch or segment list passed to `planarSurface` must contain exactly one region.".to_owned(),
             vec![source_range],
         )));
+    }
+    if !sketch.synthetic_jump_path_ids.is_empty() {
+        // Submit the original curves in boundary order, excluding pen jumps.
+        // Do not trace a region: that could trim a self-intersecting boundary
+        // to one face instead of letting the engine validate the whole input.
+        *curves = ordered_path_ids.into_iter().map(CurveType::Edge).collect();
     }
     Ok(())
 }
@@ -783,8 +798,9 @@ surface = planarSurface({curves})
             .await
             .unwrap();
 
-            assert!(result.root_module_artifact_commands().iter().any(|artifact_command| {
-                matches!(&artifact_command.command, ModelingCmd::CreatePlanarSurface(command) if command.curve_ids.len() == 1)
+            let commands = result.root_module_artifact_commands();
+            assert!(commands.iter().any(|artifact_command| {
+                matches!(&artifact_command.command, ModelingCmd::CreatePlanarSurface(command) if command.curve_ids.len() == 4)
             }));
         }
     }

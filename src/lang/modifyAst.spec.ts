@@ -778,13 +778,15 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65deg, length = ${
 })
 
 describe('Testing deleteFromSelection', () => {
+  const circleSketch = `sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [5mm, 0mm], center = [0mm, 0mm])
+}`
+
   it.each([
     {
       name: 'a circle',
-      sketch: `sketch001 = sketch(on = XY) {
-  circle1 = circle(start = [5mm, 0mm], center = [0mm, 0mm])
-}`,
-      curves: 'sketch001.circle1',
+      sketch: circleSketch,
+      surface: 'planarSurface([sketch001.circle1])',
     },
     {
       name: 'connected arcs',
@@ -795,16 +797,31 @@ describe('Testing deleteFromSelection', () => {
   coincident([arc1.start, arc2.end])
   coincident([arc1.end, arc2.start])
 }`,
-      curves: 'sketch001.arc1, sketch001.arc2',
+      surface: 'planarSurface([sketch001.arc1, sketch001.arc2])',
+    },
+    {
+      name: 'an explicit pipe input',
+      sketch: circleSketch,
+      surface: '[sketch001.circle1] |> planarSurface(%)',
+    },
+    {
+      name: 'an implicit pipe input',
+      sketch: circleSketch,
+      surface: '[sketch001.circle1] |> planarSurface()',
+    },
+    {
+      name: 'a pipe with a downstream flip',
+      sketch: circleSketch,
+      surface: 'planarSurface([sketch001.circle1]) |> flipSurface(%)',
     },
   ])(
     'deletes a planar surface made from $name without deleting its source sketch',
-    async ({ sketch, curves }) => {
+    async ({ sketch, surface }) => {
       const sourceCode = `@settings(kclVersion = 2.0, experimentalFeatures = allow)
 
 ${sketch}`
       const ast = assertParse(
-        `${sourceCode}\nsurface001 = planarSurface([${curves}])`,
+        `${sourceCode}\nsurface001 = ${surface}`,
         instanceInThisFile
       )
       const execState = await enginelessExecutor(ast, rustContextInThisFile)
