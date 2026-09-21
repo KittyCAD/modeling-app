@@ -20,7 +20,7 @@ jobs:
     runs-on: namespace-profile-ubuntu-2-cores
     steps:
       - uses: actions/checkout@v7.0.1
-      - uses: actions/create-github-app-token@v3.2.0
+      - uses: actions/create-github-app-token@v3
         id: app-token
         with:
           # required
