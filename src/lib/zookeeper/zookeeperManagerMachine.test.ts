@@ -3,7 +3,9 @@ import type {
   ClientErrorReport,
   MlCopilotFile,
 } from '@kittycad/lib'
+import { signal } from '@preact/signals-core'
 import { resetReportedClientErrorsForTests } from '@src/lib/clientErrors'
+import { initializeAuthSessionTracking } from '@src/lib/sessionExpired'
 import type { FileMeta } from '@src/lib/types'
 import {
   type Conversation,
@@ -30,11 +32,20 @@ import {
   ZOOKEEPER_RESUME_SUPERSEDED_CLOSE_CODE,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { S } from '@src/machines/utils'
+import type { AuthRegistryService } from '@src/registry/contracts/auth'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createActor, fromPromise, waitFor } from 'xstate'
 
+let stopClientErrorAuth: (() => void) | undefined
+
 function stubClientErrorFetch() {
   resetReportedClientErrorsForTests()
+  stopClientErrorAuth = initializeAuthSessionTracking(
+    signal({
+      matches: (value: string): boolean => value === 'loggedIn',
+      context: { token: 'token' },
+    } as AuthRegistryService['state']['value'])
+  )
   const reports: ClientErrorReport[] = []
   const fetchMock = vi
     .spyOn(globalThis, 'fetch')
@@ -255,6 +266,8 @@ describe('zookeeperManagerMachine', () => {
   })
 
   afterEach(() => {
+    stopClientErrorAuth?.()
+    stopClientErrorAuth = undefined
     vi.useRealTimers()
     vi.restoreAllMocks()
     vi.unstubAllGlobals()

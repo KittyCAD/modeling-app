@@ -1,6 +1,10 @@
 import { type ClientErrorReport, users } from '@kittycad/lib'
 import { EngineDebugger } from '@src/lib/debugger'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
+import {
+  getAuthenticatedSession,
+  subscribeToAuthenticatedSession,
+} from '@src/lib/sessionExpired'
 
 type ReportClientErrorParams = {
   code?: string
@@ -46,6 +50,12 @@ export enum ClientErrorCode {
 }
 
 const reportedClientErrors = new Set<string>()
+type PendingReport = { body: ClientErrorReport; dedupeKey?: string }
+const pendingReports: PendingReport[] = []
+const MAX_PENDING_REPORTS = 100
+// Keep startup diagnostics, but never carry logout/expired-session errors into
+// a later account's session.
+let canQueueBeforeLogin = true
 const FALLBACK_APP_RELEASE = 'unknown'
 // Match the API's stack limit in Unicode characters.
 const MAX_STACK_LENGTH = 8192
@@ -76,18 +86,6 @@ const getCurrentRoute = () => {
   }
   const { pathname, search, hash } = window.location
   return `${pathname}${search}${hash}` || undefined
-}
-
-const getAuthToken = () => {
-  if (typeof window === 'undefined') {
-    return undefined
-  }
-
-  try {
-    return window.app?.auth.actor.getSnapshot().context.token
-  } catch {
-    return undefined
-  }
 }
 
 export const errorToMessage = (
@@ -183,6 +181,9 @@ const buildClientErrorReport = (
 }
 
 export const reportClientError = async (params: ReportClientErrorParams) => {
+  const session = getAuthenticatedSession()
+  if (!session && !canQueueBeforeLogin) return
+
   const dedupeKey = params.dedupeKey
   if (dedupeKey && reportedClientErrors.has(dedupeKey)) {
     return
@@ -191,22 +192,73 @@ export const reportClientError = async (params: ReportClientErrorParams) => {
     reportedClientErrors.add(dedupeKey)
   }
 
-  const client = createKCClient(getAuthToken())
-  const result = await kcCall(() =>
-    users.report_user_client_error({
-      client,
-      body: buildClientErrorReport(params),
-    })
-  )
-
-  if (result instanceof Error) {
-    if (dedupeKey) {
-      reportedClientErrors.delete(dedupeKey)
+  // Capture the route and debugger logs now, not after authentication completes.
+  const report = { body: buildClientErrorReport(params), dedupeKey }
+  if (!session) {
+    if (pendingReports.length === MAX_PENDING_REPORTS) {
+      const dropped = pendingReports.shift()
+      if (dropped?.dedupeKey) reportedClientErrors.delete(dropped.dedupeKey)
     }
-    console.warn('Failed to report client error', result)
+    pendingReports.push(report)
+    return
+  }
+  await sendReport(report, session)
+}
+
+async function sendReport(
+  report: PendingReport,
+  session: NonNullable<ReturnType<typeof getAuthenticatedSession>>
+) {
+  try {
+    const client = createKCClient(session.token, session.baseUrl)
+    const result = await kcCall(() =>
+      users.report_user_client_error({ client, body: report.body })
+    )
+    if (!(result instanceof Error)) return
+    reportFailure(result)
+  } catch (error) {
+    reportFailure(error)
+  }
+
+  function reportFailure(error: unknown) {
+    if (report.dedupeKey && session === getAuthenticatedSession()) {
+      reportedClientErrors.delete(report.dedupeKey)
+    }
+    console.warn('Failed to report client error', error)
+  }
+}
+
+export function initializeClientErrorReporting() {
+  let previousSession = getAuthenticatedSession()
+  const unsubscribe = subscribeToAuthenticatedSession((session) => {
+    if (previousSession && previousSession !== session) {
+      pendingReports.length = 0
+      reportedClientErrors.clear()
+    }
+    previousSession = session
+    if (!session) return
+    canQueueBeforeLogin = false
+    // Each drain belongs to one session; an old response must not resume it.
+    void (async () => {
+      while (session === getAuthenticatedSession()) {
+        const report = pendingReports.shift()
+        if (!report) return
+        await sendReport(report, session)
+      }
+    })().catch((error: unknown) => {
+      console.warn('Failed to drain client error reports', error)
+    })
+  })
+  return () => {
+    unsubscribe()
+    pendingReports.length = 0
+    reportedClientErrors.clear()
+    canQueueBeforeLogin = true
   }
 }
 
 export const resetReportedClientErrorsForTests = () => {
   reportedClientErrors.clear()
+  pendingReports.length = 0
+  canQueueBeforeLogin = true
 }

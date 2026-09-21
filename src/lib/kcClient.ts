@@ -2,7 +2,10 @@ import { Client } from '@kittycad/lib'
 import type { ApiError } from '@kittycad/lib'
 import env from '@src/env'
 import { isDesktop } from '@src/lib/isDesktop'
-import { notifySessionExpiredFromResponse } from '@src/lib/sessionExpired'
+import {
+  getAuthenticatedSession,
+  notifySessionExpiredFromResponse,
+} from '@src/lib/sessionExpired'
 import isomorphicFetch from 'isomorphic-fetch'
 
 export function createKCClient(
@@ -16,8 +19,15 @@ export function createKCClient(
     if (!isDesktop()) {
       opts.credentials = 'include'
     }
+    const session = getAuthenticatedSession()
+    const requestSession =
+      session &&
+      session.baseUrl === baseUrl &&
+      (token ? token === session.token : !isDesktop())
+        ? session
+        : undefined
     const response = await impl(input, opts)
-    notifySessionExpiredFromResponse(response)
+    notifySessionExpiredFromResponse(response, requestSession)
     return response
   }) as typeof fetch
   return new Client({ token, baseUrl, fetch: injectedFetch })

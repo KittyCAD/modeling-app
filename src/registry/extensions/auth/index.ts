@@ -6,8 +6,10 @@ import {
   provideService,
 } from '@kittycad/registry'
 import { computed, signal } from '@preact/signals-core'
+import { initializeClientErrorReporting } from '@src/lib/clientErrors'
 import {
   clearSessionExpiredNotice,
+  initializeAuthSessionTracking,
   sessionExpiredNotice,
 } from '@src/lib/sessionExpired'
 import { reportRejection } from '@src/lib/trap'
@@ -45,6 +47,8 @@ export const authExtension = defineRegistryItemFactory((ctx) => {
   const token = computed(() => authState.value.context.token)
   const user = computed(() => authState.value.context.user)
   const isLoggedIn = computed(() => authState.value.matches('loggedIn'))
+  const stopSessionTracking = initializeAuthSessionTracking(authState)
+  const stopClientErrorReporting = initializeClientErrorReporting()
 
   const serviceImpl: AuthRegistryService = {
     actor: authActor,
@@ -89,6 +93,8 @@ export const authExtension = defineRegistryItemFactory((ctx) => {
       ],
       providesServices: [provideService(authService, serviceImpl)],
       dispose: () => {
+        stopClientErrorReporting()
+        stopSessionTracking()
         sessionExpiredSubscription()
         authSubscription.unsubscribe()
         authActor.stop()
