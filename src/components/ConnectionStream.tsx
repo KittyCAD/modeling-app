@@ -546,7 +546,10 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           label: 'ConnectionStream.tsx',
           message: 'window offline, calling tearDown()',
         })
-        engineCommandManager.tearDown()
+        engineCommandManager.tearDown({
+          route: 'window-offline',
+          initiatedBy: 'client',
+        })
       },
       connect: () => {
         if (engineCommandManager.lastConnectionError?.terminal) return

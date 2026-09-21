@@ -1942,7 +1942,7 @@ export default {
       {
         "name": "method",
         "ty": "string",
-        "docs": "The method used during extrusion, either `NEW` or `MERGE`. `NEW` creates a new object. `MERGE` merges the extruded objects together. The default is `MERGE`.",
+        "docs": "The method used during extrusion, either `NEW` or `MERGE`. `NEW` creates a new body. `MERGE` updates the parent body when extruding a face or a sketch on a face; it does not combine separate plane-based sketches. The default is `MERGE`.",
         "required": false,
         "special": false,
         "experimental": false,
