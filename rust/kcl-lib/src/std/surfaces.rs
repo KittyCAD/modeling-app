@@ -23,7 +23,6 @@ use crate::execution::CurveType;
 use crate::execution::ExecState;
 use crate::execution::KclValue;
 use crate::execution::ModelingCmdMeta;
-use crate::execution::ProfileClosed;
 use crate::execution::Solid;
 use crate::execution::SolidCreator;
 use crate::execution::types::ArrayLen;
@@ -38,6 +37,7 @@ use crate::std::extrude::after_surface_creation;
 use crate::std::extrude::build_segment_surface_sketch;
 use crate::std::sketch::FaceTag;
 use crate::std::solid_consumption::record_consumed_solids;
+use crate::std::solver::SOLVER_CONVERGENCE_TOLERANCE;
 
 /// Flips the orientation of a surface, swapping which side is the front and which is the reverse.
 pub async fn flip_surface(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -547,36 +547,60 @@ fn validate_single_closed_region(curves: &[CurveType], source_range: crate::Sour
     }
 
     let sketch = sketches[0];
-    if !sketch.synthetic_jump_path_ids.is_empty() {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "A sketch or segment list passed to `planarSurface` must contain exactly one region.".to_owned(),
-            vec![source_range],
-        )));
+    // The engine has already traced this region. Its paths retain coordinates
+    // and pen-jump metadata from the source sketch, not the trimmed boundary.
+    if sketch.origin_sketch_id.is_some() {
+        return Ok(());
     }
 
-    if !sketch_is_closed(sketch) {
+    // Pen jumps describe replay order, not connectivity. Check the real edges
+    // as an undirected cycle so declaration order and edge direction do not
+    // reject a closed boundary. The engine still validates the resulting faces.
+    let mut vertices: Vec<[f64; 2]> = Vec::new();
+    let mut neighbors: Vec<Vec<usize>> = Vec::new();
+    for path in &sketch.paths {
+        if sketch.synthetic_jump_path_ids.contains(&path.get_id()) {
+            continue;
+        }
+        let [from, to] = [path.get_from(), path.get_to()].map(|point| {
+            let point = point.map(|coordinate| coordinate.to_mm());
+            if let Some(index) = vertices
+                .iter()
+                .position(|vertex| (vertex[0] - point[0]).hypot(vertex[1] - point[1]) <= SOLVER_CONVERGENCE_TOLERANCE)
+            {
+                index
+            } else {
+                vertices.push(point);
+                neighbors.push(Vec::new());
+                vertices.len() - 1
+            }
+        });
+        // A closed circle contributes both ends to the same vertex.
+        neighbors[from].push(to);
+        neighbors[to].push(from);
+    }
+
+    if neighbors.is_empty() || neighbors.iter().any(|edges| edges.len() != 2) {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "A sketch or segment list passed to `planarSurface` must form one closed region.".to_owned(),
             vec![source_range],
         )));
     }
 
-    Ok(())
-}
-
-fn sketch_is_closed(sketch: &crate::execution::Sketch) -> bool {
-    if matches!(sketch.is_closed, ProfileClosed::Implicitly | ProfileClosed::Explicitly) {
-        return true;
+    let mut visited = HashSet::new();
+    let mut pending = vec![0];
+    while let Some(index) = pending.pop() {
+        if visited.insert(index) {
+            pending.extend(&neighbors[index]);
+        }
     }
-
-    let (Some(first_path), Some(last_path)) = (sketch.paths.first(), sketch.paths.last()) else {
-        return false;
-    };
-    let start = first_path.get_from();
-    let end = last_path.get_to();
-    let dx = start[0].to_mm() - end[0].to_mm();
-    let dy = start[1].to_mm() - end[1].to_mm();
-    dx * dx + dy * dy <= super::EQUAL_POINTS_DIST_EPSILON * super::EQUAL_POINTS_DIST_EPSILON
+    if visited.len() != vertices.len() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "A sketch or segment list passed to `planarSurface` must contain exactly one region.".to_owned(),
+            vec![source_range],
+        )));
+    }
+    Ok(())
 }
 
 fn require_single_surface(
@@ -713,6 +737,73 @@ surface = planarSurface([profile.line1, profile.line2, profile.line3, profile.li
 
         // Segment lists are replayed as one synthetic sketch before surface creation.
         assert_eq!(command.curve_ids.len(), 1);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn planar_surface_accepts_one_region_from_a_multi_region_sketch() {
+        for region in [
+            "region(point = [0mm, 0mm], sketch = profile)",
+            "region(segments = [profile.circle1])",
+        ] {
+            let result = parse_execute(&format!(
+                r#"
+@settings(kclVersion = 2.0, experimentalFeatures = allow)
+profile = sketch(on = XY) {{
+  circle1 = circle(start = [2mm, 0mm], center = [0mm, 0mm])
+  circle2 = circle(start = [8mm, 0mm], center = [6mm, 0mm])
+}}
+selected = {region}
+surface = planarSurface(selected)
+"#
+            ))
+            .await
+            .unwrap();
+
+            assert!(result.root_module_artifact_commands().iter().any(|artifact_command| {
+                matches!(&artifact_command.command, ModelingCmd::CreatePlanarSurface(command) if command.curve_ids.len() == 1)
+            }));
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn planar_surface_accepts_a_closed_boundary_in_any_declaration_order() {
+        for curves in ["profile", "[profile.bottom, profile.top, profile.right, profile.left]"] {
+            let result = parse_execute(&format!(
+                r#"
+@settings(kclVersion = 2.0, experimentalFeatures = allow)
+profile = sketch(on = XY) {{
+  bottom = line(start = [0mm, 0mm], end = [2mm, 0mm])
+  top = line(start = [2mm, 2mm], end = [0mm, 2mm])
+  right = line(start = [2mm, 0mm], end = [2mm, 2mm])
+  left = line(start = [0mm, 2mm], end = [0mm, 0mm])
+}}
+surface = planarSurface({curves})
+"#
+            ))
+            .await
+            .unwrap();
+
+            assert!(result.root_module_artifact_commands().iter().any(|artifact_command| {
+                matches!(&artifact_command.command, ModelingCmd::CreatePlanarSurface(command) if command.curve_ids.len() == 1)
+            }));
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn planar_surface_rejects_a_closed_loop_with_an_open_branch() {
+        let err = parse_execute(
+            r#"
+@settings(kclVersion = 2.0, experimentalFeatures = allow)
+profile = sketch(on = XY) {
+  circle1 = circle(start = [2mm, 0mm], center = [0mm, 0mm])
+  branch = line(start = [2mm, 0mm], end = [4mm, 0mm])
+}
+surface = planarSurface(profile)
+"#,
+        )
+        .await
+        .unwrap_err();
+        assert!(err.message().contains("must form one closed region"), "{err:?}");
     }
 
     #[tokio::test(flavor = "multi_thread")]

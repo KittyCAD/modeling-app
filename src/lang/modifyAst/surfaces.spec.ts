@@ -410,8 +410,18 @@ sketch001 = sketch(on = XY) {
     )
   }
 
-  it('creates and hides the source of a selected engine region', async () => {
-    const { ast, artifactGraph } = await setup()
+  it.each([
+    { name: 'a single region', code: circle },
+    {
+      name: 'one region from a sketch with two circles',
+      code: `@settings(kclVersion = 2.0)
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [10mm, 0mm], center = [0mm, 0mm])
+  circle2 = circle(start = [40mm, 0mm], center = [30mm, 0mm])
+}`,
+    },
+  ])('creates and hides the source of $name', async ({ code }) => {
+    const { ast, artifactGraph } = await setup(code)
     const sketch = [...artifactGraph.values()].find(
       (artifact) => artifact.type === 'sketchBlock'
     )
@@ -445,8 +455,16 @@ surface001 = planarSurface(region001)`
       )
     ).toBeUndefined()
     expect(recast(ast, instanceInThisFile)).toBe(
-      recast(assertParse(circle, instanceInThisFile), instanceInThisFile)
+      recast(assertParse(code, instanceInThisFile), instanceInThisFile)
     )
+    const newCode = recast(result.modifiedAst, instanceInThisFile)
+    if (err(newCode)) throw newCode
+    await getAstAndArtifactGraph(
+      newCode,
+      instanceInThisFile,
+      kclManagerInThisFile
+    )
+    expect(kclManagerInThisFile.errors).toEqual([])
   })
 
   it('uses a singleton array for a closed sketch curve', async () => {

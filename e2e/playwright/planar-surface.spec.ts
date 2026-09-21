@@ -211,7 +211,7 @@ chamfer001 = chamfer(extrude001, tags = getCommonEdge(faces = [region001.tags.li
     })
   }
 
-  test('create from a scene region, edit tolerance, cancel an edit, and delete', async ({
+  test('create one of multiple scene regions, edit tolerance, cancel an edit, and delete', async ({
     page,
     homePage,
     scene,
@@ -221,6 +221,7 @@ chamfer001 = chamfer(extrude001, tags = getCommonEdge(faces = [region001.tags.li
   }) => {
     const initialCode = `sketch001 = sketch(on = XZ) {
   circle1 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+  circle2 = circle(start = [var 25mm, var 0mm], center = [var 20mm, var 0mm])
 }`
     const declaration = 'surface001 = planarSurface(region001)'
     const editedDeclaration =
@@ -352,7 +353,7 @@ chamfer001 = chamfer(extrude001, tags = getCommonEdge(faces = [region001.tags.li
         'surface001 = planarSurface([sketch001.arc1, sketch001.arc2])',
     },
   ]) {
-    test(`create from ${profile.name}`, async ({
+    test(`create from ${profile.name}, edit, use, and delete`, async ({
       page,
       homePage,
       scene,
@@ -427,6 +428,34 @@ chamfer001 = chamfer(extrude001, tags = getCommonEdge(faces = [region001.tags.li
         await editor.expectEditor.toContain(
           'surface002 = flipSurface(surface001)'
         )
+      })
+
+      await test.step('Delete the surfaces and preserve the source curves', async () => {
+        await editor.closePane()
+        await (await toolbar.getFeatureTreeOperation('surface002', 0)).click()
+        await page.keyboard.press('Delete')
+        await scene.settled()
+        await editor.expectEditor.not.toContain('flipSurface(')
+
+        await (await toolbar.getFeatureTreeOperation('surface001', 0)).click()
+        await page.keyboard.press('Delete')
+        await scene.settled()
+        await editor.expectEditor.not.toContain('planarSurface(')
+        await editor.expectEditor.toContain(profile.code, {
+          shouldNormalise: true,
+        })
+        await expect(
+          await toolbar.getFeatureTreeOperation('sketch001', 0)
+        ).toBeVisible()
+        await expect
+          .poll(() =>
+            page.evaluate(() =>
+              window.app.singletons.kclManager.errors.map(
+                (error) => error.message
+              )
+            )
+          )
+          .toEqual([])
       })
     })
   }

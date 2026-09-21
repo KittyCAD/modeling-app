@@ -222,7 +222,9 @@ export async function deleteFromSelection(
   const isSweepLikePathSelection =
     selection.artifact?.type === 'path' &&
     selectedCallName !== null &&
-    ['extrude', 'revolve', 'sweep', 'loft', 'blend'].includes(selectedCallName)
+    ['extrude', 'revolve', 'sweep', 'loft', 'blend', 'planarSurface'].includes(
+      selectedCallName
+    )
 
   if (
     selection.artifact?.type === 'pattern' &&

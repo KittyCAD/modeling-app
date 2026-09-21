@@ -778,6 +778,65 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65deg, length = ${
 })
 
 describe('Testing deleteFromSelection', () => {
+  it.each([
+    {
+      name: 'a circle',
+      sketch: `sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [5mm, 0mm], center = [0mm, 0mm])
+}`,
+      curves: 'sketch001.circle1',
+    },
+    {
+      name: 'connected arcs',
+      sketch: `sketch001 = sketch(on = XY) {
+  arc1 = arc(start = [var -5mm, var 0mm], end = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+  arc2 = arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([arc1.center, arc2.center])
+  coincident([arc1.start, arc2.end])
+  coincident([arc1.end, arc2.start])
+}`,
+      curves: 'sketch001.arc1, sketch001.arc2',
+    },
+  ])(
+    'deletes a planar surface made from $name without deleting its source sketch',
+    async ({ sketch, curves }) => {
+      const sourceCode = `@settings(kclVersion = 2.0, experimentalFeatures = allow)
+
+${sketch}`
+      const ast = assertParse(
+        `${sourceCode}\nsurface001 = planarSurface([${curves}])`,
+        instanceInThisFile
+      )
+      const execState = await enginelessExecutor(ast, rustContextInThisFile)
+      const operation = getAllOperations(execState.operations).find(
+        (op) => op.type === 'StdLibCall' && op.name === 'planarSurface'
+      )
+      if (!operation || operation.type !== 'StdLibCall') {
+        throw new Error('Could not find planarSurface operation')
+      }
+      const artifact =
+        getArtifactFromRange(operation.sourceRange, execState.artifactGraph) ??
+        undefined
+      expect(artifact).toMatchObject({ type: 'path', subType: 'sketch' })
+
+      const result = await deleteFromSelection(
+        ast,
+        {
+          codeRef: codeRefFromRange(operation.sourceRange, ast),
+          artifact,
+        },
+        execState.variables,
+        execState.artifactGraph,
+        instanceInThisFile
+      )
+      if (err(result)) throw result
+      expect(recast(result, instanceInThisFile)).toBe(
+        recast(assertParse(sourceCode, instanceInThisFile), instanceInThisFile)
+      )
+      await enginelessExecutor(result, rustContextInThisFile)
+    }
+  )
+
   it('deletes a surface loft selected from the feature tree operation range', async () => {
     const codeBefore = `@settings(kclVersion = 2.0)
 
