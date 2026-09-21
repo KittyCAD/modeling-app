@@ -1,11 +1,9 @@
 /**
  * Resolve the legacy `/file/*` input into application-level project state.
  *
- * `requestUrl` is present only during URL restoration. The redirect result is
- * transitional compatibility for the route-loader seam: a project root or
- * unusable file asks the loader to retry at its canonical URL. Once startup is
- * inverted fully, these cases resolve to project state immediately and the
- * canonical URL is projected only after that state has opened.
+ * `requestUrl` is present only during URL restoration. A project root or
+ * unusable file still resolves to project state immediately; `canonicalUrl`
+ * records the corrected URL that should be projected after that state opens.
  *
  * The ordering here is load-bearing: the project root is resolved before
  * project settings are loaded because loading settings writes missing files.
@@ -38,6 +36,8 @@ export interface ResolvedProjectOpen {
     name: string
     path: string
   }
+  /** A cold-start URL correction to project after this state is opened. */
+  canonicalUrl?: string
 }
 
 export interface ProjectOpenResolutionSettings {
@@ -77,7 +77,7 @@ export async function resolveProjectOpenRequest(
   dependencies: ProjectOpenResolverDependencies,
   { target, requestUrl }: OpenProjectRequest,
   throwIfSuperseded: () => void
-): Promise<{ kind: 'redirect'; to: string } | ResolvedProjectOpen> {
+): Promise<ResolvedProjectOpen> {
   const wasmInstance = await dependencies.wasmInstancePromise
   throwIfSuperseded()
 
@@ -112,6 +112,7 @@ export async function resolveProjectOpenRequest(
 
   const { projectName, projectPath } = projectPathData
   let { currentFileName, currentFilePath } = projectPathData
+  let canonicalUrl: string | undefined
   const isSettingsUrl = requestUrl
     ? new URL(requestUrl).pathname.endsWith('/settings')
     : false
@@ -140,13 +141,10 @@ export async function resolveProjectOpenRequest(
 
     if (wantsProjectDefault) {
       if (requestUrl && target) {
-        return {
-          kind: 'redirect',
-          to: requestUrl.replace(
-            safeEncodeForRouterPaths(target),
-            safeEncodeForRouterPaths(fallbackFile)
-          ),
-        }
+        canonicalUrl = requestUrl.replace(
+          safeEncodeForRouterPaths(target),
+          safeEncodeForRouterPaths(fallbackFile)
+        )
       }
       currentFilePath = fallbackFile
       currentFileName = getStringAfterLastSeparator(fallbackFile)
@@ -159,12 +157,9 @@ export async function resolveProjectOpenRequest(
         const onboardingChildRoute = target
           ? getOnboardingChildRoute(requestUrl, target)
           : ''
-        return {
-          kind: 'redirect',
-          to: `${PATHS.FILE}/${encodeURIComponent(
-            fallbackFile
-          )}${onboardingChildRoute}${routerSearch}`,
-        }
+        canonicalUrl = `${PATHS.FILE}/${encodeURIComponent(
+          fallbackFile
+        )}${onboardingChildRoute}${routerSearch}`
       }
       currentFilePath = fallbackFile
       currentFileName = getStringAfterLastSeparator(fallbackFile)
@@ -199,5 +194,6 @@ export async function resolveProjectOpenRequest(
       name: currentFileName || '',
       path: currentFilePath || '',
     },
+    ...(canonicalUrl ? { canonicalUrl } : {}),
   }
 }

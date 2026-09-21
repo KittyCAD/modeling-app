@@ -60,14 +60,7 @@ export interface OpenProjectRequest {
   signal?: AbortSignal
 }
 
-export type OpenProjectOutcome =
-  | { kind: 'opened'; data: IndexLoaderData }
-  /**
-   * Transitional loader-compatible result used while React Router still
-   * initiates project opens. The final inversion replaces this with opening
-   * normalized project state and projecting its canonical URL afterward.
-   */
-  | { kind: 'redirect'; to: string }
+export type OpenProjectOutcome = { kind: 'opened'; data: IndexLoaderData }
 
 /** The first application intent moved behind the navigation coordinator. */
 export const openProjectIntent = defineAppNavigationIntent<

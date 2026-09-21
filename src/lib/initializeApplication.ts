@@ -6,21 +6,16 @@ import {
   type RouteInitResult,
 } from '@src/lib/routeInit'
 import type { FileLoaderData, HomeLoaderData } from '@src/lib/types'
-import { appUrlService } from '@src/registry/contracts/appUrl'
+import {
+  type AppDestination,
+  appUrlService,
+} from '@src/registry/contracts/appUrl'
 
-const MAX_INITIAL_REDIRECTS = 8
+const MAX_INITIAL_TRANSITIONS = 8
 
 type InitialResult = RouteInitResult<
   undefined | FileLoaderData | HomeLoaderData
 >
-
-function applicationPathFromRedirect(to: string, baseUrl: string) {
-  const url = new URL(to, baseUrl)
-  if (url.hash.startsWith('#/')) {
-    return url.hash.slice(1)
-  }
-  return `${url.pathname}${url.search}${url.hash}`
-}
 
 function requestUrlFromApplicationPath(
   path: string,
@@ -46,9 +41,9 @@ function effectRequestUrl(requestUrl: string, usesHashRouter: boolean) {
 /**
  * Restore application state from the URL once, before React is mounted.
  *
- * Redirects are canonicalisation results from the application commands. They
- * are written back through the app URL capability and reparsed here; React
- * Router is not involved in executing any of these effects.
+ * Startup transitions carry typed application destinations rather than URL
+ * strings. They are followed directly, then their canonical URL is projected
+ * only after the resulting application state has been established.
  */
 export async function initializeApplication(
   app: App,
@@ -61,27 +56,22 @@ export async function initializeApplication(
   } = {}
 ): Promise<void> {
   const appUrl = app.registry.get(appUrlService)
-  let currentRequestUrl = requestUrl
+  const intent = appUrl.readInitialUrl({ requestUrl, usesHashRouter })
+  if (intent.type === 'unrecognized') {
+    return
+  }
+
+  let destination: AppDestination = intent.destination
+  let currentEffectRequestUrl = effectRequestUrl(requestUrl, usesHashRouter)
+  let canonicalPath: string | undefined
 
   for (
-    let redirectCount = 0;
-    redirectCount < MAX_INITIAL_REDIRECTS;
-    redirectCount += 1
+    let transitionCount = 0;
+    transitionCount < MAX_INITIAL_TRANSITIONS;
+    transitionCount += 1
   ) {
-    const intent = appUrl.readInitialUrl({
-      requestUrl: currentRequestUrl,
-      usesHashRouter,
-    })
-    if (intent.type === 'unrecognized') {
-      return
-    }
-
     let result: InitialResult
-    const currentEffectRequestUrl = effectRequestUrl(
-      currentRequestUrl,
-      usesHashRouter
-    )
-    switch (intent.destination.type) {
+    switch (destination.type) {
       case 'index':
         result = await initIndexRoute(app, {
           requestUrl: currentEffectRequestUrl,
@@ -92,7 +82,7 @@ export async function initializeApplication(
         break
       case 'project':
         result = await initFileRoute(app, {
-          id: intent.destination.target,
+          id: destination.target,
           requestUrl: currentEffectRequestUrl,
         })
         break
@@ -100,20 +90,24 @@ export async function initializeApplication(
         return
     }
 
-    if (result.kind === 'ok') {
+    if (result.kind === 'ready') {
+      if (canonicalPath) {
+        void appUrl.navigate(canonicalPath, { replace: true })
+      }
       return
     }
 
-    const path = applicationPathFromRedirect(result.to, currentRequestUrl)
-    void appUrl.navigate(path, { replace: true })
-    currentRequestUrl = requestUrlFromApplicationPath(
-      path,
-      currentRequestUrl,
+    destination = result.destination
+    canonicalPath = result.canonicalPath
+    const nextRequestUrl = requestUrlFromApplicationPath(
+      canonicalPath,
+      currentEffectRequestUrl,
       usesHashRouter
     )
+    currentEffectRequestUrl = effectRequestUrl(nextRequestUrl, usesHashRouter)
   }
 
   return Promise.reject(
-    new Error('Too many redirects while restoring initial application state.')
+    new Error('Too many transitions while restoring initial application state.')
   )
 }
