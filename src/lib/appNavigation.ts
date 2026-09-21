@@ -31,35 +31,56 @@ export interface AppNavigationDependencies {
 export function createAppNavigationService(
   dependencies: AppNavigationDependencies
 ): AppNavigationService {
-  let projectOpenGeneration = 0
+  let activeProjectOpen: AbortController | undefined
 
-  const beginProjectOpen = (signal = new AbortController().signal) => {
-    const generation = ++projectOpenGeneration
-    return () => {
-      if (signal.aborted || generation !== projectOpenGeneration) {
-        // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-        throw new DOMException('Superseded project open', 'AbortError')
-      }
+  const beginProjectOpen = (requestSignal?: AbortSignal) => {
+    activeProjectOpen?.abort()
+
+    const controller = new AbortController()
+    activeProjectOpen = controller
+    const signal = requestSignal
+      ? AbortSignal.any([requestSignal, controller.signal])
+      : controller.signal
+
+    return {
+      assertCurrent: () => signal.throwIfAborted(),
+      finish: () => {
+        if (activeProjectOpen === controller) {
+          activeProjectOpen = undefined
+        }
+      },
     }
   }
 
-  return {
-    openProject: async (request) => {
-      const assertCurrent = beginProjectOpen(request.signal)
+  const openProject: AppNavigationService['openProject'] = async (request) => {
+    const projectOpen = beginProjectOpen(request.signal)
+    try {
+      projectOpen.assertCurrent()
       const resolution = await dependencies.resolveProjectOpen(
         request,
-        assertCurrent
+        projectOpen.assertCurrent
       )
-      assertCurrent()
+      projectOpen.assertCurrent()
 
       if (resolution.kind === 'redirect') {
         return resolution
       }
 
-      return dependencies.openResolvedProject(resolution, assertCurrent)
-    },
+      return dependencies.openResolvedProject(
+        resolution,
+        projectOpen.assertCurrent
+      )
+    } finally {
+      projectOpen.finish()
+    }
+  }
+
+  return {
+    openProject,
     supersedeProjectOpen: (signal) => {
-      beginProjectOpen(signal)()
+      activeProjectOpen?.abort()
+      activeProjectOpen = undefined
+      signal?.throwIfAborted()
     },
   }
 }
