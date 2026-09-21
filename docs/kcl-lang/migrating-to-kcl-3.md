@@ -1,6 +1,6 @@
 ---
 title: "Beta Testing KCL 3.0"
-excerpt: "How to beta test KCL 3.0 and update a KCL program written for KCL 2.0 so that it runs under KCL 3.0."
+excerpt: "How to beta test KCL 3.0 and update a KCL program written in KCL 2.0 so that it runs under KCL 3.0."
 layout: manual
 ---
 
@@ -9,14 +9,13 @@ fillets and the ability to define named views.
 
 In addition to the new features, KCL 3.0 changes a few language rules and
 simplifies some standard library parameters. This page lists every change and
-shows how to update a program written for KCL 2.0. Each section has a "before"
+shows how to update a program written in KCL 2.0. Each section has a "before"
 example that runs under KCL 2.0 and an "after" example that runs under KCL 3.0.
 
 KCL 3.0 is available as a preview for testing. Behavior will change without
 notice before the final 3.0 release, including breaking changes that can make a
 model invalid or silently different. We do not recommend building real models
-with 3.0-preview. It's only intended to get a glimpse of what functionality is
-on its way.
+with 3.0-preview. It's only intended to get a glimpse of new functionality.
 
 To use it, declare the version as the string `"3.0-preview"`, with the quotes,
 in the [settings attribute](/docs/kcl-lang/settings) at the top of the file you
@@ -47,7 +46,7 @@ and partly under KCL 3.0, so migrate a project as a unit.
 | Change | In KCL 3.0 | What to do |
 | --- | --- | --- |
 | `return` exits the function immediately | Statements after an executed `return` do not run | Move statements you need before the `return` |
-| `if` branches have their own scope | A variable declared in a branch is undefined after the `if` | Use the value of the `if` expression, or declare the variable before it |
+| `if` branches have their own scope | A variable declared in a branch is undefined after the `if` | Use the value of the `if` expression, or declare the variable before the `if` expression |
 | The object is evaluated before the index | In `a[b]`, `a` is evaluated before `b` | Usually nothing; check the order of operations if both sides create geometry |
 | `fillet` and `chamfer` run in order | An edge consumed by a cut cannot be looked up afterwards | Look up edges before the cut and store them in variables |
 | `fillet` and `chamfer` follow tangent chains | Edges tangent to the selected edges are also cut | Pass `tangentChain = false` to cut only the selected edges |
@@ -61,8 +60,8 @@ and partly under KCL 3.0, so migrate a project as a unit.
 
 In KCL 2.0, `return` recorded the function's result, but execution continued
 to the end of the function body. Statements after the `return` still ran. In
-KCL 3.0, the first `return` that executes ends the function. Statements after
-it do not run, and a `return` inside an `if` branch returns from the
+KCL 3.0, the first `return` that executes terminates the function. Statements
+after it do not run. A `return` inside an `if` branch returns from the
 enclosing function.
 
 If a function has statements after a `return` that you rely on, move them
